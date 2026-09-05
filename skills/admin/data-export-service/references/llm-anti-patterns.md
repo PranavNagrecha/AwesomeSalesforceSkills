@@ -2,6 +2,8 @@
 
 Common mistakes AI assistants make when advising on Data Export Service. Each pattern lists what the LLM produces, why, the correct framing, and how to spot it.
 
+**Grounding note.** UNVERIFIED (2026-09-05): the corrective framings below that describe the Setup → Data Export UI — the 48-hour window, the UI-only constraint, the Big Object / External Object exclusions, and the binary checkboxes — rest on help.salesforce.com, which cannot be fetched. They are the right corrections to make, but do not present the figures as sourced. The Bulk API 2.0 alternative each pattern points to *is* grounded, in `references/metadata-examples.md`.
+
 ## Anti-Pattern 1: equating Data Export Service with "backup"
 
 **What the LLM generates:** "Salesforce provides backup via the Data Export Service. Schedule a weekly export under Setup → Data Export to satisfy your backup requirements."

@@ -1,6 +1,6 @@
 ---
 name: sales-process-mapping
-description: "Eliciting and documenting a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping. NOT for configuring OpportunityStage, Sales Processes or Path in Setup — use admin/opportunity-management. NOT for cross-functional swim-lane maps — use admin/process-flow-as-is-to-be."
+description: "Eliciting and documenting a sales process before it is built in Salesforce: stage sequencing, entry/exit criteria per stage, win/loss analysis requirements, and stage transition rules. Trigger keywords: sales process design, stage discovery, entry criteria, exit criteria, stage gate, win/loss categorisation, sales methodology, pipeline stages, opportunity stage mapping, stage ladder, probability ladder, forecast category mapping, required fields per stage, stage swim lane, discovery workshop, handoff brief. NOT for configuring OpportunityStage, Sales Processes or Path in Setup — use admin/opportunity-management. NOT for cross-functional swim-lane maps — use admin/process-flow-as-is-to-be."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -12,6 +12,15 @@ triggers:
   - "We want to add a win/loss reason field but aren't sure what categories to use or when to require them"
   - "Our VP of Sales wants a stage gate process documented before we configure Salesforce"
   - "How do we map our existing sales methodology (MEDDIC, SPIN, Challenger) to Salesforce opportunity stages?"
+  - "map a sales process before anyone configures opportunity stages"
+  - "define entry and exit criteria for every opportunity stage"
+  - "reps park deals in one stage and the forecast has stopped meaning anything"
+  - "decide whether new logo and renewal need separate sales processes"
+  - "work out which fields must be required at each sales stage"
+  - "design win and loss reason picklist values for closed opportunities"
+  - "run a sales process discovery workshop with the VP of Sales"
+  - "build a stage-by-stage swim lane showing who does what in Salesforce"
+  - "produce a handoff brief the admin can configure opportunity stages from"
 tags:
   - sales-process
   - stage-design
@@ -33,11 +42,12 @@ outputs:
   - "Win/loss reason category list with a recommendation on where and when to capture them in Salesforce"
   - "Stage transition rule table: which transitions are allowed, which require field completion, which require manager approval"
   - "Open questions log for items that need stakeholder resolution before Salesforce configuration begins"
+  - "Machine-readable stage map (YAML or CSV) that scripts/check_sales_process_mapping.py --map lints"
   - "Handoff brief for the opportunity-management skill (stage names, process count, record type needs)"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 # Sales Process Mapping
@@ -55,6 +65,26 @@ Gather this context before working on anything in this domain:
 - Establish whether a named sales methodology (MEDDIC, MEDDPICC, SPIN, Challenger, Value Selling) is in use or intended. Methodology constrains stage names and entry criteria. If the business has no methodology, the mapping exercise will need to establish one — that is a larger consulting engagement than a configuration task.
 - Determine whether win/loss analysis is currently tracked anywhere (CRM, spreadsheet, survey tool). If it is, obtain the existing reason taxonomy before proposing a new one. Replacing an established taxonomy breaks trend reporting.
 - Ask whether the sales stages are tied to a quoting or CPQ process. If a quote must be sent before a stage can advance, a CPQ dependency exists and must be noted in the transition rules.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before anyone opens Setup. Each one exists because a specific platform
+behaviour punishes the default answer; the right-hand column is what the answer
+changes in `templates/sales-process-mapping-template.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Walk me through the last deal you lost at proposal — what happened first?" | Stated criteria are aspirational; loss narratives expose the gate that actually existed | Rewrites one exit criterion into something observable, and usually one required field |
+| "Who is allowed to move a deal into Negotiation, and who actually does?" | The platform allows backward and skipped moves silently — only a rule stops it | The owner per stage, and either a validation-rule row or a decision not to enforce |
+| "Do renewals run these same stages, or does the CSM run something else?" | Two sequences means two Sales Processes, and `businessProcess` is required on an Opportunity record type (api_meta.txt:45007–45014) | The record type count — the largest cost line in the handoff brief |
+| "When a deal closes, who has to know, and what do they need from the record?" | The Closed Won exit obligations (onboarding Case, Contract, booking) get built by nobody unless they are stage requirements | The Sales → Service and Sales → Finance handoff rows and their fields |
+| "Which team must *not* see the other team's pipeline?" | Record types and business processes do not govern read access (api_meta.txt:42960–42962, 44974–44980) | Moves the requirement out of the stage map into `standards/decision-trees/sharing-selection.md` |
+| "What does the board pack call each forecast bucket?" | Only the documented `ForecastCategoryName` values exist (object_reference.txt:195492–195504) | The internal-label ↔ platform-value translation table, or a separate forecast session |
+| "How do deals actually get closed — rep in the UI, manager bulk edit, or a load?" | Close-path assumptions decide whether a validation rule is sufficient enforcement | The enforcement mechanism per rule, rather than "validation rule" by reflex |
+
+What a proper configuration adds over just doing it: the stage ladder ships with an owner, an observable exit condition and a field requirement per stage, so the forecast means something on day one and the Service and Finance handoffs exist before the first deal closes.
 
 ---
 
@@ -93,7 +123,7 @@ Documenting these rules in the mapping artefact is critical because Salesforce d
 
 During the mapping exercise the practitioner must track which design decisions will hit Salesforce platform limits or constraints. Key constraints to flag:
 
-- **ForecastCategoryName is fixed**: the five platform values (Pipeline, Best Case, Commit, Closed, Omitted) cannot be renamed. Every stage must map to one of these. If the business uses different category names in their forecast process, a translation layer must be documented.
+- **ForecastCategoryName is a fixed, documented value set**: `Best Case`, `Closed`, `Commit`, `Most Likely`, `Omitted`, `Pipeline` (object_reference.txt:195492–195504). They cannot be renamed, and the deployed metadata spells them differently again — see `references/gotchas.md` Gotcha 6. Every stage must map to one of these; if the business uses different category names in its forecast process, a translation layer must be documented.
 - **Stage picklist values are global**: every stage defined in the mapping becomes a global picklist value. Stage names that are too generic (e.g., "Stage 1") will conflict with other business units if the org is shared.
 - **Multiple Sales Processes require multiple Record Types**: if the mapping produces two distinct stage sequences, two Sales Processes and two Record Types are required in Salesforce. The mapping document should flag this dependency explicitly.
 
@@ -108,7 +138,7 @@ During the mapping exercise the practitioner must track which design decisions w
 **How it works:**
 1. Run a structured discovery session (60–90 minutes) with the VP of Sales and 2–3 front-line AEs. Use the Stage Map Template (see `templates/`). Ask for each stage: "What has to be true before a deal enters this stage?" and "What has to happen before the deal can leave?"
 2. Document every stage with a plain-language definition, entry criteria, exit criteria, and the role responsible for advancing the stage.
-3. For each stage, ask which of the five Salesforce forecast categories it should map to. Explain the five values plainly: Pipeline (actively working), Best Case (likely to close), Commit (near-certain), Closed (done), Omitted (not forecast). Let the sales leader assign each stage.
+3. For each stage, ask which Salesforce forecast category it should map to. Explain the values plainly: Pipeline (actively working), Best Case (likely to close), Commit (near-certain), Most Likely (available to orgs using the extra tier), Closed (done), Omitted (not forecast). Let the sales leader assign each stage.
 4. Identify all transition rules: which stage jumps are blocked, which require additional fields, which require manager sign-off.
 5. Document open questions (anything stakeholders disagree on) separately. Do not proceed to configuration until these are resolved.
 6. Produce the Stage Map Document as the output. Hand it to the opportunity-management skill as the specification input.
@@ -148,30 +178,29 @@ During the mapping exercise the practitioner must track which design decisions w
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Confirm scope and motion count.** Identify how many distinct selling motions exist. For each motion, confirm whether it needs its own stage sequence. Document the motion name, deal type, and typical deal size and length for context.
-2. **Run stage discovery sessions.** Use the Stage Map Template. For each stage, elicit: definition, entry criteria, exit criteria, primary owner, and approximate probability. Do this with both sales leadership and front-line reps — their views often diverge and the divergence is important signal.
-3. **Map stages to platform constraints.** For each stage, assign one of the five ForecastCategoryName values (Pipeline, Best Case, Commit, Closed, Omitted). Flag any stage where stakeholders want a forecast category that does not exist — document the gap and explain the platform constraint.
-4. **Document transition rules.** For each stage boundary, record: is forward progression enforced? Is backward movement allowed? Which fields must be populated? Which transitions trigger a notification or approval? Flag transitions that will require validation rules or flows — these become configuration requirements.
-5. **Design the win/loss taxonomy.** Run the win/loss interview pattern. Produce a final taxonomy of 5–8 win reasons and 5–8 loss reasons. Decide capture point, enforcement method, and data owner. Document in the mapping artefact.
-6. **Log open questions and resolution owners.** Any item stakeholders could not agree on goes into the open questions log with a named owner and a target resolution date. The mapping document is not complete until all questions are resolved.
-7. **Produce the handoff brief.** Summarise the stage sequences, motion count, transition rules, and win/loss taxonomy in a one-page handoff brief formatted as input to the opportunity-management skill. Include the stage names exactly as they should appear in Salesforce (this is the source of truth for the global picklist values).
-
----
+1. **Count the motions, then open the template.** Copy `templates/sales-process-mapping-template.md` and fill the Selling Motions table first. Every motion that diverges at more than two stages becomes its own stage sequence — and, because `businessProcess` is required on an Opportunity record type, its own record type. Get that number agreed before booking discovery time.
+2. **Run the discovery sessions off the question table.** Use `## Questions to Ask Before Configuring` above and §6 of `references/worked-examples.md` as the agenda. Interview sales leadership and front-line AEs separately; where their answers diverge, that gap is the finding, not noise.
+3. **Write the ladder as a machine-readable map, not prose.** Fill the stage map in the shape of §2 of `references/worked-examples.md` — one entry, one exit, a `ForecastCategoryName` value, a probability, an owner persona and at least one required field per stage, terminal stages included.
+4. **Lint it before anyone reads it.** `python3 scripts/check_sales_process_mapping.py --map <your-map>.yaml` (or `--manifest-dir <design-dir>` to lint every map plus a retrieved stage value set). Fix every ERROR: a missing exit criterion, a non-monotonic probability, two stages exiting on the same condition and a stage with no required field are all design defects, not formatting complaints.
+5. **Turn transition rules into enforcement intent.** For every restriction, write the row shape in §3 of `references/worked-examples.md`: where it fires, the condition in words, the rep-facing message. Decide once — in the mapping — how "at or past stage X" will be represented, because `StageName` is a picklist and gives you no ordering for free.
+6. **Design the win/loss taxonomy and its capture path.** 5–8 values per outcome, always including "No Decision / Status Quo", plus the answer to how deals actually get closed. Run the narrative document through `python3 scripts/check_sales_process_mapping.py --doc <document>.md` to catch an oversized taxonomy, a catch-all "Other", a free-text fallback or Path-enforcement language.
+7. **Read `references/gotchas.md`, then produce the handoff brief.** Close the open-questions log, and hand `admin/opportunity-management` the exact picklist strings, the process and record type count, the per-record-type stage availability matrix, and the validation rules the ladder implies.
 
 ## Review Checklist
 
 Run through these before marking work in this area complete:
 
+- [ ] The stage map exists as a machine-readable artefact and `python3 scripts/check_sales_process_mapping.py --map <map>` reports no ERROR
 - [ ] Every stage has a plain-language definition, entry criteria, and exit criteria documented
-- [ ] Every stage is assigned to exactly one of the five ForecastCategoryName values
+- [ ] Every stage is assigned to exactly one documented `ForecastCategoryName` value, spelled as the label and not as the metadata token
 - [ ] Win/loss reason taxonomy is finalised (5–8 values per outcome), capture point is defined, enforcement method is documented
 - [ ] Stage transition rules are documented: which transitions are blocked, which require fields, which require approvals
 - [ ] Open questions log has no unresolved items (or all unresolved items have a named owner and target date)
 - [ ] Number of distinct sales processes required is confirmed and matches the number of distinct stage sequences
 - [ ] Stage names in the handoff brief are the exact strings that should appear as Salesforce picklist values
 - [ ] If a named methodology (MEDDIC, SPIN, Challenger) is in use, its components are explicitly mapped to stage entry criteria in the document
+- [ ] The handoff brief carries a per-record-type stage availability matrix, not just a flat stage list — see `references/gotchas.md` Gotcha 7
+- [ ] Any visibility requirement voiced in the workshop has been moved out of the stage map and routed to `standards/decision-trees/sharing-selection.md`
 
 ---
 
@@ -179,7 +208,7 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **ForecastCategoryName values cannot be renamed** — The five platform values (Pipeline, Best Case, Commit, Closed, Omitted) are hardcoded. If the business uses different labels in their forecasting process (e.g., "Called" instead of "Commit"), those translations must be documented during mapping. Many mapping exercises skip this and produce stage-to-forecast assignments that confuse reps when they see different labels in the UI than in the mapping document.
+1. **ForecastCategoryName values cannot be renamed** — The documented value set (`Best Case`, `Closed`, `Commit`, `Most Likely`, `Omitted`, `Pipeline`) is fixed. If the business uses different labels in their forecasting process (e.g., "Called" instead of "Commit"), those translations must be documented during mapping. Many mapping exercises skip this and produce stage-to-forecast assignments that confuse reps when they see different labels in the UI than in the mapping document.
 
 2. **Stage picklist values are global across all Opportunity record types** — Every stage name defined in the mapping becomes a global picklist entry visible across the entire org. Generic names like "Stage 3" or "Prospecting" create ambiguity when multiple business units share the org. The mapping exercise must produce stage names that are unambiguous across all business units, not just the one being mapped.
 
@@ -203,10 +232,31 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | Building the artefacts — a B2B SaaS swim lane, the stage ladder in YAML and CSV, validation-rule intent, the record-type decision, the deployable stage value set, and the workshop question set |
+| `references/gotchas.md` | Before finalising a stage map — nine platform behaviours that turn a plausible mapping document into a broken configuration |
+| `references/examples.md` | Two worked engagements: new-logo vs renewal separation, and MEDDIC components used as stage entry criteria |
+| `references/well-architected.md` | Pillar mapping, the tradeoffs behind one process vs many, and the sources every platform claim in this package rests on |
+| `references/llm-anti-patterns.md` | Self-checking generated output — the six ways an assistant gets sales process mapping wrong |
+| `templates/sales-process-mapping-template.md` | Running the engagement: motions, stage map, transition rules, win/loss taxonomy, open questions, handoff brief |
+| `scripts/check_sales_process_mapping.py` | Linting the stage map (`--map`), the narrative document (`--doc`), or a whole design directory (`--manifest-dir`) |
+
+---
+
 ## Related Skills
 
-- opportunity-management — use after this skill completes; it consumes the handoff brief as its input specification and performs the Salesforce configuration
-- requirements-gathering-for-sf — use when the sales process mapping is one component of a larger requirements discovery effort
-- path-and-guidance — use after opportunity-management to add visual stage guidance layered on top of the configured stages
-- record-type-strategy-at-scale — use when the mapping produces multiple sales processes and record type design decisions need to be made at org scale
-- collaborative-forecasts — use after opportunity-management when the forecast category assignments from the mapping document need to be wired into Collaborative Forecasting types
+- admin/opportunity-management — use after this skill completes; it consumes the handoff brief and owns the `BusinessProcess`, `RecordType` and `PathAssistant` XML
+- admin/picklist-and-value-sets — owns the `OpportunityStage` standard value set once the stage names are agreed
+- admin/validation-rules — turns the §3 enforcement intent into formulas, including the `PRIORVALUE` backward-movement pattern
+- admin/record-types-and-page-layouts — the record type and layout work that a second sales process forces
+- admin/record-type-strategy-at-scale — use when the mapping produces multiple processes and the org's record type budget is already tight
+- admin/path-and-guidance — use after opportunity-management to layer visual guidance on the configured stages
+- admin/process-flow-as-is-to-be — use for the step-anchored As-Is/To-Be swim lane with exception paths; this skill only maps the stage-anchored lane
+- admin/pipeline-review-design — use once the ladder is live, to inspect the distribution across the stages it created
+- admin/collaborative-forecasts — use when the forecast category assignments need wiring into forecast types and rollups
+- admin/quote-to-cash-process — owns the Quote → Contract handoff that the Closed Won exit criterion points at
+- admin/case-management-setup — owns the onboarding Case that the Sales → Service handoff creates
+- admin/requirements-gathering-for-sf — use when this mapping is one component of a larger requirements discovery effort

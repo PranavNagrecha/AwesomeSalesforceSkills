@@ -14094,6 +14094,9 @@
     "survey-strategy": [
       "architect/customer-effort-scoring"
     ],
+    "survey-subject": [
+      "admin/salesforce-surveys"
+    ],
     "survivorship": [
       "admin/duplicate-management"
     ],

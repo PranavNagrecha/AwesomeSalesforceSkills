@@ -1,10 +1,29 @@
 #!/usr/bin/env python3
 """Checker script for Sales Process Mapping skill.
 
-Validates a sales process mapping document (Markdown table format) for common
-structural and Salesforce platform constraint issues:
+Three inputs, any combination:
+
+  --map    a machine-readable sales-process map (YAML subset or CSV) - the
+           artefact this skill produces. Linted for the design invariants that
+           make the map safe to hand to admin/opportunity-management:
+             * every stage carries non-empty entry AND exit criteria
+             * probability is monotonic non-decreasing down the open/won ladder
+             * forecast_category is a documented ForecastCategoryName value
+             * every stage names at least one required field
+             * no two stages share the same exit criteria
+             * stage names are unique
+           Warnings: more than 10 stages; a stage with no owner persona.
+
+  --doc    the Markdown mapping document (narrative form).
+
+  --manifest-dir
+           a directory. Scans it for *.yaml / *.yml / *.csv sales-process maps
+           (any file with a `stages:` key or a stage-map CSV header row) and
+           for a retrieved OpportunityStage standard value set.
+
+The Markdown document checks cover:
   - All required sections present in the mapping document
-  - ForecastCategoryName values are restricted to the five platform-fixed values
+  - ForecastCategoryName values are restricted to the documented platform values
   - At least one Closed Won stage present
   - At least one Closed Lost stage present
   - Win/loss taxonomy size within the recommended 5-8 value range
@@ -16,12 +35,38 @@ structural and Salesforce platform constraint issues:
 Optionally checks deployed Salesforce metadata (OpportunityStage XML) for
 ForecastCategoryName violations and generic stage name collisions.
 
+Accepted YAML subset for --map (deliberately small so no PyYAML is needed):
+
+    process: New Logo - Enterprise      # top-level scalars
+    object: Opportunity
+    stages:                             # a list of mappings
+      - name: Qualification
+        entry: "SDR handoff accepted"
+        exit: "Discovery call held"
+        forecast_category: Pipeline
+        probability: 10
+        owner: SDR
+        won: false                      # optional booleans
+        closed: false
+        required_fields: [LeadSource, Amount]
+
+Scalars may be bare, 'single-quoted' or "double-quoted". Lists are inline
+only ([a, b]). Block scalars (| and >) and nested mappings are not supported.
+CSV form: one row per stage with the headers name, entry, exit,
+forecast_category, probability, owner, required_fields (semicolon-separated),
+and optional won / closed columns.
+
 Uses stdlib only - no pip dependencies.
+
+Exit code is 1 if any ERROR is reported, or if --strict is set and any WARNING
+is reported.
 
 Usage:
     python3 check_sales_process_mapping.py [--help]
+    python3 check_sales_process_mapping.py --map path/to/stage-map.yaml
+    python3 check_sales_process_mapping.py --map path/to/stage-map.csv
     python3 check_sales_process_mapping.py --doc path/to/mapping-document.md
-    python3 check_sales_process_mapping.py --manifest-dir path/to/metadata
+    python3 check_sales_process_mapping.py --manifest-dir path/to/design-or-metadata
     python3 check_sales_process_mapping.py --doc path/to/mapping-document.md --strict
 """
 
@@ -57,6 +102,57 @@ WIN_LOSS_MIN = 3
 SF_NS = "http://soap.sforce.com/2006/04/metadata"
 
 
+# ---------------------------------------------------------------------------
+# Sales-process map (--map) constants
+# ---------------------------------------------------------------------------
+
+# OpportunityStage.ForecastCategoryName - the design vocabulary a stage map uses.
+# object_reference.txt:195492-195504 (Object Reference, OpportunityStage).
+FORECAST_CATEGORY_NAMES = {
+    "Best Case",
+    "Closed",
+    "Commit",
+    "Most Likely",
+    "Omitted",
+    "Pipeline",
+}
+
+# The Metadata API <forecastCategory> tokens (ForecastCategories enumeration,
+# api_meta.txt:47578-47585) plus OpportunityStage.ForecastCategory
+# (object_reference.txt:195466-195486). A stage MAP is a design artefact and
+# must speak the ForecastCategoryName vocabulary, so seeing one of these here
+# means the two vocabularies have been mixed in one column.
+# ForecastCategories enumeration - the tokens the deployed XML accepts
+# (api_meta.txt:47578-47585, CustomValue.forecastCategory).
+METADATA_FORECAST_ENUM = {"Omitted", "Pipeline", "BestCase", "Forecast", "Closed"}
+
+METADATA_FORECAST_TOKENS = {
+    "BestCase": "Best Case",
+    "Forecast": "Commit",
+    "MostLikely": "Most Likely",
+}
+
+# Design convention, not a platform limit: past ten stages reps stop
+# distinguishing them and stage data degrades.
+STAGE_COUNT_WARN_THRESHOLD = 10
+
+MAP_REQUIRED_STAGE_KEYS = ("name", "entry", "exit", "forecast_category", "probability")
+
+CSV_HEADER_ALIASES = {
+    "stage": "name",
+    "stage_name": "name",
+    "entry_criteria": "entry",
+    "exit_criteria": "exit",
+    "forecastcategory": "forecast_category",
+    "forecastcategoryname": "forecast_category",
+    "forecast_category_name": "forecast_category",
+    "default_probability": "probability",
+    "owner_persona": "owner",
+    "persona": "owner",
+    "required_field": "required_fields",
+}
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
@@ -67,6 +163,12 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--map",
+        dest="stage_map",
+        default=None,
+        help="Path to a machine-readable sales-process map (.yaml/.yml/.csv).",
+    )
+    parser.add_argument(
         "--doc",
         default=None,
         help="Path to the Markdown mapping document to validate.",
@@ -74,7 +176,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--manifest-dir",
         default=None,
-        help="Root directory of Salesforce metadata (optional, checked alongside --doc).",
+        help=(
+            "Directory to scan: any *.yaml/*.yml/*.csv sales-process map inside it is "
+            "linted, and a retrieved OpportunityStage standard value set is checked."
+        ),
     )
     parser.add_argument(
         "--strict",
@@ -137,6 +242,305 @@ def _extract_table_rows_after(text: str, heading_keyword: str) -> list[list[str]
                 break  # table ended
 
     return rows
+
+
+# ---------------------------------------------------------------------------
+# Sales-process map parsing (YAML subset / CSV) - stdlib only
+# ---------------------------------------------------------------------------
+
+def _scalar(raw: str):
+    """Coerce one YAML/CSV scalar: quoted string, inline list, bool, int, or str."""
+    value = raw.strip()
+    if value.startswith("[") and value.endswith("]"):
+        inner = value[1:-1].strip()
+        if not inner:
+            return []
+        return [_scalar(part) for part in inner.split(",")]
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+        return value[1:-1]
+    if value.lower() in ("true", "false"):
+        return value.lower() == "true"
+    if re.fullmatch(r"-?\d+", value):
+        return int(value)
+    return value
+
+
+def _strip_comment(line: str) -> str:
+    """Drop a trailing # comment when it is not inside a quoted scalar."""
+    quote = ""
+    for index, char in enumerate(line):
+        if quote:
+            if char == quote:
+                quote = ""
+        elif char in ("'", '"'):
+            quote = char
+        elif char == "#" and (index == 0 or line[index - 1] in " \t"):
+            return line[:index]
+    return line
+
+
+def parse_stage_map_yaml(text: str) -> tuple[dict, list[str]]:
+    """Parse the documented YAML subset. Returns (document, parse_errors)."""
+    errors: list[str] = []
+    doc: dict = {}
+    stages: list[dict] = []
+    in_stages = False
+    current: dict | None = None
+
+    for lineno, raw_line in enumerate(text.splitlines(), start=1):
+        line = _strip_comment(raw_line).rstrip()
+        if not line.strip():
+            continue
+
+        indent = len(line) - len(line.lstrip(" "))
+        body = line.strip()
+
+        if indent == 0:
+            if body.rstrip() == "stages:":
+                in_stages = True
+                current = None
+                continue
+            in_stages = False
+            current = None
+            if ":" in body:
+                key, _, value = body.partition(":")
+                doc[key.strip()] = _scalar(value) if value.strip() else ""
+            continue
+
+        if not in_stages:
+            continue
+
+        if body.startswith("- "):
+            current = {}
+            stages.append(current)
+            body = body[2:].strip()
+        elif current is None:
+            errors.append(
+                f"line {lineno}: indented key outside a '- ' stage item: {body!r}"
+            )
+            continue
+
+        if ":" not in body:
+            errors.append(f"line {lineno}: expected 'key: value', found {body!r}")
+            continue
+        key, _, value = body.partition(":")
+        current[key.strip()] = _scalar(value) if value.strip() else ""
+
+    doc["stages"] = stages
+    return doc, errors
+
+
+def parse_stage_map_csv(text: str) -> tuple[dict, list[str]]:
+    """Parse a stage-map CSV. Returns (document, parse_errors)."""
+    import csv
+    import io
+
+    errors: list[str] = []
+    reader = csv.DictReader(io.StringIO(text))
+    if not reader.fieldnames:
+        return {"stages": []}, ["CSV has no header row."]
+
+    stages: list[dict] = []
+    for row in reader:
+        stage: dict = {}
+        for header, raw in row.items():
+            if header is None:
+                continue
+            key = header.strip().lower().replace(" ", "_")
+            key = CSV_HEADER_ALIASES.get(key, key)
+            value = (raw or "").strip()
+            if key == "required_fields":
+                stage[key] = [v.strip() for v in value.split(";") if v.strip()]
+            elif key == "probability":
+                stage[key] = int(value) if re.fullmatch(r"-?\d+", value) else value
+            elif key in ("won", "closed"):
+                stage[key] = value.lower() == "true"
+            else:
+                stage[key] = value
+        if any(str(v).strip() for v in stage.values()):
+            stages.append(stage)
+
+    return {"stages": stages}, errors
+
+
+def parse_stage_map(path: Path) -> tuple[dict, list[str]]:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        return {"stages": []}, [f"Could not read stage map {path}: {exc}"]
+
+    if path.suffix.lower() == ".csv":
+        return parse_stage_map_csv(text)
+    return parse_stage_map_yaml(text)
+
+
+def _is_lost_terminal(stage: dict) -> bool:
+    """A stage that ends the deal without a win: excluded from the probability ladder.
+
+    Explicit won/closed flags win; otherwise fall back to the stage name, which
+    is what a design-stage map usually carries.
+    """
+    name = str(stage.get("name", "")).lower()
+    if stage.get("won") is True or "won" in name:
+        return False
+    if stage.get("closed") is True:
+        return True
+    return "lost" in name or "abandon" in name
+
+
+# ---------------------------------------------------------------------------
+# Sales-process map checks (--map)
+# ---------------------------------------------------------------------------
+
+def check_stage_map(map_path: Path) -> tuple[list[str], list[str]]:
+    """Lint a machine-readable sales-process map. Returns (errors, warnings)."""
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    if not map_path.exists():
+        return [f"Stage map not found: {map_path}"], warnings
+
+    doc, parse_errors = parse_stage_map(map_path)
+    errors.extend(f"{map_path.name}: {e}" for e in parse_errors)
+
+    stages = doc.get("stages") or []
+    if not stages:
+        errors.append(
+            f"{map_path.name}: no stages found. A sales-process map needs a "
+            "'stages:' list (YAML) or one row per stage (CSV)."
+        )
+        return errors, warnings
+
+    label = map_path.name
+
+    # --- Structural: required keys present and non-empty ---
+    seen_names: dict[str, int] = {}
+    exits: dict[str, str] = {}
+
+    for index, stage in enumerate(stages, start=1):
+        name = str(stage.get("name", "")).strip()
+        display = name or f"stage #{index}"
+
+        for key in MAP_REQUIRED_STAGE_KEYS:
+            value = stage.get(key)
+            if value is None or (isinstance(value, str) and not value.strip()):
+                errors.append(
+                    f"{label}: {display} is missing '{key}'. Every stage needs a "
+                    "name, entry criteria, exit criteria, forecast_category and probability "
+                    "before the map can be handed to admin/opportunity-management."
+                )
+
+        # Stage names unique - they become global picklist values.
+        if name:
+            key_name = name.lower()
+            if key_name in seen_names:
+                errors.append(
+                    f"{label}: stage name '{name}' appears twice (rows "
+                    f"{seen_names[key_name]} and {index}). Stage names become global "
+                    "OpportunityStage picklist values and must be unique."
+                )
+            else:
+                seen_names[key_name] = index
+
+        # Exit criteria must discriminate one stage from the next.
+        exit_text = str(stage.get("exit", "")).strip()
+        if exit_text:
+            normalised = re.sub(r"[^a-z0-9 ]", "", exit_text.lower())
+            normalised = re.sub(r"\s+", " ", normalised).strip()
+            if normalised in exits:
+                errors.append(
+                    f"{label}: {display} has the same exit criteria as "
+                    f"'{exits[normalised]}'. Two stages that exit on the same condition "
+                    "are one stage; merge them or sharpen the criteria."
+                )
+            else:
+                exits[normalised] = display
+
+        # At least one required field per stage - this is what becomes the
+        # validation-rule intent in the handoff brief.
+        required_fields = stage.get("required_fields")
+        if isinstance(required_fields, str):
+            required_fields = [f for f in re.split(r"[;,]", required_fields) if f.strip()]
+        if not required_fields:
+            errors.append(
+                f"{label}: {display} names no required_fields. A stage with no field "
+                "requirement is a label, not a gate - it produces no validation rule "
+                "and nothing for a rep to complete."
+            )
+
+        # Forecast category must be a documented ForecastCategoryName value.
+        category = str(stage.get("forecast_category", "")).strip()
+        if category:
+            if category in METADATA_FORECAST_TOKENS:
+                errors.append(
+                    f"{label}: {display} uses forecast_category '{category}', which is a "
+                    f"Metadata API token, not a ForecastCategoryName. Use "
+                    f"'{METADATA_FORECAST_TOKENS[category]}' in the design map; the "
+                    "metadata token belongs only in the deployed XML "
+                    "(see admin/opportunity-management references/gotchas.md Gotcha 13)."
+                )
+            elif category not in FORECAST_CATEGORY_NAMES:
+                errors.append(
+                    f"{label}: {display} uses forecast_category '{category}', which is not a "
+                    "documented OpportunityStage.ForecastCategoryName value. Allowed: "
+                    f"{', '.join(sorted(FORECAST_CATEGORY_NAMES))}."
+                )
+
+        # Owner persona - advisory. A stage nobody owns never gets advanced.
+        owner = str(stage.get("owner", "")).strip()
+        if not owner:
+            warnings.append(
+                f"{label}: {display} has no owner persona. Name the role that advances "
+                "the stage, or the swim-lane handoff is undefined."
+            )
+
+    # --- Probability ladder: monotonic non-decreasing over open + won stages ---
+    ladder: list[tuple[str, int]] = []
+    for index, stage in enumerate(stages, start=1):
+        name = str(stage.get("name", "")).strip() or f"stage #{index}"
+        probability = stage.get("probability")
+        if not isinstance(probability, int):
+            continue
+        if not 0 <= probability <= 100:
+            errors.append(
+                f"{label}: {name} has probability {probability}. "
+                "OpportunityStage.DefaultProbability is a percent "
+                "(object_reference.txt:195451-195457) and must be 0-100."
+            )
+            continue
+        if _is_lost_terminal(stage):
+            if probability != 0:
+                errors.append(
+                    f"{label}: {name} is a closed-lost terminal stage with probability "
+                    f"{probability}. A lost stage must be 0."
+                )
+            continue
+        ladder.append((name, probability))
+
+    for (prev_name, prev_p), (next_name, next_p) in zip(ladder, ladder[1:]):
+        if next_p < prev_p:
+            errors.append(
+                f"{label}: probability drops from {prev_p} at '{prev_name}' to {next_p} at "
+                f"'{next_name}'. A stage ladder must be monotonic non-decreasing - a "
+                "later stage that is less likely to close means the stage boundary is "
+                "in the wrong place."
+            )
+
+    # --- Advisory: ladder length ---
+    if len(stages) > STAGE_COUNT_WARN_THRESHOLD:
+        warnings.append(
+            f"{label}: {len(stages)} stages. Past {STAGE_COUNT_WARN_THRESHOLD} stages reps "
+            "stop distinguishing adjacent gates and pipeline reports lose resolution. "
+            "Check whether any two stages share an owner and an exit condition."
+        )
+
+    if not any("won" in str(s.get("name", "")).lower() for s in stages):
+        warnings.append(
+            f"{label}: no Closed Won stage found. Every sales process needs a won "
+            "terminal stage (OpportunityStage.IsWon, object_reference.txt:195536-195542)."
+        )
+
+    return errors, warnings
 
 
 # ---------------------------------------------------------------------------
@@ -306,6 +710,33 @@ def check_stage_map_document(doc_path: Path) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def discover_stage_maps(root: Path) -> list[Path]:
+    """Find sales-process maps under root.
+
+    A YAML file qualifies if it has a top-level `stages:` key; a CSV file
+    qualifies if its header row carries a stage-name column and either an entry
+    or an exit column. Anything else in the directory is ignored, so this is
+    safe to point at a mixed design/metadata folder.
+    """
+    found: list[Path] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or path.suffix.lower() not in (".yaml", ".yml", ".csv"):
+            continue
+        try:
+            head = path.read_text(encoding="utf-8", errors="replace")[:4096]
+        except OSError:
+            continue
+        if path.suffix.lower() == ".csv":
+            header = head.splitlines()[0].lower() if head.splitlines() else ""
+            cells = {c.strip().replace(" ", "_") for c in header.split(",")}
+            cells = {CSV_HEADER_ALIASES.get(c, c) for c in cells}
+            if "name" in cells and ({"entry", "exit"} & cells):
+                found.append(path)
+        elif re.search(r"^stages:\s*$", head, re.MULTILINE):
+            found.append(path)
+    return found
+
+
 # ---------------------------------------------------------------------------
 # Metadata-level checks
 # ---------------------------------------------------------------------------
@@ -366,22 +797,37 @@ def check_stage_metadata(manifest_dir: Path) -> tuple[list[str], list[str]]:
 
         active_names.append(label)
 
-        # ForecastCategoryName must be a valid platform value
+        # The XML element is typed as the ForecastCategories enumeration
+        # (api_meta.txt:47578-47585), NOT as ForecastCategoryName. Checking the
+        # XML against the UI labels flags every correct file, so use the tokens.
         forecast_category = _find_text(el, "forecastCategory")
-        if forecast_category and forecast_category not in VALID_FORECAST_CATEGORIES:
+        if forecast_category and forecast_category not in METADATA_FORECAST_ENUM:
+            hint = ""
+            for token, ui_label in METADATA_FORECAST_TOKENS.items():
+                if forecast_category == ui_label:
+                    hint = f" Did you mean <forecastCategory>{token}</forecastCategory>?"
             errors.append(
-                f"Stage '{label}': ForecastCategoryName '{forecast_category}' is not a valid "
-                f"platform value. Must be one of: {', '.join(sorted(VALID_FORECAST_CATEGORIES))}."
+                f"Stage '{label}': <forecastCategory>{forecast_category}</forecastCategory> is not "
+                f"a member of the ForecastCategories enumeration. Must be one of: "
+                f"{', '.join(sorted(METADATA_FORECAST_ENUM))}.{hint}"
             )
 
-        # IsWon=true requires IsClosed=true
-        is_won = _find_text(el, "won").lower() == "true"
-        is_closed = _find_text(el, "closed").lower() == "true"
-        if is_won and not is_closed:
-            errors.append(
-                f"Stage '{label}': IsWon=true but IsClosed=false. "
-                "A Won stage must also have IsClosed=true."
-            )
+        # <won> is the only won/closed flag documented for the opportunity Stage
+        # picklist: "Indicates whether this value is associated with a closed or
+        # won status ... only relevant for the standard Stage field in
+        # opportunities" (api_meta.txt:47611-47614). <closed> is documented as
+        # relevant only to the case and task Status fields, up to API 36.0
+        # (api_meta.txt:47542-47546), so its absence here is normal and is NOT
+        # an error. Only a file that carries both and contradicts itself is.
+        won_text = _find_text(el, "won").lower()
+        closed_el = el.find(_sf_tag("closed"))
+        if won_text == "true" and closed_el is not None:
+            closed_text = (closed_el.text or "").strip().lower()
+            if closed_text == "false":
+                errors.append(
+                    f"Stage '{label}': <won>true</won> with <closed>false</closed>. "
+                    "A won stage cannot be open; remove the <closed> element or set it to true."
+                )
 
         # Invalid picklist characters
         if INVALID_PICKLIST_CHARS_PATTERN.search(label):
@@ -409,13 +855,15 @@ def check_stage_metadata(manifest_dir: Path) -> tuple[list[str], list[str]]:
 def main() -> int:
     args = parse_args()
 
-    if args.doc is None and args.manifest_dir is None:
+    if args.stage_map is None and args.doc is None and args.manifest_dir is None:
         print(
             "No input provided. Usage examples:\n"
             "  python3 check_sales_process_mapping.py "
+            "--map path/to/stage-map.yaml\n"
+            "  python3 check_sales_process_mapping.py "
             "--doc path/to/mapping-document.md\n"
             "  python3 check_sales_process_mapping.py "
-            "--manifest-dir path/to/metadata\n"
+            "--manifest-dir path/to/design-or-metadata\n"
             "  python3 check_sales_process_mapping.py "
             "--doc path/to/mapping-document.md --strict"
         )
@@ -423,6 +871,11 @@ def main() -> int:
 
     all_errors: list[str] = []
     all_warnings: list[str] = []
+
+    if args.stage_map:
+        errors, warnings = check_stage_map(Path(args.stage_map))
+        all_errors.extend(errors)
+        all_warnings.extend(warnings)
 
     if args.doc:
         errors, warnings = check_stage_map_document(Path(args.doc))
@@ -434,6 +887,11 @@ def main() -> int:
         if not manifest_dir.exists():
             all_errors.append(f"Manifest directory not found: {manifest_dir}")
         else:
+            for map_path in discover_stage_maps(manifest_dir):
+                errors, warnings = check_stage_map(map_path)
+                all_errors.extend(errors)
+                all_warnings.extend(warnings)
+
             errors, warnings = check_stage_metadata(manifest_dir)
             all_errors.extend(errors)
             all_warnings.extend(warnings)

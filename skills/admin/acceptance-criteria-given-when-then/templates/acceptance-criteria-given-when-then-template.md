@@ -40,13 +40,13 @@ Use `templates/ac-template.md` (sibling file) as the canonical skeleton.
 Paste the filled-in AC block into the user story body, then run:
 
 ```bash
-python3 scripts/check_ac_format.py <story.md>
+python3 scripts/check_ac_format.py --file <story.md>
 ```
 
 ## Checklist
 
 Copy the Review Checklist from `SKILL.md` and tick items as you complete
-them. Do not hand off to `agents/test-generator` until all items are
+them. Do not hand off to `agents/test-class-generator` until all items are
 ticked.
 
 - [ ] Every Scenario has exactly one Given, one When, one Then
@@ -58,6 +58,9 @@ ticked.
 - [ ] Async outcomes use "eventually within N seconds"
 - [ ] Validation-error messages are exact strings (or marked `# TBD`)
 - [ ] Integration expectations name the named credential
+- [ ] Every criterion has a `req_id`, persona, sandbox, artefact and `proof`
+- [ ] Every rule-type requirement has a `negative: true` no-match criterion
+- [ ] `check_ac_format.py --file <record>` reports 0 errors
 
 ## Notes
 

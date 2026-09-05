@@ -123,11 +123,21 @@ This requires:
 The platform calculates Days in Stage from the Stage transition history
 automatically. No formula field, Flow, or Apex trigger is needed.
 
-When to still build a custom field:
-  - You need the Days in Stage value in a standard report (not inspection view)
-  - You need the value in a process or Flow condition
-  - Users who lack forecast hierarchy access need to see it
-  In those cases: custom field supplements the native metric; does not replace it.
+There is also a standard FIELD, which is what a report or list view uses:
+  Opportunity.LastStageChangeInDays  (int, API 52.0+, requires Pipeline Inspection enabled)
+  Opportunity.LastStageChangeDate    (datetime, API 52.0+, no feature condition)
+  Opportunity.AgeInDays              (int, API 52.0+, requires Pipeline Inspection enabled)
+  object_reference.txt:192275-192282, 192707-192724
+
+So "I need it in a report, not the inspection view" is NOT a reason to build
+a custom field — LastStageChangeInDays is reportable, filterable and sortable
+already. Two real caveats, both in references/gotchas.md:
+  - LastStageChangeInDays returns AgeInDays when LastStageChangeDate is null
+  - LastStageChangeDate is Aggregate/Filter/Nillable/Sort but NOT groupable
+
+Build a custom field only when the org does not have Pipeline Inspection
+enabled AND the value is needed in a formula or Flow condition. Even then,
+prefer a formula over LastStageChangeDate to a Flow-maintained date field.
 ```
 
 **Detection hint:** If the response includes a formula field or trigger to calculate "days in current stage" without first noting the native Pipeline Inspection metric, the response is incomplete and likely unnecessary.

@@ -65,6 +65,41 @@ Win reasons: Competitive Pricing, Superior Technical Fit, Stronger Champion, Fas
 Loss reasons: Lost to Competitor (Price), Lost to Competitor (Product), No Decision / Status Quo, Budget Eliminated, Wrong Stakeholder Engaged, Evaluation Criteria Shifted
 ```
 
+**The same mapping, as the machine-readable artefact handed to configuration.** MEDDIC letters become field requirements, which is what makes the entry criterion testable rather than a coaching note. This is the shape `scripts/check_sales_process_mapping.py --map` lints — the excerpt stops before the terminal stages, so the checker warns about the missing Closed Won; that warning belongs to the excerpt, not to the design. The full seven-stage inbound SaaS ladder with forecast categories and swim lanes is in `references/worked-examples.md` §2.
+
+```yaml
+process: Capital Equipment - Direct
+object: Opportunity
+methodology: MEDDIC
+stages:
+  - name: Qualified
+    entry: "Metrics quantified and the economic buyer named"
+    exit: "Decision criteria captured from the buyer, not inferred"
+    forecast_category: Pipeline
+    probability: 15
+    owner: AE
+    meddic: [M, E]
+    required_fields: [Business_Impact_Value__c, Economic_Buyer__c]
+  - name: Discovery
+    entry: "Decision criteria documented and the decision process steps known"
+    exit: "Implicated pain confirmed by the champion in writing"
+    forecast_category: Pipeline
+    probability: 30
+    owner: AE
+    meddic: [D, D]
+    required_fields: [Decision_Process_Steps__c]
+  - name: Technical Win
+    entry: "Champion has confirmed the implicated pain"
+    exit: "Champion has agreed to sponsor the deal internally"
+    forecast_category: Best Case
+    probability: 50
+    owner: Sales Engineer
+    meddic: [I]
+    required_fields: [Implicated_Pain__c, Champion_Name__c]
+```
+
+`meddic:` is a project-specific key, not something the platform or the checker knows about — the checker ignores unknown keys, which is what lets a methodology column ride along in the same artefact. What it will not ignore is a stage that drops the `required_fields` list, and a MEDDIC letter with no field behind it is exactly that: the letter goes in the deck, nothing goes on the record, and the stage gate is back to being a label.
+
 **Why it works:** Anchoring each stage's entry criteria to a named MEDDIC component makes the criteria objective and verifiable. Reps know exactly what they must confirm before advancing. The loss reason "Wrong Stakeholder Engaged" maps directly to the MEDDIC "C" (Champion) failure mode, giving the business a signal to improve champion-building coaching.
 
 ---

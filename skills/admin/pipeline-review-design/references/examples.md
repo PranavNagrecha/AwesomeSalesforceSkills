@@ -102,4 +102,31 @@ Note: Stage-specific thresholds are not natively supported as of Spring '25.
 
 **What goes wrong:** This duplicates functionality already provided natively by Pipeline Inspection's Days in Stage metric. The custom formula approach requires flow maintenance, breaks when flows are deactivated or missing trigger conditions, and produces stale values if the flow misfires. The formula value in a report does not benefit from Pipeline Inspection's visual highlight and change-window context. The native Days in Stage metric is recalculated from the platform's stage transition history and requires no additional field configuration.
 
+**The field already exists — and it is queryable.** `Opportunity.LastStageChangeInDays` is a
+standard integer field from API version 52.0, available "if you enabled Pipeline Inspection", and
+`LastStageChangeDate` is the raw timestamp behind it, available from the same version with no
+feature condition (object_reference.txt:192707–192724). Neither needs a Flow, a custom field, or
+a trigger. Compare the two approaches on the same question — "which open deals have not moved in
+more than 15 days":
+
+```sql
+-- Custom-field approach: depends on Stage_Entry_Date__c being populated by a Flow
+SELECT Id, Name, StageName, Days_In_Stage__c
+FROM Opportunity
+WHERE IsClosed = false AND Days_In_Stage__c > 15
+-- Returns nothing for any record created before the Flow shipped, and nothing for
+-- any record the Flow skipped. Both failure modes are silent.
+
+-- Platform-field approach: no automation, no backfill gap
+SELECT Id, Name, StageName, LastStageChangeDate, LastStageChangeInDays
+FROM Opportunity
+WHERE IsClosed = false AND LastStageChangeInDays > 15
+ORDER BY LastStageChangeInDays DESC
+
+-- Always run this alongside it. Every row it returns is a deal whose
+-- LastStageChangeInDays is really reporting AgeInDays (object_reference.txt:192715-192724)
+SELECT COUNT(Id) FROM Opportunity
+WHERE IsClosed = false AND LastStageChangeDate = null
+```
+
 **Correct approach:** Use Pipeline Inspection's native Days in Stage metric configured in Setup > Manage Pipeline Inspection Metrics. Reserve custom formula fields only for reporting use cases that need the value outside the Pipeline Inspection context (e.g., a report used by executives who do not have forecast hierarchy access). Even in those cases, document that the formula field is a reporting supplement — not a replacement for the native metric.

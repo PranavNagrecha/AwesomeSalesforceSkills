@@ -34,17 +34,23 @@ Every stage in the output must include:
 **Correct pattern:**
 
 ```
-The only valid ForecastCategoryName values are (exactly, case-sensitive):
-- Pipeline
+The only valid ForecastCategoryName values are (exactly, case-sensitive)
+- object_reference.txt:195492-195504:
 - Best Case
-- Commit
 - Closed
+- Commit
+- Most Likely
 - Omitted
+- Pipeline
 
-Any stage map must assign each stage to one of these five values only.
+Any stage map must assign each stage to one of these values only.
+
+The deployed metadata uses a DIFFERENT token set for the same concept
+(api_meta.txt:47578-47585): Omitted, Pipeline, BestCase, Forecast, Closed.
+Never paste a ForecastCategoryName label into <forecastCategory>.
 ```
 
-**Detection hint:** Scan the stage map output for any ForecastCategoryName value that is not one of the five listed above. Flag any deviation as an error and correct it before handing off to the opportunity-management skill.
+**Detection hint:** Scan the stage map output for any ForecastCategoryName value that is not in the list above, and for a metadata token (`BestCase`, `Forecast`, `MostLikely`) appearing in a design artefact. `scripts/check_sales_process_mapping.py --map` flags both, and its `--manifest-dir` metadata check validates deployed XML against the enumeration instead. Correct either before handing off to the opportunity-management skill.
 
 ---
 

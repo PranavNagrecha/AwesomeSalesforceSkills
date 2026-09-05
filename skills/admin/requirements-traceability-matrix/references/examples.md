@@ -28,6 +28,11 @@ REQ-010,interview,Integration with marketing automation for lead scoring,should,
 
 **Why it works:** Every released row has a story and a test. Row 9 was deferred mid-sprint and kept as evidence (status `Deferred`, blank story/test cells are intentional). Row 10 captures an incomplete requirement at release-gate review — the `release` column is empty, status is `In UAT`, so the gate review immediately flags it.
 
+`scripts/check_rtm.py` on this excerpt returns exit 1 with
+`ERROR: row 11 (REQ-010): status 'In UAT' requires at least one test_case_id`. That is the example
+working, not the example broken: the gate is supposed to stop here until `REQ-010` has a test or is
+moved back to `In Build`.
+
 ---
 
 ## Example 2: Regulatory Project (HIPAA) with Compliance Source Column
@@ -96,3 +101,23 @@ REQ-008,interview,Mobile agents can update cases offline and sync later,could,,,
 - Defects, stories, and tests cannot reliably link to a stable key.
 
 **Correct approach:** Always assign a stable, immutable `req_id` (e.g., `REQ-001`) at elicitation time. The title is a description column for human readability; the ID is the join key.
+
+The collision, made concrete — the same two requirements written both ways:
+
+```csv
+# WRONG — title is the key. These two rows collide on every join, and editing either
+# title mid-sprint silently detaches the row from the requirements document.
+requirement_title,story_ids,test_case_ids,status
+Case auto-assignment,US-301,TC-401,Released
+Case auto-assignment by region,US-311,TC-411,In UAT
+
+# RIGHT — the id is the key, the title is a column. Both prefixes are legal keys
+# (see SKILL.md "REQ-XXX <-> FG-XXX"), so a fit-gap-led project keys on FG- instead.
+req_id,source,description,priority,story_ids,test_case_ids,defect_ids,sprint,release,status
+REQ-021,interview,Case auto-assignment,must,US-301,TC-401,,Sprint-1,R1.0,Released
+FG-034,sow,Case auto-assignment by region,should,US-311,TC-411,,Sprint-3,,In UAT
+```
+
+Run `python3 scripts/check_rtm.py --file rtm.csv` on the first block and it stops at check 1:
+`missing required columns for the audit schema: req_id, source, description, priority, defect_ids,
+sprint, release`. A title-keyed matrix is not a lightweight RTM — it is a different document.

@@ -57,6 +57,35 @@ be escaped or avoided because they collide with CSV format.
 
 ---
 
+## Build-Layer Schema (`traceability.md`)
+
+Inside a build (`standards/build-orchestration.md` § 2) the matrix is
+`.sfskills/builds/<build-id>/traceability.md` and carries the step, artefact, agent and test-type
+columns instead of the multi-release ones. It is the same key and the same status enum.
+
+```csv
+req_id,source,requirement,step_id,artefact,agent,decision_ref,test_id,test_type,status
+```
+
+| Column | Allowed values |
+|---|---|
+| `req_id` | `REQ-XXX` **or** `FG-XXX`, optionally project-prefixed. Both prefixes are legal keys — see SKILL.md § REQ-XXX ⇄ FG-XXX |
+| `source` | The clarification id `Q<n>` (`plan.json.clarifications[].id`) or the named stakeholder |
+| `requirement` | One sentence |
+| `step_id` | `M<n>-S<nn>` (`plan.json.steps[].id`), or empty for a row that produces nothing |
+| `artefact` | `<MetadataType>:<ApiName>` (the Metadata API `fullName`), `File:<path>` for a project file, or `setup-only:<component>` when the Metadata API cannot carry it |
+| `agent` | One run-time agent id resolving to `agents/<id>/AGENT.md` |
+| `decision_ref` | `D<n>` (`plan.json.decisions[].id`) |
+| `test_id` | The acceptance test or UAT case id |
+| `test_type` | `checker` / `xml` / `manifest` / `command` / `manual` |
+| `status` | Same enum as the audit schema |
+
+A filled 18-row example, both formats, plus the two derived views:
+`references/worked-examples.md`. `scripts/check_rtm.py` detects which schema a file uses from its
+header and lints either — as CSV or as a markdown pipe table.
+
+---
+
 ## JSON Envelope
 
 For tool-to-tool exchange (e.g., handoff to `agents/deployment-risk-scorer/AGENT.md` or
@@ -119,5 +148,13 @@ For tool-to-tool exchange (e.g., handoff to `agents/deployment-risk-scorer/AGENT
 ## Generation
 
 Generate the markdown rendering and the JSON envelope from the CSV; never hand-maintain
-either. The `scripts/check_rtm.py` checker validates the CSV. The Steerco rollup is
-derived from the JSON envelope's `summary` block.
+either. `scripts/check_rtm.py` validates either schema in either format, and writes the two
+derived views with `--report-dir`. The Steerco rollup is derived from the JSON envelope's
+`summary` block.
+
+```bash
+python3 scripts/check_rtm.py --file governance/rtm.csv
+python3 scripts/check_rtm.py --manifest-dir .sfskills/builds/<build-id> --repo-root . \
+  --report-dir reports/
+python3 scripts/check_rtm.py --self-check
+```

@@ -1,0 +1,88 @@
+# Pipeline review spec — fill in one per sales motion, then lint with:
+#   python3 skills/admin/pipeline-review-design/scripts/check_pipeline_review_design.py \
+#       --manifest-dir path/to/review-pack
+#
+# The checker enforces: required top-level keys; every metric has id /
+# definition / source / owner / target; metric ids are unique; every metric
+# `source` names a field declared below (or is marked `derived: true`); every
+# Report XML column and every ListView filter in the same folder resolves to a
+# column declared here.
+#
+# `report_column` is the report column CODE, not the field API name. Codes are
+# report-type specific and are not published for every report type — retrieve
+# one working report on the same report type and copy its codes before you
+# deploy. See references/gotchas.md and admin/reports-and-dashboards.
+
+object: Opportunity
+cadence: Weekly            # Weekly | Fortnightly | Monthly
+meeting_length_minutes: 45
+forecast_period: "Current fiscal quarter"
+motion: "<new logo | renewal | expansion>"
+
+roles:
+  - role: "<Sales Manager>"
+    responsibility: "<runs the agenda, owns the commit call>"
+  - role: "<Account Executive>"
+    responsibility: "<updates own deals before the meeting, not during it>"
+  - role: "<Revenue Ops>"
+    responsibility: "<owns the report pack, the field definitions and this spec>"
+
+# Every field any metric, report column, list-view column or hygiene rule
+# touches. `api_name` is mandatory. `report_column` / `list_view_column` are
+# the tokens the XML uses; declare them so the checker can resolve the XML.
+fields:
+  - api_name: StageName
+    report_column: STAGE_NAME
+    list_view_column: STAGE_NAME
+    note: "Controls ForecastCategoryName, IsClosed, IsWon and Probability (object_reference.txt:192893-192904)"
+  - api_name: Amount
+    report_column: AMOUNT
+    list_view_column: AMOUNT
+    note: "Ignored on update when the record has products (object_reference.txt:192284-192292)"
+  - api_name: CloseDate
+    report_column: CLOSE_DATE
+    list_view_column: CLOSE_DATE
+  - api_name: ForecastCategoryName
+    report_column: FORECAST_CATEGORY_NAME
+    note: "Best Case | Closed | Commit | Most Likely | Omitted | Pipeline (object_reference.txt:192483-192497)"
+  - api_name: LastStageChangeInDays
+    report_column: LAST_STAGE_CHANGE_IN_DAYS
+    list_view_column: LAST_STAGE_CHANGE_IN_DAYS
+    note: "v52.0+, only when Pipeline Inspection is enabled; falls back to AgeInDays when LastStageChangeDate is null"
+  - api_name: NextStep
+    report_column: NEXT_STEP
+    list_view_column: NEXT_STEP
+  - api_name: OwnerId
+    report_column: OWNER_ID
+    list_view_column: OWNER_ID
+
+metrics:
+  - id: "<coverage_ratio>"
+    definition: "<open pipeline for the period divided by the quota for the period>"
+    source: "<Amount>"                # must resolve to a field above, or set derived: true
+    owner: "<Revenue Ops>"
+    target: "<>= 3.0x>"
+    reviewed_when: "<opening five minutes>"
+
+  - id: "<stale_deals>"
+    definition: "<open deals whose stage has not moved in more than N days>"
+    source: "<LastStageChangeInDays>"
+    owner: "<Sales Manager>"
+    target: "<< 15% of open count>"
+    reviewed_when: "<deal-by-deal block>"
+
+# Data-hygiene rules the review depends on. Each becomes a validation rule,
+# a list view, or an accepted exception — never a verbal reminder.
+hygiene_rules:
+  - id: "<close_date_in_past>"
+    intent: "<an open deal may not carry a Close Date earlier than today>"
+    enforcement: "<ValidationRule | ListView | accepted-exception>"
+    owner: "<Sales Manager>"
+
+artifacts:
+  reports:
+    - "<Revenue_Ops/Pipeline_By_Stage>"
+  dashboards:
+    - "<Revenue_Ops/Weekly_Pipeline_Review>"
+  list_views:
+    - "<Opportunity.Stale_Deals>"

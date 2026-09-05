@@ -1,6 +1,6 @@
 ---
 name: acceptance-criteria-given-when-then
-description: "Use this skill when writing test-first, behavior-driven acceptance criteria in Given/When/Then format for a Salesforce user story. Covers happy path, edge cases, negative paths, permission boundaries, and data-state preconditions so the AC block can drive UAT scripts and Apex test design downstream. Trigger keywords: given when then, gherkin, behavior driven AC, test first acceptance criteria, scenario outline, BDD acceptance criteria. NOT for the user-story format itself (use admin/user-story-writing-for-salesforce). NOT for UAT script writing (use admin/uat-test-case-design). NOT for Apex test method generation (use agents/test-class-generator). NOT for high-level UAT planning (use admin/uat-and-acceptance-criteria)."
+description: "Use this skill when writing test-first, behavior-driven acceptance criteria in Given/When/Then format for a Salesforce user story. Covers happy path, edge cases, negative paths, permission boundaries, and data-state preconditions so the AC block can drive UAT scripts and Apex test design downstream. Trigger keywords: given when then, gherkin, behavior driven AC, test first acceptance criteria, scenario outline, BDD acceptance criteria. NOT for the user-story format itself (use admin/user-story-writing-for-salesforce). NOT for UAT script writing (use admin/uat-test-case-design). NOT for Apex test method generation (use agents/test-class-generator). NOT for high-level UAT planning (use admin/uat-and-acceptance-criteria). More triggers: acceptance criteria record, ac_id, req_id on a criterion, artefact under test, negative case for a rule-type requirement, no-match fall-through criterion, oracle for a Then clause, test type apex flow manual, criteria linter, check_ac_format.py, --manifest-dir."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -16,6 +16,14 @@ triggers:
   - "how to capture permission and data-state preconditions in AC"
   - "negative path acceptance criteria for salesforce flows and validation rules"
   - "we're having issues with acceptance criteria"
+  - "write acceptance criteria for a case assignment rule"
+  - "acceptance criteria for a validation rule that blocks a save"
+  - "acceptance criteria for a permission set that grants edit"
+  - "how do I prove an SLA escalation criterion in a sandbox"
+  - "which acceptance criteria can be automated as apex tests and which stay manual"
+  - "our acceptance criteria passed UAT but the rule did nothing when no entry matched"
+  - "acceptance criteria keep describing the flow instead of the behaviour"
+  - "lint a given when then acceptance criteria file"
 tags:
   - acceptance-criteria
   - given-when-then
@@ -34,11 +42,12 @@ outputs:
   - "Scenario outline (Examples table) for parameterized cases"
   - "Negative-path AC list paired one-to-one with each happy-path AC"
   - "Permission and data-state precondition block with explicit user/PSG references"
-  - "Handoff notes pointing test-generator agent at the bulk and edge scenarios"
+  - "Handoff notes pointing test-class-generator agent at the bulk and edge scenarios"
+  - "Lintable acceptance-criteria record (YAML or markdown table) carrying req_id, persona, sandbox, seed data, artefact, proof and test type per criterion"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 # Acceptance Criteria — Given/When/Then for Salesforce
@@ -55,6 +64,24 @@ Gather this context before drafting AC:
 - **What is the data-state precondition?** Most Salesforce behavior is conditional on record ownership, lifecycle stage, related-record existence, or sharing scope. AC must capture that state in the Given clause — not assume it.
 - **Is this a bulk or single-record scenario?** Salesforce executes triggers, flows, and validation rules in batches of up to 200 records. A criterion that only describes one-record behavior leaves the bulk path untested and is the most common cause of governor-limit defects in production.
 - **Is there an integration or async boundary?** If the behavior depends on a callout, Platform Event, or Queueable, the Then clause must say *what is observable when* — synchronously, after a poll, or after a job completes.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before a single Scenario is written. Each traces to a gotcha in `references/gotchas.md`; skipping one produces criteria that read well and prove nothing.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which requirement id does this belong to, and does that requirement already have criteria somewhere else?" | Ids are the join key the RTM, the workbook and the UAT script all read; two authors writing the same `When` is a backlog problem that only surfaces at sign-off (gotcha 6) | A `req_id` on every criterion, and a merge-or-scope decision taken before duplicate criteria ship |
+| "Who runs it — named user, profile, permission set — and do they hold *record* access as well as *object* access?" | `allowEdit` on a permission set is an object-level capability; only `modifyAllRecords` / `viewAllRecords` bypass sharing, so "the PSG grants edit" is half a requirement (gotcha 5) | A persona per criterion, plus the paired deny-case naming the user who must fail and how |
+| "What happens when the rule matches nothing?" | Every rule engine defines an order and a fall-through; the AC is the only place the fall-through owner gets named, and the first unmatched record in production is where it is discovered otherwise (gotcha 10) | A criterion marked `negative` whose Given is "matches no entry" and whose Then names the fall-through |
+| "Which clock measures every elapsed time here — wall clock, or a business-hours calendar with holidays?" | Escalation and milestone targets run on the calendar attached to the record, and holidays suspend it; a Then written in clock hours will be reported as a defect against working metadata (gotcha 12) | The calendar named in the Given, a holiday criterion per calendar, and the sign on any warning trigger |
+| "How will we observe the Then — a field value, a query, an error string, or a mailbox?" | A Then with no named observable is untestable, and a query against an untracked field cannot fail (gotchas 4 and 13) | A `proof` on every criterion, and the automatable-vs-manual verdict that falls out of it |
+| "Which sandbox proves this, and what must be seeded there first?" | Personas, seed records and field-history tracking are preconditions of the oracle, not of the behaviour, so they belong in the Background rather than in a tester's head (gotcha 13) | `sandbox` and `seed_data` on every criterion, and the tracking the oracle depends on declared once |
+| "Will this behaviour ever meet 200 records at once, and through which tool?" | Governor limits bite at the batch, not the record, and Data Loader, Bulk API 2.0 and REST disagree about whether rules run at all when nothing is specified (gotchas 7 and 11) | A bulk criterion with the entry path pinned, and an honest manual verdict for the paths Apex cannot exercise |
+
+What a proper criteria set adds over just writing "the user can do X": every criterion names the actor, the record state, the artefact under test and the thing that proves it, so a pass is evidence and a failure points at one component instead of a feature.
 
 ---
 
@@ -126,11 +153,29 @@ Do not write AC against the chrome of the UI: button labels, page tab names, toa
 
 Well-formed Given/When/Then AC is consumed by three downstream agents:
 
-1. **`agents/test-generator/AGENT.md`** uses each Scenario as a test method seed and each Examples row as parameterized data.
+1. **`agents/test-class-generator/AGENT.md`** uses each Scenario as a test method seed and each Examples row as parameterized data.
 2. **`agents/data-loader-pre-flight/AGENT.md`** uses the Given clauses to compute the record shape required to seed UAT and integration tests.
-3. **`agents/uat-test-case-designer`** translates each Scenario into a step-by-step UAT script with screenshots and tester instructions.
+3. **`admin/uat-test-case-design`** translates each Scenario into a step-by-step UAT script with screenshots and tester instructions.
 
-If the AC is missing a Given (precondition), test-generator will hallucinate the seed; if it is missing the bulk path, the Apex test will pass at one record and break in production.
+If the AC is missing a Given (precondition), test-class-generator will hallucinate the seed; if it is missing the bulk path, the Apex test will pass at one record and break in production.
+
+### Requirement Ids on Every Criterion
+
+A criterion with no requirement id is untraceable the moment it leaves the story. Use the RTM
+convention — `REQ-nnn`, assigned during elicitation, immutable, never reused
+(`admin/requirements-traceability-matrix` § ID Conventions) — and carry it on every row.
+Criterion ids are scoped to the requirement: `AC-001.2` is the second criterion of `REQ-001`, and it
+is the `ac_id` the UAT script joins on (`admin/uat-and-acceptance-criteria` § The UAT Script).
+
+**`FG-XXX` ids in the configuration workbook map 1:1 to `REQ-XXX` ids.**
+`admin/configuration-workbook-authoring` § Per-Row Schema documents `source_req_id` as "the RTM
+`req_id`", while the worked rows in that skill's `references/examples.md` carry `FG-014`, `FG-031`,
+`FG-051` — fit-gap row ids. The two spaces are one-to-one and the pairing is recorded upstream, on
+each requirements-catalogue row as `downstream.fit_gap_row`
+(`admin/requirements-gathering-for-sf` § The Requirements Catalogue). Write `req_id` in acceptance
+criteria; translate to `FG-` only when writing into a workbook that already uses it, and never
+renumber either space to make them line up.
+
 
 ---
 
@@ -142,7 +187,7 @@ If the AC is missing a Given (precondition), test-generator will hallucinate the
 
 **How it works:** Use a single When and a single primary Then per scenario. Use `And` to chain *related* assertions on the same outcome (multiple field values on the same created record). Use a new Scenario when the outcome is a different system observable (a different record created, a different email sent).
 
-**Why not the alternative:** Compound AC hide which assertion failed in UAT and force test-generator to write tests with multiple oracles in one method, which violates Apex test single-responsibility.
+**Why not the alternative:** Compound AC hide which assertion failed in UAT and force test-class-generator to write tests with multiple oracles in one method, which violates Apex test single-responsibility.
 
 ### Pattern: Permission-Precondition Block at the Top of Each Scenario Set
 
@@ -199,15 +244,34 @@ Scenario: Bulk Stage update across 200 Opportunities
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Read the draft user story and identify every behavior verb ("can", "should", "must", "is created", "is updated", "is notified"). Each verb is a candidate Scenario.
-2. Draft a `Background` block with all user identities (named, with PSG and role) and OWD context the scenarios will reference.
-3. For each behavior verb, write a happy-path `Scenario` with one Given (precondition), one When (action), one Then (outcome). Use `And` to chain related assertions on the same outcome.
-4. For each happy-path Scenario, write a paired negative-path Scenario covering the deny-case (permission denied, validation error, sharing denied, async failure path).
-5. For any parameterized behavior, collapse the duplicate Scenarios into a single Scenario Outline with an Examples table.
-6. Add at least one bulk Scenario per trigger-or-flow-bound behavior, asserting 200-record success and governor-limit safety.
-7. Run `python3 scripts/check_ac_format.py <story.md>` to lint the AC block. Resolve all errors before handing off to test-generator.
+1. **Pull the requirement and its id.** Take the `REQ-nnn` from the RTM or the requirements
+   catalogue and carry it unchanged onto every criterion you write. If the workbook row you are
+   testing shows an `FG-` id in `source_req_id`, translate it rather than renumbering — see
+   § Requirement Ids on Every Criterion and `references/worked-examples.md` § 1.
+2. **Answer the seven questions above, then write the Background once.** Sandbox, named users with
+   their permission sets, seed records, and any field-history tracking an oracle will depend on.
+   `references/worked-examples.md` § 3 is the filled-in shape; the persona roster comes from
+   `admin/uat-and-acceptance-criteria`, not from this skill.
+3. **Write the happy path, then its deny-case, for each behaviour verb.** One Given, one When, one
+   Then, `And` only for related assertions on the same outcome. For a rule-type requirement
+   (assignment, auto-response, escalation, duplicate, validation) the deny-case that names the
+   **no-match fall-through** is mandatory — `references/gotchas.md` gotcha 10.
+4. **Give every Then an oracle, then decide automatable.** Name a field value, a queryable row, or
+   an exact error string. The oracle decides the verdict, not the technology: if the only way to
+   observe it is to wait for a clock or read a mailbox, the criterion is manual.
+   `references/worked-examples.md` § 6 records the verdict and the platform fact behind it.
+5. **Compress and cover volume.** Collapse near-duplicate Scenarios into a Scenario Outline with an
+   Examples table; add a bulk Scenario per trigger / flow / validation behaviour with the **entry
+   path pinned** (the Data Loader Assignment rule setting, the Bulk API `assignmentRuleId`, or the
+   REST default) — `references/gotchas.md` gotcha 11.
+6. **Emit the record and lint it.** Use the YAML shape in `references/worked-examples.md` § 5, or
+   the markdown table in § 7 for story tools that cannot hold YAML, then run
+   `python3 scripts/check_ac_format.py --file acceptance-criteria.yaml` (or `--manifest-dir
+   ./docs/stories/` for a folder). The same script still lints a Gherkin story markdown. Fix every
+   ERROR before handing off.
+7. **Hand off.** `admin/uat-and-acceptance-criteria` turns the `ac_id`s into a UAT programme;
+   `agents/test-class-generator/AGENT.md` takes the criteria marked `test_type: apex`;
+   `agents/data-loader-pre-flight/AGENT.md` reads the Given clauses for the seed shape.
 
 ---
 
@@ -225,6 +289,10 @@ Run through these before marking the AC block complete:
 - [ ] Any Examples-table parameterization compresses what would otherwise be near-duplicate Scenarios
 - [ ] Validation-rule expectations name the exact error message text
 - [ ] Integration expectations name the named credential, not "the API"
+- [ ] Every criterion carries a `req_id`, a persona, a sandbox, the artefact under test, and a `proof`
+- [ ] Every rule-type requirement (assignment, auto-response, escalation, duplicate, validation) has a criterion for the no-match fall-through
+- [ ] Every elapsed-time Then names the number, the unit, and the calendar that measures it
+- [ ] `python3 scripts/check_ac_format.py --file <record>` reports 0 errors
 
 ---
 
@@ -233,7 +301,7 @@ Run through these before marking the AC block complete:
 Non-obvious platform behaviors that cause real production problems when the AC misses them:
 
 1. **Bulk path missing means a passing CI test that breaks under Data Loader** — Apex governor limits do not bite at 1 record. They bite at 200. AC that says only "the trigger updates the record" without a bulk Scenario produces an Apex test that uses one record, passes, and fails on the first real load. Always pair single-record Scenarios with bulk Scenarios.
-2. **Async outcome stated synchronously** — When the behavior is implemented as a Queueable, Platform Event subscriber, or batch job, a synchronous Then ("the field is updated") will be false in the moment the calling transaction commits. Use `Then eventually within N seconds` and let the test generator know it must enqueue / poll.
+2. **Async outcome stated synchronously** — When the behavior is implemented as a Queueable, Platform Event subscriber, or batch job, a synchronous Then ("the field is updated") will be false in the moment the calling transaction commits. Use `Then eventually within N seconds` and let test-class-generator know it must enqueue / poll.
 3. **Shared/owned ambiguity** — AC that says "a Sales user can edit the Opportunity" without naming whether the user is the *owner*, in the *Account team*, or accessing via *role hierarchy* leaves the sharing model unstated. The build team will pick a default that may not match the business intent — and UAT will not catch it because the testing user is also unclear.
 
 ---
@@ -247,6 +315,23 @@ Non-obvious platform behaviors that cause real production problems when the AC m
 | Negative-path list | One-to-one paired deny-case scenarios for every happy-path scenario |
 | Permission precondition block | Named users, PSGs, roles, and OWD context referenced by all Scenarios in the story |
 | Bulk path scenarios | Per-behavior 200-record (or higher) Scenarios that protect the trigger / flow design from governor-limit regressions |
+| Criteria record | The same criteria as a lintable YAML file or markdown table — `ac_id`, `req_id`, persona, sandbox, seed data, artefact, `test_type`, `negative`, Given/When/Then, `proof` — the shape `scripts/check_ac_format.py` reads and `admin/uat-and-acceptance-criteria` consumes |
+| Automatability verdict | Per criterion: Apex test, Flow test, or manual, with the platform fact that decided it |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | You need six requirements from one real build worked into criteria — Background, Given/When/Then per requirement, sandbox / persona / seed data / artefact / proof per criterion, the automatable verdict with the platform fact behind it, and the same set as a lintable YAML record and as a markdown table |
+| `references/gotchas.md` | Before writing a Then, and before calling a criterion automatable — 13 failure modes with what happens / when it occurs / how to avoid, the platform ones grounded in the guides |
+| `references/examples.md` | You want three complete AC blocks (Probability gate, sharing visibility, bulk duplicate load) plus the compound-AC anti-pattern and how to turn a visibility Then into a query oracle |
+| `references/well-architected.md` | You are justifying the criteria depth to a delivery lead, or you need the source behind a platform claim (`## Official Sources Used`) |
+| `references/llm-anti-patterns.md` | You are reviewing AI-generated acceptance criteria before they reach a build team or a tester |
+| `templates/ac-template.md` | Starting a new AC block — copy, fill the placeholders, then lint |
+| `templates/acceptance-criteria-given-when-then-template.md` | Starting a working session on an existing story — records the context gathered and the patterns chosen |
+| `scripts/check_ac_format.py` | Before every handoff — lints a criteria record (YAML or markdown table) or a Gherkin story file; `--file` for one, `--manifest-dir` for a folder |
 
 ---
 
@@ -256,5 +341,8 @@ Non-obvious platform behaviors that cause real production problems when the AC m
 - `admin/uat-test-case-design` — translates each Scenario in this skill's output into a step-by-step UAT script
 - `admin/uat-and-acceptance-criteria` — higher-level UAT planning skill that this technique slots into
 - `admin/requirements-gathering-for-sf` — produces the upstream user stories whose ACs this skill formats
-- `agents/test-generator/AGENT.md` — consumes the AC block and Examples tables to design Apex test classes
+- `agents/test-class-generator/AGENT.md` — consumes the AC block and Examples tables to design Apex test classes
 - `agents/data-loader-pre-flight/AGENT.md` — uses Given clauses to compute the seed-data shape for UAT loads
+- `admin/requirements-traceability-matrix` — owns the `REQ-nnn` convention every criterion carries, and the forward/backward traceability the `ac_id` closes
+- `admin/configuration-workbook-authoring` — consumes criteria through `source_req_id`; its worked rows are where the `FG-XXX` ids come from
+- `admin/case-management-setup` — supplies the case-intake build that `references/worked-examples.md` writes criteria against

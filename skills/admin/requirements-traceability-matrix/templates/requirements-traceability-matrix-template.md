@@ -22,11 +22,16 @@ Record the answers to the Before Starting questions from SKILL.md here.
 - **Regulatory posture:** (none / HIPAA / SOX / GxP / FedRAMP / other — affects column set)
 - **RTM owner:** (named BA / delivery lead — single owner only)
 - **Update cadence:** (per-sprint / per-release-gate)
+- **Requirement key:** (`REQ-XXX` / `FG-XXX` / both — if both, where is the mapping table?)
+- **Schema:** (audit RTM `templates/rtm.md` / build-layer `traceability.md` / both, and which is generated from which)
+- **Build id, if any:** (`.sfskills/builds/<build-id>` — the matrix lives there, not in `governance/`)
+- **Setup-only rows:** (which requirements land in components the Metadata API cannot carry)
 
 ## Approach
 
 Which pattern from SKILL.md applies?
 
+- [ ] Build-layer `traceability.md` (`templates/rtm.md` § Build-Layer Schema; worked in `references/worked-examples.md`)
 - [ ] CSV-in-Git as single source of truth (`templates/rtm.md` schema)
 - [ ] Two-phase population (planning forward traces, build/UAT test traces)
 - [ ] Regulated-project schema with `compliance_control_id` + `evidence_link`
@@ -48,6 +53,9 @@ Copy the Review Checklist from SKILL.md and tick items as you complete them.
 - [ ] Multi-valued cells use the pipe `|` delimiter
 - [ ] Markdown rendering is generated, not hand-edited
 - [ ] Regulated rows (if applicable) have populated `compliance_control_id` and `evidence_link`
+- [ ] Build-layer only: every row has `artefact` + `test_id` + `test_type`, and `agent` resolves to `agents/<id>/AGENT.md`
+- [ ] Build-layer only: the coverage-gap and orphan reports are attached to the gate, every gap closed or waived with an owner
+- [ ] `python3 scripts/check_rtm.py --manifest-dir <build> --repo-root <repo>` exits 0
 
 ## Notes
 

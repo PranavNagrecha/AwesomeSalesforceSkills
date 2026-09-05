@@ -117,7 +117,45 @@ Scenario: [External system] is updated on [event]
 
 ---
 
-## Handoff Notes for `agents/test-generator`
+---
+
+## Criteria Record — The Lintable Shape
+
+Once the Scenarios above are settled, transcribe them into this record. It is what
+`scripts/check_ac_format.py` lints, what `admin/uat-and-acceptance-criteria` joins to by `ac_id`,
+and what `agents/test-class-generator` filters by `test_type`. A filled example is in
+`references/worked-examples.md` § 5.
+
+```yaml
+project: "[Project — Release]"
+acceptance_criteria:
+  - ac_id: AC-[nnn].[n]              # scoped to its requirement: AC-001.2 is REQ-001's second
+    req_id: REQ-[nnn]                # RTM id, immutable; translate an FG- id, never store it
+    story_id: US-[nnn]
+    persona: "[named user — profile and permission set / PSG, not a job title]"
+    sandbox: "[sandbox name and type]"
+    artefact: "[the metadata file or repo path under test]"
+    seed_data: "[the records that must exist before the When]"
+    test_type: apex | flow | manual  # decided by the oracle, not by the build
+    negative: false                  # true for deny-case and no-match criteria
+    given: "[precondition — ownership, lifecycle state, calendar, rule state]"
+    when: "[exactly one action]"
+    then: "[one observable outcome — field value, queryable row, or exact error string]"
+    proof: "[the query, checker command, or observation that makes the Then falsifiable]"
+```
+
+> **Rule:** every rule-type requirement (assignment, auto-response, escalation, duplicate,
+> matching, validation, entitlement) needs at least one row with `negative: true` naming what
+> happens when nothing matches. The checker fails the file otherwise.
+
+Lint it:
+
+```bash
+python3 scripts/check_ac_format.py --file acceptance-criteria.yaml
+python3 scripts/check_ac_format.py --manifest-dir ./docs/stories/
+```
+
+## Handoff Notes for `agents/test-class-generator`
 
 - Use the Background block as the test-class `setup` data shape.
 - Each Examples row becomes one parameterized test method.

@@ -2,7 +2,7 @@
 
 Common mistakes AI coding assistants make when generating Given/When/Then AC
 for Salesforce features. These patterns help the consuming agent self-check
-its own output before handing off to UAT or `agents/test-generator`.
+its own output before handing off to UAT or `agents/test-class-generator`.
 
 ---
 

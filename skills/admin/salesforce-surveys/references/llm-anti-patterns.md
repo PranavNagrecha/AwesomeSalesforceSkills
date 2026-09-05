@@ -41,24 +41,35 @@ Before designing any survey:
 
 ---
 
-## Anti-Pattern 3: Assuming Surveys Deploy Through Change Sets or Metadata API
+## Anti-Pattern 3: Naming a `Survey` Metadata Type That Does Not Exist
 
-**What the LLM generates:** Instructions to include survey components in change sets, destructive manifests, or CI/CD pipelines alongside other metadata.
+**What the LLM generates:** A package.xml with `<name>Survey</name>`, or the opposite over-correction — a flat assertion that surveys cannot be deployed at all and must be retyped in every org.
 
-**Why it happens:** LLMs know that most Salesforce configuration is metadata-deployable and generalize this to surveys. Survey content is actually stored as data in SurveyVersion records, not as traditional metadata types.
+**Why it happens:** LLMs know most Salesforce configuration is metadata-deployable and reach for the obvious type name. Older community writing then over-corrects to "surveys aren't metadata", which is also wrong. Neither describes the actual mechanism.
 
 **Correct pattern:**
 
 ```text
-Surveys are NOT deployable through change sets or standard Metadata API.
-To move a survey between orgs:
-  - Document the design (questions, pages, branching, scoring).
-  - Recreate manually in the target org.
-  - Or use the Survey REST API to script creation.
-Do not include Survey in package.xml or change set selections.
+There is no `Survey` metadata type. A survey IS a Flow.
+
+package.xml:
+  <types><members>Post_Case_CSAT</members><name>Flow</name></types>   <-- the survey
+  <types><members>Survey</members><name>Settings</name></types>       <-- the org switch
+
+`Flow.processType` = Survey   (API 42.0+, created in Survey Builder)
+`Flow.processType` = SurveyEnrich (API 49.0+, Survey Data Mapper)
+
+So Flow deployment rules apply:
+  - Deploying changes to an ACTIVE flow into production needs the
+    "Deploy processes and flows as active" org preference. Without it the
+    survey lands inactive and every scheduled invitation points at nothing.
+  - A flow version with paused interviews cannot be deleted. Survey responses
+    ARE flow interviews (SurveyResponse.InterviewId -> FlowInterview).
+  - Responses never travel with the deployment; SurveyIds differ per org, so
+    any report or automation with a hardcoded SurveyId breaks on promotion.
 ```
 
-**Detection hint:** Look for "Survey" in package.xml type lists, change set instructions, or CI/CD deployment manifests.
+**Detection hint:** `<name>Survey</name>` under a non-`Settings` types block is always wrong. So is any sentence claiming survey content "is stored as data in SurveyVersion records, not metadata".
 
 ---
 
@@ -86,22 +97,32 @@ For external (unauthenticated) survey respondents:
 
 **What the LLM generates:** Custom Apex code or formulas that manually bucket survey responses into Detractor/Passive/Promoter categories, even when using the native NPS question type.
 
-**Why it happens:** LLMs default to building things from scratch. They do not know that the NPS question type in Salesforce automatically calculates bucketing and stores it in SurveyQuestionScore. The LLM writes redundant logic that can drift from the platform's built-in calculation.
+**Why it happens:** LLMs default to building things from scratch, then justify it with a confident but wrong claim about where the platform keeps the result. The redundant logic drifts from the platform's own aggregate, and the justification sends the next reader looking for a field that does not exist.
 
 **Correct pattern:**
 
 ```text
-When using the NPS question type:
-  - Salesforce automatically categorizes: Detractor (0-6), Passive (7-8), Promoter (9-10).
-  - Scores are stored in SurveyQuestionScore.
-  - Query SurveyQuestionScore for bucketed results — do not recompute.
+Read the platform's own aggregate before writing any:
 
-Only write custom bucketing if:
-  - You are using a Slider or Rating question instead of the NPS type.
-  - Your organization requires non-standard NPS ranges.
+SELECT QuestionDeveloperName, ScoreType, Score, ResponseValue,
+       ResponseCount, CumulativeScore, QuestionSkippedCount
+FROM SurveyQuestionScore
+WHERE SurveyId = '...' AND SurveyVersionId = '...'
+
+ScoreType = 'Overall'    -> Score is "Score of an NPS type question"
+ScoreType = 'Individual' -> ResponseValue is the answer, Score the % who gave it
+
+Raw per-participant answers: SurveyQuestionResponse.NumberValue
+(NPS, Rating, Score, Slider all land there; choice types land in ChoiceValue).
+
+What SurveyQuestionScore does NOT have: a Detractor/Passive/Promoter column.
+There is no such field anywhere in the survey object model. If a report shows
+the three buckets, something computed them. Do not claim the platform stores
+them, and do not claim it does not compute the NPS score -- it does, in
+SurveyQuestionScore.Score on the Overall record.
 ```
 
-**Detection hint:** Look for Apex or formula logic that contains `IF(score <= 6, 'Detractor', IF(score <= 8, 'Passive', 'Promoter'))` when the question type is NPS. This is redundant.
+**Detection hint:** Two failure shapes. (a) Apex or a formula containing `IF(score <= 6, 'Detractor', …)` alongside a claim that the platform already stores it — pick one. (b) Any output asserting that `SurveyQuestionScore` holds "bucketed results" or a `Bucket`/`NPSCategory` field; it holds `ScoreType`, `Score`, `ResponseValue`, `ResponseCount`, `CumulativeScore` and `QuestionSkippedCount`, and nothing named for the buckets.
 
 ---
 
@@ -124,3 +145,37 @@ using the Survey data model objects.
 ```
 
 **Detection hint:** If the output mentions "Survey Analytics app," "sentiment analysis," or "lifecycle maps" without confirming the Feedback Management tier, the recommendation may reference unavailable features.
+
+---
+
+## Anti-Pattern 7: Inventing SurveyInvitation Fields That Do Not Exist
+
+**What the LLM generates:** Flow Create Records elements or Apex that set `SurveyInvitation.InvitationType = 'Link'`, `SurveyResponse.ResponderId`, `SurveyResponse.CompletedDate`, or `SurveyVersion.Status`. Also common: a Case lookup field pointing at the survey.
+
+**Why it happens:** These are the names the field *ought* to have. LLMs pattern-match from other Salesforce objects (`Status` is nearly universal; `Owner`/`Responder` reads naturally) and from third-party survey APIs where an invitation genuinely has a type. Nothing in the training signal marks them as absent.
+
+**Correct pattern:**
+
+```text
+FABRICATED                        REAL
+SurveyInvitation.InvitationType   (no such field -- channel is implied by
+                                   CommunityId + OptionsAllowGuestUserResponse)
+SurveyResponse.ResponderId        SurveyResponse.SubmitterId (-> Contact, Lead, User)
+SurveyResponse.CompletedDate      SurveyResponse.CompletionDateTime
+SurveyResponse.ResponseStatus     SurveyResponse.Status
+                                  (ResponseStatus lives on SurveyInvitation)
+SurveyVersion.Status              SurveyVersion.SurveyStatus
+                                  (Active / Draft / Obsolete / InvalidDraft)
+Survey.ActiveVersionId            Survey.ActiveVersionID  (capital D --
+                                  but LatestVersionId is lowercase d)
+Case.Survey__c or similar         SurveySubject: ParentId = the SurveyInvitation
+                                  or SurveyResponse, SubjectId = the Case
+
+WRITABLE ON SurveyInvitation: Name, SurveyId, ParticipantId, CommunityId,
+  EmailBrandingId, OwnerId, IsDefault, InviteExpiryDateTime,
+  OptionsAllowGuestUserResponse, OptionsAllowParticipantAccessTheirResponse,
+  OptionsCollectAnonymousResponse.
+DERIVED, will fail: ContactId, LeadId, UserId, InvitationLink, ResponseStatus.
+```
+
+**Detection hint:** Any survey field name not on the list above should be checked against the Object Reference before it ships. The tell for the derived-field mistake specifically is a Flow that sets `ContactId` — it reads perfectly and fails at run time, because Salesforce populates the typed lookup from `ParticipantId`.

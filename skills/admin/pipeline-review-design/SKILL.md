@@ -1,6 +1,6 @@
 ---
 name: pipeline-review-design
-description: "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories into the inspection view, Days in Stage and other deal-change metrics, and pipeline review cadence for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for the Revenue Intelligence app, Einstein deal insights, or forecast-accuracy dashboards — use admin/revenue-intelligence-setup. NOT for forecast types, quotas, or forecast hierarchy setup — use admin/collaborative-forecasts."
+description: "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories into the inspection view, Days in Stage and other deal-change metrics, and pipeline review cadence for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for the Revenue Intelligence app, Einstein deal insights, or forecast-accuracy dashboards — use admin/revenue-intelligence-setup. NOT for forecast types, quotas, or forecast hierarchy setup — use admin/collaborative-forecasts. Keywords: pipeline review, coverage ratio, stage conversion, slippage, stale deals, days in stage, LastStageChangeInDays, LastStageChangeDate, AgeInDays, PushCount, ForecastCategoryName, enablePipelineInspection, PipelineInspMetricConfig, OpportunitySettings, review cadence, commit call."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -12,6 +12,16 @@ triggers:
   - "My Pipeline Inspection view is not showing the right forecast categories — how do I configure the metrics?"
   - "How do we design a weekly pipeline review cadence in Salesforce using Pipeline Inspection?"
   - "Reps are moving deals backwards in stage and I want a way to surface that in pipeline reviews"
+  - "define the metrics for our weekly pipeline review meeting"
+  - "build a report showing stalled opportunities by days in stage"
+  - "days in stage is wrong for deals that never changed stage"
+  - "which Opportunity field gives me days in current stage"
+  - "pipeline coverage ratio report disagrees with the forecast page"
+  - "list view of opportunities with a close date in the past and no next step"
+  - "deploy pipeline inspection settings between orgs"
+  - "PushCount is zero even though the rep keeps pushing the close date"
+  - "what should a weekly pipeline review agenda cover"
+  - "stale opportunities days in stage report for pipeline review"
 tags:
   - pipeline-inspection
   - pipeline-review
@@ -33,10 +43,14 @@ outputs:
   - "Forecast category mapping review for Pipeline Inspection visibility"
   - "Review cadence design with recommended inspection workflow"
   - "Checker output from check_pipeline_review_design.py identifying metadata gaps"
+  - "A linted pipeline-review spec (YAML): metrics with definition, source field, owner and target"
+  - "Deployable Report, Dashboard and ListView XML for the review pack, plus the package.xml"
+  - "Data-hygiene rules expressed as validation-rule intent for admin/validation-rules"
+  - "Cadence and RACI table naming the Salesforce role that owns each artefact"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 # Pipeline Review Design
@@ -54,6 +68,26 @@ Gather this context before working on anything in this domain:
 - Identify which Opportunity Stage values map to which ForecastCategoryName values. Stages mapped to `Omitted` will not appear in Pipeline Inspection forecast category groupings; stages mapped to `Closed` appear in the Closed section. Misaligned mappings are the most common reason inspection views look wrong.
 - Confirm whether custom forecast categories are in use. Starting Spring '24, orgs can create custom forecast categories beyond the default five (Pipeline, Best Case, Most Likely, Commit, Omitted). If custom categories are active, they must be explicitly included in Pipeline Inspection metric configuration.
 - Know which users need access. Pipeline Inspection visibility is governed by the user's position in the forecast hierarchy and their "View All Forecasts" permission. Users outside the forecast hierarchy cannot access the inspection view for deals they do not own.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before building a single report. Each one traces to a failure mode in
+`references/gotchas.md`; an assistant that skips them produces a pack that deploys cleanly and
+reports the wrong number.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What decision does this meeting produce, and who makes it?" | A review with no decision is a status call with a dashboard. The agenda and the RACI both derive from this answer | The agenda blocks, and one named owner per block |
+| "What is the average cycle length, and how was it measured?" | The stale-deal threshold is derived from it, not chosen. Too high hides stalls; too low floods the list | The `stale_deals` target, plus the trigger for re-deriving it when the cycle moves |
+| "Does the org sell with products?" | `Amount` cannot be updated on product-bearing opportunities, so "trim that deal" silently does nothing | Whether the coverage conversation is about `Amount` or about line items |
+| "Is Pipeline Inspection licensed and enabled in every org this pack must run in, sandboxes included?" | `AgeInDays` and `LastStageChangeInDays` exist only where it is enabled; `LastStageChangeDate` exists everywhere | Which fields the metrics are allowed to use, and whether a fallback is needed |
+| "When does the fiscal year start?" | `INTERVAL_CURRENT` is the fiscal quarter and `INTERVAL_CURRENTQ` the calendar one; a calendar-aligned org cannot tell them apart in testing | The `interval` value, recorded in the spec so the next person inherits the reasoning |
+| "Who owns each number, and what counts as good for it this quarter?" | An unowned metric drifts and an untargeted one is decoration. The checker refuses both | Every metric's `owner` and `target`, and a quarterly definition review |
+| "Which stages map to `Omitted`, and does the business consider those deals dead?" | Omitted deals are excluded from roll-ups and from the report filter by design; parking live deals there removes them from every total | The stage-to-category audit, and whether the review needs a separate parked-deals block |
+
+What a proper configuration adds over just doing it: every number on the agenda traces to a named field, a named owner and a written target, so a disagreement in the meeting is settled by reading the spec instead of by whoever talks loudest.
 
 ---
 
@@ -101,6 +135,42 @@ Metric columns can be shown or hidden per inspection view. Not all metrics are a
 Pipeline Inspection must be associated with one or more active Collaborative Forecasts forecast types to determine which opportunities it surfaces. In Setup > Pipeline Inspection, each active forecast type can be toggled on or off for inclusion in the inspection view. If a forecast type uses Opportunity Splits as its source object, the inspection view will reflect split-credited amounts rather than the full Opportunity Amount.
 
 Associating a forecast type with Pipeline Inspection does not change the forecast type itself. It only controls which source data feeds the inspection view's metric calculations. If multiple forecast types are active (e.g., one for Opportunities and one for Products), each will appear as a selectable filter in the Pipeline Inspection view.
+
+### The Opportunity Fields a Pipeline Review Actually Reads
+
+Every number said out loud in a review comes from one of these. The full metric-to-field mapping,
+with the failure mode beside each, is `references/worked-examples.md` §2.
+
+| Field | Type | What it gives the review | Grounding |
+|---|---|---|---|
+| `StageName` | picklist | The stage ladder. Updating it auto-updates `ForecastCategoryName`, `IsClosed`, `IsWon` and `Probability` | object_reference.txt:192893–192904 |
+| `ForecastCategoryName` | picklist | The roll-up axis: Best Case, Closed, Commit, Most Likely, Omitted, Pipeline. Overridable per record | object_reference.txt:192483–192497 |
+| `Amount` | currency | Coverage numerator. Update is **ignored** on any record that has products | object_reference.txt:192284–192292 |
+| `CloseDate` | date | Period bracketing. Required on every opportunity | object_reference.txt:192320–192326 |
+| `LastStageChangeDate` | datetime | Raw stage-movement timestamp, API 52.0+, no feature condition. Filterable and sortable but **not** groupable | object_reference.txt:192707–192713 |
+| `LastStageChangeInDays` | int | Days in stage — API 52.0+ **and only where Pipeline Inspection is enabled**. Falls back to `AgeInDays` when the timestamp is null | object_reference.txt:192715–192724 |
+| `AgeInDays` | int | Record age since creation, same availability condition | object_reference.txt:192275–192282 |
+| `PushCount` | int | Slippage — calendar-month pushes only, never decremented. API 53.0+ | object_reference.txt:192865–192873 |
+| `ExpectedRevenue` | currency | Weighted pipeline: read-only `Amount` × `Probability` | object_reference.txt:192401–192408 |
+| `NextStep` | string(255) | The only field that makes a stale-deal list actionable | object_reference.txt:192758–192764 |
+
+There is no custom formula field in that list, and there does not need to be. The anti-pattern in
+`references/examples.md` shows why the `Stage_Entry_Date__c` + formula pattern is worse than the
+platform field it replaces.
+
+### What of Pipeline Inspection Is Deployable
+
+Part of the feature is metadata and part of it is not, which is why a green deploy is never proof
+the review surface works.
+
+| Piece | Deployable as | Note |
+|---|---|---|
+| Feature on/off | `OpportunitySettings.enablePipelineInspection` | Default `false`; also enables Opportunity historical trending (api_meta.txt:123341–123349) |
+| Metric labels | `PipelineInspMetricConfig` (`.pipelineInspMetricConfig`, API 57.0+) | Accepts the `*` wildcard in package.xml (api_meta.txt:95626–95632, api_meta.txt:95713–95714) |
+| Flow Chart | `OpportunitySettings.enablePipelineInspectionFlow` | Requires Revenue Insights access (api_meta.txt:123360–123366) |
+| Single-category roll-up | `OpportunitySettings.enablePipelineInspectionSingleCategoryRollup` | API 55.0+, default `false` (api_meta.txt:123367–123372) |
+| Metric thresholds, forecast-type association, hierarchy | not metadata | "To use Pipeline Inspection, additional configuration in Setup is required" (api_meta.txt:123344–123345) |
+| The review pack itself | `Report`, `Dashboard`, `ListView` | Fully deployable, licence-free, and the artefact of record |
 
 ---
 
@@ -151,15 +221,13 @@ Associating a forecast type with Pipeline Inspection does not change the forecas
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. Verify licensing and prerequisites: Confirm Revenue Intelligence or Sales Cloud Einstein is provisioned (Setup > Company Information). Confirm Collaborative Forecasting is enabled and at least one active forecast type exists. Confirm the admin user has the Customize Application and Manage Pipeline Inspection permissions.
-2. Enable Pipeline Inspection in Setup > Pipeline Inspection. Toggle the feature on. Associate each active forecast type the sales team uses for pipeline reviews. Do not associate forecast types that are experimental or not aligned to current quota plans.
-3. Configure metrics in Setup > Manage Pipeline Inspection Metrics. At minimum enable: Days in Stage, Amount Changed, Close Date Changed, and Stage Changed. Set the Days in Stage highlight threshold to reflect the typical sales cycle (e.g., 14 days for a 30-day average deal cycle). Document this threshold so managers understand when a deal is flagged.
-4. Review Stage picklist ForecastCategoryName mappings in Setup > Opportunity Stages. Verify that every revenue-bearing stage is mapped to Pipeline, Best Case, Most Likely, or Commit. Verify that truly inactive or discarded stages are mapped to Omitted. Fix any misalignments before reviewing inspection data.
-5. Validate user access: confirm that sales managers who will use Pipeline Inspection are in the active forecast hierarchy under Setup > Forecasts > Forecast Settings. Confirm they have "View All Forecasts" or direct subordinate relationship to the opportunities they need to review.
-6. Run the skill-local checker: `python3 skills/admin/pipeline-review-design/scripts/check_pipeline_review_design.py --manifest-dir path/to/metadata`. Review all flagged issues before concluding configuration.
-7. Design the review cadence with stakeholders: define meeting frequency, who reviews which segment, how stalled deals are handled, and when re-forecast updates are triggered by Pipeline Inspection signals.
+1. **Draft the spec first.** Copy `templates/pipeline-review-spec-template.yaml` into the project and fill in cadence, roles, `fields`, `metrics` (each with `id`, `definition`, `source`, `owner`, `target`) and `hygiene_rules`. Start from the metric set in `references/worked-examples.md` §2 rather than inventing one. No XML until the spec exists — the spec is what the report columns are checked against.
+2. **Ground every metric in a field that exists in the target org.** Confirm `LastStageChangeInDays`, `AgeInDays` and `PushCount` are present (they are version- and feature-gated), record whether the org sells with products, and record the fiscal-year start so the report `interval` is a decision rather than a default. Read `references/gotchas.md` 7, 9 and 10 before this step, not after.
+3. **Harvest the real column codes.** Retrieve one working Opportunity report and one Opportunity list view from the target org, read the report column codes and list-view tokens off them, and write those into the spec's `report_column` / `list_view_column` values. Never hand-author them — see `references/gotchas.md` 11 and `admin/list-views-and-compact-layouts`.
+4. **Build the pack** — Report, Dashboard, ListView — shaped from `references/worked-examples.md` §4–§6, and the package.xml from §9. If Pipeline Inspection itself is being deployed, add the `OpportunitySettings` and `PipelineInspMetricConfig` files from §8b and read `references/gotchas.md` 13 before setting `enablePipelineInspection`.
+5. **Lint before deploying:** `python3 skills/admin/pipeline-review-design/scripts/check_pipeline_review_design.py --manifest-dir <source-dir>`. Exit 1 means a metric has no owner, target or resolvable source; a metric id repeats; a report or list-view column references something the spec never declared; or a Report XML is malformed. Fix the spec or the XML — never silence the checker.
+6. **Deploy validate-only, deploy, then verify with data.** Run the two SOQL checks in `references/worked-examples.md` §9. If average days-in-stage tracks record age, or the null-`LastStageChangeDate` count is non-trivial, the stale-deal number is measuring the wrong thing and the threshold conversation has to happen again.
+7. **Publish the cadence and roles table** (§8) and schedule the quarterly review of the metric definitions. Hand the `hygiene_rules` intent to `admin/validation-rules` for the deployable `ValidationRule` metadata, and the stage-ladder consequences to `admin/opportunity-management`.
 
 ---
 
@@ -177,6 +245,12 @@ Run through these before marking work in this area complete:
 - [ ] Sales managers who need access are in the forecast hierarchy or have "View All Forecasts" permission
 - [ ] Review cadence (frequency, scope, escalation triggers, re-forecast rules) is documented and communicated
 - [ ] Checker script output has been reviewed and all flagged issues resolved
+- [ ] The pipeline-review spec exists and `check_pipeline_review_design.py --manifest-dir` exits 0
+- [ ] Every metric in the spec has a definition, a source field, a named owner and a target
+- [ ] Report column codes and list-view tokens were harvested from the target org, not hand-authored
+- [ ] The report `interval` is the fiscal variant if the number will be compared to a forecast
+- [ ] The null-`LastStageChangeDate` population was counted before the stale threshold was set
+- [ ] Data-hygiene rules have been handed to `admin/validation-rules` with an owner, not left verbal
 
 ---
 
@@ -203,13 +277,37 @@ Non-obvious platform behaviors that cause real production problems:
 | Pipeline Inspection configuration checklist | Completed checklist confirming licensing, feature toggle, metric settings, forecast type associations, and user access |
 | Stage-to-forecast-category mapping audit | Table of all Stage values, their ForecastCategoryName, IsClosed, and IsWon values — used to verify correct grouping in Pipeline Inspection |
 | Review cadence design document | Meeting frequency, scope definition, Days in Stage escalation thresholds, and re-forecast trigger rules |
-| Checker output | Output of `check_pipeline_review_design.py` listing metadata issues found in the deployed manifest |
+| Pipeline-review spec (YAML) | `templates/pipeline-review-spec-template.yaml` filled in: cadence, roles, field inventory, metrics with owner and target, hygiene rules, artefact list |
+| Review pack metadata | Deployable `Report`, `Dashboard` and `ListView` XML plus the package.xml, shaped from `references/worked-examples.md` §4–§6 and §9 |
+| Pipeline Inspection settings (optional) | `OpportunitySettings` flags and `PipelineInspMetricConfig` files, where the feature itself is being deployed rather than clicked |
+| Data-hygiene rule intent | Close Date, Amount and Next Step rules stated as intent plus formula, for `admin/validation-rules` to turn into `ValidationRule` metadata |
+| Cadence and RACI table | Who updates deals, who runs the meeting, who owns each metric definition, and when the definitions are re-reviewed |
+| Checker output | Output of `check_pipeline_review_design.py --manifest-dir` listing spec and metadata issues found in the pack |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | Building the pack: a full B2B SaaS weekly review carried end to end — agenda, metric-to-field map, the linted spec, deployable Report / Dashboard / ListView XML, the deployable half of Pipeline Inspection, hygiene rules, RACI, package.xml and verification SOQL |
+| `references/gotchas.md` | Fourteen platform behaviours behind most wrong pipeline numbers — the `LastStageChangeInDays` age fallback, feature-gated fields, `PushCount` semantics, unwritable `Amount`, fiscal vs calendar intervals, and the fourth forecast vocabulary |
+| `references/examples.md` | Worked enablement, forecast-category diagnosis and stall-threshold scenarios, plus the SOQL that shows why a custom days-in-stage formula field is worse than the platform field |
+| `references/well-architected.md` | Pillar mapping, the inspection-view-vs-report-pack and native-field-vs-snapshot tradeoffs, and the official-source list behind every claim in this package |
+| `references/llm-anti-patterns.md` | Self-checking generated output — the six ways an assistant gets Pipeline Inspection and pipeline metrics wrong |
+| `templates/pipeline-review-spec-template.yaml` | Starting a new review: the YAML shape `scripts/check_pipeline_review_design.py` lints |
+| `scripts/check_pipeline_review_design.py` | Gating the pack before deploy: metric completeness, unique ids, resolvable sources, and every Report / ListView column checked against the spec |
 
 ---
 
 ## Related Skills
 
-- opportunity-management — use when Stage picklist values and ForecastCategoryName mappings need to be created or corrected before Pipeline Inspection configuration
-- collaborative-forecasts — use when designing the underlying forecast types and hierarchy that Pipeline Inspection depends on
-- einstein-copilot-for-sales — use when AI-powered deal health scores or Opportunity Scoring insights inside Pipeline Inspection are required
-- reports-and-dashboards — use when the team needs custom pipeline analytics beyond what Pipeline Inspection natively surfaces
+- admin/opportunity-management — where the stage ladder, its `ForecastCategoryName` mapping and the sales process are actually configured
+- admin/sales-process-mapping — agree the stages and their exit criteria before any metric is defined against them
+- admin/collaborative-forecasts — forecast types, rollups, quotas and the hierarchy that Pipeline Inspection reads
+- admin/reports-and-dashboards — folder sharing, running-user semantics, subscriptions, and the canonical Report / Dashboard metadata reference
+- admin/report-type-strategy — when the review pack outgrows the standard `Opportunity` report type and needs a custom one
+- admin/list-views-and-compact-layouts — list-view column tokens, `sharedTo`, and sprawl control for the stale-deals view
+- admin/validation-rules — turning the data-hygiene rules into deployable `ValidationRule` metadata
+- admin/revenue-intelligence-setup — the Revenue Intelligence app, Revenue Insights and AI deal insights that sit above this
+- admin/report-performance-tuning — when the pipeline report is slow rather than wrong

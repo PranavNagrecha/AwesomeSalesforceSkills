@@ -26,9 +26,12 @@
 
 ## Official Sources Used
 
-- Trailhead: Create and Manage Stages and Sales Processes — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
-- Trailhead: Business Process Mapping — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
-- Salesforce Object Reference: OpportunityStage — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunitystage.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Help: Sales Processes — https://help.salesforce.com/s/articleView?id=sf.customize_salesstages.htm
-- Salesforce Help: Opportunity Stages — https://help.salesforce.com/s/articleView?id=sf.customize_opportunitystages.htm
+- **Metadata API Developer Guide** — `StandardValueSet` (api_meta.txt:130740–130830): file suffix and folder, the "at least one picklist value" deploy rule, the Record Types note behind Gotcha 7, the `OpportunityStage` sample definition used in `references/worked-examples.md` §5, and the no-wildcard rule for package.xml. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- **Metadata API Developer Guide** — `CustomValue` / `StandardValue` field tables (api_meta.txt:47497–47614): `default` is required, the `ForecastCategories` enumeration members behind Gotcha 6 and the checker's metadata-enum validation, and the `won` / `closed` field scoping that the checker's XML check now respects.
+- **Metadata API Developer Guide** — `BusinessProcess` (api_meta.txt:42955–43007) and `RecordType` (api_meta.txt:44968–45014): the process-to-record-type binding, the object-qualified vs bare `fullName` spelling, `businessProcess` being required on opportunity record types, and the twin "not an access control mechanism" warnings behind Gotcha 9 and the "One shared process vs. separate processes" tradeoff above.
+- **Metadata API Developer Guide** — `PathAssistant` (api_meta.txt:94490–94530): "only one path can be created per record type for each object", which is what makes a second selling motion cost a second Path as well as a second record type — cited in the cost table in `references/worked-examples.md` §4.
+- **Object Reference for the Salesforce Platform** — `OpportunityStage` (object_reference.txt:195434–195577): `ForecastCategoryName` and `ForecastCategory` value sets, `DefaultProbability` as a property of the stage value (Gotcha 5), the 255-character `Description` and `MasterLabel` limits, and "This object is read-only via the API" (Gotcha 8). https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunitystage.htm
+- **Object Reference for the Salesforce Platform** — API field properties (object_reference.txt:2384–2389): the picklist-value objects, `OpportunityStage` among them, are read-only through the API and are modified through the Salesforce user interface — the second leg of Gotcha 8.
+- **`standards/decision-trees/sharing-selection.md`** — the tree a "team X must not see team Y's pipeline" requirement is routed to instead of being answered with record types (Gotcha 9, and the workshop question set in SKILL.md).
+- **`skills/admin/opportunity-management/references/gotchas.md`** Gotcha 13 — the three-way forecast-vocabulary mapping table (`forecastCategory` token / `ForecastCategoryName` / `Opportunity.ForecastCategory`) that this skill cites rather than restates.
+- **Salesforce Well-Architected** — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (pillar framing for the Operational Excellence, User Experience and Trust sections above).

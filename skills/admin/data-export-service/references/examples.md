@@ -1,5 +1,7 @@
 # Examples — Salesforce Data Export Service
 
+**Grounding note.** UNVERIFIED (2026-09-05): every Setup → Data Export screen value in the configuration blocks below — the frequency options, the binary-content checkboxes, the 512 MB file-size split, the 48-hour download window, and the 1–24-hour generation latency — is documented only on help.salesforce.com, which cannot be fetched. Treat those blocks as the shape of the conversation with an admin, and take the checkable artefacts from `references/metadata-examples.md`. The Bulk API 2.0 path in Example 3 and the drill scorecard in the Anti-Pattern are grounded.
+
 ## Example 1: Monthly evidence archive runbook for an Enterprise org
 
 **Context:** A 3-million-row org running Enterprise Edition, no budget for Salesforce Backup and Restore yet, regulatory requirement to maintain "monthly evidence of record state" for 7 years.
@@ -90,5 +92,37 @@ Then a related EmailMessage and ContentVersion query keyed by those Case Ids. Do
 - Field history and Chatter feed history are absent.
 
 When the first real incident hits — accidental mass-delete via Data Loader, mistaken hard-delete from a flow — the team realizes the "backup" cannot be restored in any reasonable timeframe and the RPO claim was fiction.
+
+**What the first restore drill actually produces.** This is the artefact that ends the argument — a real scorecard from a sandbox reload of one month's archive, with the reason each line failed. Run it before the incident, not during one:
+
+```text
+RESTORE DRILL — 2026-09-04, sandbox "dr-drill", source archive 2026-08 monthly set
+object            exported   loaded   matched   outcome
+----------------  ---------  -------  --------  ----------------------------------------
+Account             412,006  412,006   412,006  PASS
+Contact             988,431  988,431         0  FAIL — every AccountId is a prod 18-char
+                                                Id with no sandbox counterpart; needs an
+                                                External Id round-trip that the export
+                                                CSV does not carry
+Opportunity         301,774  301,774         0  FAIL — AccountId + Pricebook2Id both
+                                                unresolvable; OwnerId points at users
+                                                that do not exist in the sandbox
+Case                544,902  544,902         0  FAIL — as above, plus ContactId
+Case (deleted)            ?        0         0  FAIL — the export ran `query`, not
+                                                `queryAll`, so soft-deleted rows were
+                                                never in the CSV to begin with
+                                                (api_asynch.txt:2959-2961)
+CaseComment       1,204,338        0         0  FAIL — object was never in scope; nobody
+                                                had written down the object list
+ContentVersion       88,190        0         0  FAIL — metadata only; VersionData was
+                                                deliberately excluded, so no file bodies
+                                                exist anywhere in the archive
+FieldHistory              0        0         0  N/A  — not exportable via this path
+----------------  ---------  -------  --------  ----------------------------------------
+elapsed: 3 days 6 hours of a 2-person team, for ONE month of ONE sandbox
+claimed RTO in the DR policy: 4 hours
+```
+
+Every FAIL line above is structural, not operational — no amount of care during the drill fixes them, because the CSVs never contained the information a reload needs. That is the difference between an export and a backup, expressed as a number a steering committee understands.
 
 **Correct approach:** state the actual obligation, license a real backup product (Salesforce Backup and Restore, Own, Odaseva, Spanning, Veeam) or build an explicit data-warehouse pipeline with reverse-load capability, and either retire Data Export or recast it as evidence archive only. The architecture doc must reflect the reality, not the brochure.

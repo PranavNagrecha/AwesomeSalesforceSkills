@@ -242,3 +242,49 @@ email fails to send but the save succeeds, the Scenario is reported as
 **Correct approach:** Split into four Scenarios — Stage update, save, manager
 approval (probably a separate story altogether), email send (likely a
 post-commit Scenario with `Then eventually within 60 seconds`).
+
+---
+
+## Turning a Then Into an Oracle — Example 2 Made Checkable
+
+Example 2's deny-cases ("the access is denied") read well and prove nothing on
+their own: a tester who sees a blank list view cannot tell "no access" from "no
+records". Give each visibility Then a query the tester or the test class runs,
+and the criterion becomes falsifiable.
+
+```sql
+-- AC oracle for "Owner can read their Deal Plan" and its three deny-cases.
+-- One row per (persona, record) pair the AC names. Run as an admin; the
+-- UserId column is what makes the answer persona-specific rather than
+-- whoever happens to be logged in.
+SELECT RecordId, UserId, HasReadAccess, HasEditAccess, HasTransferAccess,
+       MaxAccessLevel
+FROM   UserRecordAccess
+WHERE  UserId   IN :aliceId, :bobId, :eveId, :malloryId
+AND    RecordId IN :dealPlanIds
+
+-- Expected, straight from the Scenarios:
+--   Alice   (owner)                      HasReadAccess = true
+--   Bob     (above Alice in hierarchy)   HasReadAccess = true
+--   Eve     (on the Opportunity Team)    HasReadAccess = true
+--   Eve     (removed from the team)      HasReadAccess = false
+--   Mallory (peer, other branch)         HasReadAccess = false
+```
+
+Two things this buys that the prose Then does not:
+
+- **The bulk Scenario stops being vacuous.** "Then 0 Deal_Plan__c records are
+  returned" passes if the seed data never loaded. Pair it with a control row —
+  the same query for Alice must return 1000 — and a silent seeding failure
+  fails the criterion instead of passing it.
+- **The deny-case names the mechanism.** `MaxAccessLevel` distinguishes access
+  granted by ownership from access granted by the hierarchy or a team, so a
+  criterion that was meant to test the Opportunity Team path cannot be
+  satisfied accidentally by the role hierarchy.
+
+Do the same for Example 1: its "Then the save fails" clauses are already exact
+about the message text, so the oracle is `Database.update(records, false)` and
+an assertion on `SaveResult.getErrors()[0].getMessage()` rather than a query.
+The rule is one line — **every Then names either a field value, a queryable
+row, or an error string** — and it is the single edit that most often turns a
+plausible AC block into a testable one.

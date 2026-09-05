@@ -28,8 +28,43 @@ The key tradeoffs a delivery team faces:
 
 ## Official Sources Used
 
-- Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-- Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Well-Architected — Operational Excellence — https://architect.salesforce.com/well-architected/adaptable/resilient
-- Salesforce Trailhead — Business Analyst Skills (requirements management and traceability practices) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
+- **Metadata API Developer Guide** (Summer '26 / v62 PDF, `api_meta.pdf`) —
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+  - § AssignmentRules → *File Suffix and Directory Location* and the `AssignmentRule` singular-member
+    syntax (L23675–23691) — supports gotcha 9, "`artefact` is not a unique key", and the coarse
+    artefact granularity noted in `references/worked-examples.md` § 4.
+  - § EntitlementProcess → *File Suffix and Directory Location*, the versioned file name and
+    `slaProcess.NameNorm` (L59074–59082) — supports gotcha 10 and the linter's unresolved-artefact
+    warning in `references/worked-examples.md` § 8.
+  - § BusinessHoursSettings / BusinessHoursEntry (L111264–111294) — supports the single-settings-file
+    note in `references/worked-examples.md` § 4 and the `BusinessHoursEntry:` artefact form the
+    checker resolves.
+  - § CustomField → *Specify the full name whenever you create or update a field* (L43221–43232) —
+    supports the `<MetadataType>:<ApiName>` rule for the `artefact` column.
+  - § Deleting Components in a Deployment (L4614–4656) and the note that deletions of components that
+    do not exist are still attempted (L4641) — supports gotcha 15, "a `Dropped` row is not a
+    destructive change".
+  - § Unsupported Metadata Types (L9555–9559) — supports gotcha 14, the `setup-only:` marker, and the
+    decision to make an unresolved artefact a warning rather than an error by default.
+- **`standards/build-orchestration.md`** (contract v1, 2026-09-05) — § 2 defines
+  `.sfskills/builds/<build-id>/traceability.md` as "REQ → step → artefact → test"; § 4 fixes one
+  owning run-time agent per step; § 5 fixes the five acceptance-test types. This is the authority for
+  the build-layer column set in SKILL.md and for the `test_type` enum in `scripts/check_rtm.py`.
+- **`agents/_shared/schemas/build-plan.schema.json`** — the `clarifications[].id` (`^Q[0-9]+$`),
+  `decisions[].id` (`^D[0-9]+$`) and `steps[].id` (`^M[0-9]+-S[0-9]{2,}$`) patterns the `source`,
+  `decision_ref` and `step_id` columns must match, and the `acceptanceTest` definition (which carries
+  no id field — hence the id convention documented in `references/worked-examples.md` § 3).
+- **`skills/admin/configuration-workbook-authoring/references/examples.md`** — the workbook row schema
+  showing `FG-014` in the `source_req_id` column, which is why both `REQ-` and `FG-` are legal keys
+  (SKILL.md § REQ-XXX ⇄ FG-XXX, gotcha 11, and the checker's `REQ_ID_RE`).
+- **`skills/admin/case-management-setup/references/worked-example-case-intake.md`** and
+  **`skills/admin/uat-and-acceptance-criteria/references/worked-examples.md`** — the build and the UAT
+  programme that `references/worked-examples.md` traces; the source of every `CWB-*` row,
+  `UAT-CI-*` case and artefact path used there.
+- **`standards/decision-trees/automation-selection.md`** (Q1 → Q2 → before-save record-triggered
+  Flow) and **`standards/decision-trees/sharing-selection.md`** (§ The 7-step sharing design
+  sequence) — the branches cited as `D8` and `D2` in the worked example's decision table, and the
+  reason `decision_ref` is a column rather than a note.
+- **Salesforce Well-Architected — Overview** —
+  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — the
+  Operational Excellence and Reliability framing at the top of this file.
