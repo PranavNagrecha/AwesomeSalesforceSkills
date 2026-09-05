@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "fea342c4de9b6170df07632c75b5bccf229758bfb2c8f1826f3b8306cb9dc0a0",
+  "generated_from_hash": "64cac48b44142bf94b0719a52499078199f2e32b3b7bfd931ebc9759b4e1c940",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -147356,7 +147356,7 @@
         "f8a37fc54c3b8fe56f6b",
         "fe916a8b7baae1847b28"
       ],
-      "content_hash": "81d9acef195fe4b12c7525840619474b10301594457f2898780a55c3c304eeae",
+      "content_hash": "265ec93ffda6351df67046e05643ea82b9df714304ab196a3ae0cb36160f6109",
       "dependencies": [],
       "description": "Use when designing or reviewing Lightning Web Components that use `@wire`, Lightning Data Service, UI API, or the GraphQL wire adapter, especially for reactive parameters, cache behavior, and refresh strategy. Triggers: 'wire service', 'refreshApex', 'reactive parameter', 'getRecord', 'wire vs imperative Apex', 'cacheable=true', 'notifyRecordUpdateAvailable', 'wired data is read-only', 'getPicklistValues recordTypeId'. NOT for forcing a refresh after DML \u2014 use lwc/lwc-wire-refresh-patterns. NOT for imperative Apex on a click \u2014 use lwc/lwc-imperative-apex.",
       "file_location": "skills/lwc/wire-service-patterns",

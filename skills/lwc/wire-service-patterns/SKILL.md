@@ -33,6 +33,7 @@ triggers:
   - "chain getobjectinfo into getpicklistvalues with a reactive record type id"
   - "test a wire adapter in jest with emit"
   - "decide between fields and layoutTypes on getRecord"
+  - "wire vs imperative apex in lwc and getRecord wire fields"
 inputs:
   - "data source such as UI API, Apex, or GraphQL"
   - "whether the component only reads data or also mutates it"
