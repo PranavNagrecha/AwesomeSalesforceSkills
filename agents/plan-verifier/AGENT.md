@@ -209,7 +209,14 @@ The baseline is what separates a finding about the plan from a finding about thi
 
 One of those lines has a misleading remedy built into it. `validate` is the source of the treeless-decision WARN, whose message points a reader at "contract section 1.2" — a section `standards/build-orchestration.md` does not have. The rule it means is `agents/build-planner/AGENT.md` Step 4 and the `source_reference` field description in `agents/_shared/schemas/build-plan.schema.json`; cite those when reporting the finding, so the planner is sent somewhere that exists.
 
-`set-verification` writes the `verification` block and sets the build `status` from `--outcome` — `verified` when there are no blockers, `plan-rejected` when there are — and touches nothing else: no existing field is reworded, reordered or deleted, and `history[]` and `human_gates[]` are left alone. The file holds the block itself, with no `"verification":` wrapper around it:
+`set-verification` writes the `verification` block and sets the build `status` from `--outcome` — `verified` when there are no blockers, `plan-rejected` when there are. No existing field is reworded, reordered or deleted, and `human_gates[]` is left alone. `history[]` is the one exception, and knowing exactly when it moves is what keeps a re-plan round honest:
+
+- **Rejection archives; it does not bump.** `--outcome plan-rejected` appends the current plan body to `history[]` and leaves `version` where it was. `gate plan reject` does the identical archive, so a plan rejected through either route carries the superseded body without a version change. `--outcome verified` archives nothing.
+- **Re-planning bumps.** `version` increments when `set-plan` writes a new body over a plan whose status is `plan-rejected`, and only then. A `clarifying` or `planned` plan re-planned in place keeps its version, because nothing was gated away.
+
+So the sequence a rejected plan actually takes is: this agent writes `plan-rejected` (body archived, `version` still n), the planner writes the next body (`version` becomes n+1). Record `plan_version` in the block as the version of the body this run read — the one still in `plan.json` at write time, not the one the planner will produce next. A block claiming n+1 against a file that still says n is a warning this agent should be raising rather than causing, and it leaves two plan bodies indistinguishable to anything reading `plan.json` alone.
+
+The file holds the block itself, with no `"verification":` wrapper around it:
 
 ```json
 {
@@ -317,10 +324,11 @@ This is the shape `.claude/workflows/plan-verify.js` requires from every fanned-
 
 ### The envelope sub-schemas this agent fills
 
-The per-lens object above is this agent's own vocabulary. The envelope it travels in has schemas of its own for four blocks, and all four are strict enough to fail a well-written run on shape alone:
+The per-lens object above is this agent's own vocabulary. The envelope it travels in has schemas of its own for six blocks, and every one of the six is strict enough to fail a well-written run on shape alone:
 
 | Block | Shape it must take |
 |---|---|
+| `deliverables[]` | `kind`, `title` and `content` all required — a deliverable with a title and no `content` string fails the document. `kind` is one of `markdown`, `xml`, `apex`, `lwc`, `flow`, `json`, `yaml`, `patch`, `other`; this agent's two are the rendered verification report (`markdown`) and the `set-verification` body (`json`). `target_path` is optional and is where the file lands under the build directory. |
 | `findings[]` | `id`, `severity` and `title` required. `severity` is `P0`, `P1`, `P2` or `INFO` — those four strings, not `blocker`, `warning` or `high`. Map a blocker to `P0` and a warning to `P1` or `P2`, and say in `detail` which lens raised it. |
 | `findings[].evidence` | an **object**, not a string: `{"source": "repo_scan", "path": "agents/story-drafter/AGENT.md", "detail": "…"}`. The per-lens `evidence[]` array of verbatim lines stays where it is, under `extensions`; the envelope-level field is the structured twin of it. |
 | `followups[]` | `agent` and `because`, both required, `because` at least ten characters. An agent id that does not resolve to a real `agents/<id>/` fails validation. |

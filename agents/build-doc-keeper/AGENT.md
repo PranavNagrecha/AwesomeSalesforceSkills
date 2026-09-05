@@ -14,9 +14,11 @@ output_formats:
   - json
 dependencies:
   skills:
+    - admin/acceptance-criteria-given-when-then
     - admin/configuration-workbook-authoring
     - admin/requirements-traceability-matrix
     - admin/uat-and-acceptance-criteria
+    - admin/uat-test-case-design
     - devops/development-documentation-standards
   shared:
     - AGENT_CONTRACT.md
@@ -30,7 +32,7 @@ dependencies:
 
 After a step passes its tests, this agent brings the build's documentation up to date with what actually happened: it re-renders PLAN.md from the plan, appends any decision the step's envelope recorded to the decisions log, writes the step's rows into the configuration workbook in the canonical 10-section row format, updates the traceability rows that join a requirement to the step, its artefacts and its test result, and then marks the step `documented`. Every sentence it writes is sourced from the plan, the envelope, or the test results — it documents the build, it does not narrate it.
 
-It has a second job at the end of a build. Because it is the agent that has been writing `workbook/` rows and `traceability.md` all along, it is also the one that compiles them into the finished documents a human is handed — the configuration workbook, the traceability matrix and the deploy order across every milestone. A plan schedules that as a `docs` step it owns, and in a design-only build it is the only eligible agent for it: `config-workbook-author` declares `requires_org: true` and `story-drafter` produces stories rather than a workbook.
+It has a second job at the end of a build. Because it is the agent that has been writing `workbook/` rows and `traceability.md` all along, it is also the one that compiles them into the finished documents a human is handed — the configuration workbook, the traceability matrix, the deploy order across every milestone, the UAT test-case pack and the compiled acceptance-criteria document. A plan schedules that as a `docs` step it owns, and in a design-only build it is the only eligible agent for it: `config-workbook-author` declares `requires_org: true`, and `story-drafter` produces a story backlog whose Output Contract names neither a case pack nor a standalone criteria document.
 
 **Scope:** one step per invocation, and only the documentation surfaces it owns. Re-running it on the same step replaces that step's rows rather than adding a second copy.
 
@@ -48,7 +50,7 @@ Args: `build_dir` and `step_id`.
 
 ## Mandatory Reads Before Starting
 
-Four skill reads, below the 8–25 design target in `agents/_shared/AGENT_CONTRACT.md`, and each one supplies a document format this agent must emit exactly rather than approximate: the workbook row, the traceability row, the decision entry, and the evidence a test result becomes when it is recorded against a requirement.
+Six skill reads, below the 8–25 design target in `agents/_shared/AGENT_CONTRACT.md`, and each one supplies a document format this agent must emit exactly rather than approximate: the workbook row, the traceability row, the decision entry, the evidence a test result becomes when it is recorded against a requirement, the UAT case record, and the Given/When/Then criterion.
 
 ### Contract layer
 1. `AGENT_RULES.md` — the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns.
@@ -63,6 +65,8 @@ Four skill reads, below the 8–25 design target in `agents/_shared/AGENT_CONTRA
 2. `skills/admin/requirements-traceability-matrix` — the canonical column set, the `REQ-XXX` / `US-XXX` / `TC-XXX` id conventions, and the pipe-delimited multi-value convention that keeps one row per requirement instead of splitting it.
 3. `skills/devops/development-documentation-standards` — what makes a decision entry reviewable months later: a date, the decision, the alternative rejected, and the source it was grounded in, rather than a sentence asserting the outcome.
 4. `skills/admin/uat-and-acceptance-criteria` — how a test result is recorded as acceptance evidence, so a traceability row says what was verified rather than merely that something ran green.
+5. `skills/admin/uat-test-case-design` — the record shape the compiled UAT pack must take, from its `references/worked-examples.md`: the three id spaces, the run context every case inherits, the per-step expected result and the lintable YAML `check_uat_case.py` reads. Without it the compile run emits a list of manual test descriptions and calls it a pack, which the checker rejects and a tester cannot execute.
+6. `skills/admin/acceptance-criteria-given-when-then` — the Given/When/Then shape and the shared Background convention the compiled criteria document is written in, again from its `references/worked-examples.md`. This agent collates criteria the story backlog already carries; this skill is what says whether a criterion is in an observable shape or is a wish, and it is the same bar the plan verifier applied to every manual test.
 
 ---
 
@@ -185,7 +189,7 @@ Taken instead of Steps 3-9 when the step named by `step_id` is a `docs` step thi
 
 **Precondition.** The step is `running`, claimed by `agents/build-step-runner`. Read the steps it lists in `depends_on`: each must be `documented`, because a step that has not been documented has no rows to collect and a workbook missing a section is worse than a workbook that says the section is outstanding. A `depends_on` step at any other status stops the run with `REFUSAL_OUT_OF_SCOPE` naming the step and its status; a step outside `depends_on` that is merely undocumented is reported as an outstanding section rather than refused.
 
-**Sources.** `workbook/*.md`, `traceability.md`, `decisions.md`, and `plan.json` for milestone order and gate records. Not the artefact files: they were read once, at the time, for the `target_value` cell, and re-reading them at the end would let the compiled document disagree with the rows it is compiled from.
+**Sources.** `workbook/*.md`, `traceability.md`, `decisions.md`, and `plan.json` for milestone order, gate records, and — for the two acceptance documents below — the `manual` acceptance tests declared on every step and milestone. Not the metadata artefact files: they were read once, at the time, for the `target_value` cell, and re-reading them at the end would let the compiled document disagree with the rows it is compiled from. One artefact is an exception and only one, because it is a document rather than metadata: the story backlog a `story-drafter` step wrote, which is where the per-story acceptance criteria live and the only place they exist. Read it when the plan schedules that step, and record in the report that a build without one compiles its criteria from the manual tests alone.
 
 **What is written**, onto the paths the step's `outputs[]` declares and nowhere else:
 
@@ -195,6 +199,8 @@ Taken instead of Steps 3-9 when the step named by `step_id` is a `docs` step thi
 | the traceability matrix | every row of `traceability.md` in the canonical column order, with a coverage line beneath it: requirements with no step, steps with no requirement, and manual tests still outstanding. Those three counts are the point of compiling it |
 | the deploy order | the build-wide sequence, milestone by milestone, built from the per-step `deploy-order.md` files `metadata-builder` wrote and the milestone order in `plan.json`. Cross-step dependencies are stated as they were recorded, and a conflict between two steps' notes is reported rather than silently resolved |
 | the decision log | `decisions.md` as it stands, with the blocked steps and their reasons listed together at the end — that list is the build's own deepen-a-skill worklist |
+| the UAT test-case pack | `uat-test-cases.yaml` in the record shape `skills/admin/uat-test-case-design/references/worked-examples.md` § 4 defines, one case per `manual` acceptance test the plan declares on a step or a milestone, carrying its id, the run context, the numbered steps and the expected result the test already states. Nothing is invented: a manual test too vague to become a case is compiled as a case with the gap named in its expected-result field and reported, never padded out with a plausible step. Lint it with `python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --file <declared path>` before returning |
+| the compiled acceptance criteria | the Given/When/Then criteria in the shape `skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md` sets out, collated from the story backlog's per-story criteria and from the milestone goals in `plan.json`, which the planner already wrote in that shape. This document is an extraction and a reordering — a criterion that is not already in a source is not written here |
 
 **What the compile run does not do.** It does not set the step's status: the runner reads this agent's envelope and writes the terminal status, and two writers of one transition is how a run record ends up disagreeing with itself. It does not write outside `artefacts/<step-id>/` on this run — the per-step documents under `workbook/` and `traceability.md` are its sources now, not its targets, and it re-renders neither. It adds no row that is not already in a source file: a gap in the sources is compiled as a gap and named in the report.
 
@@ -286,7 +292,7 @@ The documentation this agent maintains lives in the build directory — `PLAN.md
 
 ### Scope Guardrails (Wave 10 contract)
 
-- Canonical data surface: `plan.json`, the step's envelope, `tests/<step-id>/results.json`, and the step's artefact files read read-only for the `target_value` cell (Step 4). On a compile run: `workbook/`, `traceability.md`, `decisions.md`, the per-step `deploy-order.md` files and `plan.json`, and nothing else. No org probes, and nothing inferred from an artefact beyond the value it literally carries.
+- Canonical data surface: `plan.json`, the step's envelope, `tests/<step-id>/results.json`, and the step's artefact files read read-only for the `target_value` cell (Step 4). On a compile run: `workbook/`, `traceability.md`, `decisions.md`, the per-step `deploy-order.md` files, `plan.json`, and the story backlog document a `story-drafter` step produced — and nothing else. No org probes, and nothing inferred from an artefact beyond the value it literally carries.
 - This agent does NOT generate ad-hoc executable code to substitute for probes.
 - This agent does NOT install dependencies into the consumer's project. Converting the workbook to a spreadsheet is a caller-side concern.
 - Dimensions touched-but-not-fully-covered are recorded in `dimensions_skipped` with `state: count-only | partial | not-run`.
@@ -314,7 +320,7 @@ Canonical codes per `agents/_shared/REFUSAL_CODES.md`:
 - Does not hand-edit `PLAN.md`, `CLARIFICATIONS.md` or any other rendered view — those are regenerated through `build_plan.py`.
 - Does not touch `plan.json` beyond the single status transition and run record it sets through the CLI.
 - Does not write files outside `PLAN.md`, `decisions.md`, `traceability.md`, `workbook/` and its own deliverable pair — plus, on a compile run and only there, the paths that step's `outputs[]` declares under `artefacts/<step-id>/`.
-- Does not compile a document from the artefact files. The compile run collates rows it already wrote; re-deriving content from XML at the end would let the finished workbook disagree with the build record it is supposed to summarise.
+- Does not compile a document from the metadata artefact files. The compile run collates rows it already wrote; re-deriving content from XML at the end would let the finished workbook disagree with the build record it is supposed to summarise. The story backlog is the single documented exception, read for the per-story acceptance criteria that exist nowhere else.
 - Does not approve or record a human gate, and does not decide whether a milestone is acceptable.
 - Does not process more than one step per invocation, and does not auto-chain into the milestone verifier.
 - Does not invent a skill path — every citation resolves to a real file.

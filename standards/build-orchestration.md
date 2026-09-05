@@ -158,7 +158,7 @@ third column instead.
 | `ui` | `path-designer`, `object-designer` (layouts), `email-template-modernizer` (templates) | `metadata-builder` | Layout / FlexiPage / PathAssistant XML; ListView; Report + ReportFolder; EmailTemplate | layout + path checkers; list-view filter fields resolve; report + email-template checkers |
 | `data` | `csv-to-object-mapper`, `data-loader-pre-flight` | `bulk-migration-planner` | mapping files, load plan | preflight checker; mapping resolves |
 | `integration` | `bulk-migration-planner`, `integration-catalog-builder` | `bulk-migration-planner` | pattern decision, contracts | integration checkers |
-| `docs` | `config-workbook-author`, `story-drafter` | `build-doc-keeper` (workbook, traceability, deploy order), `story-drafter` (stories), `metadata-builder` (the build-level `package.xml`) | workbook, traceability matrix, stories, `package.xml`, the deploy-order note | workbook linter; manifest consistency against the milestone's artefacts |
+| `docs` | `config-workbook-author`, `story-drafter` | `build-doc-keeper` (workbook, traceability, deploy order, UAT pack, acceptance criteria), `story-drafter` (the story backlog), `metadata-builder` (the build-level `package.xml`) | workbook, traceability matrix, story backlog, `uat-test-cases.yaml`, the compiled acceptance criteria, `package.xml`, the deploy-order note | workbook linter; `check_uat_case.py` over the compiled pack; manifest consistency against the milestone's artefacts |
 | `custom` | any roster agent | any roster agent with `requires_org: false` | declared in the step | declared in the step's `acceptance_tests` |
 
 **Agent eligibility.** A step's `agent` is legal only when all three hold:
@@ -183,9 +183,14 @@ has no home for them:
 | Email-to-Case and Web-to-Case intake | `routing` |
 | `package.xml` and the deploy-order note | `docs` |
 
-In a design-only build every one of them is a `metadata-builder` step, with one split inside the `docs` row: `metadata-builder` writes the `package.xml` and the per-step deploy-order note, while the workbook, the traceability matrix and the compiled build-wide deploy order are `build-doc-keeper`'s — it is the agent that wrote those rows step by step, and `config-workbook-author` is `requires_org: true` and therefore ineligible here. User stories, UAT cases and acceptance criteria remain `story-drafter`'s.
+In a design-only build every one of them is a `metadata-builder` step, with one split inside the `docs` row: `metadata-builder` writes the `package.xml` and the per-step deploy-order note, while the workbook, the traceability matrix and the compiled build-wide deploy order are `build-doc-keeper`'s — it is the agent that wrote those rows step by step, and `config-workbook-author` is `requires_org: true` and therefore ineligible here.
 
-`story-drafter` is a Tier-2 agent with no build-layer clause in its contract: it takes `discovery_artifact_path`, `discovery_artifact_kind` and `feature_scope`, and it persists to its own `default_output_dir`. That does not make it ineligible. The planner maps those three inputs from the build directory into the step's `inputs{}` and declares the step's outputs under `artefacts/<step-id>/`; `build-step-runner` relocates what the agent wrote onto those declared paths and records the move. The same accommodation applies to any roster agent a plan borrows for a step.
+The UAT test-case pack (`uat-test-cases.yaml`) and the compiled acceptance-criteria document are `build-doc-keeper`'s too, on the same compile run and for the same reason: they are collations of records the build already holds — the `manual` acceptance tests on every step and milestone, and the per-story criteria in the story backlog — written in the shapes `skills/admin/uat-test-case-design` and `skills/admin/acceptance-criteria-given-when-then` define in their `references/worked-examples.md`. `story-drafter` owns the story backlog itself and the criteria inside it; its Output Contract names no case pack and no standalone criteria file, so a plan that declares either on a `story-drafter` step declares an output that agent does not produce.
+
+**Borrowing a roster agent from outside Tier 4.** `story-drafter` is a Tier-2 agent with no build-layer clause in its contract: it takes `discovery_artifact_path`, `discovery_artifact_kind` and `feature_scope`, and it persists to its own `default_output_dir`. That does not make it ineligible. The planner maps those inputs from the build directory into the step's `inputs{}` and declares the step's outputs under `artefacts/<step-id>/`; `build-step-runner` relocates what the agent wrote onto those declared paths and records the move. The same accommodation applies to any roster agent a plan borrows for a step, on two conditions:
+
+1. **Read the Inputs table *and* the Escalation / Refusal Rules section, not either alone.** The table states what the agent needs; the refusal section states what it does when it does not get it, and the two are authored separately — an input the table marks "yes for design" is often the same one a single refusal line turns into a stop before the agent reads the plan. `sandbox-strategy-designer` is the standing case: five inputs are mandatory for a design run (`mode`, `team_size`, `concurrent_workstreams`, `release_cadence`, `data_sensitivity`) and its Escalation section reads, in full, "No team size / cadence → refuse." Every input either section makes mandatory is mapped into `inputs{}` from an answered clarification, from `requirement.md`, or from a `depends_on` step's outputs. When one exists nowhere on file the step is `blocked` with `blocked_reason: "borrowed agent requires <inputs>"`, naming them.
+2. **Declare only outputs the agent's Output Contract names.** A borrowed agent produces what its contract says it produces; a path in `outputs[]` with no counterpart there is an artefact nobody writes, `check-outputs` never confirms it, and the step cannot reach `built`. Re-own the step, or move the output to the agent that does declare it.
 
 **Adding a step type is not one edit.** It touches, in this order: this table
 and the artefact map above it; `STEP_TYPES` in `scripts/build_plan.py`; the
@@ -216,7 +221,7 @@ Every step has ≥ 1 acceptance test; every milestone has ≥ 1. Types:
 
 | type | runner | pass condition |
 |---|---|---|
-| `checker` | the command as declared in the plan — default form `python3 skills/<domain>/<slug>/scripts/check_*.py --manifest-dir artefacts/<step>`; a checker that takes a positional path or `--file` is declared with that form instead | exit 0 **and** `check-outputs` ok |
+| `checker` | the command as declared in the plan — default form `python3 skills/<domain>/<slug>/scripts/check_*.py --manifest-dir artefacts/<step>`; a checker that takes a positional path or `--file` is declared with that form instead. Carries an optional `scope` of `step` (default) or `build` — see **Checker scope** below | exit 0 **and** `check-outputs` ok |
 | `xml` | ElementTree parse of every `*.xml`/`*-meta.xml` in the step's artefacts | all parse |
 | `manifest` | every artefact type/member appears in `package.xml`; no member without a file | consistent |
 | `command` | a stdlib-only `python3 …` command declared in the plan, over a path in the repo or the build dir (never a deploy — see the deny-list below) | exit 0 |
@@ -240,6 +245,41 @@ a failing step when nothing about the artefacts is wrong.
 > does not ERROR — on a `checker` command with no `--manifest-dir`, saying the
 > checker declares a non-standard argument form and the tester will run it
 > verbatim.
+
+### Checker scope
+
+A `checker` acceptance test may carry a `scope`:
+
+| `scope` | What the tester passes the checker | When to use it |
+|---|---|---|
+| `step` (default, and what is assumed when the field is absent) | the step's own artefacts — `--manifest-dir artefacts/<step-id>` | the checker's assertions are all satisfiable inside one step's output |
+| `build` | the whole tree — `--manifest-dir artefacts` | the checker asserts a link between files that different steps write |
+
+`render` prints the scope beside the command, so a reader of PLAN.md can see
+which of the two a test was declared at.
+
+**Cross-referential checkers.** Some checkers assert a relationship spanning
+two metadata files that the plan assigns to two different steps. Run at step
+scope, such a checker sees one half of the pair and either fires on a correct
+artefact or falls silent on a broken one — both of which look like a working
+test until someone runs the build. Four in the library behave this way today,
+and this is the documented list `validate` warns against:
+
+| Checker | The cross-reference it asserts |
+|---|---|
+| `check_escalation_rules.py` | an escalation action's `assignedTo` → a queue or user another step created |
+| `check_omni_channel_routing_setup.py` | a routing configuration → the queue it pushes from, and a service channel → its presence statuses |
+| `check_list_views_and_compact_layouts.py` | a compact layout → the `compactLayoutAssignment` on the `CustomObject` and record types, which belong to the object-model step |
+| `check_permission_set_architecture.py` | a permission set's object and field permissions → the object metadata another step wrote |
+
+When one of these is declared on a `routing`, `sla` or `access` step at `scope:
+"step"`, `validate` WARNs and names the two remedies: declare `"scope":
+"build"` on that test, or carry the assertion in a milestone acceptance test
+running the same checker across `artefacts/`. Whichever is chosen, the step's
+test `description` says which one carries the cross-reference, so a reader is
+not left inferring it from the exit code. The list is hard-coded rather than
+detected, so a checker that becomes cross-referential is added here and in
+`agents/build-planner/AGENT.md` Step 6 in the same change.
 
 The tester never invents a test; it runs what the plan declares plus the
 always-on `xml` and `manifest` checks. If a declared checker does not exist,
