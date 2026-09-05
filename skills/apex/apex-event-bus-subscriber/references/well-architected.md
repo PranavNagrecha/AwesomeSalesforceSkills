@@ -55,7 +55,7 @@
    After 10 attempts the events are gone. Plan accordingly.
 5. **Calling fictional `EventBus.subscribe(...)` API.** Doesn't exist
    in Apex.
-6. **Tests without `Test.EventBus.deliver()`.** Trigger never fires;
+6. **Tests without `Test.getEventBus().deliver()`.** Trigger never fires;
    tests are fake-passing.
 
 ## Official Sources Used

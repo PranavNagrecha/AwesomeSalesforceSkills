@@ -12,7 +12,7 @@ records per batch) runs into governor limit failures in production.
 SOQL query count, DML row count, and CPU all hit harder than expected.
 
 **When it occurs.** First production load with realistic event volume.
-Tests with `Test.EventBus.deliver()` and small event lists pass; the
+Tests with `Test.getEventBus().deliver()` and small event lists pass; the
 wall hits when 2,000 events arrive in a batch.
 
 **How to avoid.** Two-pronged:
@@ -99,7 +99,7 @@ the user's permission set in the config-meta.xml comment.
 
 ---
 
-## Gotcha 6: `Test.EventBus.deliver()` is required to drive triggers in tests
+## Gotcha 6: `Test.getEventBus().deliver()` is required to drive triggers in tests
 
 **What happens.** Test publishes an event with `EventBus.publish`,
 the test ends, the trigger never fires, the test passes — but the
@@ -114,11 +114,11 @@ asynchronously; in tests you must explicitly drive them.
 ```apex
 EventBus.publish(myEvent);  // queues
 Test.stopTest();
-Test.EventBus.deliver();    // drives the trigger synchronously
+Test.getEventBus().deliver();    // drives the trigger synchronously
 // then assert side effects
 ```
 
-Multiple `Test.EventBus.deliver()` calls drive multiple batches if
+Multiple `Test.getEventBus().deliver()` calls drive multiple batches if
 you want to test the retry path.
 
 ---

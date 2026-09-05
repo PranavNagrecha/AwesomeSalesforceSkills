@@ -6879,6 +6879,9 @@
     "filter-by-scope": [
       "admin/scoping-rules"
     ],
+    "filter-formula": [
+      "flow/flow-formula-and-expression-patterns"
+    ],
     "filter-groups": [
       "apex/npsp-custom-rollups"
     ],
@@ -7138,6 +7141,9 @@
     ],
     "flow-loop-element-patterns": [
       "flow/flow-loop-element-patterns"
+    ],
+    "flow-metadata": [
+      "flow/flow-formula-and-expression-patterns"
     ],
     "flow-navigation": [
       "flow/flow-screen-lwc-components",
@@ -14364,6 +14370,7 @@
       "apex/apex-string-and-regex"
     ],
     "text-template": [
+      "flow/flow-formula-and-expression-patterns",
       "flow/flow-resource-patterns"
     ],
     "theming": [

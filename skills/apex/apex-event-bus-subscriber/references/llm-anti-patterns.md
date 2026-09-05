@@ -159,7 +159,7 @@ permanent failures as transient.
 
 ---
 
-## Anti-Pattern 6: Tests that publish without `Test.EventBus.deliver()`
+## Anti-Pattern 6: Tests that publish without `Test.getEventBus().deliver()`
 
 **What the LLM generates.**
 
@@ -183,13 +183,13 @@ static void testTrigger() {
     Test.startTest();
     EventBus.publish(new MyEvent__e(...));
     Test.stopTest();
-    Test.EventBus.deliver();   // drives the trigger synchronously
+    Test.getEventBus().deliver();   // drives the trigger synchronously
     System.assertEquals(1, [SELECT COUNT() FROM Result__c]);
 }
 ```
 
 **Detection hint.** Any test that publishes a Platform Event without
-calling `Test.EventBus.deliver()` is testing nothing.
+calling `Test.getEventBus().deliver()` is testing nothing.
 
 ---
 

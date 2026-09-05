@@ -182,7 +182,7 @@ user with the right permissions for the downstream operations.
 
 ---
 
-## Example 5 — Test class using `Test.EventBus.deliver()`
+## Example 5 — Test class using `Test.getEventBus().deliver()`
 
 **Context.** Testing the OrderEventSubscriber trigger from Example 1.
 
@@ -200,7 +200,7 @@ private class OrderEventSubscriberTest {
         Test.stopTest();
 
         // Act — drive the trigger synchronously.
-        Test.EventBus.deliver();
+        Test.getEventBus().deliver();
 
         // Assert — both orders processed.
         List<Order__c> orders = [SELECT Id FROM Order__c WHERE OrderId__c IN ('A1', 'A2')];
@@ -209,7 +209,7 @@ private class OrderEventSubscriberTest {
 }
 ```
 
-Without `Test.EventBus.deliver()` the trigger doesn't fire in the test
+Without `Test.getEventBus().deliver()` the trigger doesn't fire in the test
 context — `EventBus.publish` queues the events, the test ends, the
 trigger never runs, and the test passes for the wrong reason.
 

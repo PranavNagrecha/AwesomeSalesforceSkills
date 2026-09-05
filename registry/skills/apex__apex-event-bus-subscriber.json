@@ -14,6 +14,7 @@
     "285642241bb72485f209",
     "3277eefdcc970c8951d9",
     "3416540925f54c869257",
+    "3b5b543037c95ea3a1ab",
     "4477185076c223857871",
     "4ef61bea0a159146fda1",
     "5221515bce3ddf34bbe1",
@@ -28,14 +29,13 @@
     "68313a72eb48d5dc518c",
     "6a458b565caa25bed4ee",
     "6b1d01ea8906dc0add44",
-    "7296df0943f9d4b11927",
+    "762f0ba6ac671e1cd1f0",
     "7852ac2afa40b6afa0ac",
     "79266363eec13fd54d2f",
     "7a2ce82cb3f4ef74c41a",
     "7a88c61b9afd7abf3f58",
     "7f3c91b8b24c03d75d03",
     "82a6eac854096ec1b398",
-    "82bd2e29b738ab27c3cd",
     "83bf352e5aa62e03a3c9",
     "899d12e41f1213f4fa6d",
     "8a768a3d2dfc8e292733",
@@ -66,14 +66,14 @@
     "e24ad374fe4cb88706fa",
     "e3c79a862ad6a0851a82",
     "e4ecea2b8745a333fffd",
-    "e8dc6b5dad6eb2e1a2db",
     "f34503c2e045dede865c",
     "f34b028f4f44d7d2384e",
     "f50c050e2e59230ea397",
+    "f6b941f4d13d9bb408c8",
     "fa4bc2347490fa5465b4",
     "fbfb3d50ac01c7bff07c"
   ],
-  "content_hash": "652a05c7bf8454869a9d09c7d1dc827e080e0ff7c6c306e2d965e4131bb065a8",
+  "content_hash": "d960ad4943eb0a4b2e6ed42a31d836d3f9d349ec45dbddaa718dfeea7b7b2a9b",
   "dependencies": [],
   "description": "Apex Platform Event subscriber runtime semantics \u2014 checkpoint-and-resume via `EventBus.TriggerContext.setResumeCheckpoint`, `EventBus.RetryableException` semantics, the 2,000-event-per-trigger default batch, and `PlatformEventSubscriberConfig` for batch-size and running-user tuning. Covers the checkpoint-vs-RetryableException decision, the most common subscriber bug. NOT for publishing from Apex \u2014 use apex/platform-events-apex. NOT for external subscribers \u2014 use integration/platform-events-integration.",
   "file_location": "skills/apex/apex-event-bus-subscriber",
@@ -120,7 +120,7 @@
   "templates": [
     "skills/apex/apex-event-bus-subscriber/templates/apex-event-bus-subscriber-template.md"
   ],
-  "updated": "2026-05-04",
+  "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

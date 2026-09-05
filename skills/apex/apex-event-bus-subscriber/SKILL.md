@@ -31,9 +31,9 @@ outputs:
   - "Decision: when to throw `RetryableException` vs let an uncaught exception resume from checkpoint"
   - "`PlatformEventSubscriberConfig` metadata XML when default batch / user is wrong"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-09-05
 ---
 
 # Apex Event Bus Subscriber
@@ -230,7 +230,7 @@ dominates.
 1. **Pick the retry strategy first.** Checkpoint + propagate, RetryableException + no-checkpoint, or drop-on-error. Different strategies for transient vs permanent failures inside the same trigger are fine and common.
 2. **Always call `setResumeCheckpoint(e.ReplayId)` after each successful event** unless you've explicitly chosen Pattern B (all-or-nothing).
 3. **Catch the right exception types.** Don't catch `Exception` — catch `DmlException`, `CalloutException`, `QueryException` etc. and decide per type whether it's transient (re-throw) or permanent (log + checkpoint).
-4. **Test with `Test.EventBus.deliver()`.** Triggers are async; in a test class, publish the event, then call `Test.EventBus.deliver()` to drive the trigger synchronously.
+4. **Test with `Test.getEventBus().deliver()`.** Triggers are async; in a test class, publish the event, then call `Test.getEventBus().deliver()` to drive the trigger synchronously.
 5. **Tune via `PlatformEventSubscriberConfig` only after measurement.** Default batch size is fine for most workloads; only tune when you have profile evidence.
 
 ---
@@ -244,7 +244,7 @@ dominates.
 - [ ] Transient-failure branch either re-throws (with checkpoint set) or throws `RetryableException`.
 - [ ] No use of a fictional `EventBus.subscribe(...)` API.
 - [ ] `PlatformEventSubscriberConfig` is in source control if non-default batch size or running user is required.
-- [ ] Test class uses `Test.EventBus.deliver()` to drive the trigger, with assertions on the eventual side effects.
+- [ ] Test class uses `Test.getEventBus().deliver()` to drive the trigger, with assertions on the eventual side effects.
 - [ ] Trigger's per-event work, multiplied by 2,000 (or the configured batch size), stays inside SOQL / DML / CPU governors.
 
 ---
@@ -256,7 +256,7 @@ dominates.
 3. **`RetryableException` without `setResumeCheckpoint` reprocesses already-processed events.** Idempotency required. (See `references/gotchas.md` § 3.)
 4. **9 retries (10 total) then the events are lost.** Plan a dead-letter strategy for must-not-lose flows. (See `references/gotchas.md` § 4.)
 5. **The trigger's running user defaults to the publisher's context, not always what you want.** Set explicitly via `PlatformEventSubscriberConfig`. (See `references/gotchas.md` § 5.)
-6. **`Test.EventBus.deliver()` is required to drive triggers in tests** — publishing alone doesn't fire the trigger synchronously. (See `references/gotchas.md` § 6.)
+6. **`Test.getEventBus().deliver()` is required to drive triggers in tests** — publishing alone doesn't fire the trigger synchronously. (See `references/gotchas.md` § 6.)
 
 ---
 
@@ -266,7 +266,7 @@ dominates.
 |---|---|
 | Production-grade subscriber trigger | With per-event checkpointing, typed exception handling, retry-strategy decision documented inline |
 | `PlatformEventSubscriberConfig` XML (when needed) | Batch size + running user tuning |
-| Test class | Uses `Test.EventBus.deliver()`; covers success path, transient retry, permanent-skip, and 10-attempt give-up |
+| Test class | Uses `Test.getEventBus().deliver()`; covers success path, transient retry, permanent-skip, and 10-attempt give-up |
 | Dead-letter handler (if must-not-lose) | Stores residue from the 10th failed retry for human review or async retry |
 
 ---
@@ -275,5 +275,5 @@ dominates.
 
 - `integration/platform-event-publish-patterns` — the publisher side; pair with this skill for end-to-end Platform Event flow.
 - `apex/trigger-framework` — when this trigger lives inside a generic trigger framework; the framework dispatch must respect the EventBus.TriggerContext API rather than treating the trigger like a DML trigger.
-- `apex/apex-mocking-and-stubs` — for the test class that uses `Test.EventBus.deliver()`.
+- `apex/apex-mocking-and-stubs` — for the test class that uses `Test.getEventBus().deliver()`.
 - `integration/event-relay-configuration` — when the same Platform Event channel that this trigger subscribes to is also relayed to AWS EventBridge; the two subscribers are independent (Apex + AWS-side rule).
