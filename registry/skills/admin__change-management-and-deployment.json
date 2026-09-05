@@ -2,9 +2,11 @@
   "category": "admin",
   "chunk_ids": [
     "000a6bbadc82492e98b3",
+    "0148e112b29a5456247e",
     "0155e248f7e5cd561c86",
     "026d9c5d812cf386a05a",
     "02c7daf5a264b1045e9f",
+    "02de48b76465f2ecc826",
     "02e26dd218eeab7af507",
     "05aacd6d99e4c7d673ea",
     "07919defb6e4e9ab4439",
@@ -22,6 +24,7 @@
     "1f59bffdcc0642342be4",
     "28369226872cd26cf1ce",
     "28f9dce48eb58f2b269e",
+    "29be96531833c307ed5e",
     "29ce2cebc6b3daadeea4",
     "2b7d455e4c4dd4f9832d",
     "2b9b42aa74dac6060bea",
@@ -32,9 +35,11 @@
     "3ad5e86c9101a0c3a771",
     "3ed6335a6b2fe4c42b6c",
     "40e321792e1d5709b2ab",
+    "4159a245cb5d50ca983e",
     "44aef00d76eb2f7ea97b",
     "477034e9e8da6bfde835",
     "49d9a6e62a4ed2868b06",
+    "49e08e480803715cdb36",
     "4ba6109cde536028a61f",
     "4e2e4e40d41f158ed635",
     "515f4bd696b0eea3a40b",
@@ -62,6 +67,7 @@
     "783fdeaa3ec352da3ec7",
     "78f62ec08163a5636990",
     "7ae3ad76e6833849b60d",
+    "7b117b40c8dd0bff3850",
     "7d48f3ac7cb18b2d1633",
     "7d67e2e00b545ad0eb7e",
     "7d8250bf87fb60700e3e",
@@ -84,6 +90,7 @@
     "9db3e328efdf255ae0fd",
     "a00b4c9681fa4220e81e",
     "a01a5b71c23e3e3efd09",
+    "a19cea4bedf090ccb7dc",
     "a1a08fe5375dc4471796",
     "a52618df1a9fdd3ea3ab",
     "a7183a7e13bd24eb8719",
@@ -99,6 +106,7 @@
     "b46ac742abfd28bd0452",
     "b9f961462fb30b8a8fa8",
     "bc05e661a00c4ab5afee",
+    "bc52d5740f58a22f7353",
     "bc93c6f14bdef3c96fb5",
     "be0729727103c8c96e74",
     "be2f88ff6be36fbf58ea",
@@ -113,6 +121,7 @@
     "cd9154cf8e82e5b0bd0d",
     "cff3f624d90b3c270405",
     "d5e9654d79e717d88a39",
+    "dc1b9e391af4cd69d6de",
     "dc6b01fdc2a7d888eedf",
     "dd82ac77147a3d8ecc8b",
     "e1e92492344e30a0268b",
@@ -135,7 +144,7 @@
     "fc807a1362e2abfbb18d",
     "ffbcf462862901c65ed7"
   ],
-  "content_hash": "453af890ede4d558d969acd85c002054e8be72cef8e70cf83f10fd6a890ba66f",
+  "content_hash": "05f92075cb0cf882a1b21896431c1d14badbd767510aeba521b0e5c90706ab84",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment', 'validation only deploy', 'quick deploy', 'test level', 'rollbackOnError', 'destructive changes', 'package.xml for an admin release', 'deployment status'. NOT for change set upload mechanics \u2014 use devops/change-set-deployment. NOT for scoring release risk up front \u2014 use admin/deployment-risk-assessment.",
   "file_location": "skills/admin/change-management-and-deployment",
@@ -185,7 +194,7 @@
   "templates": [
     "skills/admin/change-management-and-deployment/templates/release-plan-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

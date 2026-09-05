@@ -28,6 +28,7 @@
     "2cdb12e5081fa1cfeb24",
     "31c1b3d6b3346c5b02ab",
     "32bbf901ba28f0cbb7c7",
+    "34d17474f37729d14ad8",
     "3539bc7573e7885ce392",
     "3540a1756d4ae81eaaad",
     "360bb9704f9c881b3cd5",
@@ -82,6 +83,7 @@
     "9a4cd70ed3bec5abeb35",
     "a32654d74bb4e4ea44ab",
     "aa6357ca80bf48e5b058",
+    "afc55d619623d3ee0bb3",
     "affbfce23fa3d447950d",
     "b15e0816dae157f4b9a8",
     "b2fef17aa8999f354efc",
@@ -118,7 +120,7 @@
     "fc0c2655d8b956b23287",
     "fe283615c9d5685c1bd2"
   ],
-  "content_hash": "1ca94a41fc55f4818ab30d9038a9e82a859504429705a6283fc484228414c2e6",
+  "content_hash": "1e859ff44fe5c1f94b3c744facc9b73012b4526b734b0550d54765b142e21af4",
   "dependencies": [],
   "description": "Configuring Salesforce Omni-Channel routing from scratch or updating existing routing: enabling Omni-Channel, creating Service Channels, configuring Routing Configurations (queue-based and skills-based), setting up Presence Statuses and Presence Configurations, assigning skills to Service Resources, and defining Skills-Based Routing Rules. Trigger keywords: Omni-Channel setup, routing configuration, queue-based routing, skills-based routing, presence status, service channel, routing rules. NOT for agent capacity units and channel weighting \u2014 use architect/omni-channel-capacity-model. NOT for Apex routing via PendingServiceRouting \u2014 use apex/omni-channel-custom-routing.",
   "file_location": "skills/admin/omni-channel-routing-setup",
@@ -179,5 +181,5 @@
   ],
   "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

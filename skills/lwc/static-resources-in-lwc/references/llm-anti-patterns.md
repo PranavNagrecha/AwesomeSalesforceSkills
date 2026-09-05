@@ -15,7 +15,7 @@ connectedCallback() {
 }
 ```
 
-**Why it happens:** LLMs use the standard web pattern for dynamic script loading. In Salesforce, this violates Content Security Policy and is blocked by Lightning Web Security.
+**Why it happens:** LLMs use the standard web pattern for dynamic script loading. In Salesforce, uploading the library as a static resource "is a Lightning Web Components content security policy requirement" (`js-third-party-library` L2655), and a Trusted URL does not help: "you can't load JavaScript resources from a third-party site, even from a trusted URL" (`js-api-calls`).
 
 **Correct pattern:**
 
@@ -144,7 +144,9 @@ import MY_LIB from '@salesforce/resourceUrl/myLibrary';
 await loadScript(this, '/resource/myLibrary/lib.js'); // Hardcoded path — ignores versioning
 ```
 
-**Why it happens:** LLMs import the resource URL correctly but then hardcode the path string instead of using the imported reference. The imported URL includes a cache-busting version hash; the hardcoded path does not.
+**Why it happens:** LLMs import the resource URL correctly but then hardcode the path string instead of using the imported reference. The scoped import is the only form the platform validates and the only one that carries a namespace prefix when the resource ships in a managed package (LWC Developer Guide, `create-resources` L3657).
+
+**UNVERIFIED (2026-09-05):** an earlier revision of this file claimed the imported URL includes a cache-busting version hash. No Salesforce guide in the local corpus states the shape of the URL that `@salesforce/resourceUrl` resolves to, so that claim has been removed rather than restated.
 
 **Correct pattern:**
 
@@ -168,7 +170,7 @@ Always concatenate paths with the imported resource URL constant.
 // Instructions: upload the full node_modules/d3 folder as a static resource
 ```
 
-**Why it happens:** LLMs suggest uploading the entire library folder. Static resources have a 5 MB per-file limit and a 250 MB org-wide limit. Unminified or bundled libraries waste space and load slowly.
+**Why it happens:** LLMs suggest uploading the entire library folder. "The maximum file size is 5 MB. An org can have up to 250 MB of static resources" (LWC Developer Guide, `create-resources` L3648; restated at `create-use-third-party-components` L4190). Both are deploy-time ceilings. Unminified or bundled libraries waste that budget and load slowly.
 
 **Correct pattern:**
 
@@ -183,3 +185,36 @@ static-resources/
 Do not upload source maps, test files, examples, or the full `node_modules` tree.
 
 **Detection hint:** Static resource size exceeding 500 KB for a single library, or resource containing `node_modules`, `test`, or `.map` files.
+
+---
+
+## Anti-Pattern 7: Packaging the ESM build and calling loadScript on it
+
+**What the LLM generates:**
+
+```javascript
+// Instructions: zip node_modules/chart.js/dist/chart.js and upload it
+await loadScript(this, CHARTJS + '/chart.js');
+new Chart(ctx, config); // ReferenceError: Chart is not defined
+```
+
+**Why it happens:** `chart.js`, `d3`, and most modern libraries ship an ES module as the
+package default, and that is the file an LLM reaches for. The platform will not run it:
+"`loadScript` doesn't currently support ECMAScript Modules (ESM). For example,
+`<script type="module">` isn't supported. Import third-party web components using
+pre-bundled JavaScript files with custom elements in a legacy format such as IIFE
+(Immediately-Invoked Function Expression) or UMD (Universal Module Definition)"
+(LWC Developer Guide, `create-use-third-party-components` L4207). Nothing fails at deploy
+time — the resource uploads, the network request returns 200, and the global is simply
+never defined.
+
+**Correct pattern:**
+
+```javascript
+// Package the UMD/IIFE build the vendor also publishes
+await loadScript(this, CHARTJS + '/dist/chart.umd.min.js');
+```
+
+**Detection hint:** a packaged file whose first lines contain `import ` or `export `, a
+filename containing `.esm.` or `.mjs`, or a `loadScript` path pointing at a package's
+`module`/`exports.import` entry point.

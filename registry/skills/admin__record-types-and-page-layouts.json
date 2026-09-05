@@ -21,15 +21,16 @@
     "1b18d27e94df9c7a5c6d",
     "1dd2a04c5bc1f1137b9e",
     "21d527edf7c4b3960e4b",
-    "220d4ca8571bb349b6a6",
     "22d9fcf7dde27608116c",
     "234b0a317f8e542035f0",
+    "23ac1f462e35c31f0927",
     "24804c825858d732a210",
     "24f1907f5bddffcd1ea8",
     "27a36af2aec59597f5f0",
     "2843739466dbd3720d43",
     "28f3670b0e5824665b2e",
     "3577d068437d665b7f06",
+    "36f20b3f52ed857416fe",
     "380008c8b31f47eb5f02",
     "3878707fad32c1fede50",
     "3996c0bee2692a696492",
@@ -42,6 +43,7 @@
     "4ba8b8d87a2a1e175dac",
     "4dd81307266bae42915e",
     "4e92bdeddfc0ea3b4568",
+    "4f503739b84f583ab7d2",
     "511727bcc6e728ca029d",
     "5422aa0ba668092c2032",
     "54260fb723f1480ca421",
@@ -66,6 +68,7 @@
     "71227e7e22cd18707149",
     "7d818439281db92ddf5b",
     "7de1b92e748e22202d65",
+    "7e872b7936abc53dbda5",
     "7fddbf6161be4f7006a6",
     "80dcd87d1cf5c958f27e",
     "81353bf46e0500344b5d",
@@ -79,6 +82,7 @@
     "8d8889d051c4dd4a4d66",
     "8e878264debc9eff7f5b",
     "8e9a613aa062779273b0",
+    "8ee06645252f35ffba0f",
     "8f6d3f3526c905f70dc7",
     "9079e829add45bc12304",
     "9d96387584b1ff4aa1dd",
@@ -118,6 +122,7 @@
     "d44e2fc9d10aed0f7ae8",
     "d55ea508e5b25eb2535f",
     "d6e183e3cd05bd068c82",
+    "da2eb19345b2472b3a7e",
     "da65e4c94a0876719ef9",
     "db81b58898fe703904c4",
     "de474b309486a50c8d85",
@@ -132,9 +137,10 @@
     "f19903e9096339a37b88",
     "f25c2adc0af2cb3d2efe",
     "f3821fb2d4ece7049fd1",
-    "ff5574e081455a8c9e3b"
+    "ff5574e081455a8c9e3b",
+    "ffed04b69efa82ed8343"
   ],
-  "content_hash": "ac176a8ba219f810011e68a2ddf25ff88c8c3600ebe0b5817fef2d52613a3746",
+  "content_hash": "99e3bba2bcae4af10efe28e335b1d632e2992bab6c61888eee87c28393cb3968",
   "dependencies": [],
   "description": "Use when designing, auditing, or simplifying Record Types and Page Layouts. Triggers: 'record type', 'page layout', 'different picklist values', 'different fields per team', 'dynamic forms', 'business process', 'recordTypeVisibilities', 'layoutAssignments', 'record type deploy failed', 'businessProcess required', 'layout assignment matrix'. NOT for layout explosion across many profiles \u2014 use admin/record-type-strategy-at-scale. NOT for sharing rules \u2014 use admin/sharing-and-visibility. NOT for FLS \u2014 use admin/permission-sets-vs-profiles.",
   "file_location": "skills/admin/record-types-and-page-layouts",
@@ -180,7 +186,7 @@
   "templates": [
     "skills/admin/record-types-and-page-layouts/templates/record-type-design-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-09-05",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

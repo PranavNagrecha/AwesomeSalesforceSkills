@@ -3154,6 +3154,9 @@
     "cache-aside": [
       "apex/platform-cache"
     ],
+    "cache-control": [
+      "lwc/static-resources-in-lwc"
+    ],
     "cache-invalidation": [
       "lwc/lwc-lds-writes"
     ],
