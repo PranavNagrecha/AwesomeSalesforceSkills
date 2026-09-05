@@ -2284,6 +2284,9 @@
     "appexchange-evaluation": [
       "admin/fit-gap-analysis-against-org"
     ],
+    "application-log": [
+      "flow/flow-error-monitoring"
+    ],
     "application-network": [
       "integration/api-led-connectivity"
     ],
@@ -10899,7 +10902,8 @@
       "flow/pause-elements-and-wait-events"
     ],
     "paused-interviews": [
-      "admin/scheduled-path-patterns"
+      "admin/scheduled-path-patterns",
+      "flow/flow-error-monitoring"
     ],
     "payer": [
       "architect/payer-vs-provider-architecture"
@@ -14983,7 +14987,8 @@
       "omnistudio/omnistudio-deployment-datapacks"
     ],
     "version-drift": [
-      "devops/api-version-management"
+      "devops/api-version-management",
+      "flow/flow-error-monitoring"
     ],
     "version-management": [
       "flow/flow-governance"
