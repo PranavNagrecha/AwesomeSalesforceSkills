@@ -49,6 +49,18 @@ Setup → Case Assignment Rules → New
 Save and activate.
 ```
 
+Step 3 in one query, if you would rather not open records one at a time. Compare the owners of yesterday's web cases against the org's `defaultCaseOwner`:
+
+```sql
+SELECT Owner.Name, COUNT(Id) cases, MIN(CaseNumber) sample_case
+FROM Case
+WHERE Origin = 'Web' AND CreatedDate = LAST_N_DAYS:1
+GROUP BY Owner.Name
+ORDER BY COUNT(Id) DESC
+```
+
+Every case sitting with the default owner is a case the assignment rule did not place — and therefore a case whose auto-response was never going to send. If that row is the whole result set, the rule is inactive or has no matching entry; if it is one row among several, only some entries are matching and the catch-all is missing.
+
 **Why it works:** Auto-response rule execution is gated on assignment rule execution. The platform uses the same event trigger — confirming an active, matching assignment rule is the prerequisite step that many configurations miss.
 
 ---

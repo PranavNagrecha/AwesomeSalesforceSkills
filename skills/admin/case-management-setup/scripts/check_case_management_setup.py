@@ -4,6 +4,16 @@
 Inspects Salesforce metadata (retrieved via sfdx/sf force:source:retrieve or
 equivalent) for common case management configuration issues.
 
+Covers, in order: case assignment rules, escalation rules, auto-response rules,
+queues, the Email-to-Case routing block, the CaseSettings org-level and webToCase
+blocks, the CaseOrigin / CasePriority / CaseStatus standard value sets, and the
+Case support processes and record types (nested <CustomObject> form and the
+DX-decomposed *.businessProcess-meta.xml / *.recordType-meta.xml form).
+
+Element names and constraints are grounded in the Metadata API Developer Guide
+(CaseSettings, WebToCaseSettings, StandardValueSet, StandardValue, BusinessProcess,
+RecordType) — see references/metadata-examples.md for the line citations.
+
 Uses stdlib only — no pip dependencies.
 
 Usage:
@@ -100,8 +110,22 @@ def check_assignment_rules(manifest_dir: Path, verbose: bool) -> list[str]:
             case_rule_files = [top]
 
     if not case_rule_files:
+        # Distinguish "the rules are broken" from "the rules were not retrieved".
+        # A manifest that carries no assignmentRules directory at all is a partial
+        # retrieve (or a package that deliberately leaves rules to a sibling
+        # deployment), not a misconfiguration this checker can assert.
+        if not any(manifest_dir.rglob("assignmentRules")):
+            notes.append(
+                "No assignmentRules directory in this manifest. Assignment-rule checks skipped. "
+                "Auto-response rules will NOT fire without an active assignment rule, so verify "
+                "one exists in the target org (see references/gotchas.md #1)."
+            )
+            if verbose:
+                for note in notes:
+                    print(f"NOTE: {note}")
+            return issues
         issues.append(
-            "No case assignment rule metadata found. "
+            "assignmentRules directory is present but contains no case assignment rule. "
             "Auto-response rules will NOT fire without an active assignment rule."
         )
         return issues
@@ -323,11 +347,9 @@ def check_email_to_case_routing(manifest_dir: Path, verbose: bool) -> list[str]:
     issues: list[str] = []
     notes: list[str] = []
 
-    # CaseSettings contains Email-to-Case configuration
-    settings_paths = list((manifest_dir / "settings").glob("Case.settings") if
-                          (manifest_dir / "settings").is_dir() else [])
-    if not settings_paths:
-        settings_paths = list(manifest_dir.rglob("Case.settings"))
+    # CaseSettings contains Email-to-Case configuration. Match both the MDAPI file
+    # name (Case.settings) and the DX source-format one (Case.settings-meta.xml).
+    settings_paths = _case_settings_files(manifest_dir)
 
     if not settings_paths:
         notes.append("Case.settings metadata not found. Cannot verify Email-to-Case configuration.")
@@ -361,6 +383,365 @@ def check_email_to_case_routing(manifest_dir: Path, verbose: bool) -> list[str]:
     return issues
 
 
+def _child(element, name):
+    """Return the named child Element, or None. Never use `a.find(x) or a.find(y)`:
+    a childless Element is falsy, so `or` silently discards real matches."""
+    if element is None:
+        return None
+    found = element.find(f"{{{SF_NS}}}{name}")
+    return found if found is not None else None
+
+
+def _is_true(element, name: str) -> bool:
+    child = _child(element, name)
+    return child is not None and (child.text or "").strip().lower() == "true"
+
+
+def _has(element, name: str) -> bool:
+    return _child(element, name) is not None
+
+
+def _case_settings_files(manifest_dir: Path) -> list[Path]:
+    """Locate Case.settings / Case.settings-meta.xml anywhere in the manifest."""
+    found = sorted(
+        set(manifest_dir.rglob("Case.settings"))
+        | set(manifest_dir.rglob("Case.settings-meta.xml"))
+    )
+    return found
+
+
+def _standard_value_set_files(manifest_dir: Path) -> dict[str, Path]:
+    """Map standard value set name -> file, for the three Case intake value sets."""
+    wanted = {"CaseOrigin", "CasePriority", "CaseStatus"}
+    result: dict[str, Path] = {}
+    for path in manifest_dir.rglob("*.standardValueSet*"):
+        if not path.is_file():
+            continue
+        name = path.name.split(".")[0]
+        if name in wanted:
+            result[name] = path
+    return result
+
+
+def _standard_values(root) -> list[tuple[str, bool, bool]]:
+    """Return (fullName, is_default, is_closed) for each <standardValue>."""
+    values = []
+    for value in root.findall(f"{{{SF_NS}}}standardValue"):
+        name = text(value, "fullName")
+        values.append((name, _is_true(value, "default"), _is_true(value, "closed")))
+    return values
+
+
+def check_case_settings(manifest_dir: Path, verbose: bool) -> list[str]:
+    """Check CaseSettings: the webToCase block and the org-level intake fields.
+
+    Grounded in Metadata API Developer Guide, CaseSettings / WebToCaseSettings.
+    """
+    issues: list[str] = []
+    notes: list[str] = []
+
+    files = _case_settings_files(manifest_dir)
+    if not files:
+        notes.append(
+            "No Case.settings file in this manifest. Web-to-Case and org-level case "
+            "settings checks skipped."
+        )
+        if verbose:
+            for note in notes:
+                print(f"NOTE: {note}")
+        return issues
+
+    for path in files:
+        root = xml_root(path)
+        if root is None:
+            issues.append(f"Could not parse Case.settings: {path}")
+            continue
+
+        web = _child(root, "webToCase")
+        origin_declared = ""
+        if web is not None and _is_true(web, "enableWebToCase"):
+            origin_declared = text(web, "caseOrigin")
+            if not origin_declared:
+                issues.append(
+                    f"{path.name}: webToCase is enabled but has no <caseOrigin>. "
+                    "Web submissions will be created with no Case Origin, so no assignment "
+                    "rule can tell them apart from any other channel."
+                )
+            if _has(web, "defaultResponseTemplate"):
+                notes.append(
+                    f"{path.name}: webToCase/defaultResponseTemplate is set. The guide scopes "
+                    "this to Self-Service portal responses, not the customer acknowledgement. "
+                    "The acknowledgement is an AutoResponseRules entry (see admin/assignment-rules)."
+                )
+
+            # Web-to-Case has no owner field of its own; the org-level fallback must exist.
+            if not text(root, "defaultCaseOwner"):
+                issues.append(
+                    f"{path.name}: webToCase is enabled but <defaultCaseOwner> is not set. "
+                    "WebToCaseSettings has no owner field, so any submission the assignment "
+                    "rule does not match falls to the org default (references/gotchas.md #8)."
+                )
+            elif text(root, "defaultCaseOwnerType").lower() == "user":
+                notes.append(
+                    f"{path.name}: defaultCaseOwnerType is User. Unrouted web cases will land "
+                    "on one person's record set and be invisible to the team. Prefer a Queue."
+                )
+
+        if _has(root, "defaultCaseOwner") and not text(root, "defaultCaseOwnerType"):
+            issues.append(
+                f"{path.name}: <defaultCaseOwner> is set without <defaultCaseOwnerType>. "
+                "The platform cannot tell whether the owner is a User or a Queue."
+            )
+
+        # useSystemUserAsDefaultCaseUser=false requires defaultCaseUser.
+        sys_user = _child(root, "useSystemUserAsDefaultCaseUser")
+        if sys_user is not None and (sys_user.text or "").strip().lower() == "false":
+            if not text(root, "defaultCaseUser"):
+                issues.append(
+                    f"{path.name}: useSystemUserAsDefaultCaseUser is false but "
+                    "<defaultCaseUser> is empty. The guide requires a value in that case; "
+                    "without it, automated case changes have no attributable user in Case History."
+                )
+
+        # Suggested Articles and Suggested Solutions are mutually exclusive.
+        if _is_true(root, "enableSuggestedArticlesApplication") and _is_true(
+            root, "enableSuggestedSolutions"
+        ):
+            issues.append(
+                f"{path.name}: enableSuggestedArticlesApplication and enableSuggestedSolutions "
+                "are both true. The guide states each is only valid while the other is false."
+            )
+
+        # Origin declared on the web form must exist in the deployed CaseOrigin value set.
+        if origin_declared:
+            svs = _standard_value_set_files(manifest_dir)
+            origin_file = svs.get("CaseOrigin")
+            if origin_file is not None:
+                origin_root = xml_root(origin_file)
+                if origin_root is not None:
+                    names = [v[0] for v in _standard_values(origin_root)]
+                    if origin_declared not in names:
+                        issues.append(
+                            f"{path.name}: webToCase/caseOrigin is '{origin_declared}' but that "
+                            f"value is not in {origin_file.name} ({', '.join(names) or 'no values'}). "
+                            "Deploy the value set first (references/metadata-examples.md section 1)."
+                        )
+            else:
+                notes.append(
+                    f"{path.name}: webToCase/caseOrigin is '{origin_declared}'; no "
+                    "CaseOrigin standardValueSet in this manifest to verify it against."
+                )
+
+    if verbose:
+        for note in notes:
+            print(f"NOTE: {note}")
+
+    return issues
+
+
+def check_standard_value_sets(manifest_dir: Path, verbose: bool) -> list[str]:
+    """Check the CaseOrigin / CasePriority / CaseStatus standard value sets."""
+    issues: list[str] = []
+    notes: list[str] = []
+
+    svs = _standard_value_set_files(manifest_dir)
+    if not svs:
+        notes.append(
+            "No CaseOrigin / CasePriority / CaseStatus standardValueSet files in this manifest. "
+            "Value-set checks skipped."
+        )
+        if verbose:
+            for note in notes:
+                print(f"NOTE: {note}")
+        return issues
+
+    for name, path in sorted(svs.items()):
+        root = xml_root(path)
+        if root is None:
+            issues.append(f"Could not parse standard value set: {path}")
+            continue
+
+        values = _standard_values(root)
+        if not values:
+            issues.append(
+                f"{path.name}: no <standardValue> elements. The guide states a StandardValueSet "
+                "deploy fails unless the array contains at least one picklist value."
+            )
+            continue
+
+        defaults = [v[0] for v in values if v[1]]
+        if len(defaults) > 1:
+            issues.append(
+                f"{path.name}: {len(defaults)} values are marked default ({', '.join(defaults)}). "
+                "A picklist has one default."
+            )
+        elif not defaults:
+            notes.append(
+                f"{path.name}: no value carries <default>true</default>. CustomValue.default is "
+                "documented as required and defaulting to true, so state it explicitly on each value."
+            )
+
+        if not _has(root, "sorted"):
+            notes.append(
+                f"{path.name}: <sorted> is absent. The guide marks it Required; omitting it "
+                "leaves the display order of the status ladder to the org's current setting."
+            )
+
+        if name == "CaseStatus":
+            flagged_closed = [v[0] for v in values if v[2]]
+            named_closed = [v[0] for v in values if "closed" in v[0].lower()]
+            if not flagged_closed and not named_closed:
+                issues.append(
+                    f"{path.name}: no value is marked closed and none is named like a closed "
+                    "state. Case.IsClosed is driven entirely by Status, so every case in this "
+                    "org would count as open forever (references/gotchas.md #10)."
+                )
+            elif not flagged_closed:
+                notes.append(
+                    f"{path.name}: closed states are inferred from names ({', '.join(named_closed)}) "
+                    "because no value carries <closed>true</closed>. Confirm with the CaseStatus "
+                    "SOQL query in references/metadata-examples.md section 6 — the placement of "
+                    "the closed flag in a modern retrieve is marked UNVERIFIED there."
+                )
+
+    if verbose:
+        for note in notes:
+            print(f"NOTE: {note}")
+
+    return issues
+
+
+def check_case_processes_and_record_types(manifest_dir: Path, verbose: bool) -> list[str]:
+    """Check Case support processes and record types, nested or DX-decomposed."""
+    issues: list[str] = []
+    notes: list[str] = []
+
+    # Collect the closed-status vocabulary, if the value set travelled with the package.
+    closed_names: set[str] = set()
+    all_status_names: set[str] = set()
+    status_file = _standard_value_set_files(manifest_dir).get("CaseStatus")
+    if status_file is not None:
+        status_root = xml_root(status_file)
+        if status_root is not None:
+            for value_name, _default, is_closed in _standard_values(status_root):
+                all_status_names.add(value_name)
+                if is_closed or "closed" in value_name.lower():
+                    closed_names.add(value_name)
+
+    # Nested <CustomObject> form (the shape the Metadata API guide documents) plus
+    # the DX-decomposed files, so either project format is checked.
+    processes: list[tuple[str, str, list[str]]] = []   # (source, name, values)
+    record_types: list[tuple[str, str, str]] = []      # (source, name, businessProcess)
+
+    object_files = [
+        p for p in manifest_dir.rglob("Case.object*")
+        if p.is_file() and p.suffix in (".xml", ".object")
+    ]
+    for path in object_files:
+        root = xml_root(path)
+        if root is None:
+            issues.append(f"Could not parse Case object file: {path}")
+            continue
+        for bp in root.findall(f"{{{SF_NS}}}businessProcesses"):
+            processes.append(
+                (
+                    path.name,
+                    text(bp, "fullName"),
+                    [text(v, "fullName") for v in bp.findall(f"{{{SF_NS}}}values")],
+                )
+            )
+        for rt in root.findall(f"{{{SF_NS}}}recordTypes"):
+            record_types.append((path.name, text(rt, "fullName"), text(rt, "businessProcess")))
+
+    for path in manifest_dir.rglob("*.businessProcess-meta.xml"):
+        root = xml_root(path)
+        if root is None:
+            continue
+        processes.append(
+            (
+                path.name,
+                text(root, "fullName") or path.name.split(".")[0],
+                [text(v, "fullName") for v in root.findall(f"{{{SF_NS}}}values")],
+            )
+        )
+    for path in manifest_dir.rglob("*.recordType-meta.xml"):
+        if "Case" not in str(path):
+            continue
+        root = xml_root(path)
+        if root is None:
+            continue
+        record_types.append(
+            (path.name, text(root, "fullName") or path.name.split(".")[0], text(root, "businessProcess"))
+        )
+
+    if not processes and not record_types:
+        notes.append(
+            "No Case business processes or record types in this manifest. "
+            "Support-process checks skipped."
+        )
+        if verbose:
+            for note in notes:
+                print(f"NOTE: {note}")
+        return issues
+
+    process_names = {name for _src, name, _values in processes}
+
+    for source, name, values in processes:
+        if not values:
+            issues.append(
+                f"{source}: business process '{name}' has no <values>. A support process is a "
+                "subset of the CaseStatus value set; an empty one exposes no status at all."
+            )
+            continue
+        if all_status_names:
+            unknown = [v for v in values if v and v not in all_status_names]
+            if unknown:
+                issues.append(
+                    f"{source}: business process '{name}' references Status values that are not "
+                    f"in the deployed CaseStatus value set: {', '.join(unknown)}. "
+                    "Deploy the value set first (references/metadata-examples.md section 1)."
+                )
+        if closed_names:
+            if not any(v in closed_names for v in values):
+                issues.append(
+                    f"{source}: business process '{name}' exposes no closed status "
+                    f"(closed values available: {', '.join(sorted(closed_names))}). "
+                    "Agents on a record type using it cannot close a case, and it stays open "
+                    "in every report forever (references/gotchas.md #10)."
+                )
+        elif not any("closed" in (v or "").lower() for v in values):
+            notes.append(
+                f"{source}: business process '{name}' has no value that looks like a closed "
+                "status, and no CaseStatus value set in this manifest to check against."
+            )
+
+    for source, name, business_process in record_types:
+        if not business_process:
+            issues.append(
+                f"{source}: Case record type '{name}' has no <businessProcess>. The Metadata API "
+                "guide makes it required for case record types; the deploy will fail."
+            )
+        elif process_names and business_process not in process_names:
+            issues.append(
+                f"{source}: Case record type '{name}' names business process "
+                f"'{business_process}', which is not defined in this manifest "
+                f"({', '.join(sorted(process_names)) or 'none'}). Note the guide's naming rule: "
+                "inside a CustomObject the value is the bare process name, never object-qualified."
+            )
+        if "." in business_process:
+            issues.append(
+                f"{source}: Case record type '{name}' uses the object-qualified form "
+                f"'{business_process}' for <businessProcess>. Inside a CustomObject definition "
+                "the enclosing object supplies the entity context — use the bare process name."
+            )
+
+    if verbose:
+        for note in notes:
+            print(f"NOTE: {note}")
+
+    return issues
+
+
 # ---------------------------------------------------------------------------
 # Main entrypoint
 # ---------------------------------------------------------------------------
@@ -379,6 +760,9 @@ def check_case_management_setup(manifest_dir: Path, verbose: bool = False) -> li
     issues.extend(check_auto_response_rules(manifest_dir, verbose))
     issues.extend(check_queues(manifest_dir, verbose))
     issues.extend(check_email_to_case_routing(manifest_dir, verbose))
+    issues.extend(check_case_settings(manifest_dir, verbose))
+    issues.extend(check_standard_value_sets(manifest_dir, verbose))
+    issues.extend(check_case_processes_and_record_types(manifest_dir, verbose))
 
     return issues
 
