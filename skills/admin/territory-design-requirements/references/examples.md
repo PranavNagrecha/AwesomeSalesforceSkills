@@ -28,12 +28,33 @@ Assignment rule criteria (examples — leaf level):
 
 Catch-all: "Unassigned US" territory at National level for accounts with blank BillingState
 
-User-to-territory ratio: 40 users / 36 leaf territories = 1.1:1
-  Action: merge lowest-density state clusters to reach ~3:1;
-          target 13-14 leaf territories with 2-3 reps each
+Coverage ratios (metric defined so it can be recomputed):
+  territories / users        = 36 / 40 = 0.9   (most reps own exactly one territory)
+  accounts per leaf          = 40 - 2,100      (the number that actually decides)
+  Action: the ratio is not the finding. Merge the six leaf territories under
+          200 accounts into their neighbours, and split the two above 1,500.
+          Re-check accounts-per-leaf, not the headcount ratio.
 ```
 
-**Why it works:** The three-level hierarchy enables regional rollups in territory forecasting. Merging low-density states into clusters corrects the sub-1:1 ratio. The catch-all territory ensures no accounts fall outside coverage and go missing from forecasts.
+**Why it works:** The three-level hierarchy enables regional rollups in territory forecasting. Sizing on accounts per leaf territory, rather than on a headcount ratio, is what corrects both the starved and the overloaded nodes. The catch-all territory ensures no accounts fall outside coverage and go missing from forecasts.
+
+Before sign-off, run the density numbers the design is claiming rather than accepting them:
+
+```sql
+-- Accounts that WOULD land in each proposed leaf territory, per the draft criteria.
+-- Run this in the current org against the criteria fields, before any territory exists.
+SELECT BillingState, COUNT(Id) accounts
+FROM   Account
+WHERE  BillingState != null
+GROUP BY BillingState
+ORDER BY COUNT(Id) DESC
+
+-- And the accounts no proposed leaf rule would match, which size the catch-all.
+SELECT COUNT(Id)
+FROM   Account
+WHERE  BillingState = null
+OR     BillingCountry = null
+```
 
 ---
 
@@ -50,9 +71,9 @@ Document the hybrid design requirements:
 ```
 Coverage model: Hybrid (Geographic Primary + Named Account Overlay)
 
-Territory types:
+Territory types (priority is a unique integer; the HIGHEST wins OTA):
   - "Geographic" (priority: 10) — primary coverage
-  - "Named Account" (priority: 5) — overlay; lower integer = higher priority for OTA
+  - "Named Account" (priority: 20) — overlay; higher integer wins OTA
 
 Geographic hierarchy: unchanged (Country -> Region -> Rep Territory)
 
@@ -67,17 +88,22 @@ Access behavior:
   - Both reps appear as territory members on the account — no account ownership change
 
 Opportunity territory assignment:
-  - Named Account type priority (5) overrides Geographic type priority (10)
+  - Named Account type priority (20) beats Geographic type priority (10)
+    ("the account-assigned territory whose territory type priority is highest
+      is then assigned to the opportunity" - Territory2Type > priority)
   - Named account opps roll into enterprise rep territory forecast, not geo forecast
+  - Constraint this design must hold: no account may sit on TWO Named Account
+    territories, because two territories of the same type assign NO territory
+    to the opportunity at all
 
-User-to-territory ratio:
-  - Geographic: 25 users / 25 geo rep territories = 1:1 at leaf level
+Coverage ratios:
+  - Geographic: 25 territories / 25 users = 1.0 territories per user at leaf level
     Recommendation: confirm each geo territory has sufficient account volume;
     consolidate if any territory has fewer than 20 accounts
-  - Named account: 5 users / 5 named account territories = 1:1 (acceptable for overlay)
+  - Named account: 5 territories / 5 users = 1.0 (acceptable for an overlay layer)
 ```
 
-**Why it works:** Territory membership is additive — both reps gain access without changing account ownership. The priority value on territory types ensures OTA correctly routes named account opportunities to the enterprise rep's forecast. Manual assignment for the named account list is preferred because the list changes quarterly, making rule-based matching expensive to maintain.
+**Why it works:** Territory membership is additive — both reps gain access without changing account ownership, and the two assignment paths stay distinguishable afterwards because a manual assignment lands as `ObjectTerritory2Association.AssociationCause = Territory2Manual` while a rule-driven one lands as `Territory2AssignmentRule`. The higher priority integer on the Named Account type routes named-account opportunities to the enterprise rep's forecast. Manual assignment for the named account list is preferred because the list changes quarterly, making rule-based matching expensive to maintain.
 
 ---
 

@@ -1,32 +1,57 @@
-# Uat Test Case Design — Work Template
+# UAT Test Case Design — Engagement Worksheet
 
-Use this template when working on tasks in this area.
+Fill this in before authoring cases. It is the record of the answers to
+`SKILL.md` § Questions to Ask Before Configuring, plus the decomposition that
+produces the case set. Keep it beside the case file; the checker does not read
+it, but a reviewer does.
 
-## Scope
+## 1. Scope
 
 **Skill:** `uat-test-case-design`
 
-**Request summary:** (fill in what the user asked for)
+| Field | Value |
+|---|---|
+| Release / build | |
+| Requirements in scope (`REQ-` ids) | |
+| Criteria file (path) | |
+| Programme file (`admin/uat-and-acceptance-criteria` plan) | |
+| RTM (path) | |
 
-## Context Gathered
+## 2. Answers to the Questions to Ask
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+| Ask | Answer | Consequence for the case set |
+|---|---|---|
+| For each expected result, what does the tester actually look at? | | Evidence type and automation verdict per case |
+| Which grant carries the feature, and is its recalculation finished? | | The `PermissionSetGroup.Status` gate in the run context |
+| For every deny case: what is the persona set up **without**? | | The named absence in `permission_setup` |
+| Is a scoping or restriction rule active on the object? | | Whether an empty list view counts as a deny |
+| Which UI does each persona use — Lightning desktop, mobile, Classic? | | The form factor in `precondition` |
+| Which paths reach the behaviour — UI, Data Loader, Bulk, REST? | | One case per path, and which half of validation each proves |
+| Who owns the refresh calendar; is a refresh booked inside the window? | | Whether the evidence survives the cycle |
+| Who decides `Fail` versus `Blocked`? | | Named triager on the run sheet |
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+## 3. Run context
 
-## Approach
+Copy the filled block from `references/worked-examples.md` § 2 and edit it. Record the
+sandbox, refresh date, build deploy date, deliverability, personas and the permission gate.
 
-TODO: Which pattern from SKILL.md applies? Why?
+## 4. Decomposition
 
-## Checklist
+One row per criterion. A criterion producing more than one case says why in the last column.
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
+| `ac_id` | `req_id` | Personas it applies to | Cases produced | Why more than one |
+|---|---|---|---|---|
 
-- [ ] TODO
-- [ ] TODO
+## 5. Coverage check before authoring steps
 
-## Notes
+- [ ] Every criterion in scope has ≥ 1 case
+- [ ] Every requirement has ≥ 1 negative case
+- [ ] Every load path named in § 2 has its own case
+- [ ] No persona is an administrator, and none is generic
+- [ ] Every case has an evidence type and an automation verdict pencilled in
 
-TODO: Record any deviations from the standard pattern and why.
+## 6. Deviations
+
+Record any place this set departs from `SKILL.md` § Recommended Workflow, and why. A criterion
+you chose not to script goes here with the reason and the person who accepted the gap — an
+undocumented omission reads as an oversight a year later.

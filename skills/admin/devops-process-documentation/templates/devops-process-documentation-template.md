@@ -12,6 +12,13 @@ Select one:
 - [ ] Deployment Runbook — single deployment event execution checklist
 - [ ] Environment Matrix — sandbox topology reference
 - [ ] Deployment Guide — standing process reference
+- [ ] Change-Request State Machine — who approves what, and the emergency path (Section D)
+- [ ] Deploy Contract — the deployOptions this release used (Section E)
+
+> The machine-checkable version of all five is a single `devops-process.yaml`. Its filled-in shape is
+> `references/worked-examples.md` section 1; lint it with
+> `python3 scripts/check_devops_process_documentation.py --file devops-process.yaml --manifest-dir manifest/`.
+> Use this Markdown template when the audience will not read YAML.
 
 **Request summary:** (fill in what the user asked for)
 
@@ -206,6 +213,95 @@ Maximum acceptable rollback time: [N minutes]
 | DevOps lead | | |
 | Integration owner | | |
 | Org owner | | |
+
+
+---
+
+## SECTION D: Change-Request State Machine
+
+_Use to define who approves what. One row per state. A state with no approver role is an
+accountability gap, not a shortcut._
+
+**Record:** [`Change_Request__c` custom object / Jira / ServiceNow — name it]
+**Record id used as the join key:** [e.g. `CR-{0000}` autonumber, quoted in the git branch, the deploy description, the RTM row and the UAT test case]
+
+| State | Approver role | Exit criteria | SLA |
+|---|---|---|---|
+| Draft | [requesting admin] | [what must be filled in] | [none] |
+| Triaged | [release manager] | [risk set, conflicts identified] | [N working days] |
+| Built | [admin] | [exists in dev sandbox, committed to a branch named after the CR] | [ ] |
+| Validated | [admin] | [validate-only run against the target succeeded; deploy id recorded] | [ ] |
+| UAT-Signed-Off | [business owner] | [named owner executed the acceptance criteria] | [ ] |
+| Approved | [release manager] | [rollback path owned, manual steps listed, window booked] | [ ] |
+| Deployed | [release manager] | [post-deploy checks pass; deploy id and timestamp recorded] | [ ] |
+| Rolled-Back | [release manager] | [rollback executed, smoke tests re-run, incident raised] | [ ] |
+| Rejected | [release manager] | [reason recorded; branch deleted or parked with an expiry] | [ ] |
+
+### Emergency path
+
+| Field | Value |
+|---|---|
+| Approver role | [org owner — the role that authorises skipping the ladder] |
+| Reachability | [phone / Slack handle, recorded here, not in a wiki] |
+| Trigger | [e.g. P1 in production with no feature-flag or configuration workaround] |
+| What it skips | [Triaged, Built, UAT-Signed-Off] |
+| What it never skips | [the validate-only run — minutes on an Apex-free package, and the only cheap way to learn the package does not compile in the target] |
+| Retro requirement | [normal-path CR within N days; change replayed forward into every lower environment so the ladder stops diverging] |
+
+---
+
+## SECTION E: Deploy Contract
+
+_Record the deployOptions this release actually used. One column per run. Choosing the values is
+`admin/change-management-and-deployment`; recording and verifying them is this document._
+
+| Option | Validation run | Sandbox rehearsal | Production run |
+|---|---|---|---|
+| `checkOnly` | true | false | false |
+| `testLevel` | [NoTestRun / RunSpecifiedTests / RunRelevantTests / RunLocalTests / RunAllTestsInOrg] | [same] | [same] |
+| `runTests` | [only when testLevel is RunSpecifiedTests] | [ ] | [ ] |
+| `rollbackOnError` | [true] | [true] | **true** (required for production) |
+| `ignoreWarnings` | [false] | [false] | [false] |
+| `purgeOnDelete` | [false] | [true — sandbox only] | **false** (inert in production) |
+| `singlePackage` | [true] | [true] | [true] |
+| Target org | [ ] | [ ] | [ ] |
+| Deploy id | [record after the run] | [ ] | [ ] |
+| Status read from the `status` field | [Succeeded / SucceededPartial / Failed] | [ ] | [ ] |
+
+### Deploy order
+
+_Only needed when the release is split across more than one submission. Submit each package only
+after the previous one reports `Succeeded` — the queue is not first-in-first-out._
+
+| # | Label | Metadata types | Manifest | Dependency reason |
+|---|---|---|---|---|
+| 1 | [schema and access] | [ ] | [manifest/package-01.xml] | [ ] |
+| 2 | [presentation and routing] | [ ] | [ ] | [ ] |
+| 3 | [automation and integration] | [ ] | [ ] | [ ] |
+| 4 | [retirement] | [ ] | [destructiveChangesPost.xml] | [why post rather than pre] |
+
+---
+
+## SECTION F: RACI
+
+_Roles, not names. Names live on the change-request record._
+
+| Activity | Admin | Developer | Release manager | Data owner |
+|---|---|---|---|---|
+| Raise a change request | | | | |
+| Set risk and identify conflicting CRs | | | | |
+| Write the deploy order for the release | | | | |
+| Run the validate-only pass | | | | |
+| Approve the production window | | | | |
+| Execute the deploy | | | | |
+| Re-enter credentials post-deploy | | | | |
+| Approve a production data export or masking exception | | | | |
+| Approve a sandbox refresh (destroys in-flight UAT) | | | | |
+| Call the rollback | | | | |
+| Approve an emergency fix | | | | |
+
+The last four rows are the ones usually missing. A refresh destroys other people's work and a data
+export is a compliance decision; both need an accountable party before anyone needs one.
 
 ---
 

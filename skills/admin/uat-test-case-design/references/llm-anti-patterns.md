@@ -153,7 +153,7 @@ steps:
 
 **Detection hint:** If the generated artifact contains `@isTest`, `Test.startTest()`,
 `System.assert(...)`, or `Database.insert(...)`, it is an Apex test, not a UAT
-case. Route to `agents/test-generator/AGENT.md` instead.
+case. Route to `agents/test-class-generator/AGENT.md` instead.
 
 ---
 

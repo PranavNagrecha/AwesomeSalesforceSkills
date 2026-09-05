@@ -5,6 +5,11 @@ record-state UI flow, bulk import via Data Loader, and Lightning record page ren
 Each set includes a happy-path case and a paired negative-path case so the story is
 fully covered.
 
+For the full artefact — thirteen cases against one real build, with a per-step expected
+result, an evidence type and an automation verdict on every case, plus the run sheet and
+the defect-triage table — read `references/worked-examples.md` instead. These three are
+the short form.
+
 ---
 
 ## Example 1: Opportunity Stage Update — Happy Path + Permission Deny
@@ -101,7 +106,7 @@ precondition: "Tester is logged into UAT-Full sandbox as marketing-ops-loader@ua
 data_setup:
   - "Source CSV 'leads-clean-50.csv' with 50 unique Lead rows (FirstName, LastName, Email, Company)"
 permission_setup:
-  - "Assign Marketing_Ops_Loader_PSG which grants API Enabled, Bulk API Hard Delete, and Lead CRUD"
+  - "Assign Marketing_Ops_Loader_PSG which grants the API Enabled user permission plus Lead create/read/edit"
   - "DO NOT assign System Administrator profile to the tester"
 steps:
   - "Open Data Loader, choose 'Insert', select Object = Lead"
@@ -136,7 +141,7 @@ steps:
   - "Select source file leads-with-3-dups.csv"
   - "Run the insert with batch size 200"
   - "Open success.csv and error.csv"
-expected_result: "7 rows in success.csv, 3 rows in error.csv each with the message 'DUPLICATES_DETECTED — A duplicate Lead exists with the same email'"
+expected_result: "7 rows in the success CSV, 3 rows in the error CSV, each carrying the status code DUPLICATES_DETECTED"
 actual_result: ""
 pass_fail: "Not Run"
 evidence_url: ""
@@ -146,6 +151,20 @@ executed_at: ""
 
 **Why it works:** The persona is the human running Data Loader, with their loader
 PSG. The negative case proves the rule fires under bulk, not just UI.
+
+**Assert the status code, not the alert text.** `DUPLICATES_DETECTED` is the platform
+status code, and the message the API returns with it is `Use one of these records?`
+(`api_rest.txt` L22757, L6932). The sentence the *business* sees is the duplicate rule's
+own alert text, which is org-configured — so an expected result quoting a friendly
+sentence is asserting a config value the case never seeded. Assert the code, then assert
+the alert text separately only if the story contracted its wording.
+
+Data Loader gives you both files to attach, which is why this case's evidence is the
+files themselves and not a screenshot of a count: "Data Loader generates two CSV output
+files… One file name begins with `success`, and the other starts with `error`", where the
+success file carries "a column with the newly generated record IDs" and the error file
+"contains the rejected records, with a column that describes why the load failed"
+(`salesforce_data_loader.txt` L1135–1137, L1153–1155).
 
 ---
 
@@ -208,7 +227,7 @@ steps:
   - "Open the Service app, navigate to Service Visits"
   - "Search for SV-100 in the list view"
   - "Attempt to open SV-100 directly via URL"
-expected_result: "SV-100 does not appear in the list view; direct URL navigation returns 'Insufficient privileges' error per Private OWD"
+expected_result: "SV-100 appears in no list view available to the tester; opening the record id directly is refused; UserRecordAccess reports HasReadAccess = false and MaxAccessLevel = None"
 actual_result: ""
 pass_fail: "Not Run"
 evidence_url: ""
@@ -218,6 +237,25 @@ executed_at: ""
 
 **Why it works:** Two Field Tech users, same PSG, different ownership — proves
 the page renders for the right persona AND that sharing isolates peers.
+
+The deny is asserted three ways on purpose, because an empty list view alone is not a
+deny — a scoping rule "controls the default records that your users see **without**
+restricting access" (`api_meta.txt` L106019–106020). The direct-id step is what separates
+the two. And the SOQL is the durable half of the evidence, since a screenshot of an
+access-denied page does not record *why* access was denied:
+
+```sql
+SELECT RecordId, HasReadAccess, HasEditAccess, MaxAccessLevel
+FROM   UserRecordAccess
+WHERE  UserId   = '005xx000001Sv7BAAS'   -- field-tech-2
+AND    RecordId = 'a0Bxx0000004CSlEAM'   -- SV-100
+```
+
+Read it with the caveat attached: `UserRecordAccess` "doesn't consider whether a user's
+access is blocked due to a restriction rule" (`object_reference.txt` L303130–303131,
+L303228–303230), so on an object that has one, this query can report access the tester
+does not have. Confirm no restriction rule is active on the object before treating the
+row as the oracle.
 
 ---
 

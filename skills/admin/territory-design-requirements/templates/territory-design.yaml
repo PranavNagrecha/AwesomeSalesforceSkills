@@ -1,0 +1,124 @@
+# Territory design — the machine-lintable half of the requirements package.
+#
+# Lint with:
+#   python3 scripts/check_territory_design_requirements.py --file territory-design.yaml
+#
+# A filled example is in references/worked-examples.md section 8.
+# The prose companion (open decisions, sign-off, ratio narrative) is
+# templates/territory-design-requirements-template.md.
+#
+# Vocabulary notes, all from the Metadata API Developer Guide unless stated:
+#   territory_types[].priority  Required int. The HIGHEST integer wins opportunity territory
+#                               assignment, values must be unique per type, and two territories of
+#                               the SAME type on one account assign no territory at all.
+#   territories[].parent        The parent's developer name. "Do not use the fully qualified name."
+#   access.account              Read | Edit | All      (there is no None for accounts)
+#   access.opportunity/case/contact
+#                               None | Read | Edit     (omit the key to inherit the
+#                                                       Territory2Settings default)
+#   rules[].items[].operation   equals | notEqual | lessThan | greaterThan | lessOrEqual |
+#                               greaterOrEqual | contains | notContain | startsWith | includes |
+#                               excludes | within        (within is DISTANCE criteria only)
+#   rules[]                     At most 10 items per rule. Item order is positional. A
+#                               boolean_filter must start at 1 and be contiguous.
+#   rules[].inherited           ruleAssociations.inherited: true flows the rule to descendant
+#                               territories; false keeps it local to this one.
+
+model: FY__ALIGNMENT_NAME
+edition: Enterprise            # Enterprise | Performance | Unlimited
+owd:                           # today's org-wide defaults; they constrain the access values below
+  account: Private             # Private | PublicReadOnly | PublicReadWrite
+  opportunity: Private
+  contact: ControlledByParent
+  case: Private
+
+territory_types:
+  - name: TYPE_NAME            # e.g. Geo
+    priority: 20               # unique integer; highest wins OTA
+  - name: TYPE_NAME_2          # e.g. NamedAccount
+    priority: 40
+
+territories:
+  # --- the root -------------------------------------------------------------
+  - name: ROOT_TERRITORY
+    type: TYPE_NAME
+    root: true
+    manual_assignment: true
+    manual_assignment_owner: "WHO maintains this container territory"
+    access:
+      account: Read
+      opportunity: Read
+      case: None
+    forecast_reader: "WHO reads the forecast at this node"
+
+  # --- a rollup node with no coverage of its own ---------------------------
+  - name: ROLLUP_TERRITORY
+    type: TYPE_NAME
+    parent: ROOT_TERRITORY
+    manual_assignment: true
+    manual_assignment_owner: "WHO — rollup node, coverage sits at the leaves"
+    access:
+      account: Read
+      opportunity: Read
+      case: Read
+    forecast_reader: "WHO"
+
+  # --- a rule-assigned leaf -------------------------------------------------
+  - name: LEAF_TERRITORY
+    type: TYPE_NAME
+    parent: ROLLUP_TERRITORY
+    access:
+      account: Edit
+      opportunity: Edit
+      case: Read
+    forecast_reader: "WHO"
+    rules:
+      - name: LEAF_RULE
+        inherited: false       # true = flows to descendant territories
+        boolean_filter: "1 AND 2"
+        items:
+          - field: Account.FIELD_API_NAME
+            operation: equals
+            value: VALUE
+          - field: Account.SECOND_FIELD__c
+            operation: includes
+            value: "A;B;C"     # one item, not one item per value
+
+  # --- a manually assigned leaf (named accounts, strategic books) ----------
+  - name: MANUAL_TERRITORY
+    type: TYPE_NAME_2
+    parent: ROOT_TERRITORY
+    manual_assignment: true
+    manual_assignment_owner: "WHO maintains the list, and how often it is reviewed"
+    access:
+      account: Edit
+      opportunity: Edit
+    forecast_reader: "WHO"
+
+  # --- the catch-all --------------------------------------------------------
+  - name: UNASSIGNED
+    type: TYPE_NAME
+    parent: ROOT_TERRITORY
+    access:
+      account: Read
+      opportunity: None
+      case: None
+    forecast_reader: "Sales Ops"
+    rules:
+      - name: UNASSIGNED_RULE
+        inherited: false
+        boolean_filter: "1 OR 2"
+        items:
+          - field: Account.SEGMENT_FIELD__c
+            operation: equals
+            value: ""
+          - field: Account.BillingCountry
+            operation: equals
+            value: ""
+
+realignment:
+  cadence: annual              # how often the alignment is re-cut
+  cutover_date: "YYYY-MM-DD"   # the date the new model goes Active
+  states: "Planning -> Active; outgoing model archived only after the first forecast closes"
+  rule_runner: "WHO holds Manage Territories and starts the rule run"
+  rollback: "outgoing model left un-archived until <condition> — archiving is one-way"

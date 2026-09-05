@@ -75,7 +75,8 @@ Layout of a build directory:
 ├── workbook/                 # configuration workbook sections (doc keeper)
 ├── artefacts/<step-id>/      # what each step produced (metadata XML, Apex, Flow, JSON)
 ├── tests/<step-id>/          # tester outputs (checker stdout, results.json)
-├── envelopes/<step-id>/      # each agent run's JSON envelope
+├── envelopes/<step-id>/      # each agent run's JSON envelope (validate with scripts/validate_envelope.py)
+├── inputs/<stage-or-step>/   # JSON handed to build_plan.py set-* --file (not envelopes)
 └── reports/                  # milestone verification reports (written, not rendered)
 ```
 

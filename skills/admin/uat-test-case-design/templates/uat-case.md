@@ -1,8 +1,100 @@
 # UAT Test Case Template
 
-Three formats: markdown skeleton (humans), JSON envelope (machines / RTM ingest), and CSV import schema (bulk authoring in a spreadsheet).
+Four formats: a YAML record (the shape `scripts/check_uat_case.py` reads natively and the one
+`references/worked-examples.md` uses), a markdown skeleton (humans), a JSON envelope
+(machines / RTM ingest), and a CSV import schema (bulk authoring in a spreadsheet).
 
-All three encode the same canonical schema enforced by `scripts/check_uat_case.py`.
+All four encode the same canonical schema. Two fields carry most of the weight and are worth
+copying carefully: **every step has its own `expected`**, and every case declares an
+`automation_candidate` of `apex`, `flow-test` or `none` with the reason. The checker fails a
+step with no expected result and an automation verdict outside that enum.
+
+---
+
+## Format 0 — YAML Record (preferred)
+
+```yaml
+project: "<release name>"
+sandbox: "<sandbox name>"
+test_cases:
+  - case_id: TC-XXX-001            # unique; TC- or UAT- prefix, letters/digits/hyphens
+    ac_id: AC-001.1                # must resolve to a criterion in the criteria file
+    req_id: REQ-001
+    story_id: US-XX-01
+    programme_case_id: UAT-XX-001  # the RTM's test_id, when the programme minted one
+    persona: "<persona id> — <profile> + <grant>"   # never an administrator, never generic
+    sandbox: "<sandbox name>"
+    negative_path: false           # >= 1 true per requirement
+    permission_setup:
+      - "Assign <grant>"
+      - "PermissionSetGroup <name> Status = Updated before login"
+      - "DO NOT assign System Administrator to the tester"
+    data_setup:
+      - "<record or import to seed, in order>"
+    precondition: "<sandbox, build date, form factor, login state>"
+    steps:
+      - step: "<what the tester does — a Setup destination, a record action, a query>"
+        expected: "<what they observe: a field value, a row, a message, a file line>"
+      - step: "<...>"
+        expected: "<...>"
+    evidence:
+      - type: screenshot           # screenshot | soql | email-log | loader-csv | history-row
+        of: "<what the artefact shows>"
+    pass_rule: "<which steps must all hold; name the near-miss that is still a fail>"
+    automation_candidate: none     # apex | flow-test | none
+    automation_rationale: "<the platform fact behind the verdict>"
+    actual_result: ""
+    pass_fail: "Not Run"           # Pass | Fail | Blocked | Not Run
+
+  # The skeleton is a PAIR, not a single case: the checker fails a requirement
+  # with no negative case, so copy this one too rather than deleting it.
+  - case_id: TC-XXX-002
+    ac_id: AC-001.3
+    req_id: REQ-001
+    story_id: US-XX-01
+    persona: "<persona id> — <profile> + <grant>"
+    sandbox: "<sandbox name>"
+    negative_path: true
+    permission_setup:
+      - "Assign <grant>"
+      - "DO NOT assign <the grant being withheld> — the absence is the test condition"
+      - "Confirm neither viewAllRecords nor modifyAllRecords is set on the object for that grant"
+    data_setup:
+      - "<the record the persona must not reach>"
+    precondition: "<sandbox, build date, form factor, login state>"
+    steps:
+      - step: "<attempt the action through the path the persona uses>"
+        expected: "<the specific refusal — a message, an empty result, a false flag>"
+      - step: "<attempt it through the path that bypasses the list view, e.g. the record id>"
+        expected: "<still refused>"
+    evidence:
+      - type: screenshot
+        of: "<the refusal>"
+      - type: soql
+        of: "<the query that records why it was refused>"
+    pass_rule: "<both refusal steps; the list-view step alone is not a deny>"
+    automation_candidate: apex
+    automation_rationale: "<the platform fact behind the verdict>"
+    actual_result: ""
+    pass_fail: "Not Run"
+run_sheet:
+  - run_id: R-001
+    case_id: TC-XXX-001
+    tester: "<username>"
+    executed_on: "<YYYY-MM-DD>"
+    result: "Not Run"
+    evidence_ref: ""
+    defect_id: ""                  # never on a Blocked row
+    notes: ""
+```
+
+Lint it before anyone runs it:
+
+```bash
+python3 scripts/check_uat_case.py --file uat-cases.yaml
+python3 scripts/check_uat_case.py --manifest-dir ./uat/           # cross-checks ac_ids and run-sheet rows
+python3 scripts/check_uat_case.py --manifest-dir ./uat/ --rtm-gate
+```
 
 ---
 
@@ -101,8 +193,12 @@ Suitable for ingestion into the RTM tool, the test management platform, or an LL
 | `precondition` | string | yes | non-empty |
 | `data_setup` | array of strings | yes | non-empty |
 | `permission_setup` | array of strings | yes | non-empty |
-| `steps` | array of strings | yes | length ≥ 2 |
-| `expected_result` | string | yes | verbatim from AC's then-clause |
+| `steps` | array | yes | each entry `{step, expected}`; every step needs its own expected result |
+| `evidence` | array | yes | what closes the case: screenshot / soql / email-log / loader-csv / history-row |
+| `pass_rule` | string | yes | which steps must all hold; no "looks correct" |
+| `automation_candidate` | enum | yes | `apex`, `flow-test` or `none` |
+| `automation_rationale` | string | when not `none` | the platform fact behind the verdict |
+| `expected_result` | string | optional | case-level summary; the per-step `expected` values are the contract |
 | `actual_result` | string | filled at run | |
 | `pass_fail` | enum | filled at run | one of `Pass`, `Fail`, `Blocked`, `Not Run` |
 | `evidence_url` | string | required at run if pass_fail in {Pass, Fail} | |
@@ -142,4 +238,6 @@ A cell is closed when:
 2. ≥1 case for the parent story has `pass_fail: Pass` AND `negative_path: true`.
 
 Both conditions are enforced by `scripts/check_uat_case.py` when run in
-`--rtm-gate` mode.
+`--rtm-gate` mode, which reads the **latest** run-sheet row per case — so a re-run
+after a fix is a new row and the failing row stays as the evidence the defect was
+raised against.

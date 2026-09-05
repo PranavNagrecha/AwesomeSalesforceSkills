@@ -15,6 +15,14 @@ triggers:
   - "UAT script schema with story id and AC id traceability"
   - "what permissions should a UAT tester have before running the script"
   - "how do I capture pass fail evidence from a UAT run"
+  - "turn acceptance criteria into executable manual test cases salesforce"
+  - "write UAT steps with an expected result for every step"
+  - "which UAT cases can I replace with an apex test or a flow test"
+  - "UAT tester has the permission set but the case still fails"
+  - "how do I prove a salesforce record is denied to a persona in UAT"
+  - "what evidence closes a UAT case screenshot soql or email log"
+  - "UAT run sheet template with tester date result and defect id"
+  - "my UAT case passed but the validation error showed at the top of the page"
 tags:
   - uat
   - test-case
@@ -33,10 +41,12 @@ outputs:
   - "Data-setup checklist the tester runs before the script"
   - "Permission-setup checklist (PSG to assign, profile NOT to test as)"
   - "RTM-ready evidence row linking the case back to story_id + ac_id"
+  - "UAT run sheet — one row per attempt (tester, date, result, evidence ref, defect id)"
+  - "Automation verdict per case (apex / flow-test / none) with the reason it is not manual forever"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-05
 ---
 
 # UAT Test Case Design
@@ -54,6 +64,24 @@ Gather this context before writing a single case:
 - **What sandbox is the build deployed in?** Cases must reference the sandbox by name. A case that ran in a developer sandbox with no production-like data is not the same evidence as a case run in a Full sandbox.
 - **What data state is required?** A case that fails because a parent Account did not exist is a setup failure, not a feature failure. Data setup must be explicit before the steps begin.
 - **Is there a negative path?** Every story needs at least one UAT case that proves the feature blocks the wrong action — invalid input, wrong persona, missing required field. Happy-path-only UAT lets P1 security and validation defects through.
+
+---
+
+## Questions to Ask Before Configuring
+
+Put these to the BA, the QA lead and the release manager before writing a step. Each one closes a gotcha in `references/gotchas.md`; an LLM that skips them produces a script that reads well and proves nothing.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "For each expected result, what would the tester actually look at — a screen, a query, a mailbox, a file?" | The oracle decides the evidence type and the automation verdict; a `then` clause with no observable is not testable | An `evidence` entry per case and an `automation_candidate` of `apex`, `flow-test` or `none` |
+| "Which permission set or group carries the feature, and is its recalculation finished?" | `PermissionSetGroup.Status` is a real picklist — `Outdated` or `Updating` means the tester does not yet have what the script assumes | A pre-run gate query instead of a false-fail logged as a build defect (gotcha 9) |
+| "For every deny case: what is the persona set up **without**, and is anything else in the org already blocking it?" | A permission set can grant but never deny, and a scoping rule empties a list view without removing access — so the deny needs a named absence and a ruled-out alternative | A deny that is attributable to the sharing model rather than to a coincidence (gotchas 10, 12) |
+| "Which UI does the persona actually use — Lightning desktop, the mobile app, or Classic?" | `formFactor` is what selects the override the persona sees, and the three values are different pages | A `precondition` that names the form factor, and steps that are runnable by the person assigned them (gotcha 3) |
+| "Is the expected result reachable through the path the persona uses, or only through the one the admin used?" | UI-created records and API-loaded records go through different halves of the save order; layout-level rules run for one and not the other | A separate case per load path instead of one case that quietly proves the easier half (gotcha 11) |
+| "Who owns the sandbox refresh calendar, and is a refresh scheduled inside this UAT window?" | A refresh over live work destroys the build and the evidence; scheduled jobs copied with it fire on their own schedule | A booked window, and a `CronTrigger` review before the first tester logs in (gotcha 13) |
+| "When a case fails, who decides `Fail` versus `Blocked`?" | `Blocked` is an environment result and must not raise a defect against the build; conflating them corrupts the defect data | A named triager and a run sheet whose rows are re-runnable rather than overwritten (gotcha 14) |
+
+What a proper configuration adds over just writing the steps: every step carries its own expected result so a failure names the step that broke, every pass carries evidence that survives the next sandbox refresh, every deny is attributable to a named mechanism, and each case records whether it should stay manual — so the script set shrinks over releases instead of growing.
 
 ---
 
@@ -180,8 +208,10 @@ Without a negative-path case, the UAT run only proves the feature works when use
 | Data setup requires >5 related records | Reference `templates/apex/tests/TestDataFactory.cls` from anonymous Apex | Manual seeding for >5 records is error-prone and slow |
 | Tester proposes running as System Admin "to save time" | Refuse and require the persona's PSG | A Sys Admin run proves nothing about persona behavior |
 | Same AC scenario, two personas, different expected results | Two cases — one per persona | Single case cannot record divergent outcomes |
-| Feature is automated time-based (scheduled flow) | Document the time advancement step in `data_setup`; do not silently wait | Sandboxes do not advance scheduled jobs by waiting |
-| Feature is in beta — UI element labels may shift | Cite the element by `data-id` or developer name where possible, not visible label | Beta UI churn invalidates cases otherwise |
+| Feature is automated time-based (scheduled job or scheduled flow) | Book the elapsed window in the UAT calendar and read `CronTrigger.NextFireTime` / `PreviousFireTime` as the precondition and the evidence | The tester cannot fast-forward the clock; the job's own schedule is the only observable, and it is queryable |
+| Feature is in beta — UI element labels may shift | Cite the element by developer name where possible, not visible label | Beta UI churn invalidates cases otherwise |
+| Every step ends in "verify the screen looks right" | Rewrite each step's expected result as something readable — a field value, a query row, a file row, a message | A step with no observable cannot fail, so it cannot pass either |
+| A case's only proof is a screenshot | Pair it with the query or file that produced the state | Screenshots do not survive a sandbox refresh as evidence of *why* the state was correct |
 
 ---
 
@@ -189,13 +219,13 @@ Without a negative-path case, the UAT run only proves the feature works when use
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. **Intake the story + AC + persona.** Confirm the AC block is in Given/When/Then form (per `admin/acceptance-criteria-given-when-then`) and the persona has a named profile + PSG. Reject if not.
-2. **Decompose AC scenarios into UAT cases.** Each scenario → ≥1 case. Split per persona and per boundary where outcomes diverge. Mark at least one case `negative_path: true`.
-3. **Define data setup per case.** List records/imports in order. For >5 records, cite `templates/apex/tests/TestDataFactory.cls`. Sandbox only.
-4. **Define permission setup per persona.** Name the PSG to assign. Never "Sys Admin." Include a "do not assign" note for negative deny-cases.
-5. **Write step-by-step + expected.** Click-level steps (≥2). Expected_result copied verbatim from the AC's `then` clause. Use developer names for UI elements when possible.
-6. **Execute + capture pass/fail evidence.** Tester runs, records `actual_result`, sets `pass_fail` from the enum {Pass, Fail, Blocked, Not Run}, attaches `evidence_url` (screenshot or recording link).
-7. **Link results back to RTM.** Write the `case_id` + `pass_fail` + `evidence_url` into the RTM row keyed by `story_id` + `ac_id`. The RTM cell is closed when at least one case per AC scenario passes and at least one negative-path case per story passes.
+1. **Intake the criteria, the personas and the environment.** Confirm the AC block is in Given/When/Then form (per `admin/acceptance-criteria-given-when-then`) and that each persona resolves to a named profile plus a named grant. Take the sandbox, refresh date and persona roster from the programme file rather than re-deciding them — `admin/uat-and-acceptance-criteria` owns those. Answer `## Questions to Ask Before Configuring` and record the answers in `templates/uat-test-case-design-template.md`.
+2. **Decompose criteria into cases.** Each AC scenario → ≥1 case; split per persona and per boundary where the expected result diverges; keep every `ac_id` and `req_id` on the row. Work from the shape in `references/worked-examples.md` § 3, which does this for thirteen criteria.
+3. **Write the steps with a per-step expected result.** Copy the skeleton from `templates/uat-case.md`. Every numbered step gets its own observable outcome — a field value, a query row, a file row, a message. A step whose expected result is "the page looks right" goes back to step 1's question about oracles.
+4. **Pin setup: data, permission, form factor.** Enumerate `data_setup` in order (for >5 related records, cite `templates/apex/tests/TestDataFactory.cls`). Name the grant in `permission_setup` and gate the run on `PermissionSetGroup.Status = 'Updated'`. State the form factor in `precondition`. For deny cases, name what the persona is set up **without**.
+5. **Assign evidence and an automation verdict per case.** Each case declares what closes it (screenshot / SOQL / email log / loader CSV / history row) and one of `apex`, `flow-test`, `none` with the reason — see `references/worked-examples.md` § 8 for the platform fact behind each verdict.
+6. **Lint the set before anyone runs it.** `python3 scripts/check_uat_case.py --manifest-dir ./uat/` — it fails on a step with no expected result, an `ac_id` that resolves to no criterion in the folder, a duplicate or malformed id, an ambiguous expected result, an automation verdict outside the enum, and a run-sheet row pointing at a case that does not exist.
+7. **Execute, then close the RTM cell.** Testers add run-sheet rows (never edit an old one), set `result` from {Pass, Fail, Blocked, Not Run} and attach evidence. Re-run the gate with `--rtm-gate`, then write `case_id` + result + evidence into the RTM row keyed by `req_id` + `ac_id` per `admin/requirements-traceability-matrix` § 3.
 
 ---
 
@@ -213,6 +243,11 @@ Run through these before declaring the case set ready for execution:
 - [ ] No case lists "System Administrator" as persona
 - [ ] Sandbox name is captured at the script-set level
 - [ ] `pass_fail` values use the enum {Pass, Fail, Blocked, Not Run} only
+- [ ] Every numbered step has its own expected result — none reads "verify it looks correct"
+- [ ] Every case declares its evidence type and an `automation_candidate` of `apex`, `flow-test` or `none`
+- [ ] Every deny case names what the persona is set up **without**, and rules out a scoping or restriction rule as the cause
+- [ ] The precondition names the form factor the persona uses
+- [ ] `python3 scripts/check_uat_case.py --manifest-dir <folder>` exits 0
 
 ---
 
@@ -222,9 +257,9 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Page-layout assignment is profile + record type, not PSG.** Adding a permission set to a tester does NOT change which page layout they see. Permission setup that ignores the page layout matrix produces cases that pass for the wrong reason. Confirm the tester's profile + record type combination is mapped to the right layout in Setup before the run.
 
-2. **Bulk API runs do not fire all UI validation.** A UAT case that proves a validation rule fires in the UI does NOT prove it fires under a Data Loader bulk insert. If the feature includes a Data Loader path, write a separate case that runs the loader.
+2. **An API load skips the layout half of validation, not the custom rules.** Custom validation rules run for every request source at step 5 of the save order, so a Data Loader insert fires them too. What only runs "for requests from a standard UI edit page" is the step-2 set: compliance with layout-specific rules and required values at the layout level. A UI case therefore proves both halves; a loader case proves one. Write the loader case anyway — it is the half where a layout-required field silently loads blank.
 
-3. **Permission set group recalculation is asynchronous.** After assigning a PSG, the tester may need to log out and back in, and the entitlements may take a moment to propagate. A case that runs immediately after assignment can fail for setup reasons. Build a "wait + reauth" step into the precondition.
+3. **Permission set group recalculation has a queryable status, not a waiting period.** `PermissionSetGroup.Status` reads `Updated`, `Outdated`, `Updating` or `Failed`. A case that runs while the group is `Outdated` fails for setup reasons. Gate the run on the status query rather than on a guessed delay.
 
 ---
 
@@ -237,18 +272,39 @@ Non-obvious platform behaviors that cause real production problems:
 | Data setup checklist | Ordered list of records and imports the tester runs before steps; cites `TestDataFactory` if Apex factory is faster |
 | Permission setup checklist | PSG(s) to assign, plus an explicit "do not test as System Administrator" note |
 | RTM evidence row | `case_id` + `pass_fail` + `evidence_url` keyed by `story_id` + `ac_id`, closing the RTM cell |
+| UAT run sheet | One row per attempt — `run_id`, `case_id`, tester, date, result, evidence ref, defect id. A re-run is a new row, never an edit |
+| Defect-triage table | Script-level columns on top of the programme's taxonomy: which case found it, which `ac_id` it violates, and the run that re-proved it |
+| Automation verdict per case | `apex` / `flow-test` / `none` with the platform fact behind it, so the manual set shrinks over releases |
 
 ---
 
 ## Official Sources Used
 
-See `references/well-architected.md` for the official Salesforce sources backing the permission, sandbox, and metadata claims in this skill.
+See `references/well-architected.md` § Official Sources Used for the guides and repo standards backing the permission, save-order, sandbox, and metadata claims in this package. Per-claim line citations sit beside the claims themselves in `references/worked-examples.md` and `references/gotchas.md`.
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/worked-examples.md` | You need the whole artefact filled in — thirteen cases for the Acme case-intake build, the YAML the checker lints, the markdown table, the run sheet, the defect-triage table, and the automation verdict per case |
+| `references/gotchas.md` | A case passed or failed for a reason that is not the feature — permissions that had not recalculated, a deny that came from the wrong mechanism, a load path that skipped half the validation |
+| `references/examples.md` | You want three shorter case sets in other shapes — record-state UI flow, Data Loader run, Lightning record page — before committing to the full worked example |
+| `references/llm-anti-patterns.md` | You are reviewing generated cases, or generating them, and want the seven failure modes to self-check against |
+| `references/well-architected.md` | You are justifying the manual-case budget against Apex coverage, or need the sources behind the platform claims in this package |
+| `templates/uat-case.md` | You are writing cases now — markdown, JSON and CSV skeletons of the canonical schema |
+| `templates/uat-test-case-design-template.md` | You are starting an engagement and need somewhere to record the Questions-to-Ask answers and the decomposition |
+| `scripts/check_uat_case.py` | Before any tester runs the set, and again before the RTM handover (`--manifest-dir`, `--rtm-gate`) |
 
 ---
 
 ## Related Skills
 
-- `admin/uat-and-acceptance-criteria` — high-level UAT plan, defect classification, regression strategy, sign-off. Activates around this skill, not under it.
+- `admin/uat-and-acceptance-criteria` — high-level UAT plan, environment rationale, persona roster, defect classification, regression strategy, sign-off. Activates around this skill, not under it.
 - `admin/acceptance-criteria-given-when-then` — the technique that produces the AC block this skill consumes. Always run that skill first.
+- `admin/requirements-traceability-matrix` — the matrix this skill's results close, and the owner of the `REQ-` / `test_id` id spaces.
+- `admin/sandbox-strategy` — sandbox type, capacity and refresh floor; a case cites the sandbox but does not choose it.
+- `devops/sandbox-data-isolation-gotchas` — deliverability, `.invalid` email scrubbing and CronTrigger carry-over, all of which decide whether a case is runnable at all.
 - `templates/apex/tests/TestDataFactory.cls` — canonical factory referenced from `data_setup` when manual seeding is too slow.
-- `agents/test-generator/AGENT.md` — generates Apex test methods. Distinct from this skill — these are human UI scripts.
+- `agents/test-class-generator/AGENT.md` — generates Apex test methods. Distinct from this skill — these are human UI scripts; this skill only records which cases should become Apex tests.

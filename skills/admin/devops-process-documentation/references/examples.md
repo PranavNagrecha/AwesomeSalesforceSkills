@@ -72,3 +72,33 @@ Below the table, the team adds explicit rules:
 **What goes wrong:** During the deployment window, the person executing the deployment cannot navigate the document to find the specific steps for the current phase. They either improvise (creating execution risk) or spend 10–15 minutes scanning the document for the relevant section (creating timeline pressure). Post-deploy issues are harder to reconstruct because actions are not numbered or timestamped. Named Credential steps are buried in a prose description rather than a numbered checklist.
 
 **Correct approach:** Separate the release plan (scope, timeline, approvals, stakeholder comms — authored by the project or release manager, typically a week before the window) from the deployment runbook (numbered execution steps — authored by the deploying admin, reviewed 24 hours before the window). The runbook references the release plan by name or link but does not repeat its content.
+
+**The split, as an artefact.** The two documents share exactly one field — the change-request number —
+and nothing else. Written down, the boundary stops being a matter of taste:
+
+```yaml
+# release-plan.md  (release manager, ~1 week before the window, prose is fine)
+release_plan:
+  release: CI-2026.10
+  change_requests: [CR-0141, CR-0142, CR-0147]      # <-- the only shared key
+  scope_narrative: "Case intake moves off the shared mailbox."
+  stakeholders: ["Support ops", "ERP integration team", "Finance (shipment refs)"]
+  timeline: {uat_open: "2026-10-06", go_live: "2026-10-17"}
+  comms_plan: "Support-wide email 2026-10-14; standup demo 2026-10-16."
+  risk_register: [{id: R-3, risk: "ERP sandbox endpoint differs from prod", owner: "integration-lead"}]
+
+# devops-process.yaml -> runbook  (deploying admin, reviewed 24h before, no prose)
+runbook:
+  release: CI-2026.10                                # <-- joins on the same release / CR ids
+  steps:
+    - {id: RB-05, phase: validate, action: validate-only, owner: admin,
+       duration_minutes: 25, pass_criteria: "status == Succeeded; deploy ids on CR-0141/0142/0147"}
+    - {id: RB-07, phase: deploy, action: deploy, owner: admin,
+       duration_minutes: 20, pass_criteria: "four deploys Succeeded, in deploy_order sequence"}
+```
+
+Anything with a `stakeholders`, `scope_narrative`, `timeline` or `risk_register` key belongs in the
+left-hand file. Anything with an `owner`, a `duration_minutes` and a `pass_criteria` belongs in the
+right-hand one. `scripts/check_devops_process_documentation.py` enforces the right-hand shape:
+a step with no owner or no pass criterion is an ERROR, because those are the two fields that make a
+line executable during a window rather than readable a week before it.

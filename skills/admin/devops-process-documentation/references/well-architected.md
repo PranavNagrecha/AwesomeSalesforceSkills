@@ -4,15 +4,19 @@
 
 ### Operational Excellence — Primary Pillar
 
-The Well-Architected Automated pillar (architect.salesforce.com/well-architected/easy/automated) treats process documentation as a first-class Operational Excellence requirement. Specifically, teams should maintain an environment matrix and deployment guides as living documents, not one-time artifacts. The automated pillar's guidance on repeatable delivery requires that every deployment event can be reconstructed from written records — which is the purpose of a deployment runbook. Without documentation, delivery relies on tribal knowledge that does not survive team rotation or incident review.
+Process documentation is where Operational Excellence stops being a slogan: every deployment event should be reconstructible from written records, which is what a runbook with numbered steps, owners, pass criteria and recorded deploy ids gives you. UNVERIFIED (2026-09-05): the framing above is attributed in this package to the Well-Architected Automated pillar at architect.salesforce.com/well-architected/easy/automated; that page cannot be fetched from this environment and is not among the extracted PDFs, so treat the attribution as unconfirmed and the argument as this skill's own.
+
+What *is* grounded is why the reconstruction matters mechanically. A deployment reports one of a documented set of statuses including `SucceededPartial` (api_meta.txt L3338–3352); a partial landing is a normal outcome, not an anomaly, and the only durable record of which components made it is the deploy id plus the manifest the runbook recorded. Without both, the post-incident question "what state is production in" has no cheap answer.
 
 ### Reliability — Supporting Pillar
 
-The Well-Architected Resilient pillar (architect.salesforce.com/well-architected/adaptable/resilient) requires that teams document recovery procedures before a deployment, not after an incident. A runbook's rollback decision gate — who owns the call, what the procedure is, and how long it takes — is a reliability artifact. An org that deploys without a documented rollback path is non-resilient by Well-Architected definition, regardless of deployment method.
+Recovery procedures belong in writing before the deployment, not after the incident. A rollback decision gate — threshold, named owner, ordered procedure, time estimate — is the reliability artefact. UNVERIFIED (2026-09-05): as above, the attribution to the Resilient pillar at architect.salesforce.com/well-architected/adaptable/resilient is unconfirmed from this environment.
+
+Three grounded facts shape what a rollback path can actually say. `rollbackOnError` decides whether a failure unwinds or leaves a partial landing, defaults to `false`, and must be `true` for production (api_meta.txt L3126–3130). `purgeOnDelete` does not work in production orgs (api_meta.txt L3119–3123), so deleted components normally remain recoverable from the Recycle Bin — except roll-up summary fields, which are purged regardless (api_meta.txt L4638–4640). And in API version 65.0 and later a deployment in `Finalizing Deploy` cannot be cancelled (api_meta.txt L4124–4127), so "cancel it" is not always available as the first move. A rollback section that does not distinguish these is a sentence, not a plan.
 
 ### Security — Applicable
 
-Named Credential and External Credential re-entry steps in a runbook carry a security dimension: secret values must be sourced from an approved secrets management system (password manager, secrets vault), not from email, chat, or plain-text documents. The runbook must specify the secret source but must not contain the secret value itself. This is an operational security control.
+Credential re-entry steps carry a security dimension, and the platform pushes teams toward the right answer whether they notice or not. Because a defined consumer secret is exported as a placeholder rather than an encrypted value (api_meta.txt L24855–24856), the secret cannot ride the pipeline unless someone deliberately puts the plaintext into the XML — which since November 2022 is the supported form (api_meta.txt L25120–25122) and which commits a secret to source control. The runbook's job is to name the *source* (a vault entry, a named handoff) and never the value, and to carry a verification callout with an expected status code so "I entered it" and "it works" are different pass criteria.
 
 ## Architectural Tradeoffs
 
@@ -30,7 +34,14 @@ Named Credential and External Credential re-entry steps in a runbook carry a sec
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Automated — https://architect.salesforce.com/well-architected/easy/automated
-- Salesforce Well-Architected Resilient — https://architect.salesforce.com/well-architected/adaptable/resilient
-- Salesforce DevOps Center Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.salesforce_vcs_developer_guide.meta/salesforce_vcs_developer_guide/devops_center_dev_overview.htm
-- Metadata API Developer Guide (NamedCredential) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_named_cred.htm
+- **Metadata API Developer Guide**, deployOptions Parameters — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (api_meta.txt L3088–3168) — the deploy contract the runbook records: `checkOnly`, `testLevel` and its five-value enumeration, `runTests`, `rollbackOnError` and its production requirement, `ignoreWarnings`, `purgeOnDelete`, `singlePackage`.
+- **Metadata API Developer Guide**, Deleting Components in a Deployment / Adding and Deleting Components in a Single Deployment (api_meta.txt L4610–4682) — `destructiveChanges.xml`, the companion `package.xml` with no components, `destructiveChangesPre.xml` / `destructiveChangesPost.xml` ordering, and the roll-up-summary purge exception that shapes the rollback path.
+- **Metadata API Developer Guide**, Deployment Status, Cancel a Deployment, and deploy status enumeration (api_meta.txt L3338–3352, L4117–4127) — `SucceededPartial` as a documented outcome; one deployment at a time; the queue is not FIFO; `Finalizing Deploy` cannot be cancelled from API 65.0.
+- **Metadata API Developer Guide**, deployRecentValidation() (api_meta.txt L4855–4875) — the ten-day, target-specific quick-deploy window that the release calendar's validate-only date has to sit inside.
+- **Metadata API Developer Guide**, Running Tests in a Deployment / Run the Same Tests in Sandbox and Production Deployments (api_meta.txt L2656–2679) — no tests by default in non-production; production runs tests by default only when the package contains Apex; `RunLocalTests` is enforced regardless of package contents. This is why the rehearsal and the production run each record a test level.
+- **Metadata API Developer Guide**, Maintaining User References (api_meta.txt L2705–2718) and Flow / FlowDefinition metadata types (api_meta.txt L68416–68423, L73921–73931) — the two post-deploy verification steps the runbook cannot skip: user references halt a deployment outright, and a `FlowDefinition` overrides a `Flow`'s `status`.
+- **Metadata API Developer Guide**, AuthProvider `consumerSecret` field and Declarative Metadata Sample Definition (api_meta.txt L24839–24857, L25120–25122) — the placeholder-on-export rule and the plaintext-since-November-2022 rule that together define the credential manual step.
+- **Metadata API Developer Guide**, deploy/retrieve size limits (api_meta.txt L2038–2045, L3654–3669) — 10,000 files and approximately 39 MB compressed, the pre-deploy gate item nobody checks until a release fails on it.
+- **Repo standard — `agents/_shared/AGENT_CONTRACT.md`**, Mandatory Reads and Citations sections — why the process document lists its consumers by agent path, so a run-time agent citing this artefact resolves to something real.
+- **Sibling skill — `skills/admin/sandbox-strategy/SKILL.md`** § "Type Capacities and Refresh Windows" — the tier capacities and platform refresh intervals this skill deliberately does not restate in the environment ladder.
+- **Sibling skill — `skills/admin/change-management-and-deployment/SKILL.md`** § "Questions to Ask Before Configuring" — the deploy-option *choice* this skill records rather than makes.

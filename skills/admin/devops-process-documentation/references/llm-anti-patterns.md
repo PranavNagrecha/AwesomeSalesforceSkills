@@ -135,3 +135,47 @@ Environment-SPECIFIC (must be re-authored for production):
 ```
 
 **Detection hint:** Search the adapted runbook for staging-specific values (sandbox org name, staging API URLs, sandbox-user email addresses). Any staging reference that survives into the production runbook is a carry-over error.
+
+---
+
+## Anti-Pattern 6: Inventing a `testLevel` Value
+
+**What the LLM generates:** A deploy contract or CI job that sets `testLevel: RunTests`, `AllTests`, `RunAllTests`, `LocalTests`, or `Default` — plausible-sounding strings that the Metadata API does not accept.
+
+**Why it happens:** The documented enumeration is five specific CamelCase strings, and the model interpolates from adjacent vocabularies (`sf apex run test`, Jenkins, generic CI). The values look right in a YAML file and only fail at submission.
+
+**Correct pattern:**
+
+```yaml
+# The complete documented TestLevel enumeration (api_meta.txt L3140-3168).
+# Anything not on this list is invented.
+testLevel: NoTestRun          # non-production only; the default there
+# testLevel: RunSpecifiedTests  # requires a non-empty runTests list; 75% coverage PER class/trigger
+# testLevel: RunRelevantTests   # beta; Salesforce picks tests from the payload and its dependencies
+# testLevel: RunLocalTests      # all org tests except managed/unlocked package tests; production default when the package has Apex
+# testLevel: RunAllTestsInOrg   # everything, including managed package tests
+runTests: []                    # only meaningful with RunSpecifiedTests
+```
+
+**Detection hint:** Run `scripts/check_devops_process_documentation.py --file <doc>`. It rejects any `testLevel` outside the five, and flags `RunSpecifiedTests` with an empty `runTests`.
+
+---
+
+## Anti-Pattern 7: Writing the Deploy Order as a Parallel Fan-Out
+
+**What the LLM generates:** A pipeline stage or runbook step that submits every manifest at once — "deploy the four packages" — often with a matrix strategy in the CI config, because parallelising independent steps is a correct instinct almost everywhere else.
+
+**Why it happens:** The model treats manifests as independent build artefacts. It has no reason to know that a Salesforce org runs one deployment at a time and that the pending queue is not first-in-first-out, so a fan-out produces a nondeterministic order rather than a fast one.
+
+**Correct pattern:**
+
+```yaml
+# Each step's pass criterion is the PREVIOUS deployment's status, not its submission.
+deploy_order:
+  - {step: 1, label: "Schema and access",          gate: "step 0 n/a"}
+  - {step: 2, label: "Presentation and routing",   gate: "step 1 status == Succeeded"}
+  - {step: 3, label: "Automation and integration", gate: "step 2 status == Succeeded"}
+  - {step: 4, label: "Retirement (destructivePost)", gate: "step 3 status == Succeeded"}
+```
+
+**Detection hint:** Search the generated pipeline for a matrix, a `&`, a `Promise.all`, or a `parallel` block over deploy jobs against the same org. Any of them means the order is a hope. Also check whether the generated runbook records a deploy id per step — if it does not, there is nothing to gate the next step on.
