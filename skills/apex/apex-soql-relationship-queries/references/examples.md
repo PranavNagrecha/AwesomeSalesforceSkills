@@ -146,25 +146,86 @@ for (Contact c : contacts) {
 
 ---
 
-## Anti-Pattern: Casting Child Rows Without getSObjects()
+## Example 4: The 200-Child Boundary — Same Query, Two Loop Shapes
 
-**What practitioners do:**
+**Context:** A nightly job summarises Contacts per Account. It works in every sandbox and throws in
+production on a handful of large Accounts.
+
+**Problem:** The query is identical in both versions below. What differs is the *loop*: a SOQL for
+loop chunks results through `queryMore` to save heap, and inside that construct a child set of 200 or
+more cannot be assigned or sized. The Apex guide states it and shows both forms
+(`apexdev L10078–10098`).
+
+**Solution — the failing shape, then the fix:**
 
 ```apex
-// WRONG — attempting a direct cast of a relationship result
-List<Contact> contacts = (List<Contact>) acc.Contacts;
+// WRONG — throws System.QueryException: Aggregate query has too many rows for
+// direct assignment, use FOR loop, on any Account with 200+ Contacts.
+for (Account acct : [SELECT Id, Name, (SELECT Id, Email FROM Contacts) FROM Account]) {
+    List<Contact> contactList = acct.Contacts;   // apexdev L10087: "Causes an error"
+    Integer count = acct.Contacts.size();        // apexdev L10088: "Causes an error"
+    summary.put(acct.Id, count);
+}
+
+// RIGHT — iterate the children instead of materialising or sizing the set.
+for (Account acct : [SELECT Id, Name, (SELECT Id, Email FROM Contacts) FROM Account]) {
+    Integer count = 0;
+    for (Contact c : acct.Contacts) {            // apexdev L10095-L10098
+        if (String.isNotBlank(c.Email)) { count++; }
+    }
+    summary.put(acct.Id, count);
+}
+
+// ALSO RIGHT, and cheaper when only the count is wanted — no child rows on the heap at all.
+for (AggregateResult ar : [
+    SELECT AccountId aid, COUNT(Id) c FROM Contact WHERE Email != null GROUP BY AccountId
+]) {
+    summary.put((Id) ar.get('aid'), (Integer) ar.get('c'));
+}
 ```
 
-**What goes wrong:** The relationship result is not a `List<Contact>`. Salesforce returns an `SObject[]` accessor, not a typed list. This cast throws a `System.TypeException` at runtime.
+**Why it works:** The nested `for` never holds the whole child set at once, which is exactly the
+condition the exception exists to enforce. The aggregate variant sidesteps the relationship entirely —
+see `apex/apex-aggregate-queries`. One more trap in the same guide section: `JSON.serialize()` on
+`acct` inside a SOQL for loop will not carry the complete child set, because the loop keeps "only a
+subset of the record data in memory" (`apexdev L10108–10110`), so a serialised payload built this way
+is quietly incomplete rather than wrong-looking.
 
-**Correct approach:**
+---
+
+## Anti-Pattern: Assuming Only One Child Accessor Exists
+
+**What practitioners do:** commit to one accessor everywhere, in either direction.
 
 ```apex
-// CORRECT — use getSObjects() and cast each row individually
+// Version A — getSObjects() on a query that already returned a concrete type.
+// Works, but trades compile-time safety for a string literal and a cast per row.
 List<SObject> rows = acc.getSObjects('Contacts');
-if (rows != null) {
-    for (SObject row : rows) {
-        Contact c = (Contact) row;
-    }
+
+// Version B — typed access on a Database.query() result. Does not compile.
+SObject parent = Database.query(dynamicSoql)[0];
+for (Contact c : parent.Contacts) { }   // 'Contacts' is not a member of SObject
+```
+
+**What goes wrong:** Version A survives review and then breaks on a relationship rename, because the
+compiler never saw the name. Version B fails at compile time, which is the harmless failure — but the
+developer who hits it often "fixes" it by abandoning dynamic SOQL rather than by reaching for
+`getSObjects()`.
+
+**Correct approach:** pick by what the query returns, not by habit.
+
+```apex
+// Concrete type -> typed access (the guide's own pattern, apexdev L20254)
+for (Account acc : accounts) {
+    if (acc.Contacts == null || acc.Contacts.isEmpty()) { continue; }
+    for (Contact c : acc.Contacts) { /* ... */ }
+}
+
+// Generic SObject -> getSObjects(), "primarily used with dynamic DML"
+// (apexrefguide L233176-L233178), guarded as the guide guards it (apexdev L11719-L11721)
+for (SObject parent : Database.query(dynamicSoql)) {
+    SObject[] children = parent.getSObjects(relationshipName);
+    if (children == null) { continue; }
+    for (SObject child : children) { /* ... */ }
 }
 ```

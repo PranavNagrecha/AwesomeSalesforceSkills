@@ -3,29 +3,52 @@
 Common mistakes AI coding assistants make when generating or advising on SOQL relationship queries.
 These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Direct Cast of Child Relationship Result Without getSObjects()
+## Anti-Pattern 1: Reaching for `getSObjects()` on a Query That Already Returned a Concrete Type
 
 **What the LLM generates:**
 
 ```apex
-List<Contact> contacts = (List<Contact>) acc.Contacts;
-// or
-for (Contact c : acc.Contacts) { ... }
+List<Account> accounts = [SELECT Id, (SELECT Id, LastName FROM Contacts) FROM Account];
+for (Account acc : accounts) {
+    List<SObject> rows = acc.getSObjects('Contacts');   // unnecessary here
+    if (rows == null) continue;
+    for (SObject row : rows) {
+        Contact c = (Contact) row;                       // cast per iteration
+    }
+}
 ```
 
-**Why it happens:** LLMs trained on general Java/OOP patterns expect a typed collection property access. The SOQL relationship result looks syntactically like a list field, reinforcing this pattern. Some older Salesforce blog posts also show this incorrectly.
+**Why it happens:** A large amount of secondary Salesforce writing — and earlier editions of this very
+skill — states that a relationship result "is not a typed list" and that `getSObjects()` is mandatory.
+The Apex Developer Guide contradicts that: its own recommended bulkification trigger iterates
+`inv.Line_Items__r` as `List<Line_Item__c>` (`apexdev L20254`), and elsewhere it assigns
+`List<IssueComments__x> comments = issue.IssueComments__r;` (`apexdev L29894`) and calls `.size()` on
+the same relationship (`apexdev L29908`). `getSObjects()` is documented as "primarily used with
+dynamic DML" (`apexrefguide L233176–233178`). The model reproduces the widespread claim rather than
+the guide.
 
 **Correct pattern:**
 
 ```apex
-List<SObject> rows = acc.getSObjects('Contacts');
-if (rows == null) continue;
-for (SObject row : rows) {
-    Contact c = (Contact) row;
+// Typed query -> typed access. No stringly-typed relationship name, no per-row cast.
+for (Account acc : accounts) {
+    if (acc.Contacts == null || acc.Contacts.isEmpty()) { continue; }
+    for (Contact c : acc.Contacts) { /* ... */ }
+}
+
+// Dynamic query -> getSObjects(), which is what it is for.
+for (SObject parent : Database.query(dynamicSoql)) {
+    SObject[] children = parent.getSObjects(relName);
+    if (children == null) { continue; }          // apexdev L11719-L11721
+    for (SObject child : children) { /* ... */ }
 }
 ```
 
-**Detection hint:** Look for `(List<Contact>)` cast applied directly to a relationship field expression, or a `for (Contact c : acc.Contacts)` loop without a `getSObjects()` call.
+**Detection hint:** a `getSObjects('...')` call whose receiver is declared as a concrete sObject type
+(`Account acc`, `Invoice_Statement__c inv`) rather than `SObject`. The string literal is the giveaway:
+if the type is known at compile time, so is the relationship, and the string buys nothing but a
+runtime failure mode. The inverse defect — typed access on a `Database.query()` result — will not
+compile, so it does not survive to review.
 
 ---
 
@@ -83,7 +106,7 @@ return Database.getQueryLocator([
 ]);
 ```
 
-**Why it happens:** LLMs learn that subqueries work in SOQL and do not distinguish execution contexts (interactive Apex, REST API, Bulk API). The Bulk API limitation is not prominently surfaced in most training data.
+**Why it happens:** LLMs learn that subqueries work in SOQL and do not distinguish execution contexts (interactive Apex, REST API, Bulk API). The Bulk API limitation is not prominently surfaced in most training data. The Batch-Apex half of this is worse, because it does not fail at all: a QueryLocator carrying a relationship subquery is accepted and "the batch job uses a slower, non-chunking, implementation" (`apexdev L17798–17800`), with the guide naming `SELECT Id, (SELECT id FROM Contacts) FROM Account` as the triggering shape (`apexdev L17801`). There is no error for the model — or a reviewer — to learn from.
 
 **Correct pattern:**
 
@@ -99,7 +122,7 @@ List<Contact> contacts = [SELECT Id, AccountId FROM Contact WHERE AccountId IN :
 
 ---
 
-## Anti-Pattern 5: Missing null Guard on getSObjects() Result
+## Anti-Pattern 5: Iterating the Child Collection Inline, With No Guard
 
 **What the LLM generates:**
 
@@ -107,21 +130,34 @@ List<Contact> contacts = [SELECT Id, AccountId FROM Contact WHERE AccountId IN :
 for (SObject row : acc.getSObjects('Contacts')) {
     // process row
 }
+// or, on the typed path
+for (Contact c : acc.Contacts) { ... }   // no guard, and inside a SOQL for loop
 ```
 
-**Why it happens:** Most programming environments return an empty collection for "no results." LLMs trained on these conventions do not anticipate that Salesforce returns `null` from `getSObjects()` when no children exist, because null-for-empty is a non-standard behavior.
+**Why it happens:** Most languages return an empty collection for "no results", so an unguarded
+enhanced-for reads as safe. Models trained on that convention do not insert a guard, and the Apex
+guide's *typed* samples (`apexdev L20254`, `L29894`) do not show one either — only its dynamic sample
+does, under the comment "Prevent a null relationship from being accessed" (`apexdev L11719–11721`).
+The model has seen both and generalises from the shorter one.
 
 **Correct pattern:**
 
 ```apex
 List<SObject> rows = acc.getSObjects('Contacts');
-if (rows == null) continue; // null, not empty, when no children
+if (rows == null || rows.isEmpty()) { continue; }   // correct under either behaviour
 for (SObject row : rows) {
     Contact c = (Contact) row;
 }
 ```
 
-**Detection hint:** An inline `acc.getSObjects('...')` call used directly as the expression in a `for` loop, without an intermediate variable and null check. This is reliably wrong whenever the parent records may have zero children.
+UNVERIFIED (2026-09-05): whether the accessor returns `null` or an empty list for a childless parent
+is not stated in apexdev.txt or apexrefguide.txt — the corpus shows the guard, not the rule. Write the
+combined guard and do not assert either behaviour in prose.
+
+**Detection hint:** a `getSObjects('...')` call or a `parent.Children__r` expression used directly as
+the iterable of a `for`, with no intermediate variable. Escalate the finding when the enclosing loop is
+itself a **SOQL for loop** — there, assigning or `.size()`-ing a 200+ child set is a documented
+`QueryException`, not a hypothetical null (`apexdev L10078–10088`).
 
 ---
 
