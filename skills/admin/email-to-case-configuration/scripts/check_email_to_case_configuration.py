@@ -1,20 +1,40 @@
 #!/usr/bin/env python3
-"""Checker script for Email-to-Case Configuration skill.
+"""Checker script for the Email-to-Case Configuration skill.
 
-Inspects Salesforce metadata (retrieved via sf project retrieve or equivalent)
-for common Email-to-Case configuration issues:
+Inspects retrieved Salesforce metadata (sf project retrieve start
+--metadata "Settings:Case" "AssignmentRules:Case" "AutoResponseRules:Case")
+for Email-to-Case configuration faults.
 
-- Routing address missing or unverified
-- On-Demand mode not enabled
-- Auto-response rule From address matching a routing address (loop risk)
-- Assignment rule absent (auto-response will not fire)
-- Auto-response rule with no email template
+ERROR-level findings (fix before deploying):
+- Email-to-Case enabled with zero routing addresses
+- Two routing addresses sharing the same emailAddress
+- A routing address with caseOwner set but no caseOwnerType
+- More than one routing address setting caseOwner: each one writes the single
+  org-level CaseSettings.defaultCaseOwner, so the last one silently wins
+  (Metadata API Developer Guide, EmailToCaseRoutingAddress.caseOwner)
+- An auto-response senderEmail / replyToEmail equal to a routing emailAddress,
+  which is the Email-to-Case reply loop
+- An auto-response rule entry with no email template
 
-Uses stdlib only — no pip dependencies.
+WARN-level findings (review, then justify or fix):
+- A routing address whose isVerified is false or absent; Salesforce does not
+  accept inbound mail at an unverified address
+- Both the Lightning-threading and the legacy-threading token switches set
+- authorizedSenders populated on a routing address, which turns every unknown
+  customer into an unauthorized sender
+- Discard selected for unauthorizedSenderAction or overEmailLimitAction
+- No active case assignment rule, so auto-response rules will not fire
+- Email-to-Case enabled without On-Demand
+
+Element names follow the Metadata API Developer Guide: CaseSettings,
+EmailToCaseSettings, EmailToCaseRoutingAddress.
+https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+
+Uses stdlib only - no pip dependencies.
 
 Usage:
     python3 check_email_to_case_configuration.py --manifest-dir path/to/metadata
-    python3 check_email_to_case_configuration.py --manifest-dir force-app/main/default
+    python3 check_email_to_case_configuration.py --manifest-dir force-app/main/default --verbose
 """
 
 from __future__ import annotations
@@ -22,6 +42,7 @@ from __future__ import annotations
 import argparse
 import sys
 import xml.etree.ElementTree as ET
+from collections import defaultdict
 from pathlib import Path
 
 # Salesforce metadata XML namespace
@@ -36,12 +57,15 @@ ON_DEMAND_TOTAL_MESSAGE_LIMIT_MB = 35
 # usable attachment payload inside the 35 MB total is roughly 25 MB.
 ON_DEMAND_EFFECTIVE_ATTACHMENT_MB = 25
 
+# EmailToCaseOnFailureActionType values that destroy the message silently.
+SILENT_FAILURE_ACTIONS = {"discard"}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Check Salesforce metadata for common Email-to-Case configuration issues. "
-            "Inspects Case.settings, assignment rules, and auto-response rules."
+            "Check Salesforce metadata for Email-to-Case configuration faults. "
+            "Inspects Case.settings, case assignment rules, and case auto-response rules."
         ),
     )
     parser.add_argument(
@@ -52,17 +76,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="Print informational notes in addition to issues.",
+        help="Print informational notes in addition to findings.",
     )
     return parser.parse_args()
 
 
-def find_xml_files(base: Path, subdir: str) -> list[Path]:
-    """Return all XML files under base/subdir."""
-    target = base / subdir
-    if not target.is_dir():
-        return []
-    return sorted(target.rglob("*.xml"))
+# ---------------------------------------------------------------------------
+# XML helpers
+#
+# NEVER write `element.find(a) or element.find(b)` - an ElementTree Element with
+# no children is falsy even when it exists, so that idiom silently drops real
+# elements. Every lookup below tests `is not None`.
+# ---------------------------------------------------------------------------
 
 
 def xml_root(path: Path):
@@ -73,14 +98,59 @@ def xml_root(path: Path):
         return None
 
 
+def child(element, tag: str):
+    """Return the named child element, or None. Explicit `is not None` throughout."""
+    if element is None:
+        return None
+    found = element.find(f"{{{SF_NS}}}{tag}")
+    return found if found is not None else None
+
+
 def text(element, *path: str) -> str:
     """Navigate a chain of child tag names and return the text of the final element."""
     current = element
     for step in path:
+        current = child(current, step)
         if current is None:
             return ""
-        current = current.find(f"{{{SF_NS}}}{step}")
-    return (current.text or "").strip() if current is not None else ""
+    return (current.text or "").strip()
+
+
+def first_text(element, *tags: str) -> str:
+    """Return the text of the first of `tags` that is present and non-empty."""
+    for tag in tags:
+        value = text(element, tag)
+        if value:
+            return value
+    return ""
+
+
+def flag(element, *path: str) -> bool:
+    """True only when the element exists and its text is exactly 'true'."""
+    return text(element, *path).lower() == "true"
+
+
+def find_xml_files(base: Path, subdir: str) -> list[Path]:
+    """Return all XML files under base/subdir."""
+    target = base / subdir
+    if not target.is_dir():
+        return []
+    return sorted(target.rglob("*.xml"))
+
+
+def locate(manifest_dir: Path, subdir: str, stem: str, suffix: str) -> list[Path]:
+    """Find `<subdir>/<stem><suffix>` and its -meta.xml twin, anywhere under the tree."""
+    names = [f"{stem}{suffix}", f"{stem}{suffix}-meta.xml"]
+    found: list[Path] = []
+    for name in names:
+        direct = manifest_dir / subdir / name
+        if direct.exists():
+            found.append(direct)
+    for name in names:
+        for path in manifest_dir.rglob(name):
+            if path not in found:
+                found.append(path)
+    return found
 
 
 # ---------------------------------------------------------------------------
@@ -88,154 +158,265 @@ def text(element, *path: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def check_email_to_case_settings(manifest_dir: Path, verbose: bool) -> tuple[list[str], list[str]]:
-    """Check Case.settings for Email-to-Case enabled state and routing addresses.
+def check_email_to_case_settings(
+    manifest_dir: Path, verbose: bool
+) -> tuple[list[str], list[str]]:
+    """Check Case.settings for Email-to-Case faults.
 
-    Returns (issues, routing_email_addresses) so the caller can check for
-    auto-response loop risk.
+    Returns (findings, routing_email_addresses) so the caller can cross-reference
+    the auto-response senders against the routing addresses.
     """
-    issues: list[str] = []
+    findings: list[str] = []
     notes: list[str] = []
     routing_emails: list[str] = []
 
-    # Case settings live at settings/Case.settings or Case.settings-meta.xml
-    candidate_paths: list[Path] = []
-    settings_dir = manifest_dir / "settings"
-    if settings_dir.is_dir():
-        candidate_paths += list(settings_dir.glob("Case.settings"))
-        candidate_paths += list(settings_dir.glob("Case.settings-meta.xml"))
-    # Also search recursively in case of non-standard structure
-    candidate_paths += [p for p in manifest_dir.rglob("Case.settings") if p not in candidate_paths]
-    candidate_paths += [
-        p for p in manifest_dir.rglob("Case.settings-meta.xml") if p not in candidate_paths
-    ]
+    candidate_paths = locate(manifest_dir, "settings", "Case", ".settings")
 
     if not candidate_paths:
         notes.append(
             "Case.settings metadata not found. "
             "Cannot verify Email-to-Case enabled state or routing address configuration. "
-            "Retrieve Case.settings via: sf project retrieve --metadata Settings:Case"
+            'Retrieve it with: sf project retrieve start --metadata "Settings:Case"'
         )
         if verbose:
             for note in notes:
                 print(f"NOTE: {note}")
-        return issues, routing_emails
+        return findings, routing_emails
 
     for path in candidate_paths:
         root = xml_root(path)
         if root is None:
-            issues.append(f"Could not parse Case.settings: {path}")
+            findings.append(f"ERROR: could not parse Case.settings: {path}")
             continue
 
-        # Check Email-to-Case enabled
-        email_to_case_enabled = text(root, "emailToCase", "enable")
-        if email_to_case_enabled.lower() != "true":
-            issues.append(
-                "Email-to-Case is not enabled in Case.settings. "
-                "Enable it at Setup → Email-to-Case before configuring routing addresses."
+        e2c = child(root, "emailToCase")
+        if e2c is None:
+            notes.append(f"{path.name}: no <emailToCase> block; Email-to-Case is not configured here.")
+            continue
+
+        # The element is enableEmailToCase, not enable. A file using <enable>
+        # deploys cleanly and turns nothing on.
+        enabled = flag(e2c, "enableEmailToCase")
+        if child(e2c, "enable") is not None and child(e2c, "enableEmailToCase") is None:
+            findings.append(
+                f"ERROR: {path.name}: <emailToCase> uses <enable>, which is not an "
+                "EmailToCaseSettings field. The correct element is <enableEmailToCase>. "
+                "As written this deploys successfully and leaves the feature off."
+            )
+        if not enabled:
+            findings.append(
+                f"ERROR: {path.name}: enableEmailToCase is not true. "
+                "Routing addresses do nothing until the feature is enabled."
             )
 
-        # Check On-Demand mode
-        on_demand_enabled = text(root, "emailToCase", "enableOnDemandEmailToCase")
-        if email_to_case_enabled.lower() == "true" and on_demand_enabled.lower() != "true":
-            notes.append(
-                "On-Demand Email-to-Case is not enabled. "
-                "Standard Email-to-Case requires a locally installed Java agent and "
-                "consumes API calls per email. "
-                "Enable On-Demand mode unless data residency policy explicitly requires Standard."
+        on_demand = flag(e2c, "enableOnDemandEmailToCase")
+        if enabled and not on_demand:
+            findings.append(
+                f"WARN: {path.name}: enableOnDemandEmailToCase is not true. "
+                "Standard Email-to-Case needs a locally installed agent and consumes API "
+                "calls per email. Enable On-Demand unless data residency policy forbids it."
             )
 
-        # Check routing addresses
-        routing_addresses = root.findall(
-            f"{{{SF_NS}}}emailToCase/{{{SF_NS}}}routingAddresses"
+        # Threading: two mutually exclusive pairs plus a header fallback.
+        lightning_pair = flag(e2c, "enableThreadTokenInBody") or flag(
+            e2c, "enableThreadTokenInSubject"
         )
-
-        if email_to_case_enabled.lower() == "true" and not routing_addresses:
-            issues.append(
-                "Email-to-Case is enabled but no routing addresses are configured. "
-                "At least one routing address is required for inbound email to create cases."
+        legacy_pair = flag(e2c, "enableThreadIDInBody") or flag(e2c, "enableThreadIDInSubject")
+        if lightning_pair and legacy_pair:
+            findings.append(
+                f"WARN: {path.name}: both threading switch pairs are set. "
+                "enableThreadTokenInBody/Subject apply only to orgs using Lightning "
+                "Threading; enableThreadIDInBody/Subject apply only to orgs that do not. "
+                "One pair is inert - confirm which mode the org is in and set only that pair."
+            )
+        if enabled and not lightning_pair and not legacy_pair:
+            findings.append(
+                f"WARN: {path.name}: no threading token switch is set in either pair. "
+                "Replies will rely entirely on useEmailHeadersForThreading, if that is on."
+            )
+        if enabled and not flag(e2c, "useEmailHeadersForThreading"):
+            notes.append(
+                f"{path.name}: useEmailHeadersForThreading is off. It is the fallback that "
+                "matches a reply when a mail gateway has stripped the token."
             )
 
-        for i, addr in enumerate(routing_addresses, start=1):
-            name = text(addr, "routingName") or f"#{i}"
+        for setting in ("unauthorizedSenderAction", "overEmailLimitAction"):
+            value = text(e2c, setting)
+            if value.lower() in SILENT_FAILURE_ACTIONS:
+                findings.append(
+                    f"WARN: {path.name}: {setting} is '{value}'. Discarded mail leaves no "
+                    "Case, no EmailMessage and no bounce - the sender and the org both have "
+                    "no record it arrived. Prefer Bounce, or Requeue for overEmailLimitAction."
+                )
+
+        routing_addresses = e2c.findall(f"{{{SF_NS}}}routingAddresses")
+
+        if enabled and not routing_addresses:
+            findings.append(
+                f"ERROR: {path.name}: Email-to-Case is enabled but no <routingAddresses> "
+                "element is present. Inbound email cannot create cases. Note that "
+                "routingAddresses is a full-replacement list: deploying this file to an org "
+                "that has addresses deletes them."
+            )
+
+        seen_addresses: dict[str, list[str]] = defaultdict(list)
+        owner_setters: list[str] = []
+
+        for index, addr in enumerate(routing_addresses, start=1):
+            name = text(addr, "routingName") or f"#{index}"
             email_address = text(addr, "emailAddress")
 
             if not email_address:
-                issues.append(
-                    f"Routing address '{name}': no email address configured. "
-                    "Inbound emails cannot be received without an email address."
+                findings.append(
+                    f"ERROR: routing address '{name}': no <emailAddress>. "
+                    "This is the customer-facing address mail is forwarded from; "
+                    "without it the address cannot receive anything."
                 )
             else:
                 routing_emails.append(email_address.lower())
+                seen_addresses[email_address.lower()].append(name)
 
-            # Check for a Salesforce-generated address (On-Demand target)
-            # In metadata this is stored as emailServicesAddress or similar;
-            # absence is flagged as a note since it may not always be exported.
-            salesforce_address = text(addr, "emailServicesAddress")
-            if on_demand_enabled.lower() == "true" and not salesforce_address:
-                notes.append(
-                    f"Routing address '{name}': no Salesforce-generated services address found "
-                    "in metadata. Confirm the address was verified in Setup. "
-                    "Unverified routing addresses silently drop inbound email."
+            # isVerified is read-only, so a fresh deploy always lands unverified.
+            if not flag(addr, "isVerified"):
+                findings.append(
+                    f"WARN: routing address '{name}': isVerified is false or absent. "
+                    "Salesforce does not process inbound mail at an unverified address, and "
+                    "the failure is silent - the mail server logs a successful delivery and "
+                    "no case appears. Send the verification email from Setup and confirm the "
+                    "address reads Verified in the org (isVerified cannot be set from metadata)."
                 )
+
+            case_owner = text(addr, "caseOwner")
+            case_owner_type = text(addr, "caseOwnerType")
+            if case_owner:
+                owner_setters.append(name)
+                if not case_owner_type:
+                    findings.append(
+                        f"ERROR: routing address '{name}': caseOwner is '{case_owner}' but "
+                        "caseOwnerType is missing. caseOwnerType declares whether the owner "
+                        "is a User or a Queue; without it the owner is ambiguous."
+                    )
+            elif case_owner_type:
+                findings.append(
+                    f"ERROR: routing address '{name}': caseOwnerType is "
+                    f"'{case_owner_type}' but caseOwner is missing."
+                )
+
+            if text(addr, "authorizedSenders"):
+                findings.append(
+                    f"WARN: routing address '{name}': authorizedSenders is populated. "
+                    "Only the listed addresses and domains can create cases here; every "
+                    "other sender hits unauthorizedSenderAction. Leave it empty on a public "
+                    "support address."
+                )
+
+            if flag(addr, "createTask") and not text(addr, "taskStatus"):
+                findings.append(
+                    f"WARN: routing address '{name}': createTask is true but taskStatus is "
+                    "not set. taskStatus applies only when createTask is true and gives the "
+                    "generated task a deliberate starting status."
+                )
+
+            if not flag(addr, "saveEmailHeaders"):
+                findings.append(
+                    f"WARN: routing address '{name}': saveEmailHeaders is false or absent. "
+                    "EmailMessage.Headers is populated at the moment mail is processed and "
+                    "cannot be backfilled, so a later phishing or spoofing investigation on "
+                    "this channel has no envelope evidence to read."
+                )
+
+            address_type = text(addr, "addressType")
+            if address_type and address_type not in {"EmailToCase", "Outlook"}:
+                findings.append(
+                    f"ERROR: routing address '{name}': addressType '{address_type}' is not a "
+                    "valid EmailToCaseRoutingAddressType. Valid values: EmailToCase, Outlook."
+                )
+
+        for email_address, names in seen_addresses.items():
+            if len(names) > 1:
+                findings.append(
+                    f"ERROR: emailAddress '{email_address}' is used by "
+                    f"{len(names)} routing addresses ({', '.join(names)}). "
+                    "Inbound mail to a duplicated address has no deterministic configuration; "
+                    "give each channel its own address or collapse them into one entry."
+                )
+
+        if len(owner_setters) > 1:
+            findings.append(
+                f"ERROR: {len(owner_setters)} routing addresses set caseOwner "
+                f"({', '.join(owner_setters)}). Per the Metadata API Developer Guide, setting "
+                "caseOwner on a routing address writes the single org-level "
+                "CaseSettings.defaultCaseOwner, so the last one processed wins and the others "
+                "silently do nothing. Give each address its own caseOrigin and route on "
+                "Case.Origin in the assignment rule instead."
+            )
 
     if verbose:
         for note in notes:
             print(f"NOTE: {note}")
 
-    return issues, routing_emails
+    return findings, routing_emails
 
 
 def check_assignment_rule_active(manifest_dir: Path, verbose: bool) -> list[str]:
     """Check that an active case assignment rule exists (required for auto-response)."""
-    issues: list[str] = []
+    findings: list[str] = []
     notes: list[str] = []
 
-    candidate_paths = [
-        manifest_dir / "assignmentRules" / "Case.assignmentRules",
-        manifest_dir / "assignmentRules" / "Case.assignmentRules-meta.xml",
-    ]
-    files = [p for p in candidate_paths if p.exists()]
+    files = locate(manifest_dir, "assignmentRules", "Case", ".assignmentRules")
     if not files:
-        files = find_xml_files(manifest_dir, "assignmentRules")
-        files = [f for f in files if "case" in f.stem.lower()]
+        files = [
+            f
+            for f in find_xml_files(manifest_dir, "assignmentRules")
+            if "case" in f.stem.lower()
+        ]
 
     if not files:
-        issues.append(
-            "No case assignment rule metadata found. "
-            "Auto-response rules will NOT fire without an active case assignment rule. "
-            "Retrieve via: sf project retrieve --metadata AssignmentRules:Case"
+        findings.append(
+            "WARN: no case assignment rule metadata found. Auto-response rules do not fire "
+            "without an active case assignment rule, and cases fall to the org default owner. "
+            'Retrieve it with: sf project retrieve start --metadata "AssignmentRules:Case"'
         )
-        return issues
+        return findings
 
     active_count = 0
     for path in files:
         root = xml_root(path)
         if root is None:
-            issues.append(f"Could not parse assignment rule file: {path}")
+            findings.append(f"ERROR: could not parse assignment rule file: {path}")
             continue
-        active_val = text(root, "active")
-        if active_val.lower() == "true":
+        for rule in root.findall(f"{{{SF_NS}}}assignmentRule"):
+            rule_name = text(rule, "fullName") or path.stem
+            if not flag(rule, "active"):
+                notes.append(f"Assignment rule '{rule_name}' is not active.")
+                continue
             active_count += 1
-            rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
+            rule_entries = rule.findall(f"{{{SF_NS}}}ruleEntry")
             if not rule_entries:
-                issues.append(
-                    f"Active assignment rule '{path.stem}' has no rule entries. "
-                    "Cases will land with the default owner and auto-response will not fire."
+                findings.append(
+                    f"ERROR: active assignment rule '{rule_name}' has no rule entries. "
+                    "Cases land with the default owner and auto-response does not fire."
+                )
+                continue
+            last_entry = rule_entries[-1]
+            if last_entry.findall(f"{{{SF_NS}}}criteriaItems"):
+                findings.append(
+                    f"WARN: active assignment rule '{rule_name}': the last rule entry has "
+                    "criteria, so it is not a catch-all. Email-to-Case cases that match no "
+                    "entry fall to the org default owner rather than a queue."
                 )
 
     if active_count == 0:
-        issues.append(
-            "No active case assignment rule found. "
-            "Auto-response rules only fire when the assignment rule fires. "
-            "Activate the assignment rule at Setup → Assignment Rules → Cases."
+        findings.append(
+            "WARN: no active case assignment rule found. Auto-response rules only fire when "
+            "the assignment rule fires. Activate the rule at Setup -> Assignment Rules -> Cases."
         )
 
     if verbose:
         for note in notes:
             print(f"NOTE: {note}")
 
-    return issues
+    return findings
 
 
 def check_auto_response_rules(
@@ -243,63 +424,73 @@ def check_auto_response_rules(
     routing_emails: list[str],
     verbose: bool,
 ) -> list[str]:
-    """Check auto-response rule metadata for loop risk and missing templates."""
-    issues: list[str] = []
+    """Check case auto-response rules for loop risk and missing templates."""
+    findings: list[str] = []
     notes: list[str] = []
 
-    candidate_paths = [
-        manifest_dir / "autoResponseRules" / "Case.autoResponseRules",
-        manifest_dir / "autoResponseRules" / "Case.autoResponseRules-meta.xml",
-    ]
-    files = [p for p in candidate_paths if p.exists()]
+    files = locate(manifest_dir, "autoResponseRules", "Case", ".autoResponseRules")
     if not files:
-        files = find_xml_files(manifest_dir, "autoResponseRules")
-        files = [f for f in files if "case" in f.stem.lower()]
+        files = [
+            f
+            for f in find_xml_files(manifest_dir, "autoResponseRules")
+            if "case" in f.stem.lower()
+        ]
 
     if not files:
-        notes.append("No case auto-response rule metadata found. Skipping auto-response checks.")
+        notes.append(
+            "No case auto-response rule metadata found; skipping the loop check. "
+            "If the org has auto-response rules, retrieve them "
+            '(--metadata "AutoResponseRules:Case") and re-run - the loop check is the '
+            "reason this script exists."
+        )
         if verbose:
             for note in notes:
                 print(f"NOTE: {note}")
-        return issues
+        return findings
 
     for path in files:
         root = xml_root(path)
         if root is None:
-            issues.append(f"Could not parse auto-response rule file: {path}")
+            findings.append(f"ERROR: could not parse auto-response rule file: {path}")
             continue
 
-        active_val = text(root, "active")
-        if active_val.lower() != "true":
-            notes.append(f"Auto-response rule '{path.stem}' is not active.")
-            continue
+        for rule in root.findall(f"{{{SF_NS}}}autoResponseRule"):
+            rule_name = text(rule, "fullName") or path.stem
+            if not flag(rule, "active"):
+                notes.append(f"Auto-response rule '{rule_name}' is not active.")
+                continue
 
-        rule_entries = root.findall(f"{{{SF_NS}}}ruleEntry")
-        for i, entry in enumerate(rule_entries, start=1):
-            template = text(entry, "template")
-            if not template:
-                issues.append(
-                    f"Auto-response rule '{path.stem}', entry {i}: "
-                    "no email template assigned. "
-                    "This entry will match cases but send no confirmation email."
-                )
+            for index, entry in enumerate(rule.findall(f"{{{SF_NS}}}ruleEntry"), start=1):
+                if not text(entry, "template"):
+                    findings.append(
+                        f"ERROR: auto-response rule '{rule_name}', entry {index}: no "
+                        "<template>. The entry matches cases and sends no acknowledgement."
+                    )
 
-            sender_email = text(entry, "senderEmail") or text(entry, "replyToEmail") or ""
-            if sender_email and routing_emails:
-                if sender_email.lower() in routing_emails:
-                    issues.append(
-                        f"Auto-response rule '{path.stem}', entry {i}: "
-                        f"sender email '{sender_email}' matches a configured Email-to-Case "
-                        "routing address. This will create an email loop: auto-response → "
-                        "customer inbox → customer reply → routing address → new case → "
-                        "auto-response. Use a no-reply address that does not route to Salesforce."
+                for field in ("senderEmail", "replyToEmail"):
+                    value = text(entry, field)
+                    if value and value.lower() in routing_emails:
+                        findings.append(
+                            f"ERROR: auto-response rule '{rule_name}', entry {index}: "
+                            f"{field} '{value}' is also an Email-to-Case routing address. "
+                            "This is the reply loop: auto-response -> customer -> reply -> "
+                            "routing address -> new case -> auto-response. Use a no-reply "
+                            "address that does not forward into Salesforce."
+                        )
+
+                sender = first_text(entry, "senderEmail", "replyToEmail")
+                if not sender:
+                    findings.append(
+                        f"WARN: auto-response rule '{rule_name}', entry {index}: neither "
+                        "senderEmail nor replyToEmail is set, so the sender identity depends "
+                        "on org defaults rather than a verified org-wide address."
                     )
 
     if verbose:
         for note in notes:
             print(f"NOTE: {note}")
 
-    return issues
+    return findings
 
 
 # ---------------------------------------------------------------------------
@@ -308,36 +499,39 @@ def check_auto_response_rules(
 
 
 def check_email_to_case_configuration(manifest_dir: Path, verbose: bool = False) -> list[str]:
-    """Run all Email-to-Case configuration checks and return a list of issue strings."""
-    issues: list[str] = []
+    """Run every Email-to-Case check and return the findings as prefixed strings."""
+    findings: list[str] = []
 
     if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
+        return [f"ERROR: manifest directory not found: {manifest_dir}"]
 
-    setting_issues, routing_emails = check_email_to_case_settings(manifest_dir, verbose)
-    issues.extend(setting_issues)
+    settings_findings, routing_emails = check_email_to_case_settings(manifest_dir, verbose)
+    findings.extend(settings_findings)
+    findings.extend(check_assignment_rule_active(manifest_dir, verbose))
+    findings.extend(check_auto_response_rules(manifest_dir, routing_emails, verbose))
 
-    issues.extend(check_assignment_rule_active(manifest_dir, verbose))
-    issues.extend(check_auto_response_rules(manifest_dir, routing_emails, verbose))
-
-    return issues
+    return findings
 
 
 def main() -> int:
     args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_email_to_case_configuration(manifest_dir, verbose=args.verbose)
+    findings = check_email_to_case_configuration(Path(args.manifest_dir), verbose=args.verbose)
 
-    if not issues:
+    if not findings:
         print("No Email-to-Case configuration issues found.")
         return 0
 
-    for issue in issues:
-        print(f"ISSUE: {issue}", file=sys.stderr)
+    errors = [f for f in findings if f.startswith("ERROR")]
+    warnings = [f for f in findings if not f.startswith("ERROR")]
+
+    print(f"Findings: {len(errors)} error(s), {len(warnings)} warning(s).")
+    for finding in errors + warnings:
+        print(f"  {finding}", file=sys.stderr)
 
     return 1
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if main() != 0:
+        sys.exit(1)
+    sys.exit(0)

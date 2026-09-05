@@ -3376,6 +3376,9 @@
     "case-milestone": [
       "apex/entitlement-apex-hooks"
     ],
+    "case-settings": [
+      "admin/email-to-case-configuration"
+    ],
     "case-teams": [
       "admin/case-management-setup"
     ],
@@ -6026,6 +6029,7 @@
       "admin/sandbox-post-refresh-automation"
     ],
     "email-message": [
+      "admin/email-to-case-configuration",
       "data/case-history-migration",
       "data/service-data-archival"
     ],
@@ -12431,6 +12435,9 @@
       "architect/service-cloud-architecture"
     ],
     "routing-address": [
+      "admin/email-to-case-configuration"
+    ],
+    "routing-address-verification": [
       "admin/email-to-case-configuration"
     ],
     "routing-configuration": [

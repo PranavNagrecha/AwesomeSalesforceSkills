@@ -1,6 +1,6 @@
 ---
 name: email-to-case-configuration
-description: "Configuring Salesforce Email-to-Case: Standard vs On-Demand mode selection, routing address setup, email threading via Lightning tokens, auto-response rules, attachment limits, and per-address case field defaults. Trigger keywords: email-to-case, routing address, on-demand email-to-case, email threading, case from email, email agent, routing address setup. NOT for the wider case layer (queues, escalation rules, case teams, entitlements) - use admin/case-management-setup. NOT for routing case work items to agents after creation - use admin/omni-channel-routing-setup. NOT for the email templates or letterheads themselves - use admin/email-templates-and-alerts."
+description: "Configuring Salesforce Email-to-Case: Standard vs On-Demand mode selection, routing address setup, email threading via Lightning tokens, auto-response rules, attachment limits, and per-address case field defaults. Trigger keywords: email-to-case, routing address, on-demand email-to-case, email threading, case from email, email agent, routing address setup, Case.settings-meta.xml, EmailToCaseRoutingAddress, emailServicesAddress, isVerified, caseOrigin, enableThreadTokenInBody, useEmailHeadersForThreading, overEmailLimitAction, unauthorizedSenderAction, enableE2CAttachmentAsFile, saveEmailHeaders, EmailMessage.EmailRoutingAddressId, auto-response loop. NOT for the wider case layer (queues, escalation rules, case teams, entitlements) - use admin/case-management-setup. NOT for routing case work items to agents after creation - use admin/omni-channel-routing-setup. NOT for the email templates or letterheads themselves - use admin/email-templates-and-alerts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -9,8 +9,18 @@ well-architected-pillars:
   - Operational Excellence
 triggers:
   - "customer reply to a case email is creating a new case instead of threading into the original"
+  - "replies create a new case instead of threading"
+  - "email to case stopped creating cases"
   - "should I use On-Demand Email-to-Case or Standard Email-to-Case and what is the difference"
   - "how do I set up a routing address so inbound support emails create cases automatically"
+  - "customer emailed support but no case was created and there was no bounce"
+  - "which Case field does the Email-to-Case routing address populate so assignment rules can read it"
+  - "auto-response is looping and creating hundreds of duplicate cases"
+  - "deploy Email-to-Case routing addresses with Case.settings-meta.xml"
+  - "EmailMessage.ThreadIdentifier is blank on every Email-to-Case message"
+  - "cases from two different support mailboxes are all landing with the same owner"
+  - "should Email-to-Case attachments be saved as Files or as Attachments"
+  - "one of our support channels disappeared from Setup after a settings deploy"
 tags:
   - email-to-case
   - routing-address
@@ -19,6 +29,9 @@ tags:
   - service-cloud
   - case-creation
   - auto-response-rules
+  - case-settings
+  - routing-address-verification
+  - email-message
 inputs:
   - "Service Cloud org with Cases enabled"
   - "Decision on Email-to-Case mode: On-Demand (recommended) or Standard (requires local agent)"
@@ -32,9 +45,9 @@ outputs:
   - "Email threading tested end-to-end (reply threads into parent case)"
   - "Auto-response rule firing correctly when assignment rule fires"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-04
 ---
 
 # Email-to-Case Configuration
@@ -49,8 +62,30 @@ Gather this context before working on Email-to-Case configuration:
 
 - **Which Email-to-Case mode is appropriate?** On-Demand is the default choice for most orgs. It uses Salesforce-hosted Apex Email Services and requires no locally installed agent. Standard Email-to-Case requires a downloadable Java agent running on a server inside the company firewall; it keeps email traffic internal but adds operational overhead. Choose Standard only if security policy or data residency rules prohibit email routing through Salesforce infrastructure.
 - **What are the attachment size limits?** On-Demand Email-to-Case accepts an inbound message of up to **35 MB in total** (body + attachments + HTML). Because MIME transfer encoding inflates a message by up to 33% in transit, the **effective attachment ceiling is approximately 25 MB**. Messages over the total limit are rejected at the routing address. There is **no separate per-attachment cap** — 10 MB and 25 MB are the *former* org-wide totals (pre-Summer '14 and pre-Winter '21 respectively), not current per-attachment rules.
-- **Is email threading the top priority?** Threading is the single most commonly misconfigured behavior. Salesforce embeds a Lightning token (a unique thread ID) in the body and subject of every outgoing case email. When a customer replies, Salesforce reads this token to locate the parent case and adds the reply as an Email Message record. If the token is stripped by a mail server, a security gateway, or an incorrect routing address configuration, every reply creates a new case.
+- **Is email threading the top priority?** Threading is the single most commonly misconfigured behavior. Salesforce puts a thread token in the body and/or subject of outgoing case email — which settings control that depends on whether the org uses Lightning Threading, and the two switch pairs are mutually exclusive (see Core Concepts). When a customer replies, Salesforce reads the token to locate the parent case and adds the reply as an EmailMessage. If the token is stripped by a mail server or a security gateway, `useEmailHeadersForThreading` is the only thing standing between the org and a new case per reply.
 - **Are auto-response rules needed?** Auto-response rules only fire when the active case assignment rule fires. Confirm an assignment rule is active and will match the cases created by Email-to-Case before configuring auto-response rules.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Setup. Each one has a gotcha behind it, and an agent that skips them
+produces a settings file that deploys cleanly and silently drops customer mail.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which public addresses do customers actually write to, and does the same mailbox forward to more than one place?" | Each address is one `routingAddresses` element; a mailbox that forwards twice duplicates every case, and two elements sharing an `emailAddress` have no deterministic configuration | The channel list, one forwarding rule each, checked by the duplicate-address ERROR in the checker |
+| "Which queue owns each channel's cases?" | `caseOwner` on a routing address writes the org-level `defaultCaseOwner`, so a second address setting it overwrites the first (gotchas #6) | Ownership expressed as `caseOrigin` per address plus assignment rule entries, not `caseOwner` |
+| "Is the `Case.Origin` picklist value for each channel already active in the org?" | `caseOrigin` is the only per-address value an assignment rule can read; a value that is not in the picklist stamps something nobody can filter on | The picklist additions that must deploy before or with the settings file |
+| "Is this org on Lightning Threading or legacy threading?" | Two mutually exclusive pairs of token switches exist and the wrong pair is inert (gotchas #8) | The one pair to set, plus `useEmailHeadersForThreading` as the gateway fallback |
+| "What should happen to mail we refuse — bounce it or drop it?" | `unauthorizedSenderAction` and `overEmailLimitAction` both accept `Discard`, which leaves no Case, no EmailMessage and no bounce (gotchas #9) | A deliberate `Bounce` / `Requeue` choice instead of an invisible failure mode |
+| "Who sends the acknowledgement, and does that address forward back to us?" | Any auto-response sender that reaches a routing address is an unbounded case-creation loop; so is a vacation responder on the forwarding mailbox | A no-reply sender, plus the mail-server rule audit the checker cannot see |
+| "Does anyone need email headers for a future security investigation?" | `saveEmailHeaders` captures envelope data at processing time and cannot be backfilled (gotchas #12) | Headers on from day one, and `EmailMessage.Headers` inside the org's retention scope |
+
+What a proper configuration adds over just switching Email-to-Case on: every channel is a reviewable
+element in `settings/Case.settings-meta.xml` rather than an unowned Setup checkbox, ownership is
+decided once in the assignment rule instead of racing through a shared org-level field, refused mail
+leaves a trace, and the reply loop is caught by a script before it is caught by the send limit.
 
 ---
 
@@ -66,9 +101,23 @@ Email-to-Case has two operating modes with distinct infrastructure requirements:
 
 Size behaviour differs by mode because the enforcement point differs. On-Demand enforces Salesforce's inbound message limit at the routing address: 35 MB total per message, with an effective attachment ceiling of roughly 25 MB once MIME encoding overhead is applied. Standard Email-to-Case receives mail at the company's own mail server, so the first size gate is whatever that server enforces; the agent then creates the case through the API. Do not quote a per-attachment cap for either mode — Salesforce documents a total-message limit, not a per-attachment one.
 
-### Email Threading via Lightning Tokens
+### Email Threading: Two Switch Pairs and a Header Fallback
 
-Every case email sent through Salesforce contains a hidden Lightning thread token. The token appears in two locations: embedded in the email body (usually as a reference string below the visible content) and in the email subject line (as a `[ref:...:ref]` suffix). Both locations serve as fallbacks.
+An outgoing case email carries a thread token in the body, the subject, or both. Which elements
+control that depends on the org's threading mode, and the Metadata API guide is explicit that the two
+pairs are mutually exclusive:
+
+| Element | Applies to | Effect |
+|---|---|---|
+| `enableThreadTokenInBody` / `enableThreadTokenInSubject` | orgs **using** Lightning Threading | appends the token when an agent sends from the Lightning email composer |
+| `enableThreadIDInBody` / `enableThreadIDInSubject` | orgs **not** using Lightning Threading | inserts the Thread ID in the body / subject line |
+| `useEmailHeadersForThreading` | either | matches a reply from incoming email metadata when token-based threading finds nothing |
+
+Setting the pair that does not apply to the org changes nothing at all. `useEmailHeadersForThreading`
+is the second chance when a mail gateway has stripped the token, and is the one switch worth turning
+on in every org. Do not verify threading on `EmailMessage.ThreadIdentifier`: the Object Reference
+states that field "is not used by On-Demand Email-to-Case". Verify on `EmailMessage.ParentId` —
+query in `references/metadata-examples.md`.
 
 When a customer replies, Salesforce's inbound processing inspects the reply for a matching token. If found, the reply is appended to the originating case as a new Email Message record. If not found, a new case is created. Threading failures occur when:
 
@@ -88,6 +137,18 @@ A routing address is a per-mailbox Email-to-Case configuration record. Each rout
 - Whether an auto-response is sent and which auto-response rule entries apply.
 
 An org can have multiple routing addresses, one per inbound support channel (e.g., `support@`, `billing@`, `returns@`). Each address creates cases with its own defaults, allowing cases to be pre-classified by channel before assignment rules run.
+
+Two fields are read-only and never come from your source file: `emailServicesAddress` (the
+Salesforce-generated address the mailbox forwards *to*) and `isVerified`. A freshly deployed routing
+address therefore always lands unverified, and Salesforce accepts no mail at it until someone clicks
+the verification link in the org.
+
+**What the address stamps on the Case, and what it does not.** `caseOrigin` sets `Case.Origin`,
+`casePriority` sets `Case.Priority`, and `caseOwner` + `caseOwnerType` reach `Case.OwnerId` — but by
+writing the single org-level `defaultCaseOwner`, so only one address can use them meaningfully.
+There is **no routing-address field on Case at all**; the address is recorded one object over as
+`EmailMessage.EmailRoutingAddressId`. That makes `Case.Origin` the only per-channel hand-off an
+assignment rule can read, which is the rule design shown in `references/metadata-examples.md`.
 
 ### Auto-Response Rules and Assignment Rule Dependency
 
@@ -144,15 +205,13 @@ This dependency is the most commonly misdiagnosed "auto-response not sending" is
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Confirm the Email-to-Case mode requirement: On-Demand (default) unless data residency or firewall policy requires Standard. Document the decision and the rationale before proceeding.
-2. Enable Email-to-Case in Setup. For On-Demand: enable the On-Demand Service option. For Standard: download and configure the local email agent before proceeding with routing address setup.
-3. Create one routing address per inbound support mailbox. Set Case Origin, Status, Priority, and optional default owner or queue on each address. For On-Demand, copy the Salesforce-generated target address.
-4. Configure the company mail server to forward inbound mail from each support address to the corresponding Salesforce-generated address. Verify each routing address using the built-in verification flow.
-5. Confirm an active case assignment rule exists with at least one entry that will match cases created by Email-to-Case. If auto-response emails are required, configure the auto-response rule now and confirm it is active.
-6. Test threading end-to-end: inbound email creates case, outgoing reply sent from Salesforce, customer reply returns and threads into the original case as an Email Message (not a new case).
-7. Review the checklist below, run the checker script against retrieved metadata, and document the configuration for the org's runbook before marking complete.
+1. **Read the org before writing anything.** `sf project retrieve start --metadata "Settings:Case" "AssignmentRules:Case" "AutoResponseRules:Case"`. `routingAddresses` is a full-replacement list, so every later edit must start from what the org actually has (`references/gotchas.md` #7).
+2. **Answer the seven questions above** and fill in `templates/email-to-case-configuration-template.md`: channels, the `caseOrigin` value each stamps, the owning queue, the acknowledgement sender, the threading mode. Confirm the mode choice — On-Demand unless data residency policy forbids it.
+3. **Shape the metadata** from `references/metadata-examples.md`: the `emailToCase` block with one `routingAddresses` element per channel, the matching `Case.assignmentRules` entries keyed on `Case.Origin`, and the `package.xml` naming `Settings:Case` explicitly (the wildcard does not work for an individual setting).
+4. **Run the checker** — `python3 scripts/check_email_to_case_configuration.py --manifest-dir <dir> --verbose`. Clear every ERROR (duplicate `emailAddress`, `caseOwner` without `caseOwnerType`, more than one address setting `caseOwner`, auto-response sender equal to a routing address). Justify or fix each WARN.
+5. **Deploy, then finish the setup that metadata cannot do**: copy each `emailServicesAddress` out of Setup, create one forwarding rule per channel, disable any auto-reply on the forwarding mailbox, send the verification email, and confirm each address reads Verified. The checklist is in `references/metadata-examples.md`.
+6. **Run the three tests** from `references/metadata-examples.md`: the threading round-trip through the *production* mail gateway asserted on `EmailMessage.ParentId`, the routing-address/origin query, and the loop test (one email per address, case count must stop at one).
+7. **Hand over.** Record the public address to `emailServicesAddress` mapping, the verification dates, and the threading mode in the org runbook — the org will not hand `emailServicesAddress` back if an address is ever deleted. Work through the Review Checklist below.
 
 ---
 
@@ -167,7 +226,14 @@ Run through these before marking Email-to-Case configuration complete:
 - [ ] Active case assignment rule exists with at least one entry matching Email-to-Case–created cases; catch-all entry routes remaining cases to a queue rather than default owner
 - [ ] If auto-response rules are configured: assignment rule fires for the same case creation events; auto-response rule entry has a valid email template and a sender address that is not the routing address (to prevent email loops)
 - [ ] Attachment size limits communicated to support team: On-Demand accepts up to 35 MB total inbound message size, i.e. roughly 25 MB of attachments after MIME encoding overhead; there is no per-attachment cap
-- [ ] Checker script output reviewed and any issues resolved
+- [ ] `settings/Case.settings-meta.xml` was retrieved from the target org before editing, and the routing-address count in the file to be deployed is not lower than the count in the org
+- [ ] At most one routing address sets `caseOwner`, and it sets `caseOwnerType` alongside it; per-channel ownership is expressed as `caseOrigin` plus assignment rule entries
+- [ ] Every `caseOrigin` value used by a routing address exists and is active in the `Case.Origin` picklist
+- [ ] Only the threading switch pair matching the org's threading mode is set; `useEmailHeadersForThreading` is on
+- [ ] `unauthorizedSenderAction` and `overEmailLimitAction` are a deliberate choice, and `Discard` is used only where someone has signed off on losing the message
+- [ ] `saveEmailHeaders` is true on every routing address
+- [ ] Threading verified on `EmailMessage.ParentId`, not on `ThreadIdentifier` (blank for On-Demand Email-to-Case by design)
+- [ ] `python3 scripts/check_email_to_case_configuration.py --manifest-dir <dir> --verbose` reports zero ERRORs and every WARN is justified
 
 ---
 
@@ -180,6 +246,11 @@ Non-obvious platform behaviors that cause real production problems:
 3. **Auto-response rule loops when From address equals routing address** — If the auto-response rule is configured to send from the same email address that the routing address is configured to receive at (e.g., both are `support@company.com`), the auto-response email will arrive back at Salesforce and create another case, which triggers another auto-response, creating an infinite loop. Always use a different From address or a no-reply address for auto-response rules.
 4. **Lightning thread token stripping by security gateways** — Corporate email security gateways (e.g., Proofpoint, Mimecast) sometimes strip or modify the reference string in the email body or subject line as part of link-rewriting or content inspection. This silently breaks threading. Test the full round-trip through the production mail gateway before go-live, not just against a direct SMTP relay.
 5. **Standard Email-to-Case agent consumes API calls** — The local agent converts each email to a case via the Salesforce API. High-volume inbound mail can exhaust the org's daily API call limit. Monitor API usage after go-live if using Standard mode in a high-volume environment.
+6. **`caseOwner` is an org-level field wearing a per-address costume** — the Metadata API guide states that setting it on a routing address writes `CaseSettings.defaultCaseOwner`. Give a second address its own owner and the first one's is overwritten, with no deploy warning. Route on `Case.Origin` instead.
+7. **Deploying a partial settings file deletes the channels it omits** — `routingAddresses` is a full-replacement list, and `emailServicesAddress` is read-only, so a deleted address cannot be restored to its old Salesforce-generated value. Always retrieve first.
+8. **`Discard` is genuinely silent** — both `unauthorizedSenderAction` and `overEmailLimitAction` accept it, and a discarded message produces no Case, no EmailMessage and no bounce. Nobody can prove the customer wrote in.
+
+Deeper treatment, with the platform behaviour behind each, in `references/gotchas.md` (13 entries).
 
 ---
 
@@ -187,7 +258,9 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
+| `settings/Case.settings-meta.xml` | The `emailToCase` block: mode, threading and failure-action switches, and one `routingAddresses` element per channel; deployable as `Settings:Case` |
 | Email-to-Case routing address | Configured routing address record with external email, Salesforce target address, and case defaults; verification confirmed |
+| Address map | Public address → `emailServicesAddress` → `caseOrigin` → owning queue, with verification dates, for the org runbook |
 | Mail server forwarding rule | Forward rule on company mail server routing inbound mail from the support address to the Salesforce-generated address |
 | Threading test record | Test case and Email Message records demonstrating that a customer reply threads correctly into the parent case |
 | Assignment rule update | Active case assignment rule with entries that match Email-to-Case–created cases and route them to the correct queue |
@@ -195,9 +268,27 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing or reviewing `Case.settings-meta.xml`, the routing-address-to-assignment-rule hand-off, the forwarding and verification checklist, or the threading / routing / loop verification queries |
+| `references/gotchas.md` | Mail is being dropped, threading broke, a channel vanished after a deploy, or ownership is wrong on one channel |
+| `references/examples.md` | Working end-to-end setups: one mailbox, multiple channels, and how to catch the auto-response loop in the first five minutes |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated Email-to-Case guidance, especially any quoted attachment size number |
+| `references/well-architected.md` | Justifying On-Demand vs Standard, single vs multiple addresses, or auto-response vs Flow, and for the source list |
+
+---
+
 ## Related Skills
 
-- case-management-setup — use when the broader case handling layer (queues, escalation rules, entitlements, Web-to-Case) also needs configuration alongside Email-to-Case
-- email-templates-and-alerts — use when the focus is on authoring or managing the email templates used in auto-response rules or case email actions
-- omni-channel-routing-setup — use when cases created by Email-to-Case need to be routed to agents via Omni-Channel after creation
-- assignment-rules — use when the case assignment rule logic, criteria ordering, or API trigger behavior needs dedicated attention
+- admin/case-management-setup — the wider case layer (queues, escalation, entitlements, Web-to-Case); this skill closes that skill's open "routing-address to queue mapping" question via `Case.Origin`
+- admin/assignment-rules — the `Case.assignmentRules` and `Case.autoResponseRules` files themselves: criteria grammar, entry order, and the `senderEmail` this skill must never let equal a routing address
+- admin/email-templates-and-alerts — org-wide email addresses and the Classic templates an auto-response entry points at
+- admin/queues-and-public-groups — `references/queue-behaviour-matrix.md`, the `email` / `doesSendEmailToMembers` pair that stacks with `notifyOwnerOnNewCaseEmail`
+- admin/business-hours-and-holidays — the SLA clock that starts when an inbound email creates the case
+- admin/email-service-inbound — a **different feature**: Apex Email Services with `Messaging.InboundEmailHandler`, for inbound mail that must run custom code. On-Demand Email-to-Case is Salesforce's own hosted email service and needs no handler; write one only when case creation is not what you want
+- admin/case-feed-send-email-action — the outbound half: the Send Email quick action agents reply from, and its own file limits
+- admin/email-deliverability-strategy — SPF, DKIM and DMARC on the domain that forwards into the routing address
+- admin/omni-channel-routing-setup — pushing the created case to an available agent; `routingFlow` and `fallbackQueue` on a routing address are the entry point
+- admin/permission-set-architecture — the grants that `isPermsetControlled` requires before it stops locking everyone out

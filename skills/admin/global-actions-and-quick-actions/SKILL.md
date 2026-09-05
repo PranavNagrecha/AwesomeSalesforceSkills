@@ -1,6 +1,6 @@
 ---
 name: global-actions-and-quick-actions
-description: "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for building an LWC that runs as a quick action — use lwc/lwc-quick-actions. NOT for converting Classic JavaScript or URL buttons — use admin/custom-button-to-action-migration."
+description: "Use this skill when configuring object-specific quick actions or global actions in Salesforce: choosing between action types, editing action layouts, pre-filling fields with predefined values, and adding actions to Lightning page layouts or mobile navigation. Trigger keywords: quick action, global action, action layout, pre-fill fields, predefined values, Salesforce mobile actions. NOT for building an LWC that runs as a quick action — use lwc/lwc-quick-actions. NOT for converting Classic JavaScript or URL buttons — use admin/custom-button-to-action-migration. NOT for Dynamic Actions visibility rules on a Lightning record page — use admin/dynamic-forms-and-actions. Also covers the QuickAction metadata type: quickAction-meta.xml, quickActionLayout, fieldOverrides, targetObject, targetParentField, targetRecordType, flowDefinition, and the Layout platformActionList and quickActionList entries that place an action."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,13 +13,16 @@ tags:
   - mobile
   - productivity
 triggers:
-  - "how do I add a quick action button to a record page in Lightning"
-  - "what is the difference between a global action and an object-specific quick action"
-  - "how do I pre-fill fields in a quick action with values from the current record"
-  - "quick action fields not showing up on mobile or Lightning Experience"
-  - "how to add actions to the Salesforce mobile app action bar"
-  - "action layout vs page layout — which one controls what appears in the quick action popup"
-  - "quick actions isn't working"
+  - "quick action deployed successfully but doesn't appear on the record page"
+  - "pre-fill a lookup on a quick action from the current record"
+  - "field added to the page layout is missing from the quick action popup"
+  - "predefined field value on a global action won't save"
+  - "quick action button hidden behind the More menu in Lightning"
+  - "write the quickAction-meta.xml for a Create action"
+  - "targetRecordType rejected on a Case quick action"
+  - "launch a screen flow from a button on a record page"
+  - "add an action to the Salesforce mobile action bar"
+  - "action layout vs page layout — which one controls the quick action form"
 inputs:
   - "The object (or global context) where the action should appear"
   - "The action type required (Create, Update, Log a Call, Custom, Flow)"
@@ -31,9 +34,9 @@ outputs:
   - "Predefined field values configured to reduce user data-entry effort"
   - "Action added to Lightning page layout in the mobile-and-Lightning actions section"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-09-04
 ---
 
 # Global Actions and Quick Actions
@@ -53,11 +56,29 @@ Gather this context before working on quick actions:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before opening Setup. Each one maps to a gotcha in `references/gotchas.md`; skipping them produces an action that deploys cleanly and does the wrong thing.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which record is the user looking at when they press this?" | A named record means object-specific and `targetParentField` can link the new record; "any page" means global and the user must pick the parent by hand | The scope decision, and whether parent linkage is free or manual |
+| "Which fields must the user type, and which should we set for them?" | Typed fields go on the action layout; set fields become `fieldOverrides` and can be omitted from the layout entirely | The split between layout items and predefined values |
+| "Is each pre-set field a picklist?" | `literalValue` is picklists only; every other type needs `formula` with a quoted string (gotcha 7) | The correct override element per field, before the deploy fails |
+| "Do any of these fields already have a default value?" | A predefined value overrides the field default, so the action's records diverge from every other creation path (gotcha 8) | A conscious decision instead of a later data-quality investigation |
+| "Which page layouts, and which surfaces — record bar, Classic publisher, mobile, list view?" | `platformActionList` and `quickActionList` are separate lists, and `actionListContext` picks the bar (gotcha 11) | The exact Layout edits, deployable in the same change |
+| "Is this object already on Dynamic Actions?" | If yes, the FlexiPage action list drives the bar and Layout edits are dead configuration | A redirect to `admin/dynamic-forms-and-actions` before wasted work |
+| "How many actions are already in front of this one?" | Position decides discoverability; `sortOrder` is the only lever (gotcha 5) | An agreed `sortOrder`, and which existing action loses its slot |
+
+What a proper configuration adds over just creating the action: the record it creates is linked and pre-filled without user typing, the pre-set values are written with the element the field type actually accepts, and the action ships in the same deployment as every Layout that surfaces it — so it is visible to real users on the first release rather than the second.
+
+---
+
 ## Core Concepts
 
 ### Action Types
 
-Salesforce provides six action types. Choosing the wrong one at creation forces deletion and recreation:
+These are the six action types an admin picks in Setup day to day. Choosing the wrong one at creation forces deletion and recreation. The full `QuickActionType` enum in the Metadata API also carries `Post`, `SocialPost` and `Canvas` — see the metadata table below:
 
 | Action Type | Creates a new record | Updates current record | Logs activity | Launches UI |
 |---|---|---|---|---|
@@ -97,7 +118,7 @@ Key points:
 - Action layouts are edited in Setup: navigate to the action, then click **Edit Layout** on the action detail page.
 - Action layouts are compact by design — best practice is 4–8 fields maximum. More fields defeats the purpose of a quick action.
 - Required fields must appear on the action layout or Salesforce will prevent saving.
-- Formula fields, roll-up summary fields, and auto-number fields cannot be added to action layouts.
+- Formula fields, roll-up summary fields, and auto-number fields cannot be added to action layouts. (UNVERIFIED 2026-09-04: not stated in the Metadata API guide's QuickActionLayout section; confirm in Setup before relying on it.)
 
 ### Predefined Values (Pre-filling Fields)
 
@@ -130,6 +151,28 @@ Steps to add an object-specific quick action to a Lightning record page:
 2. Drag **Mobile & Lightning Actions** palette items into the "Salesforce Mobile and Lightning Experience Actions" section.
 3. Save the page layout.
 4. If the layout already has actions, confirm the action is not buried behind the "More" overflow — the first 5 actions in this section appear directly on the highlights panel; subsequent actions go under a "More" dropdown.
+
+### The Metadata Behind the Setup Screens
+
+Every Setup field maps to one element of the `QuickAction` metadata type. Read this table when reviewing a diff or writing the XML by hand; `references/metadata-examples.md` has the full deployable files.
+
+| Setup control | Element | Notes from the Metadata API guide |
+|---|---|---|
+| Action Type | `type` | Required. `Canvas`, `Create`, `Flow`, `LightningComponent`, `LogACall`, `Post`, `SendEmail`, `SocialPost`, `Update`, `VisualforcePage` |
+| Target Object | `targetObject` | "The object for which the action is created and performed" |
+| (implicit parent link) | `targetParentField` | "Links the target object to the parent object" — object-specific actions only |
+| Record Type | `targetRecordType` | Only `Business Account`, `Person Account`, `Master` — see gotcha 6 |
+| Label / Standard Label | `label` / `standardLabel` | `standardLabel` uses the `QuickActionLabel` enum so the platform supplies a translated label |
+| Create a feed item | `optionsCreateFeedItem` | **Required**; applies only to Create, Update and Log a Call |
+| Success Message | `successMessage` | API 36.0+ |
+| Edit Layout | `quickActionLayout` | `layoutSectionStyle` (required) + `quickActionLayoutColumns` → `quickActionLayoutItems` (`field`, `emptySpace`, `uiBehavior`) |
+| Predefined Field Values | `fieldOverrides` | `field` + `formula` or `literalValue` |
+| Flow | `flowDefinition` | API name of the flow |
+| Lightning / Visualforce / Canvas | `lightningComponent` / `page` / `canvas` | plus `height` and `width` in pixels |
+
+Files live in `quickActions/`, suffix `.quickAction`. Object-specific actions are addressed with dot notation — the platform uses `Account.QuickCreateContact` for an entity-level action and `Global.CreateNewContact` for a global one, per the Apex `describeQuickActions` signature.
+
+The action's placement is not part of the action. It lives on the `Layout` (`platformActionList` for the Lightning and mobile bar, `quickActionList` for the Classic publisher) or, when Dynamic Actions are on, on the `FlexiPage`.
 
 ---
 
@@ -190,13 +233,13 @@ Steps to add an object-specific quick action to a Lightning record page:
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Scope and surface** — answer the Questions table above; decide object-specific vs global, and list every page layout (or FlexiPage) that must carry the action. If the object is on Dynamic Actions, stop and route to `admin/dynamic-forms-and-actions`
+2. **Split the fields** — put user-typed fields in `quickActionLayout` with the right `uiBehavior`, and everything you set for the user in `fieldOverrides`; check each override's field type against `literalValue` (picklists only) vs `formula`
+3. **Write or configure the action** — copy the matching shape from `references/metadata-examples.md` (Create with parent link, global Log a Call, Update, Flow, custom component, Person Account), or build it in Setup and retrieve it
+4. **Place it** — add the action to `platformActionList` with an explicit `sortOrder`, and to `quickActionList` too if Classic is still in use; keep the action and its layouts in one deployment
+5. **Check statically** — run `python3 scripts/check_global_actions_and_quick_actions.py --manifest-dir force-app/main/default` and clear every ERROR; treat `unplaced` INFOs as release blockers unless the action is deliberately parked
+6. **Verify as a user, not as an admin** — run `QuickAction.describeAvailableQuickActions('<Object>')` and `('Global')` in anonymous Apex as a test user on the target profile, then open a record and confirm the pre-filled values and the action's position in the bar
+7. **Record it** — fill in `templates/global-actions-and-quick-actions-template.md` with the layout placement, the overrides, and the profiles that can see it
 
 ---
 
@@ -225,7 +268,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 3. **Actions do not appear without a page layout assignment** — Creating an action and editing its layout is not sufficient; the action must also be dragged into the page layout's actions section and the page layout must be assigned to the user's profile. If an action is missing for some users but visible to others, check page layout assignments.
 
-4. **The first ~5 actions in the mobile/Lightning section display directly; the rest go to "More"** — Users often cannot find actions that are listed 6th or later. Keep the highest-frequency actions in the first five positions.
+4. **The first ~5 actions in the mobile/Lightning section display directly; the rest go to "More"** (UNVERIFIED 2026-09-04: the count is not in the extracted guides; observed behaviour, not a documented limit) — Users often cannot find actions that are listed 6th or later. Keep the highest-frequency actions in the first five positions.
 
 5. **Predefined values using merge fields only work for object-specific actions** — If you attempt to use `{!ObjectName.Field}` syntax on a global action predefined value, Salesforce will throw a validation error at save time. Global action predefined values must be static literals or formulas without source-record references.
 
@@ -242,8 +285,27 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing or reviewing `.quickAction-meta.xml`, the Layout action lists, package.xml, or the deploy and verification commands |
+| `references/gotchas.md` | An action deployed but is invisible, a predefined value is ignored or rejected, or a record from the action differs from every other creation path |
+| `references/examples.md` | You want a worked end-to-end configuration (create-child, quick update, global log-a-call) with the Setup clicks spelled out |
+| `references/well-architected.md` | Deciding global vs object-specific, declarative vs custom component, or how many actions a record page should carry |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated quick action guidance before acting on it |
+| `templates/global-actions-and-quick-actions-template.md` | Documenting a finished action: type, layout fields, overrides, placement, profile access, test results |
+| `scripts/check_global_actions_and_quick_actions.py` | Static-checking retrieved metadata before a deploy |
+
+---
+
 ## Related Skills
 
 - `admin/app-and-tab-configuration` — Lightning app configuration; action bar visibility is affected by the Lightning app's navigation items
 - `flow/screen-flows` — When the quick action type is "Flow", the referenced flow must be a screen flow; this skill covers building screen flows
 - `admin/object-creation-and-design` — Object and field design that determines what can be referenced in quick actions and predefined values
+- `admin/dynamic-forms-and-actions` — Dynamic Actions on a Lightning record page: this skill defines the actions, that skill controls when each one is visible
+- `admin/record-types-and-page-layouts` — The full `Layout` metadata shape and record-type-to-layout assignment; read it before hand-editing a layout file
+- `admin/custom-button-to-action-migration` — Replacing Classic JavaScript, URL, and list buttons with actions
+- `admin/case-feed-send-email-action` — The Case Feed Send Email action and its `QuickActionDefaultsHandler`, which is the supported way to shape an outbound email before it sends
+- `lwc/lwc-quick-actions` — Building the component behind a custom action: the required target, `recordId`, and closing the modal

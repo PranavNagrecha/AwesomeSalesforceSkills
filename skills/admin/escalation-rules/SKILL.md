@@ -1,6 +1,6 @@
 ---
 name: escalation-rules
-description: "Configure and troubleshoot Salesforce Case Escalation Rules: time-based escalation entries, business hours configuration, escalation actions (email alerts and reassignment), and diagnosing why cases are not escalating. NOT for SLA milestone timers — use admin/entitlements-and-milestones. NOT for case routing on creation — use admin/assignment-rules."
+description: "Configure and troubleshoot Salesforce Case Escalation Rules: time-based escalation entries, business hours configuration, escalation actions (email alerts and reassignment), and diagnosing why cases are not escalating. Covers the EscalationRules metadata shape, businessHoursSource and escalationStartTime semantics, staged escalationAction thresholds, deploy-inactive parallel-run cutover, and monitoring escalated cases. Trigger keywords: escalation rule, case not escalating, SLA breach notification, escalate after X hours, reassign case automatically, IsEscalated. NOT for SLA milestone timers — use admin/entitlements-and-milestones. NOT for case routing on creation — use admin/assignment-rules. NOT for the calendar itself — use admin/business-hours-and-holidays."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,10 @@ triggers:
   - "how to configure business hours so escalation only counts working hours"
   - "cases are being escalated even on weekends or outside business hours"
   - "how to reassign a case automatically when it is not resolved in time"
+  - "wave of cases escalated all at once after we reactivated the escalation rule"
+  - "escalation clock keeps resetting because a flow updates the case"
+  - "deploy an escalation rule from sandbox without switching off the live one"
+  - "find every case where IsEscalated is true and nobody followed up"
 tags:
   - escalation-rules
   - case-management
@@ -25,20 +29,25 @@ inputs:
   - "Whether escalation time should respect business hours or run 24/7"
   - "Escalation actions required: email notification targets, reassignment target (user, queue, or manager)"
   - "Case criteria for each escalation tier (priority, type, origin, etc.)"
+  - "The name of the currently active escalation rule in the target org, and its owner"
 outputs:
-  - "Configured escalation rule with entries and actions"
+  - "Deployable escalationRules/Case.escalationRules-meta.xml with entries and staged actions"
   - "Business hours setup recommendation"
   - "Escalation configuration review checklist"
   - "Troubleshooting diagnosis for non-firing escalations"
+  - "Cutover plan: deploy inactive, activate one rule, compare against the incumbent"
+  - "Monitoring query and report definition for escalated cases"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-03
+updated: 2026-09-04
 ---
 
 # Escalation Rules
 
 This skill activates when you need to configure, review, or troubleshoot Salesforce Case Escalation Rules — the declarative mechanism that automatically notifies stakeholders or reassigns cases when they are not resolved within a specified time window.
+
+It owns the **design and operation** of the rule: entry criteria, staged action thresholds, engine behaviour, the cutover, and the monitoring that proves it still works. The calendar the entry points at belongs to `admin/business-hours-and-holidays`; the routing that put the case somewhere in the first place belongs to `admin/assignment-rules`.
 
 ---
 
@@ -46,9 +55,28 @@ This skill activates when you need to configure, review, or troubleshoot Salesfo
 
 Gather this context before working on anything in this domain:
 
-- **Active rule limit:** Only one escalation rule can be active per org. If multiple rule configs exist, only the one marked Active fires. Confirm whether an active rule already exists before creating a new one.
-- **Processing cadence:** The time-based workflow engine that drives escalation runs approximately every hour. Escalations are not fired in real time. A case that hits its threshold at 2:05 PM may not escalate until the next engine run — plan SLA commitments accordingly.
-- **Business hours dependency:** If an escalation entry is configured to use business hours, those business hours must exist and be assigned to the case. If no business hours are defined at org level, the default is 24/7.
+- **Active rule limit:** Plan for one active escalation rule per org. If multiple rule configs exist, only the one marked Active fires. Confirm whether an active rule already exists before creating a new one. UNVERIFIED (2026-09-04): the Metadata API guide describes `escalationRule` as a repeating element "processed in the order they appear in the EscalationRules container" and gives each rule its own `active` flag; it does not state the one-active-rule ceiling, and help.salesforce.com cannot be fetched. Verify in the target org's Setup > Escalation Rules list before relying on it.
+- **Processing cadence:** The time-based engine that drives escalation is not real time. A case that hits its threshold at 2:05 PM may not escalate until the next engine pass — plan SLA commitments accordingly. UNVERIFIED (2026-09-04): the widely-quoted "approximately every hour" cadence appears in no fetchable official source; treat the interval as "batched, not immediate" and measure it in your own org before promising a number.
+- **Business hours dependency:** The Object Reference states it directly for the `BusinessHours` object — "Escalation rules are run only during these hours" — and adds that holidays attached to a calendar suspend both the hours and the escalation rules that use them. If no calendar is restricted, the org default is 24/7.
+- **Who else writes `OwnerId`:** an escalation action that reassigns changes the case owner, which re-fires every record-triggered automation watching ownership. Inventory those before staging a reassign action.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Setup. Each one maps to a failure documented in `references/gotchas.md`, and an LLM that skips them produces a rule that deploys cleanly and escalates the wrong cases at the wrong time.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does the clock start at case creation, or restart every time anyone edits the case?" | `escalationStartTime` is `CaseCreation` or `CaseLastModified`; `disableEscalationWhenModified` is a separate lever that stops escalation on edit | The per-tier choice of both fields, and a list of the automations that count as an "edit" |
+| "Which calendar does each tier follow, and is there a tier that must run 24/7?" | `businessHoursSource` is `None`, `Case`, or `Static` per entry — a per-Case calendar design is defeated by an entry left on `None` | One `businessHoursSource` value per entry, with the Sev-1 exception written down as a decision |
+| "Which escalation rule is active in production today, and who owns it?" | Activating a new rule is a cutover, not an addition | The incumbent rule's name, its entries, and a named owner to sign off the swap |
+| "When the timer expires, do we notify, change the owner, or both?" | Reassignment writes `OwnerId` and re-fires record automation; notify-only does not | A per-threshold action table, and the automation blast radius for any reassign action |
+| "What is the SLA in minutes, and has anyone signed off on the engine's batching latency?" | `minutesToEscalation` is stored in minutes while Setup shows hours, and the engine fires in batches | An agreed minutes value with headroom, not an hours value transcribed as minutes |
+| "How will we know next month that the rule still fires?" | `IsEscalated` is a plain writable boolean, not an engine-owned lock — nothing reports on a rule that quietly stopped | A saved report or query on escalated, still-open cases, with an owner and a cadence |
+| "How do we cut over without a wave of instant escalations?" | Cases already past their threshold escalate on the first pass after activation | A deploy-inactive-then-activate plan with a defined comparison window |
+
+What a proper configuration adds over just doing it: the timer measures the working time the SLA actually promised, the cutover is a comparison rather than a surprise, and someone is still looking at escalated cases a quarter later.
 
 ---
 
@@ -64,37 +92,51 @@ The two rules are complementary. Assignment routes the case on arrival; escalati
 
 ### Rule Structure: One Rule, Many Entries
 
-A single active escalation rule contains multiple **rule entries**. Each entry defines:
+A single active escalation rule contains multiple **rule entries**. In metadata each `ruleEntry` carries:
 
-1. **Entry criteria** — which cases this entry applies to (filter logic: field = value, using the same criteria builder as other rule types)
-2. **Escalation time** — how many hours must pass before the escalation actions fire
-3. **Business hours** — whether the timer counts all hours or only configured business hours
-4. **Age-over** field — whether the timer is based on the case's **creation date** or the date the case was **last modified** (default is creation date; choose "last modified" to reset the clock when agents update the case)
+| Field | Type | What it controls |
+|---|---|---|
+| `criteriaItems` | FilterItem[] | Which cases the entry applies to (`field`, `operation`, `value`) |
+| `formula` | string | Alternative to `criteriaItems` — "Specify either formula or criteriaItems, but not both fields" |
+| `booleanFilter` | string | Advanced filter logic across the numbered `criteriaItems` |
+| `businessHoursSource` | enum | `None`, `Case`, or `Static` |
+| `businessHours` | string | The named calendar — "Specify only if businessHoursSource is set to Static" |
+| `escalationStartTime` | enum | `CaseCreation` or `CaseLastModified` |
+| `disableEscalationWhenModified` | boolean | Escalation is disabled when the record is modified |
+| `escalationAction` | EscalationAction[] | The staged actions to perform when the criteria are met |
 
-Entries are evaluated in order. The **first matching entry** wins — subsequent entries are skipped, just like assignment rule evaluation.
+Entries are evaluated in order. The **first matching entry** wins — subsequent entries are skipped, just like assignment rule evaluation. Rules themselves are "processed in the order they appear in the EscalationRules container".
 
-### Escalation Actions
+### Escalation Actions Are Staged Inside One Entry
 
-Each rule entry can have up to **5 escalation actions**, which fire at different time thresholds. For example:
+Multi-tier escalation is built from several `escalationAction` elements inside a **single** entry, each with its own `minutesToEscalation`. It is not built from several entries — a case only ever matches one entry.
 
-- At 4 hours: email the case owner's manager
-- At 8 hours: reassign the case to a senior support queue + email the queue
+| Field | Meaning |
+|---|---|
+| `minutesToEscalation` | int, **minutes** — the guide's own sample uses `1440` for 24 hours |
+| `notifyTo` | The user to notify |
+| `notifyToTemplate` | Template for the notification email |
+| `notifyEmail` | A free-form email address to notify |
+| `notifyCaseOwner` | Boolean — notify the current owner |
+| `assignedTo` | The user or queue the case is reassigned to (omit for notify-only) |
+| `assignedToType` | `User` or `Queue` — meaningless without `assignedTo` |
+| `assignedToTemplate` | Template for the email sent to the new owner; a Classic template, because "Lightning email templates aren't packageable" |
 
-Each action specifies:
-- **Notify this user**: a specific user, role, case owner's manager, customer portal user, or no one
-- **Reassign case to**: a specific user or queue (optional — notification-only actions are valid)
-- **Additional email**: free-form email address notification
+An action with no `assignedTo` is notification-only and is a legitimate first stage. An action with `assignedTo` writes `OwnerId`.
 
-### Business Hours Configuration
+UNVERIFIED (2026-09-04): the commonly-cited ceiling of **5 escalation actions per entry** is not in the Metadata API guide's `EscalationAction` table and does not appear in the Salesforce App Limits cheat sheet (`grep -i escalation` returns nothing). `escalationAction` is typed as an unbounded array. Confirm the Setup-UI ceiling in your org before designing a fifth stage; `scripts/check_escalation_rules.py` reports the count as INFO rather than failing on it.
 
-Business hours define when your team is working. Escalation time is only counted within configured business hours windows when the entry is set to use them.
+### Business Hours and the Escalation Clock
 
-**Defaults:** The org-level default business hours are 24/7 unless explicitly configured. A case can be assigned a specific business hours record using the `BusinessHoursId` field (or the "Business Hours" field visible in the UI with Service Cloud).
+`businessHoursSource` decides per entry which clock runs:
 
-If you want escalation to pause on weekends, you must:
-1. Configure business hours under Setup > Business Hours
-2. Set the entry to "Use business hours" and point to the correct hours record
-3. Ensure cases have the correct Business Hours assignment (either default or case-level)
+| Value | Clock used |
+|---|---|
+| `None` | No calendar — wall-clock time, 24/7. Correct for Sev-1. |
+| `Case` | The calendar on `Case.BusinessHoursId` (a writable reference field) |
+| `Static` | The calendar named in `businessHours` on the entry, whatever the case says |
+
+Two facts from the Object Reference's `BusinessHours` entry govern the result: escalation rules run only during the calendar's hours, and holidays associated with the calendar suspend those hours **and the escalation rules that use them**. Restricting the calendar is what makes off-hours pausing real — a calendar left at the shipped 24/7 default makes `Static` and `None` behave identically. Calendar design itself lives in `admin/business-hours-and-holidays`.
 
 ---
 
@@ -107,33 +149,40 @@ If you want escalation to pause on weekends, you must:
 **How it works:**
 1. Create rule entries in priority order: P1 entry first, P2 next, P3 last.
 2. Each entry uses field criteria `Priority = "P1"` (or P2, P3).
-3. Set escalation times: P1 = 1 hour, P2 = 4 hours, P3 = 8 hours.
-4. Add escalation actions for each tier: P1 notifies manager immediately, P2 notifies at 2h and reassigns at 4h.
+3. Set `minutesToEscalation` per stage: P1 = 60, P2 = 240, P3 = 480.
+4. Add staged actions per tier: P1 notifies the manager at stage 1 and reassigns at stage 2.
 
 **Catch:** Rule entries are evaluated top to bottom. Put P1 first, otherwise a P1 case might match a lower-tier entry if that entry has looser criteria.
 
-### Pattern: Business-Hours-Aware Escalation for a Regional Team
+### Pattern: Mixed Clocks in One Rule
 
-**When to use:** A support team works 8 AM–6 PM, Monday–Friday. Escalation should not fire at 2 AM Saturday for a case opened Friday at 5 PM.
+**When to use:** Sev-1 must escalate at 3 AM Sunday; everything else must wait for the next working morning.
 
-**How it works:**
-1. Create a Business Hours record: Setup > Business Hours > New. Set Mon–Fri 8:00 AM–6:00 PM in the team's time zone.
-2. Set the default business hours or assign per case.
-3. In the escalation rule entry, check "Use Business Hours."
-4. Set the escalation threshold. A 4-hour escalation clock that started at 5 PM Friday will not expire until 9 AM Monday.
+**How it works:** Give the Sev-1 entry `businessHoursSource` = `None` and the standard entries `businessHoursSource` = `Case` (or `Static` with a named calendar). The choice is per entry, so one rule carries both clocks. The full XML is in `references/metadata-examples.md`.
 
-**Why this matters:** Without this configuration, a case created Friday at 5 PM with an 8-hour escalation window would fire at 1 AM Saturday — uselessly sending a notification when no one is working.
+**Why not two rules:** a second rule is a cutover, not an addition — see the deploy-inactive pattern below.
 
 ### Pattern: Notify and Reassign at Different Thresholds
 
 **When to use:** You want to warn the case owner at hour 2, then escalate to a queue at hour 4 if still unresolved.
 
-**How it works:**
-Within a single rule entry, add two escalation actions:
-- Action 1: Age over = 2 hours → Notify case owner's manager. No reassignment.
-- Action 2: Age over = 4 hours → Reassign to Escalation Queue + email queue.
+**How it works:** Within a single rule entry, add two `escalationAction` elements:
+- Action 1: `minutesToEscalation` 120 → `notifyCaseOwner` true, `notifyTo` the manager. No `assignedTo`.
+- Action 2: `minutesToEscalation` 240 → `assignedTo` the escalation queue, `assignedToType` `Queue`, plus `notifyEmail`.
 
-Both actions are attached to the same entry (same criteria). They fire sequentially as time thresholds are crossed.
+Both actions are attached to the same entry (same criteria). They fire as their thresholds are crossed.
+
+### Pattern: Deploy Inactive, Then Cut Over
+
+**When to use:** Replacing or materially changing the live rule in production.
+
+**How it works:**
+1. Deploy the new rule with `<active>false</active>` alongside the incumbent. Nothing changes in production.
+2. Compare the two rules' entry criteria against a sample of live cases before switching.
+3. Activate the new rule in a separate, small deploy, in a window where a wave of instant escalations is survivable.
+4. Watch escalated-case volume for one full SLA period before deleting the old rule.
+
+The step-by-step with XML and CLI is in `references/metadata-examples.md`.
 
 ---
 
@@ -143,24 +192,27 @@ Both actions are attached to the same entry (same criteria). They fire sequentia
 |---|---|---|
 | Route case to agent on creation | Assignment Rule | Escalation only activates after time passes — it is not a routing tool for new cases |
 | Fire when SLA time is exceeded | Escalation Rule | Purpose-built for time-based case follow-up |
-| Clock should pause on weekends | Enable Business Hours in rule entry | Without this, the 24/7 clock fires off-hours |
-| Reset clock when agent responds | Use "Last Modified Date" as age basis | Clock restarts each time the case is updated |
-| Keep original owner but notify manager | Escalation action without reassignment | Set "Notify" target only; leave reassignment blank |
+| Clock should pause on weekends | `businessHoursSource` `Case` or `Static`, pointed at a restricted calendar | Escalation runs only during the calendar's hours |
+| Sev-1 must ignore the calendar | `businessHoursSource` `None` on that entry | The choice is per entry, so it coexists with business-hours entries |
+| Reset clock when agent responds | `escalationStartTime` `CaseLastModified` | The clock restarts on each update — including automation updates |
+| Stop escalating once someone touches the case | `disableEscalationWhenModified` true | Disables escalation on modification instead of restarting the timer |
+| Keep original owner but notify manager | Action with `notifyTo`/`notifyCaseOwner` and no `assignedTo` | Notification-only actions are valid |
 | Multiple SLA tiers by priority | Multiple rule entries, ordered P1 first | First matching entry wins; put most specific criteria at top |
-| Escalation every hour until resolved | Add multiple time-stepped actions | Actions at 2h, 4h, 6h on the same entry create progressive escalation |
+| Progressive escalation within one tier | Multiple `escalationAction` elements on one entry | A case matches one entry only; stages live inside it |
+| Sub-hourly, guaranteed-precision SLA | Scheduled Flow or Apex Schedulable | The declarative engine is batched, not real time |
+| Replacing the live rule | Deploy inactive, activate separately | Activation is a cutover with a possible escalation wave |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Inventory the incumbent** — retrieve the org's current rules (`sf project retrieve start --metadata EscalationRules:Case`) and record which rule is active, its entries, and its owner. Answer the table in `## Questions to Ask Before Configuring` before designing anything.
+2. **Design the tiers** — one entry per distinct clock-and-criteria combination, staged actions inside each entry; capture the design in `templates/escalation-rules-template.md` so the minutes, the calendar source, and the action targets are agreed before they are typed.
+3. **Confirm the calendar** — check each entry's `businessHoursSource` against the calendar design in `admin/business-hours-and-holidays`; a `Case` source needs `Case.BusinessHoursId` populated at creation.
+4. **Build as metadata** — shape `escalationRules/Case.escalationRules-meta.xml` from `references/metadata-examples.md`, with the new rule `<active>false</active>` for now.
+5. **Lint** — run `python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir force-app/main/default`; it flags two active rules, a `Static` entry with no calendar, non-positive `minutesToEscalation`, `assignedTo` without `assignedToType`, and catch-all entries.
+6. **Test the clock** — reuse the after-hours clock test in `admin/business-hours-and-holidays` `references/examples.md` (Example 4) against a real case, then verify with the monitoring query in `references/metadata-examples.md`.
+7. **Cut over and watch** — activate in its own deploy, then run the escalated-case monitoring query for one full SLA period; if nothing fired, work `references/gotchas.md` in order.
 
 ---
 
@@ -168,30 +220,33 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Run through these before marking escalation rule work complete:
 
-- [ ] Only one escalation rule is active; no conflicting rules exist in Setup > Escalation Rules
+- [ ] Exactly one rule in the file has `<active>true</active>`, and it is the one you intend
 - [ ] Rule entries are ordered correctly — most specific criteria appear first
-- [ ] Each entry's escalation time is expressed in hours and matches the agreed SLA
-- [ ] Business hours are configured if escalation should respect working hours, and entries reference the correct hours record
-- [ ] Escalation actions specify valid targets (active users, populated queues, or valid roles)
-- [ ] Test case has been created, aged past the threshold (or time advanced via test tooling), and escalation fired as expected
-- [ ] The case criteria used in each entry (Priority, Type, Origin) match the actual field values used in the org
-- [ ] Notifications are going to reachable email addresses — not inactive users or empty queues
+- [ ] Every `minutesToEscalation` is a positive integer expressed in **minutes**, cross-checked against the SLA in hours
+- [ ] Each entry's `businessHoursSource` (`None` / `Case` / `Static`) is the intended one, and `businessHours` is present exactly when the source is `Static`
+- [ ] `escalationStartTime` and `disableEscalationWhenModified` were chosen deliberately per entry, not left at defaults
+- [ ] No entry sets both `criteriaItems` and `formula`
+- [ ] Every action with `assignedTo` also sets `assignedToType`, and the target user or queue exists in the target org
+- [ ] Email templates referenced by `notifyToTemplate` / `assignedToTemplate` exist and are Classic templates
+- [ ] The record automation that watches `OwnerId` has been reviewed for any reassigning action
+- [ ] A test case has been aged past the threshold and escalation fired as expected
+- [ ] Entry criteria values match the actual field values used in the org
+- [ ] The cutover was a deploy-inactive-then-activate, and escalated-case volume was watched afterwards
+- [ ] A monitoring report or query on escalated, still-open cases exists and has an owner
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Non-obvious platform behaviors that cause real production problems. Full treatment in `references/gotchas.md`.
 
-1. **The engine runs approximately every hour — not in real time.** Escalation time is not calculated to the minute. If a threshold is crossed at 10:35 AM and the engine last ran at 10:30 AM, escalation fires around 11:30 AM. Avoid SLAs with sub-one-hour resolution if precision matters.
-
-2. **Deactivating and reactivating a rule does not reset case timers.** Cases already in the pipeline do not restart their clocks when you edit the rule. The engine resumes evaluation based on the original case creation (or last modified) date. This can cause a wave of unexpected escalations immediately after a rule is reactivated.
-
-3. **Business hours = 24/7 if not explicitly configured.** If you leave business hours at the Salesforce default (which is 24 hours every day), checking "Use business hours" on an entry has no practical effect — all hours count. You must explicitly set Mon–Fri windows in the Business Hours setup for off-hours pausing to work.
-
-4. **Only one active rule per org.** You cannot have a "Sales Cases" rule and a "Service Cases" rule both active simultaneously. Use multiple entries within the single active rule, with entry criteria differentiating case types. If you need different SLA structures, implement the differentiation through rule entry criteria, not through separate rules.
-
-5. **Escalation does not fire on closed cases.** If a case is closed before the escalation threshold, no action fires. If it is reopened, the original creation-date clock continues from where it was — meaning reopened cases may escalate almost immediately if significant time has passed. Use "last modified date" as the age basis if you want reopened cases to get a fresh window.
+1. **The engine batches; it does not fire on the minute.** Do not sell minute-level SLA precision on a declarative escalation rule.
+2. **Reactivating a rule can produce a wave.** Cases already past their threshold escalate on the first pass after activation.
+3. **A 24/7 calendar makes the business-hours setting a no-op.** Restricting the calendar is the work; selecting it is not.
+4. **`minutesToEscalation` is minutes; Setup shows hours.** A "4 hour" tier written as `4` escalates after four minutes.
+5. **Reassignment writes `OwnerId`.** Every record-triggered automation on ownership fires again, hours after the case was created.
+6. **Holidays on the calendar suspend the escalation rules that use it.** An unmaintained holiday list silently changes SLA behaviour a year later.
+7. **`IsEscalated` is a plain writable boolean.** Anything with update access — a data load, a flow, an integration — can set or clear it.
 
 ---
 
@@ -199,13 +254,31 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Escalation rule configuration | A configured active rule with entries and actions, ready for test validation |
-| Business hours record | A named business hours window that escalation entries can reference |
-| Escalation configuration review | Checklist confirming rule order, thresholds, action targets, and business hours setup |
+| `escalationRules/Case.escalationRules-meta.xml` | The deployable rule with ordered entries and staged actions |
+| Business hours decision | Which `businessHoursSource` each entry uses, and why any entry is `None` |
+| Cutover plan | Deploy-inactive, activate, compare, retire — with the watch window named |
+| Escalation configuration review | Checklist confirming rule order, thresholds, action targets, and calendar wiring |
+| Monitoring query / report | Escalated, still-open cases by owner and age, with a review cadence |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing or reviewing the deployable XML, package.xml, CLI, cutover, or monitoring query |
+| `references/gotchas.md` | The escalation fired late, early, twice, or not at all |
+| `references/examples.md` | You want two worked scenarios end to end, plus the multiple-active-rules anti-pattern |
+| `references/well-architected.md` | Choosing declarative escalation over Flow/Apex, and the official sources behind the claims here |
+| `references/llm-anti-patterns.md` | Self-checking generated escalation guidance before returning it |
 
 ---
 
 ## Related Skills
 
-- assignment-rules — use alongside escalation rules to handle initial routing; assignment routes on creation, escalation follows up if unresolved
-- approval-processes — time-based routing for human decisions, not SLA escalation
+- admin/assignment-rules — initial routing; its `references/metadata-examples.md` holds the base EscalationRules shape and its `references/troubleshooting.md` step 5 covers ownership overwrites
+- admin/business-hours-and-holidays — the calendar an entry consumes through `businessHoursSource`, and the after-hours clock test
+- admin/case-management-setup — case intake, where `Case.BusinessHoursId` gets populated
+- admin/entitlements-and-milestones — milestone timers, the other SLA clock; not the same engine
+- architect/sla-design-and-escalation-matrix — the tier table and escalation matrix that decide what these entries should say
+- admin/approval-processes — time-based routing for human decisions, not SLA escalation

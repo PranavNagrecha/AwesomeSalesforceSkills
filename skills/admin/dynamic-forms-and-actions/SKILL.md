@@ -1,6 +1,6 @@
 ---
 name: dynamic-forms-and-actions
-description: "Configure Dynamic Forms (field and section visibility on Lightning record pages) and Dynamic Actions (button and action visibility rules) in Lightning App Builder — enabling Dynamic Forms, converting page layout fields with the Upgrade Now wizard, writing field visibility rules (field value, profile, permission, record type, device), and controlling action bar visibility. NOT for page layout design or record type assignment — use admin/record-types-and-page-layouts. NOT for a full layout-to-Dynamic-Forms migration across record types or profiles — use admin/dynamic-forms-migration."
+description: "Configure Dynamic Forms (field and section visibility on Lightning record pages) and Dynamic Actions (button and action visibility rules) in Lightning App Builder — enabling Dynamic Forms, converting page layout fields with the Upgrade Now wizard, writing field visibility rules (field value, profile, permission, record type, device), and controlling action bar visibility. NOT for page layout design or record type assignment — use admin/record-types-and-page-layouts. NOT for a full layout-to-Dynamic-Forms migration across record types or profiles — use admin/dynamic-forms-migration. Keywords: flexipage, fieldInstance, fieldItem, uiBehavior, visibilityRule, booleanFilter, UiFormulaCriterion, actionOverrides, profileActionOverrides, page activation, org default page, App Builder Upgrade Now."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -8,13 +8,17 @@ well-architected-pillars:
   - Operational Excellence
   - Security
 triggers:
-  - "I want fields on a record page to show or hide based on field values without creating multiple page layouts"
-  - "How do I make a button only visible to certain profiles or when a record meets specific criteria"
-  - "Users see too many irrelevant fields on the record page and I need to simplify the view by record type or user role"
-  - "How do I convert an existing page layout to Dynamic Forms in Lightning App Builder"
-  - "Field visibility rules not working on my Lightning record page"
+  - "hide a field on the record page unless another field has a certain value"
+  - "show a button only for certain profiles or only at a certain stage"
+  - "convert an existing page layout to Dynamic Forms in Lightning App Builder"
+  - "dynamic forms visibility rule not working"
+  - "field section on my Lightning page does not appear until I save the record"
+  - "deployed the flexipage but users still see the old record page"
+  - "mark a field required on the record page without making it required in the API"
+  - "cannot remove an action override with destructiveChanges.xml"
+  - "work out which profile and record type sees which Lightning record page"
   - "Dynamic Forms not available for this standard object — what are my options"
-  - "dynamic forms lightning record page visibility rules field sections"
+  - "dynamic forms dynamic actions lightning record page visibility rules field sections flexipage"
 tags:
   - dynamic-forms
   - dynamic-actions
@@ -35,9 +39,9 @@ outputs:
   - "Checklist verifying the configuration is complete and users can see expected fields"
 dependencies:
   - record-types-and-page-layouts
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-09-04
 ---
 
 # Dynamic Forms and Dynamic Actions
@@ -50,11 +54,29 @@ This skill activates when a practitioner needs to show or hide fields, sections,
 
 Gather this context before working on anything in this domain:
 
-- **Object support**: Dynamic Forms is available for all custom objects and a growing subset of standard objects. As of Spring '25, supported standard objects include Account, Contact, Lead, Opportunity, Case, and several others. Check the official help article for the current list before committing to this approach.
-- **Edition requirement**: Dynamic Forms requires Enterprise Edition or higher. Professional Edition does not support it.
+- **Object support**: Dynamic Forms is available for all custom objects and a growing subset of standard objects. As of Spring '25, supported standard objects include Account, Contact, Lead, Opportunity, Case, and several others. Check the official help article for the current list before committing to this approach. **UNVERIFIED (2026-09-04):** the Metadata API Developer Guide publishes no object support matrix for Dynamic Forms, and help.salesforce.com cannot be fetched offline. The reliable test is empirical: open Lightning App Builder for the object and see whether individual fields can be placed.
+- **Edition requirement**: Dynamic Forms requires Enterprise Edition or higher. Professional Edition does not support it. **UNVERIFIED (2026-09-04):** no edition requirement for Dynamic Forms appears in the Metadata API Developer Guide or the Salesforce App Limits Cheat Sheet. Confirm against your contract or the Lightning App Builder UI for the target org before quoting this to a customer.
 - **Existing page layout state**: Know whether the object currently uses a classic page layout in Lightning. When you enable Dynamic Forms, the page layout fields are *not* automatically migrated — you must explicitly convert them using the "Upgrade Now" wizard in Lightning App Builder.
-- **Mobile offline limitation**: Dynamic Forms is not supported in Salesforce Mobile App offline mode. Fields configured as Dynamic Form components will not render when the device is offline.
+- **Mobile**: two switches decide what a phone renders, and neither is on the page. `DynamicFormsSettings.enableFormsOnMobile` is a single org-wide setting (API 58.0+, Beta), and the assignment's `formFactor` decides which page a phone loads at all — `Small` is the mobile app, `Large` is Lightning Experience desktop, and no value means Salesforce Classic. Get a decision on both before designing for mobile. Offline behaviour is a separate question: **UNVERIFIED (2026-09-04):** the claim that Dynamic Forms does not render in Salesforce mobile offline mode is not confirmed by any source available offline. Test on a device before promising it either way. assume nothing and test.
 - **Most common wrong assumption**: Practitioners assume that once Dynamic Forms is enabled on a Lightning record page, existing page layout fields appear automatically. They do not. The page layout fields must be added individually as Dynamic Form field components, or the "Upgrade Now" wizard must be used to bulk-convert them.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening App Builder. Each one maps to a gotcha in `references/gotchas.md`; skipping them produces a page that demos perfectly and behaves differently in production.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does this condition change *while* the user is editing, or is it fixed for the whole session?" | Field rules re-evaluate live; field **section** rules are evaluated only after save | The choice between per-field rules and a section rule — the single most common design error here |
+| "Who is allowed to see this, and is hiding it enough?" | A visibility rule renders; only FLS authorises. Hidden fields stay readable in reports, list views, and the API | Either an FLS/permission-set change, or an explicit written decision that this is cosmetic |
+| "Which app, record type, and profile combinations must land on this page?" | None of that lives in the `.flexipage`; it lives in `CustomObject.actionOverrides` and `CustomApplication.profileActionOverrides`, and the narrowest match wins | The activation matrix, and the second and third metadata files the change actually needs |
+| "Do phone users need this page, and does the org have the mobile setting on?" | `formFactor` on the assignment picks the page; `DynamicFormsSettings.enableFormsOnMobile` is org-wide and Beta | A `Small` assignment row, or a documented decision that mobile keeps the old experience |
+| "Is 'required' about this screen, or about the data?" | `uiBehavior` = `Required` binds to one field instance on one page and never reaches the save path | A validation rule where the data must be clean, and `uiBehavior` only where the prompt is a UI nicety |
+| "How many fields, and are they going in one region?" | A Lightning page region is documented as holding up to 100 components, and conversion turns one detail component into one item per field | A section-and-facet structure decided before conversion, not after the ceiling is hit |
+| "Which actions move to Dynamic Actions, and are they coming off the page layout in the same change?" | Actions surviving in both places duplicate or override each other | A per-action list with a removal step, rather than a half-migrated action bar |
+
+What a proper configuration adds over just placing fields in App Builder: the page is reachable by the right users because its assignment metadata shipped with it, the rules fire when the business expects them to rather than only after a save, and the "required" and "hidden" decisions land on the layer that actually enforces them.
 
 ---
 
@@ -88,6 +110,20 @@ Visibility filters do not replace FLS — a hidden field is merely not rendered;
 Dynamic Actions apply the same visibility-rule approach to the action bar (buttons). Instead of a static list of actions from the page layout, you configure each action as a component on the Lightning record page and attach visibility rules. Dynamic Actions must be explicitly enabled per object in the Lightning App Builder page — the option appears in the page's properties panel.
 
 Dynamic Actions support the same filter types as Dynamic Form fields. A common use case is hiding "Approve" or "Submit for Approval" buttons until the record reaches a specific status.
+
+The visibility rule is a property of a **component instance**, not of the action list. The FlexiPage's `platformActionlist` holds the ordered action bar (`PlatformActionList` with `actionListContext` = `Flexipage`, and `platformActionListItems` carrying `actionName`, `actionType`, `sortOrder`, `subtype`); the per-action *rule* rides on the component that renders the button. `references/metadata-examples.md` §1 shows the shape.
+
+### Where the Page Lives, and Where the Assignment Lives
+
+These are two different metadata types, and shipping only the first is the most common way a correct page reaches nobody.
+
+| What | Metadata type | DX path |
+|---|---|---|
+| The page and all its rules | `FlexiPage` | `flexipages/<Name>.flexipage-meta.xml` |
+| Org default for View | `CustomObject` → `actionOverrides` (`type` = `flexipage`, View action only) | `objects/<Obj>/<Obj>.object-meta.xml` |
+| App default, and app + record type + profile | `CustomApplication` → `actionOverrides` and `profileActionOverrides` | `applications/<App>.app-meta.xml` |
+
+Precedence runs narrowest-wins: a matching `ProfileActionOverride` takes precedence over the `ActionOverride` for the same page. There is no permission-set dimension anywhere in the assignment metadata — only `profile`. Full XML, the deletion procedure (which is *not* `destructiveChanges.xml`), and the verification steps are in `references/metadata-examples.md`.
 
 ---
 
@@ -140,13 +176,13 @@ Dynamic Actions support the same filter types as Dynamic Form fields. A common u
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Answer the questions above into `templates/dynamic-forms-and-actions-template.md`. The Field Visibility Matrix and Action Visibility Matrix are the design; a rule you cannot write as a row is a rule you cannot express in `UiFormulaCriterion`.
+2. Decide per row whether the condition is **live** or **post-save**. Conditions that change during editing (a picklist the user is about to set) must be per-field rules; conditions fixed for the session (record type, profile, custom permission, form factor) can sit on a `flexipage:fieldSection`. Getting this backwards is the failure the Core Concepts section describes and no checker can catch.
+3. Convert with the "Upgrade Now" wizard in Lightning App Builder rather than hand-authoring, then retrieve the page and read the real XML. `references/metadata-examples.md` gives the shape to compare against — `fieldInstance` / `fieldItem` / `fieldInstanceProperties` with `uiBehavior`, and `visibilityRule` / `criteria` / `booleanFilter` with the closed operator set `CONTAINS`, `EQUAL`, `NE`, `GT`, `GE`, `LE`, `LT`.
+4. Write the **assignment** in the same change set: `CustomObject.actionOverrides` for the org default, `CustomApplication.profileActionOverrides` for app + record type + profile, one row per `formFactor` you support. A page deployed without its assignment is inert.
+5. Run `python3 scripts/check_dynamic_forms_and_actions.py --manifest-dir force-app/main/default` and clear every finding or record why it is accepted. It catches duplicated fields, rules pointing at fields that are not in the object folder, expressions spanning more than five fields, orphaned action-override targets, and region sizes past the documented ceiling.
+6. Deploy with `--dry-run` first, then verify against a **real record**, not the App Builder preview: change the driving field without saving (field rules fire, section rules do not), save (section rules fire), and repeat as a user in each profile in the activation matrix. The verification table in `references/metadata-examples.md` §7 lists the four checks worth doing.
+7. Record the activation matrix and any rule you could not express declaratively in the template's Notes and Deviations section, then hand a wide or slow page to `admin/lightning-page-performance-tuning` before rollout.
 
 ---
 
@@ -160,6 +196,9 @@ Run through these before marking work in this area complete:
 - [ ] All required fields appear for each combination of user context and record state (tested manually or via test user)
 - [ ] FLS is correctly set for all fields referenced in visibility rules (a field hidden by a visibility filter but inaccessible via FLS is doubly hidden — ensure no field becomes unexpectedly invisible to users who need it)
 - [ ] Dynamic Actions enabled if action bar changes are required, and conflicting page layout actions are removed
+- [ ] Assignment metadata shipped in the same change as the page — `CustomObject.actionOverrides` for the org default and/or `CustomApplication.actionOverrides` / `profileActionOverrides` for app, record type, and profile, with one row per `formFactor` supported
+- [ ] Every rule tested for *timing*, not just outcome: field rules verified mid-edit before saving, field-section rules verified after saving
+- [ ] `python3 scripts/check_dynamic_forms_and_actions.py --manifest-dir <source dir>` run and every finding cleared or explicitly accepted
 - [ ] Mobile behavior documented and communicated to users if the object is used on the Salesforce Mobile App
 
 ---
@@ -188,7 +227,25 @@ Non-obvious platform behaviors that cause real production problems:
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing deployable `FlexiPage` XML, the `actionOverrides` / `profileActionOverrides` that activate it, the `package.xml`, the retrieve/deploy commands, how to *remove* an assignment, and the four post-deploy verification checks |
+| `references/gotchas.md` | Ten platform behaviours that make a correct-looking page wrong — the missing org switch, per-instance `Required`, undeletable assignments, the mobile Beta toggle, and the 100-component region ceiling |
+| `references/examples.md` | Working through a real conversion: the six-layout field matrix with its record-type rules, and the AND/OR truth table for a two-criteria action rule |
+| `references/llm-anti-patterns.md` | Reviewing generated Dynamic Forms advice, especially AND-versus-OR filter logic and the field-section progressive-disclosure trap |
+| `references/well-architected.md` | Framing the design against User Experience, Operational Excellence, and Security, and for the source list behind every claim here |
+| `templates/dynamic-forms-and-actions-template.md` | Before touching App Builder — the visibility matrices are the design artifact step 1 produces |
+
+---
+
 ## Related Skills
 
-- `record-types-and-page-layouts` — For designing page layout structure, record type assignment, and profile layout mapping. Use alongside this skill when migrating from page layouts to Dynamic Forms.
-- `custom-field-creation` — For creating the fields that will be placed and conditionally shown using Dynamic Forms.
+- `admin/record-types-and-page-layouts` — Owns page layout structure, record type assignment, profile layout mapping, and the `Layout` XML. Read it for the layout side of a conversion; do not expect layout XML here.
+- `admin/dynamic-forms-migration` — Owns the multi-record-type, multi-profile conversion *project*: sequencing, impersonation test plans, and which layouts can be retired. This skill covers configuring one page; that one covers migrating an object.
+- `admin/lightning-record-page-configuration` — Owns the general FlexiPage anatomy: templates, tabs, facets, regions, and the Tooling API audit queries. Read it first if the question is about page structure rather than conditional visibility.
+- `admin/lightning-app-builder-advanced` — Component-level App Builder technique beyond field and action visibility.
+- `admin/lightning-page-performance-tuning` — Where to take a page that is slow or wide, and how to measure it rather than guess.
+- `admin/global-actions-and-quick-actions` — Defining the actions themselves (action layout, predefined values, object-specific versus global) before Dynamic Actions decides when to show them.
+- `admin/custom-field-creation` — Creating the fields that will be placed and conditionally shown, including whether a field should be required at the API rather than on one page.

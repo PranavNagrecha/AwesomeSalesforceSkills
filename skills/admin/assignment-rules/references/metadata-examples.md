@@ -217,7 +217,7 @@ How to read it:
 - `businessHoursSource` is `None`, `Case` (use the hours on the Case record), or `Static` (use the named `businessHours`; set it only with `Static`).
 - `escalationStartTime` is `CaseCreation` or `CaseLastModified`; `disableEscalationWhenModified` stops the clock when the record is edited.
 - Times are **minutes** in metadata although Setup shows hours: 120 = 2 hours, 1440 = 24 hours (the guide's own sample uses 1440).
-- An action without `assignedTo` is notification-only. Up to five actions per entry (`admin/escalation-rules`).
+- An action without `assignedTo` is notification-only. The guide models `escalationAction` as an unbounded list; the commonly quoted five-per-entry ceiling is UNVERIFIED (2026-09-04: not in the Metadata API guide or the App Limits cheat sheet; see `admin/escalation-rules`).
 - Every template, queue, and business-hours name must already exist in the target org.
 
 ## package.xml and CLI

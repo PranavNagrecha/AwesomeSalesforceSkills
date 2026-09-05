@@ -49,3 +49,192 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Standard Email-to-Case only. The local agent uses the SOAP or REST API to create cases in Salesforce. Orgs receiving hundreds or thousands of emails per day may not account for this consumption when estimating daily API usage. On-Demand Email-to-Case does not use API calls — it uses Apex Email Services, which is outside the API call governor.
 
 **How to avoid:** If the org expects high email volume, use On-Demand Email-to-Case. If Standard is required, estimate daily email volume and add it to the org's API call budget. Monitor API usage in Setup → Company Information → API Requests, Last 24 Hours.
+
+---
+
+## Gotcha 6: `caseOwner` on a Routing Address Writes an Org-Level Field, So the Last Address Wins
+
+**What happens:** Two routing addresses are each given their own default owner — `support@` to the
+Tier 1 queue, `billing@` to the Billing queue. After deploy, cases from *both* addresses land with
+the Billing queue, or with whichever address was processed last.
+
+**When it occurs:** Any time more than one `routingAddresses` element sets `caseOwner`. The Metadata
+API guide states it plainly in the `caseOwner` field description: "Specifying a case owner here in
+the routing address sets a value of `defaultCaseOwner` in `CaseSettings`" (api_meta L112010 ff.).
+`defaultCaseOwner` is a single field on `CaseSettings`, not a per-address one, so the addresses are
+writing to a shared slot. There is no warning at deploy and no error — the file is valid.
+
+**How to avoid:** Set `caseOwner` on at most one routing address, or on none. Give each address a
+distinct `caseOrigin` instead and let the case assignment rule pick the queue from `Case.Origin`
+(`references/metadata-examples.md`, assignment rule example). Set the org-level `defaultCaseOwner`
+and `defaultCaseOwnerType` once, deliberately, as the catch-all — which is what it is. When
+`caseOwner` is set at all, `caseOwnerType` must be set alongside it or the owner is ambiguous.
+
+---
+
+## Gotcha 7: A Partial `Case.settings` Deploy Deletes the Routing Addresses It Omits
+
+**What happens:** An admin edits the settings file to add a third channel, or a pipeline builds the
+file from a template that only knows about the channels in scope for this release. The deploy
+succeeds. The channels that were not in the file have stopped creating cases, and their configuration
+is gone from the org — not disabled, deleted.
+
+**When it occurs:** On any `Settings:Case` deploy. `routingAddresses` is a full-replacement list; the
+guide's field description says "Removing an address from this list deletes it from the target org"
+(api_meta L111726 ff.). Two related read-only fields make the damage hard to undo: `emailServicesAddress`
+and `isVerified` "can't be modified", so re-adding the element does not restore the deleted
+Salesforce-generated address or its verified state. The mail server's forwarding rule now points at
+an address that no longer exists.
+
+**How to avoid:** Always `sf project retrieve start --metadata "Settings:Case"` from the target org
+immediately before editing, and deploy the retrieved file with your addition — never a
+hand-assembled or template-generated subset. In a pipeline, diff the routing address count between
+the retrieved file and the file about to deploy and fail the build when it drops. Keep the list of
+public addresses and their forwarding targets in the org runbook, because the org will not hand them
+back after a deletion.
+
+---
+
+## Gotcha 8: There Are Two Mutually Exclusive Threading Switch Pairs, and `ThreadIdentifier` Is Not One of Them
+
+**What happens:** Threading is broken, someone turns on all four threading booleans "to be safe", and
+nothing improves. Or a monitoring query is written that asserts `EmailMessage.ThreadIdentifier` is
+populated, and it alerts on every single healthy Email-to-Case message in the org.
+
+**When it occurs:** The four booleans are conditional on which threading mode the org is in.
+`enableThreadTokenInBody` and `enableThreadTokenInSubject` are, per the guide, "applicable only to
+orgs using Lightning Threading"; `enableThreadIDInBody` and `enableThreadIDInSubject` are "applicable
+only to orgs that do not use Lightning Threading" (api_meta L111726 ff.). Setting the pair that does
+not apply to your org changes nothing. Separately, `EmailMessage.ThreadIdentifier` sounds like the
+threading field and is not: "This field is used by features that sync emails directly from an inbox
+into Salesforce. This field is not used by On-Demand Email-to-Case" (object_reference L104638).
+UNVERIFIED (2026-09-04): the Metadata API guide contains no element that switches an org between
+Lightning and legacy threading — only these conditional booleans — so the org's mode has to be read
+in Setup.
+
+**How to avoid:** Establish which threading mode the org is in first, then set only that pair. Turn
+on `useEmailHeadersForThreading`, described as using "metadata from incoming emails ... to match
+replies with cases if token-based threading doesn't produce a match" — it is the second chance when a
+gateway strips the token (Gotcha 4). Verify threading on `EmailMessage.ParentId`, never on
+`ThreadIdentifier`; the query is in `references/metadata-examples.md`.
+
+---
+
+## Gotcha 9: `Discard` Means Discard — Rejected Mail Leaves No Record Anywhere in Salesforce
+
+**What happens:** A customer insists they emailed support days ago. There is no case, no
+EmailMessage, no error log, and no bounce in their sent folder. Nothing in Salesforce shows the
+message ever arrived.
+
+**When it occurs:** Two settings decide the fate of mail Salesforce declines to process, and both
+accept a `Discard` value. `unauthorizedSenderAction` handles "email messages received from invalid
+senders" — anything outside a populated `authorizedSenders` list — and accepts only `Bounce` or
+`Discard`. `overEmailLimitAction` handles "email messages that are received after an organization
+exceeds its daily Email-to-Case limits" and accepts `Bounce`, `Discard` or `Requeue` (api_meta
+L111726 ff.). `Discard` is silent by design. The trap with `authorizedSenders` is that it is
+populated at all: it is meant for a fixed internal sender list, and on a public support address it
+turns every unknown customer into an invalid sender.
+UNVERIFIED (2026-09-04): the numeric daily Email-to-Case limit is not in the Salesforce App Limits
+Cheat Sheet (no Email-to-Case entry exists in it; the only adjacent figure is "Email services heap
+size is 50 MB", salesforce_app_limits_cheatsheet L161) and is not in the Metadata API guide. Read it
+from the org's own limits page rather than quoting a number.
+
+**How to avoid:** On a public support address, leave `authorizedSenders` empty — the guide's
+`EmailServicesAddress.AuthorizedSenders` equivalent says to "leave this field blank if you want the
+email service address to receive email from any email address" (object_reference L105032 ff.). Use
+`Requeue` for `overEmailLimitAction` so a limit spike delays mail rather than destroying it, and
+`Bounce` for `unauthorizedSenderAction` so a rejected sender at least learns their message did not
+arrive. Reserve `Discard` for an address under active spam attack, and write down when it was set.
+
+---
+
+## Gotcha 10: `enableE2CAttachmentAsFile` Moves Attachments to a Different Object
+
+**What happens:** After the setting is flipped, inbound attachments stop appearing where the
+existing report, list view, or Apex expected them. Automation querying `Attachment` returns nothing;
+the case looks empty to a process that was working yesterday.
+
+**When it occurs:** `enableE2CAttachmentAsFile` "Indicates whether to save attachments sent using
+Email-to-Case as Salesforce Files (`true`) or not (`false`)" (api_meta L111726 ff.). Files are
+ContentDocument/ContentVersion records linked through ContentDocumentLink — a different object from
+`Attachment`, with different sharing, a different related list, and a different query. A second
+setting controls whether email attachments even show in the case Attachments related list:
+`showEmailAttachmentsInCaseAttachmentsRL`, which when true "displays an email icon next to each
+attachment from an email in the Attachments related list for cases" and adds a Source column
+(api_meta, CaseSettings fields). A third, `enableE2CDeduplicateAttachments`, links an already-present
+attachment to the new email instead of storing a second copy when a reply threads onto a case.
+
+**How to avoid:** Decide Files vs Attachments before go-live, not after, and inventory what reads
+attachments — reports, list views, Apex, integrations, the agent's page layout — before flipping the
+switch. The Files direction is the one to pick for a new org; the migration cost is paid by orgs that
+switch later. `admin/case-feed-send-email-action` covers the outbound side's own file limits.
+
+---
+
+## Gotcha 11: `notifyOwnerOnNewCaseEmail` With a Queue Owner Emails a Team, on Every Reply
+
+**What happens:** A support team asks why they each get several near-identical emails per case, and
+starts filtering Salesforce mail to a folder nobody opens — including the escalation notices that
+matter.
+
+**When it occurs:** `notifyOwnerOnNewCaseEmail` "Indicates whether the owner of a case receives a
+notification when a new email related to the case is received" (api_meta L111726 ff.). It fires per
+inbound email, not per case, so a chatty thread notifies repeatedly. When cases are routed to a queue
+— the normal design — the "owner" is the queue, and queue notification has its own two independent
+switches: `email` (a shared address) and `doesSendEmailToMembers` (each member individually), mapped
+in `admin/queues-and-public-groups` → `references/queue-behaviour-matrix.md`. On top of those sit the
+assignment rule entry's own notification template and any Flow email alert on case create.
+UNVERIFIED (2026-09-04): whether `notifyOwnerOnNewCaseEmail` fans out to individual queue members or
+only to the queue address is not stated in the Metadata API guide; test in a sandbox before enabling
+it on a queue-owned channel.
+
+**How to avoid:** Pick one notification channel per team and switch the rest off. For queue-owned
+Email-to-Case, that is usually the queue's shared address with `doesSendEmailToMembers` false and
+`notifyOwnerOnNewCaseEmail` false, with agents working the queue list view or Omni-Channel instead of
+their inbox. Count the emails a single new case generates during the sandbox test — three is common
+and nobody designed it.
+
+---
+
+## Gotcha 12: `saveEmailHeaders` Cannot Be Turned On Retroactively
+
+**What happens:** A phishing or spoofing incident arrives through the support address. The security
+team asks for the originating IP, the SPF/DKIM result and the delivery path of the offending message.
+The EmailMessage record has a From address and a body, and nothing else — the evidence was never
+stored, and no setting change now recovers it.
+
+**When it occurs:** `saveEmailHeaders` is a per-routing-address boolean: "Indicates whether email
+routing and envelope information are saved (`true`) or not (`false`)" (api_meta L112010 ff.). It
+governs what is captured at the moment the message is processed. The receiving field,
+`EmailMessage.Headers`, is "The Internet message headers of the incoming email. Used for debugging
+and tracing purposes. Doesn't apply to outgoing emails" (object_reference L104260) — inbound only, so
+an outbound-side investigation has no equivalent.
+
+**How to avoid:** Set `saveEmailHeaders` true on every Email-to-Case routing address at creation
+time; the storage cost is trivial against one unanswerable security question. It is in the deployable
+file, so it is reviewable in a pull request rather than being an unowned Setup checkbox. Note that
+headers may carry personal data — include `EmailMessage.Headers` in the org's retention and data
+subject request handling rather than leaving it out of scope.
+
+---
+
+## Gotcha 13: `isPermsetControlled` Locks the Address Behind Grants That Are a Separate Metadata Type
+
+**What happens:** Permission-set control is enabled on a routing address to stop agents sending as
+`billing@`. Every agent, including the billing team, loses that From address in the email composer.
+
+**When it occurs:** `isPermsetControlled`, available in API version 61.0 and later, "Indicates
+whether users' access to the email routing address is controlled by a permission set. If `true`, only
+users with access via a permission set can use the routing address to send emails" (api_meta L112010
+ff.). It is deny-by-default: flipping it grants nobody. The grant lives in a different type — the
+Object Reference lists `EmailRoutingAddress` as a valid `SetupEntityAccess.SetupEntityType` "In API
+version 62.0 and later" (object_reference L261687), so the permission set entries and the setting are
+two separate pieces of metadata that must deploy together.
+
+**How to avoid:** Deploy the permission set grants first, or in the same deploy, and only then set
+`isPermsetControlled` true. Because the type is API 62.0+, the manifest must be on API 62.0 or later
+or the grants will not deploy at all. Verify by having a member of the intended group open the case
+email composer and confirm the address is in the From picklist — `EmailMessage.ValidatedFromAddress`
+is the picklist of "the sender's address, org-wide email addresses, or Email-to-Case routing address"
+and "the email address must be verified" (object_reference L104682). Permission set design itself is
+`admin/permission-set-architecture`.

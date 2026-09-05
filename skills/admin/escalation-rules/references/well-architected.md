@@ -24,7 +24,7 @@ Best practices for operational excellence:
 **Declarative escalation (Escalation Rules) vs. programmatic escalation (Apex/Flow):**
 - Escalation Rules are zero-maintenance, no-code, and native to Case management. They are the right choice for straightforward time-based case notification and reassignment.
 - Escalation Rules cannot conditionally branch, call external APIs, or perform complex record updates. If your escalation logic requires multi-step orchestration, conditional logic based on related records, or cross-object updates, consider a Scheduled Flow or Apex Schedulable.
-- The ~1-hour processing granularity of the time-based engine is acceptable for most SLA windows (4 hours, 8 hours, 24 hours). For sub-hourly SLAs (15-minute response, for example), the declarative engine is not suitable.
+- The batched processing granularity of the time-based engine is acceptable for most SLA windows (4 hours, 8 hours, 24 hours). For sub-hourly SLAs (15-minute response, for example), the declarative engine is not suitable. UNVERIFIED (2026-09-04): the frequently-quoted ~1-hour interval has no fetchable official source — see `references/gotchas.md` Gotcha 1; design for "batched", and measure the interval before quoting it.
 
 **Business hours vs. 24/7 escalation:**
 - 24/7 escalation is appropriate for P1/critical cases in always-on environments. Business-hours escalation is appropriate for standard cases at regionally-staffed orgs.
@@ -40,7 +40,12 @@ Best practices for operational excellence:
 
 ## Official Sources Used
 
-- Salesforce Help: Set Up Case Escalation Rules — https://help.salesforce.com/s/articleView?id=sf.customize_escalation.htm
-- Salesforce Help: Business Hours — https://help.salesforce.com/s/articleView?id=sf.businesshours.htm
-- Metadata API Developer Guide: EscalationRules Metadata Type — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_escalationrules.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Metadata API Developer Guide, `EscalationRules` section — `EscalationRule`, `RuleEntry`, and `EscalationAction` field tables, the declarative sample definition, the `.escalationRules` suffix and `escalationRules` folder, API 27.0+, and wildcard support in package.xml (supports every element name, enum value, and the package.xml / file-layout claims in `references/metadata-examples.md`) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide, `RuleEntry` field table — "Specify only if businessHoursSource is set to Static" and "Specify either formula or criteriaItems, but not both fields" (supports the `businessHoursSource` / `businessHours` pairing check and the criteria-vs-formula check in `scripts/check_escalation_rules.py`) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide, `FilterItem` — the `field` / `operation` / `value` shape and the `FilterOperation` enum (`equals`, `notEqual`, `contains`, `startsWith`, and the rest) used in every `criteriaItems` block here — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Object Reference, `BusinessHours` object — "Escalation rules are run only during these hours", and the statement that holidays associated with business hours suspend both the hours and the escalation rules using them (supports the business-hours dependency in `SKILL.md` and Gotchas 3 and 10) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Object Reference, `Case` object, `IsEscalated` field — boolean with Create / Update / Filter / Group / Sort, "A case's escalated state does not affect how you can use a case… You can set this flag via the API" (supports Gotcha 11 and the monitoring caveat in `references/metadata-examples.md`) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Object Reference, `Case` object, `BusinessHoursId` field — a writable reference to the calendar (supports `businessHoursSource` = `Case` and the null-fallback in `references/examples.md` Example 2) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Salesforce App Limits Cheat Sheet — searched for an escalation limit and found none; this is why the "5 actions per entry" ceiling is marked UNVERIFIED in `SKILL.md` rather than asserted — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf
+- Metadata API Developer Guide, `EscalationRules` metadata type reference page (canonical HTML entry point for the section above) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_escalationrules.htm
+- Salesforce Well-Architected Overview (framing for the Reliability and Operational Excellence notes above) — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -20,6 +20,28 @@ Create a Picklist field instead:
 
 **Why it works:** Picklist enforces a controlled vocabulary. Users cannot enter free-form text. Reports and dashboards filter on exact picklist API values, which are stable even if the label changes. FLS restricts edit access to prevent unauthorized value changes.
 
+**The evidence, before and after.** Run this against the Text version of the field to size the damage before migrating:
+
+```sql
+SELECT Region__c, COUNT(Id) recordCount
+FROM Opportunity
+WHERE Region__c != null
+GROUP BY Region__c
+ORDER BY COUNT(Id) DESC
+```
+
+The shape this returns after two quarters of free-form entry — one logical region, five stored values, and a dashboard filter on `Region__c = 'North America'` that sees only the first row (illustrative counts):
+
+| `Region__c` | recordCount |
+|---|---|
+| `North America` | 812 |
+| `NA` | 407 |
+| `N. America` | 233 |
+| `north america` | 118 |
+| `NAM` | 26 |
+
+Set `restricted` `true` on the replacement picklist so a data load cannot reintroduce a sixth spelling. The migration is a Data Loader export of `Id, Region__c`, a mapping pass, and a re-import into `Sales_Region__c` — not a field type conversion, which would take the list views with it (`references/gotchas.md` Gotcha 6).
+
 ---
 
 ## Example 2: Support Team Needs to Track Customer Contract Expiry Date
@@ -61,6 +83,33 @@ Use Master-Detail Relationship:
    - Summarized Field: `Amount__c` on `Order_Line_Item__c`
    - Filter criteria: none (sum all line items)
 4. The total order value is now always current and maintained by the platform without any Apex or Flow.
+
+**The Roll-Up Summary as metadata.** A `Summary` field names four things: what it sums, which relationship it walks back through, the operation, and an optional filter. `objects/Order__c/fields/Total_Order_Value__c.field-meta.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Order_Value__c</fullName>
+    <description>Sum of Amount__c across non-cancelled Order_Line_Item__c children. Maintained by the platform; do not write to it.</description>
+    <label>Total Order Value</label>
+    <summarizedField>Order_Line_Item__c.Amount__c</summarizedField>
+    <summaryFilterItems>
+        <field>Order_Line_Item__c.Status__c</field>
+        <operation>notEqual</operation>
+        <value>Cancelled</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Order_Line_Item__c.Order__c</summaryForeignKey>
+    <summaryOperation>Sum</summaryOperation>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>
+```
+
+- `summaryForeignKey` "represents the master-detail field on the child that defines the relationship between the parent and the child" (api_meta.txt:43648–43650) — it is the child's master-detail field, `Order_Line_Item__c.Order__c`, not the parent object.
+- `summaryOperation` valid values are `Count`, `Min`, `Max`, `Sum` (api_meta.txt:43651–43666). There is no Average; compute it with a formula dividing a `Sum` by a `Count`.
+- `summarizedField` "can't be null unless the `summaryOperation` value is `count`" (api_meta.txt:43640–43643) — a `Count` roll-up omits the element entirely.
+- `summaryFilterItems` reuses the same `FilterItem` shape as a lookup filter (api_meta.txt:43644–43647), so `field` / `operation` / `value` behave identically to `references/metadata-examples.md` §5.
 
 **Why it works:** Master-Detail is the only relationship type that enables Roll-Up Summary fields. The platform maintains the roll-up automatically whenever a child record is created, updated, or deleted. Using a Lookup would require a trigger or Flow to maintain the parent total, adding complexity and potential for stale data.
 

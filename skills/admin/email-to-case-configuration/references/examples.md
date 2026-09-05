@@ -90,3 +90,33 @@ Mail server: three separate forwarding rules, one per address.
 **What goes wrong:** Salesforce sends the auto-response to the customer. The customer's reply arrives back at `support@acme.com`, which forwards to the Salesforce routing address, which creates a new case, which triggers another auto-response, which the customer replies to again. This creates an email loop that rapidly generates hundreds of cases and outbound emails. In high-volume environments this can exhaust email send limits within minutes.
 
 **Correct approach:** Set the auto-response rule "From" address to a no-reply address (e.g., `no-reply@acme.com`) that is not configured as an Email-to-Case routing address and that does not forward back to Salesforce. Add a clear instruction in the auto-response email body telling customers not to reply to the no-reply address and directing them to the correct support channel if they need to follow up.
+
+**How to catch it before the customer does.** The loop is detectable in one query and one grep, run
+in the five minutes after the first test email. Send exactly one message to each public address, then:
+
+```sql
+-- Loop signature: more than one Case per test email, all with the same SuppliedEmail,
+-- created within seconds of each other. A healthy test returns one row per address, count 1.
+SELECT Origin, SuppliedEmail, COUNT(Id) caseCount, MIN(CreatedDate) firstSeen
+FROM Case
+WHERE CreatedDate = TODAY
+GROUP BY Origin, SuppliedEmail
+HAVING COUNT(Id) > 1
+```
+
+`Case.SuppliedEmail` is "The email address that was entered when the case was created"
+(Object Reference, Case) and is the only field that ties the duplicates in a loop back to one sender.
+The same query with `HAVING` removed is the go-live smoke test.
+
+The three addresses that must not collide, and where each lives:
+
+| Address | Metadata home | Must not equal |
+|---|---|---|
+| Routing address `emailAddress` | `settings/Case.settings-meta.xml` → `emailToCase/routingAddresses` | — |
+| Auto-response `senderEmail` / `replyToEmail` | `autoResponseRules/Case.autoResponseRules-meta.xml` (`admin/assignment-rules`) | any routing `emailAddress` |
+| The forwarding mailbox's own auto-reply / vacation responder | the mail server, not Salesforce | any routing `emailAddress` |
+
+The third row is the one that survives a correct Salesforce configuration: an out-of-office or
+"we got your message" rule left on the forwarding mailbox replies to Salesforce's auto-response, and
+that reply forwards straight back into the routing address. `scripts/check_email_to_case_configuration.py`
+catches rows one and two; row three is only visible on the mail server.

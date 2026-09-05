@@ -24,6 +24,8 @@ Escalation timing is approximate, not exact:
    shorter polling interval or a time-based Flow trigger.
 ```
 
+UNVERIFIED (2026-09-04): the batched, non-immediate behaviour is safe to assert; the specific 60-minute figure used in the block above is not stated in the Metadata API guide, the Object Reference, or the App Limits cheat sheet. Say "batched, not real time" unless you have measured the interval in the org.
+
 **Detection hint:** If the output describes escalation timing as exact (e.g., "exactly 2 hours"), the engine cycle delay is being ignored. Search for `exactly` or `precisely` near escalation time settings.
 
 ---
@@ -74,6 +76,8 @@ Escalation behavior details:
 4. Once a case meets the "stop escalation" criteria (e.g., Status = Closed),
    the case exits escalation. Configure the criteria carefully.
 ```
+
+UNVERIFIED (2026-09-04): "an escalation action sets IsEscalated to TRUE" is not stated in any fetchable official source. What the Object Reference does say about the field is in `references/gotchas.md` Gotcha 11 — it is an ordinary writable boolean that does not restrict use of the record. The multi-action point in the block above is grounded; the checkbox side effect is not.
 
 **Detection hint:** If the output describes multi-tier escalation without using multiple Escalation Actions within a single rule entry, the multi-tier setup is being misunderstood. Search for `Escalation Actions` (plural) with time thresholds.
 
@@ -128,5 +132,7 @@ Ensure escalation criteria exclude resolved/closed cases:
 4. Test: create a case, wait for escalation timer, close it,
    and verify it does NOT escalate after closure.
 ```
+
+UNVERIFIED (2026-09-04): whether the engine itself skips closed cases is not documented in any fetchable official source, and this file and `references/gotchas.md` Gotcha 4 have stated opposite positions. The advice above stands regardless — an explicit `Status notEqual Closed` criterion makes the behaviour the same either way. See `references/gotchas.md` Gotcha 12.
 
 **Detection hint:** If the escalation rule entry criteria do not explicitly filter out Closed/Resolved statuses, closed cases may escalate. Search for `Closed` or `Resolved` in the rule entry criteria.

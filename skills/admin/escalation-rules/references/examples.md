@@ -23,6 +23,18 @@
    - Reassign To: Escalations Queue
 6. Save and verify one P1 test case.
 
+**Verify it fired.** Setup shows configuration, not behaviour. After the first working day, run this against yesterday's P1 cases and check that the ones older than the threshold moved:
+
+```sql
+SELECT CaseNumber, Priority, Status, OwnerId, IsEscalated,
+       CreatedDate, LastModifiedDate
+FROM Case
+WHERE Priority = 'P1' AND CreatedDate = LAST_N_DAYS:1
+ORDER BY CreatedDate
+```
+
+A P1 row older than 8 hours whose `OwnerId` is still the original agent means the second stage did not run. Read `references/gotchas.md` in order: engine batching first, then criteria mismatch, then the calendar.
+
 **Why it works:** Entry criteria `Priority = P1` ensures lower-priority cases are unaffected. Two time-layered actions on the same entry provide progressive escalation: warn first, reassign second. The 8-hour reassignment action guarantees a human takes ownership even if the original agent is unavailable.
 
 ---
@@ -49,6 +61,22 @@
 3. Add Escalation Action: notify case owner at the 8-hour mark.
 4. Assign the Business Hours record to cases (the `BusinessHoursId` field or "Business Hours" field on Case).
 
+**Predict the fire time before you wait for it.** Anonymous Apex converts the business-hours arithmetic into a datetime you can put in the test plan, instead of watching the inbox:
+
+```apex
+// Predicted escalation moment for one case, given the entry's threshold in minutes.
+Integer minutesToEscalation = 480;              // 8 business hours
+Case c = [SELECT Id, CaseNumber, CreatedDate, BusinessHoursId FROM Case WHERE CaseNumber = '00001234'];
+Id bhId = c.BusinessHoursId != null
+    ? c.BusinessHoursId
+    : [SELECT Id FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
+
+Datetime expected = BusinessHours.add(bhId, c.CreatedDate, (Long) minutesToEscalation * 60 * 1000);
+System.debug('Case ' + c.CaseNumber + ' should escalate on or after ' + expected);
+```
+
+`BusinessHours.add` takes milliseconds of business time; the fallback to the default calendar matters because `BusinessHoursId` is null on most cases until something populates it. Method signatures are in `admin/business-hours-and-holidays`.
+
 **Why it works:** The escalation engine counts only hours that fall within the 8 AM–6 PM Monday–Friday window. A case created at 5 PM Friday has 1 hour of business time that day. It needs 7 more hours after 8 AM Monday — meaning escalation fires around 3 PM Monday. The notification lands when someone is actually available to act.
 
 ---
@@ -58,5 +86,16 @@
 **What practitioners do:** Attempt to create two escalation rules — one for "Sales Cases" and one for "Service Cases" — believing both will be active simultaneously to handle different SLA requirements.
 
 **What goes wrong:** Salesforce only allows one active escalation rule per org. When you activate the second rule, the first is automatically deactivated. One set of cases stops escalating without any error message. The deactivation happens silently — there is no warning in the UI that the previous rule was turned off.
+
+**Cheapest detection:** count the active flags in source before the deploy leaves your machine.
+
+```bash
+grep -c '<active>true</active>' \
+  force-app/main/default/escalationRules/Case.escalationRules-meta.xml
+# 1 = one live rule. 2 or more = the deploy is a silent cutover.
+
+python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py \
+  --manifest-dir force-app/main/default
+```
 
 **Correct approach:** Use a single active escalation rule with multiple rule entries that differentiate by criteria. Entry 1: `Type = Sales Case` with Sales SLA thresholds. Entry 2: `Type = Service Case` with Service SLA thresholds. Both sets of criteria live within the one active rule, and each entry can have its own escalation time and actions.

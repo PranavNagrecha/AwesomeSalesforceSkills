@@ -23,7 +23,28 @@ Step 2 — Create the Lightning app:
 - User Profiles: Assign the Field Technician profile; check "Visible in App Launcher"
 - Save
 
-Step 3 — Validate:
+Step 3 — Validate, from the technician's session rather than the admin's:
+
+```sql
+-- Run in Developer Console / sf data query while logged in AS a Field Technician.
+-- Both objects return only what the running user can access, so zero rows here is
+-- the answer "this user cannot see it", not "the query found nothing".
+SELECT DurableId, DeveloperName, Label, NavType,
+       IsLargeFormFactorSupported, IsSmallFormFactorSupported
+FROM AppDefinition
+WHERE DeveloperName = 'Field_Service'
+
+SELECT TabDefinition.Name, TabDefinition.Label,
+       TabDefinition.IsAvailableInLightning, TabDefinition.IsAvailableInMobile, SortOrder
+FROM AppTabMember
+WHERE AppDefinition.DeveloperName = 'Field_Service'
+ORDER BY SortOrder
+```
+
+Expected: one `AppDefinition` row, and three `AppTabMember` rows whose `SortOrder`
+matches the navigation order the admin chose. A missing row is a missing
+`tabSettings` entry, not a missing tab. Then confirm by eye:
+
 - Log in as a Field Technician profile user
 - Confirm "Field Service" appears in the App Launcher
 - Confirm Field Visits, Accounts, Contacts appear in the nav bar
@@ -65,3 +86,29 @@ Step 3 — Validate:
 2. "Default Off" means the tab is accessible but not pinned; users can still find it via the More menu.
 3. "Default On" means the tab is pinned in the navigation bar by default.
 4. Set the tab to at least "Default Off" for any tab you want users to be able to see.
+
+The Setup labels and the metadata words for the same three states do not match, which
+is why this is easy to get wrong in a deployment. In `Profile` metadata:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- excerpt: force-app/main/default/profiles/Field_Technician.profile-meta.xml
+     Setup "Default On" = DefaultOn, "Default Off" = DefaultOff, "Tab Hidden" = Hidden.
+     A PermissionSet spells the same three states Visible / Available / None. -->
+<Profile xmlns="http://soap.sforce.com/2006/04/metadata">
+    <custom>true</custom>
+    <tabVisibilities>
+        <tab>Field_Visit__c</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>Depot_Map</tab>
+        <visibility>DefaultOff</visibility>
+    </tabVisibilities>
+</Profile>
+```
+
+A tab left out of `tabVisibilities` entirely is not the same as `Hidden` — it is
+"whatever the org already had", which is why a partial profile deploy can appear to do
+nothing. Grant the tab in a permission set instead wherever you can; see
+`admin/permission-set-architecture`.

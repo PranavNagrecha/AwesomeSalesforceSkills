@@ -69,3 +69,45 @@
 **What goes wrong:** The page layout controls the record detail view. The quick action form is governed by the **action layout**, which is an entirely separate configuration on the action itself. Adding a field to the page layout has no effect on what appears inside the quick action dialog.
 
 **Correct approach:** Navigate to Setup → Object Manager → Case → Buttons, Links, and Actions → [Action Name] → Edit Layout. Add the Priority field to the **action layout**. Save there. The field will then appear in the quick action dialog.
+
+**Why the two files never talk to each other.** Retrieve both and the split is obvious — they use different element names in different components. What the admin edited (`layouts/Case-Case Layout.layout-meta.xml`):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EXCERPT: one layout item from the record detail page. The rest of the
+     Layout file is omitted; see admin/record-types-and-page-layouts. -->
+<Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <layoutSections>
+        <label>Case Information</label>
+        <layoutColumns>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Reason</field>
+            </layoutItems>
+        </layoutColumns>
+        <style>TwoColumnsTopToBottom</style>
+    </layoutSections>
+</Layout>
+```
+
+What actually governs the dialog (`quickActions/Case.New_Case.quickAction-meta.xml`):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EXCERPT: the quickActionLayout only. Sibling elements such as label,
+     type, targetObject and optionsCreateFeedItem are omitted. -->
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <quickActionLayout>
+        <layoutSectionStyle>OneColumn</layoutSectionStyle>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>Reason</field>
+                <uiBehavior>Edit</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+    </quickActionLayout>
+</QuickAction>
+```
+
+Different component, different element (`layoutItems` vs `quickActionLayoutItems`), different behaviour attribute (`behavior` vs `uiBehavior`). Editing one leaves the other exactly as it was. A quick way to prove which file is at fault: run `scripts/check_global_actions_and_quick_actions.py --manifest-dir force-app/main/default` — it reads the action's own layout and reports an action whose `quickActionLayout` has no items at all.

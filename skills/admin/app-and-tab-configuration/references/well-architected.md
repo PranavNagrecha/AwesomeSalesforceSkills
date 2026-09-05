@@ -22,13 +22,17 @@
 
 ## Official Sources Used
 
-- Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-  Used to confirm `CustomApplication` and `CustomTab` are standard Salesforce metadata types.
-- Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
-  Used to confirm `CustomApplication` metadata structure, `navItems` subelement, and `CustomTab` types.
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-  Used to frame Security and Operational Excellence pillar guidance for app and tab configuration best practices.
-- Salesforce Help — Create and Edit Lightning Experience Apps: https://help.salesforce.com/s/articleView?id=sf.app_builder_apps.htm
-  Primary reference for App Manager workflow, navigation items, utility bar, and profile visibility configuration.
-- Salesforce Help — Custom Tabs: https://help.salesforce.com/s/articleView?id=sf.custom_tabs.htm
-  Primary reference for tab types, tab creation steps, and profile tab settings behavior.
+- **Metadata API Developer Guide — `CustomApplication`** (v62 PDF, `api_meta.txt` L39621–40737) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+  Source for the `tabs` element and the `standard-` prefix rule (L39767–39775), `defaultLandingTab` (L39661–39663), `navType` / `uiType` both being "Not updateable" (L39719, L39782), `formFactors` semantics (L39666–39685), `AppBrand` (L39873–39893), `utilityBar` sharing across apps (L39788–39795), `AppWorkspaceConfig` / `WorkspaceMapping.fieldName` (L40028–40047), the destructive-change restriction on `profileActionOverrides` (L40398–40407), wildcard support (L40734–40736), and both sample app definitions (L40450–40525, L40527–40725).
+- **Metadata API Developer Guide — `CustomTab`** (v62 PDF, `api_meta.txt` L47248–47467) — same PDF
+  Source for the "only one of `auraComponent` / `customObject` / `flexiPage` / `lwcComponent` / `page` / `scontrol` / `url`" rule (L47276–47285), `motif` being required and its value catalogue (L47362–47396), `frameHeight` being required for s-control and page tabs (L47319–47320), `label` documented for web tabs (L47341), and `urlEncodingKey` (L47437–47441).
+- **Metadata API Developer Guide — `FlexiPage`** (v62 PDF, `api_meta.txt` L66865–68023) — same PDF
+  Source for `type` `UtilityBar` being a Lightning page used as the utility bar, API 38.0+ (L67084–67086); for the utility bar being the only page type that supports component decorators, which is where a utility's width, height, and label live (L67353–67366); and for the `Background` region type supported for utility bars only (L67288–67292).
+- **Metadata API Developer Guide — `PermissionSet` and `Profile`** (v62 PDF, `api_meta.txt` L94903–94910, L95142–95161, L97897–97907, L98243–98266) — same PDF
+  Source for `PermissionSetApplicationVisibility` (`application` + `visible`), `PermissionSetTabSetting` (`Visible` / `Available` / `None`), `ProfileApplicationVisibility` (with its required `default` flag, one app per profile), and `ProfileTabVisibility` (`DefaultOn` / `DefaultOff` / `Hidden`) — the four shapes that decide whether anyone can open the app.
+- **Object Reference for Salesforce — `AppDefinition`, `TabDefinition`, `AppTabMember`, `AppMenuItem`** (v62 PDF, `object_reference.txt` L34140–34330, L277676–277775, L36689–36760, L34561–34900) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+  Source for the post-deploy verification queries: `AppDefinition` returns "Metadata … only for apps that the current user can access", `TabDefinition` "Returns only the tabs that the current user has access to", `AppTabMember.SortOrder` / `WorkspaceDriverField` expose the app's own tab order and console mapping, and `AppMenuItem.IsVisible` is the org-wide App Launcher toggle (the only updateable field on that object).
+- **Salesforce Developer Limits and Allocations Quick Reference** (`salesforce_app_limits_cheatsheet.txt`, last updated 7 August 2026) — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf
+  Used as a *negative* result: it states that it does not cover "User interface elements in the Salesforce application" and refers per-edition allocations to *Salesforce Features and Edition Allocations* (cheat sheet L11–17). That is the grounding for the UNVERIFIED marker on the 50-navigation-item claim in `SKILL.md`.
+- **Salesforce Well-Architected** — https://architect.salesforce.com/well-architected/overview
+  Used to frame the Security and Operational Excellence pillar sections above; the platform behaviour claims in this skill are grounded in the two PDFs, not here.

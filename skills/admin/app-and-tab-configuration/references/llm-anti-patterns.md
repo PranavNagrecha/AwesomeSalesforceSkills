@@ -42,6 +42,8 @@ assignments, but the App Manager wizard itself assigns by profile.
 
 **Detection hint:** Check whether the output conflates App Manager profile assignment with permission set assignment. Look for `permission set` in the same paragraph as `App Manager → Assign`.
 
+**What is genuinely true in metadata:** both routes exist and both are first-class. `PermissionSetApplicationVisibility` takes `application` + `visible`; `ProfileApplicationVisibility` takes `application` + `visible` + a required `default` flag, of which only one app per profile may be true. The mistake to catch is not "permission sets cannot grant apps" — it is output that names *neither*, and therefore ships an app nobody can open. See `references/metadata-examples.md` section 6.
+
 ---
 
 ## Anti-Pattern 3: Recommending Classic app creation instead of Lightning app
