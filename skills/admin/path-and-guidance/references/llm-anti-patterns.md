@@ -73,6 +73,8 @@ If a long text area is important context for a stage,
 put it in the Guidance Text block instead.
 ```
 
+UNVERIFIED (2026-09-05): this supported-type list is not stated in the Metadata API guide (`fieldNames` is described only as "All the fields in entityName that will display in this step", api_meta.txt L94545) nor in the limits cheat sheet, which has no Path entry. What *is* checkable statically, and what `scripts/check_path_and_guidance.py` enforces, is that every custom field named in `fieldNames` exists on `entityName` in the manifest — a cross-object reference like `Contact.Phone` fails that check outright.
+
 **Detection hint:** Review any generated key field list for field API names ending in `__c` that correspond to long text or rich text types, or any standard fields like `Description`.
 
 ---
@@ -148,3 +150,65 @@ All three must be true for a path to render:
 ```
 
 **Detection hint:** Review any Path setup instructions that do not mention the org-level toggle as a distinct step.
+
+---
+
+## Anti-Pattern 7: Assuming a Retrieved Path Is the Whole Configuration
+
+**What the LLM generates:** A promotion plan that retrieves `PathAssistant`, deploys it, and declares the path migrated — often phrased as "the path metadata carries the steps, key fields, guidance, and celebration settings."
+
+**Why it happens:** LLMs generalize from metadata types that *are* complete records of their feature. Path is not one of them, and the omission is invisible in a diff: nothing in the retrieved file hints that something is missing.
+
+**Correct pattern:**
+
+```
+PathAssistant carries EXACTLY:
+  active, entityName, fieldName, masterLabel,
+  pathAssistantSteps[], recordTypeName
+PathAssistantStep carries EXACTLY:
+  fieldNames[], info, picklistValueName
+                                    (api_meta.txt L94510-94529, L94545-94549)
+
+NOT carried by the file, and therefore NOT deployed:
+  - celebration / confetti configuration  (no element exists)
+  - the org preference                    (PathAssistantSettings, separate type)
+  - the record page that renders it       (FlexiPage, separate type)
+  - the stage values themselves           (RecordType / BusinessProcess / StandardValueSet)
+  - guidance translations                 ("cannot be retrieved or deployed from or
+                                            to translation workbench", L94497)
+
+A path promotion is a FIVE-type package plus one manual step.
+```
+
+**Detection hint:** Any migration or deploy plan whose manifest names `PathAssistant` and nothing else. Also flag "the confetti setting will come across with the path" and any CI assertion written against celebration state — there is no field to assert on.
+
+---
+
+## Anti-Pattern 8: Inventing Element and Component Names for Path Metadata
+
+**What the LLM generates:** XML using plausible-sounding names that do not exist — `<steps>` or `<pathSteps>` instead of `<pathAssistantSteps>`, `<guidance>` instead of `<info>`, `<picklistValue>` instead of `<picklistValueName>`, a comma-separated `<fieldNames>Amount,CloseDate</fieldNames>` instead of repeated elements, `<celebrationEnabled>true</celebrationEnabled>`, `<recordType>` instead of `<recordTypeName>`, an org setting called `enablePathAssistant` in `Sales.settings`, or a Lightning page component named `flexipage:path` / `lightning:path`.
+
+**Why it happens:** The real names are irregular — a step's guidance field is called `info`, the value field is `picklistValueName` while the object field is `entityName`, and the settings flag is `pathAssistantEnabled` inside a file named `PathAssistant.settings`. LLMs smooth irregularity into consistency, and the invented names are plausible enough to survive review.
+
+**Correct pattern:**
+
+```
+File:      pathAssistants/<Name>.pathAssistant-meta.xml
+Root:      <PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+Elements:  active | entityName | fieldName | masterLabel
+           pathAssistantSteps { fieldNames* | info | picklistValueName }
+           recordTypeName
+
+File:      settings/PathAssistant.settings-meta.xml
+Root:      <PathAssistantSettings>
+Elements:  pathAssistantEnabled | canOverrideAutoPathCollapseWithUserPref
+Manifest:  <members>PathAssistant</members><name>Settings</name>
+
+FlexiPage: <componentName>runtime_sales_pathassistant:pathAssistant</componentName>
+           in <name>subheader</name>, template
+           flexipage:recordHomeWithSubheaderTemplateDesktop
+
+<fieldNames> REPEATS. It is never comma-separated.
+```
+
+**Detection hint:** Diff any generated Path XML element-by-element against the list above, or run `scripts/check_path_and_guidance.py` — an invented element name shows up as a missing Required field rather than as a parse error, because the XML is still well-formed.

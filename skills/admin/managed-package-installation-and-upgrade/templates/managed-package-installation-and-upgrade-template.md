@@ -23,9 +23,12 @@ Use this template when planning, executing, or auditing a managed package instal
 | Package ID (`033...` / `0Ho...`) | |
 | Version ID (`04t...`) | |
 | Version semantic (e.g. `4.2.1`) | |
-| AppExchange Security Review status | |
-| Released or Beta | |
+| AppExchange Security Review status (certified?) | |
+| Released or Beta (`MetadataPackageVersion.ReleaseState`) | |
 | Install URL | |
+| Named owner in our org (person, not team alias) | |
+| Licence seats allowed / used / expiry | |
+| Push upgrades enabled by publisher? Blocked by us? | |
 
 ## Target Environment
 
@@ -38,6 +41,8 @@ Use this template when planning, executing, or auditing a managed package instal
 
 ## Pre-Install Inventory
 
+- [ ] `config/package-inventory.json` regenerated from `sf package installed list --json` + the `PackageLicense` query (`references/metadata-examples.md` §6–7)
+- [ ] `python3 scripts/check_managed_package_installation_and_upgrade.py --manifest-dir .` run and findings dispositioned
 - [ ] Components the package will add (objects, fields, classes, Flows, Permission Sets) listed from publisher docs
 - [ ] Subscriber-added fields on packaged objects audited for API-name collisions
 - [ ] Subscriber Apex / Flow references to the publisher's namespace audited (run `check_managed_package_installation_and_upgrade.py`)
@@ -49,7 +54,14 @@ Use this template when planning, executing, or auditing a managed package instal
 
 - [ ] Install for Admins Only (default — preferred)
 - [ ] Install for All Users (justification: ________)
-- [ ] Install for Specific Profiles (justification: ________)
+- [ ] Install for Specific Profiles (justification: ________ — UI install only; the Metadata API and CLI accept only `AdminsOnly` / `AllUsers`)
+
+Record the decision in the artefact, not just here:
+
+- [ ] `securityType` written explicitly in `installedPackages/<ns>.installedPackage-meta.xml`
+- [ ] `activateRSS` written explicitly (it is required and defaults to `false`)
+- [ ] `--security-type` passed explicitly if the install runs from the CLI
+- [ ] Install has its own single-type `package.xml` (it cannot share a manifest)
 
 ## Environment Sequence
 
@@ -66,6 +78,9 @@ Use this template when planning, executing, or auditing a managed package instal
 - [ ] Permission Set Group built and assigned to canary user(s)
 - [ ] Custom Metadata seeded with subscriber-specific data
 - [ ] Custom Settings org-default records populated
+- [ ] Package seats assigned (`UserPackageLicense` inserts) — separate from permission sets
+- [ ] Every packaged Remote Site Setting / CSP Trusted Site confirmed in the intended state
+- [ ] Subscriber-owned Permission Set deployed naming each packaged component (no wildcards available)
 - [ ] Canary user validates end-to-end workflow
 - [ ] Broader rollout (Permission Set Group assigned to full audience)
 
@@ -84,4 +99,7 @@ Use this template when planning, executing, or auditing a managed package instal
 | Install date | |
 | Approver | |
 | Post-install runbook execution evidence (link) | |
+| Version confirmed by `sf package installed list` after install | |
+| `PackageLicense` seats / expiry after install | |
+| `config/package-inventory.json` re-baselined and checker clean | |
 | Notes / deviations | |

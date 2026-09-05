@@ -98,6 +98,46 @@ AND Demo_Requested__c = true
 
 **Why it works:** The assignment rule must fire on the same record as the auto-response rule for the response email to be sent. Once a catch-all assignment rule entry exists, every web-to-lead submission triggers both the assignment and the auto-response evaluation.
 
+**Proving it without waiting for a web form.** Run this in Anonymous Apex against the sandbox. It
+inserts a Lead with the assignment header on — the same path Web-to-Lead takes — and reports whether
+the rule actually moved ownership. If `OwnerId` comes back as the running user, no rule entry matched
+and the auto-response email would have been skipped too.
+
+```apex
+// Anonymous Apex: does a rule entry actually match this shape of lead?
+Lead probe = new Lead(
+    FirstName = 'Rule',
+    LastName  = 'Probe',
+    Company   = 'Auto-Response Probe Co',
+    Email     = 'probe@example.invalid',
+    LeadSource = 'Web'
+);
+
+Database.DMLOptions opts = new Database.DMLOptions();
+opts.assignmentRuleHeader.useDefaultRule = true;   // run the active default lead assignment rule
+opts.EmailHeader.triggerAutoResponseEmail = true;  // evaluate auto-response rules on this insert
+probe.setOptions(opts);
+
+insert probe;
+
+Lead after = [SELECT Id, OwnerId, Owner.Name, Owner.Type FROM Lead WHERE Id = :probe.Id];
+System.debug('Owner after insert: ' + after.Owner.Name + ' (' + after.Owner.Type + ')');
+System.debug('Assignment rule matched: ' + (after.OwnerId != UserInfo.getUserId()));
+
+delete after;   // clean up the probe
+```
+
+`useDefaultRule = true` runs the org's active default lead assignment rule — the same rule Web-to-Lead
+uses — which is why this probe is a valid stand-in for a form submission. Assignment rules do not run
+for API DML unless a header asks them to, so omitting `assignmentRuleHeader` here would show the
+running user as owner even in a perfectly configured org and send you chasing a rule that is fine.
+
+One nuance the probe can expose: on this API-DML path, if the org has *no* assignment rules at all,
+the Apex Developer Guide states that from API version 30.0 the lead "is unassigned and doesn't get
+assigned to the default owner" — earlier versions fell back to the predefined default owner. So an
+unowned probe lead means "no rules exist", not "the Default Lead Owner is misconfigured". Fix the
+missing rule first.
+
 ---
 
 ## Anti-Pattern: Assuming Conversion Preserves All Fields Without Checking

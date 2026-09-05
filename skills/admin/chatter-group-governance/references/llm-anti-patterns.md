@@ -9,10 +9,9 @@ Common mistakes AI assistants make when an admin asks for chatter group lifecycl
 **What the LLM generates:** "Run `delete CollaborationGroup` on every group inactive for more than a year to clean up the org."
 
 **Why it's wrong:**
-- `delete CollaborationGroup` cascade-deletes the group's `FeedItem` records — that's the conversation history.
-- Many "dormant" groups have substantive past content (approval discussions, decision threads, customer escalations) that has audit and institutional-memory value.
-- After the 15-day Recycle Bin window, deleted `FeedItem` data is unrecoverable.
-- "Cleanup" is rarely worth the permanent loss of audit trail.
+- The guide calls the deletion permanent and puts the cascade outside the group: "Deleting a group permanently deletes all posts and comments to the group. It also deletes all files and links posted to the group and **removes the files from other locations where they were shared**" (object_reference.txt L67402–67404). A file shared into the group and into three other records disappears from all four.
+- Many "dormant" groups hold substantive content (approval discussions, decision threads, customer escalations) with audit and institutional-memory value.
+- "Cleanup" is rarely worth an irreversible loss of audit trail plus collateral file deletion elsewhere in the org.
 
 **What to do instead:** Default to archive (`IsArchived = true`). Archive preserves all data, just hides the group from active lists and stops new posts. Reserve delete for groups that are demonstrably empty (e.g., 0–2 substantive `FeedItem` records, no description, name pattern like `Test-*`) or were created in error.
 
@@ -37,11 +36,11 @@ Common mistakes AI assistants make when an admin asks for chatter group lifecycl
 **What the LLM generates:** "For sensitive content use Unlisted groups — they're the most secure type."
 
 **Why it's wrong:**
-- Unlisted hides the group's *existence* from non-members; Private hides the group's *content* from non-members. Both protect content equally for normal users. Unlisted has the additional property of hiding from compliance discovery via the UI — which is a *governance liability*, not a security feature.
+- Unlisted hides the group's *existence*; Private hides its *content*. Both protect content equally from ordinary users. What Unlisted adds is hiding from the org's own auditors: a View All Data holder "can't view unlisted group information, unless they have the Modify Unlisted Groups permission as well," and a Modify All Data holder "can't view or modify unlisted group information, unless they have the Manage Unlisted Groups permission as well" (object_reference.txt L67109–67115). That is a governance liability, not a security feature.
 - For most internal-sensitive content, Private is correct. Unlisted should be reserved for cases where the group's existence is itself confidential (M&A working group, executive committee, internal investigation).
 - Calling Unlisted "more secure" leads admins to over-use it and creates governance blind spots.
 
-**What to do instead:** Recommend Private as the default for sensitive content. Recommend Unlisted only when the user explicitly says "the existence of this group must be confidential," and pair with a documented compliance-discovery workflow (admin SOQL query, not UI search).
+**What to do instead:** Recommend Private as the default for sensitive content. Recommend Unlisted only when the user explicitly says "the existence of this group must be confidential," and in the same breath require a named holder of Manage Unlisted Groups — because without one, no query anybody in the org can run will return a complete group list, and it will not say so.
 
 ---
 
@@ -73,10 +72,10 @@ WHERE LastModifiedDate < :Date.today().addDays(-365)
 **What to do instead:** Use `LastFeedModifiedDate` for activity-based queries. It advances on new posts and comments and is the canonical inactivity indicator. Combine with `MemberCount` and `Description` checks for a fuller picture:
 
 ```sql
-SELECT Id, Name, MemberCount, LastFeedModifiedDate
+SELECT Id, Name, MemberCount, LastFeedModifiedDate, IsAutoArchiveDisabled
 FROM CollaborationGroup
 WHERE IsArchived = false
-AND LastFeedModifiedDate < :Date.today().addDays(-365)
+AND (LastFeedModifiedDate < LAST_N_DAYS:365 OR LastFeedModifiedDate = NULL)
 ```
 
 ---
@@ -90,7 +89,7 @@ AND LastFeedModifiedDate < :Date.today().addDays(-365)
 - The ownership re-orphans the moment that user leaves.
 - A high-status user (VP, director) may decline to be reassigned ownership, creating political friction.
 
-**What to do instead:** Reassign to a dedicated steward service-account user — institutionally owned, never leaves the company, generates no notification noise (the account doesn't have a real human reading the bell). For groups where a named human owner is genuinely needed (e.g., an active project group), find the existing backup manager via `CollaborationGroupMember.CollaborationRole = 'Admin'` for that group and reassign to them. Don't pick at random.
+**What to do instead:** Prefer the group's own manager, fall back to a steward service account — the manager-first script in `references/metadata-examples.md` section 4 does exactly that in three queries and one partial-success DML. A steward account is institutionally owned and never leaves; a group manager has context. Picking at random has neither property. And whoever runs the reassignment needs Modify All Data: "Only the current group owner or people with the Modify All Data permission can update the `OwnerId`" (object_reference.txt L67378–67379).
 
 ---
 
@@ -99,7 +98,56 @@ AND LastFeedModifiedDate < :Date.today().addDays(-365)
 **What the LLM generates:** "Just change the group type from Unlisted to Public so compliance can find it."
 
 **Why it's wrong:**
-- `CollaborationType` cannot be changed from Unlisted to anything else. The platform blocks the conversion to prevent retroactive exposure of confidential content.
-- Even Public ↔ Private conversions are technically allowed but have user-experience consequences (members who joined under one set of visibility expectations are now under different ones).
+- Changing type does not solve the stated problem. Compliance cannot find the group because nobody holds Manage Unlisted Groups (object_reference.txt L67112–67115); the fix is a permission grant, not a data change.
+- Type changes have user-experience consequences either way: members who joined under one set of visibility expectations are silently moved to another, with no notification.
+- The Connect API cannot express the change at all — `ConnectApi.GroupVisibilityType.Unlisted` is "Reserved for future use" (apexrefguide.txt L111967–111972), so any generated `ConnectApi` code for it is wrong on its face.
 
-**What to do instead:** Plan group type at creation. If a wrong type is chosen, the migration path is: (a) create a new group of the right type, (b) port relevant content with original posters' consent, (c) archive (or delete) the original. There is no one-step type change for Unlisted, and Public ↔ Private changes should be done sparingly with member communication.
+<!-- UNVERIFIED (2026-09-05): an earlier revision of this file asserted that CollaborationType cannot be
+     changed from Unlisted at all. The Object Reference lists it as an updateable Restricted picklist
+     (L67189-67201) and documents no one-way restriction. Do not state the block as fact; test it in a
+     sandbox. The advice below holds regardless. -->
+
+**What to do instead:** Answer the actual question — a compliance discovery gap is closed with a
+permission set, described in `references/metadata-examples.md` section 2. If a type change is genuinely
+wanted, plan it at creation instead; and if the group already exists, the safe migration is: create a new
+group of the right type, port relevant content with the original posters' consent, then archive the
+original. Never promise an in-place Unlisted conversion you have not tested in that org.
+
+---
+
+## Anti-Pattern 8: Generating an "all Chatter groups" audit and calling it complete
+
+**What the LLM generates:** "Run this as a System Administrator and you'll get every group in the org:"
+
+```sql
+SELECT Id, Name, CollaborationType, OwnerId FROM CollaborationGroup
+```
+
+**Why it's wrong:** The query is fine; the claim about it is not. Unless the running user holds Manage
+Unlisted Groups (or Modify Unlisted Groups for read), unlisted groups are absent from the result — and
+Modify All Data does not confer it (object_reference.txt L67109–67117). The result set is silently
+partial. Nothing in the output distinguishes "there are no unlisted groups" from "you cannot see the
+unlisted groups," which is exactly the distinction a compliance request turns on.
+
+**What to do instead:** State the precondition alongside the query. If the org has
+`unlistedGroupsEnabled = true`, the audit is only complete when run by a Manage Unlisted Groups holder;
+if nobody holds it, say so as a finding rather than shipping the incomplete list. The bundled checker
+raises this as `CGG-UNLISTED-UNGOV` before the export happens.
+
+---
+
+## Anti-Pattern 9: Fixing over-archiving by turning archiving off
+
+**What the LLM generates:** "Your standing groups keep archiving — disable group archiving in Chatter
+Settings," or a `Chatter.settings` deploy with `<allowChatterGroupArchiving>false</allowChatterGroupArchiving>`.
+
+**Why it's wrong:** That element is not the automatic sweep alone. The Metadata API guide defines it as
+covering "whether **manual and automatic** group archiving are allowed on all Chatter groups"
+(api_meta.txt L112476–112480). Setting it `false` removes the *manual* archive action too, which deletes
+the safe half of the archive-vs-delete decision for every group in the org — and delete carries the
+file-removal cascade at L67402–67404. The recommendation trades a nuisance for an irreversible one.
+
+**What to do instead:** Exempt the affected groups individually with
+`CollaborationGroup.IsAutoArchiveDisabled = true` (L67282–67290), a per-group create-and-update boolean
+that leaves everyone else's archiving intact. `references/examples.md` Example 5 has the query that finds
+which groups deserve it — read-heavy, post-light — and the DML to set it.

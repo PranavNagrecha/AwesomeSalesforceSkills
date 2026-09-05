@@ -1,0 +1,27 @@
+{
+  "template_name": "REPLACE ME - name exactly as it appears in Setup > Quote Templates",
+  "org": "REPLACE ME - production | uat | dev sandbox alias",
+  "owner": "REPLACE ME - email of the person who owns template changes",
+  "last_reviewed": "YYYY-MM-DD",
+  "sections": {
+    "header": {
+      "quote_fields": ["QuoteNumber", "ExpirationDate"],
+      "notes": "Only Quote fields merge here. Mirror any Opportunity/Account value onto a Quote field first."
+    },
+    "line_items": {
+      "columns": ["Product2Id", "Quantity", "UnitPrice", "Discount", "TotalPrice"],
+      "sort_field": "SortOrder",
+      "notes": "QuoteLineItem.SortOrder determines the order lines appear in the Quote PDF."
+    },
+    "footer": {
+      "text_blocks": ["terms-and-conditions", "signature-block"],
+      "notes": "Split long legal text across multiple blocks rather than one oversized block."
+    }
+  },
+  "verified_in_org": {
+    "pdf_generated": false,
+    "line_items_rendered": false,
+    "email_quote_tested": false,
+    "statuses_allowing_email": ["Approved", "Presented", "Accepted"]
+  }
+}

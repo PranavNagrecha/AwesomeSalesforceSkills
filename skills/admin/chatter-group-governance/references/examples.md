@@ -8,7 +8,7 @@ Concrete, before/after examples for each governance lever. Apply in workflow ord
 
 **Symptom:** "We have a lot of Chatter groups. We don't know how many or how many are dead."
 
-Run these in Workbench / Developer Console / `sfdx force:data:soql:query`. They are read-only and safe in production.
+Run these in Workbench, Developer Console, or `sf data query --target-org <alias>`. They are read-only and safe in production.
 
 **Active vs archived split:**
 
@@ -28,7 +28,9 @@ GROUP BY OwnerId, Owner.Name, Owner.IsActive
 ORDER BY COUNT(Id) DESC
 ```
 
-The rows where `Owner.IsActive = false` are your immediate ownership-transfer queue. In a typical org that has run for 5+ years without governance, this can be 30–60% of active groups.
+The rows where `Owner.IsActive = false` are your immediate ownership-transfer queue, and in a long-running org without governance the share is usually large — measure it rather than estimating, because the number is the argument for doing the work.
+
+`Owner` resolving to null is a separate and worse case: the group still functions, but no UI can show you an owner. Catch both in one pass with `WHERE Owner.IsActive = false OR OwnerId = NULL`.
 
 **Inactivity by group:**
 
@@ -48,18 +50,42 @@ LIMIT 200
 
 **Symptom:** Anyone with an internal license can create groups, and they do — there are 800 groups in a 200-person org.
 
-**Where it lives:** Setup → Permission Sets → New: "Chatter Group Creator." On the permission set, enable *System Permissions → Create and Own New Chatter Groups*. Then on the System Administrator profile (and any other "trusted" profiles), *remove* the permission so it must be granted explicitly.
+**What the platform actually gates.** There is no "allow group creation" switch in `ChatterSettings` — the Metadata API guide's field list for that type has no such element (api_meta.txt L112470–112608). Creation is a *user permission*: "Any user with the Create and Own New Chatter Groups permission can create public, private, and unlisted groups, including in any Experience Cloud sites they belong to" (object_reference.txt L67098–67099). So the lever is where that permission is granted, and nowhere else.
 
 **Steps:**
 
-1. Setup → Profiles → for each non-admin profile, find "Create and Own New Chatter Groups" and uncheck.
-2. Setup → Permission Sets → New: "Chatter Group Creator." On the perm set, enable "Create and Own New Chatter Groups."
-3. Assign the perm set to a small, trained group of users (team leads, project managers).
-4. Update the org's group-governance runbook with the assignment criteria.
+1. Retrieve the profiles and permission sets, and find every place the permission is enabled — the checker's `CGG-PERM-BROAD` finding does this for you.
+2. Remove it from each profile. Profiles apply to everyone assigned; a profile grant is not reviewable.
+3. Deploy a `Chatter_Group_Creator` permission set carrying it (shape in `references/metadata-examples.md` section 2).
+4. Assign it to the trained team leads and project managers, by name.
+5. Record the assignment criteria in the runbook so the next admin knows who qualifies.
 
-**Effect:** Existing groups are unaffected. New group creation is restricted to perm-set holders. Sprawl rate falls to ~10% of pre-policy levels in most orgs.
+**Assign and audit from the CLI**, so the holder list is a command rather than a memory:
 
-**Alternative:** Disable group creation entirely org-wide (Setup → Chatter Settings → uncheck "Allow Group Creation"). Heavy-handed; do this only if the goal is "stop creation entirely until governance is in place" and re-enable selectively after.
+```bash
+# Assign to the trained cohort
+sf org assign permset --name Chatter_Group_Creator \
+    --on-behalf-of ateam.lead@example.com \
+    --on-behalf-of bteam.lead@example.com \
+    --target-org prod
+
+# Audit the resulting holder list, including anyone who has left
+sf data query --target-org prod --query "
+  SELECT Assignee.Username, Assignee.IsActive, Assignee.Profile.Name
+  FROM PermissionSetAssignment
+  WHERE PermissionSet.Name = 'Chatter_Group_Creator'
+  ORDER BY Assignee.IsActive DESC, Assignee.Username"
+
+# And the escape hatch: anyone with Modify All Data can still act on any public
+# or private group regardless of the permission set (object_reference.txt L67112-67115)
+sf data query --target-org prod --query "
+  SELECT Assignee.Username FROM PermissionSetAssignment
+  WHERE PermissionSet.PermissionsModifyAllData = true"
+```
+
+**Effect:** Existing groups are unaffected — the permission gates creation, not ownership of what already exists. New creation is restricted to holders.
+
+<!-- UNVERIFIED (2026-09-05): "sprawl rate falls to ~10% of pre-policy levels" was an unsourced figure in an earlier revision of this file and has been removed. Measure the org's own before/after creation rate from CollaborationGroup.CreatedDate rather than quoting a number. -->
 
 ---
 
@@ -95,10 +121,12 @@ if (!orphans.isEmpty()) {
 
 **Pre-flight checks before running:**
 
-- Confirm the steward user has a *Chatter Plus* or full Salesforce license — Chatter Free / External users cannot own most group types.
+- Confirm the steward user holds **Modify All Data** — "Only the current group owner or people with the Modify All Data permission can update the `OwnerId`" (object_reference.txt L67378–67379), so an ordinary admin login is not necessarily enough to run this.
+  <!-- UNVERIFIED (2026-09-05): an earlier revision claimed Chatter Free / External users cannot own most group types and that a Chatter Plus or full Salesforce license is required. No supplied guide states a license restriction on CollaborationGroup.OwnerId. Verify the steward account's license in a sandbox before relying on it. -->
 - Confirm the steward user is *not* in any of the groups already (they will be added as owner; if they were a manager, role transitions cleanly, but verify).
 - Run in a sandbox first to confirm row count matches your audit query.
-- Limit batch to 10,000 (the soft DML limit per transaction); for larger orgs use a Batch Apex job instead.
+- Keep the query under the 10,000-row DML ceiling per transaction; for larger populations, run this as Batch Apex.
+- Prefer `Database.update(list, false)` over bare `update` — one group with a dangling owner should not roll back the other 239. The partial-success version of this script is in `references/metadata-examples.md` section 4.
 
 **Why a service-account owner, not a department head:** assigning 240 groups to "Jane Smith, VP Sales" creates a future re-orphan when Jane leaves. A dedicated steward user is owned by IT / Salesforce admin; ownership is institutional rather than personal.
 
@@ -125,12 +153,15 @@ g.IsArchived = true;
 update g;
 ```
 
-**Delete (permanent after 15-day Recycle Bin):**
+**Delete (treat as permanent):**
 
 ```apex
 CollaborationGroup g = [SELECT Id FROM CollaborationGroup WHERE Id = :groupId];
 delete g;
-// Cascades: CollaborationGroupMember, FeedItem rows for this group's parent, EntitySubscription rows
+// Object Reference L67402-67404: "Deleting a group permanently deletes all posts and
+// comments to the group. It also deletes all files and links posted to the group and
+// removes the files from other locations where they were shared."
+// That last clause is why the file check in the decision tree above is not optional.
 ```
 
 **Bulk archive of inactive 'Project-*' groups not posted to in >365 days:**
@@ -140,8 +171,9 @@ List<CollaborationGroup> stale = [
     SELECT Id, Name, LastFeedModifiedDate
     FROM CollaborationGroup
     WHERE IsArchived = false
+    AND IsAutoArchiveDisabled = false
     AND Name LIKE 'Project-%'
-    AND LastFeedModifiedDate < :Date.today().addDays(-365)
+    AND LastFeedModifiedDate < LAST_N_DAYS:365
     LIMIT 5000
 ];
 for (CollaborationGroup g : stale) {
@@ -155,31 +187,82 @@ This relies on the naming convention being respected. Without prefixes you must 
 
 ---
 
-## Example 5 — Auto-archive setting, configured deliberately
+## Example 5 — Auto-archive tuned per group, not per org
 
-**Where it lives:** Setup → Chatter Settings → "Archive Inactive Groups." Default in many orgs is 90 days but the value is editable.
+**Symptom:** A reference-library group and a broadcast channel keep archiving themselves. The first
+instinct — raise the org-wide inactivity window, or turn archiving off — is the wrong lever twice over.
 
-**Recommended values per group purpose:**
+**The three levers, and what each one costs:**
 
-| Group purpose | Auto-archive value | Reason |
+| Lever | Scope | Where it lives | Cost of using it |
+|---|---|---|---|
+| `allowChatterGroupArchiving` | Whole org | `Chatter.settings` (api_meta.txt L112476–112480) | `false` disables **manual** archiving too, so cleanup has only the delete branch left |
+| Inactivity window | Whole org | Setup → Chatter Settings | One number for every group purpose; tuning it for standing groups under-archives dead project groups |
+| `IsAutoArchiveDisabled` | One group | `CollaborationGroup` field (object_reference.txt L67282–67290) | None — it is a create-and-update boolean, per group, reversible |
+
+**So the pattern is: leave the org-wide setting alone, exempt the named groups.**
+
+Query for the groups that need exempting — read-heavy but post-light — using the members' own read
+timestamps rather than the group's post timestamp. `CollaborationGroupMember.LastFeedAccessDate` is
+"Date and time when a group member last accessed the group's feed" (L67480–67490), which is exactly the
+signal the archive sweep ignores:
+
+```sql
+SELECT CollaborationGroupId, CollaborationGroup.Name,
+       MAX(LastFeedAccessDate) lastRead, COUNT(Id) readers
+FROM CollaborationGroupMember
+WHERE LastFeedAccessDate = LAST_N_DAYS:90
+GROUP BY CollaborationGroupId, CollaborationGroup.Name
+HAVING COUNT(Id) > 5
+```
+
+Any group in that result whose `LastFeedModifiedDate` is old is being read but not posted to — an
+auto-archive false positive waiting to happen. Exempt it:
+
+```apex
+List<CollaborationGroup> exempt = [
+    SELECT Id, Name, IsAutoArchiveDisabled
+    FROM CollaborationGroup
+    WHERE Id IN :readButNotPostedGroupIds
+      AND IsAutoArchiveDisabled = false
+];
+for (CollaborationGroup g : exempt) {
+    g.IsAutoArchiveDisabled = true;
+}
+update exempt;
+```
+
+**Which purposes usually earn an exemption:**
+
+| Group purpose | Exempt? | Reason |
 |---|---|---|
-| Project / sprint groups | 90 days (default) | Projects have natural end dates; auto-archive aligns. |
-| Standing team groups (`Team-*`) | 180 days or "Never" | Team groups can have quiet weeks without being abandoned. |
-| Topic / interest groups (`Topic-*`) | 180 days | Slow-burn engagement; 90 days under-counts active groups. |
-| Broadcast / announcement (`Announce-*`) | "Never" auto-archive | Read-mostly groups have low post velocity by design. |
-| Customer-specific groups (`Customer-*`) | 365 days | Customer relationships span quarters; don't archive an active account's group because of a quiet month. |
+| Project / sprint (`Project-*`) | No | Projects have natural end dates; the sweep is doing its job |
+| Standing team (`Team-*`) | Case by case | Quiet weeks are normal; exempt only the ones the read query flags |
+| Topic / interest (`Topic-*`) | Case by case | Slow-burn engagement; the read query separates alive from abandoned |
+| Broadcast / announcement (`Announce-*`) | Yes | Read-mostly by design — post velocity is a bad proxy for value here |
+| Customer-specific (`Customer-*`) | Yes, while the account is live | The account relationship outlasts the posting cadence |
 
-The org-level setting is single-valued — you pick one number. Per-group exceptions are managed by the owner manually un-archiving the group periodically (the group's member activity won't reset the auto-archive clock since `LastFeedModifiedDate` is post-driven, not visit-driven). For groups that should never auto-archive, the practical defense is the owner posting a "still active — re-checking in" comment quarterly.
-
-If the org has a strong mix of project and standing groups, use a longer org-wide value (180 days) and accept that fully-dead project groups will live a bit longer before auto-archive kicks in — better than over-archiving active team groups.
+The old workaround — having the owner post a "still active" comment quarterly to reset the clock — is
+strictly worse than the flag: it depends on a human remembering, and it pollutes the feed with content
+that exists only to defeat a sweep.
 
 ---
 
 ## Example 6 — Group Information Template that encodes the policy
 
-**Where it lives:** Setup → Group Information Templates (note: must be enabled in Setup → Chatter Settings first).
+**What the platform gives you.** Two fields on the group carry this content: `InformationTitle`, "The
+title of the Information section," and `InformationBody`, "The text of the Information section" — both
+"For private groups, only visible to members and users with Modify All Data or View All Data permissions"
+(object_reference.txt L67247–67273). They are `Create` and `Update`, so the content below can be written
+by DML or `ConnectApi.GroupInformationInput`, not only typed by hand.
 
-**Template Markdown (saved as the org default for new groups):**
+<!-- UNVERIFIED (2026-09-05): "Setup → Group Information Templates" as a named admin feature, and any
+     requirement to enable it in Chatter Settings first, are not in any supplied guide — ChatterSettings
+     has no such element (api_meta.txt L112470-112608). What IS grounded is the pair of Information
+     fields on CollaborationGroup. If the Setup feature does not exist in the org in front of you, seed
+     InformationBody at creation time from the trigger in the note below instead. -->
+
+**Body content to seed on every new group:**
 
 ```markdown
 ## Group Charter
@@ -190,7 +273,8 @@ If the org has a strong mix of project and standing groups, use a longer org-wid
 - [ ] Private — invitation-only, sensitive but not secret
 - [ ] Unlisted — invisible to non-members, executive committees only
 
-(If unsure: choose Public. You can change to Private later. Switching to Unlisted is one-way for visibility purposes.)
+(If unsure: choose Public. Public and Private are set at creation and changed only with admin
+involvement — see gotchas.md 5 on what is and is not reversible.)
 
 ## Owner & Backup
 - Owner: <user>
@@ -199,13 +283,47 @@ If the org has a strong mix of project and standing groups, use a longer org-wid
 
 ## Cadence
 - Expected post frequency: [weekly / monthly / quarterly / event-driven]
-- Auto-archive after: [follow org default 90 days / longer if standing group]
+- Auto-archive: [follow the org sweep / exempt via IsAutoArchiveDisabled, with the reason]
 
 ## End-of-Life
 - Trigger to archive: [project complete / team disbanded / quarterly review found dormant]
 - Trigger to delete: [archived >365 days, no historic value, no audit need]
 ```
 
-**Effect:** Group creators see the prompt. Even if 50% ignore it, the 50% who fill it in produce navigable, governed groups. The "Backup Manager" field, when populated, is the single highest-leverage change for offboarding workflow — it gives the system admin a target user for ownership transfer when the owner leaves.
+**Effect:** Creators see the prompt, and the "Backup Manager" line is the highest-leverage part — it
+gives a Modify All Data holder a named transfer target when the owner leaves, instead of a search.
 
-Templates do not enforce structured fields — they're free-form Markdown rendered in the group's Information tab. So the validation is social, not technical. Combined with restricting group creation to perm-set holders (Example 2), the social pressure is sufficient.
+**The one enforcement point that is real.** Information content is advisory; a trigger is not. The
+Object Reference names the hook explicitly: "Use Apex triggers on the `CollaborationGroup` object to
+monitor and manage the creation of groups. In Setup, enter Group Triggers in the Quick Find box, then
+select Group Triggers to add triggers" (L67131–67133). That is where a naming convention becomes
+enforceable rather than aspirational:
+
+```apex
+trigger CollaborationGroupGovernance on CollaborationGroup (before insert) {
+    // Prefixes agreed with the business; keep them in Custom Metadata in a real org.
+    Set<String> allowed = new Set<String>{
+        'Project-', 'Team-', 'Topic-', 'Announce-', 'Customer-'
+    };
+    for (CollaborationGroup g : Trigger.new) {
+        Boolean ok = false;
+        for (String prefix : allowed) {
+            if (g.Name != null && g.Name.startsWith(prefix)) { ok = true; break; }
+        }
+        if (!ok) {
+            g.Name.addError(
+                'Group names must start with one of: ' + String.join(new List<String>(allowed), ', ')
+            );
+        }
+        if (String.isBlank(g.InformationBody)) {
+            g.InformationBody = GroupCharterDefaults.SEED_BODY;
+        }
+    }
+}
+```
+
+Two cautions before deploying it. Apex on this object "runs in system mode, which means that the
+permissions of the current user aren't taken into account" (L67121–67123), so a trigger that *queries*
+groups sees unlisted ones too. And name uniqueness is asymmetric — "Group names must be unique across
+public and private groups. Unlisted groups don't require unique names" (L67345–67352) — so a trigger
+that dedupes by `Name` must also compare `CollaborationType`.

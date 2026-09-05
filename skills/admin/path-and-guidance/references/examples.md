@@ -107,6 +107,46 @@ Stage: Escalated
      - Do NOT change status back to Working without team lead approval"
 ```
 
+**The same design as deployable metadata** — `pathAssistants/Case_Support_Path.pathAssistant-meta.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <entityName>Case</entityName>
+    <fieldName>Status</fieldName>
+    <masterLabel>Support Case Path</masterLabel>
+    <pathAssistantSteps>
+        <fieldNames>Priority</fieldNames>
+        <fieldNames>Origin</fieldNames>
+        <info>Set Priority from the impact/urgency matrix, confirm the contact method matches the customer preference, and assign to the correct queue before taking ownership.</info>
+        <picklistValueName>New</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Reason</fieldNames>
+        <fieldNames>Related_Article__c</fieldNames>
+        <info>Search Knowledge before custom troubleshooting. Record findings in Internal Comments. Set a follow-up task if you are waiting on the customer.</info>
+        <picklistValueName>Working</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Escalation_Reason__c</fieldNames>
+        <fieldNames>Customer_Impact__c</fieldNames>
+        <fieldNames>Escalation_Timestamp__c</fieldNames>
+        <info>SLA: contact the customer within 4 hours of escalation. Confirm the escalation reason is documented, notify the team lead, and do not return the case to Working without team-lead approval.</info>
+        <picklistValueName>Escalated</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>Master</recordTypeName>
+</PathAssistant>
+```
+
+Three things to notice, all of which the design conversation above glosses over:
+
+- `recordTypeName` is `Master`, not "All Record Types". Even the master record type consumes the one-path-per-record-type slot (api_meta.txt L94496) — this org can never add a second Case path without introducing record types.
+- The design listed `Contact.Phone` and `Internal_Comments__c` as key fields; both are dropped here. `fieldNames` names "the fields in entityName" (api_meta.txt L94545), so a cross-object dotted reference is not a field on Case, and a long text area is not a viable inline key field.
+- `Closed` has no step. That is deliberate and it is not a deletion: "a missing step in the .xml file means it has not been configured, not that it doesn't exist" (api_meta.txt L94525–94526). The Closed chevron still renders, blank.
+
+UNVERIFIED (2026-09-05): the Metadata API guide names only Opportunity, Lead, and Quote as objects with a hard-coded `entityName`, plus custom objects (api_meta.txt L94513–94515). Case Path is long-standing practice but is not confirmed by the extracted guides — check the object picker in Setup > Path Settings before building this.
+
 **Why it works:** The 4-hour SLA reminder is unavoidable — it appears every time an agent views an Escalated case. No new automation or monitoring was required. The guidance replaces an ignored training doc with an in-context nudge.
 
 ---
@@ -117,7 +157,27 @@ Stage: Escalated
 
 **What goes wrong:** Path displays the field but does not enforce it. The rep can move to the next stage while the field is empty. The admin discovers this in UAT (or after go-live) and scrambles to add a validation rule.
 
-**Correct approach:** Use Path for display and guidance. Use a validation rule with a condition on the Stage field (e.g., `AND(ISPICKVAL(StageName, "Proposal/Price Quote"), ISBLANK(Economic_Buyer__c))`) to enforce that the field is populated before the stage can be saved. Path and the validation rule complement each other: Path tells the rep what to fill in; the validation rule ensures they actually do it.
+**Correct approach:** Use Path for display and guidance, and pair every key field that genuinely must be filled with a validation rule. The two artifacts ship together and reference the same picklist value string:
+
+```
+# pathAssistants/Enterprise_New_Business_Path.pathAssistant-meta.xml  (displays)
+<pathAssistantSteps>
+    <fieldNames>Economic_Buyer__c</fieldNames>
+    <picklistValueName>Proposal/Price Quote</picklistValueName>
+</pathAssistantSteps>
+
+# objects/Opportunity/validationRules/Opp_Proposal_RequireKeyFields.validationRule-meta.xml  (enforces)
+errorConditionFormula:
+    AND(
+        ISPICKVAL(StageName, "Proposal/Price Quote"),
+        ISBLANK(Economic_Buyer__c),
+        NOT($Permission.Bypass_Validation_Rules)
+    )
+errorDisplayField: Economic_Buyer__c
+errorMessage:      "Economic Buyer must be set before advancing to Proposal."
+```
+
+The literal `Proposal/Price Quote` appears in both files and in the record type's `picklistValues` block. If any one of the three drifts, the path shows a chevron the rule never fires on, or the rule blocks a save on a stage the path does not explain. `scripts/check_path_and_guidance.py` catches the path-to-record-type half of that drift; the rule half is `admin/validation-rules`.
 
 ---
 

@@ -64,20 +64,45 @@ Which pattern from SKILL.md applies?
 
 | Section | Fields / Content | Notes |
 |---|---|---|
-| Header | Quote.Name, Quote.QuoteNumber, Quote.ExpirationDate, custom mirror fields | Add custom mirror fields as needed |
-| Body (line items table) | Product Name, Quantity, Unit Price, Discount, Total Price | Confirm columns with business stakeholders |
-| Footer | Terms and conditions text, signature block | Keep under 32,000 chars per text block |
+| Header | Quote.Name, Quote.QuoteNumber, Quote.ExpirationDate, custom mirror fields | Only Quote fields merge here; mirror Opportunity/Account values first |
+| Body (line items table) | Product Name, Quantity, Unit Price, Discount, Total Price | Confirm columns with business stakeholders; line order comes from QuoteLineItem.SortOrder |
+| Footer | Terms and conditions text, signature block | Split long text across blocks rather than one oversized block |
+
+**Template is NOT deployable** — there is no QuoteTemplate metadata type. Record the build in
+`quote-template-checklist.json` and name the owner of the manual rebuild in each target org:
+
+- **Checklist file committed at:** ______________________
+- **Rebuild owner (per org):** ______________________
+
+## Email Gate (allowEmail)
+
+`allowEmail` on each QuoteStatus value decides whether the Email Quote action is available.
+Fill this in before deploying the standard value set:
+
+| Status | allowEmail | Why |
+|---|---|---|
+| Draft | false | |
+| Needs Review | false | |
+| In Review | false | |
+| Approved | true | |
+| Rejected | false | |
+| Presented | true | |
+| Accepted | true | |
+| Denied | false | |
 
 ---
 
 ## Approval Process Design (if applicable)
 
 - **Object:** Quote
-- **Entry criteria:** Quote.Discount > ____%
+- **Entry criteria:** Quote.Discount > ____%  (read-only field, but filterable — valid as a criterion)
 - **Record lock on submission:** Yes / No
 - **Approver routing:** Named user / Manager hierarchy / Lookup field (specify)
-- **Approval action:** Unlock record, set Quote.Status = 'Approved'
-- **Rejection action:** Unlock record, reset Quote.Discount to threshold, email submitter
+- **Approval action:** Unlock record, set Quote.Status = 'Approved' (a status with allowEmail = true)
+- **Rejection action:** Unlock record, set Quote.Status = 'Rejected' (allowEmail = false), email submitter,
+  and reset **QuoteLineItem.Discount** on the lines — NOT Quote.Discount, which has no Create/Update
+  property and cannot be the target of a field update.
+- **Non-admin test user for the lifecycle test:** ______________________
 
 ---
 
@@ -90,9 +115,12 @@ Copy from SKILL.md Review Checklist and tick off as completed:
 - [ ] Any custom fields needed on the PDF are present on the Quote object and populated correctly
 - [ ] Only one quote is ever set as synced at a time; process documented for switching sync
 - [ ] Email Quote tested end-to-end: correct PDF attached, correct recipient, activity logged
-- [ ] If discount approval configured: tested with a non-SysAdmin user, locking verified, rejection action reverts discount
+- [ ] If discount approval configured: tested with a non-admin user, locking verified, rejection resets QuoteLineItem.Discount
 - [ ] No CPQ QuoteLineItem assumption introduced in template or Flows
 - [ ] Template character limits not exceeded (32,000 chars per Text/Image field)
+- [ ] QuoteStatus standard value set retrieved, edited and redeployed **complete** (partial deploys deactivate omitted statuses)
+- [ ] `python3 scripts/check_quotes_and_quote_templates.py --manifest-dir <dir>` returns no ERROR lines
+- [ ] Reconciliation queries run (see references/metadata-examples.md section 8b)
 
 ---
 

@@ -15,10 +15,16 @@
 5. If the rep needs to revise, they edit the quote lines — changes flow to opportunity products automatically.
 
 ```text
-Opportunity.SyncedQuoteId = [ID of the selected quote]
+Opportunity.SyncedQuoteId = [ID of the selected quote]   // writable: Create, Filter, Nillable, Update
+                                                          // BUT read-only inside an Apex trigger
+Quote.IsSyncing            = true                         // read-only: Defaulted on create, Filter
 
 QuoteLineItem edits  ->  OpportunityLineItem updates (bidirectional while synced)
 OpportunityLineItem edits  ->  QuoteLineItem updates (bidirectional while synced)
+
+Exception: if the synced OpportunityLineItem has a quantity or revenue schedule,
+writes to Quantity / TotalPrice / GrandTotal are IGNORED without an error.
+Check QuoteLineItem.HasQuantitySchedule and .HasRevenueSchedule first.
 ```
 
 **Why it works:** The platform's bidirectional sync keeps the opportunity's Total Amount field (used for forecasting) in lock-step with the quote that represents the agreed deal. Stopping sync on other draft quotes ensures they remain historical records without polluting the opportunity.
@@ -58,7 +64,21 @@ Update Records: Quote (current record)
 
 Step 3 — In Setup > Quote Templates, add the mirror fields to the Header section using the Insert Field picker.
 
-**Why it works:** The template renders quote fields at PDF generation time. By keeping mirror fields updated via Flow, the PDF always reflects current opportunity and account data without any template-side SOQL.
+Step 4 — Verify the mirror actually populated, for every quote, not just the one you tested:
+
+```sql
+SELECT Id, QuoteNumber, Status, OpportunityId,
+       Billing_Street_Mirror__c, Billing_City_Mirror__c,
+       Close_Date_Mirror__c, Contract_Term_Months__c
+FROM Quote
+WHERE CreatedDate = LAST_N_DAYS:30
+  AND (Contract_Term_Months__c = NULL OR Close_Date_Mirror__c = NULL)
+ORDER BY CreatedDate DESC
+```
+
+Rows here are quotes whose PDF would render blanks. The usual cause is a flow configured for Create only, or for Update only — `scripts/check_quotes_and_quote_templates.py` does not catch that, so this query is the check.
+
+**Why it works:** The template renders quote fields at PDF generation time. By keeping mirror fields updated via Flow, the PDF always reflects current opportunity and account data without any template-side SOQL. Do not try to shortcut this with a Quote formula field that references `GrandTotal` — that field "is not directly referenceable or usable in custom formula fields on the Quote object" (`object_reference.txt` L239630–239637).
 
 ---
 
@@ -74,22 +94,50 @@ Step 3 — In Setup > Quote Templates, add the mirror fields to the Header secti
 2. Entry criteria: `Quote.Discount > 15`
 3. Record editability: Lock the record on submission.
 4. Approver: Named user (VP of Sales) or dynamic (lookup to a VP field on the quote).
-5. Approval action: Unlock record, set `Quote.Status` to "Approved".
-6. Rejection action: Unlock record, reset `Quote.Discount` to 15 (field update), send email notification to the submitter.
-7. Add a validation rule to prevent emailing the quote before approval:
+5. Approval action: Unlock record, set `Quote.Status` to "Approved" — a status whose `allowEmail` is `true`.
+6. Rejection action: Unlock record, set `Quote.Status` to "Rejected" (`allowEmail` false), notify the submitter, and reset the discount **on the line items**.
+7. Gate the send with `allowEmail` on the status value, not with a validation rule.
 
-```text
-[Validation Rule on Quote]
-Rule Name: Require_Approval_Before_Email
-Error Condition:
-  AND(
-    Quote.Discount > 15,
-    Quote.Status != 'Approved'
-  )
-Error Message: "This quote requires VP approval before it can be emailed to the customer."
+Step 7 is where most implementations go wrong. `StandardValue.allowEmail` "indicates whether this value lets users email a quote PDF (true), or not (false). This field is only relevant for the Status field in quotes." (`api_meta.txt` L47538–47541). It is deployable, per status, and needs no formula:
+
+```xml
+<!-- excerpt: two standardValue entries from the QuoteStatus StandardValueSet -->
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+<standardValue>
+    <fullName>In Review</fullName>
+    <default>false</default>
+    <isActive>true</isActive>
+    <label>In Review</label>
+    <allowEmail>false</allowEmail>
+</standardValue>
+<standardValue>
+    <fullName>Approved</fullName>
+    <default>false</default>
+    <isActive>true</isActive>
+    <label>Approved</label>
+    <allowEmail>true</allowEmail>
+</standardValue>
+</StandardValueSet>
 ```
 
-**Why it works:** The Approval Process creates the control point; the validation rule enforces it at the UI layer so reps cannot bypass approval by directly clicking Email Quote.
+Step 6 is the other trap. `Quote.Discount` has properties `Filter, Nillable, Sort` — no `Create`, no `Update` — because it is derived from the line items' subtotals (`object_reference.txt` L239578–239592). A field update against it cannot be built. Reset the lines instead; the header roll-up follows:
+
+```text
+Flow: Quote_Reset_Line_Discounts_On_Reject
+Trigger: Invoked from the approval process rejection action (or Quote after-save
+         when Status changes to Rejected)
+
+Get Records: QuoteLineItem WHERE QuoteId = {!$Record.Id}
+             AND Discount > 15
+Loop over the collection:
+  Assignment: currentLine.Discount = 15          // percent, 0-100, writable
+Update Records: the looped collection
+
+Do NOT: Update Records -> Quote -> Discount = 15
+        Quote.Discount is read-only. There is no field update to build.
+```
+
+**Why it works:** the approval process creates the control point, `allowEmail` removes the Email Quote action for every pre-approval status without depending on a save-time rule that the action may not pass through, and the reset writes to the only discount field the platform will accept — `QuoteLineItem.Discount` (`Create, Filter, Nillable, Sort, Update`, "Editable number from 0 to 100" — `object_reference.txt` L240758–240767).
 
 ---
 

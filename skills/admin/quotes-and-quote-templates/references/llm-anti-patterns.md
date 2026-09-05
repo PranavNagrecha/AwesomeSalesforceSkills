@@ -21,6 +21,8 @@ Draft quotes that are not synced do not update opportunity products.
 
 ---
 
+---
+
 ## Anti-Pattern 2: Recommending Standard Quote Templates for CPQ Quote Lines
 
 **What the LLM generates:** Instructions to create a standard Quote Template in Setup and configure it to display CPQ (SBQQ) quote lines in the PDF body table.
@@ -38,6 +40,8 @@ Do NOT advise using standard quote templates for CPQ quotes.
 ```
 
 **Detection hint:** Any recommendation to use Setup > Quote Templates for a quote in an org with CPQ installed, without checking which quote line object is in use.
+
+---
 
 ---
 
@@ -62,23 +66,40 @@ Lead Conversion field mapping (Setup > Lead Conversion Mapping) does NOT apply t
 
 ---
 
-## Anti-Pattern 4: Advising System Administrator Users to Test Approval Processes
+---
 
-**What the LLM generates:** Test instructions like "log in as an admin and submit a quote with a 20% discount to verify the approval fires correctly."
+## Anti-Pattern 4: Building a Discount Approval That Writes Back to `Quote.Discount`
 
-**Why it happens:** LLMs default to SysAdmin credentials in testing instructions because it is the most permissive and commonly referenced role. The approval bypass behavior for SysAdmins is an edge case not always represented in training data.
+**What the LLM generates:** An approval design whose rejection action is "field update: set `Quote.Discount` = 15", or a Flow that does `Update Records → Quote → Discount`. Often paired with test instructions like "log in as an admin and submit a quote with a 20% discount to verify the approval fires."
+
+**Why it happens:** `Quote.Discount` reads like a header input because it appears on the layout as a percentage next to an editable-looking total, and because the entry criterion `Quote.Discount > 15` genuinely works — the field is filterable. Nothing in the field name signals that it is a roll-up.
 
 **Correct pattern:**
 
 ```text
-System Administrators with "Modify All Data" bypass approval process entry criteria.
-ALWAYS test approval processes with a user profile that matches the actual submitter role
-(e.g., Sales Representative profile without admin permissions).
-Create a dedicated test user in the sandbox for this purpose.
-If tested only as SysAdmin, the approval may NEVER fire for real users in production.
+Quote.Discount        percent   Filter, Nillable, Sort           <- NO Create, NO Update
+                      "The difference between the QuoteLineItem record's subtotal and
+                       its discounted total, divided by the QuoteLineItem's subtotal."
+                      (object_reference.txt L239578-239592)
+
+QuoteLineItem.Discount  percent  Create, Filter, Nillable, Sort, Update
+                        "Editable number from 0 to 100."
+                        (object_reference.txt L240758-240767)
+
+READ  Quote.Discount           -> fine, in approval entry criteria and reports
+WRITE Quote.Discount           -> impossible, no field update exists to build
+WRITE QuoteLineItem.Discount   -> correct target for any reset or reversal
+
+Also read-only on Quote (no Create, no Update):
+  GrandTotal, Subtotal, TotalPrice, LineItemCount, QuoteNumber, IsSyncing, AccountId
+Writable on Quote: Tax, ShippingHandling, Status, ExpirationDate, Pricebook2Id
 ```
 
-**Detection hint:** Test instructions that reference logging in as a System Administrator or using the SysAdmin profile to validate approval process behavior.
+Test with a non-admin user as well — but for the documented reason, not an invented one: an administrator can edit records that an approval process has locked, so an admin's run never exercises the lock. UNVERIFIED (2026-09-05): the older claim that System Administrators bypass approval *entry criteria* is not supported by the Metadata API Developer Guide or the Object Reference, and help.salesforce.com cannot be fetched. Do not generate it.
+
+**Detection hint:** any field update, `inputAssignments` or `assignToReference` whose target is `Quote.Discount`, `Quote.GrandTotal`, `Quote.Subtotal`, `Quote.TotalPrice`, `Quote.QuoteNumber` or `Quote.IsSyncing`. `scripts/check_quotes_and_quote_templates.py` flags these as ERROR.
+
+---
 
 ---
 
@@ -105,6 +126,8 @@ To guarantee the customer receives the exact reviewed PDF:
 
 ---
 
+---
+
 ## Anti-Pattern 6: Referencing Opportunity or Account Fields Directly in Quote Template Merge Fields
 
 **What the LLM generates:** Template configuration instructions that include merge fields like `{!Opportunity.Name}`, `{!Account.BillingCity}`, or `{!Opportunity.Custom_Field__c}` directly in the quote template header or footer.
@@ -123,3 +146,62 @@ Workaround: create mirror fields on Quote, populate via Flow, then use those Quo
 ```
 
 **Detection hint:** Any merge field in a quote template configuration that references a parent object (Opportunity, Account, Contact) rather than a Quote or QuoteLineItem field.
+
+---
+
+## Anti-Pattern 7: Treating Quote Templates as Deployable Metadata
+
+**What the LLM generates:** A `package.xml` containing `<name>QuoteTemplate</name>`, a path like `force-app/main/default/quoteTemplates/Standard.quoteTemplate-meta.xml`, or a release plan whose sandbox-to-production step includes "deploy the quote template".
+
+**Why it happens:** Nearly every Setup artefact in Salesforce has a metadata type, so the prior is overwhelming. The token `QuoteTemplate` also genuinely appears in the Metadata API guide — as an enum value — which is enough to make a plausible-looking type name.
+
+**Correct pattern:**
+
+```text
+There is NO QuoteTemplate metadata type.
+api_meta.txt contains "QuoteTemplate" exactly once (L83165), as a value of the
+SummaryLayoutStyle enumeration on Layout.SummaryLayout. No file suffix, no
+directory location, no field table, no sample definition.
+
+Deployable around the template:
+  Settings:Quote                 (enableQuote, enableQuotesWithoutOppEnabled)
+  StandardValueSet:QuoteStatus   (statuses + allowEmail)
+  CustomField / ValidationRule / Layout on Quote
+
+Not deployable:
+  the template itself -> rebuild in Setup per org, track in
+  templates/quote-template-checklist.json, audit via QuoteDocument.DocumentTemplate
+```
+
+**Detection hint:** any `.quoteTemplate-meta.xml` path, any `QuoteTemplate` member in a manifest, or any migration plan that moves a template without a manual rebuild step.
+
+---
+
+---
+
+## Anti-Pattern 8: Hand-Writing a Partial `QuoteStatus` Standard Value Set
+
+**What the LLM generates:** A `QuoteStatus.standardValueSet-meta.xml` containing only the statuses relevant to the current request — typically two or three — presented as a complete file to deploy.
+
+**Why it happens:** Sample definitions in documentation are always abbreviated, and picklist deploys feel additive by analogy with adding a field. The destructive behaviour is stated under `CustomValue`, not under `StandardValueSet`, so it is easy to miss even when reading the right page.
+
+**Correct pattern:**
+
+```text
+"If picklist values are missing from a component definition, they get deactivated
+ when deployed. Deactivation occurs for picklist values of both standard and
+ custom fields."                                    (api_meta.txt L47481-47483)
+
+ALWAYS:
+  sf project retrieve start --metadata "StandardValueSet:QuoteStatus" --target-org <alias>
+  edit the retrieved file
+  sf project deploy start --manifest manifest/package.xml
+
+The complete standard Quote.Status set (object_reference.txt L239996-240005):
+  Draft, Needs Review, In Review, Approved, Rejected, Presented, Accepted, Denied
+StandardValueSet also refuses "*" in package.xml (api_meta.txt L130830-130832).
+```
+
+**Detection hint:** a `QuoteStatus` value set authored from scratch, or one missing any of the eight standard statuses. The skill's checker reports this as ERROR.
+
+---

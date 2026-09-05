@@ -33,6 +33,23 @@
 
 **Why it works:** Push patches can rename Apex method signatures that subscribers have called. The only durable defense is monitoring publisher release notes and treating any rename in the patch notes as a subscriber-side refactor task scheduled before the maintenance window.
 
+**What detection would have looked like.** The push landed in production only; UAT stayed on 2.4.7. That is version drift, and it is visible the moment the inventory is refreshed — before Monday's deployment failure. Regenerate `config/package-inventory.json` from `sf package installed list --json` on a schedule, then run the checker:
+
+```console
+$ python3 scripts/check_managed_package_installation_and_upgrade.py --manifest-dir .
+ERROR: config/package-inventory.json: package `logi_pkg` version drift across environments
+       (prod=2.4.8, uat=2.4.7) — a sandbox that does not match production is not a
+       rehearsal of the upgrade
+INFO:  subscriber code references managed namespace `logi_pkg__` in 3 file(s):
+       force-app/main/default/classes/RateCalculationService.cls,
+       force-app/main/default/triggers/ShipmentTrigger.trigger,
+       force-app/main/default/flows/Shipment_Rate_Refresh.flow-meta.xml
+       — every one blocks an uninstall and breaks on a publisher rename
+[managed-package-installation-and-upgrade] 1 error(s), 0 warning(s), 1 note(s)
+```
+
+The ERROR is the signal: production moved and nothing else did. The INFO is the blast radius — three subscriber artefacts call into `logi_pkg`, so three places need checking against the patch notes before the same version reaches UAT. Ask the publisher whether push upgrades are enabled for your org and whether they will honour a block; that switch lives on their `PackageSubscriber` record, not in your Setup.
+
 ---
 
 ## Example 3: Uninstall of a deprecated marketing package
@@ -48,6 +65,16 @@
 3. Run uninstall in a Full Sandbox first. Email arrives with the data export CSV (validates Salesforce's 48-hour-retention path is functional). Org spot-checks: page layouts render, Flows do not show "missing component" warnings, scheduled jobs do not fail.
 4. Schedule production uninstall in a low-traffic window. Execute. Download and archive the data export CSV within the 48-hour window — server-side retention is the only undo button.
 5. Remove the now-unused subscriber Permission Set assignments and field references from documentation.
+
+The reference audit in step 2 is the part that decides whether the uninstall runs at all. It produces a disposition per reference, not a count:
+
+| Reference | Kind | Disposition | Done before uninstall? |
+|---|---|---|---|
+| `MarketingTouchBatch.cls` | Apex, no callers, no test coverage | Delete | Yes |
+| `LeadAssignmentService.cls` reads `Lead.mkt_pkg__Last_Touch__c` | Apex field reference | Refactor to `Last_Marketing_Touch__c`, backfill first | Yes |
+| `Lead_Scoring.flow-meta.xml` Get Records on `mkt_pkg__Email_Campaign__c` | Flow element | Remove the element, reroute the branch | Yes |
+| `Standard.profile-meta.xml` grants `Opportunity.mkt_pkg__Last_Touch__c` | Profile field permission | Drops with the field on uninstall; no action | n/a |
+| `Marketing_Ops.permissionset-meta.xml` grants `mkt_pkg__Email_Campaign__c` | Subscriber permission set | Remove the grant; a stale namespace grant survives the package | Yes |
 
 **Why it works:** The data export precedes the uninstall, not follows it. Subscriber-code references are pre-audited and removed before uninstall, so the operation succeeds without the "component is referenced" error. The 48-hour Salesforce-side retention is treated as a safety net, not a primary recovery mechanism.
 

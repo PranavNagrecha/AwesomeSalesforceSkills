@@ -13,7 +13,51 @@
 4. Import the completed file via Translation Workbench > Import.
 5. Repeat for `pt_BR`.
 
+**What the vendor actually receives.** The Workbench export is a bilingual
+tab-delimited file, and the shape below is what a translator's tooling reads —
+one row per string, the source column locked, the translation column empty. The
+`LABEL` metadata type here is the Workbench's own name for a custom label; the
+`KEY` is the label's `fullName`, which is what the import matches on.
+
+```text
+# Translation file for: Spanish
+# Version: 62.0
+Metadata Type	Key	Label	Translation	Out of Date
+LABEL	Quote_Save_Button	Save Quote		-
+LABEL	Error_Amount_Must_Be_Positive	{0} must be greater than zero.		-
+LABEL	Toast_Quote_Submitted	Quote submitted for approval.		-
+```
+
+UNVERIFIED (2026-09-05): the exact column order and header text of the
+Translation Workbench export (STF) file are described in Salesforce Help, which
+is not in the extracted corpus used for this revision; the Metadata API
+Developer Guide documents only the XML equivalents. Treat the block above as the
+*shape* of the round-trip — one row per string, keyed on the label's API name,
+with an empty translation column — and open one real export before writing a
+vendor spec against it. The three columns that matter are grounded in the
+`CustomLabelTranslation` field table: `name` (Required, the label's API name)
+and `label` (Required, "Maximum of 765 characters") — `api_meta.txt:135934-135937`.
+
+**Three constraints to put in the vendor brief, not discover on import:**
+
+- The translated value caps at **765** characters even though the English
+  source may be up to 1,000 (`api_meta.txt:135934-135935`). Flag any source
+  string over 765 before it ships.
+- A row returned **blank** does not clear the existing translation. "If a
+  translation label is left blank, it's skipped during deployment, and no error
+  will be shown" (`api_meta.txt:135789-135790`). Blank cells are silent no-ops,
+  so ask the vendor to return the source string rather than an empty cell for
+  "leave as English".
+- Placeholders like `{0}` are `String.format` positions, not platform syntax.
+  A translator who reflows the sentence may move them — correct — or drop them
+  — silently wrong. Say which is which in the brief.
+
 **Why it works:** The export format is a structured bilingual text file that translation vendors can work with directly. The import maps translations back to the exact label records. No manual UI entry required.
+
+**Metadata equivalent.** The same round-trip in source control is a
+`translations/es.translation-meta.xml` file reviewed as a pull request — see
+`references/metadata-examples.md` §2 and `admin/custom-label-management`, which
+owns the `CustomLabels` master file the keys above point at.
 
 ---
 
@@ -61,13 +105,13 @@
 
 **What practitioners do:** Reference the translated label of a picklist value in an Apex condition or validation rule formula:
 ```apex
-if (account.Industry == 'Tecnología') { // Spanish translation
+if (account.Industry == 'Tecnología') { /* ... */ } // Spanish translation — breaks for every other language
 ```
 
 **What goes wrong:** The picklist API value (the stored database value) is always the default language value (`Technology`), not the translation. The comparison always returns false for Spanish-language users, breaking the logic.
 
 **Correct approach:** Always use the picklist API value in Apex and validation rule formulas, regardless of user language:
 ```apex
-if (account.Industry == 'Technology') { // API value, always works
+if (account.Industry == 'Technology') { /* ... */ } // API value, always works
 ```
 Translations only affect the UI display label. They never change the stored value.

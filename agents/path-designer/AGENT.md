@@ -125,7 +125,7 @@ Opportunity-specific: if the step is a late stage (Negotiation, Closed-Won), Key
 
 #### Step 4 — Design Guidance for Success
 
-For each step, produce Guidance (rich text, up to 5000 chars) with `guidance_style`:
+For each step, produce Guidance (the `info` element; the Metadata API guide states no character limit — keep it to a few short sentences) with `guidance_style`:
 
 - `concise` — bulleted checklist: what to verify, what to produce, next action.
 - `detailed` — prose + links to Knowledge articles + embedded videos (URL-based).
@@ -160,10 +160,10 @@ Sober users find celebration distracting in B2B sales; flag for user research if
 
 #### Step 7 — Cutover
 
-Path activation is per record type + driver field + user profile assignment. Ensure:
+Path identity is `(entityName, recordTypeName)` — one PathAssistant per object per record type, including `__Master__`; the driver field and user profiles are not part of the key (Metadata API guide, PathAssistant "Note the following"; see `admin/path-and-guidance` gotcha 9). Ensure:
 
-- Existing Path on the same record type + field is deactivated as the new one is activated (you can only have one active per combination).
-- Profiles that should see the Path are listed; those that shouldn't are excluded.
+- Any existing Path on the same object + record type is deleted or replaced — `entityName`, `fieldName` and `recordTypeName` are not updateable, so re-pointing is delete-and-recreate.
+- Users reach the Path through record-type assignment on their profiles/permission sets and through the Lightning page that carries the Path component; there is no per-profile Path assignment.
 - Dynamic Forms compatibility — Path renders fine on Dynamic Forms pages.
 
 ### Audit mode

@@ -103,3 +103,47 @@ Before initiating uninstall:
 ```
 
 **Detection hint:** Any uninstall guidance that starts at "click Uninstall" without first calling for a subscriber-code reference audit.
+
+---
+
+## Anti-Pattern 6: Reciting a default instead of writing it down
+
+**What the LLM generates:** "Create `installedPackages/acme.installedPackage-meta.xml` with the version number and deploy it — the package will install for admins only by default."
+
+**Why it happens:** The CLI's `--security-type` default is `AdminsOnly`, and that is the number most training data repeats. The Metadata API's `securityType` default is `AllUsers`, and the guide states it twice in the same section. An assistant that has absorbed the CLI default and is asked about the metadata path will confidently apply the wrong one. `activateRSS` fails the same way: it is a *required* field whose documented default is `false`, so an omitted element silently deactivates the package's Remote Site Settings and CSP Trusted Sites.
+
+**Correct pattern:**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<InstalledPackage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <versionNumber>4.2.1</versionNumber>
+    <securityType>AdminsOnly</securityType>
+    <activateRSS>true</activateRSS>
+</InstalledPackage>
+```
+
+Both fields are stated even when the value equals a default, because the two install paths default in opposite directions and the artefact has to survive being run by either.
+
+**Detection hint:** Any generated `installedPackage` XML with only `versionNumber`, or any sentence of the form "it defaults to X so you don't need to set it" about `securityType` or `activateRSS`.
+
+---
+
+## Anti-Pattern 7: Claiming the install script runs as "the Automated Process user"
+
+**What the LLM generates:** "The package's `InstallHandler` runs as the Automated Process user, so `UserInfo.getUserId()` returns that user."
+
+**Why it happens:** "Automated Process" is the right answer for several other platform contexts — process automation, some async paths — and it is heavily represented in training data. The Apex Reference Guide says something different and more specific: the post-install script "runs as a special system user that represents your package," visible only at runtime and not during tests, and the installing admin is reachable only through `InstallContext.installerId()`.
+
+**Correct pattern:**
+
+```
+The publisher's post-install script runs as a system user representing the
+package, so records it creates are attributed to that user rather than to the
+installing admin or to Automated Process. Reconcile post-install state by
+CreatedDate within the install window, not by CreatedById. The installing
+admin's id is available to the script only via InstallContext.installerId().
+```
+
+**Detection hint:** Any claim that names a specific running user for an install or uninstall script. If the answer is not "a system user representing the package," it is being recalled from a different context.
+
