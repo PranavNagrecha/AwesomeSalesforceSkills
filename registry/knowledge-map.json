@@ -3169,6 +3169,9 @@
     "cache-session": [
       "apex/platform-cache"
     ],
+    "cacheable-apex": [
+      "lwc/wire-service-patterns"
+    ],
     "caching": [
       "architect/experience-cloud-performance",
       "architect/omnistudio-scalability-patterns"
@@ -8907,8 +8910,14 @@
     "lightning-bolt-template-authoring": [
       "admin/lightning-bolt-template-authoring"
     ],
+    "lightning-card": [
+      "lwc/lwc-base-component-recipes"
+    ],
     "lightning-chart": [
       "lwc/lwc-chart-and-visualization"
+    ],
+    "lightning-combobox": [
+      "lwc/lwc-base-component-recipes"
     ],
     "lightning-confirm": [
       "lwc/lwc-toast-and-notifications"
@@ -8951,6 +8960,9 @@
       "admin/knowledge-base-administration",
       "admin/knowledge-classic-to-lightning",
       "data/knowledge-article-import"
+    ],
+    "lightning-layout": [
+      "lwc/lwc-base-component-recipes"
     ],
     "lightning-locker": [
       "lwc/common-lwc-runtime-errors"

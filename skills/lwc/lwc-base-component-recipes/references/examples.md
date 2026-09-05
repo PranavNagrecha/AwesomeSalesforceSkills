@@ -202,6 +202,115 @@ export default class ContactTable extends NavigationMixin(LightningElement) {
 
 ---
 
+## Example 4: Card Header with a Badge, a Button Group, and an Accordion Body
+
+**Context:** A "Contract health" panel on the Account page needs a status badge in the card header,
+two header actions, and three collapsible detail sections. None of it involves record data — it is
+pure base-component composition, and it is the shape most often hand-rolled from SLDS markup.
+
+**Problem:** Generated markup for this reaches for `<div class="slds-card">`, `<span class="slds-badge">`
+and a `slds-accordion` block. That renders, but the component then owns the ARIA state, the keyboard
+behaviour and every future SLDS change — Salesforce only auto-updates the *base components*
+(`lwc_guide create-components-css-slds-blueprint` L1737).
+
+**Solution — the composition, with each nesting rule cited:**
+
+```html
+<!-- contractHealthPanel.html -->
+<template>
+  <lightning-card title="Contract Health" icon-name="standard:contract">
+    <!-- Card actions are a NAMED SLOT in LWC; `title` and `footer` are text-only
+         attributes and there is no `actions` attribute — lwc_guide L11674, L4909. -->
+    <lightning-button-group slot="actions">
+      <lightning-button label="Recalculate" onclick={handleRecalculate}></lightning-button>
+      <lightning-button label="Export" onclick={handleExport}></lightning-button>
+    </lightning-button-group>
+
+    <div class="slds-var-p-horizontal_medium">
+      <!-- icon-alternative-text, not title, reaches the badge icon — lwc_guide L4799-L4801. -->
+      <lightning-badge
+        label={healthLabel}
+        icon-name="utility:success"
+        icon-alternative-text="Health status"
+      ></lightning-badge>
+
+      <!-- Composition: accordion-section nests inside accordion — lwc_guide L4857, L4902-L4907.
+           allow-multiple-sections-open changes the TYPE of openSections from string to
+           array — lwc_guide L11662. Do NOT set `title` on a section: in LWC that attribute
+           is reserved for internal use — lwc_guide L11663. -->
+      <lightning-accordion
+        allow-multiple-sections-open
+        active-section-name={openSections}
+        onsectiontoggle={handleSectionToggle}
+      >
+        <lightning-accordion-section name="terms" label="Terms">
+          <!-- The section's `actions` SLOT is where a menu goes — lwc_guide L11663, L4907. -->
+          <lightning-button-menu slot="actions" alternative-text="Term actions">
+            <lightning-menu-item value="edit" label="Edit terms"></lightning-menu-item>
+          </lightning-button-menu>
+          <lightning-formatted-text value={termsSummary}></lightning-formatted-text>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="renewal" label="Renewal">
+          <lightning-formatted-date-time value={renewalDate}></lightning-formatted-date-time>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="risk" label="Risk">
+          <lightning-progress-bar value={riskScore} size="large"></lightning-progress-bar>
+        </lightning-accordion-section>
+      </lightning-accordion>
+    </div>
+  </lightning-card>
+</template>
+```
+
+```js
+// contractHealthPanel.js — the openSections type trap, in code
+import { LightningElement, api } from 'lwc';
+
+export default class ContractHealthPanel extends LightningElement {
+  @api healthLabel = 'Healthy';
+  @api termsSummary;
+  @api renewalDate;
+  @api riskScore = 0;
+
+  // With allow-multiple-sections-open present, this is an ARRAY of section names.
+  // Remove that attribute and lightning-accordion hands back a STRING instead — lwc_guide L11662.
+  openSections = ['terms'];
+
+  handleSectionToggle(event) {
+    const opened = event.detail.openSections;
+    this.openSections = Array.isArray(opened) ? opened : [opened];
+  }
+
+  handleRecalculate() {
+    this.dispatchEvent(new CustomEvent('recalculate'));
+  }
+
+  handleExport() {
+    this.dispatchEvent(new CustomEvent('export'));
+  }
+}
+```
+
+**Why it works:** every visual element is a base component, so SLDS updates, ARIA state changes and
+WCAG 2.1 AA contrast arrive without a code change (`lwc_guide base-components-accessibility`
+L4953–L4957). The two composition rules that break this markup silently are both handled: card
+actions go in a named slot rather than an attribute, and accordion section actions go in the
+section's `actions` slot rather than the Aura `actions` attribute.
+
+**UNVERIFIED (2026-09-05):** `lightning-card` `icon-name`; `lightning-button-group`/`lightning-button`
+`label` and `onclick`; `lightning-badge` `label` and `icon-name`; `lightning-accordion`
+`allow-multiple-sections-open` (named in prose at L11662 but never shown as markup),
+`active-section-name`, `onsectiontoggle` and `event.detail.openSections`;
+`lightning-accordion-section` `name` and `label`; `lightning-button-menu` `alternative-text`;
+`lightning-menu-item` `value`/`label`; `lightning-formatted-text` `value`;
+`lightning-formatted-date-time` `value`; `lightning-progress-bar` `value` and `size`. The Developer
+Guide names these components but does not print their attribute tables — confirm each on the
+Component Reference **Specification** tab.
+
+---
+
 ## Anti-Pattern: Using lightning-record-form When Field Order Matters
 
 **What practitioners do:** They add a `fields` attribute with fields in desired display order, expecting the form to render them in that sequence.
@@ -209,3 +318,5 @@ export default class ContactTable extends NavigationMixin(LightningElement) {
 **What goes wrong:** `lightning-record-form` renders fields in the order dictated by the page layout assigned to the running user, not the JavaScript array order. On an org with a custom page layout, fields silently reorder. The issue is often not caught in development (where admins use a permissive layout) but surfaces in production.
 
 **Correct approach:** Switch to `lightning-record-edit-form` with explicit `lightning-input-field` elements in the desired order in the HTML template. This gives deterministic field placement regardless of page layout configuration.
+
+**UNVERIFIED (2026-09-05):** the claim that page layout order overrides the `fields` array order is not documented in the LWC Developer Guide; see `references/gotchas.md` Gotcha 1 for what the guide does and does not say. The remedy — use the edit form when field placement matters — is grounded at `lwc_guide data-get-user-input` L5426 and L5431.

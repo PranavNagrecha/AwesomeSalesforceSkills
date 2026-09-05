@@ -1,6 +1,8 @@
 # LWC Base Component Recipes — Work Template
 
-Use this template when building or reviewing LWC components that use `lightning-record-form`, `lightning-record-edit-form`, `lightning-record-view-form`, or `lightning-datatable`.
+Use this template when building or reviewing LWC components built from Lightning base components — the record\*form family, `lightning-datatable`, and the everyday composites (`lightning-card`, `lightning-layout`, `lightning-combobox`, `lightning-button-menu`, `lightning-spinner`, `lightning-accordion`, `lightning-tabset`).
+
+**Before you fill anything in:** the Component Library is the authority for every attribute, event and slot. The LWC Developer Guide does not publish attribute tables. Anything you cannot confirm there goes in the Assumptions list at the bottom, not into the markup unmarked.
 
 ---
 
@@ -23,6 +25,77 @@ Answer these before writing any markup:
 - **Custom layout needed?** (custom field order, custom buttons, pre-save validation) — Yes / No
 - **Table interactions needed?** (inline editing, row actions, sorting, infinite scroll) — Yes / No
 - **FLS-sensitive fields?** (fields that differ by profile) — Yes / No
+
+---
+
+## Base-Component-First Decision
+
+For each visual element on the screen, record the verdict before writing markup:
+
+| Element | Base component? | If none — blueprint / third-party / custom | Verdict |
+|---|---|---|---|
+| (e.g., status pill) | `lightning-badge` | — | base |
+| | | | |
+| | | | |
+
+Rule: prefer a base component; Salesforce updates it when SLDS updates the blueprint, while
+blueprint markup copied into your bundle is yours to maintain forever.
+
+**Container check** (decides `<supportedFormFactors>` and the toast module):
+
+- [ ] Lightning Experience  - [ ] LWR Experience Cloud site  - [ ] Salesforce mobile app  - [ ] Quick action
+- [ ] No `lightning-datatable` / `lightning-tree-grid` if mobile is in scope (unsupported there)
+- [ ] Toast module is `lightning/toast` if any Experience Cloud target is in scope
+
+---
+
+## Composite Skeleton (card + layout + combobox + menu + spinner + read-only summary)
+
+```html
+<lightning-card title="TITLE" icon-name="standard:account">
+  <lightning-button-menu slot="actions" alternative-text="Actions" onselect={handleMenuSelect}>
+    <lightning-menu-item value="refresh" label="Refresh"></lightning-menu-item>
+  </lightning-button-menu>
+
+  <div class="slds-var-p-horizontal_medium">
+    <template lwc:if={isLoading}>
+      <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </template>
+
+    <lightning-layout multiple-rows="true">
+      <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+        <lightning-combobox label="LABEL" value={value} options={options}
+                            onchange={handleChange}></lightning-combobox>
+      </lightning-layout-item>
+      <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+        <lightning-record-view-form record-id={recordId} object-api-name="OBJECT_API_NAME">
+          <lightning-output-field field-name="FIELD_API_NAME"></lightning-output-field>
+        </lightning-record-view-form>
+      </lightning-layout-item>
+    </lightning-layout>
+  </div>
+</lightning-card>
+```
+
+Three nesting rules this skeleton encodes — all three fail silently if broken:
+
+- `lightning-output-field` is a **direct child** of `lightning-record-view-form`. Put the form in the layout item, never the fields.
+- Only `lightning-layout-item` (plus plain HTML and text) sits directly inside `lightning-layout`.
+- Card actions go in the `actions` **slot**; `title` and `footer` are text-only attributes in LWC.
+
+```js
+// picklist chain: getObjectInfo -> defaultRecordTypeId -> getPicklistValues
+recordTypeId = '012000000000000AAA'; // master record type fallback
+
+@wire(getObjectInfo, { objectApiName: OBJECT })
+wiredInfo({ data }) { if (data) this.recordTypeId = data.defaultRecordTypeId || this.recordTypeId; }
+
+@wire(getPicklistValues, { recordTypeId: '$recordTypeId', fieldApiName: FIELD })
+wiredValues({ data }) {
+  // save `value` (untranslated API name); display `label` (translated)
+  if (data) this.options = data.values.map(v => ({ label: v.label, value: v.value }));
+}
+```
 
 ---
 
@@ -128,6 +201,23 @@ Copy from SKILL.md and tick items as you complete them:
 - [ ] `onsuccess` handler fires a toast or navigates; form is not left in stale state
 - [ ] `lightning-messages` present inside `lightning-record-edit-form` when using custom submit button
 - [ ] Form visibility toggled via CSS class (`slds-hide`), not `if:true`, to preserve unsaved state
+- [ ] Every input component (`lightning-input`, `lightning-combobox`, `lightning-select`, `lightning-radio-group`, `lightning-checkbox-group`) has a `label`
+- [ ] Every `lightning-output-field` is a direct child of its `lightning-record-view-form`
+- [ ] Only `lightning-layout-item` sits directly inside `lightning-layout`
+- [ ] No raw `slds-*` markup where a base component exists; no CSS targeting base-component internals
+- [ ] `.js-meta.xml` declares `<supportedFormFactors>`; `Small` absent from any datatable bundle
+- [ ] Jest assertions read properties off the base-component stub and dispatch events at it
+- [ ] Checker run clean: `python3 scripts/check_lwc_base_component_recipes.py --manifest-dir <dir> --strict`
+
+---
+
+## Assumptions to Verify
+
+Every attribute used that you could not confirm on the Component Library Specification tab:
+
+| Component | Attribute / event | Where used | Confirmed? |
+|---|---|---|---|
+| | | | |
 
 ---
 
