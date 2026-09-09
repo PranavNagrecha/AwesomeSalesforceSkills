@@ -247,7 +247,7 @@
     "fe06afd210fe1add5844",
     "fff173fc428279281dea"
   ],
-  "content_hash": "1bf6e713a8a7677d452d566f50177e1f3a2975f049e547ea9a3ac57b86554393",
+  "content_hash": "d4c26dfad674e617241ef55dec296023e4f5101520060e7569439dfcd7275e9f",
   "dependencies": [],
   "description": "Configuring Salesforce case management: case queues, assignment rules, escalation rules, auto-response rules, Email-to-Case, Web-to-Case, case teams, entitlements, and milestones. Use when setting up or troubleshooting the Service Cloud case handling layer. Trigger keywords: email-to-case, web-to-case, escalation rules, case teams, entitlements, milestones, auto-response, case queue. NOT for Standard vs On-Demand Email-to-Case and routing-address setup \u2014 use admin/email-to-case-configuration. NOT for routing case work items to agents \u2014 use admin/omni-channel-routing-setup.",
   "file_location": "skills/admin/case-management-setup",

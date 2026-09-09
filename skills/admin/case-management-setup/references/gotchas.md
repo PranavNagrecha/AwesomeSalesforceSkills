@@ -176,3 +176,52 @@ in `references/metadata-examples.md` §6 after deploying and reconcile its `IsCl
 each `<businessProcesses>` block. Set `closeCaseThroughStatusChange` explicitly rather than
 inheriting it. The checker script flags a support process with no closed-looking status and a record
 type whose support process is missing.
+
+---
+
+## Gotcha 11: A Business Process File Whose Stem Does Not Match Its `fullName` Is Unreachable in Source Format
+
+**What happens:** `sf project deploy start` fails before the org validates anything, with a member
+the CLI itself put in the manifest:
+
+```text
+An object 'Case.Support_Process' of type BusinessProcess was named in package.xml,
+but was not found in zipped directory
+```
+
+Nothing is missing from the tree. The file is there; it just answers to a different name.
+
+**When it occurs:** In a source-format (DX) project, the Case object is decomposed into
+`objects/Case/businessProcesses/<stem>.businessProcess-meta.xml` and
+`objects/Case/recordTypes/<stem>.recordType-meta.xml`. The CLI builds each package member from the
+**file stem** (`Support_Process` → `Case.Support_Process`) and resolves it against the component's
+`<fullName>`. Write the process's display name — `<fullName>Support Process</fullName>` — into a
+file the filesystem forced to be `Support_Process.businessProcess-meta.xml`, and the member points
+at nothing. `BusinessProcess.fullName` invites the mistake: the Metadata API guide's own worked
+example is `Opportunity.Bulk Orders`, spaces included, and it states no character restriction
+(api_meta L42993–L43007) — whereas `RecordType.fullName` "can contain only underscores and
+alphanumeric characters… not include spaces" (api_meta L45022–L45024), so a record type can only
+reach this failure by being renamed away from its `fullName`. The guide describes business processes
+only as part of the object definition (api_meta L42969) and never covers the decomposed layout, so
+nothing in the official docs warns about it.
+
+Verified by `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-05
+(`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`): run 5 failed on
+`Case.Support_Process` and `Case.Billing_Process`; runs 6–7, with each `<fullName>` renamed to its
+stem and the record types' `<businessProcess>` references updated, validated 12/12 components
+(`checkOnly: true`, 0 errors).
+
+UNVERIFIED (2026-09-09): the rule as proven is source-format-specific. Whether a metadata-format
+deploy with a hand-written `package.xml` accepts a spaced `fullName` is untested — run 1 of that
+same report listed the members as `Case.Support Process` / `Case.Billing Process` and reported them
+`ok` (that run failed on two `Layout` components instead), so treat the metadata-format behaviour as
+unknown rather than safe.
+
+**How to avoid:** Make the stem equal the `fullName`, in both formats — it satisfies either
+derivation. Name support processes the way record types are already forced to be named
+(`Inbound_Intake_Process`), put the human-readable wording in `<description>`, and update every
+`<businessProcess>` reference when you rename. `scripts/check_case_management_setup.py` fails the
+tree on this: **CMS-STEM-01** for a stem/`fullName` divergence or a `fullName` containing a space,
+**CMS-STEM-02** for a `<businessProcess>` naming a process with no matching file stem. Run it before
+the deploy — it is the cheapest place to catch a failure whose message points at the manifest rather
+than at the file.

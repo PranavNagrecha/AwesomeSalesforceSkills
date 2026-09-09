@@ -216,3 +216,53 @@ citation, not as background. Grep drafts for `no alert`, `no error is logged`,
 may have been asserted out of existence. Also check the ordering: any
 description of a Web-to-Case limit that reaches 50,000 without first passing
 through the 24-hour submission limit has skipped a step.
+
+---
+
+## Anti-Pattern: Writing a Spaced Display Name into `<fullName>` on a Decomposed Metadata File
+
+**What the LLM generates:** a source-format tree in which the business process reads well and does
+not deploy —
+
+```
+objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml
+    <fullName>Support Process</fullName>
+
+objects/Case/recordTypes/Support.recordType-meta.xml
+    <businessProcess>Support Process</businessProcess>
+```
+
+**Why it happens:** `fullName` looks like a label, and for `BusinessProcess` the Metadata API guide
+does nothing to dispel that — its worked example is `Opportunity.Bulk Orders`, spaces included, and
+it states no character restriction on the field (api_meta L42993–L43007). The model then writes the
+prettiest legal string. The rule it is missing is not in the guide at all: in a DX project the CLI
+names the package member from the **file stem**, and a filesystem stem cannot carry the space the
+`fullName` does. Models also generalise from `<label>` and `<description>`, where prose is correct,
+and from the nested `<CustomObject>` form, where a spaced process name genuinely does deploy.
+
+**Correct pattern:**
+
+```
+Stem == fullName, everywhere in source format:
+
+objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml
+    <fullName>Support_Process</fullName>
+    <description>Status ladder for support cases from support@ and the web form.</description>
+
+objects/Case/recordTypes/Support.recordType-meta.xml
+    <businessProcess>Support_Process</businessProcess>   <- bare, matching the stem
+
+Human wording lives in <description> (and <label> on the record type).
+RecordType.fullName may not contain a space at all (api_meta L45022-L45024);
+give BusinessProcess the same discipline and both derivations agree.
+```
+
+**Detection hint:** grep any generated tree for `<fullName>[^<]* ` inside `*.businessProcess-meta.xml`
+and `*.recordType-meta.xml` — a space in a decomposed `fullName` is the whole defect. Then diff each
+`fullName` against its file stem and each record type's `<businessProcess>` against the stems that
+exist. Both are rules **CMS-STEM-01** and **CMS-STEM-02** in
+`scripts/check_case_management_setup.py`. In review output, treat "the deploy says the component is
+not in the zipped directory, so a file is missing" as the same defect wearing a different hat — the
+file is present and named something else. Verified by `sf project deploy start --dry-run` against a
+Summer '26 developer org on 2026-09-05
+(`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`).

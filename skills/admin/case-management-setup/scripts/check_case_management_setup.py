@@ -6,9 +6,16 @@ equivalent) for common case management configuration issues.
 
 Covers, in order: case assignment rules, escalation rules, auto-response rules,
 queues, the Email-to-Case routing block, the CaseSettings org-level and webToCase
-blocks, the CaseOrigin / CasePriority / CaseStatus standard value sets, and the
+blocks, the CaseOrigin / CasePriority / CaseStatus standard value sets, the
 Case support processes and record types (nested <CustomObject> form and the
-DX-decomposed *.businessProcess-meta.xml / *.recordType-meta.xml form).
+DX-decomposed *.businessProcess-meta.xml / *.recordType-meta.xml form), and the
+source-format stem rules CMS-STEM-01 / CMS-STEM-02.
+
+ERROR-level rules (printed as `ERROR:`, exit 1):
+  CMS-STEM-01  a decomposed *.businessProcess-meta.xml / *.recordType-meta.xml whose
+               <fullName> is not exactly its file stem, or whose <fullName> holds a space.
+  CMS-STEM-02  a record type whose <businessProcess> names no existing process file stem.
+Everything else prints as `ISSUE:` and also exits 1.
 
 Element names and constraints are grounded in the Metadata API Developer Guide
 (CaseSettings, WebToCaseSettings, StandardValueSet, StandardValue, BusinessProcess,
@@ -783,6 +790,117 @@ def check_case_processes_and_record_types(manifest_dir: Path, verbose: bool) -> 
     return issues
 
 
+# Source-format decomposition: file stem is the package member the CLI declares.
+BUSINESS_PROCESS_SUFFIX = ".businessProcess-meta.xml"
+RECORD_TYPE_SUFFIX = ".recordType-meta.xml"
+
+
+def _decomposed_stem(path: Path, suffix: str) -> str:
+    """The file stem the sf CLI turns into a package.xml member.
+
+    `Support_Process.businessProcess-meta.xml` -> `Support_Process`. Path.stem is
+    wrong here (it would return `Support_Process.businessProcess`), and splitting
+    on "." loses a stem that legitimately contains one.
+    """
+    return path.name[: -len(suffix)]
+
+
+def check_source_format_stems(manifest_dir: Path, verbose: bool) -> list[str]:
+    """CMS-STEM-01 / CMS-STEM-02 — decomposed file stems must equal their <fullName>.
+
+    In a source-format (DX) tree the CLI names each package member from the file
+    stem (`Support_Process.businessProcess-meta.xml` -> member `Case.Support_Process`)
+    and then resolves that member against the component's <fullName>. A file whose
+    stem and <fullName> disagree declares a member nothing satisfies:
+
+        An object 'Case.Support_Process' of type BusinessProcess was named in
+        package.xml, but was not found in zipped directory
+
+    Verified by `sf project deploy start --dry-run` against a Summer '26 developer
+    org on 2026-09-05 (examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md,
+    runs 5 -> 6/7). See references/metadata-examples.md section 2.1 and
+    references/gotchas.md #11 — including what is NOT claimed for metadata-format
+    deploys with a hand-written package.xml.
+    """
+    issues: list[str] = []
+    notes: list[str] = []
+
+    process_files = sorted(manifest_dir.rglob(f"*{BUSINESS_PROCESS_SUFFIX}"))
+    record_type_files = sorted(manifest_dir.rglob(f"*{RECORD_TYPE_SUFFIX}"))
+
+    if not process_files and not record_type_files:
+        notes.append(
+            "No decomposed *.businessProcess-meta.xml / *.recordType-meta.xml files in this "
+            "tree. CMS-STEM-01 and CMS-STEM-02 apply to source format only; a nested "
+            "<CustomObject> definition is unaffected."
+        )
+        if verbose:
+            for note in notes:
+                print(f"NOTE: {note}")
+        return issues
+
+    # --- CMS-STEM-01: stem must equal <fullName>, and no <fullName> may hold a space.
+    for path, suffix, type_name in (
+        [(f, BUSINESS_PROCESS_SUFFIX, "BusinessProcess") for f in process_files]
+        + [(f, RECORD_TYPE_SUFFIX, "RecordType") for f in record_type_files]
+    ):
+        root = xml_root(path)
+        if root is None:
+            issues.append(f"Could not parse {type_name} file: {path}")
+            continue
+        stem = _decomposed_stem(path, suffix)
+        element = _child(root, "fullName")
+        full_name = (element.text or "").strip() if element is not None else ""
+
+        if element is None:
+            issues.append(
+                f"CMS-STEM-01 {path}: {type_name} file has no <fullName>. The CLI declares the "
+                f"member from the stem ('{stem}') and there is no component name for it to "
+                "resolve against; add <fullName>" + stem + "</fullName>."
+            )
+            continue
+        if full_name != stem:
+            issues.append(
+                f"CMS-STEM-01 {path}: <fullName> is '{full_name}' but the file stem is '{stem}'. "
+                "In source format the CLI names the package member from the stem, so the deploy "
+                f"fails with \"An object '<Object>.{stem}' of type {type_name} was named in "
+                "package.xml, but was not found in zipped directory\". Rename the <fullName> to "
+                "the stem (put the readable wording in <description>) and update every reference."
+            )
+            continue
+        if " " in full_name:
+            issues.append(
+                f"CMS-STEM-01 {path}: <fullName> '{full_name}' contains a space. A file stem "
+                "carrying a space is not a safe package member; use underscores "
+                f"('{full_name.replace(' ', '_')}') and keep the display wording in <description>."
+            )
+
+    # --- CMS-STEM-02: a record type's <businessProcess> must name an existing process stem.
+    if process_files:
+        stems = {_decomposed_stem(f, BUSINESS_PROCESS_SUFFIX) for f in process_files}
+        for path in record_type_files:
+            root = xml_root(path)
+            if root is None:
+                continue
+            business_process = text(root, "businessProcess")
+            if not business_process:
+                continue  # absence is check_case_processes_and_record_types' finding, not this one
+            if business_process not in stems:
+                issues.append(
+                    f"CMS-STEM-02 {path}: <businessProcess> names '{business_process}', which is "
+                    f"not the stem of any *.businessProcess-meta.xml in this tree "
+                    f"({', '.join(sorted(stems)) or 'none'}). The record type will deploy against "
+                    "a process the package never declares. Reference the process by its file stem, "
+                    "bare (never object-qualified)."
+                )
+
+    if verbose:
+        for note in notes:
+            print(f"NOTE: {note}")
+
+    return issues
+
+
 # ---------------------------------------------------------------------------
 # Main entrypoint
 # ---------------------------------------------------------------------------
@@ -804,6 +922,7 @@ def check_case_management_setup(manifest_dir: Path, verbose: bool = False) -> li
     issues.extend(check_case_settings(manifest_dir, verbose))
     issues.extend(check_standard_value_sets(manifest_dir, verbose))
     issues.extend(check_case_processes_and_record_types(manifest_dir, verbose))
+    issues.extend(check_source_format_stems(manifest_dir, verbose))
 
     return issues
 
@@ -818,7 +937,10 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
+        if issue.startswith("CMS-STEM-"):
+            print(f"ERROR: {issue}")
+        else:
+            print(f"ISSUE: {issue}")
 
     return 1
 

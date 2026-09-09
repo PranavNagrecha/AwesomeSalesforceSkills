@@ -166,11 +166,22 @@ required in record types for lead, opportunity, solution, and case, and not allo
 (api_meta L44968 ff.). The process is a subset of the `CaseStatus` values deployed in §1, so §1
 lands first.
 
+Every `<fullName>` below is written in stem form (`Inbound_Intake_Process`, not
+`Inbound Intake Process`), because a Salesforce DX project decomposes this one file into a
+directory of files, and each decomposed file's stem has to be its own `fullName` — see § 2.1.
+The files are
+`objects/Case/Case.object-meta.xml`,
+`objects/Case/businessProcesses/Inbound_Intake_Process.businessProcess-meta.xml`,
+`objects/Case/businessProcesses/Internal_Intake_Process.businessProcess-meta.xml`,
+`objects/Case/recordTypes/Inbound_Intake.recordType-meta.xml`,
+`objects/Case/recordTypes/Internal_Intake.recordType-meta.xml` and
+`objects/Case/compactLayouts/Case_Intake_Compact.compactLayout-meta.xml`.
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <businessProcesses>
-        <fullName>Inbound Intake Process</fullName>
+        <fullName>Inbound_Intake_Process</fullName>
         <description>Status ladder for cases arriving from the web form and support mailbox.</description>
         <isActive>true</isActive>
         <values>
@@ -195,7 +206,7 @@ lands first.
         </values>
     </businessProcesses>
     <businessProcesses>
-        <fullName>Internal Intake Process</fullName>
+        <fullName>Internal_Intake_Process</fullName>
         <description>Agent-raised cases; no customer-wait state.</description>
         <isActive>true</isActive>
         <values>
@@ -223,7 +234,7 @@ lands first.
     <recordTypes>
         <fullName>Inbound_Intake</fullName>
         <active>true</active>
-        <businessProcess>Inbound Intake Process</businessProcess>
+        <businessProcess>Inbound_Intake_Process</businessProcess>
         <compactLayoutAssignment>Case_Intake_Compact</compactLayoutAssignment>
         <description>Cases created by Web-to-Case and Email-to-Case.</description>
         <label>Inbound Intake</label>
@@ -246,7 +257,7 @@ lands first.
     <recordTypes>
         <fullName>Internal_Intake</fullName>
         <active>true</active>
-        <businessProcess>Internal Intake Process</businessProcess>
+        <businessProcess>Internal_Intake_Process</businessProcess>
         <description>Cases raised by agents on the phone or from an internal referral.</description>
         <label>Internal Intake</label>
         <picklistValues>
@@ -262,7 +273,7 @@ lands first.
 
 ### How to read it
 
-- **`<businessProcess>` is the bare name inside the object; `Case.Inbound Intake Process` is the
+- **`<businessProcess>` is the bare name inside the object; `Case.Inbound_Intake_Process` is the
   `package.xml` form.** The guide spells the split out on `BusinessProcess.fullName`: "Use the
   object-qualified form (`Opportunity.Bulk Orders`) for API addressing, such as in a `package.xml`
   member in metadata retrieve results. When creating a business process in a `CustomObject`
@@ -288,12 +299,62 @@ lands first.
   assignment and profile wiring belong to `admin/record-types-and-page-layouts` — read that file for
   the `Layout` and `recordTypeVisibilities` shapes; they are not restated here.
 
-UNVERIFIED (2026-09-05): a Salesforce DX project decomposes the block above into
-`objects/Case/businessProcesses/Inbound Intake Process.businessProcess-meta.xml`,
-`objects/Case/recordTypes/Inbound_Intake.recordType-meta.xml` and
-`objects/Case/compactLayouts/Case_Intake_Compact.compactLayout-meta.xml`. That directory layout is a
-DX source-format convention; the Metadata API PDF documents only the nested `<CustomObject>` form
-shown here, which deploys in either project format.
+### 2.1 File stem = fullName
+
+**Rule: in a source-format (DX) project, a decomposed `*.businessProcess-meta.xml` or
+`*.recordType-meta.xml` file's stem must be character-for-character its own `<fullName>`.** The CLI
+derives the `package.xml` member from the *file stem* — `Support_Process.businessProcess-meta.xml`
+becomes the member `Case.Support_Process` — and the deploy then looks for a component of that name
+inside the zip. A file whose stem says `Support_Process` while its `<fullName>` says
+`Support Process` declares a member nothing satisfies, and the deploy fails on the manifest
+rather than on anything the org objected to:
+
+```text
+An object 'Case.Support_Process' of type BusinessProcess was named in package.xml,
+but was not found in zipped directory
+```
+
+Evidence: verified by `sf project deploy start --dry-run` against a Summer '26 developer org on
+2026-09-05 (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`). A build authored from an
+earlier revision of this file wrote
+`objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml` carrying
+`<fullName>Support Process</fullName>`. Run 5 of that report failed with the error above for both
+`Case.Support_Process` and `Case.Billing_Process`; runs 6–7 renamed each `<fullName>` to its stem and
+updated the record types' `<businessProcess>` references, and all 12 components validated
+(`checkOnly: true`, 0 errors). The validated files are in
+`examples/builds/case-onboarding/reports/mock-deploy-fixes/`.
+
+Why the trap exists only for `BusinessProcess`:
+
+| Type | What the guide says about `fullName` | Can it hold a space? |
+|---|---|---|
+| `BusinessProcess` | "the `fullName` is created combining the Entity Name and Business Process Name… for a business process called 'Bulk Orders' for opportunities, the `fullName` would be `Opportunity.Bulk Orders`" (api_meta L42993–L43007) | **Yes** — no character restriction is stated, and the guide's own worked name contains one |
+| `RecordType` | "The `fullName` can contain only underscores and alphanumeric characters… begin with a letter, not include spaces" (api_meta L45022–L45024) | No |
+
+So a spaced display name is legal inside the nested `<CustomObject>` form, deploys there, and only
+breaks once the same content is decomposed into a file whose stem cannot carry the space. A record
+type reaches the same failure by a different route — a file renamed away from its `<fullName>`.
+
+The guide does not cover this. `BusinessProcess` → "Declarative Metadata File Suffix and Directory
+Location" says only "Business processes are defined as part of the custom object or standard object
+definition" (api_meta L42969); the per-file source-format layout under `objects/Case/` is a DX
+convention the Metadata API PDF never describes, so the rule above rests on the dry run, not on the
+guide.
+
+UNVERIFIED (2026-09-09): **the rule is source-format-specific as proven.** Whether a
+*metadata-format* deploy driven by an explicit `package.xml` accepts a spaced `fullName` — with
+`Case.Support Process` written out as the member — is not established here, and the guide is silent.
+Run 1 of the same report, against the same pre-fix tree, listed the members as `Case.Support Process`
+/ `Case.Billing Process` and reported them `ok` (that deploy failed on two `Layout` components, so
+nothing was committed either way), while run 5 — same tree, layouts fixed — named them
+`Case.Support_Process` / `Case.Billing_Process` and failed. Why the member name differed between the
+two runs was not investigated. Do not read run 1 as a licence to ship spaced `fullName` values:
+making the stem equal the `fullName` satisfies both derivations, and is the only shape this skill
+has watched deploy clean.
+
+`scripts/check_case_management_setup.py` enforces both halves — **CMS-STEM-01** (stem ≠ `fullName`,
+or a `fullName` containing a space) and **CMS-STEM-02** (a record type's `<businessProcess>` names a
+process with no matching file stem in the tree).
 
 ---
 
@@ -456,8 +517,8 @@ quoting it to a customer, and do not build a monitor around the number without c
         <name>CustomObject</name>
     </types>
     <types>
-        <members>Case.Inbound Intake Process</members>
-        <members>Case.Internal Intake Process</members>
+        <members>Case.Inbound_Intake_Process</members>
+        <members>Case.Internal_Intake_Process</members>
         <name>BusinessProcess</name>
     </types>
     <types>
@@ -478,6 +539,11 @@ Wildcards: `StandardValueSet` does not support `*`; `BusinessProcess` supports i
 metadata types for feature settings. The wildcard applies only when retrieving all settings, not for
 an individual setting" (api_meta, `CaseSettings` → Wildcard Support in the Manifest File). Name
 `Case` explicitly under `Settings`.
+
+The two `BusinessProcess` members above are the object-qualified `fullName`s from §2, which
+in a source-format tree are also the file stems (`Support_Process`-style, no spaces). If a
+member here and a decomposed file's stem disagree, the deploy fails with "was not found in
+zipped directory" — § 2.1.
 
 ### Deploy order
 
@@ -560,7 +626,7 @@ ORDER BY SortOrder
 ("Indicates whether this case status value represents a closed Case… **Multiple case status values
 can represent a closed Case**") and `IsDefault` (object_reference L64145 ff.). This is the
 authoritative read of the `closed` flag whose metadata placement is marked UNVERIFIED in §1. Check
-that every value your `Inbound Intake Process` exposes appears here, that exactly one row is
+that every value your `Inbound_Intake_Process` exposes appears here, that exactly one row is
 `IsDefault = true`, and that `Closed - No Response` really carries `IsClosed = true` — a
 closed-looking status with `IsClosed = false` leaves every "open cases" report and every escalation
 entry counting it forever.
