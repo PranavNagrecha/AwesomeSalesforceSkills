@@ -2,7 +2,7 @@
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Billing</fullName>
     <active>true</active>
-    <businessProcess>Billing Process</businessProcess>
+    <businessProcess>Billing_Process</businessProcess>
     <compactLayoutAssignment>Case_Intake</compactLayoutAssignment>
     <description>Finance queries from the billing@ mailbox, worked by the Billing team.</description>
     <label>Billing</label>

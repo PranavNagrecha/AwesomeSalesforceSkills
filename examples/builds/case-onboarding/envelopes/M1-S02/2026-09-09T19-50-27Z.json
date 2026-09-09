@@ -1,0 +1,333 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-09T19-50-27Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-50-27Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-50-27Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S02",
+    "status_on_entry": "built",
+    "step_type": "ui",
+    "owning_agent": "metadata-builder",
+    "build_mode": "design-only",
+    "rebuild": "#2 (metadata-builder run 2026-09-09T19-38-37Z, claimed by build-step-runner 2026-09-09T19-42-25Z)"
+  },
+  "summary": "Ran every declared acceptance test on M1-S02 after rebuild #2, plus the two always-on structural checks and the check-outputs precondition: 4 runnable tests, 4 passed, 0 failed, 1 manual deferred. The declared checker ran verbatim from the build directory and exited 0 with 0 findings under the RL-REQ-01/02 rules the cited skill's checker gained today, so this exit 0 asserts strictly more than build #1's did - the two INFO lines about no field marked behavior=Required are gone because Status is now Required on both layouts. xml parsed 3 of 3 files; the manifest is consistent in both directions against an unchanged package.xml; check-outputs reports ok on all three declared outputs. Step set to tested. The one manual test is deferred to the M1 gate unchanged, and it still asks the ticker to confirm a select-by-default behaviour the artefacts deliberately do not implement.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH: every declared test ran or was correctly classified as manual, both always-on checks completed, and every verdict came from an exit code this run observed. No command test was refused, no coverage-gap-type manifest exclusion was needed, no declared checker was missing, and check-outputs reported ok.",
+  "outcome": "completed",
+  "extensions": {
+    "step_id": "M1-S02",
+    "results_path": "tests/M1-S02/results.json",
+    "tests_run": 4,
+    "status_set": "tested",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree parse over artefacts/M1-S02/ (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "3 files scanned, 0 failed; zero-file case did not arise",
+        "capture": "tests/M1-S02/xml.stdout"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> file consistency (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "2 explicit Layout members, no wildcard; file->manifest and manifest->file both clean; excluded package.xml (the manifest itself) and deploy-order.md (not a source-format metadata file). Step type ui is a metadata type, so this check was required to run rather than skip, and it ran.",
+        "capture": "tests/M1-S02/manifest.stdout"
+      },
+      {
+        "name": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+        "declared_scope": "step",
+        "run_from": "build directory (skills symlink resolves skills/\u2026; artefacts/M1-S02 resolves as written)",
+        "run_verbatim": true,
+        "deny_list": "clear",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 0 finding(s) detected. Matches the test's own description verbatim.",
+        "capture": "tests/M1-S02/check_record_type_layouts.stdout"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs <plan> M1-S02",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "{ok: true, missing: [], empty: [], malformed: []} over all three declared outputs",
+        "capture": "tests/M1-S02/check-outputs.stdout"
+      },
+      {
+        "name": "manual (Q24 / A13)",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M1 milestone gate",
+        "detail": "Given/When/Then shape complete and an observable is named, so it is tickable rather than unusable; two caveats carried in manual_evidence."
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q24, when each layout file is read, then <layoutSections> is preceded by the assignment-rule checkbox default set on, and every field a validation rule attaches an error to (assumption A13) is present on both layouts."
+    ],
+    "manual_evidence": {
+      "capture": "tests/M1-S02/manual-evidence.stdout",
+      "half_1_presence_reading": "TRUE on both layouts - <showRunAssignmentRulesCheckbox> present with value true",
+      "half_1_positional_reading": "FALSE on both layouts - the element sits at child index 3, after the last layoutSections at index 1, so 'preceded by' is false as written and true as meant",
+      "half_1_material_caveat": "No element in either file pre-checks the box. showRunAssignmentRulesCheckbox controls whether the checkbox is SHOWN, not whether it is DEFAULTED ON; artefacts/M1-S02/deploy-order.md records the select-by-default half of Q24 as not written and not inventable from the cited skill. Unchanged by rebuild #2.",
+      "half_2": "Not file-checkable at M1-S02 time - no ValidationRule metadata anywhere under artefacts/, and A13's referenced step M3-S01 (type validation) is still pending, so there is no errorDisplayField to resolve a field list against.",
+      "fields_billing": [
+        "CaseNumber",
+        "ContactId",
+        "CreatedById",
+        "Description",
+        "LastModifiedById",
+        "Origin",
+        "OwnerId",
+        "Priority",
+        "Status",
+        "Subject",
+        "SuppliedEmail"
+      ],
+      "fields_support": [
+        "CaseNumber",
+        "ContactId",
+        "CreatedById",
+        "Description",
+        "LastModifiedById",
+        "Origin",
+        "OwnerId",
+        "Priority",
+        "Severity__c",
+        "Status",
+        "Subject",
+        "SuppliedEmail"
+      ]
+    },
+    "rebuild_2_delta_observed": {
+      "checker_rules_new_today": [
+        "RL-REQ-01",
+        "RL-REQ-02"
+      ],
+      "against_rebuild_2": "exit 0, 0 findings",
+      "against_build_1_content": "exit 1, score 20, four ERRORs (RL-REQ-01 x2, RL-REQ-02 x2) plus the two original INFO lines - reproduced read-only over examples/builds/case-onboarding/artefacts/M1-S02, which still holds build #1's layouts. Verification of the deploy-order note's claim only; it did not feed this step's verdict.",
+      "package_xml": "unchanged from build #1 - rebuild #2 added items inside two existing components, no new component"
+    }
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The rebuild closed the loop the way the contract prescribes - the skill was deepened first and the step re-run against it, rather than the artefact being edited in place.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S02/deploy-order.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-strength",
+      "observation": "This run's exit 0 is a stronger assertion than build #1's identical exit 0, because the same checker gained two ERROR rules today; a green result that changed meaning without changing colour is exactly the case a re-test exists to catch.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability",
+      "observation": "The declared checker's description predicts its own output string verbatim, and the run reproduced it exactly, so a reader can tell a passing run from a vacuous one without opening the capture.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M1-S02/check_record_type_layouts.stdout"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "example-drift",
+      "observation": "The committed worked example still carries build #1's layouts - the same content the mock deploy proved undeployable, and which the current checker rejects with four ERRORs - so the repo's canonical example is now behind the live build.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "examples/builds/case-onboarding/artefacts/M1-S02/layouts/",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "milestone-staleness",
+      "observation": "Milestone M1 is accepted with its gate approved, yet both of its steps have been rebuilt since - M1-S02 is now tested again and M1-S01 sits at built after its own F-11 rebuild - so the accepted milestone no longer describes the artefacts on disk.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "acceptance-criteria",
+      "observation": "The manual test asks the ticker to confirm the assignment-rule checkbox is 'default set on', which neither layout implements and which the deploy-order note records as ungroundable from the cited skill; rebuild #2 did not change that, so the gate will be asked to tick something the build deliberately omits.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M1-S02/manual-evidence.stdout"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "acceptance-criteria",
+      "observation": "The manual test's word 'preceded' is false under document order and true under the presence reading; this run asserted the presence reading, as the prior run did, but the criterion's wording still admits both.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M1-S02/manual-evidence.stdout"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "acceptance-criteria",
+      "observation": "Half two of the manual test cannot be evaluated at this point in the build at all, because the validation step it depends on is still pending; it will only become tickable after M3-S01 produces ValidationRule metadata.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "plan-validation",
+      "observation": "set-status printed three plan-wide WARNs about non-standard checker argument forms on M5-S02 and M5-S04; they are the pre-existing forms section 5 documents as not yet converged and touch no M1 step, so they did not affect this run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "M1-S02 is tested, so the doc keeper is the next stage of the loop for this step.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "A tested step's workbook rows, traceability and decisions need re-writing against rebuild #2's three added fields and the Status behavior change."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "M1's record-type-to-layout cross-reference is still unexercised at step scope, and the milestone now needs re-verifying after two rebuilds.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "M1's milestone test at --manifest-dir artefacts is the only run that sees 2 record types and 2 layouts together, and the accepted milestone is stale after the M1-S01 and M1-S02 rebuilds."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 5 - the five test types and their runners, the run-verbatim rule, the deny-list, the check-outputs precondition, the metadata-type manifest fail-rather-than-skip rule; section 4 for the metadata step types and the ui row"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules binding this invocation - no org write, no auto-chaining, citations mandatory"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope persistence, the atomic-write rule, and the scope guardrails"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Checked against the refusal enum; no refusal condition was met on this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The shape of acceptance_tests[] and outputs[] this agent reads, and the meaning of the scope field as declared intent"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "Envelope shape - the test payload rides in extensions, never as a top-level key"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar the manifest check is judged against - one types block per type, members naming components, and what a wildcard member legitimately means"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format filename-to-metadata-type mapping that derived Layout:Case-Case Support Layout from layouts/Case-Case Support Layout.layout-meta.xml"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checked whether either manifest exclusion was a coverage-gap type; neither was, so no coverage-gap carve-out was applied and confidence was not capped"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "Whether the manual test line is boolean and observable enough to be ticked by a human at the gate rather than re-interpreted by them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then shape the manual test was checked against before being carried into the checklist"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "The skill the step cites and whose scripts/check_record_type_layouts.py is the declared checker, including its RL-REQ-01/02 rules"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M1-S02 is tested, and the doc keeper is the next stage of the loop for a tested step - its rows need re-writing against rebuild #2"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1 is accepted but stale after two rebuilds, and its milestone test at --manifest-dir artefacts is the only run that exercises the record-type-to-layout cross-reference"
+    }
+  ]
+}

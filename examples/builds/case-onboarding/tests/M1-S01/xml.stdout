@@ -10,4 +10,4 @@ PARSED   artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml
 PARSED   artefacts/M1-S01/package.xml
 PARSED   artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml
 
-files scanned: 11 | failed: 0
+files=11 parsed=11 failed=0

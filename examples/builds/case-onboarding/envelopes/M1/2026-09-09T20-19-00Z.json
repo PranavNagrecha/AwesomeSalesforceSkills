@@ -1,0 +1,829 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-09T20-19-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1/2026-09-09T20-19-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1/2026-09-09T20-19-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "milestone_id": "M1",
+    "approver_name": null,
+    "plan_version": 5,
+    "plan_status": "building",
+    "build_mode": "design-only",
+    "invocation": "re-verification after mock deploy #2 and rebuild #2 of both M1 steps"
+  },
+  "summary": "M1 re-verified after rebuild #2 of both steps. Verdict ready-with-findings. Both steps documented; 43 references examined - 10 resolve in M1, 28 are standard and pre-existing, 5 unclassifiable in-tree (F-02), 0 unresolved; the two step manifests merged into reports/MILESTONE-M1-package.xml with no version conflict and no member collision, and its two BusinessProcess members changed to the stem form; both executable milestone tests exit 0, the checker now with 0 findings where v1 had 2; an observation-only run of check_case_management_setup.py exits 0. F-09, F-10 and F-11 are CLOSED at the skill and proven three ways including negative controls this run; F-07 is closed by the artefacts. F-01 through F-06 and F-08 remain open, and F-01's remedy pointer is corrected from M2-S01 to M2-S03 - a stale pointer the v1 report and two unrewritable gate notes carry. Three new findings: F-12 (set-milestone moved M1 accepted -> verified with no guard while the gate record still reads approved), F-13 (the merged manifest has never been read by a deploy and its CompactLayout member form is disputed by the only deploy run), F-14 (record-type-decision.md still names the pre-rebuild process spellings and is what manual line 1 sends a human to read). Five manual lines remain the human's; no gate approved, no org contacted.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 rubric. Every step was documented, the merged manifest built with no conflict, and every declared acceptance test existed and ran, which would support HIGH. MEDIUM because the reference class this milestone exists to close was still not fully classifiable: the record-type-to-layout binding had zero references to resolve (F-01) and the five business-process Status references resolve only outside the tree (F-02). Two things deliberately did not raise it: the 12/12 org validation is external corroboration the rubric does not score, and the two exit-0 checker runs were only treated as meaningful after negative controls showed the new rules fire.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "deploy-order",
+    "merged-manifest",
+    "milestone-acceptance-tests",
+    "manual-checklist",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "reference-resolution",
+      "state": "partial",
+      "reason": "Five of the six reference classes in the Step 3 table had zero references because their metadata belongs to later milestones (ValidationRule M3-S01; AssignmentRules M3-S03/S04; Flow and EntitlementProcess M4; and M2-S01's PermissionSet grants a custom permission with no object or field permissions). The sixth resolved 10 of 10 in-tree references but could not classify the five business-process Status values, which resolve only against the target org's CaseStatus (A28, F-02).",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Re-run reference resolution at the M2 milestone, once M2-S03's profiles carry layoutAssignments and M2-S02's carry recordTypeVisibilities and fieldPermissions."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "P0",
+      "title": "The record-type to layout binding is asserted nowhere in M1, and v1's remedy pointer named the wrong step",
+      "detail": "check_record_type_layouts.py resolves every record-type-to-layout check from layoutAssignments, and collect() populates them only from Profile and PermissionSet roots. No Profile exists anywhere under artefacts/. The build-scoped run is still the byte-for-byte union of the two step-scoped runs and adds no assertion neither made. It is sharper evidence than v1's: the 8th file it now sweeps IS a PermissionSet (M2-S01's Case_Intake_Integration), one of the two roots collect() reads, and it still resolves zero layoutAssignments because that permission set carries a customPermissions grant and nothing else. CORRECTION OF RECORD: v1 said layoutAssignments is M2-S01's; in plan v5 it is M2-S03's ('Minimal base profiles carrying only default app, default record type and layout assignment'). The stale pointer was copied into two human_gates notes (milestone:M1 and step:M2-S01) which no agent may rewrite.",
+      "evidence": {
+        "milestone_run": "tests/M1/check_record_type_layouts.v2.stdout",
+        "step_runs": [
+          "tests/M1-S01/check_record_type_layouts.stdout",
+          "tests/M1-S02/check_record_type_layouts.stdout"
+        ],
+        "profile_files_under_artefacts": 0,
+        "permissionset_files_under_artefacts": 1,
+        "layout_assignments_resolved": 0,
+        "owning_step_actual": "M2-S03",
+        "owning_step_claimed_in_v1": "M2-S01",
+        "stale_gate_notes": [
+          "human_gates[milestone:M1].notes",
+          "human_gates[step:M2-S01].notes"
+        ]
+      },
+      "recommendation": "v6: reword the milestone test description to what the run proves, and move the record-type-to-layout binding assertion onto an M2 milestone test at --manifest-dir artefacts once M2-S03's profiles exist. The two gate notes are not rewritable; this report is the correction of record."
+    },
+    {
+      "id": "F-02",
+      "severity": "INFO",
+      "title": "Business-process Status values are unresolvable in-tree; partly discharged by the mock deploys",
+      "detail": "Support_Process selects New/Escalated/Closed and Billing_Process New/Closed; all five resolve against StandardValueSet:CaseStatus, which assumption A28 keeps out of the build. Both mock deploys validated the two business processes against sfskills-dev, so that org's CaseStatus carries all three values. The finding does not close: it is a per-target-org precondition.",
+      "evidence": {
+        "references": 5,
+        "classification": "unclassifiable-in-tree / deferred-to-org",
+        "discharged_on": "sfskills-dev",
+        "open_on": "every other target org"
+      },
+      "recommendation": "Keep as a per-target go/no-go item: retrieve StandardValueSet:CaseStatus and reconcile before deploying to any org other than sfskills-dev."
+    },
+    {
+      "id": "F-03",
+      "severity": "P1",
+      "title": "Assumption A13's stated verification route does not exist",
+      "detail": "plan.json.assumptions[A13] says the assertion sits in M1-S02's manual test and in M1's milestone checker at --manifest-dir artefacts. check_record_type_layouts.py reads no ValidationRule metadata at any scope; METADATA_SUFFIXES carries no .validationRule entry and v1.2.0 did not add one. No ValidationRule file exists (M3-S01 pending). The artefacts moved in A13's favour - the shared-field surface widened from 8 to 11 - but the plan text still asserts a route that does not exist.",
+      "evidence": {
+        "checker": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "validationrule_files": 0,
+        "shared_layout_fields_before": 8,
+        "shared_layout_fields_after": 11
+      },
+      "recommendation": "v6: strike the milestone-checker clause from A13 and carry the assertion into M3-S01's tests, where the ValidationRule metadata will exist."
+    },
+    {
+      "id": "F-04",
+      "severity": "P1",
+      "title": "deploy-order.md is undeclared in outputs[] on both M1 steps; fixed forward on M2-S01 only",
+      "detail": "Both files exist, both were rewritten during rebuild #2, and neither appears in its step's outputs[], so check-outputs never confirmed either on either build. M2-S01 does declare artefacts/M2-S01/deploy-order.md. build-doc-keeper Step 10 compiles M5-S04's build-wide deploy order from exactly these files, so that compile depends on a file set no gate confirms.",
+      "evidence": {
+        "undeclared": [
+          "artefacts/M1-S01/deploy-order.md",
+          "artefacts/M1-S02/deploy-order.md"
+        ],
+        "declared_on": "M2-S01",
+        "also_recorded_as": "decisions.md O-M1S02-02"
+      },
+      "recommendation": "v6: declare artefacts/<step-id>/deploy-order.md in outputs[] on every metadata-builder-owned step, M1's two included."
+    },
+    {
+      "id": "F-05",
+      "severity": "P2",
+      "title": "CustomObject:Case is recorded at deploy position 7 (sharing) and has no position-1 row",
+      "detail": "Case.object-meta.xml carries both the object-level compactLayoutAssignment and the OWD; the workbook gives it one row, CWB-SHARE-001, at position 7 of 10. By artefact type a CustomObject belongs at 1. It does not break the deploy because Case is a standard object that pre-exists in every target org, so the three CustomField members at position 2 create no backwards dependency.",
+      "evidence": {
+        "workbook_row": "CWB-SHARE-001",
+        "recorded_position": "7 of 10 (sharing)",
+        "position_by_type": "1 (objects)",
+        "object_is_standard": true
+      },
+      "recommendation": "v6: split the object into two workbook rows (object at 1, OWD at 7), or record on CWB-SHARE-001 that the position is the OWD's and not the object's."
+    },
+    {
+      "id": "F-06",
+      "severity": "INFO",
+      "title": "API version 62.0 was defaulted by the owning agent three times; the plan carries no api_version",
+      "detail": "metadata-builder chose 62.0 on M1-S01, again on M1-S02, and a third time on M2-S01 (CWB-OTHER-007). All three agree and the merged manifest inherits it. A fourth default is not better evidence than the first.",
+      "evidence": {
+        "defaults": 3,
+        "value": "62.0",
+        "plan_key_present": false
+      },
+      "recommendation": "v6: add an api_version key to plan.json and have metadata-builder read it rather than default."
+    },
+    {
+      "id": "F-07",
+      "severity": "P2",
+      "title": "CLOSED: the milestone test description predicted 0 findings and the run now gives 0; a smaller file-count residue replaces it",
+      "detail": "Both layouts now set Status to behavior=Required (rebuild #2, RL-REQ-02), so check 4 no longer fires and the build-scoped run prints '0 finding(s) detected' - exactly what the description predicted. Closed by the artefacts, not by a reword; decisions.md O-M1S02-01 should close as observed-correct. RESIDUE: the same description predicts 'Scanned 7 metadata file(s)' and the run scanned 8, because M2-S01's permission set joined artefacts/ after v1. A build-scoped test whose description quotes a whole-tree file count is perishable by construction.",
+      "evidence": {
+        "v1_findings": 2,
+        "v2_findings": 0,
+        "v1_files_scanned": 7,
+        "v2_files_scanned": 8,
+        "cause_of_file_delta": "artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml"
+      },
+      "recommendation": "v6: state what the run must find (2 record types, 2 layouts, 0 findings), not how many files it walked past."
+    },
+    {
+      "id": "F-08",
+      "severity": "P1",
+      "title": "Both M1 deploy-order.md files print the production-only deploy validate against a sandbox alias, and survived the rebuild that rewrote them",
+      "detail": "artefacts/M1-S01/deploy-order.md:103 and artefacts/M1-S02/deploy-order.md:135 each read 'sf project deploy validate --target-org <your-sandbox-alias> --manifest ...'. deploy validate is production-only. Both files were rewritten on 2026-09-09 during rebuild #2 and the wrong line survived both rewrites, while the newer M2-S01 deploy-order.md emits the correct --dry-run form for the sandbox and a separate deploy validate line for production, both grounded in a cited skill.",
+      "evidence": {
+        "files": [
+          "artefacts/M1-S01/deploy-order.md:103",
+          "artefacts/M1-S02/deploy-order.md:135"
+        ],
+        "mtimes": [
+          "2026-09-09T15:40:58",
+          "2026-09-09T15:41:51"
+        ],
+        "correct_form_on": "artefacts/M2-S01/deploy-order.md:129"
+      },
+      "recommendation": "metadata-builder: emit the --dry-run form when the target is a sandbox, and revisit deploy-order.md on a rebuild rather than only on a first build."
+    },
+    {
+      "id": "F-09",
+      "severity": "P0",
+      "title": "CLOSED at the skill and proven: Case page layouts must carry ContactId",
+      "detail": "skills/admin/record-types-and-page-layouts v1.2.0 carries rule RL-REQ-01 (a Case layout with no layoutItems/field entry for ContactId, Description or SuppliedEmail is an ERROR). Three independent lines of evidence re-established this run: the declared milestone checker exits 0 with 0 findings on the rebuilt artefacts; a negative-control fixture reverting one layout to the pre-fix shape makes the same command exit 1 with RL-REQ-01 firing by name; and mock deploy #2 validated the rebuilt artefacts unmodified at 12/12 components.",
+      "evidence": {
+        "rule": "RL-REQ-01",
+        "checker_exit_on_tree": 0,
+        "checker_exit_on_reverted_fixture": 1,
+        "mock_deploy_2": "12/12 components, checkOnly true, 0 errors",
+        "negative_control": "tests/M1/NEGATIVE-CONTROLS.v2.stdout"
+      },
+      "recommendation": "No action. Note the skill marks RL-REQ-03 (other objects) ADVISORY and UNVERIFIED - only the Case set has been exercised against an org."
+    },
+    {
+      "id": "F-10",
+      "severity": "P0",
+      "title": "CLOSED at the skill and proven: Case layouts must also carry Description and SuppliedEmail, and Status must be behavior=Required",
+      "detail": "Same v1.2.0 change: RL-REQ-01 covers the three fields, RL-REQ-02 covers Status behavior. Same three lines of evidence as F-09. Q5's answer (enforce Priority/Origin at field or validation level, not layout Required) is untouched - it never covered Status, which is the platform's own precondition (decisions.md D-M1S02-05).",
+      "evidence": {
+        "rules": [
+          "RL-REQ-01",
+          "RL-REQ-02"
+        ],
+        "checker_exit_on_tree": 0,
+        "checker_exit_on_reverted_fixture": 1,
+        "q5_scope": "Priority, Origin, Subject - not Status"
+      },
+      "recommendation": "No action."
+    },
+    {
+      "id": "F-11",
+      "severity": "P0",
+      "title": "CLOSED at the skill and in the artefacts: a BusinessProcess file stem must equal its <fullName>. Its planner half is open",
+      "detail": "skills/admin/case-management-setup v1.2.0 states the rule at references/metadata-examples.md 2.1 and enforces it as CMS-STEM-01 (stem equals fullName, no fullName holds a space) and CMS-STEM-02 (a record type's <businessProcess> names an existing process file stem). Checker exits 0 on the tree and 1 with both rules firing on a reverted fixture; mock deploy #2 validated 12/12. Six files changed; D-M1S01-05 supersedes D-M1S01-03 on its fullName row. OPEN: steps[M1-S01].inputs.business_processes still reads the spaced form, diverging from the step's own outputs, and nothing detects it because no test reads that string.",
+      "evidence": {
+        "rules": [
+          "CMS-STEM-01",
+          "CMS-STEM-02"
+        ],
+        "checker_exit_on_tree": 0,
+        "checker_exit_on_reverted_fixture": 1,
+        "plan_inputs_business_processes": [
+          "Support Process",
+          "Billing Process"
+        ],
+        "artefact_form": [
+          "Support_Process",
+          "Billing_Process"
+        ],
+        "open_item": "decisions.md O-M1S01-01"
+      },
+      "recommendation": "v6: set inputs.business_processes to the stem form and fix the inputs.note (B01) spelling of the manifest members."
+    },
+    {
+      "id": "F-12",
+      "severity": "P1",
+      "title": "set-milestone overwrites an accepted milestone with no guard, and this run triggered it",
+      "detail": "scripts/build_plan.py protects a human's G3 in one place and not the other. set-status <step> running leaves an accepted milestone alone - its guard set is {pending, rejected, verified} and its comment reads 'only the human undoes their own G3'. cmd_set_milestone assigns milestone['status'] unconditionally. AGENT.md Step 9 requires this agent to record its verdict with set-milestone, so milestones[M1].status has moved accepted -> verified while human_gates[milestone:M1].status remains approved. The two records now disagree and only a human can reconcile them, because no agent writes a gate.",
+      "evidence": {
+        "before": "accepted",
+        "after": "verified",
+        "gate_record": "approved (2026-09-05T21:11:56Z, unchanged)",
+        "guarded_command": "scripts/build_plan.py set-status <step> running",
+        "unguarded_command": "scripts/build_plan.py set-milestone"
+      },
+      "recommendation": "Tooling owner: give set-milestone the same accepted-is-the-human's guard set-status carries, or add an explicit re-verification status so a second verdict need not overwrite the first."
+    },
+    {
+      "id": "F-13",
+      "severity": "P1",
+      "title": "The merged milestone manifest has never been read by a deploy, and its CompactLayout member is spelled differently by the only tool that has ever named it",
+      "detail": "reports/MILESTONE-M1-package.xml declares the bare member Case_Intake under CompactLayout, a form with no non-wildcard example in the cited skill. Both mock deploys ran --source-dir force-app --dry-run, so the CLI derived components from the source tree and never opened a package.xml - and what it derived was the object-qualified 'CompactLayout Case.Case_Intake'. The build's manifest says one thing, the only deploy ever run said another, and nothing has compared them. The always-on manifest test cannot catch it: it checks the manifest against the files in the build and both sides agree with each other. Milestone-level form of decisions.md O-M1S01-03.",
+      "evidence": {
+        "manifest_member": "Case_Intake",
+        "cli_derived_component": "Case.Case_Intake",
+        "deploys_using_manifest": 0,
+        "deploys_using_source_dir": 2,
+        "workbook_row": "CWB-OTHER-001"
+      },
+      "recommendation": "Human, optional and outside this loop: run sf project deploy start --manifest reports/MILESTONE-M1-package.xml --dry-run --target-org <sandbox> once, or retrieve to see the member form the org emits. No agent in this loop contacts an org."
+    },
+    {
+      "id": "F-14",
+      "severity": "P2",
+      "title": "record-type-decision.md describes the pre-rebuild artefacts, and manual checklist line 1 sends the human to read it",
+      "detail": "The file is byte-identical to build #1 (mtime 2026-09-05). Its section 2 table names the two processes as `Support Process` and `Billing Process` in code formatting, while the API names are now Support_Process and Billing_Process. The wording is defensible - case-management-setup v1.2.0 2.1 puts the readable form in <description>, and both files' descriptions carry it - and metadata-builder raised the ambiguity itself. What makes it a finding is where it lands: this is the one document M1's own manual acceptance test requires a human to read and judge.",
+      "evidence": {
+        "file": "artefacts/M1-S01/record-type-decision.md",
+        "mtime": "2026-09-05",
+        "spellings_in_file": [
+          "Support Process",
+          "Billing Process"
+        ],
+        "api_names": [
+          "Support_Process",
+          "Billing_Process"
+        ],
+        "workbook_row": "CWB-OTHER-003"
+      },
+      "recommendation": "v6 or the next rebuild of M1-S01: mark the two strings as display wording in the section 2 table, or give the table an API-name column."
+    }
+  ],
+  "extensions": {
+    "milestone": "M1",
+    "report_path": "reports/MILESTONE-M1-REPORT-v2.md",
+    "supersedes_report": "reports/MILESTONE-M1-REPORT.md (left on disk unchanged - it is what the 2026-09-05 gate was taken against)",
+    "merged_manifest_path": "reports/MILESTONE-M1-package.xml",
+    "merged_manifest_regenerated": true,
+    "test_evidence_dir": "tests/M1/ (this run's files carry a .v2 infix; v1's are untouched)",
+    "verdict": "ready-with-findings",
+    "passed": false,
+    "blocked_steps": [],
+    "steps": [
+      {
+        "id": "M1-S01",
+        "type": "object-model",
+        "agent": "metadata-builder",
+        "status": "documented",
+        "human_gate": true,
+        "rebuilt_2026_09_09": true,
+        "artefact_count": 13
+      },
+      {
+        "id": "M1-S02",
+        "type": "ui",
+        "agent": "metadata-builder",
+        "status": "documented",
+        "human_gate": false,
+        "rebuilt_2026_09_09": true,
+        "artefact_count": 4
+      }
+    ],
+    "reference_resolution": [
+      {
+        "class": "Validation rule field references",
+        "references": 0,
+        "resolved_this_milestone": 0,
+        "resolved_earlier": 0,
+        "unresolved": 0,
+        "unclassifiable": 0,
+        "note": "no ValidationRule metadata; M3-S01 is pending"
+      },
+      {
+        "class": "Assignment rule criteria",
+        "references": 0,
+        "resolved_this_milestone": 0,
+        "resolved_earlier": 0,
+        "unresolved": 0,
+        "unclassifiable": 0,
+        "note": "no AssignmentRules in M1; M3-S03/S04"
+      },
+      {
+        "class": "Permission set grants",
+        "references": 0,
+        "resolved_this_milestone": 0,
+        "resolved_earlier": 0,
+        "unresolved": 0,
+        "unclassifiable": 0,
+        "note": "M2-S01's PermissionSet grants a customPermissions entry only - no objectPermissions, no fieldPermissions"
+      },
+      {
+        "class": "Flow field references",
+        "references": 0,
+        "resolved_this_milestone": 0,
+        "resolved_earlier": 0,
+        "unresolved": 0,
+        "unclassifiable": 0,
+        "note": "no Flow in M1; M4"
+      },
+      {
+        "class": "Entitlement process milestones",
+        "references": 0,
+        "resolved_this_milestone": 0,
+        "resolved_earlier": 0,
+        "unresolved": 0,
+        "unclassifiable": 0,
+        "note": "no EntitlementProcess in M1; M4"
+      },
+      {
+        "class": "Layout, compact-layout, record-type and business-process references",
+        "references": 43,
+        "resolved_this_milestone": 10,
+        "resolved_earlier": 0,
+        "unresolved": 0,
+        "unclassifiable": 5,
+        "note": "23 layout field refs + 5 compact-layout field refs + 2 picklist names + 3 compactLayoutAssignment + 2 businessProcess + 3 Origin values + 5 business-process Status values. 28 are standard fields treated as pre-existing (a stated assumption); 5 Status values are unclassifiable in-tree (F-02)."
+      }
+    ],
+    "cross_step_checks": [
+      {
+        "check": "record type to layout consistency",
+        "result": "still not assertable in M1",
+        "detail": "2 record types and 2 layouts are in view together, but the binding element (layoutAssignments on a Profile) exists nowhere under artefacts/. The build-scoped run is the union of the two step runs. Sharper than v1: a PermissionSet - one of the two roots collect() reads - is now in the tree and still resolves zero. F-01. Remedy belongs to M2-S03, not M2-S01."
+      },
+      {
+        "check": "business process stem equals fullName",
+        "result": "pass, and now machine-enforced",
+        "detail": "Both files' stems equal their fullName; both record types reference the bare stem; the manifest carries the object-qualified members. CMS-STEM-01/02 exit 0 here and exit 1 on a reverted fixture. F-11 closed."
+      },
+      {
+        "check": "Case layout required standard fields",
+        "result": "pass, and now machine-enforced",
+        "detail": "ContactId, Description and SuppliedEmail present on both layouts; Status behavior=Required on both. RL-REQ-01/02 exit 0 here and exit 1 on a reverted fixture. F-09/F-10 closed."
+      },
+      {
+        "check": "compactLayoutAssignment resolution",
+        "result": "pass",
+        "detail": "3 assignments (CustomObject:Case and both record types) all resolve to CompactLayout:Case_Intake in M1-S01."
+      },
+      {
+        "check": "Origin value exposure",
+        "result": "pass",
+        "detail": "All three CaseOrigin values are exposed by at least one record type; none is orphaned."
+      },
+      {
+        "check": "manifest member form against a real deploy",
+        "result": "never made",
+        "detail": "Both mock deploys used --source-dir, so no package.xml has ever been read by the CLI. The CompactLayout member differs between the manifest (Case_Intake) and the component the CLI derived (Case.Case_Intake). F-13."
+      },
+      {
+        "check": "deploy-order recorded position vs artefact type",
+        "result": "1 divergence",
+        "detail": "CustomObject:Case recorded at 7 (sharing), type says 1 (objects). Does not break the deploy - Case is standard. F-05."
+      },
+      {
+        "check": "backwards dependencies through the deploy order",
+        "result": "none",
+        "detail": "All five inter-artefact dependencies run forward through the objects->fields->picklists->record types->layouts sequence."
+      }
+    ],
+    "deploy_order": [
+      {
+        "artefact": "CustomField:Case.Severity__c",
+        "recorded_position": "2 of 10 (fields)",
+        "position_by_type": "2",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-007"
+      },
+      {
+        "artefact": "CustomField:Account.Region__c",
+        "recorded_position": "2 of 10 (fields)",
+        "position_by_type": "2",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-008"
+      },
+      {
+        "artefact": "CustomField:Account.Support_Tier__c",
+        "recorded_position": "2 of 10 (fields)",
+        "position_by_type": "2",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-009"
+      },
+      {
+        "artefact": "StandardValueSet:CaseOrigin",
+        "recorded_position": "3 of 10 (picklists)",
+        "position_by_type": "3",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-001"
+      },
+      {
+        "artefact": "BusinessProcess:Case.Support_Process",
+        "recorded_position": "4 of 10 (with record types)",
+        "position_by_type": "no slot of its own",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-002"
+      },
+      {
+        "artefact": "BusinessProcess:Case.Billing_Process",
+        "recorded_position": "4 of 10 (with record types)",
+        "position_by_type": "no slot of its own",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-003"
+      },
+      {
+        "artefact": "RecordType:Case.Support",
+        "recorded_position": "4 of 10 (record types)",
+        "position_by_type": "4",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-004"
+      },
+      {
+        "artefact": "RecordType:Case.Billing",
+        "recorded_position": "4 of 10 (record types)",
+        "position_by_type": "4",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-005"
+      },
+      {
+        "artefact": "CompactLayout:Case_Intake",
+        "recorded_position": "cannot be placed - reported",
+        "position_by_type": "no slot: a compact layout is not a page layout",
+        "agrees": true,
+        "workbook_row": "CWB-OBJ-006"
+      },
+      {
+        "artefact": "Layout:Case-Case Support Layout",
+        "recorded_position": "5 of 10 (layouts)",
+        "position_by_type": "5",
+        "agrees": true,
+        "workbook_row": "CWB-LAYOUT-001"
+      },
+      {
+        "artefact": "Layout:Case-Case Billing Layout",
+        "recorded_position": "5 of 10 (layouts)",
+        "position_by_type": "5",
+        "agrees": true,
+        "workbook_row": "CWB-LAYOUT-002"
+      },
+      {
+        "artefact": "CustomObject:Case",
+        "recorded_position": "7 of 10 (sharing)",
+        "position_by_type": "1 (objects)",
+        "agrees": false,
+        "workbook_row": "CWB-SHARE-001"
+      }
+    ],
+    "backwards_dependencies": [],
+    "acceptance_tests": [
+      {
+        "n": 1,
+        "type": "checker",
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "exit": 0,
+        "expected": "exit 0",
+        "result": "pass",
+        "evidence": "tests/M1/check_record_type_layouts.v2.{stdout,stderr,exit}",
+        "output_summary": "Scanned 8 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected. score 100, empty stderr. v1 gave 2 INFO findings over 7 files."
+      },
+      {
+        "n": 2,
+        "type": "manifest",
+        "command": "two-way member <-> file over the regenerated merged milestone manifest",
+        "exit": 0,
+        "expected": "consistent",
+        "result": "pass",
+        "evidence": "tests/M1/manifest.v2.{stdout,stderr,exit}",
+        "output_summary": "verdict: consistent | failures: 0. 7 types, 12 members, no collision, no wildcard, versions agree at 62.0."
+      },
+      {
+        "n": 3,
+        "type": "manual",
+        "command": null,
+        "exit": null,
+        "expected": "ticked at the milestone gate",
+        "result": "deferred to the human",
+        "evidence": "section 7 line 1",
+        "output_summary": "record-type-decision.md provenance; clause (c) not fully tickable, and F-14 applies to the document itself."
+      }
+    ],
+    "observation_runs": [
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "exit": 0,
+        "output": "No case management setup issues found.",
+        "evidence": "tests/M1/OBSERVATION-check_case_management_setup.v2.{stdout,stderr,exit}",
+        "note": "Carries CMS-STEM-01/02, added 2026-09-09. NOT a declared acceptance test on any step or milestone; contributed to no pass verdict."
+      },
+      {
+        "command": "negative control: check_record_type_layouts.py against a Case layout reverted to the pre-fix shape",
+        "exit": 1,
+        "output": "RL-REQ-01 (ContactId, Description, SuppliedEmail missing) and RL-REQ-02 (Status behavior='Edit') both fire",
+        "evidence": "tests/M1/NEGATIVE-CONTROLS.v2.stdout",
+        "note": "Fixture written outside the build directory; the build's artefacts were not modified."
+      },
+      {
+        "command": "negative control: check_case_management_setup.py against a spaced <fullName> in a Support_Process stem",
+        "exit": 1,
+        "output": "CMS-STEM-01 and CMS-STEM-02 both fire",
+        "evidence": "tests/M1/NEGATIVE-CONTROLS.v2.stdout",
+        "note": "Proves the exit-0 above is a statement rather than a silence - the failure mode F-01 documents."
+      }
+    ],
+    "missing_checkers": [],
+    "merged_manifest": {
+      "path": "reports/MILESTONE-M1-package.xml",
+      "types": 7,
+      "members": 12,
+      "version": "62.0",
+      "collisions": 0,
+      "wildcards": 0,
+      "version_conflict": false,
+      "members_changed_since_v1": [
+        "BusinessProcess Case.Support Process -> Case.Support_Process",
+        "BusinessProcess Case.Billing Process -> Case.Billing_Process"
+      ],
+      "files_reaching_no_types_block": [
+        "artefacts/M1-S01/deploy-order.md",
+        "artefacts/M1-S01/record-type-decision.md",
+        "artefacts/M1-S02/deploy-order.md",
+        "the two step package.xml files"
+      ]
+    },
+    "manual_checklist": [
+      "M1 (milestone) - Read artefacts/M1-S01/record-type-decision.md. Ticks when it (a) states the record-type count was decided in the plan not by the builder, (b) names D5's criteria-based sharing rule on RecordTypeId as what settled Q1's conditional, and (c) shows the Status AND Reason value sets for each process. Evidence: (a) and (b) hold verbatim in section 1; (c) holds for Status only - section 2 records that Case.Reason is named in Q1's answer and is NOT configured, because no clarification enumerates its values. NOT FULLY TICKABLE AS WORDED. NEW at v2 (F-14): section 2 of that document still spells the processes `Support Process` / `Billing Process` in code formatting, which is the pre-rebuild form; the API names are Support_Process / Billing_Process.",
+      "M1-S01 - List artefacts/M1-S01/. Ticks when two businessProcess-meta.xml files sit beside the two recordType-meta.xml files, each record type's <businessProcess> carries the BARE process name, and package.xml lists BusinessProcess with object-qualified members. All four clauses hold on disk (Support_Process / Billing_Process bare in the record types; Case.Support_Process / Case.Billing_Process in the manifest). STRAIGHT TICK, and now machine-backed by CMS-STEM-01/02. CAVEAT (O-M1S01-02): the test's counter-example '(not Case.Support Process)' is stale - the shape it means to exclude is now spelled Case.Support_Process. This line was ticked at the 2026-09-05 gate against the old reading.",
+      "M1-S01 - Read artefacts/M1-S01/objects/Case/Case.object-meta.xml. Ticks when <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel> are direct children of <CustomObject> and no settings file anywhere in the build claims the OWD. Both hold; no *.settings-meta.xml exists under artefacts/. STRAIGHT TICK, and the file is byte-identical to build #1 so the 2026-09-05 tick still stands. What it does NOT cover: the OWD is the conservative reading of deferred blocking Q13 through assumption A1 (risk high); the machine assertion that it is not looser than the sharing rule's grant is M2-S05's check_sharing_model.py, which has not run. Approving this approves the artefact, not the policy.",
+      "M1-S02 - Read both layout files. Ticks when <layoutSections> is preceded by the assignment-rule checkbox, default set on. PRESENCE reading holds on both (element present, value true). POSITIONAL reading FAILS on both (checkbox at index 3, last layoutSections at index 1) - and should: the cited skill's own example places every show* element after the final </layoutSections>. NO element pre-checks the box on either layout, and record-types-and-page-layouts v1.2.0 - the release that closed F-09 and F-10 - added none. NEEDS A DECISION, NOT A TICK: accept the narrowing (shown, not defaulted on), route the remainder to a recorded Setup step, or deepen the skill further - noting that deepening has now been tried once and did not close it.",
+      "M1-S02 - Read both layout files against the validation rules. Ticks when every field a validation rule attaches its error to (A13) is present on both layouts. NOT FILE-CHECKABLE AT M1: zero ValidationRule files exist under artefacts/ (M3-S01 pending), so this is a prediction rather than a check. Rebuild #2 widened the satisfied surface from 8 shared fields to 11 (ContactId, Description and SuppliedEmail are now on both). CARRY-FORWARD: Severity__c is on the Support layout only by design (D-M1S02-02), so a rule attaching its error to that field would break A13 on the Billing layout. See also F-03 - the plan text claims M1's milestone checker carries this assertion, and it does not."
+    ],
+    "requirements_closed": [
+      "REQ-001",
+      "REQ-002",
+      "REQ-005",
+      "REQ-006",
+      "REQ-007",
+      "REQ-008",
+      "REQ-009",
+      "REQ-011",
+      "REQ-012"
+    ],
+    "requirements_open_at_gate": [
+      "REQ-003",
+      "REQ-004",
+      "REQ-010",
+      "REQ-013",
+      "REQ-014"
+    ],
+    "requirement_closure_caveat": "check_object_creation_and_design.py exits 0 without asserting anything about M1-S01's three fields - it returns before any assertion for a file stem not ending __c, and Case is standard. REQ-007/008/009 are proved to exist and be manifest-consistent, not to be well-formed fields (CWB-OBJ-007).",
+    "planner_open_items_for_v6": [
+      "O-M1S01-01 - steps[M1-S01].inputs.business_processes still holds the spaced form, diverging from the step's own outputs; inputs.note (B01) spells the manifest member Case.Support Process",
+      "O-M1S01-02 - manual test 1's counter-example '(not Case.Support Process)' is stale, and is copied verbatim into tests/M1-S01/results.json",
+      "O-M1S01-03 / F-13 - the bare CompactLayout Case_Intake manifest member has never been read by a manifest-reading deploy",
+      "O-M1S02-01 / F-07 - the step-test description predicting 0 finding(s) is now moot; close it as observed-correct, not as reworded",
+      "O-M1S02-02 / F-04 - deploy-order.md undeclared in outputs[] on both M1 steps",
+      "O-M1S02-03 - the M1 report and gate notes predate the rebuild; this report is the remedy for the report half",
+      "O-M2S01-01 - F-01's remedy names M2-S01; layoutAssignments is M2-S03's. Corrected in this report; the two gate notes are not rewritable",
+      "W01/W02/W03 - plan-verifier v5 non-blocking warnings, unchanged",
+      "check_case_management_setup.py is cited in steps[M1-S01].skills[] and carries the rules that closed F-11, but is a declared acceptance test on no step and no milestone",
+      "Q24's 'defaulted on' half stays unproven and unprovable from the artefacts; v1.2.0 added no pre-checking element",
+      "A13 stays unverified until M3-S01 lands"
+    ],
+    "validate_only_command": "sf project deploy start --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M1-package.xml --dry-run --target-org <your-sandbox-alias>",
+    "validate_only_command_note": "OPTIONAL and HUMAN-RUN. This agent never runs sf and did not run this. The sandbox form is deploy start --dry-run; sf project deploy validate is production-only. Neither mock deploy ran this form - both used --source-dir - which is what F-13 is about.",
+    "go_no_go_before_deploy": [
+      "StandardValueSet:CaseStatus - discharged for sfskills-dev by both mock deploys; open for every other target (F-02)",
+      "CompactLayout member form - the manifest says Case_Intake, the only deploy ever run derived Case.Case_Intake; nothing has compared them (F-13)",
+      "BusinessProcess member form - discharged by mock deploy #2 for the source-tree path; the manifest path shares F-13's caveat",
+      "Pre-release backup - checked and not applicable (greenfield, Q4, design-only)",
+      "Post-deploy manual steps - M1 deploys cleanly and is reachable by no user until M2; recordTypeVisibilities is M2-S02's and layoutAssignments is M2-S03's",
+      "Test level / coverage - not applicable, no Apex in M1",
+      "Deployment window - the human's call"
+    ],
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/case-onboarding/plan.json M1 --status verified --report-path reports/MILESTONE-M1-REPORT-v2.md",
+    "set_milestone_side_effect": "milestones[M1].status moved accepted -> verified. human_gates[milestone:M1].status is unchanged at approved (2026-09-05T21:11:56Z). The two records now disagree and only a human can reconcile them. See F-12.",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M1 approve --by \"<name>\"",
+    "gate_command_conditions": "Section 3 refuses it unless the plan gate is approved (it is) and every step in M1 is documented or blocked with a recorded reason (both are documented). There is no milestone:M0, so the predecessor condition is vacuous. No blocked step, so approving accepts no gap of that kind.",
+    "gate_not_approved_by_this_agent": true,
+    "gate_already_approved_against_earlier_artefacts": "milestone:M1 was approved 2026-09-05T21:11:56Z against build #1. Whether that approval stands, is re-taken against these artefacts, or is withdrawn is a plan-level decision no agent may make.",
+    "org_contacted": false,
+    "files_written": [
+      "reports/MILESTONE-M1-REPORT-v2.md",
+      "reports/MILESTONE-M1-package.xml (regenerated)",
+      "tests/M1/check_record_type_layouts.v2.{stdout,stderr,exit}",
+      "tests/M1/manifest.v2.{stdout,stderr,exit}",
+      "tests/M1/OBSERVATION-check_case_management_setup.v2.{stdout,stderr,exit}",
+      "tests/M1/NEGATIVE-CONTROLS.v2.stdout",
+      "envelopes/M1/2026-09-09T20-19-00Z.json",
+      "envelopes/M1/2026-09-09T20-19-00Z.md"
+    ],
+    "files_not_touched": [
+      "reports/MILESTONE-M1-REPORT.md (v1, left exactly as written)",
+      "tests/M1/ v1 evidence",
+      "every artefact under artefacts/",
+      "plan.json beyond the single set-milestone call"
+    ],
+    "persistence_deviation": "The Wave 10 pair under docs/reports/milestone-verifier/ was not written: this invocation is scoped to the build directory and the caller constrained writes to it. The build-scoped pair under envelopes/M1/ is complete."
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The loop did the thing it exists to do: a defect reality found became library content and then a checker, and the rebuild was gated by that checker rather than by a human remembering. Three HIGH findings closed at the source in four days, and the rebuilt artefacts validated unmodified.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M1.md; decisions.md D-M1S02-05, D-M1S01-05",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-integrity",
+      "observation": "Both new rule families were verified against reverted fixtures before their exit-0 was reported as meaning anything. The step tester had already run the same negative control on CMS-STEM-01/02, which is the discipline F-01 exists to teach - a silent checker reads as a clean one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1/NEGATIVE-CONTROLS.v2.stdout; envelopes/M1-S01/2026-09-09T19-52-47Z.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "documentation",
+      "observation": "build-doc-keeper recorded the divergence between the accepted milestone and the rebuilt artefacts, named who may and may not fix each part, and sequenced the re-verification so it would run once rather than twice - including a warning that two sessions were writing this build directory concurrently.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "decisions.md O-M1S02-03",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "build-loop",
+      "observation": "Fixes land forward but do not reach back. F-04 (deploy-order.md undeclared) and F-08 (production deploy command against a sandbox alias) are both correct on M2-S01 and both still wrong on the two M1 steps - and F-08's two files were rewritten during rebuild #2 without being revisited. A rebuild re-runs the builder; it does not re-open findings filed against what the builder wrote last time.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S01/deploy-order.md:103; artefacts/M1-S02/deploy-order.md:135; artefacts/M2-S01/deploy-order.md:129",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "tooling",
+      "observation": "The CLI guards a human's G3 in set-status and not in set-milestone, so an agent following its own prescribed Step 9 moved an accepted milestone back to verified. The asymmetry is in one file, twenty lines apart, and the guarded branch even carries the comment explaining why the guard exists.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py cmd_set_milestone; scripts/build_plan.py set-status running branch",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "test-design",
+      "observation": "Two acceptance-test descriptions in this milestone quote counts taken from a whole-tree scan - '7 metadata file(s)' and a finding count. Both went stale without any defect in M1: one because the artefacts were fixed, the other because a later milestone's step wrote a file into the same tree. A build-scoped description that quotes a file count is perishable by construction.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json milestones[M1].acceptance_tests[0].description; steps[M1-S02].acceptance_tests[0].description",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "gate-integrity",
+      "observation": "M1 is an approved gate over artefacts that have since changed, and nothing in the status machine expresses that state. The gate note is not rewritable, the milestone status was just overwritten, and whether M1 counts as still-accepted, re-gated or delta-accepted is a plan-level decision no agent may take.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json human_gates[milestone:M1]; plan.json milestones[M1]; decisions.md O-M1S02-03",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "test-coverage",
+      "observation": "check_case_management_setup.py now carries the two rules that enforce F-11 and is cited in steps[M1-S01].skills[], but it is a declared acceptance test on no step and no milestone. It runs observation-only, so the rules that closed a HIGH finding contribute to no pass verdict anywhere in the plan.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M1-S01].acceptance_tests; tests/M1/OBSERVATION-check_case_management_setup.v2.exit",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "grounding",
+      "observation": "RL-REQ-01 and RL-REQ-02 are grounded in one dry run against one Summer '26 developer org and are explicitly absent from the Metadata API guide. The skill says so and keeps RL-REQ-03 ADVISORY and UNVERIFIED for every other object. That is the honest scope, and it means the required-layout-field rule for any object other than Case is still unknown to this library.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py:31-51,112-123",
+        "count": 3
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (MILESTONE-<id>-REPORT.md is written not rendered and recorded with set-milestone --report-path; build_plan.py is the sole writer of plan state), section 3 (G3 is the human's and the conditions gate approve is refused under), section 4 (a rebuild leaves the milestone above it stale until /verify-milestone is re-run), section 5 (milestone tests are always build-scoped; the tester runs a declared command verbatim), section 7 (this agent runs after the milestone's steps and returns so the human can act)"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules for this invocation: no org write, no deploy, no auto-chaining to another agent"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Eight-section shape, the mandatory Process Observations block and its healthy/concerning/ambiguous categories, the confidence rubric this agent's Step 10 overrides, and the citation shape"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope persistence, the atomic-write rule, and the dimensions_skipped states"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked against the precondition (no step pending/running/built/tested/failed/blocked, so no refusal fired) and against the manifest merge (versions agreed, so no REFUSAL_NEEDS_HUMAN_REVIEW)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The milestone and gate fields this agent reads: milestones[].status/report_path, human_gates[].name pattern, steps[].status"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The manifest grammar and the <version> element the merged milestone package.xml must carry, and the no-wildcard CI-safe member form the merge preserved across 7 types and 12 members"
+    },
+    {
+      "type": "skill",
+      "id": "devops/permission-set-deployment-ordering",
+      "path": "skills/devops/permission-set-deployment-ordering/SKILL.md",
+      "used_for": "Checking positions 6-7 of the deploy order: M2-S01's permission set grants a customPermissions entry and no fieldPermissions, so the field-not-yet-in-the-org failure cannot occur in M1; it becomes live at M2-S02"
+    },
+    {
+      "type": "skill",
+      "id": "devops/flow-deployment-activation-ordering",
+      "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md",
+      "used_for": "Confirming positions 8-10 are empty in M1 - no Flow, no activation state, no paused-interview exposure - rather than leaving automation ordering unstated"
+    },
+    {
+      "type": "skill",
+      "id": "devops/deployment-error-diagnosis",
+      "path": "skills/devops/deployment-error-diagnosis/SKILL.md",
+      "used_for": "Naming the deploy-time error each finding predicts: INVALID_CROSS_REFERENCE_KEY for F-01 at M2-S03, the picklist-value-missing row for F-02's CaseStatus, and the not-found-in-zipped-directory shape F-11 actually produced"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pre-deployment-checklist",
+      "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+      "used_for": "The go/no-go list in section 8, including recording pre-release backup and test level as checked-and-not-applicable rather than skipping them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "The form each of the five manual checklist lines takes - do / ticks-when / evidence - so a human who was not in the build loop can tick or refuse them, and so lines 1, 4 and 5 are presented as decisions rather than as ticks"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "Section 9: stating which requirements M1 closes by machine evidence (8) and which remain open at the gate (6), using the REQ ids traceability.md carries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "The milestone's declared checker; rules RL-REQ-01/02/03 read directly to establish what F-09 and F-10 are now enforced by, and to bound the claim to the Case object"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "The observation-only run and rules CMS-STEM-01/02, read to establish what F-11 is now enforced by and to state that the readable spaced wording belongs in <description> (F-14)"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "deployment-risk-scorer",
+      "because": "Once a human has a sandbox alias, the regenerated merged manifest is the natural input to score before the first real deploy - and F-13 means its CompactLayout member form is the one thing no check in this build has read."
+    },
+    {
+      "agent": "release-readiness-reviewer",
+      "because": "M1 is not the last milestone before a release, so this is a later recommendation, not a now one; four milestones remain."
+    }
+  ]
+}

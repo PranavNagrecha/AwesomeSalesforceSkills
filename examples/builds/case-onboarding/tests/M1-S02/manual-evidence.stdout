@@ -23,5 +23,5 @@
      so this half is NOT file-checkable at M1-S02 time.
 
 === fields present on each layout (for the gate's later use) ===
-  Case-Case Billing Layout.layout-meta.xml: ['CaseNumber', 'CreatedById', 'LastModifiedById', 'Origin', 'OwnerId', 'Priority', 'Status', 'Subject']
-  Case-Case Support Layout.layout-meta.xml: ['CaseNumber', 'CreatedById', 'LastModifiedById', 'Origin', 'OwnerId', 'Priority', 'Severity__c', 'Status', 'Subject']
+  Case-Case Billing Layout.layout-meta.xml: ['CaseNumber', 'ContactId', 'CreatedById', 'Description', 'LastModifiedById', 'Origin', 'OwnerId', 'Priority', 'Status', 'Subject', 'SuppliedEmail']
+  Case-Case Support Layout.layout-meta.xml: ['CaseNumber', 'ContactId', 'CreatedById', 'Description', 'LastModifiedById', 'Origin', 'OwnerId', 'Priority', 'Severity__c', 'Status', 'Subject', 'SuppliedEmail']

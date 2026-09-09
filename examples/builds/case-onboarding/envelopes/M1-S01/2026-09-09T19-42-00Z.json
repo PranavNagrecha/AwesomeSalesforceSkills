@@ -1,0 +1,242 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-09T19-42-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T19-42-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T19-42-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "api_version": "62.0",
+    "invocation": "inline by build-step-runner (AGENT.md Step 6 'any other host' clause), at the caller's explicit direction",
+    "rebuild_reason": "reports/MOCK-DEPLOY-M1.md finding F-11 (HIGH) \u2014 source-format BusinessProcess stem/fullName divergence",
+    "scope_constraint": "rebuild only what F-11 touches; every other declared output stays byte-identical",
+    "plan_input_divergence": "steps[M1-S01].inputs.business_processes is ['Support Process','Billing Process'] (spaced); the declared outputs[] are stem-form paths. Stem form was written, per F-11's own remedy. plan.json not edited."
+  },
+  "summary": "Rebuilt five files of step M1-S01 to clear finding F-11: the two Case business processes now carry stem-form <fullName> (Support_Process / Billing_Process), both record types reference the process by that bare stem, and package.xml names the members Case.Support_Process / Case.Billing_Process. The four metadata files are byte-identical to the validated shape in reports/mock-deploy-fixes/. deploy-order.md was updated in the same pass because it is this agent's Step 7 output and it quoted the old member names. Case.object-meta.xml, the CaseOrigin standard value set, the compact layout, the three CustomField files and record-type-decision.md were not touched and retain their rebuild-#1 mtimes. All five checkers exit 0 on pass 1 with no repair pass; 11 XML files parse; check-outputs is ok.",
+  "confidence": "HIGH",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 HIGH: every rewritten element name came from the Step 3 inventory (case-management-setup \u00a7 2.1 for the stem rule, record-types-and-page-layouts for the bare-vs-qualified split), all five checkers exited 0 on pass 1, check-outputs returned ok, every declared output exists and no file was written outside artefacts/M1-S01/. The Questions-to-Ask rows that made rebuild #1 MEDIUM were not re-opened \u2014 no element they govern changed in this pass.",
+  "dimensions_compared": [
+    "businessProcess-fullName",
+    "recordType-businessProcess-reference",
+    "package.xml-members",
+    "deploy-order-note"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The four rebuilt metadata files came out byte-identical to the independently validated shape in reports/mock-deploy-fixes/, so the fix was reproduced rather than re-invented.",
+      "domain": "rebuild-fidelity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/mock-deploy-fixes/",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The library absorbed the finding before the rebuild ran: case-management-setup v1.2.0 states the stem rule in prose and enforces it as CMS-STEM-01/02, so the same defect now fails a checker rather than a deploy.",
+      "domain": "skill-depth",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_case_management_setup.py is not among this step's four declared acceptance tests even though the step cites admin/case-management-setup in skills[] \u2014 the checker that would have caught F-11 existed as a citation but never as a gate.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "record-type-decision.md still reads 'Support Process' / 'Billing Process' as the process names in its decision table; that is the readable wording \u00a7 2.1 says to keep out of fullName, but a reader comparing it to package.xml sees two different strings with nothing on the page saying which is the API name.",
+      "domain": "documentation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/record-type-decision.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The step's inputs.business_processes still carries the spaced form while its outputs[] carries the stem form; the artefacts now match the outputs, so the input string is stale in a way no checker reads and no gate fails on.",
+      "domain": "plan-consistency",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step's declared tests should be re-run by the agent that owns them rather than inferred from this agent's own checker run.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "heuristic",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because the step is back at built and its seven declared tests plus the always-on xml and manifest checks are step-tester's to execute, not this agent's."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "rebuild_number": 2,
+    "finding": "F-11",
+    "files_rewritten": [
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+        "change": "<fullName> 'Support Process' -> 'Support_Process'",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+        "change": "<fullName> 'Billing Process' -> 'Billing_Process'",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+        "change": "<businessProcess> -> 'Support_Process' (bare stem)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+        "change": "<businessProcess> -> 'Billing_Process' (bare stem)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "change": "BusinessProcess members -> Case.Support_Process, Case.Billing_Process",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/deploy-order.md",
+        "change": "two member-name cells corrected + Rebuild history section added",
+        "declared": false,
+        "note": "Step 7 output, written on every run; not in the step's declared outputs[]"
+      }
+    ],
+    "files_left_byte_identical": [
+      "artefacts/M1-S01/objects/Case/Case.object-meta.xml",
+      "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+      "artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml",
+      "artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml",
+      "artefacts/M1-S01/record-type-decision.md"
+    ],
+    "validated_shape_diff": "diff against reports/mock-deploy-fixes/ for all four metadata files: IDENTICAL",
+    "checker_runs": [
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts/M1-S01",
+        "before": "exit 1 \u2014 2x CMS-STEM-01, 2x CMS-STEM-02",
+        "after": "exit 0 \u2014 'No case management setup issues found.'",
+        "pass": 1
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+        "after": "exit 0 \u2014 2 record type(s), 0 layout(s); 0 finding(s)",
+        "pass": 1
+      },
+      {
+        "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01",
+        "after": "exit 0 \u2014 'No issues found.'",
+        "pass": 1
+      },
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "after": "exit 0 \u2014 'No issues found across 1 object file(s).'",
+        "pass": 1
+      },
+      {
+        "command": "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01",
+        "after": "exit 0 \u2014 'No record-type ID anti-patterns detected.'",
+        "pass": 1
+      }
+    ],
+    "xml_parse": "11 XML file(s) parsed OK",
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "status_path_taken": "under the runner \u2014 this agent set no step status (AGENT.md Step 9)",
+    "no_deploy": "no sf command of any kind was run"
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "\u00a7 2.1 source-format stem rule \u2014 'each decomposed file's stem has to be its own fullName' \u2014 the element-inventory entry the rebuilt <fullName> values were copied from"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+      "used_for": "CMS-STEM-01 / CMS-STEM-02 \u2014 the checker that failed the pre-rebuild files (4 ERRORs, exit 1) and passes the rebuilt ones"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "the bare-vs-object-qualified rule: <businessProcess> inside a RecordType is the bare stem, package.xml members are object-qualified"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/references/metadata-examples.md",
+      "used_for": "confirming no CustomObject element changed \u2014 Case.object-meta.xml was left byte-identical"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-type-id-management",
+      "path": "skills/admin/record-type-id-management/SKILL.md",
+      "used_for": "declared checker re-run: no hard-coded record-type Id was introduced by the stem rename"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/references/metadata-examples.md",
+      "used_for": "declared checker re-run: the compactLayoutAssignment on both record types is unchanged by the businessProcess edit"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the package.xml member forms and the deploy-order note rewritten in Step 7"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 4 step-type table (object-model is metadata-builder's in design-only) and \u00a7 5 the tester, not this agent, runs acceptance tests"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step's seven declared acceptance tests plus the always-on xml and manifest checks belong to it, and the step is back at built."
+    },
+    {
+      "agent": "build-planner",
+      "because": "steps[M1-S01].inputs.business_processes still holds the spaced form F-11 says to retire at plan v6, and only the planner may change it."
+    }
+  ]
+}

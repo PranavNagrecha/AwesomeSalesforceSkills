@@ -232,6 +232,77 @@ a new entry naming the one it supersedes.
   `extensions.elements_not_grounded_and_not_written[1]` and `[2]`;
   `artefacts/M1-S02/deploy-order.md` § "Elements this step could NOT ground".
 
+## D-M1S02-05 — Rebuild #2: three layout-required Case fields added and `Status` made `behavior=Required`
+
+- **Date:** 2026-09-09
+- **Step:** `M1-S02` (`ui`)
+- **Agent:** `metadata-builder` (run `2026-09-09T19-38-37Z`), claimed by `build-step-runner`
+  (run `2026-09-09T19-42-25Z`) through the `documented → running` transition
+  `standards/build-orchestration.md` § 4 allows for a rebuild
+- **Kind:** deviation — the artefacts now carry four things the step's `inputs{}` never asked for,
+  and the reason for each is the platform's rather than the requirement's. It is also the closing
+  record for a skill gap that every gate in the loop passed.
+- **What was recorded:** both Case layouts were re-emitted. `SuppliedEmail`, `Description` and
+  `ContactId` were added as `layoutItems` (written `behavior=Edit`), and the `Status` item moved
+  from `behavior=Edit` to `behavior=Required`. Support went from nine fields to twelve, Billing from
+  eight to eleven (`tests/M1-S02/manual-evidence.stdout`, § "fields present on each layout").
+- **Why the step was built a second time:** `reports/MOCK-DEPLOY-M1.md` — `sf project deploy start
+  --dry-run` against `sfskills-dev` on 2026-09-05. Run 1 validated 10 of 12 components; both layouts
+  failed with `Layout must contain an item for required layout field: ContactId`. Runs 2–5 surfaced
+  `Description`, then `SuppliedEmail`, then `Field:Status must be Required` — one message per run,
+  because the platform reports one field at a time. Findings **F-09** and **F-10**.
+- **Why build #1 missed it, and why that was not a builder error:** four platform rules that no
+  cited source carried, and no declared checker encoded. Build #1's own `deploy-order.md` said so in
+  as many words — it omitted `ContactId` because "no cited source for this step names either lookup
+  as a Case layout field" (D-M1S02-04), and it set no `behavior=Required` on the strength of Q5
+  (D-M1S02-01). Q5's answer is right for `Priority`, `Origin` and `Subject` and does not reach
+  `Status`, which is a deploy precondition rather than a data-quality control.
+- **Source the rebuild rests on — the library, fixed first:**
+  `skills/admin/record-types-and-page-layouts` **v1.2.0** (2026-09-09) now carries the deployable
+  Case layout in `references/metadata-examples.md` ("Page layout with two sections, the
+  layout-required Case fields, and one design-required field"), the `## Layout-required standard
+  fields` section behind it, gotchas **#12** and **#13**, and checker rules **RL-REQ-01** (a Case
+  layout with no `layoutItems` entry for `ContactId` / `Description` / `SuppliedEmail`) and
+  **RL-REQ-02** (a Case layout whose `Status` item is missing or is not `behavior=Required`), both
+  ERROR. `standards/build-orchestration.md` § 8 makes deepening the skill the remedy for a knowledge
+  gap; this is that remedy landing.
+- **Alternative rejected — editing build #1's layouts in place.** Refused rather than deferred:
+  `agents/metadata-builder`'s contract forbids it and § 8 makes the skill, not the artefact, the
+  place a knowledge gap is closed. The skill was deepened, then the step was re-run against it
+  through the ordinary runner path.
+- **Alternative rejected — adding the three fields at build #1 time on the builder's own judgment.**
+  That is the freestyle the contract forbids, and it would have produced the right file for the
+  wrong reason: nothing available to build #1 distinguished a conventional Case field from a
+  platform-required one, so the same judgment would equally have added `AccountId`, which the
+  platform does **not** require and which is still correctly absent.
+- **What this entry supersedes:** the `ContactId` half of **D-M1S02-04** (`AccountId` / `ContactId`
+  omitted as ungrounded) — `ContactId` is now present, and not for the requirement's reason but
+  because the platform requires it there; and the "no field carries `behavior=Required`" reading in
+  **D-M1S02-01**, whose Q5 grounding stands for `Priority`, `Origin` and `Subject` and never covered
+  `Status`. The `AccountId` half of D-M1S02-04, and D-M1S02-02 and D-M1S02-03 in full, are unchanged.
+- **What did not change:** the field set otherwise, including `Severity__c` on Support only
+  (D-M1S02-02); both layouts' `<showRunAssignmentRulesCheckbox>true</showRunAssignmentRulesCheckbox>`;
+  the two `layoutSections` and their `style`; and `package.xml`, because the rebuild added items
+  inside two existing components rather than a component.
+- **Evidence the fix is the org's answer and not the agent's:** the item set and behaviors of both
+  rebuilt layouts are identical to the scratch copies that validated 12/12 in mock-deploy run 5,
+  committed at `reports/mock-deploy-fixes/`. Mock deploy #2 (2026-09-09) then validated the rebuilt
+  artefacts **unmodified**: 12 of 12 components, `checkOnly: true`, 0 errors.
+- **Checker evidence, before and after** — same command, verbatim, from the build directory:
+  `python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py
+  --manifest-dir artefacts/M1-S02`. Against build #1's layouts it exits **1** with four ERRORs
+  (RL-REQ-01 ×2, RL-REQ-02 ×2); against rebuild #2's it exits **0** with `0 finding(s)`. Both exits
+  come from the same command and the same plan — only the skill changed.
+- **Still open after this entry, and untouched by it:** Q24's "defaulted on" half remains unwritten
+  and uninventable (D-M1S02-03 — v1.2.0 addressed F-09/F-10 and added no element that pre-checks the
+  box), and `AccountId` remains absent because no source names it and the platform does not require
+  it (D-M1S02-04).
+- **Grounded in:** `reports/MOCK-DEPLOY-M1.md` (Findings F-09/F-10; § "Mock deploy #2");
+  `artefacts/M1-S02/deploy-order.md` § "Rebuild #2 — why this step was built a second time";
+  `envelopes/M1-S02/2026-09-09T19-38-37Z.json` (builder), `…/2026-09-09T19-42-25Z.json` (runner),
+  `…/2026-09-09T19-50-27Z.json` (tester); `tests/M1-S02/results.json`;
+  `skills/admin/record-types-and-page-layouts` v1.2.0.
+
 ## D-M2S01-01 — The consumer list in the custom permission's description is read from `M3-S01`'s declared outputs
 
 - **Date:** 2026-09-06
@@ -369,6 +440,77 @@ a new entry naming the one it supersedes.
   `envelopes/M2-S01/2026-09-06T07-30-00Z.json` → `process_observations[3]` (concerning, low);
   `plan.json` `steps[M2-S01].acceptance_tests[0].description`.
 
+## D-M1S01-05 — Rebuild #2: every business-process `fullName` is now its file stem
+
+- **Date:** 2026-09-09
+- **Step:** `M1-S01` (`object-model`)
+- **Agent:** `metadata-builder` (run `2026-09-09T19-42-00Z`), claimed by `build-step-runner`
+  (`2026-09-09T19-45-00Z`) and re-tested by `step-tester` (`2026-09-09T19-52-47Z`)
+- **Kind:** deviation — the step was rebuilt away from what rebuild #1 produced, for a reason that
+  did not exist when rebuild #1 ran
+- **Why the rebuild happened:** `reports/MOCK-DEPLOY-M1.md` finding **F-11** (HIGH). A real
+  `sf project deploy start --source-dir force-app --dry-run` against `sfskills-dev` rejected this
+  step's business processes: the CLI derives the `package.xml` member from the **file stem**
+  (`Support_Process`), the file's `<fullName>` said `Support Process`, and the member therefore
+  matched nothing —
+  `An object 'Case.Support_Process' of type BusinessProcess was named in package.xml, but was not found in zipped directory`.
+  Every declared gate in the loop had been green on those artefacts.
+- **What changed** — six files, and nothing else:
+
+  | File | Change |
+  |---|---|
+  | `objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml` | `<fullName>` `Support Process` → `Support_Process` |
+  | `objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml` | `<fullName>` `Billing Process` → `Billing_Process` |
+  | `objects/Case/recordTypes/Support.recordType-meta.xml` | `<businessProcess>` → `Support_Process` (bare stem) |
+  | `objects/Case/recordTypes/Billing.recordType-meta.xml` | `<businessProcess>` → `Billing_Process` |
+  | `package.xml` | `BusinessProcess` members → `Case.Support_Process`, `Case.Billing_Process` |
+  | `deploy-order.md` | the two member-name cells, plus a **Rebuild history** section |
+
+  The other seven declared outputs — the Private OWD on `Case.object-meta.xml`, the `CaseOrigin`
+  value set, the compact layout, the three fields and `record-type-decision.md` — are byte-identical
+  to rebuild #1 and still carry their 2026-09-05 mtimes.
+- **Alternative rejected:** renaming the *files* to `Support Process.businessProcess-meta.xml` so the
+  stem matched the spaced `fullName` instead. Rejected because `plan.json` `steps[M1-S01].outputs[]`
+  declares the underscore paths, so `check-outputs` would have failed the step, and because a file
+  name carrying a space is not what the DX source-format convention produces. F-11 itself states the
+  direction: "the planner must pick one at v6 (**stem form, since it deploys**)."
+- **Also rejected:** leaving the artefacts alone and recording F-11 as a deploy-time caveat.
+  Rejected because the finding is not a caveat — the component does not deploy at all.
+- **Grounded in:** `skills/admin/case-management-setup` **v1.2.0**,
+  `references/metadata-examples.md` § 2.1 ("File stem = fullName"), which states the rule, quotes the
+  same CLI error, and records the dry run it was verified by; and the org validation itself,
+  `reports/MOCK-DEPLOY-M1.md` § "Mock deploy #2" — the rebuilt artefacts copied **without any edits**
+  into a source tree validated **12/12 components, `checkOnly: true`, 0 errors**.
+- **Now enforced rather than remembered:** the same skill's checker carries **CMS-STEM-01** (a
+  decomposed `*.businessProcess-meta.xml` / `*.recordType-meta.xml` stem must equal its `<fullName>`,
+  and no `<fullName>` may hold a space) and **CMS-STEM-02** (a record type's `<businessProcess>` must
+  name an existing process file stem). Against the pre-rebuild copy still committed at
+  `examples/builds/case-onboarding/artefacts/M1-S01` the checker emits **4 `ERROR:` lines** and exits
+  1; against these artefacts it exits 0. The tester ran that negative control deliberately, so the
+  green is earned rather than fail-open (`envelopes/M1-S01/2026-09-09T19-52-47Z.md` § "Observation
+  only").
+- **What it supersedes:** **D-M1S01-03**, on one row of its three-spellings table only. The
+  `fullName` row — "inside the file, and inside each `RecordType`: `Support Process`, bare, with a
+  space" — is no longer true; it now reads `Support_Process`. The manifest row still stands:
+  `package.xml` names the member object-qualified (`Case.Support_Process`) and a file stem cannot
+  carry the dot, so the two index keys `check_rtm.py` builds still differ and the same three orphan
+  WARNs persist. D-M1S01-03 is not rewritten — this entry names it, per the append-only rule.
+- **Open item for the planner, unclosed and not closable here:** `plan.json`
+  `steps[M1-S01].inputs.business_processes` still reads `["Support Process", "Billing Process"]`
+  while `outputs[]`, the six rebuilt files and the manifest are all stem form. Nothing downstream
+  reads that string, so no test can fail on it. It is a **v6 planner item** —
+  `standards/build-orchestration.md` § 2 gives `build_plan.py` sole authority over plan state and
+  `agents/build-doc-keeper/AGENT.md` forbids this agent touching `plan.json` beyond its own status
+  transition. Filed below as **O-M1S01-01**.
+- **What the gate should see:** milestone **M1 is already `accepted`**, and the acceptance report and
+  gate notes behind that approval describe artefacts that have since changed. `milestone-verifier`
+  has to re-run across every step in M1, not just this one
+  (`envelopes/M1-S01/2026-09-09T19-45-00Z.md` § Process observations, third Concerning bullet).
+- **Evidence:** `artefacts/M1-S01/deploy-order.md` § "Rebuild history";
+  `envelopes/M1-S01/2026-09-09T19-42-00Z.json` (builder), `2026-09-09T19-45-00Z.json` (runner),
+  `2026-09-09T19-52-47Z.json` (tester); `tests/M1-S01/results.json` (`"passed": true`, 6 ran,
+  0 failed, 2 manual).
+
 ---
 
 # Open items for the planner — plan-verifier v5 non-blocking warnings
@@ -429,6 +571,12 @@ the same reason: both are plan-file text or plan-file declarations, and
 `standards/build-orchestration.md` § 2 gives `set-plan` sole authority over them. Neither blocks the
 step — `M1-S02` passed every executable test it declares.
 
+**Amended 2026-09-09 by the rebuild #2 documentation pass.** A third item, **O-M1S02-03**, is added
+below, and **O-M1S02-01 is now moot** — the checker prints exactly the `0 finding(s)` its plan
+description predicted, because both layouts now mark a field `behavior=Required`. The entry is left
+standing rather than deleted: it records why the description was false for three days, and the
+re-plan that closes it should close it as observed-correct rather than as reworded.
+
 ## O-M1S02-01 — the checker test's `description` predicting `0 finding(s)` is stale
 
 - **Date:** 2026-09-06 · **Recorded by:** `build-doc-keeper` from the M1-S02 builder and tester
@@ -471,6 +619,44 @@ step — `M1-S02` passed every executable test it declares.
   (`extensions.artefacts[…].declared: false`) and by `step-tester` on M1-S02 (Process Observations →
   Ambiguous, third bullet).
 
+## O-M1S02-03 — F-09 and F-10 are closed at the skill; M1's report and gate notes predate the rebuild
+
+- **Date:** 2026-09-09 · **Recorded by:** `build-doc-keeper`, from the three rebuild #2 envelopes and
+  `reports/MOCK-DEPLOY-M1.md` § "Mock deploy #2"
+- **F-09 and F-10 are closed, and closed at the source.** Both were HIGH findings from the M1 mock
+  deploy: a Case layout must carry `ContactId`, `Description` and `SuppliedEmail`, and `Status` must
+  be `behavior=Required`. The remedy landed in the library —
+  `skills/admin/record-types-and-page-layouts` v1.2.0 carries the deployable Case layout example, the
+  `## Layout-required standard fields` section, gotchas #12 and #13, and ERROR rules **RL-REQ-01** and
+  **RL-REQ-02**. The same declared checker command now exits **1** against build #1's layouts and **0**
+  against rebuild #2's, and mock deploy #2 validated the rebuilt artefacts **unmodified** at 12 of 12
+  components. The build record of the change is `decisions.md` **D-M1S02-05**. Nothing is left open on
+  either finding at the artefact or the skill.
+- **What is not closed is the paperwork above the step.** `milestone:M1` was approved on 2026-09-06
+  against build #1's layouts. `reports/MILESTONE-M1-REPORT.md` describes those layouts, its go/no-go
+  section rests on them, and the `milestone:M1` gate note records a human's decision taken on them.
+  Both M1 steps have since been rebuilt — `M1-S02` for F-09/F-10 and `M1-S01` for F-11 — so the
+  accepted milestone no longer describes the artefacts on disk.
+- **Who fixes what, and who may not.** The gate note is a written record of a human's decision and is
+  **not** rewritable by any agent, exactly as `O-M2S01-01` concluded for the `step:M2-S01` note. The
+  milestone report is `milestone-verifier`'s and no other writer touches it
+  (`standards/build-orchestration.md` § 2). The remedy is therefore a **re-verification** of M1 once
+  `M1-S01` has been documented, producing a report that describes the rebuilt artefacts and states
+  which parts of the 2026-09-06 acceptance still stand. This documentation pass can record the
+  divergence; it cannot resolve it.
+- **Why it is filed for the planner and not only for the verifier.** Re-verifying an `accepted`
+  milestone is not a transition the step status machine covers, and `gate milestone:M1` is already
+  `approved` — so whether M1 is re-verified in place, re-gated, or accepted with a recorded delta is a
+  plan-level decision. The two conditions that make it safe to take are both now true: F-09/F-10 are
+  closed at the skill, and M1-S02 is documented against rebuild #2.
+- **Sequencing, so the re-verification is not run twice.** `M1-S01` was at `tested` when this entry
+  was written, with its own documentation pass in flight in a second session — its two
+  `BusinessProcess` traceability cells were amended to the post-F-11 stem form during this run
+  (`traceability.md` § "Linter result — after the M1-S02 rebuild"). Let that pass reach `documented`,
+  then run `milestone-verifier` on M1 **once**. Two sessions were writing this build directory
+  concurrently, which is itself worth knowing before anyone reads a single linter figure as the
+  state of the build.
+
 ---
 
 # Open items for the planner — raised by the M2-S01 documentation run
@@ -512,3 +698,86 @@ them. Neither blocks the step — `M2-S01` passed every executable test it decla
   member forms the profiles must reuse, and states that `check_record_type_layouts.py` still has zero
   `layoutAssignments` to resolve anywhere under `artefacts/` until `M2-S03` deploys. The builder wrote
   that section for exactly this reason.
+
+---
+
+# Open items for the planner — raised by the M1-S01 rebuild #2 documentation run
+
+Same standing as the three sections above: plan-file text and plan-file declarations, which
+`standards/build-orchestration.md` § 2 puts under `build_plan.py`'s sole authority. None of the three
+blocks the step — `M1-S01` passed every executable test it declares, twice.
+
+## F-11 is closed at the skill; its planner half is not
+
+**Closed.** The rule F-11 discovered is library content now, not a report footnote:
+`skills/admin/case-management-setup` **v1.2.0** states it at `references/metadata-examples.md` § 2.1
+and enforces it as **CMS-STEM-01 / CMS-STEM-02**, which fire on the pre-rebuild artefacts (4 `ERROR:`
+lines, exit 1) and are silent on the rebuilt ones. The artefacts themselves are fixed and validated:
+`reports/MOCK-DEPLOY-M1.md` § "Mock deploy #2" records 12/12 components validating with **no edits**
+applied to the build's own files. That is the loop working as `standards/build-orchestration.md` § 8
+describes — a defect found by reality became a checker, and the rebuild was gated by the checker.
+
+**Not closed:** the three items below.
+
+## O-M1S01-01 — `steps[M1-S01].inputs.business_processes` still holds the spaced form
+
+- **Date:** 2026-09-09 · **Recorded by:** `build-doc-keeper` from the builder, runner and tester
+  envelopes of rebuild #2, all three of which raise it independently
+- `inputs.business_processes` reads `["Support Process", "Billing Process"]`. `outputs[]` has always
+  declared the stem-form paths, and since rebuild #2 the files, the `<fullName>` values, the record
+  types' references and the manifest members are all stem form too. The divergence is now between a
+  step's inputs and its own outputs.
+- **Nothing detects it.** No test reads that string, so the step is green with it wrong; it is
+  documentation of an earlier intent rather than a value anything consumes.
+- **Remedy at v6:** set `inputs.business_processes` to `["Support_Process", "Billing_Process"]`,
+  which is the direction F-11 itself names ("stem form, since it deploys"). Raised by
+  `metadata-builder` (Process observations → Ambiguous), `build-step-runner` (same), `step-tester`
+  (same) and `artefacts/M1-S01/deploy-order.md` § "Rebuild history" → "Open item for the planner".
+- **A second edit in the same file, while it is open:** the step's `inputs.note` (B01) still says
+  "members object-qualified (`Case.Support Process`)". The object-qualification half is right; the
+  spelling is not.
+
+## O-M1S01-02 — manual test 1's counter-example is stale after rebuild #2
+
+- **Date:** 2026-09-09 · **Recorded by:** `build-doc-keeper` from `step-tester`
+  (`envelopes/M1-S01/2026-09-09T19-52-47Z.md` § "Manual checklist", caveat under item 1, and
+  Process Observations → Ambiguous)
+- `plan.json` `steps[M1-S01].acceptance_tests[6].description` reads: "…each record type's
+  `<businessProcess>` carries the BARE process name **(not `Case.Support Process`)**…". The same
+  string is copied into `tests/M1-S01/results.json` `skipped_manual[0]`, which is where a tester at
+  the gate will actually read it.
+- **The assertion still holds; the parenthetical does not.** It was written to exclude one wrong
+  shape — object-qualified where bare is required. After rebuild #2 the string it names is wrong on
+  **two** counts at once (object-qualified *and* spaced), and the shape it was meant to exclude —
+  `Case.Support_Process` inside a record type — is no longer the string it prints. A tester who
+  applies it literally is checking for something nobody would now write.
+- **Why it matters more than the wording:** `TC-M1S01-01` was ticked at the **M1 gate against
+  rebuild #1**, and the M1 milestone is already `accepted`. The gate record therefore attests to a
+  reading of a test whose text no longer matches the artefacts it was ticked over.
+- **Remedy at v6:** reword the counter-example to `(not Case.Support_Process)` — the bare-vs-qualified
+  distinction it was written for, spelled the way the components are now spelled. `results.json` is a
+  test artefact and regenerates from the plan on the next test run, so the plan is the only edit.
+  Neither this agent nor the tester edits acceptance-test descriptions.
+
+## O-M1S01-03 — the `CompactLayout` member form has still never been read by a deploy
+
+- **Date:** 2026-09-09 · **Recorded by:** `build-doc-keeper` from `step-tester`
+  (`envelopes/M1-S01/2026-09-09T19-52-47Z.md` § Process Observations → Concerning, first bullet)
+- `artefacts/M1-S01/package.xml` declares the bare member `Case_Intake` under `CompactLayout`. That
+  form comes from `skills/admin/list-views-and-compact-layouts/references/metadata-examples.md`,
+  whose "Where the files live" table says "compact layout name" in prose while its own sample manifest
+  uses `*` — so no non-wildcard example existed to copy. `artefacts/M1-S01/deploy-order.md` calls it
+  "the thinnest grounding in this manifest" in its own words.
+- **Neither mock deploy tested it.** Both runs used `--source-dir force-app --dry-run`, so the CLI
+  derived the components from the source tree and never opened this `package.xml` — and what it
+  derived was the **object-qualified** `CompactLayout Case.Case_Intake`
+  (`reports/MOCK-DEPLOY-M1.md` § "Mock deploy #2", component list). The build's manifest says one
+  thing, the only deploy that has ever run said another, and nothing has compared them.
+- **This is the same shape as F-11 and one type over.** F-11 was a member the CLI could not resolve,
+  found only by a real validation; the always-on `manifest` test cannot catch either, because it
+  checks the manifest against the files in the build and both sides here agree with each other.
+- **Remedy:** one `sf project deploy validate --manifest artefacts/M1-S01/package.xml` against a
+  sandbox — the command `deploy-order.md` already prints for the human — or a retrieve that shows the
+  member form the org emits. Not a plan edit and not this agent's to run: no agent in this loop
+  contacts an org. Until then the member form is unverified and the row that carries it
+  (`CWB-OTHER-001`) says so.

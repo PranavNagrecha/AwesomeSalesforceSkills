@@ -1,0 +1,61 @@
+=== step manifest <version> elements ===
+  M1-S01: 62.0
+  M1-S02: 62.0
+  agreement: YES -> single <version>62.0
+
+=== member collisions across the two steps ===
+  none
+
+=== merged member table ===
+  BusinessProcess    Case.Billing_Process         <- M1-S01
+  BusinessProcess    Case.Support_Process         <- M1-S01
+  CompactLayout      Case_Intake                  <- M1-S01
+  CustomField        Account.Region__c            <- M1-S01
+  CustomField        Account.Support_Tier__c      <- M1-S01
+  CustomField        Case.Severity__c             <- M1-S01
+  CustomObject       Case                         <- M1-S01
+  Layout             Case-Case Billing Layout     <- M1-S02
+  Layout             Case-Case Support Layout     <- M1-S02
+  RecordType         Case.Billing                 <- M1-S01
+  RecordType         Case.Support                 <- M1-S01
+  StandardValueSet   CaseOrigin                   <- M1-S01
+  types: 7  members: 12
+
+  merged manifest written: reports/MILESTONE-M1-package.xml
+  merged manifest parses: OK
+
+=== MILESTONE `manifest` ACCEPTANCE TEST (build scope, merged manifest) ===
+--- FILE -> MANIFEST ---
+  skip     artefacts/M1-S01/deploy-order.md  (non-metadata file: carries no manifest member)
+  ok       CustomField       'Account.Region__c'              <- artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml
+  ok       CustomField       'Account.Support_Tier__c'        <- artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml
+  ok       CustomObject      'Case'                           <- artefacts/M1-S01/objects/Case/Case.object-meta.xml
+  ok       BusinessProcess   'Case.Billing_Process'           <- artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml
+  ok       BusinessProcess   'Case.Support_Process'           <- artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml
+  ok       CompactLayout     'Case_Intake'                    <- artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml
+  ok       CustomField       'Case.Severity__c'               <- artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml
+  ok       RecordType        'Case.Billing'                   <- artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml
+  ok       RecordType        'Case.Support'                   <- artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml
+  skip     artefacts/M1-S01/package.xml  (a step manifest, merged into the milestone manifest)
+  skip     artefacts/M1-S01/record-type-decision.md  (non-metadata file: carries no manifest member)
+  ok       StandardValueSet  'CaseOrigin'                     <- artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml
+  skip     artefacts/M1-S02/deploy-order.md  (non-metadata file: carries no manifest member)
+  ok       Layout            'Case-Case Billing Layout'       <- artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml
+  ok       Layout            'Case-Case Support Layout'       <- artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml
+  skip     artefacts/M1-S02/package.xml  (a step manifest, merged into the milestone manifest)
+--- MANIFEST -> FILE ---
+  ok       BusinessProcess   'Case.Billing_Process'
+  ok       BusinessProcess   'Case.Support_Process'
+  ok       CompactLayout     'Case_Intake'
+  ok       CustomField       'Account.Region__c'
+  ok       CustomField       'Account.Support_Tier__c'
+  ok       CustomField       'Case.Severity__c'
+  ok       CustomObject      'Case'
+  ok       Layout            'Case-Case Billing Layout'
+  ok       Layout            'Case-Case Support Layout'
+  ok       RecordType        'Case.Billing'
+  ok       RecordType        'Case.Support'
+  ok       StandardValueSet  'CaseOrigin'
+
+wildcard members: none
+verdict: consistent | failures: 0

@@ -1,18 +1,34 @@
-root tag: {http://soap.sforce.com/2006/04/metadata}CustomObject
-direct children: {'compactLayoutAssignment': 'Case_Intake', 'externalSharingModel': 'Private', 'sharingModel': 'Private'}
-sharingModel==Private        : True
-externalSharingModel==Private: True
+### Manual-test evidence gathered from disk (EVIDENCE ONLY - NOT A TICK)
 
---- settings files anywhere under artefacts/ claiming an OWD? ---
-*.settings-meta.xml found: none
+-- M2: OWD on Case.object-meta.xml, direct children of <CustomObject> --
+root tag: CustomObject
+  direct child <sharingModel> = Private
+  direct child <externalSharingModel> = Private
 
---- other files containing <sharingModel> under artefacts/ ---
-   artefacts/M1-S01/record-type-decision.md
-   artefacts/M1-S01/deploy-order.md
-   artefacts/M1-S01/objects/Case/Case.object-meta.xml
+-- any OTHER file in the build claiming an OWD --
+  artefacts/M1-S01/objects/Case/Case.object-meta.xml
+  artefacts/M1-S01/deploy-order.md
+  artefacts/M1-S01/record-type-decision.md
 
---- manual test 6 evidence ---
-  Support.recordType businessProcess = 'Support Process'  bare(no Case. prefix): True
-  Billing.recordType businessProcess = 'Billing Process'  bare(no Case. prefix): True
-  businessProcess files: ['Billing_Process.businessProcess-meta.xml', 'Support_Process.businessProcess-meta.xml']
-  recordType files     : ['Billing.recordType-meta.xml', 'Support.recordType-meta.xml']
+-- M1: businessProcess files beside recordType files --
+  artefacts/M1-S01/objects/Case/businessProcesses/:
+  Billing_Process.businessProcess-meta.xml
+  Support_Process.businessProcess-meta.xml
+  
+  artefacts/M1-S01/objects/Case/recordTypes/:
+  Billing.recordType-meta.xml
+  Support.recordType-meta.xml
+
+-- M1: bare <businessProcess> in each record type --
+  artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml:    <businessProcess>Support_Process</businessProcess>
+  artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml:    <businessProcess>Billing_Process</businessProcess>
+
+-- M1: package.xml BusinessProcess members --
+          <name>BusinessProcess</name>
+      </types>
+      <types>
+          <members>Case.Billing</members>
+      <types>
+          <members>Case.Billing_Process</members>
+          <members>Case.Support_Process</members>
+          <name>BusinessProcess</name>

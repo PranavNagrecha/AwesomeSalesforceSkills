@@ -62,3 +62,30 @@ value set already carries New / Escalated / Closed. Reconcile again against any 
 The orchestration loop's own tests are necessary but not sufficient: a platform rule the skills did not encode
 passed every gate and was caught only by validating against a real org. The remedy is in the library (checker +
 example), which is exactly where the loop puts it.
+
+## Mock deploy #2 — 2026-09-09, rebuilt artefacts, unmodified
+
+After the two skill fixes (`admin/record-types-and-page-layouts` v1.2.0 rules RL-REQ-01/02; `admin/case-management-setup`
+v1.2.0 rules CMS-STEM-01/02) and rebuild #2 of M1-S02 and M1-S01 through the ordinary runner path
+(`documented → running → built`), the artefacts under `artefacts/M1-S01` and `artefacts/M1-S02` were copied
+**without any edits** into a source tree and validated again:
+
+`sf project deploy start --source-dir force-app --dry-run --target-org sfskills-dev`
+
+**Succeeded — 12/12 components validate, `checkOnly: true`, 0 errors.** CustomField ×3, StandardValueSet CaseOrigin,
+CustomObject Case, BusinessProcess Case.Support_Process / Case.Billing_Process, RecordType Case.Support / Case.Billing,
+CompactLayout Case.Case_Intake, Layout Case-Case Support Layout / Case-Case Billing Layout.
+
+F-09, F-10 and F-11 are closed at the source: the checkers that were silent on run 1 now fail the run-1 artefacts
+(RL-REQ-01/02 ×2 each; CMS-STEM-01/02 ×2 each) and pass these. Remaining for v6: the plan's step inputs still spell
+`Support Process` with a space (F-11's planner half), and the M1 acceptance report / gate notes predate the rebuild.
+
+## Mock deploy #3 — 2026-09-09, manifest-driven (F-13)
+
+`sf project deploy start --manifest reports/MILESTONE-M1-package.xml --dry-run --target-org sfskills-dev` over the same
+rebuilt source tree. **Failed, 1 of 13:** `An object 'Case_Intake' of type CompactLayout was named in package.xml, but
+was not found in zipped directory`. The merged manifest carries the bare member `Case_Intake` (the form
+`admin/list-views-and-compact-layouts` prescribes); the CLI resolves compact layouts as object-qualified
+`Case.Case_Intake` — exactly what mock deploy #2's `--source-dir` run derived. **F-13 is confirmed, not theoretical.**
+Fix belongs in `admin/list-views-and-compact-layouts` (member form + a checker rule), then M1-S01's `package.xml` at v6.
+The 12 other components validated.

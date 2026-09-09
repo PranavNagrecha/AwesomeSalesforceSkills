@@ -1,0 +1,568 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-09T20-05-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T20-05-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T20-05-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "trigger": "update pass after rebuild #2 of M1-S01 (reports/MOCK-DEPLOY-M1.md finding F-11); step returned to `tested` on 2026-09-09",
+    "persist": "--no-persist (caller restricted writes to the build directory, so the docs/reports/build-doc-keeper/ pair required by the Wave 10 persistence contract was not written)",
+    "concurrency_note": "a concurrent build-doc-keeper run was amending M1-S02's rows in workbook/99-other-configuration.md, traceability.md and decisions.md during this pass; every write here was a keyed exact-string replacement made immediately after re-reading the file, and no M1-S02 row was read for writing"
+  },
+  "summary": "Re-documented M1-S01 after rebuild #2 (finding F-11). This was an update pass on a step documented once already on 2026-09-06, so every change is a keyed replacement rather than an addition: 5 workbook rows replaced (CWB-OBJ-002, -003, -004, -005 in Section 1 Objects + Fields; CWB-OTHER-002 in the Other configuration default section) and 4 traceability rows replaced (REQ-001, REQ-002, REQ-003, REQ-004). The business processes' <fullName> values are now their file stems (Support_Process / Billing_Process), the record types reference those stems bare, and the package.xml members are Case.Support_Process / Case.Billing_Process. One decision appended, D-M1S01-05, recording the rebuild, the alternative rejected, and its two sources: skills/admin/case-management-setup v1.2.0 references/metadata-examples.md section 2.1, and the org validation in reports/MOCK-DEPLOY-M1.md 'Mock deploy #2' (12/12 components, checkOnly true, 0 errors, on artefacts copied without edits). D-M1S01-03 is superseded on one row of its three-spellings table and was named rather than rewritten, per the append-only rule. Recorded F-11 as closed at the skill and opened three planner items: O-M1S01-01 (steps[M1-S01].inputs.business_processes still spaced), O-M1S01-02 (the manual test's counter-example 'not Case.Support Process' is stale on two counts and reaches the gate through tests/M1-S01/results.json), and O-M1S01-03 (the CompactLayout member form has still never been read by any deploy). Rows REQ-005..REQ-010 and CWB-OBJ-001/006-009, CWB-OTHER-001/003 are byte-identical: their artefacts were untouched by the rebuild and their verdicts were re-earned by the tester's re-run rather than carried over. Step set to documented.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM on the named condition 'a requirement id had to be inferred from a clarification answer rather than read from the step' — this build minted no REQ-XXX ids at intake, all ten of M1-S01's were assigned in the 2026-09-06 pass and anchored to requirement.md line ranges, and REQ-006 still has no anchor at all. Rebuild #2 changed none of that. Not HIGH for a second reason specific to this run: milestone M1 is already 'accepted' and the artefacts behind that approval have since changed, so every requirement has a traceability row while the gate record behind those rows describes an earlier build. Not LOW: no row was written with an empty source_req_id, no verification cell is empty, tests/M1-S01/results.json was readable, and Step 8's row keys made all nine replacements idempotent.",
+  "dimensions_compared": [
+    "workbook rows (Section 1 — Objects + Fields)",
+    "workbook rows (Other configuration)",
+    "traceability rows (build-layer RTM)",
+    "decisions log",
+    "planner open items",
+    "manual acceptance tests compiled as UAT cases",
+    "rendered views (PLAN.md, CLARIFICATIONS.md)"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "workbook Section 4 — Sharing Settings",
+      "state": "not-run",
+      "reason": "The one M1-S01 row in that section, the Private Case org-wide default on Case.object-meta.xml, describes a file rebuild #2 left byte-identical. Nothing in the row changed, so it was not rewritten.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None needed; re-read only if a future rebuild touches Case.object-meta.xml."
+    },
+    {
+      "dimension": "Wave 10 deliverable pair under docs/reports/build-doc-keeper/",
+      "state": "not-run",
+      "reason": "--no-persist. The caller restricted writes to the build directory, so the report/envelope pair lives at envelopes/M1-S01/<run_id>.{md,json} only.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-run without the write restriction to also emit docs/reports/build-doc-keeper/<run_id>.{md,json}."
+    },
+    {
+      "dimension": "compiled UAT pack at artefacts/M5-S04/uat-test-cases.yaml",
+      "state": "partial",
+      "reason": "This is a per-step run. artefacts/<step-id>/ is writable only on a compile run, so the two re-compiled case records and their criteria records are carried in this envelope and in the report rather than written to M5-S04's declared output.",
+      "confidence_impact": "NONE",
+      "retry_hint": "M5-S04's compile run collects them from here."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The loop closed on itself: F-11 was found by validating against a real org, became skills/admin/case-management-setup v1.2.0 section 2.1 plus rules CMS-STEM-01 and CMS-STEM-02, and the rebuild was then gated by those rules rather than by a human re-reading a deploy log.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+        "note": "section 2.1 'File stem = fullName'; cross-read with envelopes/M1-S01/2026-09-09T19-42-00Z.md"
+      },
+      "domain": "skill-currency"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuild was surgical and self-describing — six files changed, seven byte-identical and still carrying their 2026-09-05 mtimes — so documenting it was reading a record rather than reconstructing one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md",
+        "note": "section 'Rebuild history'",
+        "count": 6
+      },
+      "domain": "build-record"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The tester ran a negative control rather than reporting exit 0 as proof: the same checker over the pre-rebuild copy emits 4 ERROR lines and exits 1, which is what makes the green mean something.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T19-52-47Z.md",
+        "note": "section 'Observation only' — negative control over examples/builds/case-onboarding/artefacts/M1-S01",
+        "count": 4
+      },
+      "domain": "test-integrity"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Row keying did what Step 8 promises across a rebuild — nine rows replaced in place, no duplicate rows, no renumbered row_id.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/workbook/01-objects-and-fields.md",
+        "note": "still 9 Section 1 rows; traceability.md still 16 rows",
+        "count": 9
+      },
+      "domain": "idempotence"
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "Milestone M1 is 'accepted' and the artefacts behind that acceptance have changed. The acceptance report, the human_gates[] notes rendered into PLAN.md, and the tick on TC-M1S01-01 all describe rebuild #1; nothing in the loop invalidates a gate when a step re-enters 'built'.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T19-45-00Z.md",
+        "note": "Process observations, third Concerning bullet; reports/MILESTONE-M1-REPORT.md"
+      },
+      "domain": "gate-integrity"
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The checker that would have caught F-11 was cited but never declared: admin/case-management-setup is in steps[M1-S01].skills[] and its checker is in none of the step's four checker acceptance tests. A citation is not a gate, and this build has now paid for the difference once.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "note": "steps[M1-S01].skills lists admin/case-management-setup; steps[M1-S01].acceptance_tests declares four checkers, none of them its checker",
+        "count": 0
+      },
+      "domain": "test-coverage"
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "CWB-OTHER-002 is still verified by nothing. deploy-order.md was rewritten in this rebuild and remains undeclared in outputs[], so check-outputs never confirmed the new version either — two rebuilds old on this step now.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+        "note": "row CWB-OTHER-002; pattern filed as decisions.md O-M1S02-02"
+      },
+      "domain": "verification-gap"
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "record-type-decision.md names the two processes in the spaced form and nothing on that page marks which of the two strings is the API name. Section 2.1 says the readable wording belongs in prose, so the file is not wrong, but a reader holding it beside package.xml cannot tell.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/record-type-decision.md",
+        "note": "spaced process names retained; raised in envelopes/M1-S01/2026-09-09T19-42-00Z.md Process observations"
+      },
+      "domain": "naming"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "steps[M1-S01].inputs.business_processes and the step's own outputs[] disagree, and four agents have now recorded it without any being able to fix it. Each is right that it is the planner's; the v6 question is whether a plan field nothing reads should exist at all.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "note": "steps[M1-S01].inputs.business_processes vs steps[M1-S01].outputs; filed as decisions.md O-M1S01-01",
+        "count": 4
+      },
+      "domain": "plan-drift"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The CompactLayout member form is unresolved in both directions: the manifest says Case_Intake, the only deploy that ever ran said Case.Case_Intake, and the cited skill's prose disagrees with its own sample manifest. No agent in this loop can settle it without an org.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/package.xml",
+        "note": "bare member Case_Intake vs the object-qualified CompactLayout Case.Case_Intake recorded in reports/MOCK-DEPLOY-M1.md 'Mock deploy #2'; skill prose and its own sample manifest disagree"
+      },
+      "domain": "manifest-grounding"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "automation_candidate has no enum member for an assertion whose oracle is a repo-side Python checker, which is now TC-M1S01-01's situation. Recorded as 'none' with the reason stated rather than as a value that would read as true.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/uat-test-case-design/scripts/check_uat_case.py",
+        "note": "automation_candidate enum is {apex, flow-test, none}; no member names a repo-side checker"
+      },
+      "domain": "schema-limit"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Requirement ids remain minted-and-anchored rather than inherited, and REQ-006 still has no requirement.md anchor. Unchanged by the rebuild, and still the reason this run is MEDIUM.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "note": "section 'Requirement id derivation'; plan.json carries clarifications[] and assumptions[] only, no requirement register",
+        "count": 10
+      },
+      "domain": "requirements"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "mode": "per-step",
+    "pass_type": "update — second documentation run on this step, after rebuild #2 (finding F-11)",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/01-objects-and-fields.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-OBJ-002",
+        "section": "1 — Objects + Fields",
+        "action": "replaced",
+        "cells_amended": [
+          "target_value",
+          "notes"
+        ],
+        "before": "BusinessProcess:Case.Support Process; file stem Support_Process, fullName 'Support Process'",
+        "after": "BusinessProcess:Case.Support_Process; file stem and fullName both Support_Process; manifest member Case.Support_Process; notes add observation-only CMS-STEM-01 coverage and name D-M1S01-05 as superseding D-M1S01-03's fullName row"
+      },
+      {
+        "row_id": "CWB-OBJ-003",
+        "section": "1 — Objects + Fields",
+        "action": "replaced",
+        "cells_amended": [
+          "target_value",
+          "notes"
+        ],
+        "before": "BusinessProcess:Case.Billing Process; fullName 'Billing Process'",
+        "after": "BusinessProcess:Case.Billing_Process; fullName Billing_Process; same CMS-STEM-01 coverage and same three decision entries as CWB-OBJ-002"
+      },
+      {
+        "row_id": "CWB-OBJ-004",
+        "section": "1 — Objects + Fields",
+        "action": "replaced",
+        "cells_amended": [
+          "target_value",
+          "notes"
+        ],
+        "before": "<businessProcess>Support Process</businessProcess> (bare name)",
+        "after": "<businessProcess>Support_Process</businessProcess> (bare file stem, never object-qualified); notes add observation-only CMS-STEM-02 coverage"
+      },
+      {
+        "row_id": "CWB-OBJ-005",
+        "section": "1 — Objects + Fields",
+        "action": "replaced",
+        "cells_amended": [
+          "target_value",
+          "notes"
+        ],
+        "before": "<businessProcess>Billing Process</businessProcess> (bare name)",
+        "after": "<businessProcess>Billing_Process</businessProcess> (bare file stem); same CMS-STEM-02 coverage"
+      },
+      {
+        "row_id": "CWB-OTHER-002",
+        "section": "Other configuration",
+        "action": "replaced",
+        "cells_amended": [
+          "target_value"
+        ],
+        "before": "deploy-order.md: five-position order, dependency list, manifest member forms, validate-only command",
+        "after": "the same plus the corrected BusinessProcess member names and the new 'Rebuild history' section; notes deliberately unchanged and still 'Verified by: nothing' — the file is still undeclared in outputs[]"
+      }
+    ],
+    "workbook_rows_left_byte_identical": [
+      {
+        "row_id": "CWB-OBJ-001",
+        "reason": "StandardValueSet:CaseOrigin untouched by the rebuild"
+      },
+      {
+        "row_id": "CWB-OBJ-006",
+        "reason": "CompactLayout:Case_Intake untouched; its member-form caveat is unchanged and is now O-M1S01-03"
+      },
+      {
+        "row_id": "CWB-OBJ-007",
+        "reason": "Case.Severity__c untouched"
+      },
+      {
+        "row_id": "CWB-OBJ-008",
+        "reason": "Account.Region__c untouched"
+      },
+      {
+        "row_id": "CWB-OBJ-009",
+        "reason": "Account.Support_Tier__c untouched"
+      },
+      {
+        "row_id": "CWB-OTHER-001",
+        "reason": "package.xml row counts type blocks and members rather than naming members; both counts are unchanged, so the cell is still true as written"
+      },
+      {
+        "row_id": "CWB-OTHER-003",
+        "reason": "record-type-decision.md was not rewritten in rebuild #2"
+      },
+      {
+        "row_id": "CWB-SHR-001 (Section 4)",
+        "reason": "the Private Case OWD on Case.object-meta.xml is byte-identical to rebuild #1"
+      }
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-001",
+        "step_id": "M1-S01",
+        "action": "replaced",
+        "cells_amended": [
+          "test_result"
+        ],
+        "change": "records the post-rebuild re-test (check_record_type_layouts.py exit 0, score 100, 0 findings, run 2026-09-09T19-52-47Z) and that both record types' <businessProcess> now names the process file stem; cites D-M1S01-05 and the observation-only CMS-STEM-02 run"
+      },
+      {
+        "req_id": "REQ-002",
+        "step_id": "M1-S01",
+        "action": "replaced",
+        "cells_amended": [
+          "test_result"
+        ],
+        "change": "same run as REQ-001 before and after rebuild #2; this file's <businessProcess> reads Billing_Process"
+      },
+      {
+        "req_id": "REQ-003",
+        "step_id": "M1-S01",
+        "action": "replaced",
+        "cells_amended": [
+          "artefact",
+          "test_result"
+        ],
+        "change": "artefact BusinessProcess:Case.Support Process -> BusinessProcess:Case.Support_Process; test_result records the <fullName> change, the 12/12 dry-run validation and CMS-STEM-01"
+      },
+      {
+        "req_id": "REQ-004",
+        "step_id": "M1-S01",
+        "action": "replaced",
+        "cells_amended": [
+          "artefact",
+          "test_result"
+        ],
+        "change": "artefact BusinessProcess:Case.Billing Process -> BusinessProcess:Case.Billing_Process; same rebuild change"
+      }
+    ],
+    "traceability_rows_left_byte_identical": [
+      "REQ-005",
+      "REQ-006",
+      "REQ-007",
+      "REQ-008",
+      "REQ-009",
+      "REQ-010"
+    ],
+    "traceability_rows_left_byte_identical_reason": "Their components were untouched by the rebuild and still carry their 2026-09-05 mtimes; their verdicts were re-earned rather than carried over, because the tester re-ran all six runnable tests over the whole step directory and every one exited 0.",
+    "decisions_appended": [
+      {
+        "id": "D-M1S01-05",
+        "date": "2026-09-09",
+        "step_id": "M1-S01",
+        "kind": "deviation",
+        "agents": [
+          "metadata-builder (2026-09-09T19-42-00Z)",
+          "build-step-runner (2026-09-09T19-45-00Z)",
+          "step-tester (2026-09-09T19-52-47Z)"
+        ],
+        "decision": "Every business-process <fullName> is now its own file stem (Support_Process / Billing_Process); the record types reference those stems bare and package.xml names them object-qualified.",
+        "alternative_rejected": "Renaming the files to carry a space so the stem matched the spaced fullName — check-outputs would have failed the step, because plan.json outputs[] declares the underscore paths; and F-11 itself names stem form as the direction, 'since it deploys'.",
+        "sources": [
+          "skills/admin/case-management-setup v1.2.0 references/metadata-examples.md section 2.1 'File stem = fullName'",
+          "reports/MOCK-DEPLOY-M1.md section 'Mock deploy #2' — 12/12 components validate, checkOnly true, 0 errors, on artefacts copied without edits"
+        ],
+        "supersedes": "D-M1S01-03, on the fullName row of its three-spellings table only; its manifest row still stands, and it was named rather than rewritten per the append-only rule",
+        "open_item": "plan.json steps[M1-S01].inputs.business_processes still reads ['Support Process', 'Billing Process'] — a v6 planner item, filed as O-M1S01-01"
+      }
+    ],
+    "planner_open_items_recorded": [
+      {
+        "id": "F-11 (skill half)",
+        "state": "closed",
+        "detail": "The rule is library content: skills/admin/case-management-setup v1.2.0 section 2.1 states it and rules CMS-STEM-01 / CMS-STEM-02 enforce it. They emit 4 ERROR lines on the pre-rebuild artefacts and exit 0 on these; the rebuilt artefacts validate 12/12 against a real org with no edits applied."
+      },
+      {
+        "id": "O-M1S01-01",
+        "state": "open",
+        "detail": "steps[M1-S01].inputs.business_processes still holds the spaced form while outputs[], the six rebuilt files and the manifest are all stem form. Nothing reads that string, so no test can fail on it. The same file's inputs.note (B01) also still says 'members object-qualified (Case.Support Process)' — the qualification half is right, the spelling is not. Remedy at v6: set both to stem form."
+      },
+      {
+        "id": "O-M1S01-02",
+        "state": "open",
+        "detail": "acceptance_tests[6].description — and therefore tests/M1-S01/results.json skipped_manual[0], which is what a tester at the gate actually reads — carries the counter-example '(not Case.Support Process)'. The assertion holds; the parenthetical names a string now wrong on two counts at once and no longer describes the shape it was written to exclude. TC-M1S01-01 was ticked at the M1 gate against rebuild #1, so the gate record attests to a reading of a test whose text no longer matches its artefacts. Remedy at v6: reword to '(not Case.Support_Process)'."
+      },
+      {
+        "id": "O-M1S01-03",
+        "state": "open",
+        "detail": "The manifest's CompactLayout member form has never been read by any deploy. package.xml declares the bare Case_Intake; both mock deploys ran --source-dir --dry-run, so the CLI derived components from the source tree and never opened the manifest — and what it derived was the object-qualified CompactLayout Case.Case_Intake. The always-on manifest test cannot catch this, because it checks the manifest against the build's own files and both sides agree. Same shape as F-11, one metadata type over. Remedy: one sf project deploy validate --manifest against a sandbox — not a plan edit, and not this agent's to run."
+      }
+    ],
+    "manual_tests_compiled": {
+      "note": "Re-compiled against the rebuilt artefacts and carried here, not written to artefacts/M5-S04/uat-test-cases.yaml: that path is M5-S04's declared output and a per-step run may not write under artefacts/<step-id>/. TC-M1S01-01 changed two expected results, its negative assertion, its data_setup run id, and gained one new step — read each <fullName> and compare it with its file stem, the assertion F-11 turned out to need and the case did not have. TC-M1S01-02 changed only its data_setup.",
+      "criteria_yaml": "project: \"Acme case onboarding — build case-onboarding, plan v5, milestone M1 (after M1-S01 rebuild #2, F-11)\"\n# Extraction, not authorship: both criteria below are the Given/When/Then already written into\n# plan.json steps[M1-S01].acceptance_tests[6] and [7] by the planner, restated in the record shape\n# skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md section 5 defines.\n# One clause of AC-M1S01.1 is restated against the rebuilt artefacts: the counter-example the plan\n# text carries (\"not Case.Support Process\") is stale after rebuild #2 and is recorded as planner\n# item O-M1S01-02 rather than silently kept.\nacceptance_criteria:\n  - ac_id: AC-M1S01.1\n    req_id: REQ-003\n    story_id: \"pending:M5-S03\"\n    persona: \"Release reviewer at the M1 gate; no org access, no admin seat\"\n    sandbox: \"none — design-only build\"\n    artefact: \"objects/Case/businessProcesses/*.businessProcess-meta.xml, objects/Case/recordTypes/*.recordType-meta.xml, package.xml\"\n    seed_data: \"artefacts/M1-S01/ as rebuilt on 2026-09-09T19-42-00Z (rebuild #2, finding F-11)\"\n    test_type: manual\n    negative: true\n    given: \"plan v5 note B01 — each Case record type names a support process, so both processes are declared as files of their own; and admin/case-management-setup v1.2.0 section 2.1 — a decomposed file's stem must be its own fullName\"\n    when: \"artefacts/M1-S01/ is listed\"\n    then: \"two businessProcess-meta.xml files exist beside the two recordType-meta.xml files, each record type's <businessProcess> carries the bare file stem (Support_Process, not the object-qualified Case.Support_Process), each process file's <fullName> equals its own stem, and package.xml lists BusinessProcess with object-qualified members\"\n    proof: \"TC-M1S01-01, re-read at the M1 re-verification\"\n\n  - ac_id: AC-M1S01.2\n    req_id: REQ-010\n    story_id: \"pending:M5-S03\"\n    persona: \"Release reviewer at the M1 gate, with the security owner countersigning assumption A1\"\n    sandbox: \"none — design-only build\"\n    artefact: \"objects/Case/Case.object-meta.xml\"\n    seed_data: \"artefacts/ as built through M1-S01; Case.object-meta.xml byte-identical to rebuild #1\"\n    test_type: manual\n    negative: true\n    given: \"the Case org-wide default is what makes 'a Tier 1 agent cannot open a Billing case' true\"\n    when: \"artefacts/M1-S01/objects/Case/Case.object-meta.xml is read\"\n    then: \"it carries <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel> as direct children of <CustomObject>, and no separate settings file anywhere in the build claims to carry the org-wide default\"\n    proof: \"TC-M1S01-02, ticked at the M1 milestone gate; the machine half is M2-S05's build-scoped check_sharing_model.py test\"\n",
+      "cases_yaml": "project: \"Acme case onboarding — build case-onboarding, plan v5, milestone M1 (after M1-S01 rebuild #2, F-11)\"\nsandbox: \"none — design-only build\"\ntest_cases:\n  - case_id: TC-M1S01-01\n    ac_id: AC-M1S01.1\n    req_id: REQ-003\n    story_id: \"pending:M5-S03 — the story backlog is drafted by the story-drafter step, which has not run\"\n    programme_case_id: M1-GATE-01\n    persona: \"Release reviewer at the M1 gate — reads artefacts/M1-S01/ from the build directory; no org access, no admin seat\"\n    sandbox: \"none — design-only build (build_mode design-only); this case is read against artefacts/M1-S01/ on disk, not against an org\"\n    negative_path: true\n    negative_assertion: \"Step 3 fails the case if the object-qualified form 'Case.Support_Process' appears inside a record type; step 4 fails it if package.xml carries the bare stem. Each is a wrong-shape-must-not-appear assertion. The plan's own wording still names the pre-rebuild string 'Case.Support Process', which is wrong on two counts at once and is recorded as planner item O-M1S01-02.\"\n    permission_setup:\n      - \"None. The case reads files under artefacts/M1-S01/; no org permission is involved.\"\n    data_setup:\n      - \"artefacts/M1-S01/ as produced by the metadata-builder rebuild #2, run 2026-09-09T19-42-00Z\"\n    precondition: \"Build case-onboarding at plan v5; step M1-S01 status tested after rebuild #2; tests/M1-S01/results.json passed true\"\n    steps:\n      - step: \"List artefacts/M1-S01/objects/Case/businessProcesses/\"\n        expected: \"Two files: Billing_Process.businessProcess-meta.xml and Support_Process.businessProcess-meta.xml\"\n      - step: \"List artefacts/M1-S01/objects/Case/recordTypes/\"\n        expected: \"Two files: Billing.recordType-meta.xml and Support.recordType-meta.xml, siblings of the businessProcesses directory under the same objects/Case parent\"\n      - step: \"Read the <businessProcess> element of each record type file\"\n        expected: \"Support.recordType reads Support_Process and Billing.recordType reads Billing_Process — the bare file stem in both, with no Case. prefix on either\"\n      - step: \"Read the <fullName> of each businessProcess file and compare it with the file stem\"\n        expected: \"Support_Process and Billing_Process — each fullName is character-for-character its own stem, and neither contains a space (rule CMS-STEM-01)\"\n      - step: \"Read the BusinessProcess type block in artefacts/M1-S01/package.xml\"\n        expected: \"Two members, Case.Billing_Process and Case.Support_Process — object-qualified in the manifest, unlike the bare stem inside the record types\"\n    evidence:\n      - type: file-listing\n        of: \"artefacts/M1-S01/objects/Case/businessProcesses/ and artefacts/M1-S01/objects/Case/recordTypes/\"\n      - type: xml-read\n        of: \"<businessProcess> on both recordType-meta.xml files, <fullName> on both businessProcess-meta.xml files, and the BusinessProcess type block in package.xml\"\n    pass_rule: \"All five steps meet their expectation. A Case. prefix inside a record type is a fail; a bare member in package.xml is a fail; a fullName that differs from its stem is a fail.\"\n    automation_candidate: none\n    automation_rationale: \"Recorded as none because the schema's enum is {apex, flow-test, none} and neither org-side value fits: the oracle is now a repo-side Python checker. Steps 3, 4 and 5 ARE mechanically asserted since rebuild #2 by check_case_management_setup.py rules CMS-STEM-01 and CMS-STEM-02, which exit 1 on the pre-rebuild artefacts and 0 on these. That checker is not declared in this step's acceptance_tests[], so the plan still carries the assertion as manual; declaring it is a v6 item, and widening the enum to name a repo checker is a skill signal against admin/uat-test-case-design.\"\n    pass_fail: \"Not Run\"\n    source_acceptance_test: \"plan.json steps[M1-S01].acceptance_tests[6], type manual, expected 'ticked at the milestone gate'. Previously ticked at the M1 gate against rebuild #1; that tick predates these artefacts.\"\n\n  - case_id: TC-M1S01-02\n    ac_id: AC-M1S01.2\n    req_id: REQ-010\n    story_id: \"pending:M5-S03 — the story backlog is drafted by the story-drafter step, which has not run\"\n    programme_case_id: M1-GATE-02\n    persona: \"Release reviewer at the M1 gate, with the security owner countersigning A1 — reads artefacts/ from the build directory; no org access, no admin seat\"\n    sandbox: \"none — design-only build (build_mode design-only); this case is read against artefacts/ on disk, not against an org\"\n    negative_path: true\n    negative_assertion: \"Step 3 fails the case if any *.settings-meta.xml anywhere under artefacts/ claims to carry the Case org-wide default. The absence is the test condition.\"\n    permission_setup:\n      - \"None. The case reads files under artefacts/; no org permission is involved.\"\n    data_setup:\n      - \"artefacts/M1-S01/objects/Case/Case.object-meta.xml — byte-identical to rebuild #1; rebuild #2 did not touch it\"\n      - \"The whole artefacts/ tree, so step 3 can search beyond this step's directory\"\n    precondition: \"Build case-onboarding at plan v5; step M1-S01 status tested; assumption A1 stands in for deferred blocking question Q13 at risk high\"\n    steps:\n      - step: \"Read artefacts/M1-S01/objects/Case/Case.object-meta.xml\"\n        expected: \"Root element is <CustomObject>; its direct children are compactLayoutAssignment, externalSharingModel and sharingModel\"\n      - step: \"Read the <sharingModel> and <externalSharingModel> values\"\n        expected: \"Both read Private, and both are direct children of <CustomObject> rather than nested inside another element\"\n      - step: \"Search the whole artefacts/ tree for *.settings-meta.xml\"\n        expected: \"No such file exists anywhere under artefacts/, so nothing else in the build claims to carry the Case org-wide default\"\n      - step: \"Confirm with the security owner that A1 — a Tier 1 agent cannot open a Billing case at all, rather than opening it with a field hidden — is the intended reading of deferred question Q13\"\n        expected: \"The security owner states the record-level reading, or states the field-level reading and the M1 gate is not ticked on this case\"\n    evidence:\n      - type: xml-read\n        of: \"Direct children and values of <CustomObject> in artefacts/M1-S01/objects/Case/Case.object-meta.xml\"\n      - type: file-search\n        of: \"*.settings-meta.xml across the artefacts/ tree — expected empty\"\n      - type: sign-off\n        of: \"Security owner's reading of Q13, recorded against assumption A1\"\n    pass_rule: \"Steps 2, 3 and 4 together. Step 2 alone proves only that the element is present, not that it is the build's single source of the Case OWD.\"\n    automation_candidate: none\n    automation_rationale: \"Step 4 is a human judgment on a deferred blocking question; no exit code stands for it. The machine half of this case — that the OWD is not looser than the sharing rule's grant — is M2-S05's build-scoped check_sharing_model.py test.\"\n    pass_fail: \"Not Run\"\n    source_acceptance_test: \"plan.json steps[M1-S01].acceptance_tests[7], type manual, expected 'ticked at the M1 milestone gate'\"\n",
+      "lint": {
+        "check_uat_case": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir <scratch>/uat-m1s01/ -> exit 0, 'OK — 2 case(s), 0 run-sheet row(s), 2 criterion id(s) cross-checked.'",
+        "check_ac_format": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --manifest-dir <scratch>/uat-m1s01/ -> exit 0, '1 document(s) checked — 0 error(s), 2 warning(s).' Both WARNs read 'persona names a job title but no permission construct' and are inherent: a design-only build has no profile, permission set or PSG to name.",
+        "schema_limit": "automation_candidate's enum is {apex, flow-test, none}. TC-M1S01-01's oracle is now a repo-side Python checker, which no member names, so the case records 'none' with the reason in automation_rationale rather than a value that would read as true. Widening the enum is a skill signal against admin/uat-test-case-design; declaring check_case_management_setup.py in the step's acceptance_tests[] is the v6 plan half of the same gap."
+      }
+    },
+    "rows_replaced": {
+      "workbook": 5,
+      "traceability": 4,
+      "total": 9,
+      "newly_written": 0,
+      "decisions_appended": 1,
+      "note": "Step 8's keys made every replacement in place: workbook rows by row_id, traceability rows by req_id + step_id. Section 1 still holds nine rows and the matrix still holds sixteen, exactly as before the rebuild. decisions.md is append-only, so D-M1S01-05 is new and D-M1S01-03 was named rather than rewritten."
+    },
+    "checker_results": [
+      {
+        "command": "python3 scripts/build_plan.py render .sfskills/builds/case-onboarding/plan.json",
+        "exit": 0,
+        "result": "wrote PLAN.md + CLARIFICATIONS.md"
+      },
+      {
+        "command": "check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..",
+        "exit": 0,
+        "result": "16 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 1 warning(s)"
+      },
+      {
+        "command": "check_rtm.py --file traceability.md --manifest-dir artefacts/M1-S01 --repo-root ../../..",
+        "exit": 0,
+        "result": "16 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 7 warning(s) — the 6 extra WARNs are the 6 rows whose components live under artefacts/M1-S02 and artefacts/M2-S01; all ten M1-S01 rows resolve at both scopes"
+      },
+      {
+        "command": "check_workbook.py --workbook workbook/01-objects-and-fields.md --repo-root ../../.. --allow-empty-section",
+        "exit": 1,
+        "result": "9 issue(s), every one 'Missing canonical section', 0 per-row findings — the linter validates a whole ten-section workbook and a per-step slice cannot satisfy it"
+      },
+      {
+        "command": "check_workbook.py --workbook workbook/99-other-configuration.md --repo-root ../../.. --allow-empty-section",
+        "exit": 1,
+        "result": "10 issue(s), same shape, 0 per-row findings"
+      },
+      {
+        "command": "check_workbook.py --workbook <scratch>/wb/workbook-harness.md --repo-root . --allow-empty-section",
+        "exit": 0,
+        "result": "OK: workbook passes all checks — all four amended Section 1 rows and the amended Other-configuration row are schema-valid inside a full ten-section harness"
+      },
+      {
+        "command": "check_uat_case.py --manifest-dir <scratch>/uat-m1s01/",
+        "exit": 0,
+        "result": "OK — 2 case(s), 0 run-sheet row(s), 2 criterion id(s) cross-checked"
+      },
+      {
+        "command": "check_ac_format.py --manifest-dir <scratch>/uat-m1s01/",
+        "exit": 0,
+        "result": "1 document(s) checked — 0 error(s), 2 warning(s)"
+      },
+      {
+        "command": "python3 scripts/validate_envelope.py .sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T20-05-00Z.json",
+        "exit": 0,
+        "result": "OK"
+      }
+    ],
+    "rtm_orphans": {
+      "count": 3,
+      "identities": [
+        "BusinessProcess:Support_Process",
+        "BusinessProcess:Billing_Process",
+        "CompactLayout:Case.Case_Intake"
+      ],
+      "note": "Unchanged in identity and halved in cause. check_rtm.py indexes every component twice, once from package.xml and once from the file stem. Before rebuild #2 the two keys differed on two axes at once — the space and the object qualification. F-11 removed the first; only the second remains, and it is required, because a manifest member is object-qualified and a file stem cannot carry a dot. The WARN is now a pure manifest-convention artefact rather than the surfacing of a real naming divergence. D-M1S01-03's consequence paragraph is narrowed accordingly by D-M1S01-05."
+    },
+    "workflow_return": {
+      "step_id": "M1-S01",
+      "status": "documented",
+      "files_updated": [
+        ".sfskills/builds/case-onboarding/PLAN.md",
+        ".sfskills/builds/case-onboarding/workbook/01-objects-and-fields.md",
+        ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+        ".sfskills/builds/case-onboarding/traceability.md",
+        ".sfskills/builds/case-onboarding/decisions.md"
+      ],
+      "notes": "Update pass after rebuild #2 (F-11). 9 rows replaced, 0 newly written, 1 decision appended (D-M1S01-05), 3 planner items opened (O-M1S01-01/02/03), F-11 recorded as closed at the skill. Milestone M1 is 'accepted' against pre-rebuild artefacts and needs milestone-verifier re-run."
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 rendered views and the no-hand-edit-plan.json rule; Section 4 the step-type-to-section map; Section 5 the test runners and check-outputs; Section 6 this agent's per-step job; Section 8 a decision entry as the deepen-a-skill signal"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time Agents — no org writes, no writes outside the supplied paths, no auto-chaining"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the confidence rubric this agent's Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and the --no-persist opt-out invoked here"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against the four refusal triggers; none fired — the step's status is tested, so the Step 1 precondition holds"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step fields this agent reads (type, agent, skills, inputs, outputs, acceptance_tests, status) and the ones it leaves alone"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concept 1 the row schema every amended cell had to keep; Concept 2 the ten fixed sections; Concept 3 one agent per row; the status enum"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set, the REQ-XXX key convention, and artefact as <MetadataType>:<fullName> — the rule that made the two BusinessProcess cells change at all"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "Org-level design standards — an entry recording the alternative rejected and the source it rests on, rather than a sentence asserting the outcome"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a test result becomes acceptance evidence; the tickable-without-re-interpretation bar that surfaced the stale counter-example"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/references/worked-examples.md",
+      "used_for": "section 4 — the lintable case-record shape, the --manifest-dir invocation, and the automation_candidate enum"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md",
+      "used_for": "section 5 — the criteria-record shape, so both ac_id references resolve"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "read-only, as the source D-M1S01-05 rests on: section 2.1's stem-equals-fullName rule, the CLI error it produces, and the dry run it was verified by"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "used_for": "branch Q3 — the tree citation workbook/04-sharing-settings.md's row requires, carried forward untouched",
+      "branch": "Q3"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's acceptance report and gate notes predate rebuild #2 of both M1-S01 and M1-S02; the milestone stays stale until it is re-run across every step in M1."
+    },
+    {
+      "agent": "build-planner",
+      "because": "four plan-file items are now recorded for this step alone — O-M1S01-01, O-M1S01-02, the undeclared deploy-order.md, and declaring check_case_management_setup.py as an acceptance test — and only set-plan may write any of them."
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+# Negative controls run 2026-09-09 by milestone-verifier (re-verification of M1).
+# Fixtures are copies of the CURRENT artefacts reverted to the pre-fix (build #1) shape,
+# written outside the build directory. They prove RL-REQ-01/02 and CMS-STEM-01/02 FIRE
+# rather than being silent - the fail-open failure mode F-01 documented.
+
+=== A: Case layout without ContactId/Description/SuppliedEmail, Status behavior=Edit ===
+ERROR: 2 deploy-breaking finding(s) detected
+WARN: 1 review/info finding(s) detected
+{
+  "score": 60,
+  "findings": [
+    {
+      "severity": "INFO",
+      "location": "/private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/a37a6d55-8c87-4be0-9b2f-62a25a9b1432/scratchpad/neg/A/layouts/Case-Case Support Layout.layout-meta.xml",
+      "message": "layout 'Case-Case Support Layout' marks no field behavior=Required"
+    },
+    {
+      "severity": "ERROR",
+      "location": "/private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/a37a6d55-8c87-4be0-9b2f-62a25a9b1432/scratchpad/neg/A/layouts/Case-Case Support Layout.layout-meta.xml",
+      "message": "RL-REQ-01 Case layout 'Case-Case Support Layout' has no layoutItems entry for ContactId, Description, SuppliedEmail - the deploy fails with 'Layout must contain an item for required layout field: <field>', one field per run"
+    },
+    {
+      "severity": "ERROR",
+      "location": "/private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/a37a6d55-8c87-4be0-9b2f-62a25a9b1432/scratchpad/neg/A/layouts/Case-Case Support Layout.layout-meta.xml",
+      "message": "RL-REQ-02 Case layout 'Case-Case Support Layout' sets Status behavior='Edit' - the deploy fails with 'Field:Status must be Required'. This one is not the layout-vs-field enforcement choice; it is a deploy precondition"
+    }
+  ],
+  "summary": "Scanned 1 metadata file(s): 0 record type(s), 1 layout(s); 3 finding(s) detected."
+}
+exit=1
+
+=== B: businessProcess <fullName> 'Support Process' in a Support_Process stem ===
+ERROR: CMS-STEM-01 /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/a37a6d55-8c87-4be0-9b2f-62a25a9b1432/scratchpad/neg/B/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml: <fullName> is 'Support Process' but the file stem is 'Support_Process'. In source format the CLI names the package member from the stem, so the deploy fails with "An object '<Object>.Support_Process' of type BusinessProcess was named in package.xml, but was not found in zipped directory". Rename the <fullName> to the stem (put the readable wording in <description>) and update every reference.
+ERROR: CMS-STEM-02 /private/tmp/claude-501/-Users-pranavnagrecha-VS-Code-Personal-SfSkills/a37a6d55-8c87-4be0-9b2f-62a25a9b1432/scratchpad/neg/B/objects/Case/recordTypes/Support.recordType-meta.xml: <businessProcess> names 'Support Process', which is not the stem of any *.businessProcess-meta.xml in this tree (Support_Process). The record type will deploy against a process the package never declares. Reference the process by its file stem, bare (never object-qualified).
+exit=1

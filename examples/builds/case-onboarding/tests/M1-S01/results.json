@@ -6,8 +6,7 @@
     "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
     "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py",
     "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
-    "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py",
-    "check-outputs"
+    "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py"
   ],
   "passed": true,
   "failed": [],

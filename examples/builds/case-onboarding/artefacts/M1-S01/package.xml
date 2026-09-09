@@ -15,8 +15,8 @@
         <name>CustomField</name>
     </types>
     <types>
-        <members>Case.Billing Process</members>
-        <members>Case.Support Process</members>
+        <members>Case.Billing_Process</members>
+        <members>Case.Support_Process</members>
         <name>BusinessProcess</name>
     </types>
     <types>

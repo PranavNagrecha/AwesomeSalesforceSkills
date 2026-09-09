@@ -1,0 +1,305 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-09T19-42-25Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-42-25Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-42-25Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S02",
+    "reason": "rebuild #2, human-directed: mock-deploy findings F-09/F-10 proved build #1's two Case layouts fail sf project deploy start --dry-run; skills/admin/record-types-and-page-layouts was fixed to v1.2.0 first."
+  },
+  "summary": "Re-ran step M1-S02 (owner metadata-builder, type ui) as rebuild #2 and set it built. The step was at documented, so it did not appear in build_plan.py next and does not match either Step 2 carve-out (blocked / failed); it was claimed on the human's explicit instruction using the documented -> running transition the plan CLI allows, and that deviation from the runner's Step 2 is recorded below rather than papered over. The owning agent's Plan was executed inline. Three declared outputs plus the always-written deploy-order.md are on disk, check-outputs is ok, the declared checker exits 0 where it exited 1 with four RL-REQ ERRORs against build #1's layouts, and both envelopes validate.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 9 MEDIUM on two counts. First, deploy-order.md exists under artefacts/M1-S02/ and no output declares it — the 'a file exists that no output declared' row — though metadata-builder Step 5 rule 2 mandates it on every run, so it is an expected undeclared artefact rather than a surprise. Second, the HIGH row requires the step to have been in next or to qualify for a Step 2 carve-out, and this one did neither. Nothing in the LOW row applies: check-outputs exited 0, both envelopes validate, and no file was written outside artefacts/M1-S02/ and envelopes/M1-S02/.",
+  "dimensions_compared": [
+    "runnability",
+    "input-mapping",
+    "artefact-capture",
+    "status-transition",
+    "envelope-validation"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "runnability",
+      "state": "partial",
+      "reason": "build_plan.py next printed [] for M1 with 'reason: no pending steps in M1', because M1-S02 was at documented. The runner AGENT.md Step 2 grants carve-outs for blocked and failed only and says a step at built/tested/documented 'gets no carve-out at all: re-running it is a re-plan decision, not this agent's'. The human made that decision explicitly and build_plan.py itself allows documented -> running (ALLOWED_TRANSITIONS line 136; --help: 'documented -> running re-runs a step'), and set-status running was accepted, so no gate was reached around. The check was run and read, not skipped, but its answer was overridden by the human rather than satisfied.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Give runner AGENT.md Step 2 a documented/tested carve-out that mirrors the CLI's transition and requires a caller-supplied reason, or state in the AGENT.md that a re-run of a documented step is a human instruction the runner records rather than refuses."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "build_awareness_probe": {
+      "command": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md",
+      "result": 39,
+      "meaning": "the owner declares a build-layer contract, so Step 7 relocation does not apply and no file was moved"
+    },
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-38-37Z.json",
+    "invocation_form": "inline execution of agents/metadata-builder/AGENT.md (the AGENT.md's 'in any other host' form), on the caller's explicit instruction to follow the owning agent's playbook directly",
+    "rebuild_number": 2,
+    "rebuild_cause": "reports/MOCK-DEPLOY-M1.md findings F-09 and F-10 — the two Case layouts fail sf project deploy start --dry-run without ContactId, Description and SuppliedEmail and with Status at behavior=Edit",
+    "library_fixed_before_rebuild": "skills/admin/record-types-and-page-layouts v1.2.0 (commit 267bee04a): deployable Case layout example, '## Layout-required standard fields', gotchas #12 and #13, checker rules RL-REQ-01 and RL-REQ-02",
+    "step_2_deviation": {
+      "next_output": "[]",
+      "next_stderr_default": "step M2-S02 carries human_gate: true and gate 'step:M2-S02' is 'pending', not 'approved' — a human signs this step off before it runs",
+      "next_stderr_milestone_M1": "no pending steps in M1",
+      "prior_status": "documented",
+      "transition_used": "documented -> running",
+      "authority": "explicit human instruction naming the transition; scripts/build_plan.py ALLOWED_TRANSITIONS permits it and set-status running accepted the claim (gate blocker check passed: clarifications and plan gates approved, human_gate false on this step)",
+      "agent_md_text_deviated_from": "agents/build-step-runner/AGENT.md Step 2 — 'A step at built, tested or documented gets no carve-out at all'",
+      "what_was_not_done": "no gate was approved, no plan field was hand-edited, and milestone M1's accepted status was left untouched by set-status"
+    },
+    "input_map": [
+      {
+        "input": "build_dir",
+        "required": true,
+        "value": ".sfskills/builds/case-onboarding/",
+        "source": "caller"
+      },
+      {
+        "input": "step_id",
+        "required": true,
+        "value": "M1-S02",
+        "source": "caller"
+      },
+      {
+        "input": "api_version",
+        "required": false,
+        "value": "absent — owner applied its documented 62.0 default",
+        "source": "none of the three Step 5 sources; plan.json carries no api_version"
+      }
+    ],
+    "reading_list_passed_to_owner": {
+      "skills": [
+        "admin/record-types-and-page-layouts"
+      ],
+      "templates": [],
+      "decision_trees": [],
+      "acceptance_tests_as_context": 4
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml",
+        "declared": true,
+        "rewritten": true
+      },
+      {
+        "path": "artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml",
+        "declared": true,
+        "rewritten": true
+      },
+      {
+        "path": "artefacts/M1-S02/package.xml",
+        "declared": true,
+        "rewritten": false
+      },
+      {
+        "path": "artefacts/M1-S02/deploy-order.md",
+        "declared": false,
+        "rewritten": true,
+        "note": "undeclared but mandated by metadata-builder Step 5 rule 2 / Step 7 on every run; same shape as build #1"
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "files_written_outside_step_artefacts": [
+      ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-38-37Z.json",
+      ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-38-37Z.md",
+      ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-42-25Z.json",
+      ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-42-25Z.md"
+    ],
+    "checker_evidence": {
+      "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+      "cwd": ".sfskills/builds/case-onboarding",
+      "before_exit": 1,
+      "before_findings": "6 — ERROR RL-REQ-01 x2 (no layoutItems entry for ContactId, Description, SuppliedEmail), ERROR RL-REQ-02 x2 (Status behavior='Edit'), INFO x2",
+      "after_exit": 0,
+      "after_summary": "Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 0 finding(s) detected."
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M1-S02 built --run-agent metadata-builder --envelope envelopes/M1-S02/2026-09-09T19-38-37Z.json --result \"rebuild #2 (F-09/F-10): +ContactId/Description/SuppliedEmail on both layouts, Status behavior=Required; check_record_type_layouts.py exit 0 (0 findings; exit 1 with 4 RL-REQ ERRORs against build #1); check_deployment_manifest.py exit 0; check-outputs ok\" --started 2026-09-09T19-38-37Z",
+    "set_status_result": "M1-S02: running -> built (run appended: metadata-builder)",
+    "claim_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M1-S02 running --started 2026-09-09T19:38:37Z",
+    "claim_result": "M1-S02: documented -> running (run appended: metadata-builder)",
+    "terminal_status": "built",
+    "blocked_reason": null
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The deepen-the-skill path in standards/build-orchestration.md § 8 closed a real defect without any plan edit: the skill gained an example and two checker rules, and re-running the unchanged step against the unchanged plan produced deployable artefacts.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "contract-drift",
+      "observation": "scripts/build_plan.py permits documented -> running and its --help calls it a re-run, while agents/build-step-runner/AGENT.md Step 2 says a documented step gets no carve-out at all — so the only agent that would ever use that transition is told not to, and a legitimate rebuild has to be recorded as a deviation.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-step-runner/AGENT.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "downstream-staleness",
+      "observation": "Milestone M1 is at accepted with gate milestone:M1 approved against build #1's layouts, and M1-S02 is now built again, so the milestone's acceptance and the M1-S02 rows in the workbook, decisions log and traceability matrix describe artefacts that no longer exist.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "run-record",
+      "observation": "The --started value on the built transition was passed in the filename-safe form 2026-09-09T19-38-37Z rather than the colon form used by every earlier run record; build_plan.py stores --started verbatim and offers no way to amend a written run, so the two runs of this rebuild carry different timestamp punctuation.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "concurrency",
+      "observation": "Step M1-S01 was at running with a run record reading 'rebuild #2 claimed: F-11 source-format stem fix' while this step was rebuilt, so a second session is working the other half of the same mock-deploy remediation; the two steps write disjoint artefact directories, so nothing was contended.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The rebuilt step needs its declared acceptance tests re-run before it can advance past built.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It owns the step's declared tests and writes tests/M1-S02/results.json, which set-status tested requires."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Milestone M1's acceptance report predates both rebuilds and will need re-verification once M1-S01 and M1-S02 are documented again.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M1-REPORT.md"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "It owns the cross-step checks and the acceptance report that F-09, F-10 and F-11 invalidated."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 build_mode and no hand-edits to plan.json, § 3 gates, § 4 the status machine and agent eligibility, § 5 check-outputs as a precondition of built, § 8 the plan CLI as sole writer"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement and the citation schema"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields of steps[], inputs{}, outputs[] and runs[] this agent reads and writes"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape — everything step-specific hangs off extensions"
+    },
+    {
+      "type": "standard",
+      "id": "metadata-builder-agent",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the owning agent's Inputs, Plan and Output Contract, executed inline"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the layouts/ directory-per-type source-format layout the rebuilt artefacts keep"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming Layout is a Metadata API type the declared outputs can legitimately name"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step's inputs were derived from, which the doc keeper will now need to revisit"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ/US id conventions echoed so the doc keeper can rejoin step to requirement after the rebuild"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "confirming no credential-shaped value appears in the step inputs echoed here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the step's cited skill, carried through from the owning agent's citations"
+    },
+    {
+      "type": "probe",
+      "id": "check_record_type_layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "the before/after evidence that RL-REQ-01 and RL-REQ-02 fail build #1's layouts and pass rebuild #2's"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step is at built and its declared acceptance tests must be re-run before it can reach tested"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the M1-S02 workbook rows, decisions and traceability entries still describe build #1's layouts"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "milestone M1 was accepted against artefacts that two rebuilds have since replaced"
+    }
+  ]
+}

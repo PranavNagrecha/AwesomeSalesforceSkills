@@ -2330,7 +2330,7 @@
         }
       ],
       "status": "accepted",
-      "report_path": "reports/MILESTONE-M1-REPORT.md"
+      "report_path": "reports/MILESTONE-M1-REPORT-v2.md"
     },
     {
       "id": "M2",
@@ -2650,6 +2650,30 @@
           "started": "2026-09-06T03:15:00Z",
           "envelope_path": "envelopes/M1-S01/2026-09-06T03-15-00Z.json",
           "result": "workbook rows 13; traceability rows 10; decisions appended 4"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-09T19:40:00Z",
+          "envelope_path": "envelopes/M1-S01/running-2026-09-09T19-40-00Z.json",
+          "result": "rebuild #2 claimed: F-11 source-format stem fix (businessProcess fullName -> stem form)"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-09T19-42-00Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-09T19-42-00Z.json",
+          "result": "rebuild #2 (F-11): businessProcess fullName + recordType references + package.xml members to stem form; 5/5 checkers exit 0 on pass 1 incl. new CMS-STEM-01/02; check-outputs ok"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-09T19:52:47Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-09T19-52-47Z.json",
+          "result": "ran 6, failed 0, manual 2 (post-F-11 rebuild #2; CMS-STEM-01/02 pass as observation)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-09T20:05:00Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-09T20-05-00Z.json",
+          "result": "update pass after rebuild #2 (F-11): workbook rows 5 replaced / 0 new; traceability rows 4 replaced / 0 new; decisions appended 1 (D-M1S01-05); planner items O-M1S01-01/02/03 opened, F-11 closed at the skill"
         }
       ],
       "human_gate": true
@@ -2743,6 +2767,30 @@
           "started": "2026-09-06T05:10:00Z",
           "envelope_path": "envelopes/M1-S02/2026-09-06T05-10-00Z.json",
           "result": "workbook rows 4; traceability rows 4; decisions appended 4"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-09T19:38:37Z",
+          "envelope_path": "envelopes/M1-S02/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-09T19-38-37Z",
+          "envelope_path": "envelopes/M1-S02/2026-09-09T19-38-37Z.json",
+          "result": "rebuild #2 (F-09/F-10): +ContactId/Description/SuppliedEmail on both layouts, Status behavior=Required; check_record_type_layouts.py exit 0 (0 findings; exit 1 with 4 RL-REQ ERRORs against build #1); check_deployment_manifest.py exit 0; check-outputs ok"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-09T19:50:27Z",
+          "envelope_path": "envelopes/M1-S02/2026-09-09T19-50-27Z.json",
+          "result": "ran 4 (xml, manifest, check_record_type_layouts.py, check-outputs), failed 0, manual 1 deferred; checker exit 0 with 0 findings under new RL-REQ-01/02"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-09T20:12:00Z",
+          "envelope_path": "envelopes/M1-S02/2026-09-09T20-12-00Z.json",
+          "result": "update pass after rebuild #2: workbook rows 3 amended (CWB-LAYOUT-001/002 target_value+notes, CWB-OTHER-005 target_value); traceability rows 4 amended (REQ-011..014 test_result); decisions appended 2 (D-M1S02-05, O-M1S02-03); 0 rows added, 0 removed"
         }
       ],
       "human_gate": false
@@ -4283,8 +4331,8 @@
       "name": "milestone:M1",
       "status": "approved",
       "by": "dry-run operator (Fable; design-only, nothing deploys)",
-      "at": "2026-09-05T21:11:56Z",
-      "notes": "Accepted with findings F-01..F-08 from reports/MILESTONE-M1-REPORT.md: F-01 (layout↔record-type assertion needs Profile layoutAssignments — M2-S01) carried to M2; manual line 1(c) Reason values and line 4 Q24 'defaulted on' recorded as narrowed, not ticked; A13 carry-forward to M3-S01; StandardValueSet:CaseStatus reconciliation is a pre-deploy blocker for a real org."
+      "at": "2026-09-09T20:30:32Z",
+      "notes": "Re-approval over rebuild #2 per MILESTONE-M1-REPORT-v2.md (ready-with-findings). F-09..F-11 closed at the skills and proven by mock deploy #2 (12/12 --source-dir). F-13 CONFIRMED by mock deploy #3 (--manifest): CompactLayout member must be Case.Case_Intake — skill + v6 item. F-01 remedy is M2-S03's; F-12 status/gate skew noted. Manual lines 1(c), 4, 5 remain narrowed, not ticked."
     },
     {
       "name": "step:M2-S01",

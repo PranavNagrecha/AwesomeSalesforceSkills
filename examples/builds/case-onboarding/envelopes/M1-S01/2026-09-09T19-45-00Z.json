@@ -1,0 +1,310 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-09T19-45-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T19-45-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-09T19-45-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "reason": "rebuild #2 \u2014 reports/MOCK-DEPLOY-M1.md finding F-11 (HIGH): source-format BusinessProcess stem/fullName divergence made `sf project deploy start --dry-run` fail with 'not found in zipped directory'. admin/case-management-setup v1.2.0 now states the rule (\u00a7 2.1) and enforces it (CMS-STEM-01/02).",
+    "credentials_seen": "none \u2014 no input matched a credential shape per skills/devops/pipeline-secrets-management"
+  },
+  "summary": "Re-ran step M1-S01 of the case-onboarding build to clear finding F-11. The step was at `documented`; `build_plan.py next` returned [] ('no pending steps in M1'), so this run took neither the `next` path nor a Step 2 carve-out \u2014 it proceeded on the caller's explicit rebuild instruction and the CLI's `documented -> running` transition. The owning agent, metadata-builder, is build-aware (Step 4 grep: 39 hits) and was executed inline per Step 6's 'any other host' clause, writing only inside artefacts/M1-S01/. Five files changed: two business processes to stem-form <fullName>, two record types to the bare stem reference, package.xml to object-qualified stem members, and deploy-order.md for the member names plus a rebuild-history note. Seven other declared outputs are byte-identical to rebuild #1. All four declared checkers plus check_case_management_setup.py exit 0; check-outputs is ok; the step is `built`.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 9 rubric: HIGH's first condition fails \u2014 the step was not in `next` and `documented` is not one of the two Step 2 carve-outs (blocked, failed); AGENT.md line 110 says re-running a documented step is a re-plan decision, and this run proceeded on the caller's instruction instead. Every other HIGH condition holds: all required inputs resolved from the plan, both envelopes validate, check-outputs exited 0, and nothing was written outside artefacts/M1-S01/. Scored MEDIUM rather than HIGH so the unmet condition is visible rather than argued away.",
+  "dimensions_compared": [
+    "step-runnability",
+    "input-mapping",
+    "owning-agent-invocation",
+    "artefact-adjudication",
+    "status-transition",
+    "envelope-validation"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The loop closed on itself: a defect a real dry-run found became a skill rule and a checker rule, and the rebuild was then gated by that checker rather than by a human re-reading the deploy log.",
+      "domain": "feedback-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "set-status running enforced its gate check as documented \u2014 the step:M1-S01 gate was already approved and M1 is milestone index 0, so the claim succeeded without any gate being touched by an agent.",
+      "domain": "gate-integrity",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "build_plan.py allows `documented -> running` and its inline comment attributes that transition to contract section 4, but standards/build-orchestration.md line 211 names only two recovery transitions (failed -> pending, running -> running) and does not mention documented -> running; the code and the standard it cites disagree.",
+      "domain": "contract-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py",
+        "count": 1,
+        "query": "ALLOWED_TRANSITIONS lines 126-139 vs standards/build-orchestration.md lines 211-215"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "agents/build-step-runner/AGENT.md Step 2 gives carve-outs for `blocked` and `failed` only and states a documented step gets none, so the runner's own playbook has no procedure for the rebuild the CLI permits and the caller asked for.",
+      "domain": "contract-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-step-runner/AGENT.md",
+        "count": 1,
+        "query": "Step 2, line 110"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The step re-entered `built`, which discards the `tested` and `documented` records rebuild #1 earned; the tester and doc keeper must run again for M1-S01 before the M1 milestone gate reflects the rebuilt artefacts, and milestone M1 is already `accepted`.",
+      "domain": "milestone-consistency",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "steps[M1-S01].inputs.business_processes still reads the spaced form while outputs[] and the artefacts read stem form; F-11 names this a v6 planner decision and nothing in this run may change it, so the divergence is recorded in deploy-order.md and left standing.",
+      "domain": "plan-consistency",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step is at `built` and its declared tests have not been executed by their owner in this pass.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "heuristic",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because the seven declared acceptance tests plus the always-on xml and manifest checks are its to run, and this agent may not run them."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Milestone M1 is already accepted against the pre-rebuild artefacts.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because M1's acceptance report was written against artefacts that have since changed, and only it may re-run the cross-step checks behind that report."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md -> 39",
+    "owning_agent_invocation": "inline, per AGENT.md Step 6 'in any other host' clause, at the caller's explicit direction; the three Step 6 clauses (write only under artefacts/M1-S01/, return a schema-valid envelope, no deploy and no chaining) were all honoured",
+    "owning_envelope_path": "envelopes/M1-S01/2026-09-09T19-42-00Z.json",
+    "rebuild_number": 2,
+    "finding": "F-11 (HIGH) \u2014 reports/MOCK-DEPLOY-M1.md",
+    "runnability": {
+      "next_stdout": "[]",
+      "next_stderr": "reason: no pending steps in M1",
+      "next_milestone_forced": "--milestone M1 -> same result",
+      "step_status_before": "documented",
+      "carve_out_applied": "none \u2014 documented is not a Step 2 carve-out",
+      "basis": "caller's explicit rebuild instruction plus ALLOWED_TRANSITIONS['documented'] == {'running'} in scripts/build_plan.py",
+      "gates_touched": "none \u2014 step:M1-S01 was already approved by a human on 2026-09-05T19:35:41Z"
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/Case.object-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/record-type-decision.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/deploy-order.md",
+        "declared": false,
+        "note": "undeclared but expected: metadata-builder AGENT.md Step 7 writes it on every run and Step 5 rule 2 exempts it from the declared-outputs rule. Present since rebuild #1; not a new appearance."
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "files_rewritten": [
+      "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+      "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+      "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+      "artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+      "artefacts/M1-S01/package.xml",
+      "artefacts/M1-S01/deploy-order.md"
+    ],
+    "checker_exit_codes": {
+      "check_case_management_setup.py": {
+        "before": 1,
+        "after": 0
+      },
+      "check_record_type_layouts.py": {
+        "after": 0
+      },
+      "check_list_views_and_compact_layouts.py": {
+        "after": 0
+      },
+      "check_object_creation_and_design.py": {
+        "after": 0
+      },
+      "check_record_type_id_management.py": {
+        "after": 0
+      }
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status plan.json M1-S01 built --run-agent metadata-builder --envelope envelopes/M1-S01/2026-09-09T19-42-00Z.json --result \"rebuild #2 (F-11): businessProcess fullName + recordType references + package.xml members to stem form; 5/5 checkers exit 0 on pass 1 incl. new CMS-STEM-01/02; check-outputs ok\" --started 2026-09-09T19-42-00Z",
+    "set_status_running_command": "python3 scripts/build_plan.py set-status plan.json M1-S01 running --started 2026-09-09T19:40:00Z --run-agent metadata-builder --envelope envelopes/M1-S01/running-2026-09-09T19-40-00Z.json",
+    "terminal_status": "built",
+    "next_command": "python3 scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json  # then: /test-build-step M1-S01",
+    "no_deploy": "no sf command of any kind was run; plan.json was never hand-edited"
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 design-only build mode and the no-hand-edit rule, \u00a7 3 the step:<id> gate, \u00a7 4 the status machine and metadata-builder's ownership of object-model in design-only, \u00a7 5 who runs tests, \u00a7 8 the plan CLI as sole writer"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement and the confidence rubric overridden at Step 9"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the steps[] fields this agent reads and the ones it must leave alone"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "envelope shape \u2014 everything agent-specific under extensions, since the envelope is additionalProperties: false"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the decomposed source-format layout objects/Case/businessProcesses/<Stem>.businessProcess-meta.xml is the tree the CLI reads, which is what makes the stem load-bearing"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "BusinessProcess, RecordType and CompactLayout are Metadata-API-carried types, so the step's declared outputs are deployable metadata"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step derives from \u2014 recommended_agent metadata-builder and recommended_skills[] both unchanged by this rebuild"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ/US id conventions echoed so build-doc-keeper can rejoin the rebuilt step to its requirements without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "screening the step's inputs for credential shapes before echoing them into this envelope \u2014 none matched"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "\u00a7 2.1 \u2014 the stem-equals-fullName rule the owning agent copied the rebuilt values from; carried through from the owning agent's citations"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step is back at built and its seven declared acceptance tests plus the always-on xml and manifest checks are its to run."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once the step is tested, the workbook, decisions log and traceability rows need the rebuilt member names."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1 was accepted against the pre-rebuild artefacts and its acceptance report now describes files that have changed."
+    }
+  ]
+}

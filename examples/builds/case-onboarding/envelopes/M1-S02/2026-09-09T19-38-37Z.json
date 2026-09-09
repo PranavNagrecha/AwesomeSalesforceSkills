@@ -1,0 +1,261 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-09T19-38-37Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-38-37Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S02/2026-09-09T19-38-37Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S02",
+    "api_version": "62.0 (defaulted — plan.json carries no api_version; matches M1-S01's package.xml and build #1's manifest)",
+    "reason": "rebuild #2 — mock-deploy findings F-09/F-10; skills/admin/record-types-and-page-layouts fixed to v1.2.0 (2026-09-09) with the deployable Case layout, the 'Layout-required standard fields' section, gotchas #12/#13 and checker rules RL-REQ-01/RL-REQ-02"
+  },
+  "summary": "Rebuild #2 of M1-S02 (type ui, design-only). Both Case page layouts were re-emitted from the fixed skill's deployable Case layout example: three layoutItems entries added per layout (SuppliedEmail, Description, ContactId — layout-required on Case) and the Status item moved from behavior=Edit to behavior=Required. Everything build #1 carried is unchanged: the field set including Severity__c on Support only, both layouts' showRunAssignmentRulesCheckbox=true, the two layoutSections, and package.xml's two Layout members. The declared step checker check_record_type_layouts.py exits 1 with four ERRORs (RL-REQ-01 x2, RL-REQ-02 x2) against build #1's layouts and exits 0 with 0 findings against these; check_deployment_manifest.py exits 0; all three XML files parse; check-outputs is ok. The item set and behaviors of both files are identical to the scratch copies that validated 12/12 against sfskills-dev in mock-deploy run 5.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM, for the same two reasons build #1 scored MEDIUM and neither of which this rebuild addressed: the optional api_version input resolved from no source and took this agent's documented 62.0 default, and Q24's 'defaulted on' half still has no element in the cited skill's inventory at v1.2.0, so that question is answered only in part. Everything else meets HIGH: every element traced to the Step 3 inventory (the v1.2.0 Case layout example and its Layout-required standard fields section), both cited checkers exited 0 on pass 1 with no repair pass, check-outputs returned ok, all three declared outputs were written, and nothing landed outside artefacts/M1-S02/.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Q24 asks for the 'Assign using active assignment rule' checkbox to be defaulted on. The cited skill at v1.2.0 documents <showRunAssignmentRulesCheckbox> as controlling whether the checkbox is shown on Case, Lead and Account layouts, and still documents no element that pre-checks it. The show half is written; the default-on half is not, and inventing an element name for it is what this agent refuses to do. The v1.2.0 fix targeted F-09/F-10 and did not touch this.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Deepen skills/admin/record-types-and-page-layouts with the Layout element that pre-selects the assignment-rule checkbox, if one exists; otherwise record a Setup step for the human."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "ui",
+    "invoked_by": "build-step-runner (rebuild #2, human-directed re-run of a documented step)",
+    "rebuild": {
+      "number": 2,
+      "of_step": "M1-S02",
+      "previous_build_run_id": "2026-09-06T04-05-00Z",
+      "cause": "mock-deploy findings F-09 and F-10 (reports/MOCK-DEPLOY-M1.md, runs 1-5)",
+      "library_fix_first": "skills/admin/record-types-and-page-layouts v1.2.0 (commit 267bee04a) — deployable Case layout example, '## Layout-required standard fields', gotchas #12 and #13, checker rules RL-REQ-01/RL-REQ-02",
+      "artefacts_edited_in_place_in_build_1": false,
+      "validated_shape_matched": [
+        "reports/mock-deploy-fixes/Case-Case Support Layout.layout-meta.xml",
+        "reports/mock-deploy-fixes/Case-Case Billing Layout.layout-meta.xml"
+      ]
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml",
+        "type": "Layout",
+        "declared": true,
+        "source": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md — 'Page layout with two sections, the layout-required Case fields, and one design-required field' + '## Layout-required standard fields'",
+        "changed_in_rebuild_2": "added layoutItems SuppliedEmail/Description/ContactId (behavior=Edit); Status behavior Edit -> Required"
+      },
+      {
+        "path": "artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml",
+        "type": "Layout",
+        "declared": true,
+        "source": "same",
+        "changed_in_rebuild_2": "added layoutItems SuppliedEmail/Description/ContactId (behavior=Edit); Status behavior Edit -> Required"
+      },
+      {
+        "path": "artefacts/M1-S02/package.xml",
+        "type": "Package",
+        "declared": true,
+        "source": "skills/admin/change-management-and-deployment/references/metadata-examples.md § 1",
+        "changed_in_rebuild_2": "unchanged — rebuild added no component, only items inside two existing ones"
+      },
+      {
+        "path": "artefacts/M1-S02/deploy-order.md",
+        "type": "note",
+        "declared": false,
+        "source": "metadata-builder Step 7 (written on every run; Step 5 rule 2 exempts it from the declared-outputs rule)",
+        "changed_in_rebuild_2": "rewritten — new '## Rebuild #2' section; the ContactId and 'no field marked Required' bullets under 'Elements this step could NOT ground' corrected, since both are now grounded"
+      }
+    ],
+    "decision_record": [
+      {
+        "question": "Are ContactId / Description / SuppliedEmail required on a Case layout?",
+        "answer": "Yes — all three must be present as layoutItems, any behavior. Written as behavior=Edit.",
+        "source": "cited skill (metadata-examples.md '## Layout-required standard fields', Case set verified by dry run 2026-09-05)",
+        "element": "layoutItems/field x3 per layout"
+      },
+      {
+        "question": "Q5 — where is a field's requiredness enforced?",
+        "answer": "Priority, Origin and Subject stay behavior=Edit and are enforced at field/validation level, because Email-to-Case and Web-to-Case create through the API where layout Required does not bind. Status is outside that question: behavior=Required is a deploy precondition, not a data-quality control.",
+        "source": "clarification answer Q5 + cited skill gotchas #11 and #13",
+        "element": "layoutItems/behavior"
+      },
+      {
+        "question": "Q24 — should the assignment-rule checkbox be shown and defaulted on?",
+        "answer": "Shown: yes, showRunAssignmentRulesCheckbox=true on both layouts. Defaulted on: not writable — no element in the inventory.",
+        "source": "clarification answer Q24 + cited skill element inventory",
+        "element": "showRunAssignmentRulesCheckbox (show half only)"
+      },
+      {
+        "question": "Which fields does the Support layout carry that Billing does not?",
+        "answer": "Severity__c, on Support only — unchanged from build #1.",
+        "source": "step inputs + build #1 artefacts",
+        "element": "layoutItems/field"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code_before_rebuild": 1,
+        "before_summary": "Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 6 finding(s) detected. — 4 ERROR (RL-REQ-01 x2, RL-REQ-02 x2), 2 INFO",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "summary": "Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 0 finding(s) detected."
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "summary": "Scanned 4 manifest or metadata file(s); 0 finding(s) detected."
+      },
+      {
+        "command": "python3 -c \"<ElementTree parse of every *.xml under artefacts/M1-S02>\"",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "summary": "3 file(s) parsed"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "blocked_reason": null,
+    "elements_not_grounded_and_not_written": [
+      "The 'defaulted on' half of Q24 — no element in skills/admin/record-types-and-page-layouts at v1.2.0 pre-selects the assignment-rule checkbox.",
+      "AccountId on either layout — no cited source names it and the platform does not require it, so it stays omitted. ContactId is now present as a platform requirement, not as an answer to the requirement's account-centric framing.",
+      "quickActionList and relatedLists — the skill's example members are that example's content, and relatedLists/fields for standard fields use retrieval aliases the skill warns against hand-writing."
+    ]
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "library-feedback-loop",
+      "observation": "The loop's own remedy worked end to end: a platform rule that passed every gate was caught by a dry run, written into the skill as an example plus two checker rules, and the same declared checker command now fails the old artefacts and passes the new ones with no change to the plan.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "metadata-grounding",
+      "observation": "The rebuilt layouts' item sets and behaviors are byte-for-byte equivalent in meaning to the two scratch copies that validated against a real org, so the fix is the org's answer rather than this agent's inference.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/mock-deploy-fixes/",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "checker-coverage",
+      "observation": "RL-REQ-03 covers every standard object other than Case with a name-like-field heuristic and the skill marks the per-object required set UNVERIFIED (2026-09-09); any later step that builds a layout for Opportunity, Lead or Account will pass the checker without the rule ever having been exercised for that object.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "plan-drift",
+      "observation": "The plan's step acceptance-test description quotes '0 finding(s)' for a passing run, which is what the checker now prints; build #1 printed 2 INFO lines and also exited 0, so the description matched the intended shape rather than the shipped one until this rebuild.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step needs re-testing and re-documenting before M1 can be re-verified against the corrected artefacts.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It owns the step's declared acceptance tests and writes tests/M1-S02/results.json, which set-status tested requires."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the cited skill for this step; v1.2.0 supplied the Layout element set and the layout-required Case field rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "the deployable Case layout example and the '## Layout-required standard fields' section — every element and behavior written in this rebuild"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "#11 layout Required binds only to that layout; #12 layout-required fields fail the deploy not the checker; #13 Status must be Required on Case layouts; #6/#7/#8 for the deploy-order note"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "the package.xml shape and the Layout member form confirmed unchanged"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4 step types and the status machine, § 5 the manifest and check-outputs rules, § 8 deepen-the-skill rather than freestyle"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, Process Observations and the citation schema"
+    },
+    {
+      "type": "probe",
+      "id": "check_record_type_layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "the step's declared checker, run before and after the rebuild"
+    },
+    {
+      "type": "probe",
+      "id": "check_deployment_manifest",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "manifest consistency of package.xml against the two layout files"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step's declared acceptance tests must be re-run against the rebuilt artefacts before it can reach tested"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the workbook rows, decisions log and traceability entries for M1-S02 describe build #1's layouts and need the rebuild folded in once the step is tested"
+    }
+  ]
+}
