@@ -122,7 +122,12 @@ How to read it:
 
 `fullName` must begin with a letter, contain only underscores and alphanumerics, hold no spaces, not end with an underscore, and not contain two consecutive underscores. Adding `<businessProcess>` to this block is a deploy error, not a warning.
 
-## Page layout with two sections and one required field
+## Page layout with two sections, the layout-required Case fields, and one design-required field
+
+This layout deploys. The three `Edit` items marked below and the `Required` behavior on
+`Status` are not design choices — the platform rejects a Case layout without them. See
+[Layout-required standard fields](#layout-required-standard-fields) directly after the
+snippet for why, and for how to find the equivalent set on another object.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -137,6 +142,19 @@ How to read it:
                 <behavior>Required</behavior>
                 <field>Subject</field>
             </layoutItems>
+            <!-- layout-required on Case: the deploy fails without these three items -->
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>ContactId</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Description</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>SuppliedEmail</field>
+            </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Priority</field>
@@ -147,8 +165,9 @@ How to read it:
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
+            <!-- layout-required on Case AND must carry behavior=Required -->
             <layoutItems>
-                <behavior>Edit</behavior>
+                <behavior>Required</behavior>
                 <field>Status</field>
             </layoutItems>
             <layoutItems>
@@ -205,10 +224,68 @@ How to read it:
 - `layoutSections` order is the on-screen order. `style` is one of `TwoColumnsTopToBottom`, `TwoColumnsLeftToRight`, `OneColumn`, `CustomLinks`; `layoutColumns` must match — 1, 2, or 3 columns ordered left to right.
 - `customLabel` says whether `label` is your own text or one of the built-in labels. Built-in labels ("System Information") translate automatically; custom ones must be translated separately.
 - `detailHeading` and `editHeading` are independent. `System Information` above shows its heading on the detail page and hides it on the edit page.
-- `behavior` is `Edit`, `Required`, or `Readonly`. **`Required` here is a layout-level requirement, not a field-level one** — the same field is optional on a layout that omits it (gotchas #11). Setting `behavior` explicitly on a Knowledge article layout raises an exception.
+- `behavior` is `Edit`, `Required`, or `Readonly` (api_meta L82844–82851: `Edit` — "the layout field can be edited but isn't required"; `Required` — "the layout field can be edited and is required"; `Readonly` — "the layout field is read-only"). **`Required` here is a layout-level requirement, not a field-level one** — the same field is optional on a layout that omits it (gotchas #11). The exception is a field the *platform* requires on the layout, such as `Status` on Case: there `Required` is not a design choice and cannot be traded for a validation rule (gotchas #13). Setting `behavior` explicitly on a Knowledge article layout raises an exception (api_meta L82850).
 - A `layoutItems` entry sets exactly one of `field`, `customLink`, `component`, `page`, `scontrol`, `analyticsCloudComponent`, or `reportChartComponent`. `emptySpace` reserves a blank grid cell so the two columns stay aligned.
 - `showEmailCheckbox` is allowed only on Case, CaseClose, and Task layouts; `showRunAssignmentRulesCheckbox` only on Case, Lead, and Account; `showKnowledgeComponent` only on Case. Deploying one on the wrong object fails.
 - `relatedLists/fields` for standard fields use retrieval **aliases**, not API names — Fax, Mobile, and Home Phone come back as `Phone2`, `Phone3`, `Phone4`. Round-tripping a retrieved layout preserves them; hand-writing API names there does not.
+
+## Layout-required standard fields
+
+Some standard fields are required **on the layout itself**. A `Layout` that omits one does
+not deploy, whatever the field's own `required` setting or the org's validation rules say.
+Two distinct failures, two distinct messages:
+
+| Failure | Message | Fix in the `Layout` file |
+|---|---|---|
+| The field has no `layoutItems` entry at all | `Layout must contain an item for required layout field: <Field>` | Add a `layoutItems` entry naming the field, any `behavior` |
+| The field is present but not required on the layout | `Field:<Field> must be Required` | Set that item's `<behavior>Required</behavior>` |
+
+The deploy reports **one field per run**. Fixing the named field surfaces the next one, so
+the failure looks like a queue rather than a list — budget for several `--dry-run` rounds,
+not one.
+
+**The Case set (verified).** On Case, `ContactId`, `Description`, and `SuppliedEmail` must
+be present as `layoutItems`, and `Status` must additionally carry
+`<behavior>Required</behavior>`. Verified by `sf project deploy start --dry-run` against a
+Summer '26 developer org on 2026-09-05
+(`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`, runs 1–5: the four messages
+arrived in that order, one per run, and run 5 cleared both layouts). The passing files are
+committed at `examples/builds/case-onboarding/reports/mock-deploy-fixes/Case-Case Support
+Layout.layout-meta.xml` and `…/Case-Case Billing Layout.layout-meta.xml`.
+
+**This rule is not in the Metadata API guide.** The guide's `Layout` entry (api_meta
+L82275+) documents `layoutSections`, `layoutColumns`, and `LayoutItem` (api_meta L82839+)
+with no notion of a per-object required-item set, and `behavior` (api_meta L82844–82851) is
+described purely as an author's choice among `Edit` / `Required` / `Readonly`. The string
+`required layout field` does not appear anywhere in the guide. So the deploy is the
+authority here, and a checker or an example is the only place this can be written down —
+which is why `scripts/check_record_type_layouts.py` now enforces it as RL-REQ-01 and
+RL-REQ-02.
+
+**Which standard fields are layout-required on objects other than Case is
+`UNVERIFIED (2026-09-09)`.** Only the Case set above was exercised against an org. Do not
+extrapolate a per-object list — the shape of the rule generalises, the membership does not.
+An assistant that produces "the required layout fields for Opportunity are …" from this
+page is inventing them.
+
+**How to discover the set for any object.** Two procedures, and they are not equally
+grounded:
+
+1. **Iterate `--dry-run`** — deploy the layout, read the field named in
+   `Layout must contain an item for required layout field: X`, add `X`, repeat until the
+   layout validates, then handle any `Field:Y must be Required`. *Grounded* — this is
+   exactly the procedure that produced the Case set (runs 1–5 of the mock deploy above).
+   It costs one round trip per field and needs no prior knowledge of the object.
+2. **Retrieve an existing layout of that object as the seed** —
+   `sf project retrieve start --metadata "Layout:Opportunity-Opportunity Layout"` and start
+   from its item set, on the reasoning that a layout the org already holds must satisfy the
+   org's own rule. `UNVERIFIED (2026-09-09)` — this shortcut was not exercised in the mock
+   deploy, and a retrieved layout carries every field someone put there, so it over-supplies
+   the answer: it tells you a **sufficient** set, never the minimal required one. Use it to
+   avoid the first two round trips, then still validate with procedure 1.
+
+Neither procedure can be replaced by reading documentation, and neither is a substitute for
+running the deploy.
 
 ## Making the record type visible and assigning the page
 
@@ -302,7 +379,9 @@ sf project retrieve start --manifest manifest/record-types.xml --target-org my-s
 
 python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py \
   --manifest-dir force-app/main/default
-# add --strict to fail on MEDIUM/LOW/INFO as well as CRITICAL/HIGH
+# RL-REQ-01 / RL-REQ-02 are ERROR and exit 1: a Case layout missing ContactId,
+# Description, or SuppliedEmail, or whose Status item is absent or not Required.
+# RL-REQ-03 is ADVISORY. Add --strict to fail on MEDIUM/LOW/INFO/ADVISORY too.
 
 sf project deploy start --manifest manifest/record-types.xml --target-org my-sandbox --dry-run
 sf project deploy start --manifest manifest/record-types.xml --target-org my-sandbox

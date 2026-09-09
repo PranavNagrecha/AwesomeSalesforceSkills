@@ -22,12 +22,14 @@ triggers:
   - "picklist values went blank after a record type change"
   - "required field on the layout is still blank on API-created records"
   - "which profile gets which page layout for this record type"
+  - "layout must contain an item for required layout field"
+  - "deploy fails required layout field ContactId"
 inputs: ["process differences", "page requirements", "picklist variation needs"]
 outputs: ["record type strategy", "layout simplification findings", "ui model recommendations"]
 dependencies: []
-version: 1.1.1
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-09
 ---
 
 You are a Salesforce Admin expert in UX and data architecture. Your goal is to design a Record Type model that supports distinct business processes with minimum complexity — and to help orgs that have over-built their Record Type model find a simpler path forward.
@@ -56,6 +58,7 @@ Ask these before opening Object Manager. Each one maps to a way this model fails
 | "Do records already exist on the record type we are changing or retiring?" | Reassignment blanks any picklist value absent from the target record type, silently | The at-risk record count and the value-mapping step that must run first (gotchas #1) |
 | "Which reports, list views, and Flow entry criteria filter on this record type today?" | Report filters key on the label, which is not stable; code and Flows key on `DeveloperName`, which is | The rename blast radius, before anyone renames anything (gotchas #4) |
 | "Is a field being marked Required on the layout meant to be enforced everywhere?" | Layout `Required` binds to that layout only — API, Flow, and every other layout ignore it | A decision between field-level `required` and a record-type-scoped validation rule (gotchas #11) |
+| "Which standard fields does the platform require on this object's layout?" | A layout that omits one does not deploy, and no static checker can derive the set from the Metadata API guide — it is not documented there | The layout-required item list before the file is written, instead of one `--dry-run` round trip per missing field (gotchas #12, #13). On Case the answer is `ContactId`, `Description`, `SuppliedEmail`, and `Status` at `behavior=Required` |
 | "Are Person Accounts enabled on this org?" | Person Account record types are a separate model, and the Metadata API will not round-trip their custom picklist values | A separate design track and a manual verification step for the picklist matrix (gotchas #2, #9) |
 
 What a proper configuration adds over just creating the record type: the record type is selectable by the right users with the right default, every profile lands on an intended page layout instead of falling through to a default, the picklist matrix survives a scratch-org rebuild, and no existing record loses a field value on the way there.
@@ -143,9 +146,9 @@ The Master Record Type:
 1. Justify the record type — run the "Do you actually need a Record Type?" table above. If the only difference is which fields appear, stop and route to `admin/dynamic-forms-and-actions`. Record the outcome in `templates/record-type-design-template.md`
 2. Fill the design template — record types, the picklist-by-record-type matrix, the profile × record type × layout matrix, and (for Lead, Opportunity, Solution, Case) the business process. The template is the human-readable source of truth, because the Metadata API does not round-trip the whole picklist matrix (`references/gotchas.md` #9)
 3. Write the metadata — copy the shapes in `references/metadata-examples.md`: `recordTypes` and `businessProcesses` inside the `CustomObject`, the `Layout` file, and the `recordTypeVisibilities` / `layoutAssignments` in the profiles and permission sets. Use one manifest that names every record type explicitly — `RecordType` does not accept `*`
-4. Check before deploying — `python3 scripts/check_record_type_layouts.py --manifest-dir force-app/main/default` (add `--strict` to fail on MEDIUM/LOW/INFO too). It flags layout assignments pointing at inactive record types, missing business processes on the four objects that need them, record types nobody can see, and objects past the count threshold. Point it at a tree that carries the objects, the layouts **and** the profiles — run it over profiles alone and it reports `N reference(s) unresolvable at this scope` instead of a cross-check, because there is nothing to cross-check against. Exit 1 means a CRITICAL/HIGH deploy-breaker
+4. Check before deploying — `python3 scripts/check_record_type_layouts.py --manifest-dir force-app/main/default` (add `--strict` to fail on MEDIUM/LOW/INFO too). It flags layout assignments pointing at inactive record types, missing business processes on the four objects that need them, record types nobody can see, objects past the count threshold, and — as ERROR-severity `RL-REQ-01` / `RL-REQ-02` — a Case layout missing `ContactId`, `Description`, or `SuppliedEmail`, or whose `Status` item is absent or not `Required` (`RL-REQ-03` is an ADVISORY heuristic for other standard objects). Point it at a tree that carries the objects, the layouts **and** the profiles — run it over profiles alone and it reports `N reference(s) unresolvable at this scope` instead of a cross-check, because there is nothing to cross-check against. Exit 1 means a CRITICAL/HIGH deploy-breaker
 5. Plan the data impact — if any existing record moves record type, run the at-risk SOQL in `references/gotchas.md` #1 and migrate the picklist values *before* the reassignment
-6. Deploy and verify — `--dry-run` first, then deploy the object, layouts, profiles, and permission sets in one package. Confirm with the `RecordType` SOQL and the Page Layout Assignment grid in `references/metadata-examples.md`
+6. Deploy and verify — `--dry-run` first, then deploy the object, layouts, profiles, and permission sets in one package. Layout pre-deploy checklist: every Case layout carries `ContactId`, `Description`, and `SuppliedEmail` as items and `Status` at `<behavior>Required</behavior>`; on any other object, treat the layout-required set as unknown and let `--dry-run` name it one field per run rather than guessing (gotchas #12). Confirm with the `RecordType` SOQL and the Page Layout Assignment grid in `references/metadata-examples.md`
 7. Test as a user, not as an admin — create a record as each affected persona and confirm the record type selector, the default, the layout, and the filtered picklist values. System Administrator sees everything and will not reproduce the failure
 
 ---
@@ -160,6 +163,7 @@ The Master Record Type:
 - **Page layouts ≠ access control**: A field hidden on a page layout is still visible in reports, list views, related lists, and API queries. If you need to hide a field from a user, use FLS — not a page layout. Page layouts are UX tools, not security tools.
 - **`businessProcess` is mandatory on four objects and banned everywhere else**: Lead, Opportunity, Solution, and Case record types must name one; every other object rejects one. Both directions fail the deploy (`references/gotchas.md` #6).
 - **A permission set cannot assign a page layout or a default record type**: `PermissionSet.recordTypeVisibilities` carries only `recordType` and `visible`. `layoutAssignments` and `default` exist only on `Profile`, so a profile-free assignment model still leaves layouts on the profile (`references/gotchas.md` #8, `references/metadata-examples.md`).
+- **Some standard fields are required on the layout itself, and only the deploy knows which**: a Case layout without `ContactId`, `Description`, and `SuppliedEmail`, or with `Status` at anything but `behavior=Required`, fails `sf project deploy start` with four errors delivered one per run — while passing every static check. The Metadata API guide does not state the rule; the set for objects other than Case is unverified (`references/gotchas.md` #12, #13).
 - **`RecordType` does not accept the `*` wildcard in package.xml**: a wildcard manifest retrieves the object and its layouts but no record types, so a "full" source snapshot quietly omits them (`references/metadata-examples.md`).
 
 ## Proactive Triggers
@@ -183,11 +187,11 @@ Surface these WITHOUT being asked:
 
 | File | Read it when |
 |---|---|
-| `references/metadata-examples.md` | Writing deployable `RecordType`, `BusinessProcess`, `Layout`, and profile/permission-set assignment XML, the package.xml, and the verification SOQL |
-| `references/gotchas.md` | Eleven platform behaviours that cause most record type and layout incidents — picklist wipes, deploy failures, profile-diff noise, and layout `Required` that enforces nothing |
+| `references/metadata-examples.md` | Writing deployable `RecordType`, `BusinessProcess`, `Layout`, and profile/permission-set assignment XML, the layout-required standard fields, the package.xml, and the verification SOQL |
+| `references/gotchas.md` | Thirteen platform behaviours that cause most record type and layout incidents — picklist wipes, deploy failures, profile-diff noise, layout `Required` that enforces nothing, and the layout-required standard fields that fail the deploy rather than the checker |
 | `references/examples.md` | Worked Opportunity, Case, and Dynamic-Forms-instead-of-record-types designs with picklist and layout matrices |
 | `references/well-architected.md` | Pillar mapping, governance (who approves a new record type), and the official-source list behind every claim in this package |
-| `references/llm-anti-patterns.md` | Self-checking generated output — the five ways an assistant gets record types wrong |
+| `references/llm-anti-patterns.md` | Self-checking generated output — the six ways an assistant gets record types and layouts wrong |
 | `templates/record-type-design-template.md` | Capturing the design before building it: the decision, the matrices, the migration plan, and the test protocol |
 
 ---

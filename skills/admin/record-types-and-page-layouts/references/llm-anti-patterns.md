@@ -140,3 +140,55 @@ Example:
 ```
 
 **Detection hint:** If the output creates more than 4 record types for a single object, or creates record types that correspond to a status progression, the model is over-engineered. Count the record types and check if they represent statuses rather than processes.
+
+---
+
+## Anti-Pattern 6: Writing a Case layout from a generic layout template and omitting the layout-required standard fields
+
+**What the LLM generates:** a `Layout` file containing exactly the fields the requirement named — `Subject`, `Priority`, `Origin`, `Status`, `OwnerId`, a custom field or two — arranged in a two-column `Case Information` section, with `Status` set to `<behavior>Edit</behavior>`. It looks like every layout example in the corpus, parses as valid XML, and is described in the accompanying prose as "deploy-ready".
+
+**Why it happens:** the model composes the layout from the requirement plus a generic two-section skeleton, and treats "which fields go on this layout" as a purely declarative decision. The Metadata API guide reinforces that reading — it documents `layoutItems` and `behavior` as free choices and states no per-object required-item set anywhere (api_meta L82275+, L82839+). Nothing in the documentation contradicts the generated file, so the model has no reason to doubt it. The correction only exists at deploy time.
+
+**Correct pattern:**
+
+```xml
+<!-- force-app/main/default/layouts/Case-Case Support Layout.layout-meta.xml -->
+<layoutSections>
+    <label>Case Information</label>
+    <layoutColumns>
+        <layoutItems><behavior>Required</behavior><field>Subject</field></layoutItems>
+        <!-- layout-required on Case; the deploy fails without all three -->
+        <layoutItems><behavior>Edit</behavior><field>ContactId</field></layoutItems>
+        <layoutItems><behavior>Edit</behavior><field>Description</field></layoutItems>
+        <layoutItems><behavior>Edit</behavior><field>SuppliedEmail</field></layoutItems>
+        <layoutItems><behavior>Edit</behavior><field>Priority</field></layoutItems>
+    </layoutColumns>
+    <layoutColumns>
+        <!-- layout-required AND must be Required, not Edit -->
+        <layoutItems><behavior>Required</behavior><field>Status</field></layoutItems>
+        <layoutItems><behavior>Edit</behavior><field>OwnerId</field></layoutItems>
+    </layoutColumns>
+    <style>TwoColumnsTopToBottom</style>
+</layoutSections>
+```
+
+Four separate deploy errors are hiding in the omission, and the platform reports them one
+per run: `Layout must contain an item for required layout field: ContactId`, then
+`Description`, then `SuppliedEmail`, then `Field:Status must be Required`. Verified by
+`sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-05
+(`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`).
+
+Two further rules for the generated answer:
+
+- Do not state a required-field list for an object other than Case. That membership is
+  `UNVERIFIED (2026-09-09)`; say instead that the set is discovered by iterating
+  `sf project deploy start --dry-run`, or seeded from a layout retrieved from the target org.
+- Do not call a hand-written layout "deploy-ready" on the strength of a static check. Say
+  "validated by `--dry-run` against \<org\>" or say nothing.
+
+**Detection hint:** grep the generated `Layout` for `<field>ContactId</field>`,
+`<field>Description</field>`, and `<field>SuppliedEmail</field>` whenever the file name
+starts with `Case-`, and check that the `Status` item's `behavior` is `Required` rather than
+`Edit`. `scripts/check_record_type_layouts.py` does exactly this as RL-REQ-01 and RL-REQ-02
+(both ERROR, exit 1). A generated layout that was never run through it, or through a
+`--dry-run`, has not been checked for this at all.

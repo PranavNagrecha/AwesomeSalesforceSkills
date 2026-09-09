@@ -168,3 +168,40 @@ ORDER BY Profile.Name
 - Enforce the requirement where it actually binds: `required` on the field definition (all contexts), or a validation rule scoped by `RecordType.DeveloperName` (all save paths, but selectively by process). Layout `Required` on top of either is a UX affordance, not the control.
 - Explicitly setting `behavior` on a Knowledge article layout raises an exception, per the guide — the one object where you must leave it out entirely.
 - The same scoping trap applies in reverse: a field that is `Readonly` on one layout is fully editable on another, and read-only on a layout is not field-level security (gotchas #5).
+- One exemption, and it runs the other way: a handful of standard fields are required *by the platform* on the layout, and there `Required` is not the analyst's choice to make (gotchas #12, #13).
+
+---
+
+## 12. Layout-Required Standard Fields Fail the Deploy, Not the Checker
+
+**What happens:** A build generates two Case page layouts from the fields the requirement named — Subject, Priority, Origin, Status, Owner, a custom Severity — passes every static check in the pipeline, passes the step tests, passes the milestone verification, and then fails `sf project deploy start --dry-run` on the first component with `Layout must contain an item for required layout field: ContactId`. Adding `ContactId` produces `Layout must contain an item for required layout field: Description`. Adding that produces `SuppliedEmail`. Adding that produces `Field:Status must be Required`. Four runs, four messages, one at a time, none of them predicted by anything upstream.
+
+That is not a hypothetical. It is `examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`, runs 1–5: verified by `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-05. Ten of twelve components validated on run 1; both failures were the same platform rule.
+
+**When it bites you:** Any hand-written or LLM-generated `Layout` file — that is, any layout that was composed from a requirement rather than retrieved from an org. A layout retrieved and round-tripped already carries the required items, so the whole class of failure is invisible to teams who never author one from scratch. It bites hardest in a design-only pipeline, where a green board of checkers implies deployability and nothing in the pipeline has ever talked to an org.
+
+**Why nothing upstream catches it:** the Metadata API guide does not state the rule. `LayoutItem.behavior` (api_meta L82844–82851) presents `Edit` / `Required` / `Readonly` as an author's choice, the `Layout` type (api_meta L82275+) lists no required-item set, and the phrase `required layout field` appears nowhere in the guide. A checker cannot derive the rule from the documentation; it has to be seeded from a deploy.
+
+**How to avoid it:**
+- On Case, put `ContactId`, `Description`, and `SuppliedEmail` on every layout as `layoutItems` and give `Status` `<behavior>Required</behavior>`. That is the verified set — see `references/metadata-examples.md` § "Layout-required standard fields".
+- Run `python3 scripts/check_record_type_layouts.py --manifest-dir force-app/main/default` before the deploy. RL-REQ-01 and RL-REQ-02 are ERROR-severity and exit 1 on exactly these four conditions.
+- On any object other than Case, the membership of the set is `UNVERIFIED (2026-09-09)` — do not assume a list. Discover it by iterating `--dry-run` (grounded), or seed from a retrieved layout of that object and then still iterate.
+- Budget for several `--dry-run` rounds. The deploy names one missing field per run, so a layout short of three fields costs three round trips before it even reaches the `must be Required` message.
+- `--dry-run` (`checkOnly: true`) is the cheap way to buy this information: it validates against a real org and changes nothing.
+
+---
+
+## 13. `Status` Must Be `Required` on Case Layouts Even When the Org Enforces It Elsewhere
+
+**What happens:** An admin reads gotcha #11, correctly concludes that layout `Required` binds only to that layout, and moves the enforcement where it actually binds — a validation rule scoped by `RecordType.DeveloperName`, or `required` on the field. They then set every layout item to `Edit` for consistency, including `Status`. The Case layout stops deploying: `Field:Status must be Required`. The rule they wrote is correct, enforced, and completely irrelevant to the error — the platform is not asking whether the value is enforced, it is asking what this layout item's `behavior` says.
+
+**When it bites you:** Precisely when someone has internalised the *right* lesson about layout `Required`. This is the failure mode of a good answer applied one step too far: Q5 in the skill's Questions table ("Is a field being marked Required on the layout meant to be enforced everywhere?") pushes toward field-level or validation-rule enforcement, and that answer is right for `Priority`, `Origin`, `Subject`, and every custom field — and wrong for `Status` on Case, where `behavior=Required` is a deploy precondition rather than a data-quality control.
+
+Verified by `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-05 (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`, run 4 → run 5).
+
+**How to avoid it:**
+- Split the question in two before answering it. *Does the platform require this item to be `Required` on this object's layout?* comes first; only if the answer is no does *where should this requirement be enforced?* apply.
+- Answer the first question empirically — `--dry-run` — not from the Metadata API guide, which does not carry the rule.
+- On Case, `Status` is `<behavior>Required</behavior>`, full stop. A validation rule on `Status` may still be worth having for API and Flow save paths (gotchas #11 is unaffected), but it does not buy an exemption from the layout behavior.
+- Which fields carry this constraint on objects other than Case is `UNVERIFIED (2026-09-09)`. Do not generalise `Status` to `StageName` on Opportunity or `Status` on Lead without a dry run against the target org.
+- When reviewing a generated answer to "enforce at field/validation level, not on the layout", check whether the fields it demotes to `Edit` include a platform-required one. That is the regression this gotcha exists to catch.

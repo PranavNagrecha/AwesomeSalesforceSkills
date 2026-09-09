@@ -28,10 +28,38 @@ Checks (each grounded in the Metadata API Developer Guide, v62):
    unresolvable at this scope" -- so a reader can tell the difference between
    "checked and clean" and "nothing to check against".
 
+Layout-required standard fields (RL-REQ-01 .. RL-REQ-03). Some standard fields are
+required *on the layout itself*: a Layout that omits one fails to deploy, and a
+field the platform requires must also carry behavior=Required. The Metadata API
+guide does not document this -- LayoutItem.behavior is presented purely as an
+author's choice (api_meta L82844-82851) and the phrase "required layout field"
+appears nowhere in the guide -- so the rule below is seeded from a deploy, not
+from documentation:
+
+  RL-REQ-01  ERROR     A `Case` layout (object taken from the file name, e.g.
+                       `Case-Case Support Layout.layout-meta.xml`) with no
+                       layoutItems/field entry for ContactId, Description, or
+                       SuppliedEmail. Deploy message:
+                       "Layout must contain an item for required layout field: <F>".
+  RL-REQ-02  ERROR     A `Case` layout whose Status item is missing, or whose
+                       behavior is anything other than Required. Deploy message:
+                       "Field:Status must be Required".
+  RL-REQ-03  ADVISORY  A layout for any *other* standard object whose items carry
+                       none of the usual name/subject-like fields. Advisory, not
+                       an error, because the per-object required set is UNVERIFIED
+                       (2026-09-09): only the Case set has been exercised against
+                       an org, and this rule is a heuristic stand-in, not a list.
+
+The Case set is verified by `sf project deploy start --dry-run` against a Summer '26
+developer org on 2026-09-05 -- see
+examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md (runs 1-5) and the two
+validated layouts under examples/builds/case-onboarding/reports/mock-deploy-fixes/.
+
 Severities and exit codes:
-  CRITICAL / HIGH   deploy-breaking; exit 1
-  MEDIUM / LOW      review; printed, exit 0
-  INFO              scope and discovery notes; printed, exit 0
+  CRITICAL / ERROR / HIGH   deploy-breaking; exit 1
+  MEDIUM / LOW              review; printed, exit 0
+  INFO / ADVISORY           scope, discovery, and unverified-heuristic notes;
+                            printed, exit 0
 
   0 -- no CRITICAL/HIGH finding (and no finding at all when --strict is passed)
   1 -- at least one CRITICAL/HIGH, or any finding under --strict
@@ -63,7 +91,16 @@ METADATA_SUFFIXES = (
     ".recordType-meta.xml",
     ".businessProcess-meta.xml",
 )
-SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "INFO": 0, "REVIEW": 0}
+SEVERITY_WEIGHTS = {
+    "CRITICAL": 20,
+    "ERROR": 20,
+    "HIGH": 10,
+    "MEDIUM": 5,
+    "LOW": 1,
+    "INFO": 0,
+    "ADVISORY": 0,
+    "REVIEW": 0,
+}
 
 # Metadata API Developer Guide, RecordType: businessProcess "is required in record
 # types for lead, opportunity, solution, and case, and not allowed otherwise".
@@ -71,6 +108,19 @@ BUSINESS_PROCESS_OBJECTS = {"lead", "opportunity", "solution", "case"}
 
 RECORD_TYPE_COUNT_WARN = 8
 RECORD_TYPE_COUNT_HIGH = 13
+
+# RL-REQ-01 / RL-REQ-02. Verified by `sf project deploy start --dry-run` against a
+# Summer '26 developer org on 2026-09-05
+# (examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md, runs 1-5). Not stated
+# in the Metadata API guide; do not extend this to another object without a dry run.
+CASE_LAYOUT_REQUIRED_ITEMS = ("ContactId", "Description", "SuppliedEmail")
+CASE_LAYOUT_REQUIRED_BEHAVIOR = "Required"
+CASE_LAYOUT_REQUIRED_BEHAVIOR_FIELD = "Status"
+
+# RL-REQ-03 heuristic only. The per-object required set is UNVERIFIED (2026-09-09),
+# so this is a "does the layout carry any identifying field at all" smoke test
+# rather than a claim about what a given object requires.
+NAME_LIKE_FIELDS = ("Name", "Subject", "LastName", "Title", "CaseNumber")
 
 
 def local_name(tag: str) -> str:
@@ -134,6 +184,20 @@ def layout_developer_name(path: Path) -> str:
     return path.stem
 
 
+def layout_object_name(developer_name: str) -> str:
+    """Object the layout belongs to, taken from the file-name form.
+
+    A Layout member is `<Object>-<Layout Name>` (Metadata API guide, Layout: the
+    Idea example uses `Idea-Idea Layout`), so the object is everything before the
+    first hyphen. Returns "" when the name carries no hyphen and the object cannot
+    be established -- callers must not guess in that case.
+    """
+    head, sep, _tail = developer_name.partition("-")
+    if not sep:
+        return ""
+    return head.strip()
+
+
 class Model:
     """Everything the checks need, collected in one pass."""
 
@@ -146,6 +210,8 @@ class Model:
         self.layouts: dict[str, Path] = {}
         # layout developer name -> number of Required layout items
         self.layout_required_counts: dict[str, int] = {}
+        # layout developer name -> {field API name: that item's behavior text ("" if unset)}
+        self.layout_item_behaviors: dict[str, dict[str, str]] = {}
         # record type full names referenced by any recordTypeVisibilities entry
         self.visible_record_types: set[str] = set()
         # (source path, layout name, record type full name or "")
@@ -194,12 +260,21 @@ def collect(model: Model, path: Path, root: ET.Element) -> None:
         dev_name = layout_developer_name(path)
         model.layouts[dev_name] = path
         required = 0
+        behaviors: dict[str, str] = {}
         for section in children(root, "layoutSections"):
             for column in children(section, "layoutColumns"):
                 for item in children(column, "layoutItems"):
-                    if child_text(item, "behavior") == "Required":
+                    behavior = child_text(item, "behavior")
+                    if behavior == "Required":
                         required += 1
+                    field = child_text(item, "field")
+                    if field:
+                        # first entry wins; a field placed twice keeps the stricter
+                        # reading only if the duplicate is itself Required
+                        if field not in behaviors or behavior == "Required":
+                            behaviors[field] = behavior
         model.layout_required_counts[dev_name] = required
+        model.layout_item_behaviors[dev_name] = behaviors
 
     elif root_type in {"Profile", "PermissionSet"}:
         for node in children(root, "recordTypeVisibilities"):
@@ -263,6 +338,49 @@ def run_checks(model: Model) -> list[str]:
                 f"INFO {model.layouts[dev_name]}: layout '{dev_name}' marks no field "
                 f"behavior=Required"
             )
+
+    # RL-REQ-01 / RL-REQ-02 / RL-REQ-03: layout-required standard fields.
+    for dev_name in sorted(model.layouts):
+        path = model.layouts[dev_name]
+        obj = layout_object_name(dev_name)
+        if not obj:
+            continue
+        behaviors = model.layout_item_behaviors.get(dev_name, {})
+
+        if obj == "Case":
+            missing = [f for f in CASE_LAYOUT_REQUIRED_ITEMS if f not in behaviors]
+            if missing:
+                findings.append(
+                    f"ERROR {path}: RL-REQ-01 Case layout '{dev_name}' has no layoutItems "
+                    f"entry for {', '.join(missing)} - the deploy fails with 'Layout must "
+                    f"contain an item for required layout field: <field>', one field per run"
+                )
+            status_behavior = behaviors.get(CASE_LAYOUT_REQUIRED_BEHAVIOR_FIELD)
+            if status_behavior is None:
+                findings.append(
+                    f"ERROR {path}: RL-REQ-02 Case layout '{dev_name}' has no "
+                    f"{CASE_LAYOUT_REQUIRED_BEHAVIOR_FIELD} item - the platform requires one "
+                    f"with behavior={CASE_LAYOUT_REQUIRED_BEHAVIOR}"
+                )
+            elif status_behavior != CASE_LAYOUT_REQUIRED_BEHAVIOR:
+                findings.append(
+                    f"ERROR {path}: RL-REQ-02 Case layout '{dev_name}' sets "
+                    f"{CASE_LAYOUT_REQUIRED_BEHAVIOR_FIELD} behavior="
+                    f"'{status_behavior or 'unset'}' - the deploy fails with "
+                    f"'Field:{CASE_LAYOUT_REQUIRED_BEHAVIOR_FIELD} must be "
+                    f"{CASE_LAYOUT_REQUIRED_BEHAVIOR}'. This one is not the layout-vs-field "
+                    f"enforcement choice; it is a deploy precondition"
+                )
+        elif not obj.endswith("__c"):
+            if not any(field in behaviors for field in NAME_LIKE_FIELDS):
+                findings.append(
+                    f"ADVISORY {path}: RL-REQ-03 standard-object layout '{dev_name}' carries "
+                    f"none of {', '.join(NAME_LIKE_FIELDS)} - some standard fields are required "
+                    f"on the layout itself and the deploy, not this checker, is the authority. "
+                    f"Advisory only: the required set is verified for Case alone, so the set for "
+                    f"'{obj}' is UNVERIFIED (2026-09-09). Discover it with "
+                    f"'sf project deploy start --dry-run'"
+                )
 
     # 5. record type count per object
     for obj, count in sorted(model.record_type_counts.items()):
@@ -360,7 +478,7 @@ def main() -> int:
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="Exit 1 on MEDIUM/LOW/INFO findings as well as CRITICAL/HIGH.",
+        help="Exit 1 on MEDIUM/LOW/INFO/ADVISORY findings as well as CRITICAL/ERROR/HIGH.",
     )
     args = parser.parse_args()
 
