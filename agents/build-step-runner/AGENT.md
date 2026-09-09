@@ -107,7 +107,9 @@ Two carve-outs, both narrow:
 - A step whose status is `blocked` never appears in `next`. It may be re-run when the caller supplied `reason` — `build_plan.py` allows `blocked → running` — and the refusal above does not apply. Record the caller's `reason` on the run.
 - A step whose status is `failed` is reset before it is re-run. `set-status <step> pending` is the documented reset (`failed → pending` is an allowed transition), after which the step appears in `next` like any other and the ordinary path applies. `failed → running` is also allowed for an immediate re-claim with `reason` recorded; prefer the reset, because a step that goes back through `next` is a step whose gates and dependencies were re-checked.
 
-Neither carve-out reaches around a human gate: `set-status <step> running` is refused while the step's `step:<id>` gate is pending, whatever the previous status was. A step at `built`, `tested` or `documented` gets no carve-out at all: re-running it is a re-plan decision, not this agent's.
+A third carve-out is the rebuild: a step at `documented` may be re-run when the caller supplies a `reason` that names the finding which reached it late (a milestone report, a mock deploy, a fixed skill) — `build_plan.py` allows `documented → running`. Record the reason on the run, note the rebuild in the step's `deploy-order.md`, and say in the envelope that the step's earlier `tested`/`documented` records and the milestone verdict above it are now stale. Steps at `built` or `tested` get no carve-out: they are mid-loop, and the tester or doc-keeper is the next agent, not this one.
+
+None of the carve-outs reaches around a human gate: `set-status <step> running` is refused while the step's `step:<id>` gate is pending, whatever the previous status was.
 
 Never infer runnability by reading `depends_on` yourself. `build_plan.py` owns that computation per `standards/build-orchestration.md` § 8, and a second implementation of it is a second answer.
 

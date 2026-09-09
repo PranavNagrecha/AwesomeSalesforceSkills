@@ -2296,3 +2296,11 @@ def test_export_skips_the_skills_symlink(tmp_path, fixture_repo, requirement, ca
     assert run("export", str(build_dir / "plan.json"), str(dest), "--repo-root", str(fixture_repo)) == 0
     assert not (dest / "skills").exists() and not (dest / "skills").is_symlink()
     assert (dest / "plan.json").is_file() and (dest / "requirement.md").is_file()
+
+
+def test_documented_step_can_be_rebuilt():
+    """Section 4: documented -> running is the rebuild path; built/tested are not re-runnable."""
+    from scripts.build_plan import ALLOWED_TRANSITIONS
+    assert "running" in ALLOWED_TRANSITIONS["documented"]
+    assert "running" not in ALLOWED_TRANSITIONS["built"]
+    assert "running" not in ALLOWED_TRANSITIONS["tested"]

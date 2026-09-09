@@ -209,9 +209,15 @@ Each step records: `id`, `milestone`, `type`, `title`, `agent`, `skills[]`
 `status`, `human_gate`, `runs[]`.
 
 Step status machine: `pending → running → built → tested → documented`, with
-`failed` and `blocked` as side exits. Two more transitions exist for recovery:
-`failed → pending` (reset a step for retry) and `running → running` (re-claim a
-step on resume, which appends a run rather than overwriting one). `next` still
+`failed` and `blocked` as side exits. Three more transitions exist for recovery:
+`failed → pending` (reset a step for retry), `running → running` (re-claim a
+step on resume, which appends a run rather than overwriting one), and
+`documented → running` (rebuild a finished step after a finding that reached it
+late — a milestone report, a mock deploy, a skill fix). A rebuild appends a run
+with the caller's `reason`, drops the step back to `built` when it completes so
+the tester and doc-keeper run again, and leaves the milestone above it stale
+until `/verify-milestone` is re-run; it never reaches around a pending
+`step:<id>` gate. `next` still
 offers `pending` steps only — steps whose `depends_on` are all `documented`, in
 the current (approved) milestone, excluding any step whose `step:<id>` human
 gate is not approved.
