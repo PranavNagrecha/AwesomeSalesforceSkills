@@ -126,6 +126,8 @@ Read `plan.build_mode` before running any lens: it is `design-only` or `org-conn
 
 Verify a plan at `status: planned`; re-verifying one already at `verified` is allowed, because that is how a plan is re-checked after an edit. Refuse anything else — a `clarifying` plan has nothing to verify, an `approved` or `building` plan is past this gate, and a `plan-rejected` plan needs a new version from the planner first.
 
+**scale: ask** — a plan with exactly one milestone and one step is a plan: it is not refused, downgraded, or waved through as too small to check. Skipped: no minimum step or milestone count gates entry to Step 2. Invariant unchanged (§ 3.1 "What never changes"): `scripts/build_plan.py validate` still runs first and a non-zero exit still stops the run before any lens fires, whatever the plan's size.
+
 ### Step 2 — Executability lens, per step
 
 For each step, open the named agent's `AGENT.md` and check, one claim at a time:
@@ -193,6 +195,8 @@ Run once per plan, after the per-step lenses. These are the checks no single ste
 ### Step 6 — Synthesise, write, and stop at G2
 
 Merge the verdicts. Any `refuted` lens on any step, any step that returned no verdict at all, and any failed cross-step check is a **blocker**; anything the agent wants a human to see but which does not invalidate a step is a **warning**. Aggregate, do not re-adjudicate: never overturn a refutation because it reads harshly, and never add a blocker no lens raised. Deduplicate an identical finding across lenses into one blocker that lists the lenses that raised it, and order blockers by step in plan order.
+
+**scale: ask** — this synthesis runs once: three lenses over the single step, refutation-only, with no second pass. Only a **CRITICAL** finding earns one re-plan — a refutation on the executability or grounding lens naming an ineligible agent, a skill or template that does not resolve, a declared checker not on disk, or a decision with no tree branch (§ 3.1 the sizing rule's CRITICAL definition). A testability refutation on the step's own tests is fixed in place with `amend-step` and recorded there instead of triggering a round; anything softer is a warning printed at the `go` gate for the human to weigh. At `scale: feature`, up to two rounds are allowed instead of one. Skipped: the open-ended re-plan loop `project`-scale verification allows. Invariant unchanged (§ 3.1 "What never changes"): a lens not run is still `refuted`, never `pass`, and `set-verification` still validates before it writes.
 
 Write the `verification` object to `inputs/verification/verification.json` under the build directory and hand it to the CLI. The `inputs/<stage-or-step>/` tree in the `standards/build-orchestration.md` § 2 layout is where a `set-*` `--file` body belongs; it is not an envelope and does not go under `envelopes/`, which holds agent run envelopes only and where `scripts/validate_envelope.py` would flag it. This agent never edits `plan.json` by hand:
 
@@ -374,7 +378,7 @@ Extends the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 ### Process Observations
 
 - **What was healthy** — steps whose agent, skills, templates and checkers all lined up on the first read; decision branches quoted accurately; tests that would genuinely fail if the step did nothing.
-- **What was concerning** — a step type with no checker anywhere in the library; agents whose Inputs sections are too loose to verify against; decisions citing a tree without quoting a branch; repeated refutations pointing at the same missing file.
+- **What was concerning** — a step type with no checker anywhere in the library; agents whose Inputs sections are too loose to verify against; decisions citing a tree without quoting a branch; repeated refutations pointing at the same missing file; the plan's recorded `scale` disagreeing with the sizing line's own D/S/O/X counts, whether from an unrecorded override or a count that should have re-tiered the build.
 - **What was ambiguous** — checks the agent refuted on the conservative side; steps where the roster offers two plausible owners; fit tiers that sit between two rubric rows.
 - **Suggested follow-up agents** — [`/plan-build`](../../commands/plan-build.md) when the plan is rejected. [`/assess-waf`](../../commands/assess-waf.md) when blockers cluster around one architectural decision rather than around individual steps.
 

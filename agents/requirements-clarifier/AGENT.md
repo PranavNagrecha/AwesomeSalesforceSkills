@@ -85,6 +85,9 @@ Typed mirror: [`inputs.schema.json`](./inputs.schema.json).
 | `requirement_text` | one of these two | the requirement pasted inline; the agent writes it to a file first, because `init --requirement` takes a path and the build directory keeps the human's words verbatim |
 | `build_dir` | no | `.sfskills/builds/case-onboarding` — defaults to `.sfskills/builds/<requirement-filename-slug>`. The build id is the directory name (`init --build-id` only overrides it), so there is no separate id input. Supply an existing directory when re-clarifying |
 | `title` | no | `Case onboarding` — the one-line human title `init --title` requires; defaults to the requirement's first heading, or the build id in title case |
+| `scale` | no | `ask` — mirrors `init --scale ask\|feature\|project`; absent leaves `scale` unset and Step 1 computes it |
+
+**scale: ask** — `scale` is accepted as an optional override of the tier Step 1 would otherwise compute, exactly as `init --scale` accepts it. Skipped: nothing at this input boundary — an override changes what Steps 1, 4, 5 and 6 do downstream, not what is asked for here. Invariant unchanged (§ 3.1 "What never changes"): every cited skill is still read in full and every row of its Questions-to-Ask table is still harvested (§ 1 stage 1), whichever tier is in force.
 
 Explicitly **not** accepted: any cap on the number of questions. `standards/build-orchestration.md` § 3 forbids capping. If a caller supplies one, the agent records the request in Process Observations and asks the full set anyway.
 
@@ -112,6 +115,8 @@ python3 scripts/build_plan.py init \
 `init` also fills `requirement.summary` mechanically: the first non-heading line of `requirement.md`, truncated at 400 characters, or a "see `requirement.md`" placeholder when the file has no prose line at all. That is a stand-in, not a summary. The schema asks for a one-paragraph restatement and `PLAN.md` prints it under `## Requirement` as the build's own statement of what is being built, and **this agent is its only writer** — `set-clarifications --summary` is the sole subcommand that can set the field, so no later stage will fix a placeholder left behind here. Write the real restatement in Step 5.
 
 `init` creates the § 2 directory layout, copies the requirement verbatim to `requirement.md`, writes a minimal `plan.json` at `status: intake` with the `clarifications` and `plan` gate records already present as `pending`, and renders `PLAN.md` + `CLARIFICATIONS.md`. The agent therefore never adds a gate record; `ensure-gates` is the planner's call, once milestones exist.
+
+**scale: ask** — before harvesting a question, take the four counts § 3.1's sizing rule defines from `requirement.md` and the Step 2 searches (D metadata types, S skills with a question table, O objects, X integration/migration), and print the sizing line in the exact § 3.1 format — `scale: ask (D=1 metadata type, S=2 skills with question tables, O=1 object, integration=no; no override)` — then pass the resulting tier to `init --scale`. Skipped: nothing about how `init` builds the directory — the sizing line is additive, printed before the `init` call above. Invariant unchanged (§ 3.1 "What never changes"): a human override is still recorded verbatim, and the clarifier still prints the counts even when they disagree with it — the sizing line is quoted into the report rather than recounted.
 
 If the directory already exists, read its `plan.json` first: a build already past G1 is not re-clarified in place — see `REFUSAL_COMPETING_ARTIFACT`.
 
@@ -182,6 +187,8 @@ Then add the generic set: every row of `skills/admin/requirements-gathering-for-
 
 Finally, dedupe **by meaning, not by string**. Two skills asking "who owns this record when nothing matches?" is one question, not two. `source_skill` holds a single id, so keep the skill that worded it best there and list the rest under the agent's own `also_asked_by[]` key. Keep the clearer wording; keep every source; keep the stricter `kind`.
 
+**scale: ask** — every `informational` row lands pre-filled from its `proposed_default` with `default_source` set, and is listed in `CLARIFICATIONS.md` as a default applied rather than a question asked; only `blocking` rows go to the human. Apply the tier test before finishing this step: if more than eight rows are `blocking`, the requirement was never an `ask` — re-tier to `feature` in the Step 1 sizing line and keep every row exactly as harvested. Skipped: putting an informational row in front of the human at all. Invariant unchanged (§ 3.1 "What never changes"): every cited skill is still read in full and every row of its Questions-to-Ask table still becomes a record in `clarifications[]` — the ≤ 8 bounds only how many reach the human in a round, never the harvest itself.
+
 ### Step 5 — Group, order, and write the plan
 
 `group` is free text to the schema but it is not free vocabulary here, because it is what tells the planner which build step an answer feeds. The vocabulary is the **step-type list in `standards/build-orchestration.md` § 4** — `object-model`, `access`, `automation`, `validation`, `routing`, `sla`, `ui`, `data`, `integration`, `docs`, `custom` — plus one group for questions that shape how the build is proved rather than what it configures: `testing-and-environments` (which sandbox, what seed data, who runs UAT, what the acceptance evidence is). Note `validation` is a step type in its own right: validation-rule questions group under `validation`, not under `object-model`. Use the § 4 spelling exactly. The workbook sections in `skills/admin/configuration-workbook-authoring` are the doc keeper's vocabulary for where a *built* row is written up; a group named for one of them ("SLA and calendars", "objects and fields") reads fine to a human and tells the planner nothing, because it matches no step type.
@@ -211,6 +218,8 @@ clarifications written: 24 question(s), 11 blocking; status -> clarifying; requi
 
 Every subcommand except `init` takes the **path to `plan.json`** as a positional argument; there is no `--build-dir` flag outside `init`. `validate` WARNs on every blocking question still open; that is the expected state at this stage, not a failure. An ERROR is a failure, and is fixed before rendering. `CLARIFICATIONS.md` is a rendered view: the agent writes through the CLI and lets `build_plan.py` render it, never the other way round.
 
+**scale: ask** — the ordered set is written once, answered once by the human in `CLARIFICATIONS.md`, and `ingest-answers` runs once before G1: one round, per § 3.1's three tiers table. Skipped: a second harvesting pass after the human's first answers, even when an answer implies a further question. Invariant unchanged (§ 3.1 "What never changes"): `scripts/build_plan.py` is still the only writer of plan state at any tier, and `set-clarifications` still validates before it writes — a round is a ceremony choice, not a relaxation of who may write `plan.json`.
+
 ### Step 6 — Stop at G1 and hand the loop back
 
 Report the counts (total, blocking, informational, defaults proposed, defaults absent) and tell the human exactly how to answer:
@@ -234,6 +243,8 @@ Report the counts (total, blocking, informational, defaults proposed, defaults a
 4. **Then run [`/plan-build`](../../commands/plan-build.md)** against the same build directory.
 
 The agent does not run `ingest-answers` for the human, and it never runs `gate`.
+
+**scale: ask** — Step 6 prints one command instead of a `clarifications`-gate-then-`/plan-build` hand-off: `python3 scripts/build_plan.py gate .sfskills/builds/<build-id>/plan.json go approve --by "<name>" --notes "<what was decided>"`. `go` writes the `clarifications` and `plan` records in that single invocation (§ 3.1 CLI deltas). Skipped: the separate G1 record followed by a pointer to run `/plan-build` as a second human action. Invariant unchanged (§ 3.1 "What never changes"): a gate is still written only by `gate` — `go` is a CLI alias for it, not a new decider — and decided only by a human; the stored `clarifications` and `plan` gate names and their approval preconditions are exactly the ones § 3 defines.
 
 ### Step 7 — Self-validate the envelope, then stop
 
@@ -311,7 +322,7 @@ Extends the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 ### Process Observations
 
 - **What was healthy** — capabilities with deep local coverage; skills whose question tables already agree with each other; requirement statements that arrived with volume, licence or sharing already stated.
-- **What was concerning** — capabilities that surfaced no skill with a question table (a depth gap in the library, named by search phrase); requirement statements that describe a workaround rather than an outcome; questions whose skills disagree on what a good answer looks like.
+- **What was concerning** — capabilities that surfaced no skill with a question table (a depth gap in the library, named by search phrase); requirement statements that describe a workaround rather than an outcome; questions whose skills disagree on what a good answer looks like; the printed sizing line's D/S/O/X counts disagreeing with the tier actually in effect, whether from an unrecorded override or from a count that should have re-tiered the build.
 - **What was ambiguous** — questions the agent marked blocking on the conservative side; defaults it declined to propose; deduped pairs where the two wordings were close but not identical.
 - **Suggested follow-up agents** — [`/plan-build`](../../commands/plan-build.md) once G1 is approved. Where the requirement is really a backlog rather than one requirement, [`/draft-stories`](../../commands/draft-stories.md) first, because clarification of a portfolio is a per-story operation.
 

@@ -129,6 +129,8 @@ Pick the workbook section from the step's `type`, then write one row per address
 
 **The default matters.** `standards/build-orchestration.md` § 4 names this map as one of the five places a new step type has to be added, and it is the one most likely to be missed. When a step's `type` is not a row above, write its rows to `workbook/99-other-configuration.md` under the section heading **Other configuration**, and say so in Process Observations and in the report — naming the type, so the gap gets closed in the map rather than rediscovered on the next build. A row placed in the default section is a documented artefact with a flag on it; a step type with no row is an artefact nobody signs off.
 
+**scale: ask** — the step's rows are written into `RUN.md` instead of into `workbook/<NN>-<section-slug>.md`; there is no ten-section workbook to place a row in at this scale (§ 3.1 the three tiers: documentation is "envelopes + one `RUN.md`"). `decisions.md` and `traceability.md` are left exactly as `init` stubbed them — no row is appended to either. Skipped: the section-mapping table above and the workbook idempotence keying it drives. Invariant unchanged (§ 3.1 "What never changes"): every field the row schema requires is still sourced from the plan, the envelope, or the test results, never narrated, and the write is still made through the CLI, never by hand.
+
 Each row is written to `<build_dir>/workbook/<NN>-<section-slug>.md` as a markdown table row carrying every field the row schema requires, with these bindings:
 
 - `row_id` — `CWB-<SECTION>-<nnn>`, stable across re-runs of the same step, so a re-run replaces rather than renumbers.
@@ -259,7 +261,7 @@ python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M1-S0
 5. **Decisions appended** — each with its date, step, citation and reason; explicitly "none" when the envelope recorded none.
 6. **Compiled documents** — compile run only: one row per declared output, giving the path written, the source files it was collated from, and the section or row count it carries, followed by the coverage line (requirements with no step, steps with no requirement, manual tests outstanding).
 7. **Idempotence note** — which rows were replaced versus newly written on this run.
-8. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the file it came from.
+8. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the file it came from. Flag under Concerning whenever `plan.json`'s `scale` disagrees with the D/S/O/X counts the clarifier's sizing line printed — an unrecorded override, or a count that should have re-tiered the build.
 9. **Citations** — skills, standards and schemas consulted.
 
 Suggested follow-ups: `milestone-verifier` once every step in the milestone is documented, and `config-workbook-author` when the build's workbook is to be compiled into a release-level document. Recommendations only.

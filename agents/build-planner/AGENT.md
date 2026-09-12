@@ -214,6 +214,8 @@ Rules, in force order:
 
 Between two and six. Each milestone records exactly `id` (`M1`, `M2`, …), `title`, `goal` in Given/When/Then shape, `steps[]` (exactly the ids of the steps whose `milestone` is this id), `acceptance_tests[]` (at least one — the cross-step check the milestone verifier will run) and `status: "pending"`. Milestone objects are `additionalProperties: false`: any other key fails schema validation, so the requirements a milestone closes are traced through `scope.fit_gap[].steps[]`, not through a field here. Order them by the deployment order in `skills/admin/configuration-workbook-authoring`: the data model before the things that reference it, access before automation that runs as those users, routing and SLA before the UI that displays them. A milestone that cannot be accepted on its own is two milestones or one.
 
+**scale: ask** — "between two and six" becomes exactly **1** milestone (`M1`), holding every step the plan needs; the same is true at `scale: feature`. Skipped: the workbook-order milestone cut this step otherwise performs, and the multi-milestone spread. Invariant unchanged (§ 3.1 "What never changes"): the one milestone still records `id`, `title`, `goal` in Given/When/Then, `steps[]`, at least one `acceptance_tests[]` entry and `status: "pending"` exactly as the schema requires, and `set-plan` still validates the body before writing it.
+
 ### Step 6 — Write the steps
 
 One step per unit of build. Step objects are `additionalProperties: false`, and all fifteen of these are **required**: `id` (`M1-S01` — `^M[0-9]+-S[0-9]{2,}$`), `milestone`, `type`, `title`, `agent`, `skills[]`, `templates[]`, `decision_trees[]`, `inputs{}`, `outputs[]`, `depends_on[]`, `acceptance_tests[]` (minItems 1), `status`, `runs[]` (`[]` at plan time) and `human_gate`. `blocked_reason` is the only optional key, and it is required when `status` is `blocked`. Nothing else may be added — there is no field for requirement ids on a step.
@@ -281,6 +283,8 @@ There is a second blocking cause and it is the one most likely to be planned aro
 
 Three rules govern this whole step and are worth stating flatly: **agents only from the roster; skills only when they resolve on disk; no freestyle Salesforce claims.** A plan that breaks any of the three is worse than a short plan, because the failure surfaces three stages later inside an artefact somebody is about to deploy.
 
+**scale: ask** — the plan is exactly one step (`M1-S01`), and it is written with `human_gate: false` (§ 3.1 the three tiers: 1 milestone, 1 step). Skipped: the multi-step decomposition, the `depends_on` graph, and the pending `step:` gate record `ensure-gates` would otherwise add for a `human_gate: true` step. Invariant unchanged (§ 3.1 "What never changes"): the one step still declares all fifteen required fields, still names exactly one agent eligible under the four-check rule in this step, and still carries at least one runnable acceptance test — `set-plan` still validates the body before it writes.
+
 ### Step 7 — Write, validate, render
 
 Never edit `plan.json` by hand. Write the plan body to `inputs/plan/plan-body.json` under the build directory and hand it to the CLI, which replaces the body in one validated write and sets `status: "planned"`.
@@ -305,6 +309,8 @@ python3 scripts/build_plan.py render    .sfskills/builds/<build-id>/plan.json
 **`ensure-gates` is a repair command, not a fourth line in that block.** `set-plan` already fills the gate records in on its way through — one `milestone:<id>` per milestone, plus a `step:<step-id>` for every step written with `human_gate: true`, all `pending` — and names what it added on its `gates added:` output line. Reach for `ensure-gates` only when `validate` still reports `missing human gate '<name>'`, which happens to a plan that predates this behaviour or was edited outside the CLI; it is idempotent and leaves any existing record untouched. Writing a *pending* record is not approving one: `build_plan.py gate` stays the only writer of a gate decision, and a human the only decider.
 
 `validate` rejects an unknown step type, an agent that is not eligible under the four checks in Step 6, a skill that does not resolve, a dependency cycle, a step or milestone with no acceptance test, a milestone whose `steps[]` does not match its members, a missing gate, a `checker` test whose script is not on disk, and any test `command` that matches the § 5 deploy deny-list. Fix every error and re-run until it exits 0 — finishing with a plan that does not validate hands the verifier a file it will reject on mechanics instead of on substance. Report the next command in the loop, [`/verify-plan`](../../commands/verify-plan.md), and stop.
+
+**scale: ask** — `render` also writes `RUN.md` at the build root (§ 3.1 CLI deltas): what was built, every artefact path, the checker commands with their exit codes, the defaults applied, the `manual` acceptance lines, and the `mock_deploy.py` command to run next. Skipped: nothing about the write sequence itself — `set-plan` → `validate` → `render` still runs in that order; `RUN.md` is an additional rendered view alongside `PLAN.md`, not a replacement for it. Invariant unchanged (§ 3.1 "What never changes"): `RUN.md` is a rendered view like `PLAN.md`, never hand-edited, and `scripts/build_plan.py` remains the only writer of the plan state it renders from.
 
 ### Step 8 — Self-validate the envelope before returning
 
@@ -367,7 +373,7 @@ Extends the default rubric in `agents/_shared/AGENT_CONTRACT.md`:
 ### Process Observations
 
 - **What was healthy** — capabilities where a skill, a template and a checker all existed for the same step; answers that arrived with volume and sharing already stated; milestones that fell out of the workbook order without forcing.
-- **What was concerning** — steps blocked on skill gaps; a milestone carrying more than a handful of steps; a step type with no checker anywhere in the library; requirements that reached the plan with no test that would fail if the step did nothing.
+- **What was concerning** — steps blocked on skill gaps; a milestone carrying more than a handful of steps; a step type with no checker anywhere in the library; requirements that reached the plan with no test that would fail if the step did nothing; the clarifier's printed sizing line disagreeing with the tier the plan is actually built at, whether from an unrecorded override or a count that should have re-tiered the build.
 - **What was ambiguous** — milestone cuts that could reasonably have gone another way; steps that two roster agents could equally own; capabilities whose fit tier sat between Config and Low-Code.
 - **Suggested follow-up agents** — [`/verify-plan`](../../commands/verify-plan.md) next, always. [`/assess-waf`](../../commands/assess-waf.md) when a decision was recorded with `adr_required: true`. [`/run-fit-gap`](../../commands/run-fit-gap.md) when the requirement is really a backlog and needs org-grounded tiers before planning.
 

@@ -144,6 +144,8 @@ For a production target the command is `sf project deploy validate` with the sam
 
 The overall verdict is one of three, and it is a recommendation to the human, not a decision: `ready-for-gate` (no unresolved references, no ordering contradiction, no failing acceptance test, no blocked step), `ready-with-findings` (findings the human may accept), or `not-ready` (at least one unresolved reference, ordering contradiction, failing test, or blocked step).
 
+**scale: ask** — `MILESTONE-M1-REPORT.md` is one page: the single step's artefacts, its reference resolution, its deployment-order check, its acceptance-test result, and its manual checklist if any — no cross-milestone rollup, because there is exactly one milestone. That one page is the evidence the `accept` gate alias rests on (§ 3.1 CLI deltas: `accept` writes the `milestone:M1` record in one invocation). Skipped: a multi-milestone rollup section. Invariant unchanged (§ 3.1 "What never changes"): the gate is still written only by `gate` — `accept` is a CLI alias for it, not a new decider — and decided only by a human; this agent still only prints the command.
+
 Then record the verdict and the report path — this is the one plan write this agent makes, and it is a subcommand, never a hand edit:
 
 ```bash
@@ -219,7 +221,7 @@ python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M2/<r
 8. **Optional validate-only command** — marked optional and human-run.
 9. **Gate line** — the exact `build_plan.py gate` command, unrun, with the § 3 conditions it will be checked against.
 10. **The `set-milestone` invocation** — the exact command line that recorded the verdict and the report path.
-11. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the artefact or result behind it.
+11. **Process Observations** — Healthy / Concerning / Ambiguous / Suggested follow-ups, each citing the artefact or result behind it. Flag under Concerning whenever `plan.json`'s `scale` disagrees with the D/S/O/X counts the clarifier's sizing line printed — an unrecorded override, or a count that should have re-tiered the build.
 12. **Citations** — skills, standards and schemas consulted.
 
 Suggested follow-ups: `deployment-risk-scorer` when the human has an org to score the merged manifest against, and `release-readiness-reviewer` when the milestone is the last one before a release. Recommendations only; this agent invokes neither.
