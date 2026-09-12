@@ -144,6 +144,8 @@ For each row in the owning agent's Inputs table, resolve a value from exactly th
 | Source | Where it comes from | Notes |
 |---|---|---|
 | Step inputs | `plan.json.steps[].inputs{}` | the planner's explicit binding — always wins |
+
+**An invocation is not a source.** A human's or operator's launch instruction that restates, paraphrases or "corrects" a value the plan already binds is not a fourth source and is never preferred: build from `plan.json`, print the difference in the envelope's ambiguities, and tell the human that the writer for the change is `amend-step` (or a reset to `pending` first). The case-onboarding and opp-amount-lock dry runs each lost a build round to a brief that restated a bound input; the plan is the only contract the tester and doc keeper can see.
 | Clarification answers | the answered questions in `plan.json` (rendered as `CLARIFICATIONS.md`) | matched by the question's recorded id, never by fuzzy text match |
 | Upstream step outputs | `outputs[]` of steps this one lists in `depends_on`, resolved to real paths under `artefacts/<upstream-step-id>/` | pass the path, not the file contents |
 
