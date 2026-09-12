@@ -1,10 +1,23 @@
 #!/usr/bin/env python3
-"""Lint validation rule metadata for common admin mistakes."""
+"""Lint validation rule metadata for common admin mistakes.
+
+VR-REF-01/VR-REF-02 do best-effort, offline reference resolution: a `__c`
+field token (in `errorConditionFormula` or `errorDisplayField`) or a
+`$Permission.X` token is checked against whatever `objects/<Object>/fields/`
+or `customPermissions/` metadata the *same scan* happens to carry. Standard
+fields (no `__c`) are never flagged -- there is no standard-field inventory to
+check them against, and the platform, not this script, is the source of truth
+for whether e.g. `Priority` exists. This is scope-dependent: point the scan at
+one build step's directory and the fields it depends on usually live in a
+different step, so there is nothing to resolve against -- see the INFO finding
+below rather than reading that silence as "checked and clean".
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from collections import defaultdict
@@ -15,7 +28,16 @@ from pathlib import Path
 # `.object` is metadata format (rules embedded in <CustomObject>);
 # `.object-meta.xml` and `.validationRule-meta.xml` are DX source format.
 METADATA_SUFFIXES = (".object", ".object-meta.xml", ".validationRule-meta.xml")
-SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0}
+SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0, "INFO": 0}
+
+# VR-REF-01/02: a custom field token (optionally relationship-qualified, e.g.
+# `Account.Region__c`) or a `$Permission.X` reference in formula text.
+# Standard fields never match -- they don't end in `__c` -- which is exactly
+# why they are never flagged.
+FIELD_TOKEN = re.compile(r"(?:([A-Za-z_]\w*)\.)?([A-Za-z_]\w*__c)\b")
+PERMISSION_TOKEN = re.compile(r"\$Permission\.([A-Za-z_]\w*)")
+FIELD_META_SUFFIX = ".field-meta.xml"
+CUSTOM_PERMISSION_SUFFIX = ".customPermission-meta.xml"
 
 # Metadata API Developer Guide, ValidationRule: "As of API version 20.0,
 # validation rules can't have compound fields." Uppercase; matched against the
@@ -98,6 +120,14 @@ def normalize_finding(finding: str) -> dict[str, str]:
 
 BLOCKING_SEVERITIES = {"CRITICAL", "HIGH"}
 
+# INFO is scope commentary, not a finding about the rule itself (e.g. "this
+# object has no field inventory in this scan, so field/errorDisplayField
+# references were not checked"). --strict promotes every actual finding
+# (REVIEW included, unchanged) but must not fail a correct build merely
+# because it was scanned one step at a time -- see the M3-S01 step-scope
+# fixture, which is exactly that shape and must stay green under --strict.
+NEVER_STRICT_SEVERITIES = {"INFO"}
+
 
 def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     """Print the JSON report and return the exit code.
@@ -105,7 +135,8 @@ def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     Exit 1 only on CRITICAL/HIGH findings (platform facts that will fail or
     misbehave at deploy or run time). MEDIUM/LOW/REVIEW are advisory and exit 0
     so a build that produced correct rules with natural formulas stays green;
-    pass --strict to promote every finding to a failure.
+    pass --strict to promote every finding to a failure, except INFO (see
+    NEVER_STRICT_SEVERITIES above), which stays advisory even under --strict.
     """
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
@@ -116,7 +147,8 @@ def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
         print(f"WARN: {len(normalized)} finding(s) detected ({len(blocking)} blocking)", file=sys.stderr)
     if blocking:
         return 1
-    return 1 if (strict and normalized) else 0
+    strict_eligible = [item for item in normalized if item["severity"] not in NEVER_STRICT_SEVERITIES]
+    return 1 if (strict and strict_eligible) else 0
 
 
 def collect_rules(path: Path) -> list[Rule]:
@@ -141,6 +173,179 @@ def collect_rules(path: Path) -> list[Rule]:
         if local_name(child.tag) == "validationRules":
             rules.append(read_rule(child, fallback_name="<unnamed rule>"))
     return rules
+
+
+def object_from_objects_path(path: Path) -> str | None:
+    """Object API name for a metadata file, from its `objects/<Object>/...`
+    ancestor directory. Works for `.validationRule-meta.xml`, `.field-meta.xml`
+    and the CustomObject-embedded `.object` / `.object-meta.xml` shapes alike,
+    since all three live under that same directory in both DX and a retrieved
+    metadata-format package. Falls back to the bare `<Object>.object[-meta.xml]`
+    file name when there is no `objects/` ancestor (e.g. a lone file passed with
+    no enclosing directory structure).
+    """
+    parts = path.parts
+    for index, part in enumerate(parts):
+        if part == "objects" and index + 1 < len(parts):
+            return parts[index + 1]
+    name = path.name
+    if name.endswith(".object-meta.xml"):
+        return name[: -len(".object-meta.xml")]
+    if name.endswith(".object"):
+        return name[: -len(".object")]
+    return None
+
+
+def collect_field_inventory(targets: list[Path]) -> tuple[dict[str, set[str]], set[str]]:
+    """Best-effort custom-field inventory for VR-REF-01, built from whatever
+    field metadata the scanned tree happens to carry: standalone
+    `objects/<Object>/fields/*.field-meta.xml` files, and `<fields>` /
+    `<CustomField>` elements embedded directly in a `.object` /
+    `.object-meta.xml` CustomObject file.
+
+    Returns `(fields_by_object, objects_with_inventory)`. Only `__c` names are
+    collected in `fields_by_object` -- standard fields are never flagged, so
+    nothing needs to know them. `objects_with_inventory` is presence, not
+    population: an object can legitimately have a field file and zero `__c`
+    fields in it, which still means "this scope can check that object", not
+    "absent".
+    """
+    fields_by_object: dict[str, set[str]] = defaultdict(set)
+    objects_with_inventory: set[str] = set()
+
+    field_files: set[Path] = set()
+    object_meta_files: set[Path] = set()
+    for target in targets:
+        if target.is_dir():
+            field_files.update(p for p in target.rglob(f"*{FIELD_META_SUFFIX}") if p.is_file())
+            object_meta_files.update(
+                p for p in target.rglob("*")
+                if p.is_file() and (p.name.endswith(".object-meta.xml") or p.name.endswith(".object"))
+            )
+        elif target.is_file():
+            if target.name.endswith(FIELD_META_SUFFIX):
+                field_files.add(target)
+            elif target.name.endswith(".object-meta.xml") or target.name.endswith(".object"):
+                object_meta_files.add(target)
+
+    for path in sorted(field_files):
+        obj = object_from_objects_path(path)
+        if obj is None:
+            continue
+        objects_with_inventory.add(obj)
+        try:
+            root = ET.parse(path).getroot()
+        except ET.ParseError:
+            continue
+        field_name = child_text(root, "fullName")
+        if field_name.endswith("__c"):
+            fields_by_object[obj].add(field_name)
+
+    for path in sorted(object_meta_files):
+        obj = object_from_objects_path(path)
+        if obj is None:
+            continue
+        try:
+            root = ET.parse(path).getroot()
+        except ET.ParseError:
+            continue
+        if local_name(root.tag) != "CustomObject":
+            continue
+        for child in root:
+            if local_name(child.tag) in ("fields", "CustomField"):
+                objects_with_inventory.add(obj)
+                field_name = child_text(child, "fullName")
+                if field_name.endswith("__c"):
+                    fields_by_object[obj].add(field_name)
+
+    return dict(fields_by_object), objects_with_inventory
+
+
+def collect_custom_permission_names(targets: list[Path]) -> tuple[set[str], bool]:
+    """Custom Permission API names from `customPermissions/*.customPermission-meta.xml`
+    anywhere in the scanned tree, and whether a `customPermissions` directory
+    exists in the tree at all -- the gate for VR-REF-02. When it does not
+    exist, `$Permission` tokens are left unchecked rather than guessed at: an
+    empty result would otherwise be indistinguishable from "checked, and every
+    permission exists".
+    """
+    names: set[str] = set()
+    dir_found = False
+    for target in targets:
+        if target.is_dir():
+            if any(p.is_dir() and p.name == "customPermissions" for p in target.rglob("*")):
+                dir_found = True
+            for candidate in target.rglob(f"*{CUSTOM_PERMISSION_SUFFIX}"):
+                if candidate.is_file():
+                    names.add(candidate.name[: -len(CUSTOM_PERMISSION_SUFFIX)])
+                    dir_found = True
+        elif target.is_file() and target.name.endswith(CUSTOM_PERMISSION_SUFFIX):
+            names.add(target.name[: -len(CUSTOM_PERMISSION_SUFFIX)])
+            dir_found = True
+    return names, dir_found
+
+
+def audit_rule_references(
+    path: Path,
+    rule: Rule,
+    object_name: str | None,
+    fields_by_object: dict[str, set[str]],
+    objects_with_inventory: set[str],
+    permission_names: set[str],
+    permission_dir_found: bool,
+) -> tuple[list[str], bool]:
+    """VR-REF-01/VR-REF-02: resolve what CAN be resolved offline.
+
+    Returns `(findings, inventory_was_absent)`. The second value lets the
+    caller fold every rule whose object had no field inventory in this scope
+    into one INFO instead of one per rule, mirroring how
+    admin/record-types-and-page-layouts reports an unresolvable-at-this-scope
+    count rather than staying silent about a check it could not make.
+    """
+    findings: list[str] = []
+    name = rule.full_name
+    has_own_inventory = object_name is not None and object_name in objects_with_inventory
+
+    field_tokens = set(FIELD_TOKEN.findall(rule.formula))
+    if rule.error_display_field.endswith("__c"):
+        field_tokens.add(("", rule.error_display_field))
+
+    if has_own_inventory:
+        for prefix, field in sorted(field_tokens):
+            if prefix:
+                continue  # relationship-qualified; resolved in the loop below
+            if field not in fields_by_object.get(object_name, set()):
+                findings.append(
+                    f"HIGH {path}::{name}: VR-REF-01 references {field}, which has no "
+                    f"matching field file under objects/{object_name}/fields/ in the "
+                    "scanned tree"
+                )
+
+    for prefix, field in sorted(field_tokens):
+        if not prefix:
+            continue
+        if prefix not in objects_with_inventory:
+            # Foreign-object reference this scope can't verify -- skip rather
+            # than guess, same as a missing customPermissions/ directory below.
+            continue
+        if field not in fields_by_object.get(prefix, set()):
+            findings.append(
+                f"HIGH {path}::{name}: VR-REF-01 formula references {prefix}.{field}, "
+                f"which has no matching field file under objects/{prefix}/fields/ in "
+                "the scanned tree"
+            )
+
+    if permission_dir_found:
+        for permission in sorted(set(PERMISSION_TOKEN.findall(rule.formula))):
+            if permission not in permission_names:
+                findings.append(
+                    f"HIGH {path}::{name}: VR-REF-02 formula references "
+                    f"$Permission.{permission}, which has no matching "
+                    f"customPermissions/{permission}{CUSTOM_PERMISSION_SUFFIX} in the "
+                    "scanned tree"
+                )
+
+    return findings, not has_own_inventory
 
 
 # Metadata API Developer Guide, ValidationRule: "The message must be 255
@@ -242,7 +447,14 @@ def main() -> int:
         description=(
             "Scan ValidationRule metadata for formula, bypass and error-message "
             "issues. Reads both the metadata-format `.object` shape and the DX "
-            "source-format `.validationRule-meta.xml` shape."
+            "source-format `.validationRule-meta.xml` shape. When the scanned tree "
+            "also carries objects/<Object>/fields/*.field-meta.xml (or embedded "
+            "<fields>/<CustomField> elements) and/or customPermissions/*.customPermission-meta.xml, "
+            "also resolves `__c` field tokens, `errorDisplayField`, and `$Permission` "
+            "references against that inventory (VR-REF-01/VR-REF-02). Standard fields "
+            "are never flagged. Run over the whole build/package tree, not one step's "
+            "directory, or those references come back as an advisory INFO instead of "
+            "a real answer."
         )
     )
     parser.add_argument(
@@ -292,16 +504,41 @@ def main() -> int:
     # over one name in a manifest; both deploy unpredictably.
     seen_names: dict[str, list[str]] = defaultdict(list)
 
+    fields_by_object, objects_with_inventory = collect_field_inventory(targets)
+    permission_names, permission_dir_found = collect_custom_permission_names(targets)
+    inventory_absent_rule_count = 0
+    inventory_absent_objects: set[str] = set()
+
     for path in files:
         try:
             rules = collect_rules(path)
         except ET.ParseError as exc:
             findings.append(f"CRITICAL {path}: file is not well-formed XML ({exc})")
             continue
+        object_name = object_from_objects_path(path)
         for rule in rules:
             rule_count += 1
             seen_names[rule.full_name].append(str(path))
             findings.extend(audit_rule(path, rule))
+            ref_findings, inventory_absent = audit_rule_references(
+                path, rule, object_name, fields_by_object, objects_with_inventory,
+                permission_names, permission_dir_found,
+            )
+            findings.extend(ref_findings)
+            if inventory_absent:
+                inventory_absent_rule_count += 1
+                inventory_absent_objects.add(object_name or f"<unknown object: {path}>")
+
+    if inventory_absent_rule_count:
+        findings.append(
+            f"INFO field references: {inventory_absent_rule_count} validation rule(s) "
+            f"on {len(inventory_absent_objects)} object(s) "
+            f"({', '.join(sorted(inventory_absent_objects))}) have no field inventory "
+            "in this scope - field inventory absent at this scope, references "
+            "unresolvable. Re-run over the tree that also carries "
+            "objects/<Object>/fields/ (and customPermissions/ for $Permission "
+            "tokens) to make the check real"
+        )
 
     for full_name, sources in sorted(seen_names.items()):
         if len(sources) > 1:
