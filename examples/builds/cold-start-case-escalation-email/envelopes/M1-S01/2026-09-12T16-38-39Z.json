@@ -1,0 +1,57 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T16-38-39Z",
+  "report_path": ".sfskills/builds/case-escalation-email-alert/envelopes/M1-S01/2026-09-12T16-38-39Z.md",
+  "envelope_path": ".sfskills/builds/case-escalation-email-alert/envelopes/M1-S01/2026-09-12T16-38-39Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-escalation-email-alert",
+    "step_id": "M1-S01"
+  },
+  "summary": "Ran the molecular tests for M1-S01. Always-on xml: both artefact XML files (the Flow and package.xml) parse. Always-on manifest: the Flow member Case_Escalation_Notify_Account_Owner is declared in package.xml and the file exists on disk, checked in both directions, consistent. Declared checker: python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M1-S01, run verbatim from the build directory via its skills symlink, exited 0 with 'No issues found.'. check-outputs paired with it also returned ok. No step-level manual tests are declared; the build's one manual test belongs to milestone M1 and is left for milestone-verifier. results.json written with passed: true.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (none were manual at step level), both always-on checks completed, and every exit code was observed directly by this run rather than assumed.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The command was run exactly as declared in the plan (--manifest-dir artefacts/M1-S01, from the build directory via its skills symlink), with no rewriting, and it resolved and ran cleanly on the first attempt.",
+      "domain": "checker-verification",
+      "evidence": {"source": "heuristic", "path": ".sfskills/builds/case-escalation-email-alert/tests/M1-S01/check_record_triggered_flow_patterns.stdout.txt"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Step M1-S01 is tested; the doc keeper is next, then the milestone verifier once all of M1's steps are documented.",
+      "domain": "build-loop",
+      "evidence": {"source": "input"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "standards/build-orchestration.md Section 3 routes a tested step to the doc keeper next."
+    }
+  ],
+  "citations": [
+    {"type": "skill", "id": "flow/record-triggered-flow-patterns", "path": "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py", "used_for": "the step's declared checker test"}
+  ],
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the step is tested; the doc keeper updates PLAN.md/decisions.md/traceability next"}
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "results": {
+      "step_id": "M1-S01",
+      "ran": ["xml", "manifest", "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py"],
+      "passed": true,
+      "failed": [],
+      "skipped_manual": []
+    },
+    "xml_check": [
+      {"path": "artefacts/M1-S01/flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml", "parsed": true},
+      {"path": "artefacts/M1-S01/package.xml", "parsed": true}
+    ],
+    "manifest_check": {"consistent": true, "file_to_manifest_covered": true, "manifest_to_file_covered": true},
+    "checker_results": [
+      {"command": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M1-S01", "exit_code": 0, "output": "No issues found."}
+    ],
+    "check_outputs": {"ok": true, "step": "M1-S01", "missing": [], "empty": [], "malformed": []}
+  }
+}

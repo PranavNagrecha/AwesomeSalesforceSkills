@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Case_Escalation_Notify_Account_Owner
+
+    After-save record-triggered Flow on Case. Fires on every transition into
+    IsEscalated = true (including a repeat escalation after being
+    un-escalated). Emails the related Account's Owner with the Case Number
+    and Subject. If the Case has no related Account, the send is skipped and
+    logged. If the Account's Owner has no matching User record (a Queue-owned
+    Account), the email falls back to the Support Manager distribution
+    address instead. Every Get Records / Send Email element routes its
+    faultConnector to a shared log-and-notify chain
+    (templates/flow/FaultPath_Template.md); the chain's own two elements
+    (Create_Application_Log_Error, Notify_Admin_On_Fault) back each other up
+    so neither is left without a faultConnector of its own.
+
+    Placeholder addresses below (support-manager@example.com,
+    sfadmin@example.com) are literal stand-ins per Q3/Q4's answers and must
+    be confirmed against this org's real distribution lists before deploy.
+-->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>After-save. Emails the Account Owner (Case Number + Subject) whenever a Case transitions into IsEscalated = true, including repeats. Skips and logs when there is no related Account; falls back to the Support Manager distribution address when the Account Owner is a Queue rather than a User. Owner: Salesforce admin / Support Ops.</description>
+    <environments>Default</environments>
+    <interviewLabel>Case Escalation Notify Account Owner {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case Escalation - Notify Account Owner</label>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>DefaultMode</runInMode>
+    <status>Active</status>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Has_Account</targetReference>
+        </connector>
+        <object>Case</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>IsEscalated</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+    </start>
+
+    <!-- Decision 1: does this Case have a related Account at all? -->
+    <decisions>
+        <name>Check_Has_Account</name>
+        <label>Check Has Account</label>
+        <locationX>176</locationX>
+        <locationY>120</locationY>
+        <defaultConnector>
+            <targetReference>Log_Skip_No_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Account</defaultConnectorLabel>
+        <rules>
+            <name>Has_Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.AccountId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Account</targetReference>
+            </connector>
+            <label>Has Account</label>
+        </rules>
+    </decisions>
+
+    <!-- No-Account branch: skip the email, log why. -->
+    <recordCreates>
+        <name>Log_Skip_No_Account</name>
+        <label>Log Skip - No Account</label>
+        <locationX>50</locationX>
+        <locationY>240</locationY>
+        <faultConnector>
+            <targetReference>Capture_Fault</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Severity__c</field>
+            <value>
+                <stringValue>INFO</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Source__c</field>
+            <value>
+                <stringValue>Case_Escalation_Notify_Account_Owner</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <elementReference>Skip_Message_Formula</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Request_Id__c</field>
+            <value>
+                <elementReference>$Flow.InterviewGuid</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Application_Log__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+
+    <!-- Has-Account branch: look up the Account, then its Owner. -->
+    <recordLookups>
+        <name>Get_Account</name>
+        <label>Get Account</label>
+        <locationX>300</locationX>
+        <locationY>240</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Owner_User</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Capture_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- A Get Records on User for the Account's OwnerId: a hit means the owner is a
+         person; no row found means OwnerId points at a Group (a Queue), since Queue
+         Ids never resolve against the User object. -->
+    <recordLookups>
+        <name>Get_Owner_User</name>
+        <label>Get Owner User</label>
+        <locationX>300</locationX>
+        <locationY>360</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Owner_Is_Person</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Capture_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Account.OwnerId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Email</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- Decision 2: did that User lookup find a person owner? -->
+    <decisions>
+        <name>Check_Owner_Is_Person</name>
+        <label>Check Owner Is Person</label>
+        <locationX>300</locationX>
+        <locationY>480</locationY>
+        <defaultConnector>
+            <targetReference>Send_Email_To_Support_Manager_Fallback</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Owner Is Queue Or Not Found</defaultConnectorLabel>
+        <rules>
+            <name>Owner_Is_Person</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Owner_User.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Email_To_Owner</targetReference>
+            </connector>
+            <label>Owner Is Person</label>
+        </rules>
+    </decisions>
+
+    <!-- Happy path: email the resolved person Owner. -->
+    <actionCalls>
+        <name>Send_Email_To_Owner</name>
+        <label>Send Email To Owner</label>
+        <locationX>176</locationX>
+        <locationY>600</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <faultConnector>
+            <targetReference>Capture_Fault</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>Get_Owner_User.Email</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>Email_Subject_Formula</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBodyRichText</name>
+            <value>
+                <elementReference>Escalation_Email_Body</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+
+    <!-- Fallback path: Account Owner is a Queue (or otherwise not a User); notify the
+         Support Manager distribution address instead. -->
+    <actionCalls>
+        <name>Send_Email_To_Support_Manager_Fallback</name>
+        <label>Send Email To Support Manager Fallback</label>
+        <locationX>430</locationX>
+        <locationY>600</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <faultConnector>
+            <targetReference>Capture_Fault</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>support-manager@example.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>Email_Subject_Formula</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBodyRichText</name>
+            <value>
+                <elementReference>Escalation_Email_Body</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+
+    <!-- Shared fault-handling chain. Every DML/action element above routes here. -->
+    <assignments>
+        <name>Capture_Fault</name>
+        <label>Capture Fault</label>
+        <locationX>50</locationX>
+        <locationY>720</locationY>
+        <assignmentItems>
+            <assignToReference>faultMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_Application_Log_Error</targetReference>
+        </connector>
+    </assignments>
+    <recordCreates>
+        <name>Create_Application_Log_Error</name>
+        <label>Create Application Log Error</label>
+        <locationX>50</locationX>
+        <locationY>840</locationY>
+        <connector>
+            <targetReference>Notify_Admin_On_Fault</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Notify_Admin_On_Fault</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Severity__c</field>
+            <value>
+                <stringValue>ERROR</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Source__c</field>
+            <value>
+                <stringValue>Case_Escalation_Notify_Account_Owner</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <elementReference>faultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Request_Id__c</field>
+            <value>
+                <elementReference>$Flow.InterviewGuid</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Application_Log__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <actionCalls>
+        <name>Notify_Admin_On_Fault</name>
+        <label>Notify Admin On Fault</label>
+        <locationX>50</locationX>
+        <locationY>960</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <faultConnector>
+            <targetReference>Create_Application_Log_Error</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>sfadmin@example.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Case_Escalation_Notify_Account_Owner flow fault</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBodyRichText</name>
+            <value>
+                <elementReference>faultMessage</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+
+    <formulas>
+        <name>Email_Subject_Formula</name>
+        <dataType>String</dataType>
+        <expression>"Case " &amp; {!$Record.CaseNumber} &amp; " escalated: " &amp; {!$Record.Subject}</expression>
+    </formulas>
+
+    <textTemplates>
+        <name>Escalation_Email_Body</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;Case {!$Record.CaseNumber} on account {!Get_Account.Name} has just been escalated.&lt;/p&gt;
+&lt;p&gt;Subject: {!$Record.Subject}&lt;/p&gt;
+&lt;p&gt;Open the case: {!$Record.Id}&lt;/p&gt;</text>
+    </textTemplates>
+
+    <variables>
+        <name>faultMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

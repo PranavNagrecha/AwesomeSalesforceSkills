@@ -1,0 +1,99 @@
+{
+  "agent": "build-planner",
+  "mode": "single",
+  "run_id": "2026-09-12T16-24-09Z",
+  "report_path": ".sfskills/builds/case-escalation-email-alert/envelopes/plan/2026-09-12T16-24-09Z.md",
+  "envelope_path": ".sfskills/builds/case-escalation-email-alert/envelopes/plan/2026-09-12T16-24-09Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-escalation-email-alert"
+  },
+  "summary": "Planned the answered 'Case Escalation Email Alert to Account Owner' requirement at scale feature (O=2 named objects, Case and Account, is the signal that promoted it past ask) into exactly one milestone (M1) and one step (M1-S01, type automation, agent metadata-builder, human_gate false). The step builds one after-save record-triggered Flow on Case (Update, fires on every transition to IsEscalated=true) that reads the related Account's Owner and sends an email with the Case Number and Subject via a Flow Send Email action, with an explicit skip-and-log path for no-Account and a Support-Manager fallback for a Queue-owned Account, and a fault path per templates/flow/FaultPath_Template.md. Recorded one fit_gap row (Low-Code, effort M, fit) and two decisions, both resolved via decision-tree branches with adr_required false: D1 (automation-selection.md Q4, Flow over the native Escalation Rule engine's fixed-recipient notify actions or Apex) and D2 (flow-pattern-selector.md Q5, After-Save firing inline over Before-Save or a Scheduled Path). No assumptions were needed -- all 4 blocking clarifications were answered directly (none deferred) and all 15 informational rows carry the clarifier's pre-filled defaults as answers, not open deferrals. Wrote the plan body via set-plan, validated (0 warnings on the first pass), and rendered PLAN.md/CLARIFICATIONS.md. Status is now planned; gate 'plan' is pending.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every blocking clarification was answered (not deferred); the step's agent (metadata-builder: class runtime, status beta, requires_org false) is eligible in this design-only build; both cited skills and both their checkers and both cited templates resolve on disk; both decisions cite a decision-tree branch (not a source_reference fallback) with a verbatim branch_quote; the step carries four acceptance tests (two checkers, xml, manifest) whose runners all exist; validate exits 0 with 0 steps blocked and 0 warnings -- every clause of the agent's own HIGH bar is met.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both technology decisions (Flow over the native Escalation Rule engine; After-Save over Before-Save) resolved cleanly to a decision-tree branch on the first read, with no need to fall back to a source_reference/adr_required:true pair -- unlike the opp-amount-lock precedent build, where neither of its two decisions was tree-covered.",
+      "domain": "requirements-quality",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-escalation-email-alert/plan.json"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Reading skills/admin/escalation-rules/SKILL.md's Core Concepts table before writing D1 caught a real design trap: the native Escalation Rule engine's notifyTo/notifyEmail/notifyCaseOwner actions target a fixed user, role, or the case owner, never a dynamically-resolved 'Owner of the related Account' -- so the native engine cannot satisfy this requirement even in an org that already has Escalation Rules configured. Confirming this before committing to Flow avoided a plan that looked plausible ('use the existing escalation mechanism') but could not have been built.",
+      "domain": "grounding-check",
+      "evidence": {"source": "repo_scan", "path": "skills/admin/escalation-rules/SKILL.md"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The sizing-rule promotion from 'ask' to 'feature' rests entirely on O=2 (Case and Account both named in the one-sentence requirement) even though the automation itself is exactly as small as the worked 'ask'-tier validation-rule example in standards/build-orchestration.md Section 3.1 (one Flow, one milestone, one step). A reader skimming only the automation complexity, not the object count, would reasonably expect scale:ask here; the O-signal promotion is correct per the letter of the sizing table but produces more ceremony (a feature-tier clarification round, a milestone-only-not-RUN.md documentation path) than the build's actual size seems to warrant.",
+      "domain": "orchestration-contract",
+      "evidence": {"source": "heuristic", "path": "standards/build-orchestration.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether admin/escalation-rules, admin/case-management-setup, and admin/assignment-rules should have been kept in the clarifier's harvested skill set (they surfaced in the capability searches and each carries a Questions-to-Ask table) is a judgment call this run made by scoping: the requirement reacts to an existing escalation state rather than asking to build or change the escalation/routing mechanism itself, so their design-the-mechanism questions were treated as out of scope rather than harvested. A different, more literal reading of Step 3's 'keep every skill that has one' would have harvested all three, which -- given each contributes at least one more named object or supporting metadata type -- would plausibly have re-tiered this build to 'project'.",
+      "domain": "plan-authoring-judgment",
+      "evidence": {"source": "heuristic", "path": "agents/requirements-clarifier/AGENT.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The plan is written, validated (0 warnings) and rendered; the next stage in the loop is the adversarial three-lens verification before the human plan gate.",
+      "domain": "build-loop",
+      "evidence": {"source": "input"},
+      "suggested_followup_agent": "plan-verifier",
+      "followup_reason": "standards/build-orchestration.md Section 3 always routes a planned build to plan-verifier next, before the plan gate can be approved."
+    }
+  ],
+  "citations": [
+    {"type": "skill", "id": "flow/record-triggered-flow-patterns", "path": "skills/flow/record-triggered-flow-patterns/SKILL.md", "used_for": "trigger-type (RecordAfterSave), recordTriggerType (Update), transition-vs-state entry criteria, fault-path requirement, and the checker command for M1-S01"},
+    {"type": "skill", "id": "admin/email-templates-and-alerts", "path": "skills/admin/email-templates-and-alerts/SKILL.md", "used_for": "sender-identity question, merge-context scoping, and the checker command for M1-S01"},
+    {"type": "skill", "id": "admin/escalation-rules", "path": "skills/admin/escalation-rules/SKILL.md", "used_for": "confirmed the native Escalation Rule engine's notify actions cannot dynamically target an Account Owner, grounding D1's rejection of that alternative"},
+    {"type": "skill", "id": "admin/requirements-gathering-for-sf", "path": "skills/admin/requirements-gathering-for-sf/SKILL.md", "used_for": "the generic volume/sharing/licence/integration/reporting questions folded into Q15-Q19 and scope.out"},
+    {"type": "skill", "id": "admin/fit-gap-analysis-against-org", "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md", "used_for": "five-tier rubric and effort formula (base(Low-Code)=M, no scope or risk multiplier) behind the single scope.fit_gap[] row"},
+    {"type": "skill", "id": "admin/stakeholder-raci-for-sf-projects", "path": "skills/admin/stakeholder-raci-for-sf-projects/SKILL.md", "used_for": "owner_role vocabulary (CRM admin lead, Process owner) attached to each clarification at the intake stage"},
+    {"type": "standard", "id": "automation-selection", "path": "standards/decision-trees/automation-selection.md", "used_for": "D1: routed Q1->Q2->Q4, resolving to After-save record-triggered Flow over the native engine or Apex"},
+    {"type": "standard", "id": "flow-pattern-selector", "path": "standards/decision-trees/flow-pattern-selector.md", "used_for": "D2: routed Q1->Q2->Q4->Q5, resolving to After-Save firing inline over Before-Save or a Scheduled Path"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "Section 2 layout, Section 3/3.1 lifecycle and feature-scale ceremony rules (1 milestone, up to 5 steps, human_gate per-step), Section 4 step-type table and agent eligibility, Section 5 acceptance-test types and checker-scope rules, Section 8 CLI writers"},
+    {"type": "template", "id": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml", "path": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml", "used_for": "canonical Start element and entry-criteria shape for the after-save flow"},
+    {"type": "template", "id": "templates/flow/FaultPath_Template.md", "path": "templates/flow/FaultPath_Template.md", "used_for": "the fault-path shape (Application_Log__c row, $Flow.FaultMessage, $Flow.InterviewGuid) required by Q4's answer"},
+    {"type": "standard", "id": "agent-frontmatter-schema", "path": "agents/_shared/schemas/agent-frontmatter.schema.json", "used_for": "verified metadata-builder's class/status/requires_org fields make it an eligible step owner in a design-only build"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "plan-body shape, milestone/step required fields, and the acceptance-test $defs used to write every test entry"}
+  ],
+  "followups": [
+    {"agent": "plan-verifier", "because": "the next stage in the loop is the adversarial three-lens check before the human plan gate"}
+  ],
+  "extensions": {
+    "plan_path": ".sfskills/builds/case-escalation-email-alert/plan.json",
+    "plan_version": 1,
+    "scope": {
+      "in_count": 4,
+      "out_count": 5,
+      "fit_gap_count": 1
+    },
+    "fit_gap": [
+      {"requirement": "Email the Account Owner (with Case Number and Subject) whenever a Case on that Account is escalated", "verdict": "fit", "tier": "Low-Code", "effort": "M", "risk_tag": [], "steps": ["M1-S01"]}
+    ],
+    "decisions": [
+      {"id": "D1", "decision": "Build the notification as a Flow rather than the native Escalation Rule engine's notify actions or Apex.", "decision_tree": "standards/decision-trees/automation-selection.md", "branch": "Q4", "adr_required": false},
+      {"id": "D2", "decision": "After-Save record-triggered Flow, firing inline, not Before-Save or a Scheduled Path.", "decision_tree": "standards/decision-trees/flow-pattern-selector.md", "branch": "Q5", "adr_required": false}
+    ],
+    "milestones": [
+      {"id": "M1", "title": "Email the Account Owner when a Case is escalated", "steps": ["M1-S01"], "status": "pending"}
+    ],
+    "steps": [
+      {"id": "M1-S01", "milestone": "M1", "type": "automation", "agent": "metadata-builder", "status": "pending", "human_gate": false, "outputs_count": 3, "acceptance_tests_count": 4}
+    ],
+    "blocked_steps": [],
+    "validate_result": {
+      "exit_code": 0,
+      "milestones": 1,
+      "steps": 1,
+      "warnings": 0
+    }
+  }
+}

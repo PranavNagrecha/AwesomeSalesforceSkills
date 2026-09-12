@@ -1,0 +1,90 @@
+{
+  "status": "verified",
+  "verified_at": "2026-09-12T16:35:00Z",
+  "by": "plan-verifier 1.0.0",
+  "plan_version": 1,
+  "scale": "feature",
+  "rounds": 1,
+  "lenses": [
+    {"lens": "executability", "verdict": "pass", "notes": "1/1 steps. metadata-builder resolves (class: runtime, status: beta, requires_org: false) and is the standards/build-orchestration.md Section 4 design-only owner for type `automation` (declarative). Its Step 2 table maps `automation` -> 'declarative automation only', and this step's only metadata type is Flow, so there is no cross-type mismatch of the kind opp-amount-lock's W9 flagged. Inputs accepted (build_dir/step_id/api_version per its Inputs table, everything else read from the step record). Outputs producible: all 3 declared paths (flows/*.flow-meta.xml, package.xml, deploy-order.md) match what metadata-builder's Output Contract and Steps 6-7 always write. depends_on is empty and this is the plan's only step, so no ordering or output-collision issue. 0 warnings."},
+    {"lens": "grounding", "verdict": "pass", "notes": "1/1 steps, after one in-session correction. Both decisions (D1: automation-selection.md branch Q4; D2: flow-pattern-selector.md branch Q5) were opened and their branch_quote text matches the tree files verbatim. INITIAL FINDING (CRITICAL, fixed before this record): neither flow/record-triggered-flow-patterns (trigger/entry-criteria/fault-connector shape only) nor admin/email-templates-and-alerts (classic EmailTemplate/EmailAlert metadata, explicitly not Flow's own Send Email action) documents the actual emailSimple actionCalls inputParameters (emailAddresses/emailSubject/emailBodyRichText) the step's whole mechanism depends on -- grep -l '^```xml' against both skills' references never surfaces that shape. skills/admin/flow-for-admins/references/metadata-examples.md Example 2 does (an after-save Case flow with a fault path notifying by emailSimple, parameter names verbatim). Without it, metadata-builder would have had to invent input-parameter names for the one action the entire requirement depends on -- exactly the 'step would produce wrong or ungrounded artefacts' bar this tier's CRITICAL definition names. Remedied by re-running set-plan (status was still `planned`, not yet gated, so no rejection/version-bump was needed) to add admin/flow-for-admins to the step's skills[] and to record the citation and the reason in inputs.emailSimple_action_shape. Re-checked after the fix: the built Flow's Send Email actions use exactly emailAddresses/emailSubject/emailBodyRichText, matching the now-cited example. fit_gap re-tiered independently: Low-Code (the moment a Flow is in the delivery path), effort base(Low-Code)=M with no scope multiplier (3 objects: Case/Account/User) and no risk multiplier (risk_tag []) -> M; matches. No clarification was deferred, so the deferred-question/assumptions[] cross-check is vacuously satisfied (assumptions[] is empty by design, not by omission). No freestyle Salesforce claim found beyond the two grounded decisions. No deploy smuggled into any input, output or test. 0 warnings after the fix."},
+    {"lens": "testability", "verdict": "pass", "notes": "1/1 steps, after one in-session correction. INITIAL FINDING (testability refutation, fixed in place with amend-step per this tier's rule that a testability-only finding does not spend a re-plan round): the declared check_email_templates.py acceptance test can never pass, on any artefact this step could legitimately produce. Verified directly -- ran `python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir <dir containing only a .flow-meta.xml file>` and got exit 1, ERROR 'no email template artefact found', because that checker only scans `.email`/`.email-meta.xml` files and this step deliberately produces none (the email content is inline inside the Flow's own emailSimple action, per Q11/D1 -- the whole point of choosing Send Email over an Email Alert). A test that fails on every possible correct output is not a test with an inverted pass condition, it is not applicable to this step at all. Removed via `amend-step --file <acceptance_tests, inputs>` (legal at status `planned`, which allows exactly those two fields), with the reason and the checker's own error output recorded in the amendment and in inputs.email_templates_checker_note. Re-verified the remaining 3 tests directly and for real, not from memory: (1) check_record_triggered_flow_patterns.py --manifest-dir <the actual built artefact directory> -> 'No issues found.', exit 0; a negative fixture with every faultConnector stripped -> 7 ERROR lines (one per DML/action/lookup element) and exit 1, proving the test can fail; (2) `python3 scripts/build_plan.py check-outputs <plan> M1-S01` -> `{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []}`, confirming the xml test's premise (every declared file exists, is non-empty, and the two XML files parse); (3) manifest: package.xml's sole <types><name>Flow</name><members>Case_Escalation_Notify_Account_Owner</members> matches the built flow file's base name exactly, satisfying the manifest test by inspection. Metadata coverage: automation is a metadata type in scope, and this step (owned by metadata-builder, not apex-builder) both an xml and a manifest test, and package.xml is declared in outputs[] -- the always-on manifest row is satisfied. Scope agrees with command: the remaining checker test declares scope: step and its command reads --manifest-dir artefacts/M1-S01, matching. Milestone M1 carries its own manual acceptance test. Human gate: this step changes no access and deletes nothing, so human_gate: false is correct and not refuted. Manual-test-observable-only-in-a-deployed-org WARN (not a refutation at scale: feature, per this tier's own rule): M1's manual test partially depends on an actual email arriving in an inbox, which only a deployed org produces; flagged as a WARN the human weighs at the plan gate, consistent with how this tier treats that row. 1 warning."}
+  ],
+  "steps": [
+    {
+      "step_id": "M1-S01",
+      "verdict": "pass",
+      "lenses": [
+        {
+          "step_id": "M1-S01",
+          "lens": "executability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [],
+          "evidence": [
+            "sed -n '1,10p' agents/metadata-builder/AGENT.md -> 'class: runtime', 'status: beta', 'requires_org: false'",
+            "agents/metadata-builder/AGENT.md Step 2 table, row `automation` -> 'declarative automation only'; this step's only metadata type is Flow, a match with no cross-type spillover",
+            "standards/build-orchestration.md Section 4 table, row `automation` -> design-only owner column reads `metadata-builder` (declarative) / `apex-builder` (Apex); this step is declarative",
+            "plan.json steps[0].depends_on = [] ; only one step in the plan, so no ordering cycle and no output-path collision",
+            "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-escalation-email-alert/plan.json M1-S01 -> {\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []}"
+          ]
+        },
+        {
+          "step_id": "M1-S01",
+          "lens": "grounding",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [
+            {"problem": "Neither of the plan's two originally-cited skills documents the emailSimple actionCalls inputParameters the step's core mechanism depends on. (Resolved before this record was written -- see notes above and the step's amendments[].)", "fix": "Already applied: admin/flow-for-admins added to skills[]."}
+          ],
+          "evidence": [
+            "grep -l '^```xml' skills/flow/record-triggered-flow-patterns/references/*.md skills/flow/record-triggered-flow-patterns/SKILL.md -> examples.md, llm-anti-patterns.md, metadata-examples.md (all Flow-shape XML; none contains an emailSimple actionCalls block)",
+            "grep -l '^```xml' skills/admin/email-templates-and-alerts/references/*.md skills/admin/email-templates-and-alerts/SKILL.md -> metadata-and-sender-identity.md, gotchas.md (classic EmailTemplate/EmailAlert shapes only)",
+            "grep -n 'emailSimple' skills/admin/flow-for-admins/references/metadata-examples.md -> Example 2, full deployable after-save Case flow with a fault-path emailSimple action, parameter names emailAddresses/emailSubject/emailBodyRichText",
+            "standards/decision-trees/automation-selection.md Q4 branch_quote matches the plan's D1 verbatim (checked by direct comparison)",
+            "standards/decision-trees/flow-pattern-selector.md Q5 branch_quote matches the plan's D2 verbatim (checked by direct comparison)",
+            "skills/admin/escalation-rules/SKILL.md Core Concepts table -> notifyTo/notifyEmail/notifyCaseOwner target a fixed user/role/case-owner, never a dynamically-resolved related-object owner, grounding D1's rejection of the native engine as an alternative",
+            "skills/admin/fit-gap-analysis-against-org/SKILL.md effort formula -> base(Low-Code)=M, no scope multiplier (3 objects: Case/Account/User), no risk multiplier (risk_tag []) -> M, matching the plan's fit_gap row",
+            "plan.json assumptions[] = [] ; no clarification was deferred (all 4 blocking answered directly, all 15 informational pre-filled), so there is nothing for this row to check and it is vacuously satisfied rather than skipped",
+            "No step input, output or acceptance test names an org, an alias, sf/sfdx, or a network call"
+          ]
+        },
+        {
+          "step_id": "M1-S01",
+          "lens": "testability",
+          "verdict": "pass",
+          "blockers": [],
+          "warnings": [
+            {"problem": "M1's manual acceptance test line includes 'the Account Owner receives an email' -- observable only once this Flow is actually deployed and fired in an org. Not a refutation at scale: feature (this tier's own testability rule treats this row as a WARN, the same as scale: ask, because a feature build has no UAT mechanism other than the human's own pass over the built artefacts and a post-deploy check).", "fix": "None required at this stage; carry as a post-deploy UAT line, which deploy-order.md's checklist already gestures at via the validate-only/mock_deploy commands."}
+          ],
+          "evidence": [
+            "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --help -> accepts [--manifest-dir MANIFEST_DIR] [--strict]",
+            "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir .sfskills/builds/case-escalation-email-alert/artefacts/M1-S01 -> 'No issues found.', exit 0",
+            "Negative fixture (every <faultConnector> block stripped via sed) -> 7 ERROR lines, one per DML/action/lookup element, exit 1 -- the test can fail",
+            "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir <dir with only the .flow-meta.xml> -> exit 1, ERROR 'no email template artefact found' -- proved the test was inapplicable rather than assumed it; removed via amend-step",
+            "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-escalation-email-alert/plan.json M1-S01 -> {\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []}",
+            "package.xml <types><name>Flow</name><members>Case_Escalation_Notify_Account_Owner</members> matches flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml exactly -- manifest test satisfied by inspection",
+            "Step type `automation` (metadata type) carries both an xml and a manifest test, and package.xml is declared in outputs[] -- metadata-coverage row satisfied",
+            "The remaining checker test declares scope: step and its command reads --manifest-dir artefacts/M1-S01 -- intent and command agree",
+            "Milestone M1 carries one manual acceptance test of its own",
+            "Step changes no access and deletes nothing -> human_gate: false is correct, not refuted"
+          ]
+        }
+      ]
+    }
+  ],
+  "blockers": [],
+  "warnings": [
+    {"step": "M1", "lens": "testability", "id": "W1", "severity": "P1", "problem": "The M1 manual acceptance test's full observation (an email actually arriving) is confirmable only after this build is deployed; scale: feature treats this as a WARN for the human to weigh at the plan gate, not a refutation, since there is no other UAT mechanism at this tier."},
+    {"step": "M1-S01", "lens": "grounding", "id": "W2 (resolved before this record)", "severity": "P1-fixed", "problem": "Original plan cited no skill documenting the emailSimple actionCalls shape; fixed by adding admin/flow-for-admins to skills[] before this verification record was written."},
+    {"step": "M1-S01", "lens": "testability", "id": "W3 (resolved before this record)", "severity": "P1-fixed", "problem": "Original plan declared a check_email_templates.py acceptance test that fails on every correct artefact this step could produce; fixed via amend-step, removing it and recording why."}
+  ],
+  "cross_step_results": [
+    {"check": "Every scope.fit_gap[] requirement reaches a step, and each of those steps carries at least one acceptance test", "result": "pass", "detail": "The single fit_gap row steps[] = ['M1-S01']; M1-S01 carries 3 acceptance tests."},
+    {"check": "No two steps write the same output path", "result": "pass", "detail": "One step; its 3 output paths are distinct."},
+    {"check": "depends_on graph is acyclic and every id in it exists", "result": "pass", "detail": "M1-S01.depends_on = []."},
+    {"check": "Every milestone has >= 1 acceptance test, >= 1 step, and steps[] lists exactly the steps whose milestone is that id", "result": "pass", "detail": "M1: 1 manual acceptance test, steps ['M1-S01']; M1-S01.milestone = 'M1'."},
+    {"check": "Every scope-out item names why it is out", "result": "pass", "detail": "All five scope.out entries cite the clarification/answer or grounding fact that put them out."}
+  ],
+  "notes": "scale: feature -- up to two rounds are allowed; this run needed effectively one round of substantive work: a CRITICAL grounding gap (no cited skill documented the emailSimple action shape) was found and fixed in place via a plan correction while status was still `planned` (no rejection/version-bump needed, since set-plan is unrestricted before the plan is gated), and a testability-only finding (an inapplicable checker) was fixed in place with amend-step per this tier's rule that a testability refutation alone does not spend a round. Both fixes were verified for real against the actual built Flow XML and the actual checker scripts, not asserted from memory. Outcome: verified, with 1 open warning (W1, the deployed-org-only manual-test observation) for the human to weigh at the plan gate, and 2 findings already resolved and recorded in the step's amendments[] before this record was written."
+}

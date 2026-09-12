@@ -1,0 +1,54 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T16-41-32Z",
+  "report_path": ".sfskills/builds/case-escalation-email-alert/envelopes/M1/2026-09-12T16-41-32Z.md",
+  "envelope_path": ".sfskills/builds/case-escalation-email-alert/envelopes/M1/2026-09-12T16-41-32Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-escalation-email-alert",
+    "milestone_id": "M1"
+  },
+  "summary": "Verified milestone M1 (its only step, M1-S01, documented with no failures). Reference resolution: every Case/Account/User field the Flow touches is a standard field and resolves; the four Application_Log__c fields the fault chain writes are NOT defined by any step in this build and are flagged as an external dependency, already named in M1-S01's own deploy-order.md pre-deploy checklist. Deployment order: single artefact, no contradiction. Merged manifest (reports/MILESTONE-M1-package.xml): one Flow member, no conflicts. Acceptance tests: all 3 of M1-S01's declared tests passed. Manual checklist: one milestone-level manual test collected, observable only post-deploy. Verdict: ready-with-findings (the Application_Log__c dependency is real and worth the human's attention, but is not a defect in this build's own artefacts). Wrote MILESTONE-M1-REPORT.md and the merged manifest, recorded the verdict via set-milestone, and printed the gate command for the human.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every step in the milestone was documented (the precondition for running this agent at all), every reference class the Step 3 table names was checked with no unclassifiable references, the merged manifest built with zero conflicts, and every declared acceptance test (all 3 automated ones) ran and passed; the one flagged item is a genuine external-dependency finding named explicitly rather than a gap in this verification.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The Application_Log__c external-dependency finding was already visible in M1-S01's own deploy-order.md before this milestone check ran -- the cross-step verification did not discover a new fact, it confirmed the same fact holds at the milestone's own reference-resolution granularity and put it in front of the gate decision explicitly rather than leaving it three files deep.",
+      "domain": "grounding-check",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-escalation-email-alert/artefacts/M1-S01/deploy-order.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1 is the build's only milestone; once the human approves milestone:M1, the build reaches status done.",
+      "domain": "build-loop",
+      "evidence": {"source": "input"},
+      "suggested_followup_agent": "none",
+      "followup_reason": "This is the build's last milestone -- there is no next stage in the loop beyond the human's own accept-gate decision and the optional validate-only deploy command already printed in the report."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "Section 3 milestone gate rules and Section 5 acceptance-test dispatch, applied at milestone scope"}
+  ],
+  "followups": [],
+  "extensions": {
+    "milestone_id": "M1",
+    "verdict": "ready-with-findings",
+    "blocked_steps": [],
+    "reference_resolution": {
+      "resolved": ["Case.IsEscalated", "Case.AccountId", "Case.CaseNumber", "Case.Subject", "Case.Id", "Account.Id", "Account.OwnerId", "Account.Name", "User.Id", "User.Email"],
+      "unresolved_external_dependency": ["Application_Log__c.Severity__c", "Application_Log__c.Source__c", "Application_Log__c.Message__c", "Application_Log__c.Request_Id__c"],
+      "unclassifiable": []
+    },
+    "deployment_order_ok": true,
+    "merged_manifest_path": "reports/MILESTONE-M1-package.xml",
+    "manifest_conflicts": [],
+    "acceptance_tests_run": 3,
+    "acceptance_tests_passed": 3,
+    "manual_checklist_count": 1,
+    "report_path": "reports/MILESTONE-M1-REPORT.md",
+    "set_milestone_status": "verified"
+  }
+}

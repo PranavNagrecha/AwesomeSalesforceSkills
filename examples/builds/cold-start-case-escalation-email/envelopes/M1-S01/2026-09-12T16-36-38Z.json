@@ -1,0 +1,76 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T16-36-38Z",
+  "report_path": ".sfskills/builds/case-escalation-email-alert/envelopes/M1-S01/2026-09-12T16-36-38Z.md",
+  "envelope_path": ".sfskills/builds/case-escalation-email-alert/envelopes/M1-S01/2026-09-12T16-36-38Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-escalation-email-alert",
+    "step_id": "M1-S01",
+    "api_version": "62.0"
+  },
+  "summary": "Built the after-save record-triggered Flow Case_Escalation_Notify_Account_Owner (Case, Update, IsEscalated transitions to true) that emails the related Account's Owner with the Case Number and Subject, with an explicit no-Account skip-and-log path, a Queue-owned-Account fallback to a Support Manager address, and a mutually-backstopped fault-logging chain writing Application_Log__c and notifying an admin address on any failure. Emitted 1 Flow, 1 package.xml, 1 deploy-order.md under artefacts/M1-S01/. Both cited checkers were run for real: check_record_triggered_flow_patterns.py exited 0 ('No issues found.'); check-outputs confirmed all 3 declared outputs exist, are non-empty, and the two XML files parse.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every emitted element traces to a cited skill's own worked example (the entry-criteria/fault-connector shape from flow/record-triggered-flow-patterns, the emailSimple actionCalls parameter names from admin/flow-for-admins Example 2), the cited checker exited 0 on the first pass with no repair needed, check-outputs returned ok, every declared output was written and nothing else was, and every Questions-to-Ask row the step's inputs.answers carries was answered from the plan rather than defaulted silently by this agent.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's inputs.emailSimple_action_shape already named the exact source (admin/flow-for-admins Example 2) and parameter names to use, so this build step required no independent re-derivation of the emailSimple shape -- the plan-verifier's grounding fix carried through cleanly to the build.",
+      "domain": "checker-verification",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-escalation-email-alert/plan.json"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "This build assumes Application_Log__c already exists in the target org; it does not create it. Both recordCreates elements that write to it (Log_Skip_No_Account, Create_Application_Log_Error) will fail identically if it does not exist, falling through to the fault chain's own failure path. Named in deploy-order.md's pre-deploy checklist rather than built as a dependency, since no step in this plan owns creating that object.",
+      "domain": "deploy-readiness",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-escalation-email-alert/artefacts/M1-S01/deploy-order.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Artefacts built and check-outputs is ok; the step is ready for the tester.",
+      "domain": "build-loop",
+      "evidence": {"source": "input"},
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "standards/build-orchestration.md Section 3 routes a built step to the tester next."
+    }
+  ],
+  "citations": [
+    {"type": "skill", "id": "flow/record-triggered-flow-patterns", "path": "skills/flow/record-triggered-flow-patterns/references/metadata-examples.md", "used_for": "Start element shape (object/recordTriggerType/triggerType/filters/doesRequireRecordChangedToMeetCriteria), fault-connector requirement, checker command"},
+    {"type": "skill", "id": "admin/flow-for-admins", "path": "skills/admin/flow-for-admins/references/metadata-examples.md", "used_for": "Example 2 -- the emailSimple actionCalls shape (actionName/actionType/inputParameters emailAddresses/emailSubject/emailBodyRichText) and the after-save-Case-plus-fault-path pattern this flow follows"},
+    {"type": "skill", "id": "admin/email-templates-and-alerts", "path": "skills/admin/email-templates-and-alerts/SKILL.md", "used_for": "sender-identity and merge-context guidance (prose only; its checker is inapplicable to this artefact shape, per the step's amendment)"},
+    {"type": "template", "id": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml", "path": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml", "used_for": "canonical Start/decision skeleton adapted for Case + IsEscalated"},
+    {"type": "template", "id": "templates/flow/FaultPath_Template.md", "path": "templates/flow/FaultPath_Template.md", "used_for": "Application_Log__c fault-logging shape (Severity__c/Source__c/Message__c/Request_Id__c) and the $Flow.FaultMessage/$Flow.InterviewGuid variables"}
+  ],
+  "followups": [
+    {"agent": "step-tester", "because": "the step is built and check-outputs is ok; the tester runs the step's declared acceptance tests next"}
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "artefacts": [
+      "artefacts/M1-S01/flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml",
+      "artefacts/M1-S01/package.xml",
+      "artefacts/M1-S01/deploy-order.md"
+    ],
+    "decision_record": [
+      {"question": "Q1", "answer": "Standard Case.IsEscalated checkbox; every new transition into true re-notifies, including repeats.", "source": "clarification answer", "element": "start.filters (IsEscalated EqualTo true) + doesRequireRecordChangedToMeetCriteria=true"},
+      {"question": "Q2", "answer": "Org default sender; no reply monitoring needed.", "source": "clarification answer", "element": "no explicit senderAddress element set on the emailSimple actions -- runs as the org default"},
+      {"question": "Q3", "answer": "Skip and log if no Account; fall back to Support Manager distribution address if Owner is a Queue/no User match.", "source": "clarification answer", "element": "Check_Has_Account decision + Log_Skip_No_Account; Check_Owner_Is_Person decision + Send_Email_To_Support_Manager_Fallback"},
+      {"question": "Q4", "answer": "Fault path logs to Application_Log__c and emails the admin address.", "source": "clarification answer", "element": "Capture_Fault -> Create_Application_Log_Error -> Notify_Admin_On_Fault chain"},
+      {"question": "Q11", "answer": "Flow Send Email action (emailSimple), inline text.", "source": "clarification answer", "element": "actionName/actionType emailSimple on Send_Email_To_Owner and Send_Email_To_Support_Manager_Fallback"},
+      {"question": "Q12", "answer": "Include a record link and Account Name beyond Case Number and Subject.", "source": "clarification answer", "element": "Escalation_Email_Body textTemplate + Email_Subject_Formula"}
+    ],
+    "checker_results": [
+      {"command": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M1-S01", "exit_code": 0, "repair_passes": 0, "output": "No issues found."}
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    }
+  }
+}

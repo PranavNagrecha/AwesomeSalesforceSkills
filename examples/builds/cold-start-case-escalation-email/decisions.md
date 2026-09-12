@@ -1,0 +1,10 @@
+# Decisions log
+
+Append-only. Written by the build doc keeper.
+
+## 2026-09-12 — M1-S01 — metadata-builder
+
+- **D1 (technology choice).** Build the notification as a Flow rather than the native Escalation Rule engine's fixed-recipient notify actions or Apex. Cites `standards/decision-trees/automation-selection.md` branch Q4. Rejected: native Escalation Rule notify action (cannot dynamically target an Account Owner — see `skills/admin/escalation-rules/SKILL.md` Core Concepts), Apex trigger + handler (no governor-limit, callout, rollback, or coverage-gate pressure present).
+- **D2 (technology choice).** After-Save record-triggered Flow, firing inline, not Before-Save or a Scheduled Path. Cites `standards/decision-trees/flow-pattern-selector.md` branch Q5. Rejected: Before-Save (cannot send email or read a related object beyond a lazy-loaded field), After-Save with a Scheduled Path (the notification is not time-relative to the record).
+- **Deviation (grounding fix, recorded during plan verification, before the build ran).** Added `admin/flow-for-admins` to the step's `skills[]`. Neither of the two originally-cited skills documents the Flow `emailSimple` action's actual `inputParameters` (`emailAddresses`/`emailSubject`/`emailBodyRichText`); `skills/admin/flow-for-admins/references/metadata-examples.md` Example 2 does, with a matching after-save-Case-plus-fault-path worked example. Fixed via `set-plan` while the build was still at status `planned` (no gate had been recorded yet, so no rejection/version-bump was needed).
+- **Deviation (testability fix, recorded during plan verification, before the build ran).** Removed the `admin/email-templates-and-alerts` `check_email_templates.py` acceptance test via `amend-step`. That checker only audits classic `EmailTemplate`/`.email-meta.xml` artefacts; this step deliberately produces none (the email content is inline inside the Flow's own `emailSimple` action, per Q11), so the test could never pass against correct output. Confirmed by running the checker against a fixture (exit 1, "no email template artefact found") before removing it.

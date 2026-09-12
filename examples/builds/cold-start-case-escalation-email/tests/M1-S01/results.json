@@ -1,0 +1,7 @@
+{
+  "step_id": "M1-S01",
+  "ran": ["xml", "manifest", "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py"],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": []
+}

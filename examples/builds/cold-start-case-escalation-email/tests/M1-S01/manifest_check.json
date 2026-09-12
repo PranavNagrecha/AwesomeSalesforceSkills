@@ -1,0 +1,6 @@
+{
+  "manifest_members": [{"type": "Flow", "member": "Case_Escalation_Notify_Account_Owner"}],
+  "file_to_manifest": [{"file": "artefacts/M1-S01/flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml", "derived_type": "Flow", "derived_member": "Case_Escalation_Notify_Account_Owner", "covered": true}],
+  "manifest_to_file": [{"type": "Flow", "member": "Case_Escalation_Notify_Account_Owner", "file_found": true}],
+  "consistent": true
+}

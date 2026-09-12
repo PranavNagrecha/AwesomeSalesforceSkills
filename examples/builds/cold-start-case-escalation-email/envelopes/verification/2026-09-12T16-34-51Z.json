@@ -1,0 +1,80 @@
+{
+  "agent": "plan-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T16-34-51Z",
+  "report_path": ".sfskills/builds/case-escalation-email-alert/envelopes/verification/2026-09-12T16-34-51Z.md",
+  "envelope_path": ".sfskills/builds/case-escalation-email-alert/envelopes/verification/2026-09-12T16-34-51Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-escalation-email-alert"
+  },
+  "summary": "Verified the case-escalation-email-alert plan (version 1, scale feature) across all three lenses for its one step, M1-S01. Two real findings surfaced and were fixed in-session before recording this outcome: (1) grounding -- neither of the two originally-cited skills documents the Flow emailSimple action's actual inputParameters (emailAddresses/emailSubject/emailBodyRichText), which the step's entire mechanism depends on; admin/flow-for-admins/references/metadata-examples.md Example 2 does, and was added to the step's skills[] via a plan correction (status was still `planned`, so no rejection/version-bump was needed). (2) testability -- the declared check_email_templates.py acceptance test can never pass on this step's correct output, because that checker only scans classic .email/.email-meta.xml artefacts and this step deliberately produces none (the email lives inline in the Flow's own action). Confirmed by actually running the checker against a fixture (exit 1, 'no email template artefact found'); removed via amend-step per this tier's rule that a testability-only finding is fixed in place rather than spending a re-plan round. Both fixes were then verified for real: built the actual Flow XML artefact, ran the real record-triggered-flow-patterns checker (exit 0, 'No issues found.'), proved it can fail (stripped every faultConnector -> 7 errors, exit 1), and confirmed check-outputs and the manifest by inspection. Outcome: verified, 0 blockers, 1 open warning (a milestone manual-test row observable only in a deployed org, which scale:feature treats as a WARN rather than a refutation).",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every check in all three lenses passed after the two in-session fixes, both of which were verified against the real checker scripts and the real built artefact rather than asserted; validate exits 0 with 0 warnings both before and after set-verification's write; the one open warning is the class of finding this tier's own contract says to record as a WARN rather than refute (a deployed-org-only manual test observation), not a gap in the verification itself.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both plan-time findings were caught by actually running the tool in question (the checker script against a minimal fixture) rather than by reasoning about what it probably does -- the check_email_templates.py failure and the missing emailSimple documentation were both confirmed with a command, not inferred.",
+      "domain": "grounding-check",
+      "evidence": {"source": "heuristic"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The fault-handling chain's two terminal elements (Create_Application_Log_Error, Notify_Admin_On_Fault) back each other's faultConnector, satisfying the checker's literal per-element requirement without leaving either element genuinely unhandled -- confirmed by stripping every faultConnector in a negative fixture and seeing all 7 DML/action/lookup elements (not just the 5 'main line' ones) reported.",
+      "domain": "artefact-quality",
+      "evidence": {"source": "heuristic", "path": ".sfskills/builds/case-escalation-email-alert/artefacts/M1-S01/flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The Flow's two fallback addresses (support-manager@example.com, sfadmin@example.com) are literal placeholders, following the same pattern as the precedent example (admin/flow-for-admins Example 2 hardcodes service-ops@example.com the same way). deploy-order.md's pre-deploy checklist names both explicitly as must-replace-before-production items, but nothing in the automated test suite can catch a human skipping that step, since check_email_templates.py never scans .flow-meta.xml files at all.",
+      "domain": "deploy-readiness",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-escalation-email-alert/artefacts/M1-S01/deploy-order.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "This build assumes Application_Log__c already exists in the target org (the same object templates/flow/FaultPath_Template.md and the Apex ApplicationLogger template write to); this build does not create it. If it does not exist, both recordCreates elements that write to it will fail on every run and fall through to the fault chain's own (identical) failure. Recorded as a pre-deploy checklist item in deploy-order.md rather than as a blocking scope item, since Q4's answer treated logging infrastructure as already handled 'however that's normally handled.'",
+      "domain": "plan-authoring-judgment",
+      "evidence": {"source": "heuristic", "path": ".sfskills/builds/case-escalation-email-alert/artefacts/M1-S01/deploy-order.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Plan is verified with 0 blockers; the next stage is the human plan-gate decision, then the single milestone's build/test/document/verify pass.",
+      "domain": "build-loop",
+      "evidence": {"source": "input"},
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "Once the human approves the plan gate, M1-S01 is the only runnable step and build-step-runner is its owner-facing next agent."
+    }
+  ],
+  "citations": [
+    {"type": "skill", "id": "flow/record-triggered-flow-patterns", "path": "skills/flow/record-triggered-flow-patterns/SKILL.md", "used_for": "re-checked the checker's actual behaviour against the real built artefact and a negative fixture"},
+    {"type": "skill", "id": "admin/email-templates-and-alerts", "path": "skills/admin/email-templates-and-alerts/SKILL.md", "used_for": "re-checked check_email_templates.py's actual scope (classic .email/.email-meta.xml only) against the built artefact, confirming the original acceptance test was inapplicable"},
+    {"type": "skill", "id": "admin/flow-for-admins", "path": "skills/admin/flow-for-admins/references/metadata-examples.md", "used_for": "the emailSimple actionCalls shape (Example 2) that grounds the step's core mechanism; added to skills[] during this verification"},
+    {"type": "skill", "id": "admin/escalation-rules", "path": "skills/admin/escalation-rules/SKILL.md", "used_for": "re-confirmed D1's grounding: the native engine's notify actions cannot target a dynamically-resolved Account Owner"},
+    {"type": "standard", "id": "automation-selection", "path": "standards/decision-trees/automation-selection.md", "used_for": "compared D1's branch_quote against the tree file verbatim"},
+    {"type": "standard", "id": "flow-pattern-selector", "path": "standards/decision-trees/flow-pattern-selector.md", "used_for": "compared D2's branch_quote against the tree file verbatim"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "Section 3.1 feature-tier verification ceremony (up to 2 rounds, narrower CRITICAL bar, testability-only fixes via amend-step without spending a round), Section 4 agent eligibility and step-type table, Section 5 acceptance-test types and the always-on xml/manifest rule"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "verification object shape"}
+  ],
+  "followups": [
+    {"agent": "build-step-runner", "because": "the plan is verified with 0 blockers; once the human approves the plan gate, M1-S01 is the only runnable step"}
+  ],
+  "extensions": {
+    "plan_path": ".sfskills/builds/case-escalation-email-alert/plan.json",
+    "plan_version": 1,
+    "verification_outcome": "verified",
+    "rounds": 1,
+    "blockers_count": 0,
+    "warnings_count": 1,
+    "resolved_before_record_count": 2,
+    "validate_result": {
+      "baseline_exit_code": 0,
+      "baseline_warnings": 0,
+      "post_write_exit_code": 0,
+      "post_write_warnings": 0
+    }
+  }
+}

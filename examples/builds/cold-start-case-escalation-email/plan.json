@@ -1,0 +1,755 @@
+{
+  "build_id": "case-escalation-email-alert",
+  "title": "Case Escalation Email Alert to Account Owner",
+  "version": 1,
+  "status": "done",
+  "created": "2026-09-12T16:14:34Z",
+  "build_mode": "design-only",
+  "requirement": {
+    "source_path": "requirement.md",
+    "summary": "When a Case linked to an Account is escalated (Case.IsEscalated becomes true), automatically email the Account Owner so they are aware their customer is unhappy; the email includes the Case Number and Subject. Delivered as a single after-save record-triggered Flow on Case, design-only (no org access), scale: feature due to two named objects (Case, Account)."
+  },
+  "clarifications": [
+    {
+      "id": "Q1",
+      "question": "Which field represents \"escalated\" in this org (the standard Case.IsEscalated checkbox, a custom field, or a Status value), and if a Case is escalated, un-escalated, and later re-escalated, should each new escalation send a fresh email or only the very first one ever?",
+      "kind": "blocking",
+      "why": "Decides the flow's trigger field and doesRequireRecordChangedToMeetCriteria; the wrong field misses real escalations, and the wrong transition-vs-repeat answer either sends nothing on a repeat escalation or spams the owner on every unrelated edit.",
+      "proposed_default": "Standard Case.IsEscalated checkbox. Every new transition into true (including a repeat escalation after being un-escalated) sends a fresh email, since each represents a new unhappy-customer event; edits that leave IsEscalated unchanged never re-fire it.",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "The field API name, plus a yes/no on whether repeat escalations re-notify.",
+      "owner_role": "CRM admin lead",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "also_asked_by": [
+        "admin/email-templates-and-alerts"
+      ],
+      "answer": "Yes, whatever our standard Escalated flag/checkbox is on the Case — we don't use a separate custom field for that. And yes please: if a case gets un-escalated and then escalated again later, send the email again each time. We'd rather get a duplicate heads-up than miss one."
+    },
+    {
+      "id": "Q2",
+      "question": "Who should the notification email appear to come from, and does anyone need to monitor replies to that address?",
+      "kind": "blocking",
+      "why": "Sender identity is an org-wide email address that must exist and be verified in the target org before the flow can send from it.",
+      "proposed_default": "Send from the org's default Organization-Wide Email Address (fall back to the flow's running-user context if none is configured). No reply monitoring is needed — the Account Owner is expected to open the Case in Salesforce rather than reply by email.",
+      "status": "answered",
+      "source_skill": "admin/email-templates-and-alerts",
+      "answer_shape": "A named Organization-Wide Email Address (or explicit decision not to use one) and whether replies need a monitored mailbox.",
+      "owner_role": "CRM admin lead",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Just send it from whatever our normal Salesforce notification address is — I don't need to pick a specific inbox. Nobody needs to reply to the email; the account owner should just go look at the case in Salesforce."
+    },
+    {
+      "id": "Q3",
+      "question": "What should happen if the Case has no related Account, or the Account has no Owner (or the owner is a Queue rather than a person)? Who, if anyone, should be notified instead?",
+      "kind": "blocking",
+      "why": "\"Make it automatic\" hides the exception path; without a decision, a null Account or Owner either silently drops the alert or fails invisibly inside the flow's own error email.",
+      "proposed_default": "If the Case has no related Account, skip the email and log the skip. If the Account Owner is a Queue rather than a User, send to the queue's email address if one exists; otherwise fall back to notifying the Support Manager / Case-escalation admin distribution list. No customer-facing failure either way.",
+      "status": "answered",
+      "source_skill": "admin/requirements-gathering-for-sf",
+      "answer_shape": "A named decision and fallback recipient for each of the two null/edge cases.",
+      "owner_role": "Process owner",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "If a case somehow isn't linked to an account, don't worry about it — that's an edge case, skip it. If the account is owned by a queue/team instead of a real person, send it to whoever manages that team as a backup — our support manager is a fine default for now."
+    },
+    {
+      "id": "Q4",
+      "question": "If the Get-Account-Owner or Send-Email step fails (bad address, deleted user, etc.), who should find out, and how?",
+      "kind": "blocking",
+      "why": "Without a fault path the interview stops and the error is invisible outside the flow's own error email, which nobody but the running user ever sees.",
+      "proposed_default": "The fault path writes an entry using the repo's standard flow-fault logging pattern (Application_Log__c, per templates/flow/FaultPath_Template.md) and emails the Salesforce admin distribution list. No customer-facing impact.",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "Confirmation of the fault-logging target and who is on the admin distribution list.",
+      "owner_role": "CRM admin lead",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "If it breaks, just let whoever manages Salesforce for us know so they can fix it — however that's normally handled is fine, I don't need a separate process for this."
+    },
+    {
+      "id": "Q5",
+      "question": "Does this change touch only fields on the Case being saved, or does it also need to read the related Account/Owner and send email?",
+      "kind": "informational",
+      "why": "Same-record-only work fits a before-save flow; anything that sends email or reads a related object forces after-save.",
+      "proposed_default": "After-save — the flow reads the related Account's Owner and sends email, neither of which a before-save flow can do (confirmed by standards/decision-trees/automation-selection.md Q2/Q4/Q5).",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "Confirmation of RecordAfterSave as the trigger type.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "After-save — the flow reads the related Account's Owner and sends email, neither of which a before-save flow can do (confirmed by standards/decision-trees/automation-selection.md Q2/Q4/Q5)."
+    },
+    {
+      "id": "Q6",
+      "question": "What else already runs on Case in the after-save context, and does this new flow need to run before or after any of it?",
+      "kind": "informational",
+      "why": "Two flows in one save context with no declared order is undefined sequencing.",
+      "proposed_default": "No other after-save automation is known to depend on ordering relative to this notification; run at the default triggerOrder. This flow never writes back to the Case, so it cannot conflict with another flow's field ownership.",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "A triggerOrder value, or confirmation none is needed.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "No other after-save automation is known to depend on ordering relative to this notification; run at the default triggerOrder. This flow never writes back to the Case, so it cannot conflict with another flow's field ownership."
+    },
+    {
+      "id": "Q7",
+      "question": "Does anything downstream update this Case again as a result of this flow, creating a recursion risk?",
+      "kind": "informational",
+      "why": "An after-save flow that re-saves its own object re-enters the save procedure and can behave differently on the second pass.",
+      "proposed_default": "No — this flow only sends an email and never performs DML on the Case or Account, so there is no recursion risk and no recursion guard is needed.",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "Confirmation the flow performs no DML, or a recursion-guard design if it does.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "No — this flow only sends an email and never performs DML on the Case or Account, so there is no recursion risk and no recursion guard is needed."
+    },
+    {
+      "id": "Q8",
+      "question": "Should the email send immediately when the Case is escalated, or can/should it be delayed (e.g., batched, or gated to business hours)?",
+      "kind": "informational",
+      "why": "A delayed notification needs a FlowScheduledPath; an immediate one does not.",
+      "proposed_default": "Immediate — send synchronously in the same after-save transaction. Do not gate on business hours; an unhappy customer alert loses its value if it waits for morning.",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "Immediate vs. a named delay/business-hours gate.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Immediate — send synchronously in the same after-save transaction. Do not gate on business hours; an unhappy customer alert loses its value if it waits for morning."
+    },
+    {
+      "id": "Q9",
+      "question": "When a Case of this kind is deleted, does anything about this notification need to be preserved or cleaned up?",
+      "kind": "informational",
+      "why": "RecordBeforeDelete is the only delete context that exists for record-triggered flows, and there is no after-delete equivalent.",
+      "proposed_default": "Not applicable — this flow only reacts to Case updates (escalation), not deletes; no delete-context flow is needed.",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "Confirmation no delete-context handling is required.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Not applicable — this flow only reacts to Case updates (escalation), not deletes; no delete-context flow is needed."
+    },
+    {
+      "id": "Q10",
+      "question": "Is the flow's recordTriggerType Create, Update, or CreateAndUpdate — i.e., can a Case ever arrive already escalated on creation?",
+      "kind": "informational",
+      "why": "Decides which $Record parameters the FlowTest Start test point may carry; the wrong pair fails deploy.",
+      "proposed_default": "Update only — Cases are not created pre-escalated in this org; escalation always happens as a later edit to an existing Case.",
+      "status": "answered",
+      "source_skill": "flow/record-triggered-flow-patterns",
+      "answer_shape": "Create / Update / CreateAndUpdate.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Update only — Cases are not created pre-escalated in this org; escalation always happens as a later edit to an existing Case."
+    },
+    {
+      "id": "Q11",
+      "question": "Is this email built as a Flow Send Email action (Flow Text Template resource) or as a classic Email Alert referencing a Classic Email Template invoked from the flow?",
+      "kind": "informational",
+      "why": "Rules deployed by metadata (assignment/auto-response/escalation) can only reference Classic templates; a pure Flow build is not bound by that constraint and can use either mechanism.",
+      "proposed_default": "Flow Send Email action with a Flow Text Template resource — simplest for a two-merge-field, internal-only notification with no reuse across other automations.",
+      "status": "answered",
+      "source_skill": "admin/email-templates-and-alerts",
+      "answer_shape": "Send Email action + Text Template, or Email Alert + Classic Template — with a reason if the latter.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Flow Send Email action with a Flow Text Template resource — simplest for a two-merge-field, internal-only notification with no reuse across other automations."
+    },
+    {
+      "id": "Q12",
+      "question": "Which record is the merge context (Case, with the Account reached via relationship), and beyond the Case Number and Subject the requirement names, should anything else appear in the email (a link to the record, the Account name, who escalated it)?",
+      "kind": "informational",
+      "why": "Merge fields resolve only for the firing record and its parents; scoping the merge context up front avoids templates that render blanks.",
+      "proposed_default": "Merge context is Case, reaching Account.Owner via the Case→Account relationship. Beyond Case Number and Subject, include a direct link to the Case record and the Account Name, since a bare case number/subject still leaves the Account Owner needing to open the record.",
+      "status": "answered",
+      "source_skill": "admin/email-templates-and-alerts",
+      "answer_shape": "The merge field list, confirmed against what the requirement explicitly asked for.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Merge context is Case, reaching Account.Owner via the Case→Account relationship. Beyond Case Number and Subject, include a direct link to the Case record and the Account Name, since a bare case number/subject still leaves the Account Owner needing to open the record."
+    },
+    {
+      "id": "Q13",
+      "question": "Does this email depend on an Email-to-Case thread reference token?",
+      "kind": "informational",
+      "why": "Removing a thread reference from a customer-facing case email breaks reply threading.",
+      "proposed_default": "Not applicable — this is an internal notification to the Account Owner, not a customer-facing Case communication, so no Email-to-Case threading token is involved.",
+      "status": "answered",
+      "source_skill": "admin/email-templates-and-alerts",
+      "answer_shape": "Confirmation this is internal-only.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Not applicable — this is an internal notification to the Account Owner, not a customer-facing Case communication, so no Email-to-Case threading token is involved."
+    },
+    {
+      "id": "Q14",
+      "question": "Walk me through what happens today, right now, when a Case gets escalated — is there any existing manual step (a phone call, a Slack ping, a manual email) this notification is meant to replace?",
+      "kind": "informational",
+      "why": "Stakeholders sometimes describe a workaround built around a gap as if it were the whole requirement; missing it produces a to-be design that duplicates rather than replaces the workaround.",
+      "proposed_default": "No existing automated notification exists; this is net-new automation. Any manual heads-up an agent currently gives (a call, a Slack ping) may continue in parallel — this flow does not need to replace it, only to guarantee the Account Owner always gets one.",
+      "status": "answered",
+      "source_skill": "admin/requirements-gathering-for-sf",
+      "answer_shape": "An as-is step list, if a workaround exists.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "No existing automated notification exists; this is net-new automation. Any manual heads-up an agent currently gives (a call, a Slack ping) may continue in parallel — this flow does not need to replace it, only to guarantee the Account Owner always gets one."
+    },
+    {
+      "id": "Q15",
+      "question": "Does anyone need record- or field-level access changed to support this (e.g., a profile that currently cannot see Account.Owner)?",
+      "kind": "informational",
+      "why": "Record access and field access are different mechanisms in different places; automation running in system context can silently mask a visibility gap a human would hit.",
+      "proposed_default": "No sharing or field-level-security changes are needed. The flow runs in automation/system context and only reads Case/Account/Owner to build the email; it does not grant or need any new user-facing visibility.",
+      "status": "answered",
+      "source_skill": "admin/requirements-gathering-for-sf",
+      "answer_shape": "A sharing_impact value naming a layer, or \"none.\"",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "No sharing or field-level-security changes are needed. The flow runs in automation/system context and only reads Case/Account/Owner to build the email; it does not grant or need any new user-facing visibility."
+    },
+    {
+      "id": "Q16",
+      "question": "Roughly how many Cases get escalated per day (steady state and worst case), to confirm this stays well under the org's mass-email and Flow governor limits?",
+      "kind": "informational",
+      "why": "Automation that passes UAT on ten records can fail at volume; the transaction limits are shared by Flow and Apex.",
+      "proposed_default": "Escalations are a small fraction of total daily Case volume (single digits to low tens per day in a typical support org of this shape) — far under the ~1,000/day mass-email cap and well within a single-record after-save flow's per-transaction limits, since each escalation fires its own transaction rather than a bulk batch.",
+      "status": "answered",
+      "source_skill": "admin/requirements-gathering-for-sf",
+      "answer_shape": "A steady-state number and a worst-case single-day number.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Escalations are a small fraction of total daily Case volume (single digits to low tens per day in a typical support org of this shape) — far under the ~1,000/day mass-email cap and well within a single-record after-save flow's per-transaction limits, since each escalation fires its own transaction rather than a bulk batch."
+    },
+    {
+      "id": "Q17",
+      "question": "Does any of this data live outside Salesforce (e.g., is \"escalated\" status or Account ownership synced in from another system)?",
+      "kind": "informational",
+      "why": "A requirement sourced from another system is an integration requirement wearing an automation costume, and needs a pattern decision before sizing.",
+      "proposed_default": "No — Case, Account, and Owner all live natively in Salesforce; no external system or integration is involved in this notification.",
+      "status": "answered",
+      "source_skill": "admin/requirements-gathering-for-sf",
+      "answer_shape": "Confirmation of no integration, or a named source system.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "No — Case, Account, and Owner all live natively in Salesforce; no external system or integration is involved in this notification."
+    },
+    {
+      "id": "Q18",
+      "question": "Is the Account Owner always an internal Salesforce employee user, or could it be a partner/customer-community user?",
+      "kind": "informational",
+      "why": "The answer selects a licence, and licence selects API allocation and portal template long before design starts.",
+      "proposed_default": "Account Owners are internal Salesforce employee users (standard Salesforce licence); no customer or partner community licence implication.",
+      "status": "answered",
+      "source_skill": "admin/requirements-gathering-for-sf",
+      "answer_shape": "A licence_implication value.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "Account Owners are internal Salesforce employee users (standard Salesforce licence); no customer or partner community licence implication."
+    },
+    {
+      "id": "Q19",
+      "question": "Is there a reporting need behind this (e.g., a dashboard of escalation notifications sent), or is the email itself the entire deliverable?",
+      "kind": "informational",
+      "why": "Reporting requirements assume joins the report-type rules may forbid; scoping this now avoids a same-week follow-up request treated as in-scope.",
+      "proposed_default": "No reporting requirement — the email itself is the entire deliverable for this ask. A future report on escalated Cases and notification history is out of scope here and can be requested separately.",
+      "status": "answered",
+      "source_skill": "admin/requirements-gathering-for-sf",
+      "answer_shape": "Confirmation of no reporting need, or a named reporting row.",
+      "asked_by": "metadata-builder",
+      "default_source": "skill-guidance",
+      "group": "automation",
+      "answer": "No reporting requirement — the email itself is the entire deliverable for this ask. A future report on escalated Cases and notification history is out of scope here and can be requested separately."
+    }
+  ],
+  "assumptions": [],
+  "scope": {
+    "in": [
+      "Send an automated email to the Account Owner whenever a Case on that Account is escalated (Case.IsEscalated transitions to true), including the Case Number and Subject in the email (Q1, requirement statement).",
+      "Fire on every new transition into escalated, including a repeat escalation after a Case was previously un-escalated, not only the first-ever escalation (Q1).",
+      "Handle the no-related-Account and no-person-Owner (Queue-owned Account) edge cases explicitly rather than letting them fail silently: skip-and-log for no Account, fall back to the Support Manager distribution list when the owner is a Queue (Q3).",
+      "A fault path that logs any send failure and notifies the Salesforce admin distribution list (Q4)."
+    ],
+    "out": [
+      "Building or modifying native Salesforce Escalation Rules (the mechanism that sets IsEscalated in the first place) — the requirement only asks to react to an escalation that already happens; confirmed no engine change is requested and the native engine's own notify actions cannot target a dynamically-resolved Account Owner (see D1 rationale).",
+      "Any change to Case routing/assignment on creation — out of scope; not mentioned in the requirement and no clarification implied it.",
+      "In-app bell / SMS / Slack notification channels — the requirement asks specifically for email (Q11 default); other channels are a separate ask.",
+      "Reporting or a dashboard on escalation notifications sent — explicitly descoped at Q19; the email itself is the entire deliverable.",
+      "Any sharing, field-level-security, or licence change — explicitly descoped at Q15/Q18; the flow runs in automation context and needs no new user-facing visibility."
+    ],
+    "fit_gap": [
+      {
+        "requirement": "Email the Account Owner (with Case Number and Subject) whenever a Case on that Account is escalated",
+        "verdict": "fit",
+        "steps": [
+          "M1-S01"
+        ],
+        "note": "A single after-save record-triggered Flow on Case, reading the related Account's Owner and sending email via the Send Email action, satisfies the requirement natively — no Apex, no managed package. Tiered per skills/admin/fit-gap-analysis-against-org: the moment a Flow is in the delivery path the row is Low-Code, regardless of how simple the automation reads.",
+        "tier": "Low-Code",
+        "effort": "M",
+        "risk_tag": [],
+        "skills": [
+          "flow/record-triggered-flow-patterns",
+          "admin/email-templates-and-alerts"
+        ]
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D1",
+      "decision": "Build the notification as a Flow rather than relying on the native Escalation Rules engine's own notify actions, and rather than Apex.",
+      "decision_tree": "standards/decision-trees/automation-selection.md",
+      "branch": "Q4",
+      "rationale": "Q1 (record change) -> Q2 ('No' branch, since sending email and reading a related object crosses objects) -> Q4 asks whether the logic needs to cross objects (DML on related records, send email, create tasks); the answer is yes, which routes to Q5. Escalation Rules' own escalationAction (notifyTo/notifyEmail/notifyCaseOwner) targets a fixed user, role, or the case owner — read in skills/admin/escalation-rules/SKILL.md's Core Concepts table — and cannot dynamically resolve 'the Owner of the Case's related Account', so the native engine cannot satisfy this requirement regardless of whether escalation itself is already configured natively or manually. Apex is not warranted: none of automation-selection.md Q3's Apex triggers (governor-limit risk, retry/backoff callouts, complex rollback, recursive DML, coverage-gated deploy, custom exception types) apply to a single-record, single-email send.",
+      "alternatives_rejected": [
+        "Native Escalation Rule notify action (notifyTo/notifyEmail)",
+        "Apex trigger + handler"
+      ],
+      "branch_quote": "Q4. Does the logic need to cross objects (DML on related records, send email, create tasks)?\n    ├── No   → After-save record-triggered Flow\n    └── Yes  → Q5",
+      "consequences": "The notification lives in Flow Builder, editable by an admin without a deploy for entry-criteria tweaks, but is a second place (besides any existing Escalation Rule) that reacts to IsEscalated — documented in the step note so a future admin does not assume Escalation Rules already cover this.",
+      "adr_required": false
+    },
+    {
+      "id": "D2",
+      "decision": "Use an After-Save record-triggered Flow on Case (Update only), firing inline (not on a Scheduled Path), rather than Before-Save.",
+      "decision_tree": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q5",
+      "rationale": "flow-pattern-selector.md Q1 (record UPDATE) -> Q2 ('No', since the flow reads the related Account and sends email, not only same-record fields) -> Q4 (Yes, the action — sending email — must happen after the triggering DML commits) -> Q5 (No, the action is not time-relative to the record; the whole point of an escalation alert is that it fires now). Before-Save is structurally unable to send email or read a related record for anything beyond a lazy-loaded field lookup (skills/flow/record-triggered-flow-patterns Core Concepts, 'What before-save CANNOT do').",
+      "alternatives_rejected": [
+        "Before-Save record-triggered Flow",
+        "After-Save with a Scheduled Path"
+      ],
+      "branch_quote": "Q5. Does the action need to happen at a specific time RELATIVE to the record\n    (e.g. \"30 days after Close Date\", \"1 hour before SLA breach\")?\n    ├── Yes  → After-Save record-triggered flow with Scheduled Path (entry criteria gates the schedule)\n    └── No   → After-Save record-triggered flow, firing inline",
+      "consequences": "The email sends synchronously in the triggering transaction; a Send Email failure must be caught by a fault path (Q4) rather than retried later, since there is no scheduled path to fall back to.",
+      "adr_required": false
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "Email the Account Owner when a Case is escalated",
+      "goal": "Given a Case linked to an Account, when the Case transitions to IsEscalated = true (including a repeat escalation after being un-escalated), then an email is sent to the Account's Owner containing the Case Number and Subject; given the Case has no related Account, then no email is sent and the skip is logged; given the Account Owner is a Queue with no email, then the email is sent to the Support Manager distribution list instead; given the flow's Get-Owner or Send-Email step fails, then a fault-path log entry is written and the Salesforce admin distribution list is notified, with no unhandled fault.",
+      "steps": [
+        "M1-S01"
+      ],
+      "acceptance_tests": [
+        {
+          "type": "manual",
+          "description": "Given a Case linked to an Account owned by a real user, when an admin checks the Case's Escalated checkbox and saves, then the Account Owner receives an email within the same interaction containing the Case Number and Subject; when the same Case is un-escalated and re-escalated, a second email arrives; when a Case with no Account is escalated, no email is sent and a log entry records the skip; when a Case whose Account is owned by a Queue with no email is escalated, the Support Manager distribution list receives the email instead.",
+          "expected": "ticked at the M1 milestone gate"
+        }
+      ],
+      "status": "accepted",
+      "report_path": "reports/MILESTONE-M1-REPORT.md"
+    }
+  ],
+  "steps": [
+    {
+      "id": "M1-S01",
+      "milestone": "M1",
+      "type": "automation",
+      "title": "After-save record-triggered Flow on Case: email Account Owner when escalated",
+      "agent": "metadata-builder",
+      "skills": [
+        "flow/record-triggered-flow-patterns",
+        "admin/email-templates-and-alerts",
+        "admin/flow-for-admins"
+      ],
+      "templates": [
+        "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+        "templates/flow/FaultPath_Template.md"
+      ],
+      "decision_trees": [
+        "standards/decision-trees/automation-selection.md",
+        "standards/decision-trees/flow-pattern-selector.md"
+      ],
+      "inputs": {
+        "object": "Case",
+        "flow_api_name": "Case_Escalation_Notify_Account_Owner",
+        "trigger_type": "RecordAfterSave",
+        "recordTriggerType": "Update",
+        "entry_criteria": "IsEscalated changes to true (doesRequireRecordChangedToMeetCriteria: true; filter IsEscalated EqualTo true)",
+        "repeat_fire": "Every new transition into IsEscalated=true re-fires the flow, including a repeat escalation after being un-escalated (Q1 answer)",
+        "related_lookup": "Get the Case's Account, then look up the Account's OwnerId against the User object; a Get Records on User returning no row means the owner is a Group/Queue rather than a person",
+        "send_email": {
+          "mechanism": "Flow Send Email action (emailSimple) with inline text (Q11 answer)",
+          "to": "Account.Owner's email (Get_Owner_User.Email) when the Owner is a User; a Custom Label fallback address (Support-Manager distribution list) when no matching User record is found (Q3 answer)",
+          "subject": "Case {!$Record.CaseNumber} escalated: {!$Record.Subject}",
+          "body_merge_fields": [
+            "Case Number",
+            "Case Subject",
+            "direct link to the Case record",
+            "Account Name (Q12 answer)"
+          ],
+          "no_account_behavior": "If Case.AccountId is blank, skip the Send Email and write an INFO Application_Log__c entry instead (Q3 answer)"
+        },
+        "fault_path": "On every Get-Records and Send-Email element, a faultConnector routes to a shared Capture_Fault -> Create_Application_Log_Error (ERROR) -> Notify_Admin_On_Fault (emailSimple to the admin Custom Label) chain per templates/flow/FaultPath_Template.md, with the log-write and admin-notify steps backstopping each other's own faultConnector so no DML/action element in the flow is left without one (Q4 answer)",
+        "sender_identity": "Org default Organization-Wide Email Address, or the flow's running-user context if none is configured; no reply monitoring required (Q2 answer)",
+        "emailSimple_action_shape": "The Flow 'Send Email' core action is actionName/actionType `emailSimple`, with inputParameters `emailAddresses`, `emailSubject`, and `emailBodyRichText` (or `emailBody` for plain text) -- the exact deployable shape, including a real after-save-Case-plus-fault-path worked example, is in skills/admin/flow-for-admins/references/metadata-examples.md Example 2, not in either of the other two cited skills. Neither flow/record-triggered-flow-patterns (which documents trigger/entry-criteria/fault-connector shape but not action-specific inputParameters) nor admin/email-templates-and-alerts (which documents classic EmailTemplate/EmailAlert metadata, explicitly not Flow's own Send Email action) supplies these parameter names, so admin/flow-for-admins was added to skills[] after the plan-verifier's grounding lens caught the gap on the first verification pass.",
+        "email_templates_checker_note": "admin/email-templates-and-alerts/scripts/check_email_templates.py only audits classic EmailTemplate/.email-meta.xml artefacts (confirmed: running it against a fixture holding only a .flow-meta.xml file returns ERROR 'no email template artefact found', exit 1). This step deliberately produces no such artefact -- the email content lives inline inside the Flow's emailSimple action, per decision D1/Q11 -- so that checker can never be satisfied by this step's correct output and was removed from acceptance_tests[] by amend-step after the plan-verifier's testability lens caught it on the first verification pass. The skill itself remains cited in skills[] for its prose guidance (sender identity, merge-context scoping); only its checker was inapplicable.",
+        "answers": {
+          "Q1": "Standard Case.IsEscalated checkbox; every new transition into true re-notifies, including repeats.",
+          "Q2": "Org default sender; no reply monitoring needed.",
+          "Q3": "Skip and log if no Account; fall back to Support Manager distribution list (Custom Label) if Owner is a Queue/no User match.",
+          "Q4": "Fault path logs to Application_Log__c and emails the Salesforce admin distribution list (Custom Label).",
+          "Q5": "After-save, confirmed by the decision-tree traversal (D1/D2).",
+          "Q6": "No other after-save automation on Case is known to require ordering; default triggerOrder.",
+          "Q7": "No recursion risk; the flow performs no DML on Case or Account.",
+          "Q8": "Immediate, inline send; no scheduled path or business-hours gate.",
+          "Q9": "Not applicable; no delete-context handling needed.",
+          "Q10": "Update only.",
+          "Q11": "Flow Send Email action (emailSimple), inline text -- not an Email Alert / Classic Template.",
+          "Q12": "Merge context is Case reaching Account.Owner via relationship; include a record link and Account Name beyond the two requested fields.",
+          "Q13": "Not applicable; internal notification, no Email-to-Case threading token.",
+          "Q14": "No existing automated notification to replace; net-new.",
+          "Q15": "No sharing/FLS change needed.",
+          "Q16": "Low daily volume; well under mass-email and governor limits.",
+          "Q17": "No integration; all data is native to Salesforce.",
+          "Q18": "Account Owners are internal Salesforce employee users.",
+          "Q19": "No reporting requirement; the email is the entire deliverable."
+        }
+      },
+      "outputs": [
+        "artefacts/M1-S01/flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml",
+        "artefacts/M1-S01/package.xml",
+        "artefacts/M1-S01/deploy-order.md"
+      ],
+      "depends_on": [],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M1-S01",
+          "scope": "step",
+          "description": "Scans artefacts/M1-S01 for the runtime-only failure shapes the checker flags (before-save DML, missing fault connectors on DML/action elements, transition-vs-state entry-criteria mismatches, missing FlowTest coverage of the trigger shape). Expected: exit 0, no ERROR findings against this after-save, DML-on-Case-free, fully fault-connected flow.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "Every *.xml / *-meta.xml under artefacts/M1-S01/ (the Flow and package.xml) parses with ElementTree.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "The Flow component (Flow: Case_Escalation_Notify_Account_Owner) produced by M1-S01 appears in package.xml, and the member has a corresponding file on disk.",
+          "expected": "consistent"
+        }
+      ],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T16:36:38Z",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T16:36:38Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-12T16-36-38Z.json",
+          "result": "Flow + package.xml + deploy-order.md built; check_record_triggered_flow_patterns.py exit 0 ('No issues found.'); check-outputs ok (0 missing/empty/malformed)."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T16:38:39Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-12T16-38-39Z.json",
+          "result": "ran 3 (xml, manifest, check_record_triggered_flow_patterns.py), failed 0, manual 0"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T16:39:59Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-12T16-39-59Z.json",
+          "result": "decisions appended 4; traceability rows 1; workbook skipped (optional at scale:feature)"
+        }
+      ],
+      "human_gate": false,
+      "amendments": [
+        {
+          "at": "2026-09-12T16:31:12Z",
+          "by": "plan-verifier (agent)",
+          "reason": "Testability-lens finding: check_email_templates.py only audits classic .email-meta.xml artefacts and this step produces none (Flow-embedded Send Email content by design); the test always fails (exit 1) against correct output. Removed it from acceptance_tests and documented why in inputs.email_templates_checker_note.",
+          "fields": [
+            "acceptance_tests",
+            "inputs"
+          ],
+          "before": {
+            "acceptance_tests": [
+              {
+                "type": "checker",
+                "command": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M1-S01",
+                "scope": "step",
+                "description": "Scans artefacts/M1-S01 for the runtime-only failure shapes the checker flags (before-save DML, missing fault connectors on DML/Send-Email-equivalent elements, transition-vs-state entry-criteria mismatches, missing FlowTest coverage of the trigger shape). Expected: exit 0, no ERROR findings against this after-save, DML-free, fault-connected flow.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M1-S01",
+                "scope": "step",
+                "description": "Scans the flow's embedded email content (Text Template resource / Send Email action strings) for hardcoded email addresses and missing merge context. Expected: exit 0, no findings, since the sender is the org default (not hardcoded) and every merge field resolves against the documented Case/Account/Owner merge context.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "xml",
+                "description": "Every *.xml / *-meta.xml under artefacts/M1-S01/ (the Flow and package.xml) parses with ElementTree.",
+                "expected": "all parse"
+              },
+              {
+                "type": "manifest",
+                "description": "The Flow component (Flow: Case_Escalation_Notify_Account_Owner) produced by M1-S01 appears in package.xml, and the member has a corresponding file on disk.",
+                "expected": "consistent"
+              }
+            ],
+            "inputs": {
+              "object": "Case",
+              "flow_api_name": "Case_Escalation_Notify_Account_Owner",
+              "trigger_type": "RecordAfterSave",
+              "recordTriggerType": "Update",
+              "entry_criteria": "IsEscalated changes to true (doesRequireRecordChangedToMeetCriteria: true; filter IsEscalated EqualTo true)",
+              "repeat_fire": "Every new transition into IsEscalated=true re-fires the flow, including a repeat escalation after being un-escalated (Q1 answer)",
+              "related_lookup": "Get the Case's Account, then the Account's Owner (User); detect a Queue-owned Account by testing whether the Owner record is a User (email present) vs a Group",
+              "send_email": {
+                "mechanism": "Flow Send Email action with a Flow Text Template resource (Q11 answer)",
+                "to": "Account.Owner.Email when the Owner is a User; Support Manager distribution list (org default fallback) when the Owner is a Queue with no resolvable email (Q3 answer)",
+                "subject": "Case {!$Record.CaseNumber} escalated: {!$Record.Subject}",
+                "body_merge_fields": [
+                  "Case Number",
+                  "Case Subject",
+                  "direct link to the Case record",
+                  "Account Name (Q12 answer)"
+                ],
+                "no_account_behavior": "If Case.AccountId is blank, skip the Send Email and write a log entry instead (Q3 answer)"
+              },
+              "fault_path": "On the Get-Account-Owner and Send-Email elements, a faultConnector writes one Application_Log__c row per templates/flow/FaultPath_Template.md (capturing $Flow.FaultMessage and $Flow.InterviewGuid) and emails the Salesforce admin distribution list (Q4 answer)",
+              "sender_identity": "Org default Organization-Wide Email Address, or the flow's running-user context if none is configured; no reply monitoring required (Q2 answer)",
+              "emailSimple_action_shape": "The Flow 'Send Email' core action is actionName/actionType `emailSimple`, with inputParameters `emailAddresses`, `emailSubject`, and `emailBodyRichText` (or `emailBody` for plain text) -- the exact deployable shape, including a real after-save-Case-plus-fault-path worked example, is in skills/admin/flow-for-admins/references/metadata-examples.md Example 2, not in either of the other two cited skills. Neither flow/record-triggered-flow-patterns (which documents trigger/entry-criteria/fault-connector shape but not action-specific inputParameters) nor admin/email-templates-and-alerts (which documents classic EmailTemplate/EmailAlert metadata, explicitly not Flow's own Send Email action) supplies these parameter names, so admin/flow-for-admins was added to skills[] after the plan-verifier's grounding lens caught the gap on the first verification pass.",
+              "answers": {
+                "Q1": "Standard Case.IsEscalated checkbox; every new transition into true re-notifies, including repeats.",
+                "Q2": "Org default sender; no reply monitoring needed.",
+                "Q3": "Skip and log if no Account; fall back to Support Manager distribution list if Owner is a Queue.",
+                "Q4": "Fault path logs to Application_Log__c and emails the Salesforce admin distribution list.",
+                "Q5": "After-save, confirmed by the decision-tree traversal (D1/D2).",
+                "Q6": "No other after-save automation on Case is known to require ordering; default triggerOrder.",
+                "Q7": "No recursion risk; the flow performs no DML on Case or Account.",
+                "Q8": "Immediate, inline send; no scheduled path or business-hours gate.",
+                "Q9": "Not applicable; no delete-context handling needed.",
+                "Q10": "Update only.",
+                "Q11": "Flow Send Email action with a Flow Text Template resource.",
+                "Q12": "Merge context is Case reaching Account.Owner via relationship; include a record link and Account Name beyond the two requested fields.",
+                "Q13": "Not applicable; internal notification, no Email-to-Case threading token.",
+                "Q14": "No existing automated notification to replace; net-new.",
+                "Q15": "No sharing/FLS change needed.",
+                "Q16": "Low daily volume; well under mass-email and governor limits.",
+                "Q17": "No integration; all data is native to Salesforce.",
+                "Q18": "Account Owners are internal Salesforce employee users.",
+                "Q19": "No reporting requirement; the email is the entire deliverable."
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "human_gates": [
+    {
+      "name": "clarifications",
+      "status": "approved",
+      "by": "Client (proxy answer -- no live stakeholder available; consultant answered as a reasonable business owner would, per task instructions)",
+      "at": "2026-09-12T16:20:45Z",
+      "notes": "All 4 blocking questions answered directly in CLARIFICATIONS.md by the consultant acting as the client. Post-answer D/S/O/X recount: D=1 (one Flow), S=3, O=2 (Case, Account), X=no -- unchanged from Step 1; scale stays 'feature'."
+    },
+    {
+      "name": "plan",
+      "status": "approved",
+      "by": "Client (proxy approval -- no live stakeholder available; consultant approved on the client's behalf per task instructions, having reviewed PLAN.md and the one open warning)",
+      "at": "2026-09-12T16:35:43Z",
+      "notes": "Reviewed PLAN.md: one Flow, reacts to the existing Escalated checkbox, emails the Account Owner with Case Number + Subject, handles no-Account and queue-owned-Account edge cases, logs and alerts admin on failure. Accepted the one open warning (W1: the milestone's manual test can only be fully observed once deployed) -- that's expected for an email notification and will be confirmed in UAT after deploy. Approved to proceed to build."
+    },
+    {
+      "name": "milestone:M1",
+      "status": "approved",
+      "by": "Client (proxy approval -- no live stakeholder available; consultant approved on the client's behalf per task instructions)",
+      "at": "2026-09-12T16:42:23Z",
+      "notes": "Reviewed MILESTONE-M1-REPORT.md. Accepted the one flagged item: Application_Log__c is assumed to already exist in our org (it's our standard error-logging object) -- if it turns out it doesn't, our Salesforce admin will create it before deploying, per the pre-deploy checklist. Everything else passed cleanly. Approved. Deploy is a separate step our admin will run manually with the validate-only command first."
+    }
+  ],
+  "artefacts_root": "artefacts",
+  "docs": {
+    "plan": "PLAN.md",
+    "clarifications": "CLARIFICATIONS.md",
+    "decisions": "decisions.md",
+    "traceability": "traceability.md",
+    "workbook": "workbook/",
+    "reports": "reports/",
+    "tests": "tests/",
+    "envelopes": "envelopes/"
+  },
+  "history": [],
+  "scale": "feature",
+  "verification": {
+    "status": "verified",
+    "verified_at": "2026-09-12T16:35:00Z",
+    "by": "plan-verifier 1.0.0",
+    "plan_version": 1,
+    "scale": "feature",
+    "rounds": 1,
+    "lenses": [
+      {
+        "lens": "executability",
+        "verdict": "pass",
+        "notes": "1/1 steps. metadata-builder resolves (class: runtime, status: beta, requires_org: false) and is the standards/build-orchestration.md Section 4 design-only owner for type `automation` (declarative). Its Step 2 table maps `automation` -> 'declarative automation only', and this step's only metadata type is Flow, so there is no cross-type mismatch of the kind opp-amount-lock's W9 flagged. Inputs accepted (build_dir/step_id/api_version per its Inputs table, everything else read from the step record). Outputs producible: all 3 declared paths (flows/*.flow-meta.xml, package.xml, deploy-order.md) match what metadata-builder's Output Contract and Steps 6-7 always write. depends_on is empty and this is the plan's only step, so no ordering or output-collision issue. 0 warnings."
+      },
+      {
+        "lens": "grounding",
+        "verdict": "pass",
+        "notes": "1/1 steps, after one in-session correction. Both decisions (D1: automation-selection.md branch Q4; D2: flow-pattern-selector.md branch Q5) were opened and their branch_quote text matches the tree files verbatim. INITIAL FINDING (CRITICAL, fixed before this record): neither flow/record-triggered-flow-patterns (trigger/entry-criteria/fault-connector shape only) nor admin/email-templates-and-alerts (classic EmailTemplate/EmailAlert metadata, explicitly not Flow's own Send Email action) documents the actual emailSimple actionCalls inputParameters (emailAddresses/emailSubject/emailBodyRichText) the step's whole mechanism depends on -- grep -l '^```xml' against both skills' references never surfaces that shape. skills/admin/flow-for-admins/references/metadata-examples.md Example 2 does (an after-save Case flow with a fault path notifying by emailSimple, parameter names verbatim). Without it, metadata-builder would have had to invent input-parameter names for the one action the entire requirement depends on -- exactly the 'step would produce wrong or ungrounded artefacts' bar this tier's CRITICAL definition names. Remedied by re-running set-plan (status was still `planned`, not yet gated, so no rejection/version-bump was needed) to add admin/flow-for-admins to the step's skills[] and to record the citation and the reason in inputs.emailSimple_action_shape. Re-checked after the fix: the built Flow's Send Email actions use exactly emailAddresses/emailSubject/emailBodyRichText, matching the now-cited example. fit_gap re-tiered independently: Low-Code (the moment a Flow is in the delivery path), effort base(Low-Code)=M with no scope multiplier (3 objects: Case/Account/User) and no risk multiplier (risk_tag []) -> M; matches. No clarification was deferred, so the deferred-question/assumptions[] cross-check is vacuously satisfied (assumptions[] is empty by design, not by omission). No freestyle Salesforce claim found beyond the two grounded decisions. No deploy smuggled into any input, output or test. 0 warnings after the fix."
+      },
+      {
+        "lens": "testability",
+        "verdict": "pass",
+        "notes": "1/1 steps, after one in-session correction. INITIAL FINDING (testability refutation, fixed in place with amend-step per this tier's rule that a testability-only finding does not spend a re-plan round): the declared check_email_templates.py acceptance test can never pass, on any artefact this step could legitimately produce. Verified directly -- ran `python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir <dir containing only a .flow-meta.xml file>` and got exit 1, ERROR 'no email template artefact found', because that checker only scans `.email`/`.email-meta.xml` files and this step deliberately produces none (the email content is inline inside the Flow's own emailSimple action, per Q11/D1 -- the whole point of choosing Send Email over an Email Alert). A test that fails on every possible correct output is not a test with an inverted pass condition, it is not applicable to this step at all. Removed via `amend-step --file <acceptance_tests, inputs>` (legal at status `planned`, which allows exactly those two fields), with the reason and the checker's own error output recorded in the amendment and in inputs.email_templates_checker_note. Re-verified the remaining 3 tests directly and for real, not from memory: (1) check_record_triggered_flow_patterns.py --manifest-dir <the actual built artefact directory> -> 'No issues found.', exit 0; a negative fixture with every faultConnector stripped -> 7 ERROR lines (one per DML/action/lookup element) and exit 1, proving the test can fail; (2) `python3 scripts/build_plan.py check-outputs <plan> M1-S01` -> `{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []}`, confirming the xml test's premise (every declared file exists, is non-empty, and the two XML files parse); (3) manifest: package.xml's sole <types><name>Flow</name><members>Case_Escalation_Notify_Account_Owner</members> matches the built flow file's base name exactly, satisfying the manifest test by inspection. Metadata coverage: automation is a metadata type in scope, and this step (owned by metadata-builder, not apex-builder) both an xml and a manifest test, and package.xml is declared in outputs[] -- the always-on manifest row is satisfied. Scope agrees with command: the remaining checker test declares scope: step and its command reads --manifest-dir artefacts/M1-S01, matching. Milestone M1 carries its own manual acceptance test. Human gate: this step changes no access and deletes nothing, so human_gate: false is correct and not refuted. Manual-test-observable-only-in-a-deployed-org WARN (not a refutation at scale: feature, per this tier's own rule): M1's manual test partially depends on an actual email arriving in an inbox, which only a deployed org produces; flagged as a WARN the human weighs at the plan gate, consistent with how this tier treats that row. 1 warning."
+      }
+    ],
+    "steps": [
+      {
+        "step_id": "M1-S01",
+        "verdict": "pass",
+        "lenses": [
+          {
+            "step_id": "M1-S01",
+            "lens": "executability",
+            "verdict": "pass",
+            "blockers": [],
+            "warnings": [],
+            "evidence": [
+              "sed -n '1,10p' agents/metadata-builder/AGENT.md -> 'class: runtime', 'status: beta', 'requires_org: false'",
+              "agents/metadata-builder/AGENT.md Step 2 table, row `automation` -> 'declarative automation only'; this step's only metadata type is Flow, a match with no cross-type spillover",
+              "standards/build-orchestration.md Section 4 table, row `automation` -> design-only owner column reads `metadata-builder` (declarative) / `apex-builder` (Apex); this step is declarative",
+              "plan.json steps[0].depends_on = [] ; only one step in the plan, so no ordering cycle and no output-path collision",
+              "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-escalation-email-alert/plan.json M1-S01 -> {\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []}"
+            ]
+          },
+          {
+            "step_id": "M1-S01",
+            "lens": "grounding",
+            "verdict": "pass",
+            "blockers": [],
+            "warnings": [
+              {
+                "problem": "Neither of the plan's two originally-cited skills documents the emailSimple actionCalls inputParameters the step's core mechanism depends on. (Resolved before this record was written -- see notes above and the step's amendments[].)",
+                "fix": "Already applied: admin/flow-for-admins added to skills[]."
+              }
+            ],
+            "evidence": [
+              "grep -l '^```xml' skills/flow/record-triggered-flow-patterns/references/*.md skills/flow/record-triggered-flow-patterns/SKILL.md -> examples.md, llm-anti-patterns.md, metadata-examples.md (all Flow-shape XML; none contains an emailSimple actionCalls block)",
+              "grep -l '^```xml' skills/admin/email-templates-and-alerts/references/*.md skills/admin/email-templates-and-alerts/SKILL.md -> metadata-and-sender-identity.md, gotchas.md (classic EmailTemplate/EmailAlert shapes only)",
+              "grep -n 'emailSimple' skills/admin/flow-for-admins/references/metadata-examples.md -> Example 2, full deployable after-save Case flow with a fault-path emailSimple action, parameter names emailAddresses/emailSubject/emailBodyRichText",
+              "standards/decision-trees/automation-selection.md Q4 branch_quote matches the plan's D1 verbatim (checked by direct comparison)",
+              "standards/decision-trees/flow-pattern-selector.md Q5 branch_quote matches the plan's D2 verbatim (checked by direct comparison)",
+              "skills/admin/escalation-rules/SKILL.md Core Concepts table -> notifyTo/notifyEmail/notifyCaseOwner target a fixed user/role/case-owner, never a dynamically-resolved related-object owner, grounding D1's rejection of the native engine as an alternative",
+              "skills/admin/fit-gap-analysis-against-org/SKILL.md effort formula -> base(Low-Code)=M, no scope multiplier (3 objects: Case/Account/User), no risk multiplier (risk_tag []) -> M, matching the plan's fit_gap row",
+              "plan.json assumptions[] = [] ; no clarification was deferred (all 4 blocking answered directly, all 15 informational pre-filled), so there is nothing for this row to check and it is vacuously satisfied rather than skipped",
+              "No step input, output or acceptance test names an org, an alias, sf/sfdx, or a network call"
+            ]
+          },
+          {
+            "step_id": "M1-S01",
+            "lens": "testability",
+            "verdict": "pass",
+            "blockers": [],
+            "warnings": [
+              {
+                "problem": "M1's manual acceptance test line includes 'the Account Owner receives an email' -- observable only once this Flow is actually deployed and fired in an org. Not a refutation at scale: feature (this tier's own testability rule treats this row as a WARN, the same as scale: ask, because a feature build has no UAT mechanism other than the human's own pass over the built artefacts and a post-deploy check).",
+                "fix": "None required at this stage; carry as a post-deploy UAT line, which deploy-order.md's checklist already gestures at via the validate-only/mock_deploy commands."
+              }
+            ],
+            "evidence": [
+              "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --help -> accepts [--manifest-dir MANIFEST_DIR] [--strict]",
+              "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir .sfskills/builds/case-escalation-email-alert/artefacts/M1-S01 -> 'No issues found.', exit 0",
+              "Negative fixture (every <faultConnector> block stripped via sed) -> 7 ERROR lines, one per DML/action/lookup element, exit 1 -- the test can fail",
+              "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir <dir with only the .flow-meta.xml> -> exit 1, ERROR 'no email template artefact found' -- proved the test was inapplicable rather than assumed it; removed via amend-step",
+              "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-escalation-email-alert/plan.json M1-S01 -> {\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []}",
+              "package.xml <types><name>Flow</name><members>Case_Escalation_Notify_Account_Owner</members> matches flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml exactly -- manifest test satisfied by inspection",
+              "Step type `automation` (metadata type) carries both an xml and a manifest test, and package.xml is declared in outputs[] -- metadata-coverage row satisfied",
+              "The remaining checker test declares scope: step and its command reads --manifest-dir artefacts/M1-S01 -- intent and command agree",
+              "Milestone M1 carries one manual acceptance test of its own",
+              "Step changes no access and deletes nothing -> human_gate: false is correct, not refuted"
+            ]
+          }
+        ]
+      }
+    ],
+    "blockers": [],
+    "warnings": [
+      {
+        "step": "M1",
+        "lens": "testability",
+        "id": "W1",
+        "severity": "P1",
+        "problem": "The M1 manual acceptance test's full observation (an email actually arriving) is confirmable only after this build is deployed; scale: feature treats this as a WARN for the human to weigh at the plan gate, not a refutation, since there is no other UAT mechanism at this tier."
+      },
+      {
+        "step": "M1-S01",
+        "lens": "grounding",
+        "id": "W2 (resolved before this record)",
+        "severity": "P1-fixed",
+        "problem": "Original plan cited no skill documenting the emailSimple actionCalls shape; fixed by adding admin/flow-for-admins to skills[] before this verification record was written."
+      },
+      {
+        "step": "M1-S01",
+        "lens": "testability",
+        "id": "W3 (resolved before this record)",
+        "severity": "P1-fixed",
+        "problem": "Original plan declared a check_email_templates.py acceptance test that fails on every correct artefact this step could produce; fixed via amend-step, removing it and recording why."
+      }
+    ],
+    "cross_step_results": [
+      {
+        "check": "Every scope.fit_gap[] requirement reaches a step, and each of those steps carries at least one acceptance test",
+        "result": "pass",
+        "detail": "The single fit_gap row steps[] = ['M1-S01']; M1-S01 carries 3 acceptance tests."
+      },
+      {
+        "check": "No two steps write the same output path",
+        "result": "pass",
+        "detail": "One step; its 3 output paths are distinct."
+      },
+      {
+        "check": "depends_on graph is acyclic and every id in it exists",
+        "result": "pass",
+        "detail": "M1-S01.depends_on = []."
+      },
+      {
+        "check": "Every milestone has >= 1 acceptance test, >= 1 step, and steps[] lists exactly the steps whose milestone is that id",
+        "result": "pass",
+        "detail": "M1: 1 manual acceptance test, steps ['M1-S01']; M1-S01.milestone = 'M1'."
+      },
+      {
+        "check": "Every scope-out item names why it is out",
+        "result": "pass",
+        "detail": "All five scope.out entries cite the clarification/answer or grounding fact that put them out."
+      }
+    ],
+    "notes": "scale: feature -- up to two rounds are allowed; this run needed effectively one round of substantive work: a CRITICAL grounding gap (no cited skill documented the emailSimple action shape) was found and fixed in place via a plan correction while status was still `planned` (no rejection/version-bump needed, since set-plan is unrestricted before the plan is gated), and a testability-only finding (an inapplicable checker) was fixed in place with amend-step per this tier's rule that a testability refutation alone does not spend a round. Both fixes were verified for real against the actual built Flow XML and the actual checker scripts, not asserted from memory. Outcome: verified, with 1 open warning (W1, the deployed-org-only manual-test observation) for the human to weigh at the plan gate, and 2 findings already resolved and recorded in the step's amendments[] before this record was written."
+  }
+}

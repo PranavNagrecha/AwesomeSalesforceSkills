@@ -1,0 +1,10 @@
+[
+  {
+    "path": ".sfskills/builds/case-escalation-email-alert/artefacts/M1-S01/flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml",
+    "parsed": true
+  },
+  {
+    "path": ".sfskills/builds/case-escalation-email-alert/artefacts/M1-S01/package.xml",
+    "parsed": true
+  }
+]

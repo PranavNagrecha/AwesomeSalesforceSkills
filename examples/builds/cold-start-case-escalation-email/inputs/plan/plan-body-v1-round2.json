@@ -1,0 +1,157 @@
+{
+  "scope": {
+    "in": [
+      "Send an automated email to the Account Owner whenever a Case on that Account is escalated (Case.IsEscalated transitions to true), including the Case Number and Subject in the email (Q1, requirement statement).",
+      "Fire on every new transition into escalated, including a repeat escalation after a Case was previously un-escalated, not only the first-ever escalation (Q1).",
+      "Handle the no-related-Account and no-person-Owner (Queue-owned Account) edge cases explicitly rather than letting them fail silently: skip-and-log for no Account, fall back to the Support Manager distribution list when the owner is a Queue (Q3).",
+      "A fault path that logs any send failure and notifies the Salesforce admin distribution list (Q4)."
+    ],
+    "out": [
+      "Building or modifying native Salesforce Escalation Rules (the mechanism that sets IsEscalated in the first place) — the requirement only asks to react to an escalation that already happens; confirmed no engine change is requested and the native engine's own notify actions cannot target a dynamically-resolved Account Owner (see D1 rationale).",
+      "Any change to Case routing/assignment on creation — out of scope; not mentioned in the requirement and no clarification implied it.",
+      "In-app bell / SMS / Slack notification channels — the requirement asks specifically for email (Q11 default); other channels are a separate ask.",
+      "Reporting or a dashboard on escalation notifications sent — explicitly descoped at Q19; the email itself is the entire deliverable.",
+      "Any sharing, field-level-security, or licence change — explicitly descoped at Q15/Q18; the flow runs in automation context and needs no new user-facing visibility."
+    ]
+  },
+  "fit_gap": [
+    {
+      "requirement": "Email the Account Owner (with Case Number and Subject) whenever a Case on that Account is escalated",
+      "verdict": "fit",
+      "steps": ["M1-S01"],
+      "note": "A single after-save record-triggered Flow on Case, reading the related Account's Owner and sending email via the Send Email action, satisfies the requirement natively — no Apex, no managed package. Tiered per skills/admin/fit-gap-analysis-against-org: the moment a Flow is in the delivery path the row is Low-Code, regardless of how simple the automation reads.",
+      "tier": "Low-Code",
+      "effort": "M",
+      "risk_tag": [],
+      "skills": ["flow/record-triggered-flow-patterns", "admin/email-templates-and-alerts"]
+    }
+  ],
+  "assumptions": [],
+  "decisions": [
+    {
+      "id": "D1",
+      "decision": "Build the notification as a Flow rather than relying on the native Escalation Rules engine's own notify actions, and rather than Apex.",
+      "decision_tree": "standards/decision-trees/automation-selection.md",
+      "branch": "Q4",
+      "rationale": "Q1 (record change) -> Q2 ('No' branch, since sending email and reading a related object crosses objects) -> Q4 asks whether the logic needs to cross objects (DML on related records, send email, create tasks); the answer is yes, which routes to Q5. Escalation Rules' own escalationAction (notifyTo/notifyEmail/notifyCaseOwner) targets a fixed user, role, or the case owner — read in skills/admin/escalation-rules/SKILL.md's Core Concepts table — and cannot dynamically resolve 'the Owner of the Case's related Account', so the native engine cannot satisfy this requirement regardless of whether escalation itself is already configured natively or manually. Apex is not warranted: none of automation-selection.md Q3's Apex triggers (governor-limit risk, retry/backoff callouts, complex rollback, recursive DML, coverage-gated deploy, custom exception types) apply to a single-record, single-email send.",
+      "alternatives_rejected": ["Native Escalation Rule notify action (notifyTo/notifyEmail)", "Apex trigger + handler"],
+      "branch_quote": "Q4. Does the logic need to cross objects (DML on related records, send email, create tasks)?\n    ├── No   → After-save record-triggered Flow\n    └── Yes  → Q5",
+      "consequences": "The notification lives in Flow Builder, editable by an admin without a deploy for entry-criteria tweaks, but is a second place (besides any existing Escalation Rule) that reacts to IsEscalated — documented in the step note so a future admin does not assume Escalation Rules already cover this.",
+      "adr_required": false
+    },
+    {
+      "id": "D2",
+      "decision": "Use an After-Save record-triggered Flow on Case (Update only), firing inline (not on a Scheduled Path), rather than Before-Save.",
+      "decision_tree": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q5",
+      "rationale": "flow-pattern-selector.md Q1 (record UPDATE) -> Q2 ('No', since the flow reads the related Account and sends email, not only same-record fields) -> Q4 (Yes, the action — sending email — must happen after the triggering DML commits) -> Q5 (No, the action is not time-relative to the record; the whole point of an escalation alert is that it fires now). Before-Save is structurally unable to send email or read a related record for anything beyond a lazy-loaded field lookup (skills/flow/record-triggered-flow-patterns Core Concepts, 'What before-save CANNOT do').",
+      "alternatives_rejected": ["Before-Save record-triggered Flow", "After-Save with a Scheduled Path"],
+      "branch_quote": "Q5. Does the action need to happen at a specific time RELATIVE to the record\n    (e.g. \"30 days after Close Date\", \"1 hour before SLA breach\")?\n    ├── Yes  → After-Save record-triggered flow with Scheduled Path (entry criteria gates the schedule)\n    └── No   → After-Save record-triggered flow, firing inline",
+      "consequences": "The email sends synchronously in the triggering transaction; a Send Email failure must be caught by a fault path (Q4) rather than retried later, since there is no scheduled path to fall back to.",
+      "adr_required": false
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "Email the Account Owner when a Case is escalated",
+      "goal": "Given a Case linked to an Account, when the Case transitions to IsEscalated = true (including a repeat escalation after being un-escalated), then an email is sent to the Account's Owner containing the Case Number and Subject; given the Case has no related Account, then no email is sent and the skip is logged; given the Account Owner is a Queue with no email, then the email is sent to the Support Manager distribution list instead; given the flow's Get-Owner or Send-Email step fails, then a fault-path log entry is written and the Salesforce admin distribution list is notified, with no unhandled fault.",
+      "steps": ["M1-S01"],
+      "acceptance_tests": [
+        {
+          "type": "manual",
+          "description": "Given a Case linked to an Account owned by a real user, when an admin checks the Case's Escalated checkbox and saves, then the Account Owner receives an email within the same interaction containing the Case Number and Subject; when the same Case is un-escalated and re-escalated, a second email arrives; when a Case with no Account is escalated, no email is sent and a log entry records the skip; when a Case whose Account is owned by a Queue with no email is escalated, the Support Manager distribution list receives the email instead.",
+          "expected": "ticked at the M1 milestone gate"
+        }
+      ],
+      "status": "pending"
+    }
+  ],
+  "steps": [
+    {
+      "id": "M1-S01",
+      "milestone": "M1",
+      "type": "automation",
+      "title": "After-save record-triggered Flow on Case: email Account Owner when escalated",
+      "agent": "metadata-builder",
+      "skills": ["flow/record-triggered-flow-patterns", "admin/email-templates-and-alerts", "admin/flow-for-admins"],
+      "templates": ["templates/flow/RecordTriggered_Skeleton.flow-meta.xml", "templates/flow/FaultPath_Template.md"],
+      "decision_trees": ["standards/decision-trees/automation-selection.md", "standards/decision-trees/flow-pattern-selector.md"],
+      "inputs": {
+        "object": "Case",
+        "flow_api_name": "Case_Escalation_Notify_Account_Owner",
+        "trigger_type": "RecordAfterSave",
+        "recordTriggerType": "Update",
+        "entry_criteria": "IsEscalated changes to true (doesRequireRecordChangedToMeetCriteria: true; filter IsEscalated EqualTo true)",
+        "repeat_fire": "Every new transition into IsEscalated=true re-fires the flow, including a repeat escalation after being un-escalated (Q1 answer)",
+        "related_lookup": "Get the Case's Account, then the Account's Owner (User); detect a Queue-owned Account by testing whether the Owner record is a User (email present) vs a Group",
+        "send_email": {
+          "mechanism": "Flow Send Email action with a Flow Text Template resource (Q11 answer)",
+          "to": "Account.Owner.Email when the Owner is a User; Support Manager distribution list (org default fallback) when the Owner is a Queue with no resolvable email (Q3 answer)",
+          "subject": "Case {!$Record.CaseNumber} escalated: {!$Record.Subject}",
+          "body_merge_fields": ["Case Number", "Case Subject", "direct link to the Case record", "Account Name (Q12 answer)"],
+          "no_account_behavior": "If Case.AccountId is blank, skip the Send Email and write a log entry instead (Q3 answer)"
+        },
+        "fault_path": "On the Get-Account-Owner and Send-Email elements, a faultConnector writes one Application_Log__c row per templates/flow/FaultPath_Template.md (capturing $Flow.FaultMessage and $Flow.InterviewGuid) and emails the Salesforce admin distribution list (Q4 answer)",
+        "sender_identity": "Org default Organization-Wide Email Address, or the flow's running-user context if none is configured; no reply monitoring required (Q2 answer)",
+        "emailSimple_action_shape": "The Flow 'Send Email' core action is actionName/actionType `emailSimple`, with inputParameters `emailAddresses`, `emailSubject`, and `emailBodyRichText` (or `emailBody` for plain text) -- the exact deployable shape, including a real after-save-Case-plus-fault-path worked example, is in skills/admin/flow-for-admins/references/metadata-examples.md Example 2, not in either of the other two cited skills. Neither flow/record-triggered-flow-patterns (which documents trigger/entry-criteria/fault-connector shape but not action-specific inputParameters) nor admin/email-templates-and-alerts (which documents classic EmailTemplate/EmailAlert metadata, explicitly not Flow's own Send Email action) supplies these parameter names, so admin/flow-for-admins was added to skills[] after the plan-verifier's grounding lens caught the gap on the first verification pass.",
+        "answers": {
+          "Q1": "Standard Case.IsEscalated checkbox; every new transition into true re-notifies, including repeats.",
+          "Q2": "Org default sender; no reply monitoring needed.",
+          "Q3": "Skip and log if no Account; fall back to Support Manager distribution list if Owner is a Queue.",
+          "Q4": "Fault path logs to Application_Log__c and emails the Salesforce admin distribution list.",
+          "Q5": "After-save, confirmed by the decision-tree traversal (D1/D2).",
+          "Q6": "No other after-save automation on Case is known to require ordering; default triggerOrder.",
+          "Q7": "No recursion risk; the flow performs no DML on Case or Account.",
+          "Q8": "Immediate, inline send; no scheduled path or business-hours gate.",
+          "Q9": "Not applicable; no delete-context handling needed.",
+          "Q10": "Update only.",
+          "Q11": "Flow Send Email action with a Flow Text Template resource.",
+          "Q12": "Merge context is Case reaching Account.Owner via relationship; include a record link and Account Name beyond the two requested fields.",
+          "Q13": "Not applicable; internal notification, no Email-to-Case threading token.",
+          "Q14": "No existing automated notification to replace; net-new.",
+          "Q15": "No sharing/FLS change needed.",
+          "Q16": "Low daily volume; well under mass-email and governor limits.",
+          "Q17": "No integration; all data is native to Salesforce.",
+          "Q18": "Account Owners are internal Salesforce employee users.",
+          "Q19": "No reporting requirement; the email is the entire deliverable."
+        }
+      },
+      "outputs": [
+        "artefacts/M1-S01/flows/Case_Escalation_Notify_Account_Owner.flow-meta.xml",
+        "artefacts/M1-S01/package.xml",
+        "artefacts/M1-S01/deploy-order.md"
+      ],
+      "depends_on": [],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M1-S01",
+          "scope": "step",
+          "description": "Scans artefacts/M1-S01 for the runtime-only failure shapes the checker flags (before-save DML, missing fault connectors on DML/Send-Email-equivalent elements, transition-vs-state entry-criteria mismatches, missing FlowTest coverage of the trigger shape). Expected: exit 0, no ERROR findings against this after-save, DML-free, fault-connected flow.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M1-S01",
+          "scope": "step",
+          "description": "Scans the flow's embedded email content (Text Template resource / Send Email action strings) for hardcoded email addresses and missing merge context. Expected: exit 0, no findings, since the sender is the org default (not hardcoded) and every merge field resolves against the documented Case/Account/Owner merge context.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "Every *.xml / *-meta.xml under artefacts/M1-S01/ (the Flow and package.xml) parses with ElementTree.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "The Flow component (Flow: Case_Escalation_Notify_Account_Owner) produced by M1-S01 appears in package.xml, and the member has a corresponding file on disk.",
+          "expected": "consistent"
+        }
+      ],
+      "status": "pending",
+      "runs": [],
+      "human_gate": false
+    }
+  ]
+}
