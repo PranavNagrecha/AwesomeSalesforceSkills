@@ -25,7 +25,11 @@ PS_OpportunityDelete from the included permission sets."
     <permissionSets>PS_OpportunityEdit</permissionSets>
     <permissionSets>PS_OpportunityDelete</permissionSets>
 </PermissionSetGroup>
+```
 
+...and the variant, same members plus the mute:
+
+```xml
 <!-- PSG_SalesManager_Prod.permissionsetgroup-meta.xml — same PSes + mute -->
 <PermissionSetGroup>
     <permissionSets>PS_OpportunityRead</permissionSets>
@@ -156,15 +160,18 @@ insert new PermissionSetAssignment(
 
 ```xml
 <!-- package.xml for retrieving PSGs -->
-<types>
-    <members>*</members>
-    <name>PermissionSetGroup</name>
-</types>
-<types>
-    <members>*</members>
-    <name>PermissionSet</name>
-</types>
-<!-- MutingPermissionSet missing -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>*</members>
+        <name>PermissionSetGroup</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>PermissionSet</name>
+    </types>
+    <!-- MutingPermissionSet missing -->
+    <version>62.0</version>
+</Package>
 ```
 
 **Why it happens:** The LLM assumes the muting permission set is embedded inside the PSG metadata file. It is not — it is a separate `MutingPermissionSet` metadata type.
@@ -172,18 +179,21 @@ insert new PermissionSetAssignment(
 **Correct pattern:**
 
 ```xml
-<types>
-    <members>*</members>
-    <name>PermissionSetGroup</name>
-</types>
-<types>
-    <members>*</members>
-    <name>PermissionSet</name>
-</types>
-<types>
-    <members>*</members>
-    <name>MutingPermissionSet</name>
-</types>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>*</members>
+        <name>PermissionSetGroup</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>MutingPermissionSet</name>
+    </types>
+    <version>62.0</version>
+</Package>
 ```
 
 **Detection hint:** any `package.xml` that includes `PermissionSetGroup` but not `MutingPermissionSet`. If the org uses mutes, the manifest is incomplete.

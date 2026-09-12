@@ -43,18 +43,21 @@ Subtle traps when composing PSGs, applying mutes, sequencing recalculation, and 
 **How to avoid:** Always pair `PermissionSetGroup` with `MutingPermissionSet` (and `PermissionSet`) in the deployment manifest:
 
 ```xml
-<types>
-    <members>*</members>
-    <name>PermissionSetGroup</name>
-</types>
-<types>
-    <members>*</members>
-    <name>MutingPermissionSet</name>
-</types>
-<types>
-    <members>*</members>
-    <name>PermissionSet</name>
-</types>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>*</members>
+        <name>PermissionSetGroup</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>MutingPermissionSet</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>62.0</version>
+</Package>
 ```
 
 Source-tracked SFDX projects do this automatically when retrieving a PSG that references a mute, but only if the mute is in the same project. Cross-project references get cut.

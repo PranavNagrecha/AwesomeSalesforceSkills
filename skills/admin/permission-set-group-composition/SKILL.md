@@ -36,9 +36,9 @@ outputs:
   - "Naming-convention check report and consolidation candidates"
   - "Assignment lifecycle plan covering expiration, activation, and audit trail"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-11
+updated: 2026-09-12
 ---
 
 # Permission Set Group Composition
@@ -53,6 +53,22 @@ This is NOT the place to argue PSG vs profile-stack — see `admin/permission-se
 - Is the desired delta from an existing PSG **subtractive** (mute) or **additive** (a new small PS)? Mute Permission Sets only ever subtract — they cannot grant.
 - What user licenses are attached to the target personas, and do any included PSes require a feature license that the target user does not have?
 - Is the org source-tracked (DX/Source) or change-set based? Mute Permission Sets are separate metadata files and must be retrieved explicitly — they do not travel inside the `permissionsetgroup-meta.xml` file.
+
+## Questions to Ask Before Configuring
+
+Put these to the requester before opening Setup or writing the XML. Each one exists because a specific trap in `references/gotchas.md` (cited by number) is cheap to avoid at question time and expensive to unwind after a group is assigned to 300 users.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which job function is this group for, and which capabilities does that job need — named one at a time?" | Gotcha 7: a group named after an incumbent or a department rather than a job function is the seed of PSG explosion | A capability list that maps onto small composable permission sets, plus the job title rather than the person's name | One group per job function that outlives the incumbent, instead of a 60-group estate that has to be excavated at audit time |
+| "Of the permission sets this group needs, which already exist and are shared with other groups, and which would be private to this one?" | Gotcha 5: a shared set cannot be deleted while any group still references it, so today's sharing decision sets tomorrow's retirement cost | A reuse map — which sets are org-wide building blocks, which are single-group, and who owns each | Retirement runs as a planned detach → wait → delete ladder instead of a destructive deployment that fails halfway |
+| "Is the delta from the closest existing group subtractive or additive — and if subtractive, is anyone in this persona still allowed the permission?" | Gotcha 1: muting is one-way, so no included set can hand a muted permission back, and a persona that needs it sometimes needs a second group rather than a mute | A mute-vs-new-set decision with the exact object and permission named | A one-file subtractive delta instead of a cloned group that drifts from its original inside one release |
+| "When does this access have to be live, and who is watching the group's `status` between deploy and go-live?" | Gotcha 2: recalculation is asynchronous, so assignments made while `status` is `Outdated` look complete and grant nothing | A go-live time, a named owner for the status poll, and a quiet window for edits to high-fan-out sets | Users get access at the hour they were promised it, instead of a support queue whose answer is "wait and try again" |
+| "Does this access belong behind a session — `hasActivationRequired` true — and if so, what performs the activation?" | Gotcha 3: `hasActivationRequired` (`api_meta L95331`, API 53.0+) is a third gate on top of assignment and recalculation, and each one can be true while the others are not | A standing-access-vs-session-activated decision and the UI or API call that activates it | Elevated capability that only exists inside an activated session, rather than standing privilege nobody remembers granting |
+| "Which environments carry this group, and does the name encode the environment as `PSG_<persona>_<env>`?" | Gotcha 4: cross-environment moves are where the muting set gets dropped from a hand-curated manifest, and an environment-suffixed name is what makes that manifest reviewable | The environment list plus the manifest entries — `PermissionSet`, `MutingPermissionSet` and `PermissionSetGroup` named together (`api_meta L95396`) | The same composition lands in every org, instead of a production group whose mutes silently never travelled |
+| "What single line goes in each `description`, and where does the composition rationale live instead?" | Gotcha 9: `PermissionSet.description` is capped at 255 characters (`api_meta L94788`), and an over-length set is rejected while every group composing it fails with `permission set names are invalid` | A one-line label per file plus the named home for the rationale — the package template or the configuration workbook | A deployment that validates first time, instead of a composition-layer error that sends the team hunting one layer above the real fault |
+
+What a proper composition adds over just building the group: the persona's access is a named union of reusable parts with its subtractions in one auditable file, the rollout waits for the platform instead of racing it, and the same shape deploys to every org because the manifest and the naming were decided before the first click.
 
 ## Core Concepts
 
@@ -144,7 +160,7 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 1. **Inventory existing PSGs.** Run `python3 scripts/check_permission_set_group_composition.py --manifest-dir <path>` (add `--strict` to fail the run on the naming convention as well) against the `permissionsetgroups/` and `permissionsets/` directories — capture which PSes are referenced in multiple PSGs (good — reuse), which PSGs have zero included PSes (orphan), which PSGs use mute PSes (good — explicit subtract), which names violate the convention, and any `description` over length (`PSGC-DESC-01` ERROR at 255+ characters, `PSGC-DESC-02` WARN at 200+).
 2. **Identify the closest existing PSG.** Compare the target persona to existing PSGs and decide: subtractive delta (mute), additive delta (new PS), or different combination (new PSG).
 3. **Apply the Decision Guidance table.** Choose mute, new PS, or new PSG based on the row that matches the request. Avoid cloning; cloning is the explosion vector.
-4. **Compose the PSG.** Use the template at `templates/permission-set-group-composition-template.md`. Fill persona name, included PSes, mute PS (if any), license dependency, and lifecycle stage (draft / piloted / production).
+4. **Compose the PSG.** Use the template at `templates/permission-set-group-composition-template.md`. Fill persona name, included PSes, mute PS (if any), license dependency, and lifecycle stage (draft / piloted / production). For the deployable XML — permission sets, muting set, group, `package.xml`, and the deploy order between them — copy from `references/metadata-examples.md`.
 5. **Plan recalculation.** If a frequently-referenced PS is being touched, list every PSG that will recalc. Schedule the change for a quiet window. Do not pair a PS edit with a PS deletion in the same deployment.
 6. **Roll out with assignment-vs-activation in mind.** Wait for `Status = Updated` before assigning users. For time-boxed elevation, set `ExpirationDate` on the assignment.
 7. **Verify and audit.** Confirm Setup Audit Trail captured the composition change, run the checker again, and update the inventory artifact.

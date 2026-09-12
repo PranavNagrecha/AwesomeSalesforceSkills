@@ -27,7 +27,7 @@ Permission Sets (small, composable):
 Mute Permission Set:
 - MutePS_NoOpportunityDelete
     object: Opportunity
-    permission: Delete = false (mute)
+    permission: Delete = true  (in a mute file, enabled == muted)
 
 PSGs:
 - PSG_SalesRep_Prod
@@ -77,13 +77,20 @@ The two PSGs share the same underlying PSes. When `PS_ForecastingEdit` is added 
     <label>Mute No Opportunity Delete</label>
     <description>Subtract Delete on Opportunity from any PSG that includes it</description>
     <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>false</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
         <object>Opportunity</object>
-        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
 </MutingPermissionSet>
 ```
 
-Note the muting permission set is its own metadata file, not embedded in the PSG. A `package.xml` for source-tracked deployment must list both `PermissionSetGroup` AND `MutingPermissionSet` types.
+`allowDelete` is `true` and that is not a typo: "Unlike PermissionSet, settings enabled by MutingPermissionSet are turned off for the permission set group that it's a component of" (`api_meta` L89719). Setting it to `false` would produce a file that deploys and mutes nothing. Every child of `objectPermissions` is documented as Required (`api_meta` L95069–L95110), so all seven appear even though only one carries the mute.
+
+Note the muting permission set is its own metadata file, not embedded in the PSG. A `package.xml` for source-tracked deployment must list both `PermissionSetGroup` AND `MutingPermissionSet` types. `references/metadata-examples.md` carries the full four-file set for a different persona.
 
 ---
 
