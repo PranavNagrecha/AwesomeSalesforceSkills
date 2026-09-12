@@ -31,9 +31,9 @@ outputs:
   - Subflow input/output rename + version-bump recommendation
   - Audit table of non-conforming element names with proposed replacements
 dependencies: []
-version: 1.0.3
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 # Flow Element Naming Conventions
@@ -303,6 +303,7 @@ Known inconsistency: the at-bar sibling skills `flow/record-triggered-flow-patte
 | `references/gotchas.md` | A rename saved cleanly and something broke anyway: cross-flow contracts, auto-underscore substitution, reserved words, the 80-char cap |
 | `references/llm-anti-patterns.md` | You are reviewing names an AI assistant produced, or self-checking your own output before a pull request |
 | `references/well-architected.md` | You need the Operational Excellence framing, the tradeoffs, or the source behind a claim in this skill |
+| `references/metadata-examples.md` | You want a complete, deployable `*.flow-meta.xml` that already conforms end to end, plus a negative fixture and the checker output for both |
 | `templates/flow-element-naming-conventions-template.md` | You are recording the rename decision — current names, proposed names, rename-risk class — for review |
 | `scripts/check_flow_element_naming_conventions.py` | Before every deploy. `--manifest-dir <source tree>`; 22 rule codes, exits 1 on any ERROR, and on WARNs too under `--strict` |
 
@@ -315,7 +316,7 @@ Known inconsistency: the at-bar sibling skills `flow/record-triggered-flow-patte
 - `flow/process-builder-to-flow-migration` — migration pass should include a rename step using this skill's patterns.
 - `flow/flow-resource-patterns` — companion skill on choosing the right resource type; this skill governs how to name them once chosen.
 - `flow/orchestration-flows` — Stage / Step naming conventions in this skill apply to Orchestration designs.
-- `admin/naming-conventions` (and `templates/admin/naming-conventions.md`) — canonical naming for objects, fields, and metadata outside Flow Builder.
+- `admin/object-creation-and-design` (and `templates/admin/naming-conventions.md`) — canonical naming for objects, fields, and metadata outside Flow Builder.
 
 ---
 

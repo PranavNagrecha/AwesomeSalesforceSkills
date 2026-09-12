@@ -8,9 +8,12 @@ its own output against this list before returning the Flow XML or rename plan.
 
 ## Anti-Pattern 1: Generating cryptic numeric names like `Decision_1`, `Get_Records_2`
 
-**What the LLM generates:**
+**What the LLM generates** (both elements are siblings under the same
+`<Flow>` root — shown together because the pattern is systemic, not a
+one-off):
 
 ```xml
+<Flow>
 <decisions>
   <name>Decision_1</name>
   <label>Decision 1</label>
@@ -19,6 +22,7 @@ its own output against this list before returning the Flow XML or rename plan.
   <name>Get_Records_2</name>
   <label>Get Records 2</label>
 </recordLookups>
+</Flow>
 ```
 
 **Why it happens:** Flow Builder defaults element API Names to
@@ -29,6 +33,7 @@ real-world flows that shipped with these auto-names.
 **Correct pattern:**
 
 ```xml
+<Flow>
 <decisions>
   <name>Decision_HasActiveContract</name>
   <label>Has active contract?</label>
@@ -37,6 +42,7 @@ real-world flows that shipped with these auto-names.
   <name>Get_OpenCasesByOwner</name>
   <label>Get open cases owned by current user</label>
 </recordLookups>
+</Flow>
 ```
 
 **Detection hint:** regex `<name>(Decision|Get_Records|Update|Create|Loop|Assignment|Screen|Action)_\d+</name>`
@@ -46,15 +52,18 @@ in the Flow XML, or any element API Name ending in `_<digits>`.
 
 ## Anti-Pattern 2: Using camelCase or spaces in API Names that auto-convert
 
-**What the LLM generates:**
+**What the LLM generates** (both resources shown together — the model
+makes both mistakes in the same pass):
 
 ```xml
+<Flow>
 <variables>
   <name>get open cases</name>
 </variables>
 <variables>
   <name>getOpenCases</name>
 </variables>
+</Flow>
 ```
 
 **Why it happens:** the model conflates Label (human text, allows spaces)
@@ -129,9 +138,11 @@ that is empty.
 
 ## Anti-Pattern 4: Generating two elements with the same Label causing fault-email confusion
 
-**What the LLM generates:**
+**What the LLM generates** (both elements shown together — the
+duplicate only shows up when you look at both):
 
 ```xml
+<Flow>
 <recordUpdates>
   <name>Update_Account</name>
   <label>Update Account</label>     <!-- same label -->
@@ -140,6 +151,7 @@ that is empty.
   <name>Update_Account_2</name>
   <label>Update Account</label>     <!-- duplicate label -->
 </recordUpdates>
+</Flow>
 ```
 
 **Why it happens:** the model generates element-by-element without checking
@@ -149,6 +161,7 @@ allows duplicate Labels (only API Names must be unique).
 **Correct pattern:**
 
 ```xml
+<Flow>
 <recordUpdates>
   <name>Update_AccountTier</name>
   <label>Update Account tier based on revenue</label>
@@ -157,6 +170,7 @@ allows duplicate Labels (only API Names must be unique).
   <name>Update_AccountOwner</name>
   <label>Reassign Account owner to regional director</label>
 </recordUpdates>
+</Flow>
 ```
 
 Distinct API Names AND distinct Labels — the qualifier in the API Name
@@ -200,9 +214,11 @@ or "rename ... output" in the context of a Subflow without a corresponding
 
 ## Anti-Pattern 6: Skipping resource type prefixes (`var`, `coll`, `map`, `formula`)
 
-**What the LLM generates:**
+**What the LLM generates** (both resources shown together — a single
+variable and a collection, both unprefixed):
 
 ```xml
+<Flow>
 <variables>
   <name>accountId</name>
   <dataType>String</dataType>
@@ -212,6 +228,7 @@ or "rename ... output" in the context of a Subflow without a corresponding
   <dataType>SObject</dataType>
   <isCollection>true</isCollection>
 </variables>
+</Flow>
 ```
 
 **Why it happens:** model uses generic programming-language conventions
@@ -223,6 +240,7 @@ author has to flip back to the variable list to check.
 **Correct pattern:**
 
 ```xml
+<Flow>
 <variables>
   <name>varAccountId</name>
   <dataType>String</dataType>
@@ -232,6 +250,7 @@ author has to flip back to the variable list to check.
   <dataType>SObject</dataType>
   <isCollection>true</isCollection>
 </variables>
+</Flow>
 ```
 
 **Detection hint:** any `<variables><name>` whose value does not start
