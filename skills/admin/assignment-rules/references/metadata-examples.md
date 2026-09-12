@@ -168,6 +168,8 @@ Auto-response entries carry the sender identity and template; there is no `assig
 
 The Lead version is identical with `Lead.` fields and lives in `autoResponseRules/Lead.autoResponseRules-meta.xml`. `senderEmail` must be a verified org-wide email address in the target org, and it must not equal — or forward into — any Email-to-Case routing address; validate this with `scripts/check_assignment_rules.py` (rule `AR-LOOP-01`), which cross-references `senderEmail` against every `routingAddresses/emailAddress` it can find under `settings/Case.settings-meta.xml` in the tree.
 
+`support-noreply@acme.example` is also a deploy-time prerequisite in the target org: provision and verify the `OrgWideEmailAddress` in Setup before deploying this rule, or `sf project deploy start` fails validation with `<address> is an invalid From email address.: Email Address` (`references/gotchas.md` #7). `scripts/check_assignment_rules.py` (`AR-SENDER-01`) prints one deduped INFO line naming both `senderEmail` occurrences above as this same prerequisite.
+
 ## Case escalation rule: two-stage escalation inside business hours
 
 ```xml

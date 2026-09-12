@@ -78,7 +78,22 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Most often when an admin reuses the public support address (e.g., `support@acme.example`) as both the Email-to-Case intake address and the auto-response sender because it "is the address customers already know." It also occurs when the sender is a distinct address that silently forwards into the routing address (a mail rule, a distribution list, or a shared mailbox alias), which the metadata cannot detect.
 
 **How to avoid:**
-- Give the auto-response rule a dedicated, verified OrgWideEmailAddress (e.g., `support-noreply@acme.example`) that is provisioned only as a sender, never as an Email-to-Case routing address.
+- Give the auto-response rule a dedicated, verified OrgWideEmailAddress (e.g., `support-noreply@acme.example`) that is provisioned only as a sender, never as an Email-to-Case routing address. This address is also a deploy-time prerequisite in the target org — see Gotcha 7.
 - Confirm the sender address has no mail-server forwarding rule that points at any routing address, and disable "keep a copy and auto-reply" on any forwarding mailbox in the chain (`admin/email-to-case-configuration`).
 - Run `scripts/check_assignment_rules.py` — rule `AR-LOOP-01` cross-references every `autoResponseRules` `senderEmail` against every `routingAddresses/emailAddress` it can find under `settings/Case.settings-meta.xml` in the tree and errors on a match; `AR-LOOP-02` warns when no routing-address inventory is in scope to check against.
 - After deploy, send one real email to each public address and confirm the Case count per address stops at one (`admin/email-to-case-configuration`, references/metadata-examples.md, "Loop test").
+
+---
+
+## Gotcha 7: `autoResponseRules` `senderEmail` Fails Deploy Validation, Not Just Send, When the OrgWideEmailAddress Is Missing in the Target Org
+
+**What happens:** An `AutoResponseRule` whose `ruleEntry.senderEmail` names an address (e.g., `support-noreply@acme.example`) that has no matching, verified `OrgWideEmailAddress` record in the target org fails `sf project deploy start` validation itself — before any email is ever sent — with `<address> is an invalid From email address.: Email Address`. This is a deploy-time blocker, not only the send-time symptom described in `admin/email-templates-and-alerts` (unverified addresses "cannot send"). `UNVERIFIED (2026-09-12): proven live in a dry-run, not stated in the guide` — confirmed via `sf project deploy start --dry-run` (API 67.0) against a target org with `SELECT Address FROM OrgWideEmailAddress` returning 0 rows for the address; not documented in the Metadata API reference for `AutoResponseRule`.
+
+**When it occurs:** Promoting an auto-response rule to any org (new sandbox, a freshly refreshed sandbox, first production deploy) where nobody has yet created and verified the org-wide address in Setup — most commonly when the rule metadata is authored and version-controlled ahead of the manual, non-deployable Setup step that has to happen in every org separately (`admin/email-templates-and-alerts` references/metadata-and-sender-identity.md, "Org-wide email address (the sender)": no metadata type exists for it).
+
+**How to avoid:**
+- Provision and verify the `OrgWideEmailAddress` in Setup → Organization-Wide Addresses in the target org *before* deploying any `AutoResponseRule` (or workflow email alert) that names it as a sender. Verification requires clicking the confirmation link sent to the mailbox — it cannot be scripted or included in the deploy.
+- List this step explicitly under deploy prerequisites in `references/migration-and-sandbox.md` deploy-order and in any release runbook, the same way a required custom field or permission set is listed — not assumed as "already there."
+- Keep this address distinct from any Email-to-Case routing address (Gotcha 6, `AR-LOOP-01`); provisioning it for deploy does not relax that separation.
+- `scripts/check_assignment_rules.py` rule `AR-SENDER-01` prints one INFO line per distinct `senderEmail`/`replyToEmail` found in an `autoResponseRules` file, naming it as a deploy-time prerequisite to check manually — it is INFO only because the checker has no org connection and cannot query `OrgWideEmailAddress` itself.
+- Before deploying, run `SELECT Address, IsVerified FROM OrgWideEmailAddress WHERE Address = '<sender>'` against the target org and confirm one verified row exists.

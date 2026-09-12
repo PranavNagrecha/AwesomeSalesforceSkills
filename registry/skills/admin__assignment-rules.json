@@ -10,6 +10,7 @@
     "0c85f27ca8b1aa0f3cd3",
     "0e39160cf0a11c185e7f",
     "1019cba8a85831afc539",
+    "1571a83cbeace8757ac0",
     "1c9e6d592faf3c13427d",
     "2372540d70b978d560cc",
     "25d2ef3313c963703550",
@@ -49,6 +50,7 @@
     "6160b20c1997d359e2ce",
     "61bf62ea5aa7b75f3bc0",
     "6314baf7d151c0f01649",
+    "66f53236c25e090e4830",
     "68030eaa2a5c6e79cccb",
     "69910dd396d4a33ac7ac",
     "69a389658e7deddf5fa7",
@@ -77,6 +79,7 @@
     "91c906fa851938a39dba",
     "92a11100b8b209a0d052",
     "966e2a2907e8f18a9c21",
+    "990eba0ad9c4ba59cc43",
     "9b42f23464187a1a5fa7",
     "9cfb1fdbd43f38331198",
     "9d2cc8998ab28c8b79b0",
@@ -119,10 +122,12 @@
     "d3597fdeb70e837139fb",
     "d43bdb8d78e98a4af792",
     "d5c74b1a2702a6ef7722",
+    "d765a6796f115e6d4629",
     "dc011de6d9cffb82198b",
     "de120d95ee092e168387",
     "e024622897b4de51cf55",
     "e1038f103bb3f3cfd9eb",
+    "e10bbc1fb24e8e23dc22",
     "e566730039e6be97c93d",
     "e6b906ca2d45295ebdfe",
     "e76d7e53c5e56e9f93a5",
@@ -143,7 +148,7 @@
     "fce8b43076b01d8d3a7a",
     "ff9a44f25e51bc2cc9c6"
   ],
-  "content_hash": "dcb2cd197174a2e17a47ed60c382c7ff139781141be3b9d9dd70e09617c80113",
+  "content_hash": "44b98d2f6a5e5ee26b821a12146bf89cdf9f053dbc200ca223b58c949410f4b8",
   "dependencies": [],
   "description": "Use this skill when configuring or troubleshooting Lead or Case assignment rules in Salesforce: creating rule entries, setting filter criteria, assigning records to users or queues, understanding when rules run, and implementing round-robin patterns with Apex. Trigger keywords: lead assignment, case assignment, assignment rule, queue assignment, auto-assign. NOT for creating the queue or public group a rule routes into \u2014 use admin/queues-and-public-groups. NOT for Omni-Channel or skills-based routing \u2014 use admin/omni-channel-routing-setup. NOT for approval routing \u2014 use admin/approval-processes.",
   "file_location": "skills/admin/assignment-rules",
@@ -199,7 +204,7 @@
   "templates": [
     "skills/admin/assignment-rules/templates/assignment-rules-template.md"
   ],
-  "updated": "2026-09-11",
+  "updated": "2026-09-12",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

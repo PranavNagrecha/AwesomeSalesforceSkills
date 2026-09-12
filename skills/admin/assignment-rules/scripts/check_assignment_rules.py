@@ -224,6 +224,29 @@ def check_auto_response_loop(path: Path, routing_emails: set[str]) -> list[str]:
     return issues
 
 
+def find_auto_response_senders(path: Path) -> list[str]:
+    """Return every senderEmail / replyToEmail address text found in one
+    autoResponseRules file, in document order. Not deduped here — the caller
+    dedupes across the whole run so the same address named in two entries
+    (or two files) produces one AR-SENDER-01 line, not one per occurrence."""
+    addresses: list[str] = []
+    try:
+        tree = ET.parse(path)
+    except ET.ParseError:
+        return addresses
+
+    root = tree.getroot()
+    rules = root.findall(_tag("autoResponseRule")) or root.findall("autoResponseRule")
+    for rule in rules:
+        entries = rule.findall(_tag("ruleEntry")) or rule.findall("ruleEntry")
+        for entry in entries:
+            for field in ("senderEmail", "replyToEmail"):
+                el = _find(entry, field)
+                if el is not None and el.text and el.text.strip():
+                    addresses.append(el.text.strip())
+    return addresses
+
+
 def check_assignment_rules(manifest_dir: Path) -> list[str]:
     """Run all checks and return a list of issue strings."""
     issues: list[str] = []
@@ -253,6 +276,30 @@ def check_assignment_rules(manifest_dir: Path) -> list[str]:
                 "— cannot verify the sender is not an intake address at this scope."
             )
 
+        # AR-SENDER-01: the org-wide address named as sender/reply-to is a
+        # deploy-time prerequisite (references/gotchas.md #7) — it must exist
+        # and be verified (IsVerified = true) in the target org before this
+        # rule deploys, and there is no metadata type that ships it. This
+        # cannot be checked offline (no org connection here), so it is always
+        # INFO — never ERROR or WARN — and never changes the exit code.
+        # Dedupe case-insensitively across every file in this run so the same
+        # address named on two rule entries prints once, not twice.
+        seen_lower: set[str] = set()
+        prerequisite_addresses: list[str] = []
+        for ar_file in auto_response_files:
+            for address in find_auto_response_senders(ar_file):
+                lowered = address.lower()
+                if lowered not in seen_lower:
+                    seen_lower.add(lowered)
+                    prerequisite_addresses.append(address)
+
+        for address in prerequisite_addresses:
+            issues.append(
+                f"AR-SENDER-01 INFO: senderEmail/replyToEmail '{address}' is a "
+                "deploy-time prerequisite — verify OrgWideEmailAddress exists and "
+                "IsVerified in the target org before deploying (references/gotchas.md #7)."
+            )
+
     return issues
 
 
@@ -269,9 +316,12 @@ def main() -> int:
         print(f"ISSUE: {issue}")
 
     # AR-LOOP-02 is a WARN (no routing-address inventory to check against, not a
-    # detected loop) and must not fail the run on its own; every other issue,
-    # including AR-LOOP-01, keeps the pre-existing exit-1-on-any-issue policy.
-    has_error = any(not issue.startswith("AR-LOOP-02") for issue in issues)
+    # detected loop) and AR-SENDER-01 is INFO (an unconditional deploy-time
+    # reminder that cannot be checked offline) — neither may fail the run on
+    # its own. Every other issue, including AR-LOOP-01, keeps the pre-existing
+    # exit-1-on-any-issue policy.
+    non_blocking_prefixes = ("AR-LOOP-02", "AR-SENDER-01")
+    has_error = any(not issue.startswith(non_blocking_prefixes) for issue in issues)
     return 1 if has_error else 0
 
 

@@ -39,9 +39,9 @@ outputs:
   - "Apex-based round-robin pattern when equal distribution is required"
   - "Troubleshooting analysis when rules are not firing as expected"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-11
+updated: 2026-09-12
 ---
 
 # Assignment Rules

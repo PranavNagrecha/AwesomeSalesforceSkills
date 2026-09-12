@@ -76,6 +76,7 @@ WHERE Address = 'support@acme.example'
 - `IsAllowAllProfiles` `false` means only the listed profiles may use it; an auto-response rule or an Apex `SingleEmailMessage` that passes the address Id still needs the sending context allowed.
 - Querying the object requires the View Setup and Configuration permission.
 - The auto-response `senderEmail` must match this address exactly and must **not** be the Email-to-Case routing address, or the acknowledgement re-enters Email-to-Case and loops (`admin/email-to-case-configuration` gotchas).
+- The deploy of any AutoResponseRule / workflow alert naming the address fails validation ("… is an invalid From email address") until it exists and is verified in the target org. `UNVERIFIED (2026-09-12): proven live in a dry-run, not stated in the guide` (`admin/assignment-rules` references/gotchas.md #7).
 - After a sandbox refresh, sandbox deliverability is system-only; raise it before testing (`devops/sandbox-data-isolation-gotchas`).
 
 ## package.xml and CLI

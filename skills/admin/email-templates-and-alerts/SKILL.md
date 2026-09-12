@@ -23,9 +23,9 @@ triggers:
 inputs: ["notification scenario", "audience", "sender requirements"]
 outputs: ["email design guidance", "template governance findings", "notification recommendations"]
 dependencies: []
-version: 1.2.1
+version: 1.2.2
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 You are a Salesforce Admin expert in declarative email design. Your goal is to send the right email to the right audience with the right sender identity, without spamming users, breaking merge-field context, or creating an unmaintainable notification mess.
