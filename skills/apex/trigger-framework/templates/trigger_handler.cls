@@ -2,7 +2,7 @@
  * [ObjectName]TriggerHandler
  *
  * Purpose:    Handles all trigger logic for [ObjectName] (see [ObjectName]Trigger).
- * Owner:      TODO: Team/individual
+ * Owner:      <owning team or individual — fill in when you scaffold>
  * Dependencies: [ObjectName]Service, TestDataFactory (tests)
  *
  * WAF Pillars: Scalability (bulkified), Reliability (recursion guard), Security (with sharing)
@@ -32,26 +32,27 @@ public with sharing class [ObjectName]TriggerHandler {
     // Do NOT use for: DML on other objects, callouts
 
     public void onBeforeInsert(List<[ObjectName]> newRecords) {
-        // TODO: Add before-insert logic
-        // Example: [ObjectName]Service.setDefaults(newRecords);
+        // Before-insert work goes here, e.g.:
+        // [ObjectName]Service.setDefaults(newRecords);
     }
 
     public void onBeforeUpdate(List<[ObjectName]> newRecords, Map<Id, [ObjectName]> oldMap) {
         // Delta check — only process records where relevant fields changed
         List<[ObjectName]> changed = new List<[ObjectName]>();
         for ([ObjectName] record : newRecords) {
-            // TODO: Replace with your field name
+            // Replace Status__c with the field this object actually gates on.
             if (record.Status__c != oldMap.get(record.Id).Status__c) {
                 changed.add(record);
             }
         }
         if (changed.isEmpty()) return;
 
-        // TODO: [ObjectName]Service.handleStatusChange(changed, oldMap);
+        // Hand off to the service layer, e.g.:
+        // [ObjectName]Service.handleStatusChange(changed, oldMap);
     }
 
     public void onBeforeDelete(List<[ObjectName]> oldRecords) {
-        // TODO: Add before-delete logic, or leave empty
+        // Before-delete work goes here, or leave this method empty.
     }
 
     // ─── After Save Contexts ──────────────────────────────────────────────────
@@ -62,7 +63,8 @@ public with sharing class [ObjectName]TriggerHandler {
         List<[ObjectName]> toProcess = filterUnprocessed(newRecords);
         if (toProcess.isEmpty()) return;
 
-        // TODO: [ObjectName]Service.createRelatedRecords(toProcess);
+        // Hand off to the service layer, e.g.:
+        // [ObjectName]Service.createRelatedRecords(toProcess);
     }
 
     public void onAfterUpdate(List<[ObjectName]> newRecords, Map<Id, [ObjectName]> oldMap) {
@@ -70,15 +72,16 @@ public with sharing class [ObjectName]TriggerHandler {
         List<[ObjectName]> toProcess = filterUnprocessed(newRecords);
         if (toProcess.isEmpty()) return;
 
-        // TODO: [ObjectName]Service.handlePostUpdateSideEffects(toProcess, oldMap);
+        // Hand off to the service layer, e.g.:
+        // [ObjectName]Service.handlePostUpdateSideEffects(toProcess, oldMap);
     }
 
     public void onAfterDelete(Map<Id, [ObjectName]> oldMap) {
-        // TODO: Add after-delete logic, or leave empty
+        // After-delete work goes here, or leave this method empty.
     }
 
     public void onAfterUndelete(List<[ObjectName]> newRecords) {
-        // TODO: Add after-undelete logic, or leave empty
+        // After-undelete work goes here, or leave this method empty.
     }
 
     // ─── Private Helpers ──────────────────────────────────────────────────────

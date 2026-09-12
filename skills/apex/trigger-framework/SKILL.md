@@ -20,9 +20,9 @@ triggers:
 inputs: ["object context", "trigger events", "existing framework constraints"]
 outputs: ["trigger design guidance", "trigger review findings", "framework recommendations"]
 dependencies: []
-version: 1.1.1
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-12
 ---
 
 You are a Salesforce expert in Apex trigger design. Your goal is to ensure triggers are bulkified, recursion-safe, testable, and follow a single-trigger-per-object handler pattern — and that they can be disabled without a deployment.
@@ -121,15 +121,45 @@ trigger AccountTrigger on Account (before insert, before update, after insert, a
 **Never** put cross-object DML in a before-save trigger path.
 
 
+## Questions to Ask Before Configuring
+
+Ask these before writing the first line of the handler. Every row exists because a
+specific failure in `references/gotchas.md` was cheaper to prevent than to debug.
+
+| # | Ask the requester | Why it matters | What a good answer adds | Traces to |
+|---|---|---|---|---|
+| 1 | Which DML events does this object genuinely need — and which are you adding "just in case"? | An unused hook that accepts an old-state map is where the null dereference lives; insert contexts have no prior state to compare against | The trigger declares only the events with a real handler behind them, and insert-context methods never take an old-state parameter | Gotcha 3 |
+| 2 | Does any post-save step need to write back to the record that fired the trigger? | That write is illegal in the before-save path's record list and re-enters the trigger from the after-save path | The work lands in the right half of the save, with the re-entry guard written before the DML rather than after the first incident | Gotcha 2 |
+| 3 | Where will the largest batches come from — Data Loader, Bulk API, an integration, or Batch Apex? | A chunked job gives a transaction-scoped guard a fresh lifetime per chunk, so "once per record" silently becomes "once per record per chunk" | A test that crosses a chunk boundary, and a persisted marker instead of a static wherever job-wide idempotency is actually required | Gotchas 7, 1 |
+| 4 | Which specific field changes should gate the expensive work, and does this object still carry workflow field updates? | A workflow field update re-runs the update triggers once more, and the old-state snapshot on that second pass is the pre-edit value, so a naive delta check still reports "changed" | A named field list for the delta check plus an inventory of the other writers on the object, so double-firing is designed out rather than discovered | Gotcha 8 |
+| 5 | Should this logic see records the running user cannot? | The trigger file itself always runs in system mode and cannot carry a sharing keyword, so the handler class is the only place the decision exists | An explicit keyword with a written reason, and any elevation scoped to the smallest inner class rather than the whole handler | Gotcha 4 |
+| 6 | What `apiVersion` will these classes be pinned at? | Hook-override syntax, and the meaning of an absent sharing keyword, are both gated on the class's own version rather than the org's release | Every override carries the base class's visibility and the sharing keyword is written out, so the package compiles at the version it ships with | Gotcha 6 |
+| 7 | Does this object carry a unique field or External Id that a load could collide on? | With a trigger present, an in-batch collision triggers a rollback/retry that reassigns keys, so the record id named in the platform error is stale | In-handler duplicate detection keyed on the value rather than the id, and a bulk test that plants a deliberate in-batch duplicate | Gotcha 5 |
+
+**What a proper configuration adds over just doing it:** anyone can make a trigger
+fire. The answers above are what make it survive a Data Loader run, a workflow
+field update, a partial-success retry, and an `apiVersion` bump without a
+production incident — and what let an operator switch it off in thirty seconds
+instead of shipping a deployment.
+
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
+1. **Answer the seven questions above** and record the answers next to the object in `salesforce-context.md`. Question 1 fixes the trigger's event list; question 3 fixes the test sizes; question 6 fixes the `apiVersion` for every `-meta.xml` in the package.
+2. **Ship the canonical base classes verbatim.** Copy `templates/apex/TriggerHandler.cls`, `templates/apex/TriggerControl.cls`, their `.cls-meta.xml` files, and `templates/apex/cmdt/Trigger_Setting__mdt/` into the deploy tree unedited. The rule is same-day and has no exceptions: a class that references a canonical template class ships that class verbatim in the same deployment, or an earlier step of the same plan already declared it. A subclass deployed without its base class fails with `Invalid type: TriggerHandler`.
+3. **Scaffold the per-object pair.** Either substitute `[ObjectName]` throughout this skill's `templates/trigger_handler.cls` and `templates/trigger_body.trigger`, or subclass `TriggerHandler` directly — `references/code-examples.md` shows the second route end to end, including the `package.xml` and the deploy order.
+4. **Write the bulk test before the logic is finished.** 200 records minimum, one DML statement, assertions on the business outcome rather than on record counts alone; `templates/apex/tests/BulkTestPattern.cls` is the shape and `templates/apex/tests/TestDataFactory.cls` the data source. Add the deactivated-handler case, and a case that crosses a Batch Apex chunk boundary if question 3 said the load arrives that way.
+5. **Run the checker against the deploy tree**, not against a scratch folder: `python3 skills/apex/trigger-framework/scripts/check_trigger_framework.py --manifest-dir force-app/main/default --strict`. Clear every ERROR. The rules it enforces — one trigger per object, no logic in the trigger body, a recursion guard on same-object after-update DML, and template-class provenance — are the four that cannot be fixed cheaply after deploy.
+6. **Dry-run the deploy with the tests attached** (`sf project deploy start --manifest manifest/package.xml --test-level RunSpecifiedTests --dry-run`) and confirm the `Trigger_Setting__mdt` row for this object exists, so the bypass is real before anyone needs it.
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+### Reference Files
+
+| File | Read it for |
+|---|---|
+| `references/code-examples.md` | One complete deployable package: handler, trigger, bulk test, every `-meta.xml`, `package.xml`, deploy order, and the checker command |
+| `references/examples.md` | The reusable shapes — dispatch, recursion guard, delta check, bulk related-record lookup |
+| `references/gotchas.md` | Eight failures with what happens, when it occurs, and how to avoid it |
+| `references/llm-anti-patterns.md` | What an assistant generates unprompted, and the correction |
+| `references/well-architected.md` | Pillar mapping and the official sources behind each claim |
 
 ---
 
@@ -137,13 +167,15 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 | Gotcha | Why it bites |
 |---|---|
-| Static recursion guards affect tests too | Clear static state between tests or expose a reset helper. |
+| A static guard suppresses the second half of a multi-DML test method | Statics are reinitialised per test method, not leaked between them — reset inside the method. |
 | `Trigger.new` is read-only in after contexts | Field mutation there causes runtime failures. |
 | DML on the triggering object in after-save re-enters the same trigger | The recursion guard must run before any such DML. |
 | Handler sharing matters | `without sharing` changes visibility compared with the initiating user's context. |
 | `Trigger.old` and `Trigger.oldMap` are null on insert | Delta logic must guard for context correctly. |
 | `Trigger.newMap` is null in before-insert (records have no Ids yet) | Only key related-record maps off `Trigger.newMap` in after-insert or update contexts. |
 | Duplicate unique-field values in one bulk batch trigger a rollback/retry that reassigns Ids | The record Id in the resulting duplicate-error message can be stale — see `references/gotchas.md`. |
+| A static guard's lifetime is one transaction | Batch Apex chunks give it a fresh lifetime each; a partial-success retry does not reset it at all. |
+| A workflow field update re-fires before- and after-update triggers once more | And `Trigger.old` on that second pass is the pre-edit value, so a plain delta check still says "changed". |
 
 ## Proactive Triggers
 
@@ -155,6 +187,8 @@ Surface these WITHOUT being asked:
 | Logic directly in trigger body | High | Move it to a handler immediately. |
 | No activation bypass mechanism | High | Every migration or incident response becomes harder. |
 | After-save self-DML with no recursion guard | High | Infinite-loop risk. |
+| Handler subclass with a bare `override` hook | High | Stops compiling at `apiVersion` 65.0+ — a broken deploy, not a runtime surprise. |
+| A class referencing `TriggerHandler`/`TriggerControl` in a package that does not ship them | Critical | `Invalid type` at deploy; the provenance rule has no exceptions. |
 | Handler declared `without sharing` with no comment | High | Treat as a security finding until justified. |
 
 ## Output Artifacts

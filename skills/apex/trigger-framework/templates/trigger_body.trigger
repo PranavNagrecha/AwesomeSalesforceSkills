@@ -2,7 +2,7 @@
  * [ObjectName]Trigger
  *
  * Purpose:    Single trigger for [ObjectName]. All logic in [ObjectName]TriggerHandler.
- * Owner:      TODO: Team/individual
+ * Owner:      <owning team or individual — fill in when you scaffold>
  *
  * Activation: Controlled via Trigger_Setting__mdt — set Is_Active__c = false to disable
  *             without deployment (e.g. during data migrations).
