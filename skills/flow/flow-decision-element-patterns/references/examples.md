@@ -128,8 +128,8 @@ deliberately tiered low and one that cannot tell that from a bug.
         <targetReference>Route_To_Acme_Team</targetReference>
     </connector>
     <label>Acme Lead</label>
+    <!-- the only outcome; everything else, including a null Company, falls to the default -->
 </rules>
-<!-- default: everything else -->
 ```
 
 Two genuinely different populations — leads at other companies, and leads with no
@@ -140,37 +140,46 @@ business outcomes.
 **Right:**
 
 ```xml
-<rules>
-    <name>Acme_Lead</name>
-    <conditionLogic>and</conditionLogic>
-    <conditions>
-        <leftValueReference>$Record.Company</leftValueReference>
-        <operator>EqualTo</operator>
-        <rightValue>
-            <stringValue>Acme</stringValue>
-        </rightValue>
-    </conditions>
-    <connector>
-        <targetReference>Route_To_Acme_Team</targetReference>
-    </connector>
-    <label>Acme Lead</label>
-</rules>
+<decisions>
+    <name>Route_Lead</name>
+    <label>Route Lead</label>
+    <defaultConnector>
+        <targetReference>Route_To_General_Queue</targetReference>
+    </defaultConnector>
+    <defaultConnectorLabel>Other Company (named, not Acme)</defaultConnectorLabel>
 
-<rules>
-    <name>Company_Missing</name>
-    <conditionLogic>and</conditionLogic>
-    <conditions>
-        <leftValueReference>$Record.Company</leftValueReference>
-        <operator>IsNull</operator>
-        <rightValue>
-            <booleanValue>true</booleanValue>
-        </rightValue>
-    </conditions>
-    <connector>
-        <targetReference>Request_Company_Name</targetReference>
-    </connector>
-    <label>Company Missing</label>
-</rules>
+    <rules>
+        <name>Acme_Lead</name>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>$Record.Company</leftValueReference>
+            <operator>EqualTo</operator>
+            <rightValue>
+                <stringValue>Acme</stringValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Route_To_Acme_Team</targetReference>
+        </connector>
+        <label>Acme Lead</label>
+    </rules>
+
+    <rules>
+        <name>Company_Missing</name>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>$Record.Company</leftValueReference>
+            <operator>IsNull</operator>
+            <rightValue>
+                <booleanValue>true</booleanValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Request_Company_Name</targetReference>
+        </connector>
+        <label>Company Missing</label>
+    </rules>
+</decisions>
 ```
 
 **Why it works:** `IsNull` with a `booleanValue` of `true` is how "is blank" is
@@ -335,9 +344,10 @@ requirement says.
 that is not worth reasoning about at review time. Parentheses cost nothing and
 make the expression self-documenting to the next reader, who will otherwise have
 to work it out.
-`<!-- UNVERIFIED: the precedence of AND over OR in Flow custom condition logic
-when parentheses are omitted was not confirmed against a fetchable official page
-during authoring. The guidance above deliberately does not depend on it. -->`
+`UNVERIFIED (2026-09-12):` the precedence applied to `1 AND 2 OR 3` when the
+parentheses are omitted is not stated in the Metadata API guide, which documents
+only that advanced logic of the form `1 AND (2 OR 3)` is accepted. The guidance
+above deliberately does not depend on knowing the precedence.
 
 **Keep the condition count low.** A `conditionLogic` string with eight numbered
 terms is a business rule that has outgrown the element. Extract the sub-expression

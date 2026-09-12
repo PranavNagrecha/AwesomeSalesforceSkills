@@ -7,11 +7,20 @@ well-architected-pillars:
   - Reliability
   - Operational Excellence
 triggers:
-  - decision element
-  - flow branching
-  - default outcome
-  - compound conditions
-  - hardcoded user id in flow decision
+  - "decision element"
+  - "flow branching"
+  - "default outcome"
+  - "compound conditions"
+  - "hardcoded user id in flow decision"
+  - "branch a flow on record type"
+  - "check for null before a decision"
+  - "order the outcomes of a flow decision"
+  - "name the default outcome of a decision element"
+  - "write custom condition logic in a flow"
+  - "route an opportunity renewal with a decision element"
+  - "test whether a field changed inside a flow decision"
+  - "compare a multi-select picklist in a flow condition"
+  - "flatten nested decisions in a flow"
 tags:
   - flow
   - decision
@@ -26,9 +35,9 @@ outputs:
   - Suggested extraction into sub-flow where nesting is too deep
 dependencies:
   - flow/record-triggered-flow-patterns
-version: 1.0.1
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-12
 ---
 
 # Flow Decision Element Patterns
@@ -46,6 +55,28 @@ updated: 2026-08-14
   entry criteria instead.
 - Screen branching only — prefer the Screen's built-in component
   visibility.
+
+## Questions to Ask Before Configuring
+
+Ask these before opening Flow Builder. Each one maps to a documented failure in
+`references/gotchas.md`, cited by number.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| Which of these fields can be null or blank, and does null mean the same thing as "matched nothing"? | A comparison against a null field is simply false, so the null population and the genuinely-different population share one path (Gotcha 3). Text fields have a third case: `IsBlank` covers zero characters or whitespace, `IsNull` covers "not set" (Gotcha 17). | A per-field answer of "null means incomplete" / "null means treat as X" / "null cannot happen because a validation rule blocks it" — the last one is checkable. | An explicit outcome per meaning, so incomplete data goes to a data-quality path instead of being counted as a business decision nobody made. |
+| Can two outcomes ever be true for the same record, and if so which should win? | Rules "are evaluated in the order that they're listed, and the connector of the first true rule is used" (`api_meta.txt` L70247–L70250). An earlier broad outcome makes a later narrow one dead code with no warning (Gotcha 4). | A stated precedence per overlapping pair, which is also the review script: "which record reaches this outcome and not the one above it?" | An ordering you can defend at review, and no silently unreachable branch surviving into production. |
+| What should happen to a record that matches nothing, and who owns that path? | If no rule is true the default connector runs (`api_meta.txt` L70233–L70234). It is simultaneously the intended fallback and the bucket for everything nobody considered, and nothing distinguishes them afterwards (Gotcha 5). | A business name for the case — "Standard renewal", "Needs triage" — rather than "the else". | A `defaultConnectorLabel` naming the real case, plus a log row where misrouting matters, so "deliberately defaulted" and "silently unmatched" are separable. |
+| Is this rule about a *state* or a *transition* — must the record have just changed into it? | "Now equals X" and "just became X" are different rules that look identical on the canvas. `doesRequireRecordChangedToMeetCriteria` exists on `FlowRule`, not only on the Start element (Gotcha 14). | Per-outcome clarity on which branches are transition-shaped and which are plain state. | The transition test placed where it belongs: at the Start element when it gates everything, on the one outcome when it does not — instead of a hand-built comparison that is wrong on insert. |
+| Are any of these values a multi-select picklist, or a Salesforce Id? | A multi-select value is one semicolon-delimited string, so `EqualTo` matches only the whole selection and `Contains` is a substring test with collisions (Gotcha 2). Id comparisons are the one case-sensitive text comparison (Gotcha 1). | The field types up front, and the actual API values from the value set rather than labels read off a record page. | Membership tested with an operator that means membership, and Ids compared to references instead of to pasted literals that stop matching after a refresh. |
+| How many conditions does the combined rule need, and what is its AND/OR shape? | `conditionLogic` accepts `and`, `or`, or advanced logic such as `1 AND (2 OR 3)` (`api_meta.txt` L71306–L71313), and an unparenthesised mixed expression is a bet (Gotcha 8). Advanced logic is capped at 1,000 characters (Gotcha 13). | The requirement restated as a numbered expression before anything is built, which is where the ambiguity in the requirement surfaces. | Parentheses that make the expression self-documenting, and a term count low enough that the rule stayed in the element instead of outgrowing it. |
+| How often will this list of outcomes change, and who will change it? | Outcomes that differ only in a literal — regions, tiers, product families — are data encoded as structure, and every addition costs an edit, a test, and a deploy, forever (Gotcha 12). | An expected change rate and an owner. "Sales ops adds a segment each quarter" and "this has not changed in three years" lead to different designs. | A Custom Metadata lookup for the volatile case, so adding a segment is a data change; branches only where the logic really is logic. |
+
+A proper configuration here buys the ability to answer "why did this record go
+there?" from the flow definition alone — ordered outcomes whose overlap is
+deliberate, a named default, an explicit branch per meaning of null, and no rule
+whose correctness depends on a literal nobody owns. Just building the Decision
+produces something that routes most records correctly and cannot explain the
+rest.
 
 ## Three Operator Behaviours That Drive Everything Else
 
@@ -143,3 +174,13 @@ here and almost nobody reaches for it first.
 - Flow metadata type (`FlowDecision`, `FlowRule`, `FlowCondition`) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
 
 The full annotated list is in `references/well-architected.md`.
+
+## Reference Files
+
+| File | What it holds |
+|---|---|
+| `references/gotchas.md` | 17 non-obvious behaviours of conditions, outcomes, and operators, with Metadata API citations. |
+| `references/examples.md` | Five worked outcome patterns plus three anti-patterns, as condition-level XML fragments. |
+| `references/metadata-examples.md` | A complete, deployable Opportunity renewal-routing flow — ordered outcomes, a null-guard outcome, advanced `conditionLogic`, a named default, `package.xml`, deploy order, and a verification run of the checker. |
+| `references/llm-anti-patterns.md` | Ten mistakes assistants make when generating Decision logic. |
+| `references/well-architected.md` | Pillar mapping, architectural tradeoffs, hygiene checklist, and the annotated source list. |

@@ -138,9 +138,10 @@ readable.
 grouping. `conditionLogic` accepts an expression referencing conditions by number
 and supports parentheses — `1 AND (2 OR 3)` — so the ambiguity is entirely
 optional.
-`<!-- UNVERIFIED: the precedence applied when parentheses are omitted was not
-confirmed against a fetchable official page during authoring. The guidance here
-deliberately does not depend on knowing it. -->`
+`UNVERIFIED (2026-09-12):` the precedence applied when the parentheses are
+omitted is not stated in the Metadata API guide, which documents only that
+advanced logic of the form `1 AND (2 OR 3)` is accepted. The guidance here
+deliberately does not depend on knowing it.
 
 **How to avoid:** Parenthesise every mixed expression, always. And treat a
 `conditionLogic` string with more than about four numbered terms as a rule that
@@ -211,3 +212,119 @@ row, and let the Decision test whether a row was found. Adding a region becomes 
 data change with no deploy. This is the single highest-leverage refactor
 available in this domain and it is almost never the first thing anyone reaches
 for.
+
+---
+
+## Gotcha 13: Advanced Condition Logic Is Capped at 1,000 Characters
+
+**What happens:** A rule that started as `1 AND 2` grows term by term until the
+expression stops being something anyone can review — and eventually stops being
+something the field can hold.
+
+**When it occurs:** `FlowRule.conditionLogic` takes `and`, `or`, or advanced
+logic such as `1 AND (2 OR 3)`; when advanced logic is used the string can
+contain up to 1,000 characters (`api_meta.txt` L71306–L71313). The same three
+shapes apply to the Start element's entry conditions
+(`api_meta.txt` L72299–L72301 shows `And` / `Or` there).
+
+**How to avoid:** Treat the cap as a design signal rather than a budget. An
+expression approaching even a tenth of it is a business rule that has outgrown
+one element — lift it into a named Formula resource (`isEscalatable`,
+`isAtRiskRenewal`) so the Decision reads as one comparison, or into Custom
+Metadata if it is really a lookup table. Nothing good happens at 900 characters.
+
+---
+
+## Gotcha 14: "Only When Changed to Meet Criteria" Exists Per Outcome, Not Only at the Start
+
+**What happens:** An author hand-builds `IsChanged` + `EqualTo` in a Decision
+because they believe the "changed to meet criteria" behaviour is a Start-element
+setting — or, worse, retrofits one at the Start element and breaks every other
+outcome in the flow.
+
+**When it occurs:** `doesRequireRecordChangedToMeetCriteria` is a boolean on
+`FlowRule`, available in API version 50.0 and later: "If set to true, conditions
+evaluate to true only if the record didn't meet the required conditions before
+the triggering update but now meets the conditions after the update"
+(`api_meta.txt` L71320–L71324). The identically named field also exists on
+`FlowStart` (`api_meta.txt` L72322), which is the one everybody knows about.
+
+**How to avoid:** Decide deliberately where the transition test belongs. At the
+Start element it gates the whole interview and every outcome inherits it; on one
+`FlowRule` it scopes the transition to that outcome alone and leaves the others
+evaluating plain state. When only one branch of several is transition-shaped, the
+per-rule flag is the correct place and it is the one most reviewers never look
+for in the XML.
+`UNVERIFIED (2026-09-12):` how (or whether) Flow Builder surfaces the per-rule
+flag in the outcome editor is not stated in the Metadata API guide; the field is
+documented as metadata, so a retrieved flow may carry a setting the canvas does
+not show.
+
+---
+
+## Gotcha 15: A `rightValue` Carries Exactly One Typed Child
+
+**What happens:** A hand-edited or model-generated condition sets both a literal
+and a reference on the same right-hand side, and the reviewer reads whichever one
+matches their expectation.
+
+**When it occurs:** `rightValue` is a `FlowElementReferenceOrValue`, whose
+definition is explicit: "Defines a reference to an existing element or a
+particular value that you specify. Make sure that you specify only one of the
+fields" (`api_meta.txt` L70411–L70412). The typed children are mutually
+exclusive by contract — `booleanValue`, `stringValue`, `numberValue`,
+`dateValue`, `dateTimeValue`, `elementReference`, and the rest each repeat the
+warning "If you want to specify a different data type or element reference, don't
+use this field."
+
+**How to avoid:** One child per `rightValue`, and let the operator pick which
+one. The guide's own Decision example pairs `IsNull` with
+`<booleanValue>false</booleanValue>` (`api_meta.txt` L73342–L73344), which is the
+canonical shape for the null operators. Comparing a field to another field means
+`elementReference` and nothing else.
+`UNVERIFIED (2026-09-12):` the guide states the constraint but does not say what
+the platform does when two children are present — whether deployment is rejected
+or one value silently wins is not documented, so do not rely on either.
+
+---
+
+## Gotcha 16: `None` Is a Real Operator and It Deploys
+
+**What happens:** A half-built outcome ships. The condition looks incomplete in
+Flow Builder, so everyone assumes the platform would have stopped it.
+
+**When it occurs:** `None` is a valid `FlowComparisonOperator` whose documented
+purpose is to "Save a flow with an incomplete condition, so you can finish
+building the flow later," available in API version 58.0 and later
+(`api_meta.txt` L70104–L70106). It is a deliberate save-my-work affordance, not
+an error state.
+
+**How to avoid:** Grep the flow XML for `<operator>None</operator>` before every
+deploy — it is a one-line check and the only reliable one, because an incomplete
+condition does not announce itself downstream. The package's checker flags it as
+an ERROR for exactly this reason.
+
+---
+
+## Gotcha 17: Every Operator Has an API-Version Floor, and the Flow Carries Its Own `apiVersion`
+
+**What happens:** An operator that exists in the documentation is missing from
+the org, or a flow copied from a newer org fails to deploy into an older
+package — and the diagnosis wanders into permissions and feature licences.
+
+**When it occurs:** The operator list is versioned, per entry:
+`WasSet` from 30.0, `IsChanged` from 52.0 (`api_meta.txt` L70095–L70096), `In`
+and `NotIn` from 56.0 (`api_meta.txt` L70089, L70108–L70109), `None` from 58.0,
+`IsBlank` and `IsEmpty` from 61.0 (`api_meta.txt` L70090–L70094, L70097–L70098),
+`HasError` from 64.0 (`api_meta.txt` L70087–L70088). Meanwhile `Flow.apiVersion`
+is "The API version that defines the execution behavior of the flow"
+(`api_meta.txt` L68075) — a per-flow value, not an org-wide one.
+
+**How to avoid:** Check the floor before reaching for a newer operator, and check
+the flow's own `apiVersion` rather than the org's. The distinction that actually
+bites is `IsBlank` versus `IsNull`: `IsBlank` is "a text value with zero
+characters or with only whitespace… for other data type values, use to determine
+whether a field or variable is null," while `IsNull` is "a value that is either
+not set or references no value" (`api_meta.txt` L70090–L70094, L70099–L70101).
+On a text field they are different tests — a field holding a single space is
+blank but not null — and only one of them is available below API version 61.0.
