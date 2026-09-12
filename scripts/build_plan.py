@@ -2003,11 +2003,44 @@ AMEND_STEP_PLAN_STATUSES = {"building", "approved"}
 # or test results an amendment would silently orphan.
 AMEND_STEP_STATUSES = {"pending", "blocked"}
 
+# Fields `--prose-only` may touch: text that *describes* a test, never what
+# the test runs. A subset of AMENDABLE_STEP_FIELDS.
+PROSE_ONLY_FIELDS = ("notes", "acceptance_tests")
+
+# acceptanceTest keys that change what the test DOES, not how it reads.
+# `--prose-only` refuses any amendment that changes one of these; only
+# `description` may differ between the current and amended test at the same
+# index.
+_ACCEPTANCE_TEST_STRUCTURAL_FIELDS = ("type", "command", "expected", "scope")
+
+
+def _prose_only_violation(current_tests: list, new_tests: list) -> str | None:
+    """None if new_tests differs from current_tests only in `description`.
+
+    Otherwise a human-readable reason `--prose-only` must refuse the write.
+    """
+    if len(new_tests) != len(current_tests):
+        return (f"acceptance_tests has {len(new_tests)} entr{'y' if len(new_tests) == 1 else 'ies'} "
+                f"but the step currently has {len(current_tests)} — --prose-only may reword "
+                f"existing test descriptions, not add or remove tests")
+    for i, (old, new) in enumerate(zip(current_tests, new_tests)):
+        if not isinstance(new, dict):
+            return f"acceptance_tests[{i}] must be an object"
+        for field in _ACCEPTANCE_TEST_STRUCTURAL_FIELDS:
+            old_val = old.get(field)
+            new_val = new.get(field)
+            if old_val != new_val:
+                return (f"acceptance_tests[{i}].{field} differs ({old_val!r} -> {new_val!r}) — "
+                        f"--prose-only may change only `description`; drop --prose-only if this "
+                        f"field genuinely needs to change")
+    return None
+
 
 def cmd_amend_step(args: argparse.Namespace) -> int:
     plan_path = Path(args.plan)
     schema = load_schema(args.schema)
     plan = read_plan_on_schema(plan_path, schema)
+    prose_only = bool(getattr(args, "prose_only", False))
 
     status = plan.get("status")
     if status not in AMEND_STEP_PLAN_STATUSES:
@@ -2021,48 +2054,86 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
         _die(f"no step {args.step_id!r} in {plan_path}")
 
     step_status = step.get("status")
-    if step_status not in AMEND_STEP_STATUSES:
+    if prose_only:
+        # Prose does not change what ran — only what a human reads about it —
+        # so every status is fair game except mid-run, where the step object
+        # itself may still be mutating.
+        if step_status == "running":
+            _die(f"{args.step_id} is 'running' — --prose-only cannot correct a step while it is "
+                 f"mid-run; wait for it to reach a resting status (documented/tested/built/"
+                 f"failed/blocked/pending), then reword its test descriptions")
+    elif step_status not in AMEND_STEP_STATUSES:
         if step_status == "documented":
             _die(f"{args.step_id} is 'documented' — amend-step only corrects a step that has not "
                  f"run yet; rebuild it first (`build_plan.py set-status {args.plan} "
                  f"{args.step_id} running` — contract § 8's documented -> running rebuild path), "
-                 f"then amend the re-opened step")
+                 f"then amend the re-opened step (or pass --prose-only if you are only "
+                 f"correcting a test's `description`/`notes` text)")
         if step_status == "failed":
             _die(f"{args.step_id} is 'failed' — reset it first (`build_plan.py set-status "
-                 f"{args.plan} {args.step_id} pending`), then amend it")
+                 f"{args.plan} {args.step_id} pending`), then amend it (or pass --prose-only if "
+                 f"you are only correcting a test's `description`/`notes` text)")
         _die(f"{args.step_id} is '{step_status}' — amend-step only corrects a step that has not "
-             f"started running yet (status 'pending' or 'blocked')")
+             f"started running yet (status 'pending' or 'blocked'), unless --prose-only is "
+             f"passed to reword a test's `description`/`notes` text")
 
     gate_name = f"step:{args.step_id}"
-    if gate_status(plan, gate_name) == "approved":
+    gate_already_approved = gate_status(plan, gate_name) == "approved"
+    if gate_already_approved and not prose_only:
         _die(f"gate '{gate_name}' is already approved — amending {args.step_id} would "
              f"invalidate what the human signed off; reject it first (`build_plan.py gate "
-             f"{args.plan} {gate_name} reject --by <who>`), then amend {args.step_id}")
+             f"{args.plan} {gate_name} reject --by <who>`), then amend {args.step_id} "
+             f"(or pass --prose-only: prose does not invalidate a signature, so an approved "
+             f"gate does not block it)")
 
     doc = _read_json_file(Path(args.file))
     if not isinstance(doc, dict):
-        _die(f"{args.file} must be a JSON object with any of: "
-             f"{', '.join(AMENDABLE_STEP_FIELDS)}")
-    unknown = sorted(set(doc) - set(AMENDABLE_STEP_FIELDS))
-    if unknown:
-        _die(f"{args.file}: amend-step writes only {', '.join(AMENDABLE_STEP_FIELDS)} — refusing "
-             f"{', '.join(unknown)} (id/milestone/type/agent are structural; status/runs/"
-             f"blocked_reason belong to set-status; depends_on and human_gate are not amendable)")
-    if not doc:
-        _die(f"{args.file} names none of the amendable fields "
-             f"({', '.join(AMENDABLE_STEP_FIELDS)}) — nothing to amend")
+        allowed = PROSE_ONLY_FIELDS if prose_only else AMENDABLE_STEP_FIELDS
+        _die(f"{args.file} must be a JSON object with any of: {', '.join(allowed)}")
+
+    if prose_only:
+        unknown = sorted(set(doc) - set(PROSE_ONLY_FIELDS))
+        if unknown:
+            _die(f"{args.file}: --prose-only writes only {', '.join(PROSE_ONLY_FIELDS)} — "
+                 f"refusing {', '.join(unknown)} (a prose-only amendment may reword text, not "
+                 f"change a structural field; drop --prose-only to amend {', '.join(unknown)})")
+        if not doc:
+            _die(f"{args.file} names neither of {', '.join(PROSE_ONLY_FIELDS)} — nothing to amend")
+        if "notes" in doc and not isinstance(doc["notes"], str):
+            _die(f"{args.file}: notes must be a string under --prose-only")
+        if "acceptance_tests" in doc:
+            new_tests = doc["acceptance_tests"]
+            if not isinstance(new_tests, list):
+                _die(f"{args.file}: acceptance_tests must be an array under --prose-only")
+            current_tests = step.get("acceptance_tests") or []
+            violation = _prose_only_violation(current_tests, new_tests)
+            if violation:
+                _die(f"{args.file}: {violation}")
+    else:
+        unknown = sorted(set(doc) - set(AMENDABLE_STEP_FIELDS))
+        if unknown:
+            _die(f"{args.file}: amend-step writes only {', '.join(AMENDABLE_STEP_FIELDS)} — "
+                 f"refusing {', '.join(unknown)} (id/milestone/type/agent are structural; "
+                 f"status/runs/blocked_reason belong to set-status; depends_on and human_gate "
+                 f"are not amendable)")
+        if not doc:
+            _die(f"{args.file} names none of the amendable fields "
+                 f"({', '.join(AMENDABLE_STEP_FIELDS)}) — nothing to amend")
 
     before = {field: copy.deepcopy(step[field]) for field in doc if field in step}
     for field, value in doc.items():
         step[field] = value
     fields = sorted(doc)
-    step.setdefault("amendments", []).append({
+    amendment_record = {
         "at": _now(args.at),
         "by": args.by,
         "reason": args.reason,
         "fields": fields,
         "before": before,
-    })
+    }
+    if prose_only:
+        amendment_record["prose_only"] = True
+    step.setdefault("amendments", []).append(amendment_record)
 
     # Mirrors write_plan()'s validate-then-atomic-write, but the printed
     # warnings are scoped to this step: a plan-wide WARN dump on every
@@ -2089,8 +2160,11 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
     for msg in step_warnings:
         print(f"WARN {msg}")
     _atomic_write(plan_path, plan_json(plan))
-    print(f"step {args.step_id}: amended {', '.join(fields)} by {args.by} — "
-          f"{len(step_warnings)} warning(s)")
+    gate_note = (f" (gate '{gate_name}' stays approved — prose does not invalidate a signature)"
+                 if prose_only and gate_already_approved else "")
+    print(f"step {args.step_id}: amended {', '.join(fields)} by {args.by}"
+          f"{' (prose-only)' if prose_only else ''} — "
+          f"{len(step_warnings)} warning(s){gate_note}")
     print("next: `build_plan.py render`")
     return 0
 
@@ -2594,14 +2668,25 @@ def build_parser() -> argparse.ArgumentParser:
                                    "which-fields/prior-values in the step's amendments[], "
                                    "re-validates the whole plan, and refuses the write (leaving "
                                    "the file untouched) if any ERROR results. Never touches "
-                                   "gates, statuses or runs[].")
+                                   "gates, statuses or runs[]. --prose-only relaxes all of the "
+                                   f"above for text that only describes a test: --file may then "
+                                   f"hold only {', '.join(PROSE_ONLY_FIELDS)}; an acceptance_tests "
+                                   "array must keep the same length with the same type/command/"
+                                   "expected/scope at every index (only description may change); "
+                                   "the step may be at any status except 'running'; and an "
+                                   "already-approved step gate does not block it.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("step_id", metavar="step-id", help="e.g. M1-S01")
     p.add_argument("--file", required=True,
-                   help=f"JSON object of amendable step fields ({', '.join(AMENDABLE_STEP_FIELDS)})")
+                   help=f"JSON object of amendable step fields ({', '.join(AMENDABLE_STEP_FIELDS)}"
+                        f"; with --prose-only, only {', '.join(PROSE_ONLY_FIELDS)})")
     p.add_argument("--by", required=True, help="who is making the correction")
     p.add_argument("--reason", required=True, help="why the step is being amended")
     p.add_argument("--at", default=None, help="ISO timestamp (default: UTC now)")
+    p.add_argument("--prose-only", action="store_true",
+                   help="restrict --file to notes/acceptance_tests[].description text that "
+                        "does not change what runs; in exchange, allow any step status except "
+                        "'running' and do not block on an already-approved step gate")
     p.set_defaults(func=cmd_amend_step)
 
     p = sub.add_parser("set-verification", parents=[common],

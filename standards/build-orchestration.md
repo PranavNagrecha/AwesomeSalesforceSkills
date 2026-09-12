@@ -74,6 +74,18 @@ when, why, which fields, their prior values) in the step's `amendments[]`
 before re-validating the whole plan, refusing the write if the result carries
 any ERROR.
 
+`--prose-only` is a narrower mode for the case that keeps recurring once a
+build has steps behind it: a test's `description` or a step's `notes` turns
+out to have narrated the wrong outcome, even though the test itself (its
+`type`/`command`/`expected`/`scope`) still runs exactly as intended.
+`amend-step --prose-only` accepts `--file` holding only `notes` and/or an
+`acceptance_tests` array of the same length with every index's structural
+fields unchanged (only `description` may differ), and in exchange allows the
+step to be at any status except `running` and does not require an
+already-approved `step:<id>` gate to be rejected first — prose does not
+invalidate a signature. The amendment record carries `"prose_only": true` so
+`amendments[]` distinguishes a text correction from a substantive one.
+
 ### Build mode
 
 `plan.json` carries a required `build_mode`, and it decides which agents may

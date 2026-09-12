@@ -698,6 +698,10 @@
           "type": "object",
           "additionalProperties": true,
           "description": "The amended fields' prior values, keyed by field name. A field absent here was absent on the step before the amendment."
+        },
+        "prose_only": {
+          "type": "boolean",
+          "description": "True when `build_plan.py amend-step --prose-only` wrote this amendment: only `notes` and/or `acceptance_tests[].description` text changed, nothing that changes what runs. Absent (not false) on an ordinary amendment."
         }
       }
     },

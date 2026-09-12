@@ -16,6 +16,7 @@ out on disk.
 
 from __future__ import annotations
 
+import copy
 import json
 import sys
 from pathlib import Path
@@ -1357,6 +1358,121 @@ def test_amend_step_refused_when_result_is_invalid(tmp_path, fixture_repo):
              "--by", "pranav", "--reason", "bad type", "--repo-root", str(fixture_repo))
     assert rc == 1
     assert path.read_bytes() == before, "a refused amendment must leave the file untouched"
+
+
+def _write_fake_checker(fixture_repo: Path) -> str:
+    """Create a real skill-local checker script so a 'checker' test passes
+    the "command must name an existing checker" semantic gate, and return
+    its canonical command string.
+    """
+    checker = fixture_repo / "skills" / "admin" / "fake-object-design" / "scripts" / "check_fields.py"
+    checker.parent.mkdir(parents=True, exist_ok=True)
+    checker.write_text("print('ok')\n", encoding="utf-8")
+    rel = checker.relative_to(fixture_repo)
+    return f"python3 {rel} --manifest-dir artefacts/M1-S01"
+
+
+def test_amend_step_prose_only_on_documented_step_succeeds(tmp_path, fixture_repo, capsys):
+    """A stale test description on an already-`documented` step gets corrected
+    without a rebuild, and the amendment records `prose_only: true`.
+    """
+    command = _write_fake_checker(fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", tests=[
+        {"type": "checker", "command": command,
+         "expected": "exit 0", "scope": "step",
+         "description": "Scanned 14 metadata file(s)"},
+    ])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    advance(path, fixture_repo, "M1-S01", upto="documented")
+    before_doc = json.loads(path.read_text())
+    assert before_doc["steps"][0]["status"] == "documented"
+    current_tests = before_doc["steps"][0]["acceptance_tests"]
+
+    fixed_tests = copy.deepcopy(current_tests)
+    fixed_tests[0]["description"] = "Scanned 15 metadata file(s)"
+    amendment = write_json(tmp_path / "amend-prose.json", {"acceptance_tests": fixed_tests})
+
+    capsys.readouterr()
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment), "--prose-only",
+             "--by", "dry-run operator (Fable)", "--reason", "O-M1S01-01",
+             "--at", "2026-09-11T10:00:00Z", "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "M1-S01: amended acceptance_tests by dry-run operator (Fable) (prose-only)" in out
+
+    after = json.loads(path.read_text())
+    s1 = after["steps"][0]
+    assert s1["status"] == "documented", "prose-only never touches status"
+    assert s1["acceptance_tests"][0]["description"] == "Scanned 15 metadata file(s)"
+    assert s1["acceptance_tests"][0]["command"] == current_tests[0]["command"]
+    assert len(s1["amendments"]) == 1
+    record = s1["amendments"][0]
+    assert record["prose_only"] is True
+    assert record["reason"] == "O-M1S01-01"
+    assert record["fields"] == ["acceptance_tests"]
+    assert record["before"] == {"acceptance_tests": current_tests}
+
+
+def test_amend_step_prose_only_refused_when_command_differs(tmp_path, fixture_repo):
+    command = _write_fake_checker(fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", tests=[
+        {"type": "checker", "command": command,
+         "expected": "exit 0", "scope": "step", "description": "old description"},
+    ])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    advance(path, fixture_repo, "M1-S01", upto="documented")
+    before = path.read_bytes()
+
+    current_tests = json.loads(before)["steps"][0]["acceptance_tests"]
+    changed = copy.deepcopy(current_tests)
+    changed[0]["description"] = "new description"
+    changed[0]["command"] = changed[0]["command"] + " --extra-flag"
+    amendment = write_json(tmp_path / "amend-prose.json", {"acceptance_tests": changed})
+
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment), "--prose-only",
+             "--by", "pranav", "--reason", "sneaking in a command change",
+             "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_step_prose_only_refused_when_test_count_differs(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1", tests=[
+        {"type": "xml", "description": "every artefact parses"},
+    ])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    advance(path, fixture_repo, "M1-S01", upto="documented")
+    before = path.read_bytes()
+
+    amendment = write_json(tmp_path / "amend-prose.json", {
+        "acceptance_tests": [
+            {"type": "xml", "description": "every artefact parses"},
+            {"type": "manifest", "description": "extra test snuck in"},
+        ],
+    })
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment), "--prose-only",
+             "--by", "pranav", "--reason", "sneaking in an extra test",
+             "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_step_ordinary_mode_still_refuses_documented_step(tmp_path, fixture_repo):
+    """--prose-only relaxes the status/gate gates; ordinary mode still does not."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    advance(path, fixture_repo, "M1-S01", upto="documented")
+    before = path.read_bytes()
+
+    amendment = write_json(tmp_path / "amend.json", {"notes": "tweak"})
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "late fix", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
 
 
 def test_set_verification_records_both_outcomes(tmp_path, fixture_repo):
