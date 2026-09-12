@@ -31,7 +31,7 @@ outputs:
   - "Consumer map: which escalation entries, milestones, and Apex read which calendar"
   - "Troubleshooting result for a clock that did not pause"
 dependencies: []
-version: 1.0.1
+version: 1.1.0
 author: Pranav Nagrecha
 updated: 2026-09-12
 ---
@@ -82,7 +82,7 @@ A calendar is a `BusinessHours` record: name, active flag, default flag, time zo
 
 ### Deployable metadata: one settings file
 
-All calendars and holidays live in one file, `settings/BusinessHours.settings-meta.xml`, deployed as `Settings` with member `BusinessHours` (API 29.0+). Each `businessHours` entry carries `name`, `active`, `default`, `timeZoneId`, and the fourteen day-window fields in `HH:mm:ss.SSSZ`. Each `holidays` entry carries `name`, `description`, `isRecurring`, `activityDate` (non-recurring), `recurrenceStartDate` / `recurrenceEndDate` (recurring), and `startTime` / `endTime`, which are both null for a whole-day holiday. The full example is in `references/examples.md`.
+All calendars and holidays live in one file, `settings/BusinessHours.settings-meta.xml`, deployed as `Settings` with member `BusinessHours` (API 29.0+). Each `businessHours` entry carries `name`, `active`, `default`, `timeZoneId`, and the fourteen day-window fields in `HH:mm:ss.SSSZ`. Each `holidays` entry carries `name`, `description`, `isRecurring`, `activityDate` (non-recurring), `recurrenceStartDate` / `recurrenceEndDate` (recurring), and `startTime` / `endTime`, which are both null for a whole-day holiday. The full example is in `references/examples.md`; a second, single-region scenario with a genuine weekend-only calendar and full Metadata API field grounding is in `references/metadata-examples.md`.
 
 ### Holidays are inert until attached
 
@@ -178,6 +178,18 @@ Deeper treatment in `references/gotchas.md`.
 | Case calendar rule | Before-save Flow logic that sets `BusinessHoursId`, with fallback |
 | Consumer map | Escalation entries, milestones, Apex callers and the calendar each reads |
 | Clock test record | Evidence that an after-hours Case escalated in the next open window |
+
+---
+
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/metadata-examples.md` | Writing the deployable XML for a single-region scenario with a genuine weekend-only calendar and a named 24/7 severity tier — field-by-field Metadata API grounding with line citations |
+| `references/examples.md` | Two regional calendars end to end, the Case-calendar Flow, the Apex working-time helper, and the clock test |
+| `references/gotchas.md` | Before deploying, and whenever an SLA clock keeps running when it should have paused |
+| `references/llm-anti-patterns.md` | Reviewing AI-generated business-hours guidance or metadata |
+| `references/well-architected.md` | Choosing one calendar vs one per region, and citing the sources behind any claim in this skill |
 
 ---
 
