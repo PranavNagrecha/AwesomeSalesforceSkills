@@ -50,7 +50,7 @@ Follow the 7-step plan exactly:
 1. Establish the build directory with `build_plan.py init --build-dir … --title … --requirement …` (all three required), plus `--now <ISO>` when the run must be reproducible. Note what `init` puts in `requirement.summary`: the first non-heading line of the requirement, truncated at 400 characters. That is a placeholder, and step 5 is the only chance to replace it
 2. Enumerate capability phrases and run `python3 scripts/search_knowledge.py "<phrase>"` — one search per phrase, never one for the whole requirement. If every phrase comes back empty, settle "no index" versus "no coverage" with one control search on a term the library certainly covers (`search_knowledge.py "permission set"`), **not** with `bootstrap.py --verify-only`, which also prints `BOOTSTRAP FAILED` when the installed slash-command count merely differs from `commands/`
 3. Keep only skills that carry a `## Questions to Ask Before Configuring` table; record the rest with the phrase that surfaced them
-4. Harvest **every row** into a clarification: `kind` blocking or informational, `why`, `answer_shape`, `proposed_default` (from skill guidance or the requirement text only), `owner_role`, `owner_hint` — then add the generic set and dedupe by meaning. `owner_hint` obeys the `standards/build-orchestration.md` § 4 eligibility rule in full, `build_mode` included: in a design-only build the org-requiring designers are ineligible and a metadata question's hint is `metadata-builder`
+4. Harvest **every row** into a clarification: `kind` blocking or informational, `why`, `answer_shape`, `proposed_default` (from skill guidance or the requirement text only), `owner_role` (omit rather than write `null` when no requester is named — the schema types it as a non-empty string), `asked_by` — then add the generic set and dedupe by meaning. `asked_by` obeys the `standards/build-orchestration.md` § 4 eligibility rule in full, `build_mode` included: in a design-only build the org-requiring designers are ineligible and a metadata question's hint is `metadata-builder`
 5. Group with the § 4 **step-type** vocabulary (`object-model`, `access`, `automation`, `validation`, `routing`, `sla`, `ui`, `data`, `integration`, `docs`, `custom`) plus `testing-and-environments` — not workbook section names — order blocking-first, number `Q1…Qn`, then write the set through `set-clarifications`, followed by `validate` and `render`. The agent never hand-edits `plan.json`:
 
    ```bash
@@ -74,7 +74,7 @@ Return the Output Contract:
 - Summary + confidence
 - Coverage table (phrase → skills returned → which carried a question table → rows harvested)
 - The ordered, grouped clarification set, blocking first
-- What `CLARIFICATIONS.md` shows the human per question — **Question**, **Why it matters**, **Who can answer** (`owner_role`), **Answer shape**, **From skill**, **Proposed default** — and what it does not: `owner_hint`, `default_source` and `also_asked_by[]` live only in `plan.json` and the envelope, so repeat anything the human needs from them here
+- What `CLARIFICATIONS.md` shows the human per question — **Question**, **Why it matters**, **Who can answer** (`owner_role`), **Answer shape**, **From skill**, **Proposed default** — and what it does not: `asked_by`, `default_source` and `also_asked_by[]` live only in `plan.json` and the envelope, so repeat anything the human needs from them here
 - The loop artefacts: `plan.json` at `status: clarifying`, rendered `CLARIFICATIONS.md`
 - Process Observations (4 buckets)
 - Citations

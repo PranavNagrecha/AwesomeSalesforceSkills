@@ -227,7 +227,7 @@ scale: ask (D=1 metadata type, S=2 skills with question tables, O=1 object, inte
 
 | | `ask` | `feature` | `project` |
 |---|---|---|---|
-| Clarification scope | only the cited skills' Questions-to-Ask rows, each with its proposed default; **one** round; ≤ 8 put to the human as blocking | those, plus one question per decision tree whose scope the requirement straddles (`standards/decision-trees/`) | unchanged: every row of every cited skill plus the generic `admin/requirements-gathering-for-sf` set |
+| Clarification scope | only the cited skills' Questions-to-Ask rows, each with its proposed default; **one** round; ≤ 8 put to the human as blocking | those, plus one question per decision tree whose scope the requirement straddles (`standards/decision-trees/`); blocking questions are **not** capped at this tier — an integration feature legitimately asks 20–30 — answered in **one** round (a second round only when answers contradict each other); the tier is re-checked afterward only by the D/S/O/X recount (below), never by how many questions were asked | unchanged: every row of every cited skill plus the generic `admin/requirements-gathering-for-sf` set |
 | Plan shape | 1 milestone, 1 step | 1 milestone, ≤ 5 steps | unchanged: 2–6 milestones |
 | Verification | verifier runs **once** — three lenses over the one step, refutation-only; no re-plan round unless a blocker is CRITICAL (below) | ≤ 2 rounds | unchanged |
 | Gates | two human decisions: `go` and `accept` | `clarifications`, `plan`, one `milestone:M1` | unchanged |
@@ -242,6 +242,15 @@ listed in `CLARIFICATIONS.md` as defaults applied; the blocking ones are asked.
 If more than eight rows are blocking, the requirement was never an `ask`: the
 clarifier re-tiers to `feature`, says so in the sizing line, and drops nothing.
 The bound is a tier test, not a truncation.
+
+This eight-blocking test applies at **`ask` only** — it is the signal that an
+`ask` was mis-sized and belongs at `feature`. It has no analogue at `feature`:
+a `feature` build is never re-tiered to `project` by counting blocking
+questions, no matter how many land (20–30 blocking rows on an integration
+feature is expected, not a signal). The only re-tier signal at any tier,
+including from `feature` upward, is the D/S/O/X recount in "The sizing rule"
+above, applied once, after the answers land, to what the answers actually
+require — never applied by analogy from a question count.
 
 **CRITICAL**, at `ask`, means exactly a refutation on the executability or
 grounding lens — an ineligible agent, a skill or template that does not resolve,

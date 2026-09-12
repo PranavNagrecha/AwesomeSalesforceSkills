@@ -1955,8 +1955,10 @@ def test_set_clarifications_default_source_not_overwritten_if_already_set(
     assert clar["default_source"] == "skill-guidance", "an existing default_source is preserved"
 
 
-def test_set_clarifications_does_not_fill_defaults_at_project_or_feature_scale(
+def test_set_clarifications_does_not_fill_defaults_at_project_scale(
         tmp_path, fixture_repo):
+    """`project` is the one tier § 3.1 leaves unchanged: every row, blocking
+    or informational, still goes to the human."""
     def informational_question(name: str) -> Path:
         return write_json(tmp_path / name, [
             {"id": "Q1", "question": "Nice to know?", "kind": "informational", "status": "open",
@@ -1971,12 +1973,47 @@ def test_set_clarifications_does_not_fill_defaults_at_project_or_feature_scale(
     clar = json.loads(path.read_text())["clarifications"][0]
     assert clar["status"] == "open" and not clar.get("answer")
 
-    plan = plan_dict([step("M1-S01", "M1")], scale="feature")
+    plan = plan_dict([step("M1-S01", "M1")], scale="project")
     path = write_plan_file(tmp_path / "c", plan)
     assert run("set-clarifications", str(path), "--file", str(informational_question("q2.json")),
                "--repo-root", str(fixture_repo)) == 0
     clar = json.loads(path.read_text())["clarifications"][0]
     assert clar["status"] == "open" and not clar.get("answer")
+
+
+def test_set_clarifications_fills_open_informational_defaults_at_scale_feature(
+        tmp_path, fixture_repo, capsys):
+    """§ 3.1's feature-tier clarification-scope cell inherits the ask-tier
+    default pre-fill — only the blocking-question ceiling and round count
+    differ between the two tiers. The stamped default_source names the
+    actual tier, not a hardcoded 'ask'."""
+    plan = plan_dict([step("M1-S01", "M1")], scale="feature")
+    path = write_plan_file(tmp_path / "b", plan)
+    body = write_json(tmp_path / "questions.json", [
+        {"id": "Q1", "question": "Which system of record wins on conflict?", "kind": "blocking",
+         "status": "open", "proposed_default": "Salesforce"},
+        {"id": "Q2", "question": "Should we log the sync timestamp?", "kind": "informational",
+         "status": "open", "proposed_default": "Yes, on a hidden field"},
+        {"id": "Q3", "question": "Already answered?", "kind": "informational",
+         "status": "answered", "answer": "Custom text", "proposed_default": "ignored"},
+    ])
+    capsys.readouterr()
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert "1 informational default(s) applied (scale: feature)" in out
+
+    by_id = {c["id"]: c for c in json.loads(path.read_text())["clarifications"]}
+    # Blocking rows are never auto-filled, regardless of scale.
+    assert by_id["Q1"]["status"] == "open"
+    assert not by_id["Q1"].get("answer")
+    # Open informational row with a default: filled and stamped with the
+    # actual tier, not a hardcoded 'ask'.
+    assert by_id["Q2"]["status"] == "answered"
+    assert by_id["Q2"]["answer"] == "Yes, on a hidden field"
+    assert by_id["Q2"]["default_source"] == "proposed_default (scale: feature)"
+    # Already-answered informational row: left exactly alone.
+    assert by_id["Q3"]["answer"] == "Custom text"
 
 
 def test_set_clarifications_default_renders_and_can_be_overwritten_by_a_human(

@@ -2637,16 +2637,21 @@ def cmd_set_clarifications(args: argparse.Namespace) -> int:
         plan["requirement"] = dict(plan.get("requirement") or {})
         plan["requirement"]["summary"] = summary
 
-    # § 3.1: at `scale: ask` the informational rows are never put to the human
-    # in a round — they "land pre-filled from their proposed_default with
-    # default_source set" (contract, § 3.1). This is the writer, so it is the
-    # one place that guarantee holds regardless of what the clarifier passed
-    # in. A blocking row is never touched here — it always waits for a human
-    # or an explicit `DEFER:`. Only `open` rows with nothing already answered
-    # are filled, so re-running set-clarifications never clobbers a human's
-    # (or a later ingest-answers') edit.
+    # § 3.1: at `scale: ask` *and* `scale: feature` the informational rows are
+    # never put to the human in a round — they "land pre-filled from their
+    # proposed_default with default_source set" (contract, § 3.1; the feature
+    # tier's clarification-scope cell inherits the ask-tier default-pre-fill
+    # behaviour — only the blocking-question ceiling and round count differ
+    # between the two). This is the writer, so it is the one place that
+    # guarantee holds regardless of what the clarifier passed in. `project`
+    # is unchanged: every row, blocking or informational, still goes to the
+    # human. A blocking row is never touched here at any tier — it always
+    # waits for a human or an explicit `DEFER:`. Only `open` rows with
+    # nothing already answered are filled, so re-running set-clarifications
+    # never clobbers a human's (or a later ingest-answers') edit.
+    tier = plan.get("scale")
     defaults_filled = 0
-    if plan.get("scale") == "ask":
+    if tier in ("ask", "feature"):
         for clar in doc:
             if not isinstance(clar, dict):
                 continue
@@ -2662,7 +2667,7 @@ def cmd_set_clarifications(args: argparse.Namespace) -> int:
             clar["answer"] = default
             clar["status"] = "answered"
             if not (clar.get("default_source") or "").strip():
-                clar["default_source"] = "proposed_default (scale: ask)"
+                clar["default_source"] = f"proposed_default (scale: {tier})"
             defaults_filled += 1
 
     schema = load_schema(args.schema)
@@ -2672,7 +2677,7 @@ def cmd_set_clarifications(args: argparse.Namespace) -> int:
     blocking = sum(1 for c in doc if isinstance(c, dict) and c.get("kind") == "blocking")
     print(f"clarifications written: {len(doc)} question(s), {blocking} blocking; "
           f"status -> clarifying" + ("; requirement.summary updated" if summary else "")
-          + (f"; {defaults_filled} informational default(s) applied (scale: ask)"
+          + (f"; {defaults_filled} informational default(s) applied (scale: {tier})"
              if defaults_filled else ""))
     print("next: `build_plan.py render`, then the human answers CLARIFICATIONS.md.")
     return 0
@@ -3203,12 +3208,13 @@ def build_parser() -> argparse.ArgumentParser:
                                    "sets the build status to 'clarifying'. Use this instead of "
                                    "editing plan.json — the write is validated, atomic, and "
                                    "leaves the file untouched if the result would be invalid. "
-                                   "At scale 'ask' (contract § 3.1), an 'open' informational "
-                                   "row with a proposed_default and no answer is written "
-                                   "answered from that default (default_source stamped "
-                                   "'proposed_default (scale: ask)' if not already set); "
-                                   "blocking rows and anything already answered are untouched, "
-                                   "and 'ingest-answers' can still overwrite a filled default.")
+                                   "At scale 'ask' or 'feature' (contract § 3.1), an 'open' "
+                                   "informational row with a proposed_default and no answer is "
+                                   "written answered from that default (default_source stamped "
+                                   "'proposed_default (scale: <tier>)' if not already set); "
+                                   "'project' is unchanged. Blocking rows and anything already "
+                                   "answered are untouched at every tier, and 'ingest-answers' "
+                                   "can still overwrite a filled default.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--file", required=True, help="JSON array of clarification objects")
     p.add_argument("--summary", default=None,
