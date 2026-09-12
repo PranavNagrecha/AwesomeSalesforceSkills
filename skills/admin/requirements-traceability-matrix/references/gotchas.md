@@ -318,3 +318,31 @@ every entry inside it covered, and a row naming one entry marks that entry and t
 (not its sibling entries). Naming the container remains correct and sufficient whenever no
 requirement calls out an individual calendar. If this still surfaces on a repo pinned to an older
 `check_rtm.py`, that is the signal to update the script, not to rewrite the row.
+
+---
+
+## Gotcha 19: A Requirement's Other Files Look Orphaned Because `artefact` Is Single-Valued
+
+**What happens:** A requirement's delivery spans several files — a trigger plus the service class it
+calls plus that class's test class — but Step 7 still forbids a second row per file (Gotcha 9's rule
+generalises past rule containers to any multi-file delivery). The row's single-valued `artefact` cell
+names one of them (the trigger, say); the other files live in the build-doc-keeper's own
+`artefact_paths` column instead, pipe-delimited. Below `check_rtm.py` v1.1.5 `resolve_artefact()` and
+the orphan sweep only ever look at the `artefact` cell, so every file `artefact_paths` names on its
+own — `ApexClass:CaseMilestoneService`, `ApexClass:CaseMilestoneServiceTest`, and any sibling class
+named the same way — is reported as an orphan the row never claims, even though the row does name it,
+just not in the column the checker was reading.
+
+**When it occurs:** Any build-layer row whose requirement delivers more than one file, once
+`artefact_paths` carries the rest of them. Live case: `case-onboarding` M4-S05's `REQ-044` named
+`ApexTrigger:CaseMilestoneTrigger` in `artefact` and its three Apex classes in `artefact_paths`; all
+three classes reported as orphans until the checker learned to read that second column.
+
+**How to avoid:** Nothing to do in the row — `check_rtm.py` v1.1.5+ resolves each `artefact_paths`
+entry against the same manifest `artefact` resolves against (`resolve_artefact_path()` plus
+`index_manifest`'s path → key mapping) and marks the component(s) that file produces covered too,
+container/child propagation included. A path with a non-metadata suffix (`.md`, `.yaml`, `.yml` — a
+decision doc or deploy-order writeup a requirement also cites) is ignored silently rather than
+resolved or warned on; a path that does not exist under `--manifest-dir` still gets its own WARN, the
+same treatment an unresolved `artefact` gets. If this still surfaces on a repo pinned to an older
+`check_rtm.py`, that is the signal to update the script, not to invent a second row per file.

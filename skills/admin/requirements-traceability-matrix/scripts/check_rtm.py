@@ -32,6 +32,11 @@ Checks performed
     (package.xml members plus the source files themselves). Unresolved names are
     reported; they are an ERROR only under ``--strict``, because a component the
     Metadata API cannot carry legitimately has no file (mark those ``setup-only:``).
+    When a row also carries an ``artefact_paths`` cell (build-doc-keeper
+    convention — see below), each of its pipe-delimited paths that resolves to a
+    file under ``--manifest-dir`` marks that file's own component(s) covered too
+    (Gotcha 19), so a requirement whose delivery spans several files is not
+    reported as orphaning the ones ``artefact`` didn't name.
 9.  Orphans: components in the manifest that no row's ``artefact`` names.
 10. Multi-value cells use the pipe delimiter (audit schema).
 
@@ -69,6 +74,21 @@ per-type suffix table, so it is deliberately not cited per row here.
 Anything not in this table falls back to a same-name, any-type stem match
 (the final loop in ``resolve_artefact``), so a slightly wrong type spelling
 still resolves against the right file.
+
+Multi-file requirements — the ``artefact_paths`` column
+---------------------------------------------------------
+Step 7 of ``agents/build-doc-keeper/AGENT.md`` writes one row per requirement
+even when the requirement's delivery spans several files (a trigger plus its
+service class plus its test class). ``artefact`` stays single-valued — it is
+the one component the row keys on — so the rest of the delivered files live
+in the build-doc-keeper's own ``artefact_paths`` column instead, pipe-
+delimited, e.g. ``artefacts/M4-S05/classes/CaseMilestoneService.cls |
+artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls``. ``check_rtm.py``
+v1.1.5+ reads that column too (Gotcha 19):
+
+| Column | Row shape | Coverage effect |
+|---|---|---|
+| ``artefact_paths`` (build-doc-keeper convention, not a canonical column) | pipe-delimited file paths, written from the build root | each entry that resolves to a real file under ``--manifest-dir`` marks that file's own derived component key(s) covered, in addition to ``artefact``'s single key; a non-metadata entry (``.md``, ``.yaml``, ``.yml``) is ignored silently; an entry that resolves to no file stays a WARN, same as an unresolved ``artefact`` |
 
 Both derived views — coverage gaps and orphans — are printed, and written as
 markdown to ``--report-dir`` when one is given.
@@ -141,6 +161,11 @@ STEP_ID_RE = re.compile(r"^M\d+-S\d{2,}$")
 DECISION_RE = re.compile(r"^D\d+$")
 
 EMPTY_MARKERS = {"", "-", "--", "—", "–", "n/a", "na", "none", "tbd"}
+
+# artefact_paths entries with one of these suffixes are notes, not deployable
+# metadata (a decision doc, a deploy-order writeup) — ignored silently rather
+# than resolved against the manifest or warned on when missing. Gotcha 19.
+NON_METADATA_ARTEFACT_PATH_SUFFIXES = {".md", ".yaml", ".yml"}
 
 # Metadata source-format suffix -> Metadata API type name. Only the types this
 # skill's rows actually name; unknown suffixes fall through to a generic rule.
@@ -402,7 +427,9 @@ def discover_matrix(manifest_dir: Path) -> Path | None:
 # Manifest index — what artefacts actually exist
 # --------------------------------------------------------------------------- #
 
-def index_manifest(manifest_dir: Path) -> tuple[dict[str, str], dict[str, list[str]]]:
+def index_manifest(
+    manifest_dir: Path,
+) -> tuple[dict[str, str], dict[str, list[str]], dict[str, list[str]]]:
     """Map ``Type:FullName`` -> the path that evidences it.
 
     Also returns ``container_children``: every key minted for a container
@@ -418,13 +445,23 @@ def index_manifest(manifest_dir: Path) -> tuple[dict[str, str], dict[str, list[s
     children's path (always the one shared container file). No path-based
     sibling sweep is used for this reason. See ``references/gotchas.md``
     Gotcha 17 (rules) and Gotcha 18 (settings entries).
+
+    Also returns ``path_index``: the reverse of ``index``, one relative path
+    (``where``) -> every key minted from it. A file that mints no key (an
+    unrecognised suffix) is simply absent. Used to resolve a row's
+    ``artefact_paths`` cell (Gotcha 19) — a path is not itself a key, so
+    ``artefact_paths`` handling looks up the key(s) a resolved file mints
+    here rather than re-deriving them.
     """
     index: dict[str, str] = {}
     container_children: dict[str, list[str]] = {}
+    path_index: dict[str, list[str]] = {}
 
     def add(mtype: str, name: str, where: str) -> None:
         if mtype and name:
-            index.setdefault(f"{mtype}:{name}", where)
+            key = f"{mtype}:{name}"
+            index.setdefault(key, where)
+            path_index.setdefault(where, []).append(key)
 
     for root, dirs, files in os.walk(manifest_dir):
         dirs[:] = [d for d in dirs if d not in {".git", "__pycache__", "node_modules"}]
@@ -490,7 +527,7 @@ def index_manifest(manifest_dir: Path) -> tuple[dict[str, str], dict[str, list[s
                         f"{entry_type}:{entry}"
                     )
 
-    return index, container_children
+    return index, container_children, path_index
 
 
 def read_manifest_members(path: Path) -> list[tuple[str, str]]:
@@ -583,6 +620,30 @@ def container_key_match(artefact: str, container_children: dict[str, list[str]])
     return None
 
 
+def resolve_artefact_path(entry: str, manifest_dir: Path) -> Path | None:
+    """Resolve one ``artefact_paths`` cell entry to a file under ``manifest_dir``.
+
+    Tried relative to ``manifest_dir`` itself first (the entry is already
+    manifest-relative — the shape used inside a per-step scope). If that
+    misses, tried relative to ``manifest_dir``'s parent — the build-doc-keeper
+    convention writes these cells from the build root
+    (``artefacts/M4-S05/classes/Foo.cls``), which repeats ``--manifest-dir``'s
+    own directory name when ``--manifest-dir`` points straight at that
+    ``artefacts/`` folder rather than one step under it. Whichever candidate
+    is an existing file under ``manifest_dir`` wins; neither is "does not
+    exist" (Gotcha 19).
+    """
+    for candidate in (manifest_dir / entry, manifest_dir.parent / entry):
+        if not candidate.is_file():
+            continue
+        try:
+            candidate.relative_to(manifest_dir)
+        except ValueError:
+            continue
+        return candidate
+    return None
+
+
 # --------------------------------------------------------------------------- #
 # Validation
 # --------------------------------------------------------------------------- #
@@ -623,10 +684,12 @@ def validate(
     repo_root: Path | None = None,
     manifest_dir: Path | None = None,
     container_children: dict[str, list[str]] | None = None,
+    path_index: dict[str, list[str]] | None = None,
 ) -> Result:
     res = Result()
     manifest_index = manifest_index or {}
     container_children = container_children or {}
+    path_index = path_index or {}
 
     if not rows:
         res.warnings.append("matrix has zero data rows")
@@ -681,7 +744,7 @@ def validate(
 
         _validate_build_row(
             res, line_no, label, row, status, manifest_index, repo_root, referenced,
-            manifest_dir, container_children,
+            manifest_dir, container_children, path_index,
         )
 
     # Container/child coverage (RULE_CONTAINERS, SETTINGS_ENTRIES): a row
@@ -753,9 +816,10 @@ def _validate_audit_row(res, line_no, label, row, status) -> None:
 
 def _validate_build_row(
     res, line_no, label, row, status, manifest_index, repo_root, referenced,
-    manifest_dir=None, container_children=None,
+    manifest_dir=None, container_children=None, path_index=None,
 ) -> None:
     container_children = container_children or {}
+    path_index = path_index or {}
     source = clean(row.get("source"))
     step_id = clean(row.get("step_id"))
     artefact = clean(row.get("artefact"))
@@ -887,6 +951,34 @@ def _validate_build_row(
                         k for k in manifest_index
                         if k == artefact or manifest_index[k] == where
                     )
+
+    # 8b — artefact_paths (build-doc-keeper convention, Gotcha 19): `artefact`
+    # stays single-valued so the row still keys on one component, but a
+    # requirement can deliver several files. Each pipe-delimited entry that
+    # resolves to a real file under --manifest-dir marks that file's own
+    # component key(s) covered too, looked up via `path_index` (index_manifest's
+    # path -> key mapping) rather than re-derived here. Container/child
+    # propagation is unchanged: it runs once, after every row, over whatever
+    # this loop and the `artefact` cell both added to `referenced`.
+    if manifest_dir is not None:
+        # Each pipe-delimited piece is cleaned on its own, not just the cell as
+        # a whole — a markdown row backtick-quotes every path individually
+        # (`` `artefacts/.../Foo.cls` | `artefacts/.../Bar.cls` ``), and those
+        # backticks sit inside the cell, not at its outer edges.
+        for raw_entry in split_multi(row.get("artefact_paths") or ""):
+            entry = clean(raw_entry)
+            if not entry:
+                continue
+            if Path(entry).suffix.lower() in NON_METADATA_ARTEFACT_PATH_SUFFIXES:
+                continue
+            resolved = resolve_artefact_path(entry, manifest_dir)
+            if resolved is None:
+                res.warnings.append(
+                    f"row {line_no} ({label}): artefact_paths entry '{entry}' does not "
+                    f"exist under the manifest dir"
+                )
+                continue
+            referenced.update(path_index.get(str(resolved.relative_to(manifest_dir)), []))
 
 
 # --------------------------------------------------------------------------- #
@@ -1071,10 +1163,13 @@ def main() -> int:
         return 0
 
     rows = load_matrix(matrix_path)
-    manifest_index, container_children = index_manifest(manifest_dir) if manifest_dir else ({}, {})
+    manifest_index, container_children, path_index = (
+        index_manifest(manifest_dir) if manifest_dir else ({}, {}, {})
+    )
     res = validate(
         rows, manifest_index=manifest_index, repo_root=repo_root,
         manifest_dir=manifest_dir, container_children=container_children,
+        path_index=path_index,
     )
 
     for warning in res.warnings:
