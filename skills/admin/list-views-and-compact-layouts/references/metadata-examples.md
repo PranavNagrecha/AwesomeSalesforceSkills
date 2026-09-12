@@ -6,8 +6,8 @@ Deployable shapes for the three browse-and-scan metadata types, taken from the M
 
 | Type | package.xml `<name>` | `<members>` syntax | Wildcard `*` | DX source file | API |
 |---|---|---|---|---|---|
-| `ListView` | `ListView` | `Object.ViewUniqueName` (e.g. `Account.AccountTeam`) | **Not supported** | `objects/Case/listViews/Escalations.listView-meta.xml` | 14.0+ custom objects, 17.0+ standard objects |
-| `CompactLayout` | `CompactLayout` | compact layout name | **Supported** | `objects/Case/compactLayouts/Case_Triage.compactLayout-meta.xml` | 29.0+; external objects 42.0+ |
+| `ListView` | `ListView` | `Object.ViewUniqueName` (e.g. `Account.AccountTeam`, `api_meta L2305`, `L2318`) | **Not supported** | `objects/<Object>/listViews/<Name>.listView-meta.xml` (e.g. `objects/Case/listViews/Escalations.listView-meta.xml`) | 14.0+ custom objects, 17.0+ standard objects |
+| `CompactLayout` | `CompactLayout` | `Object.CompactLayoutName` (e.g. `Case.Case_Triage`) — see [Manifest member form](#manifest-member-form) | **Supported** | `objects/<Object>/compactLayouts/<Name>.compactLayout-meta.xml` (e.g. `objects/Case/compactLayouts/Case_Triage.compactLayout-meta.xml`) | 29.0+; external objects 42.0+ |
 | `SearchLayouts` | reached through `CustomObject` | the object name | **Not supported** | inside `objects/Case/Case.object-meta.xml` | 14.0+ custom objects, 27.0+ standard objects except Event and Task |
 | `ProfileSearchLayouts` | reached through `CustomObject` | the object name | — | inside `objects/<Object>/<Object>.object-meta.xml` | 48.0+ for custom objects |
 
@@ -86,6 +86,8 @@ The guide states the retrieval rule plainly: "You can access SearchLayouts only 
 - **`division` applies only when the org uses divisions and the view is scoped to all records.**
 
 ## 3. Compact layout
+
+The file lives at `objects/<Object>/compactLayouts/<Name>.compactLayout-meta.xml` — inside the object directory, never beside it. The guide states the containment rule but not the path: "Compact layouts are defined as part of the custom object, standard object, or external object definition" (`api_meta L43086-43088`), and its only sample nests `<compactLayouts><fullName>testCompactLayout</fullName>` inside a `<CustomObject>` (`api_meta L43147-43151`). That containment is why the package.xml member is **object-qualified** and not the bare `fullName` — see [Manifest member form](#manifest-member-form) before writing a manifest.
 
 `force-app/main/default/objects/Case/compactLayouts/Case_Triage.compactLayout-meta.xml`
 
@@ -166,14 +168,45 @@ How to read it:
         <name>ListView</name>
     </types>
     <types>
-        <members>*</members>
+        <members>Case.Case_Triage</members>
         <name>CompactLayout</name>
     </types>
     <version>62.0</version>
 </Package>
 ```
 
-`ListView` members use `objectName.listViewUniqueName` — the **View Unique Name**, not the label — and the type rejects `*`. `CompactLayout` is the only one of the three that accepts the wildcard. `SearchLayouts` has no members of its own; it rides along with `<name>CustomObject</name>`.
+`ListView` members use `objectName.listViewUniqueName` — the **View Unique Name**, not the label — and the type rejects `*`. `CompactLayout` is the only one of the three that accepts the wildcard (`api_meta L43199-43201`), so `<members>*</members>` is also valid for it; an *enumerated* compact-layout member, however, must be object-qualified. `SearchLayouts` has no members of its own; it rides along with `<name>CustomObject</name>`.
+
+### Manifest member form
+
+**Rule: every enumerated member of a type that lives inside an object is `<Object>.<Name>`.** That is documented for `ListView` — "Note the `objectName.listViewUniqueName` syntax in the `<members>` field" (`api_meta L2318`), with the sample `<members>Account.AccountTeam</members>` (`api_meta L2305`) — and for `CustomField`, "Note the `objectName.field` syntax" (`api_meta L2287`). `CompactLayout` behaves the same way, but the guide never says so.
+
+> UNVERIFIED (2026-09-11): the Metadata API Developer Guide publishes **no** package.xml member-form statement and **no** manifest sample for `CompactLayout`. Its `CompactLayout` topic gives only the containment rule (`api_meta L43086-43088`) and wildcard support (`api_meta L43199-43201`). The object-qualified form below is grounded in a deploy, not in the guide.
+
+The object-qualified form is verified by `sf project deploy start --manifest … --dry-run` against a Summer '26 developer org on 2026-09-09 (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md` § Mock deploy #3). A manifest carrying the bare `fullName`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Case_Intake</members>
+        <name>CompactLayout</name>
+    </types>
+    <version>62.0</version>
+</Package>
+```
+
+failed validation on a source tree that *did* contain `objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml`, with this error:
+
+```text
+An object 'Case_Intake' of type CompactLayout was named in package.xml, but was not found in zipped directory
+```
+
+The same tree, deployed with `--source-dir` instead, validated 12/12 — and the CLI's own component list named the compact layout **`CompactLayout Case.Case_Intake`**. Correcting the member to `Case.Case_Intake` is the fix.
+
+**Why `--source-dir` hides the defect.** `--source-dir` derives the manifest from the files on disk, so it always produces the object-qualified member and can never disagree with the tree. `--manifest` takes the member list as written and matches it against the zip. A build that only ever validates with `--source-dir` will pass every time and still ship a manifest that fails the first time someone runs `--manifest` — the form a metadata-API deploy, a packaging build, or a CI validate step typically uses. Validate both ways before handing the manifest over.
+
+**Does the same trap apply to `ListView`?** The documented member form is identical (`Object.ViewUniqueName`, `api_meta L2318`), so a bare `<members>Escalations_Queue</members>` under `<name>ListView</name>` contradicts the guide for the same reason. UNVERIFIED (2026-09-11): the bare-member `ListView` case was **not** exercised against an org, so the exact CLI error text for it is not claimed here — only the compact-layout error above was observed. The checker treats both types the same on the documented grounds.
 
 ## 6. Retrieve, check, deploy
 
@@ -184,12 +217,18 @@ sf project retrieve start --metadata CustomObject:Case --target-org my-sandbox
 # Or just the browse-and-scan pieces
 sf project retrieve start --metadata "ListView:Case.My_Open_Cases" --metadata CompactLayout --target-org my-sandbox
 
-# Static review before deploying
+# Static review before deploying. Point it at the PROJECT ROOT, not at force-app/,
+# so manifest/package.xml is in scope for the member-form rules CL-MEM-01 / CL-MEM-02.
 python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py \
-    --manifest-dir force-app/main/default
+    --manifest-dir .
 
 # Validate-only, then deploy
 sf project deploy start --source-dir force-app/main/default/objects/Case --target-org my-sandbox --dry-run
+
+# Validate the MANIFEST too: --source-dir derives members from the files and can never
+# disagree with them, so it cannot catch a wrong <members> value. Only --manifest can.
+sf project deploy start --manifest manifest/package.xml --target-org my-sandbox --dry-run
+
 sf project deploy start --source-dir force-app/main/default/objects/Case --target-org my-sandbox
 ```
 

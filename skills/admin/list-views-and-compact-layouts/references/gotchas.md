@@ -107,3 +107,13 @@
 **When it occurs:** The three types have different wildcard rules in the same manifest file. The guide records that `ListView` "doesn't support the wildcard character *", that `SearchLayouts` doesn't either, and that `CompactLayout` does. `ListView` members also need the `objectName.listViewUniqueName` form, so the unique names must be known before the manifest can be written.
 
 **How to avoid:** Retrieve the encompassing object (`<name>CustomObject</name>` with the object as the member) when you want all three together — the guide names this as the easiest way to get a standard object's list views — and reserve the enumerated `ListView` entries for surgical, single-view changes.
+
+---
+
+## A Bare `CompactLayout` Member In package.xml Fails, And `--source-dir` Never Tells You
+
+**What happens:** The compact layout file is in the tree, the tree validates cleanly with `--source-dir`, and the manifest-driven run of the *same* tree fails with `An object 'Case_Intake' of type CompactLayout was named in package.xml, but was not found in zipped directory`. Nothing is missing from the zip; the member name is wrong.
+
+**When it occurs:** The manifest copies the compact layout's `fullName` (`Case_Intake`) straight out of `objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml`. Compact layouts are defined inside the object (`api_meta L43086-43088`), so — like `ListView` (`api_meta L2318`) and `CustomField` (`api_meta L2287`) — the member has to be object-qualified: `Case.Case_Intake`. The guide documents the member form for those two types and not for `CompactLayout`, which is exactly why the bare form looks reasonable. Verified by `sf project deploy start --manifest … --dry-run` against a Summer '26 developer org on 2026-09-09 (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md` § Mock deploy #3); the `--source-dir` run of the identical tree passed 12/12 and the CLI's own component list read `CompactLayout Case.Case_Intake`.
+
+**How to avoid:** Write `<Object>.<Name>` for every enumerated `CompactLayout` and `ListView` member, and validate the manifest the way it will actually be used. `--source-dir` builds its member list *from* the files, so it can never disagree with them and can never surface this class of defect; a change set, a package build, or a CI validate step that runs `--manifest` will. Run both dry-runs, and let `scripts/check_list_views_and_compact_layouts.py` (rules **CL-MEM-01** / **CL-MEM-02**) catch it before either one. The wildcard `<members>*</members>` is still valid for `CompactLayout` (`api_meta L43199-43201`) — it is only the enumerated form that has to be qualified.

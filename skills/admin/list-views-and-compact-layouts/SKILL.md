@@ -1,6 +1,6 @@
 ---
 name: list-views-and-compact-layouts
-description: "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Covers the deployable ListView, CompactLayout, SearchLayouts and ProfileSearchLayouts metadata: filterScope, booleanFilter, sharedTo, compactLayoutAssignment, and the package.xml shapes for each. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel', 'list view missing after sandbox refresh', 'deploy a list view between orgs', 'list view column deployed blank', 'compact layout deploy failed'. NOT for page layouts or record types — use admin/record-types-and-page-layouts. NOT for Dynamic Forms — use admin/dynamic-forms-and-actions."
+description: "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Covers the deployable ListView, CompactLayout, SearchLayouts and ProfileSearchLayouts metadata: filterScope, booleanFilter, sharedTo, compactLayoutAssignment, and the package.xml shapes for each. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel', 'list view missing after sandbox refresh', 'deploy a list view between orgs', 'list view column deployed blank', 'compact layout deploy failed', 'compact layout was named in package.xml but was not found in zipped directory'. NOT for page layouts or record types — use admin/record-types-and-page-layouts. NOT for Dynamic Forms — use admin/dynamic-forms-and-actions."
 category: admin
 salesforce-version: "Spring '25+'"
 well-architected-pillars:
@@ -25,6 +25,8 @@ triggers:
   - "a list view column deployed but renders blank"
   - "search layout keeps re-adding the name field on every deploy"
   - "the compact layout I created is not showing on the record"
+  - "named in package.xml but was not found in zipped directory compact layout"
+  - "compact layout member form package.xml"
 inputs:
   - "target objects, personas, and primary browse or search workflows"
   - "whether the experience is Lightning desktop, mobile, console, or Experience Cloud"
@@ -35,9 +37,9 @@ outputs:
   - "review findings for list-view sprawl, weak filters, and poor highlights design"
   - "configuration worksheet for object-level browse and scan paths"
 dependencies: []
-version: 1.1.1
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-11
 ---
 
 Use this skill when users are losing time before they even open a record. List views, compact layouts, and search layouts all shape how quickly a user can browse, triage, and select the next record, but they solve different problems and should not be treated as interchangeable UI settings.
@@ -65,6 +67,7 @@ Ask these before opening Setup. Each one maps to a behaviour in `references/gotc
 | "Which record types exist, and which compact layout does each one get?" | `compactLayoutAssignment` sits on the object **and** on every record type; an unassigned layout renders nowhere | An assignment map: object default plus one line per record type |
 | "Does any field we want in the highlights panel hold free text?" | Text area, long text area, rich text area, and multi-select picklist cannot go in a compact layout — the deploy fails | A short formula or text field to carry the summary, with the long field left on the record page |
 | "Are these views migrating between orgs, and by what mechanism?" | `ListView` and `SearchLayouts` reject the package.xml wildcard and `ListView` members need `Object.ViewUniqueName` | A manifest that retrieves the encompassing object rather than a wildcard that silently returns nothing |
+| "Which manifest member form does each type need — bare or object-qualified?" | Everything nested in an object takes `<Object>.<Name>`; `CompactLayout` is the one the guide never spells out, so the bare `fullName` looks right and fails the manifest deploy | A manifest written as `Case.Case_Intake`, and a plan to validate it with `--manifest`, not only `--source-dir` |
 | "Who owns list-view creation on this object after go-live?" | Sprawl is a permission decision: "Manage Public List Views" also lets a user edit or delete every public view in the org | A named owner and the narrower "Manage Shared List Views" permission where it fits |
 
 What a proper configuration adds over just doing it: views that survive a sandbox refresh because they are in source, a highlights panel that actually deploys and renders on every record type, and a public-view inventory small enough that the next admin can tell which queue is authoritative.
@@ -98,9 +101,11 @@ None of these is a standalone folder in Metadata API terms. Everything below is 
 | Metadata type | package.xml `<name>` | `<members>` | Wildcard `*` | Key elements |
 |---|---|---|---|---|
 | `ListView` | `ListView` | `Object.ViewUniqueName` | No | `filterScope` (required), `columns`, `filters`, `booleanFilter`, `queue`, `sharedTo`, `label`, `language`, `division` |
-| `CompactLayout` | `CompactLayout` | layout name | Yes | `fields` (ordered by priority), `label` |
+| `CompactLayout` | `CompactLayout` | `Object.LayoutName` | Yes | `fields` (ordered by priority), `label` |
 | `SearchLayouts` | via `CustomObject` | object name | No | `listViewButtons`, `searchResultsAdditionalFields`, `lookupDialogsAdditionalFields`, `customTabListAdditionalFields`, `searchFilterFields`, `massQuickActions`, `excludedStandardButtons` |
 | `ProfileSearchLayouts` | via `CustomObject` | object name | — | `profileName`, `fields` |
+
+Enumerated members for the first two are object-qualified: `Case.My_Open_Cases`, `Case.Case_Intake`. The guide documents that form for `ListView` and not for `CompactLayout` — the compact-layout half is verified by a failed `--manifest` dry-run rather than by documentation (`references/metadata-examples.md` § Manifest member form, and gotcha 10 below).
 
 `filterScope` is the one required element on a list view. Its enumeration is `Everything`, `Mine`, `MineAndMyGroups`, `AssignedToMe` (ServiceAppointment only), `Queue`, `Delegated`, `MyTerritory`, `MyTeamTerritory`, `Team`, `SalesTeam`, and `ScopingRule` — and a `ScopingRule` view only applies its rule when the user selects **Filter by scope** in Lightning Experience (`admin/scoping-rules`). Deployable XML for all four types is in `references/metadata-examples.md`.
 
@@ -154,8 +159,8 @@ A compact layout is inert until something names it. `compactLayoutAssignment` ap
 2. **Fill in `templates/list-views-and-compact-layouts-template.md`.** One row per existing view with audience, filters, columns, share scope, and a keep / merge / retire call; then the compact-layout field set and the assignment per record type. This is the artefact the rest of the workflow edits.
 3. **Harvest tokens before writing any XML.** Copy standard-field `columns` and `searchResultsAdditionalFields` values from the retrieved files. Custom fields use their API name; standard fields do not, and guessing produces a blank column or a failed deploy.
 4. **Author the metadata from `references/metadata-examples.md`.** Take the queue-scoped view, the `booleanFilter` + `sharedTo` view, the compact layout, and the object-level `compactLayoutAssignment` / `recordTypes` / `searchLayouts` block as the starting shapes, and follow the "How to read it" notes rather than editing them by analogy.
-5. **Run the checker on the source tree**: `python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir force-app/main/default`. It flags unfiltered public views, dangling `booleanFilter` indices, `filterScope` / `queue` mismatches, compact layouts holding an unsupported field type, and compact layouts that no `compactLayoutAssignment` names.
-6. **Deploy with `--dry-run` first, then confirm on a phone-width viewport.** Open one record of each record type and one list view per persona; re-run the `ListView` query to confirm `DeveloperName` and `IsSoqlCompatible` match what was authored. Re-check `references/gotchas.md` if the retrieved file differs from what you sent — the search layout's Name field is added back by design.
+5. **Run the checker from the project root** — not from inside `force-app/` — so the manifest is in scope alongside the source: `python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir .` (add `--strict` to fail on WARN and INFO as well as ERROR). It flags unfiltered public views, dangling `booleanFilter` indices, `filterScope` / `queue` mismatches, compact layouts holding an unsupported field type, compact layouts that no `compactLayoutAssignment` names, and the package.xml member form — **CL-MEM-01** (a bare `CompactLayout` / `ListView` member whose file is in the tree) and **CL-MEM-02** (a compact layout no manifest declares).
+6. **Dry-run both ways — `--source-dir` *and* `--manifest` — then confirm on a phone-width viewport.** Open one record of each record type and one list view per persona; re-run the `ListView` query to confirm `DeveloperName` and `IsSoqlCompatible` match what was authored. Re-check `references/gotchas.md` if the retrieved file differs from what you sent — the search layout's Name field is added back by design.
 7. **Record the governance decision.** Who may create public views on this object, which auto-created queue views are authoritative, and when the inventory is reviewed again.
 
 ---
@@ -174,7 +179,8 @@ Run through these before marking work in this area complete:
 - [ ] Every compact layout is named by a `compactLayoutAssignment` on the object or on a record type.
 - [ ] `filterScope` = `Queue` views name a queue that deploys before them, and duplicate auto-created queue views are accounted for.
 - [ ] `booleanFilter` indices resolve to filter line items that exist, in document order.
-- [ ] `scripts/check_list_views_and_compact_layouts.py --manifest-dir <source>` reports no ERROR lines.
+- [ ] Every enumerated `CompactLayout` and `ListView` member in package.xml is object-qualified (`Case.Case_Intake`), and the manifest has been validated with a `--manifest --dry-run`, not only `--source-dir`.
+- [ ] `scripts/check_list_views_and_compact_layouts.py --manifest-dir <project root>` reports no ERROR lines.
 
 ---
 
@@ -191,6 +197,7 @@ Non-obvious platform behaviors that cause real production problems:
 7. **"Visible only to me" views are outside Metadata API entirely** - they never appear in a retrieve, so a clean org diff is not evidence that users kept their views.
 8. **Compact layouts reject four field types at deploy** - text area, long text area, rich text area, and multi-select picklist, which is exactly the shortlist an admin reaches for when asked to show "what this record is about".
 9. **`ListView` and `SearchLayouts` reject the package.xml wildcard while `CompactLayout` accepts it** - the same manifest can therefore ship half the design.
+10. **A bare `CompactLayout` member in package.xml fails the deploy, and `--source-dir` never tells you** - the member has to be `Case.Case_Intake`, not the layout's own `fullName`; `--source-dir` derives the member from the file so it always passes, while `--manifest` fails with "An object 'Case_Intake' of type CompactLayout was named in package.xml, but was not found in zipped directory".
 
 Deeper treatment, with what happens / when it occurs / how to avoid, in `references/gotchas.md`.
 

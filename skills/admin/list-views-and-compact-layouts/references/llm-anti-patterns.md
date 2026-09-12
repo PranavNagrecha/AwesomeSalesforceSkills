@@ -168,3 +168,31 @@ Letting a user share a list view (Lightning Experience, all editions):
 ```
 
 **Detection hint:** If the output answers "let this user share a list view" with `Manage Public List Views`, it is over-granting. Search for `Manage Public List Views` and confirm the user genuinely needs to administer other people's views.
+
+---
+
+## Anti-Pattern 7: Copying the compact layout's `fullName` into package.xml unqualified
+
+**What the LLM generates:** a manifest whose `CompactLayout` member is the layout's own `fullName`, lifted verbatim from the file it just wrote.
+
+```xml
+<types>
+    <members>Case_Intake</members>
+    <name>CompactLayout</name>
+</types>
+```
+
+**Why it happens:** the model has just authored `objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml`, whose `<fullName>` really is `Case_Intake`, and top-level types (`ApexClass`, `Flow`, `PermissionSet`) genuinely do use the bare developer name. The Metadata API Developer Guide reinforces the mistake by never publishing a package.xml member form or a manifest sample for `CompactLayout` — it documents the syntax only for `ListView` (`api_meta L2318`) and `CustomField` (`api_meta L2287`). And if the assistant validates its work with `sf project deploy start --source-dir`, the manifest is never read, so the run passes and the output looks confirmed.
+
+**Correct pattern:**
+
+```xml
+<types>
+    <members>Case.Case_Intake</members>
+    <name>CompactLayout</name>
+</types>
+```
+
+Everything that lives inside an object — `ListView`, `CompactLayout`, `CustomField`, `RecordType`, `BusinessProcess` — takes `<Object>.<Name>`. The bare form fails with `An object 'Case_Intake' of type CompactLayout was named in package.xml, but was not found in zipped directory`, verified by `sf project deploy start --manifest … --dry-run` against a Summer '26 developer org on 2026-09-09 (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md` § Mock deploy #3).
+
+**Detection hint:** grep every `<members>` value under `<name>CompactLayout</name>` or `<name>ListView</name>` for a `.`; a value with no dot that is not `*` is the bug whenever a matching `objects/<Object>/compactLayouts/<name>` or `objects/<Object>/listViews/<name>` file exists. Also check *how* the output says it validated: a `--source-dir` dry-run is not evidence the manifest is correct, because that flag derives the member list from the files instead of reading it. `scripts/check_list_views_and_compact_layouts.py` rule **CL-MEM-01** is this check.
