@@ -262,3 +262,32 @@ next to the exact member shape for every type this skill's rows commonly name (`
 checker's same-name, any-type fallback, so a wrong type spelling recovers — a wrong *shape*
 (folder or object qualifier missing entirely) does not, because the fallback matches on the full name
 string, not just the file stem.
+
+---
+
+## Gotcha 17: Naming the Rule Container Doesn't Look Like It Covers Its Own Rules
+
+**What happens:** A row correctly names the deployable member `check_rtm.py`'s manifest reads and
+`package.xml` and `deploy-order.md` both declare — `AssignmentRules:Case`, the whole container, not
+one rule inside it. The linter still reports every individual rule read out of that same file
+(`AssignmentRule:Case.Case_Intake_Routing`, `AutoResponseRule:Case.Case_Acknowledgement`, ...) as an
+orphan, even though the container row is the *only* correct way to cite a component that has no
+per-rule file to point to (Gotcha 9). The team either files a false coverage-gap ticket or starts
+adding a second, finer-grained row per rule just to quiet the linter — which makes the traceability
+row wrong (`AssignmentRule:Case.Case_Intake_Routing` is not what `package.xml` declares) to make the
+orphan report clean.
+
+**When it occurs:** Any `AssignmentRules` / `AutoResponseRules` / `EscalationRules` component with
+more than one named rule inside its one shared file, once a row exists that correctly names the
+container. Below `check_rtm.py` v1.1.3 the checker's manifest indexer registers two different kinds
+of key from that one file — the container key (`AssignmentRules:Case`) and one singular key per rule
+(`AssignmentRule:Case.<rule fullName>`) — and treated a row's coverage as resolved only against the
+one key it named, so the container row never propagated to the rules the checker itself had derived.
+
+**How to avoid:** Nothing to do in the row — `check_rtm.py` v1.1.3+ resolves container ↔ rule
+coverage by key, not by the file path each key happens to carry: a row naming the container marks
+every rule inside it covered, and a row naming one rule marks that rule and the container covered
+(not its sibling rules — Gotcha 9's per-rule granularity still traces one row to one rule). Naming
+the container remains correct and sufficient whenever no requirement calls out an individual rule.
+If this still surfaces on a repo pinned to an older `check_rtm.py`, that is the signal to update the
+script, not to rewrite the row.

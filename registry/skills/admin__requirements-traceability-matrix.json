@@ -44,9 +44,11 @@
     "21ba040a044bed74711a",
     "22eb17db31091b9f1e48",
     "2327fe46d2414b8ba2eb",
+    "23cbab88e66c5d92e349",
     "24cebf416d75d146ac3e",
     "25379d37bdbe5c9ae28e",
     "253c17eda568b17de521",
+    "25cf43bbf7edbc68f339",
     "25f8695a77235537d586",
     "26afe25ef9bc3b4cfdaf",
     "29cb962776ddd05a3eed",
@@ -88,6 +90,7 @@
     "5b0512f52bd9f3f086ee",
     "5c099223adea74d4a0fa",
     "5c1122315195683e85de",
+    "5c9c5c2efd8eacdafa5a",
     "5d7a5b60ca4b62f6c059",
     "5e23f6a1ee1f75fd97fd",
     "5f03b351cb84cbe88c79",
@@ -123,6 +126,7 @@
     "7e62f8a3900ce3037141",
     "804a126bdf5fc10ef530",
     "8061e827bcb778354b6f",
+    "8084ee086c9bdff6d3d2",
     "81435bb3dde655478229",
     "82c401e3f44b499a9215",
     "855850012dad24cdd29e",
@@ -161,6 +165,7 @@
     "a620f2c8bf4fcc46b15c",
     "a6949ae335f17dae61f3",
     "a8b142ad7d9218ec3f61",
+    "a8f97136113d0fa6ab97",
     "aaa733f77ffeccefbc90",
     "aadfe0d2eab0a8abc6a6",
     "ab88d00a4844eed7c00f",
@@ -241,7 +246,7 @@
     "fce4632e8f705b065e94",
     "ff1cbd597bfb16994968"
   ],
-  "content_hash": "67db031d802845af4976caf516a06dbfb1a513be32d68463dcb5132b3234a169",
+  "content_hash": "ffd2302c7f329d221c329c81d0e9b7365a8484867e5afcc8d46932c812bdda0f",
   "dependencies": [],
   "description": "Use this skill when building or maintaining a Requirements Traceability Matrix (RTM) on a Salesforce project: one row per requirement, columns for source, user-story id(s), test-case id(s), defect id(s), sprint, release, and status. Covers forward traceability (req \u2192 story \u2192 code \u2192 test) and backward traceability (test \u2192 req). Trigger keywords: RTM, requirements traceability matrix, audit trail for salesforce delivery, traceability for steerco, deferred requirement tracking, regulatory traceability. NOT for eliciting the requirements in the first place \u2014 use admin/requirements-gathering-for-sf. NOT for user-story authoring \u2014 use admin/user-story-writing-for-salesforce. NOT for UAT test design \u2014 use admin/uat-test-case-design. NOT for Apex test design \u2014 use apex/test-class-standards. NOT for backlog prioritization \u2014 use admin/moscow-prioritization-for-sf-backlog. More triggers: traceability.md, build-layer traceability, REQ-XXX and FG-XXX id mapping, artefact-to-requirement orphan report, coverage-gap report, check_rtm.py --manifest-dir, owning run-time agent column, design decision ref column, metadata API name in a traceability row.",
   "file_location": "skills/admin/requirements-traceability-matrix",
@@ -301,5 +306,5 @@
   ],
   "updated": "2026-09-12",
   "vector_embedding": null,
-  "version": "1.1.2"
+  "version": "1.1.3"
 }

@@ -55,6 +55,7 @@ per-type suffix table, so it is deliberately not cited per row here.
 | RecordType | ``Object.Record_Type`` | ``objects/Object/recordTypes/Record_Type.recordType-meta.xml`` |
 | CompactLayout | ``Object.Layout_Name`` | ``objects/Object/compactLayouts/Layout_Name.compactLayout-meta.xml`` |
 | BusinessProcess | ``Object.Process_Name`` | ``objects/Object/businessProcesses/Process_Name.businessProcess-meta.xml`` |
+| AssignmentRules / AutoResponseRules / EscalationRules | ``Object`` (container — the ``package.xml``/``deploy-order.md`` form) or ``AssignmentRule``/``AutoResponseRule``/``EscalationRule``:``Object.Rule_Name`` (one rule) | ``assignmentRules/Object.assignmentRules-meta.xml`` etc. — one shared file. A row naming the container covers every rule inside it; a row naming one rule covers that rule and, transitively, the container (Gotcha 17). |
 | EmailTemplate | ``Folder/Name`` | ``email/Folder/Name.email`` + ``email/Folder/Name.email-meta.xml`` |
 | EmailFolder | ``Folder`` | ``email/Folder.emailFolder-meta.xml`` |
 | SharingRules | ``Object`` | ``sharingRules/Object.sharingRules-meta.xml`` |
@@ -396,9 +397,22 @@ def discover_matrix(manifest_dir: Path) -> Path | None:
 # Manifest index — what artefacts actually exist
 # --------------------------------------------------------------------------- #
 
-def index_manifest(manifest_dir: Path) -> dict[str, str]:
-    """Map ``Type:FullName`` -> the path that evidences it."""
+def index_manifest(manifest_dir: Path) -> tuple[dict[str, str], dict[str, list[str]]]:
+    """Map ``Type:FullName`` -> the path that evidences it.
+
+    Also returns ``rule_children``: each rule-container key (``AssignmentRules:
+    Case``) mapped to the singular per-rule keys read out of that same
+    container file (``AssignmentRule:Case.Case_Intake_Routing``, ...).
+    Container/member coverage is resolved from this map, not from the
+    ``where`` path either key happens to carry — ``package.xml`` and the
+    container's own file both mint the *same* container key via
+    ``index.setdefault``, so whichever ``os.walk`` visits first wins that
+    path, and either way it legitimately differs from the per-rule members'
+    path (always the rule file itself). See ``references/gotchas.md``
+    Gotcha 17.
+    """
     index: dict[str, str] = {}
+    rule_children: dict[str, list[str]] = {}
 
     def add(mtype: str, name: str, where: str) -> None:
         if mtype and name:
@@ -452,15 +466,19 @@ def index_manifest(manifest_dir: Path) -> dict[str, str]:
 
             if mtype in RULE_CONTAINERS:
                 singular, child_tag = RULE_CONTAINERS[mtype]
+                container_key = f"{mtype}:{member_name}"
                 for rule_name in read_rule_names(path, child_tag):
                     add(singular, f"{stem}.{rule_name}", rel)
+                    rule_children.setdefault(container_key, []).append(
+                        f"{singular}:{stem}.{rule_name}"
+                    )
 
             if mtype == "Settings" and stem.lower() in SETTINGS_ENTRIES:
                 entry_type, container_tag, name_tag = SETTINGS_ENTRIES[stem.lower()]
                 for entry in read_settings_entries(path, container_tag, name_tag):
                     add(entry_type, entry, rel)
 
-    return index
+    return index, rule_children
 
 
 def read_manifest_members(path: Path) -> list[tuple[str, str]]:
@@ -527,6 +545,29 @@ def resolve_artefact(artefact: str, index: dict[str, str]) -> str | None:
     return None
 
 
+def rule_key_match(artefact: str, rule_children: dict[str, list[str]]) -> str | None:
+    """Return the canonical RULE_CONTAINERS key ``artefact`` names, or None.
+
+    Every rule inside one object's container file (``AssignmentRule:Case.Rule_A``,
+    ``AssignmentRule:Case.Rule_B``) shares that file's evidencing path, so the
+    path-based sweep in ``_validate_build_row`` cannot be used to decide
+    coverage between them — it would mark every sibling rule referenced the
+    moment any one of them, or the container, is named. Container/member
+    coverage is resolved on keys instead: this match feeds the container ↔
+    member expansion in ``validate`` (see its comment and
+    ``references/gotchas.md`` Gotcha 17). Case-insensitive, matching
+    ``resolve_artefact``.
+    """
+    lowered = artefact.lower()
+    for container_key, children in rule_children.items():
+        if container_key.lower() == lowered:
+            return container_key
+        for child_key in children:
+            if child_key.lower() == lowered:
+                return child_key
+    return None
+
+
 # --------------------------------------------------------------------------- #
 # Validation
 # --------------------------------------------------------------------------- #
@@ -566,9 +607,11 @@ def validate(
     manifest_index: dict[str, str] | None = None,
     repo_root: Path | None = None,
     manifest_dir: Path | None = None,
+    rule_children: dict[str, list[str]] | None = None,
 ) -> Result:
     res = Result()
     manifest_index = manifest_index or {}
+    rule_children = rule_children or {}
 
     if not rows:
         res.warnings.append("matrix has zero data rows")
@@ -623,8 +666,21 @@ def validate(
 
         _validate_build_row(
             res, line_no, label, row, status, manifest_index, repo_root, referenced,
-            manifest_dir,
+            manifest_dir, rule_children,
         )
+
+    # Container/singular-rule coverage (RULE_CONTAINERS): a row naming the
+    # container key (`AssignmentRules:Case`) covers every singular member read
+    # out of that same file; a row naming one singular member covers that
+    # member and, since the container's own row need not be repeated per
+    # rule, the container key too. Resolved on keys via `rule_children`, not
+    # on `where` paths — see `index_manifest`'s docstring and
+    # references/gotchas.md Gotcha 17 for why the paths are not comparable.
+    for container_key, children in rule_children.items():
+        if container_key in referenced:
+            referenced.update(children)
+        elif any(child in referenced for child in children):
+            referenced.add(container_key)
 
     # 9 — orphans: indexed components no row names.
     for key, where in sorted(manifest_index.items()):
@@ -681,8 +737,9 @@ def _validate_audit_row(res, line_no, label, row, status) -> None:
 
 def _validate_build_row(
     res, line_no, label, row, status, manifest_index, repo_root, referenced,
-    manifest_dir=None,
+    manifest_dir=None, rule_children=None,
 ) -> None:
+    rule_children = rule_children or {}
     source = clean(row.get("source"))
     step_id = clean(row.get("step_id"))
     artefact = clean(row.get("artefact"))
@@ -799,10 +856,20 @@ def _validate_build_row(
                     f"if the Metadata API cannot carry it"
                 )
             else:
-                referenced.update(
-                    k for k in manifest_index
-                    if k == artefact or manifest_index[k] == where
-                )
+                rule_key = rule_key_match(artefact, rule_children)
+                if rule_key is not None:
+                    # RULE_CONTAINERS: coverage between the container and its
+                    # rules is resolved by key in `validate` (container ->
+                    # every member, one member -> just itself + container),
+                    # not by this path sweep — every rule in the file shares
+                    # one evidencing path, so the sweep would wrongly cover
+                    # every sibling rule the moment any one of them is named.
+                    referenced.add(rule_key)
+                else:
+                    referenced.update(
+                        k for k in manifest_index
+                        if k == artefact or manifest_index[k] == where
+                    )
 
 
 # --------------------------------------------------------------------------- #
@@ -987,10 +1054,10 @@ def main() -> int:
         return 0
 
     rows = load_matrix(matrix_path)
-    manifest_index = index_manifest(manifest_dir) if manifest_dir else {}
+    manifest_index, rule_children = index_manifest(manifest_dir) if manifest_dir else ({}, {})
     res = validate(
         rows, manifest_index=manifest_index, repo_root=repo_root,
-        manifest_dir=manifest_dir,
+        manifest_dir=manifest_dir, rule_children=rule_children,
     )
 
     for warning in res.warnings:
