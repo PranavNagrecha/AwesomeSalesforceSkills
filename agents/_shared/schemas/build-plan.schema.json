@@ -66,6 +66,15 @@
       ],
       "description": "design-only = the build has no org target, so every step must be owned by an agent with requires_org: false (the metadata-builder default owner for metadata step types). org-connected = an org alias is available, so org-requiring designer agents may own steps. Set by scripts/build_plan.py init (--org-alias switches it to org-connected); enforced by validate and by the plan-verifier's executability lens."
     },
+    "scale": {
+      "type": "string",
+      "enum": [
+        "ask",
+        "feature",
+        "project"
+      ],
+      "description": "Section 3.1: how much ceremony the loop spends on this build, not which guarantees it keeps. ask = 1 milestone / 1 step, one clarification round, one verification pass, two human decisions (go, accept). feature = 1 milestone / <= 5 steps, <= 2 verification rounds. project = the full pass in sections 3-5. Chosen at init by the requirements-clarifier's printed sizing rule (metadata types / cited skills with question tables / objects named / integration implied), overridable by the human with init --scale. Optional: absent means project, so plans written before section 3.1 keep their behaviour."
+    },
     "org": {
       "type": "object",
       "additionalProperties": true,

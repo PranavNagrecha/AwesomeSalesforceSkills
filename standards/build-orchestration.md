@@ -174,6 +174,134 @@ Rules:
   it, marks it `blocking` or `informational`, and proposes a default. The human
   may accept all defaults in one action.
 
+## 3.1 Ceremony scales to the ask
+
+§ 3 is one shape and its guarantees are not negotiable. What varies is how much
+ceremony they cost. `plan.json` carries an optional `scale` — `ask`, `feature`
+or `project` — and it selects the ceremony, never the guarantees. A plan with no
+`scale` is `project`, so every build written before this section behaves exactly
+as it did.
+
+### The sizing rule — deterministic, and printed
+
+`requirements-clarifier` takes four counts from `requirement.md` and its Step 2
+searches, before it harvests a question: **D** distinct metadata types implied,
+**S** cited skills carrying a `## Questions to Ask Before Configuring` table
+(after dedupe), **O** distinct objects named, **X** whether an integration or a
+data migration is implied (an external system, an inbound or outbound API, a
+bulk load).
+
+| Signal | `ask` | `feature` | `project` |
+|---|---|---|---|
+| D metadata types | ≤ 2 | 3–6 | ≥ 7 |
+| S skills with a question table | ≤ 3 | 4–8 | ≥ 9 |
+| O objects named | ≤ 1 | 2–3 | ≥ 4 |
+| X integration / migration | no | implied | implied, plus a load or a second system |
+
+The tier is the **highest** tier any single signal reaches — not an average and
+not a vote. Automation on its own never bumps a tier: "write me an Apex trigger"
+is D=2, S≤3, O=1, X=no, and it is an `ask`. Crossing a system boundary always
+does, because a contract with someone else's system is the thing no checker can
+settle. When a count cannot be taken — the requirement names no object, the
+searches are ambiguous about which skills apply — **round up, never down**: an
+over-ceremonied small ask costs minutes, an under-ceremonied large one ships an
+unasked question. A human overrides with `init --scale <tier>`; the override is
+recorded verbatim, and the clarifier still prints the counts that disagreed with
+it. The printed line, quoted into the report rather than recounted:
+
+```text
+scale: ask (D=1 metadata type, S=2 skills with question tables, O=1 object, integration=no; no override)
+```
+
+### The three tiers
+
+| | `ask` | `feature` | `project` |
+|---|---|---|---|
+| Clarification scope | only the cited skills' Questions-to-Ask rows, each with its proposed default; **one** round; ≤ 8 put to the human as blocking | those, plus one question per decision tree whose scope the requirement straddles (`standards/decision-trees/`) | unchanged: every row of every cited skill plus the generic `admin/requirements-gathering-for-sf` set |
+| Plan shape | 1 milestone, 1 step | 1 milestone, ≤ 5 steps | unchanged: 2–6 milestones |
+| Verification | verifier runs **once** — three lenses over the one step, refutation-only; no re-plan round unless a blocker is CRITICAL (below) | ≤ 2 rounds | unchanged |
+| Gates | two human decisions: `go` and `accept` | `clarifications`, `plan`, one `milestone:M1` | unchanged |
+| Documentation | envelopes + one `RUN.md`; `decisions.md` and `traceability.md` keep their `init` stubs | workbook optional, traceability required | unchanged |
+
+The ≤ 8 is **not** a cap on the harvest. § 3's "questions are never capped" and
+the schema's "Never capped" both still hold: every row of every cited question
+table still becomes a record in `clarifications[]`. `scale` decides only how
+many are put to the human *in a round*. At `ask` the informational rows land
+pre-filled from their `proposed_default` with `default_source` set and are
+listed in `CLARIFICATIONS.md` as defaults applied; the blocking ones are asked.
+If more than eight rows are blocking, the requirement was never an `ask`: the
+clarifier re-tiers to `feature`, says so in the sizing line, and drops nothing.
+The bound is a tier test, not a truncation.
+
+**CRITICAL**, at `ask`, means exactly a refutation on the executability or
+grounding lens — an ineligible agent, a skill or template that does not resolve,
+a declared checker not on disk, a decision with no tree branch. Those earn one
+re-plan. A testability refutation on the single step's own tests is fixed in
+place with `amend-step` and recorded there; anything softer is a warning printed
+at the `go` gate for the human to weigh.
+
+### What never changes, at any scale
+
+- Every cited skill is read in full and every row of its Questions-to-Ask table is harvested (§ 1 stage 1).
+- Checkers run verbatim from the build directory, deny-list cleared, never rewritten (§ 5).
+- Every agent run writes a validated envelope under `envelopes/<stage-or-step>/` (§ 2, § 8).
+- `check-outputs` still gates `built`; `tests/<step>/results.json` with `"passed": true` still gates `tested`.
+- `scripts/build_plan.py` is still the only writer of plan state. No hand edit, at any tier.
+- Nothing deploys. `scripts/mock_deploy.py --dry-run` is still the human's own validation and its `summary.md` still the evidence a gate rests on — at `ask` it is the one command `RUN.md` ends with.
+- A gate is still written only by `gate` and decided only by a human. Merging two gate records into one decision does not make an agent the decider of either.
+
+### CLI deltas
+
+- `init --scale ask|feature|project` — optional; unset leaves `scale` absent, and the clarifier's first pass sets it. Echoed on the `init` summary beside `build mode:`.
+- Schema: `scale`, an optional top-level string with enum `["ask","feature","project"]`. No other schema change; absent = `project`.
+- `validate` applies the tier's plan shape as **WARNs only** — a `scale: ask` plan with four steps warns and names the sizing rule. An ERROR here would turn a re-tier into a re-plan.
+- `ensure-gates` reads `scale`: at `ask` it adds `milestone:M1` and **no** `step:` record, because the single step is written `human_gate: false`.
+- `gate go …` and `gate accept …` are aliases legal only when `scale` is `ask`: `go` writes the `clarifications` and `plan` records in one invocation under one `--by` / `--at` / `--notes`; `accept` writes `milestone:M1`. The stored gate **names** are unchanged, so the § 3 name pattern, every approval precondition and every rejection behaviour apply exactly as written.
+- `status` prints `scale: <tier>` on the build-mode line, with `(override)` when a human set it.
+- `render` emits `RUN.md` at the build root when `scale` is `ask`: what was built, every artefact path, the checker commands with their exit codes, the defaults applied and the assumptions they became, the `manual` acceptance lines, and the `mock_deploy.py` command to run next. It is a rendered view — never hand-edited. It is **not** added to `docs{}`, which is `additionalProperties: false`; a `docs.run` key is a separate schema change and is not made here.
+
+### Agent deltas
+
+- `requirements-clarifier` — **Inputs** (accept `scale`); **Step 1** (compute, print, pass to `init`); **Step 4** (`ask`: informational rows pre-filled from their defaults, plus the eight-blocking tier test); **Step 5** (one round); **Step 6** (`ask`: print the single `gate go` command instead of G1-then-`/plan-build`).
+- `build-planner` — **Step 5** ("between two and six" becomes exactly 1 at `ask` and at `feature`); **Step 6** (`ask`: one step, `human_gate: false`); **Step 7** (`ask`: `render` also writes `RUN.md`).
+- `plan-verifier` — **Step 1** (a one-step plan is a plan); **Step 6** (`ask`: one round, refutation-only, the CRITICAL list above, no second pass).
+- `build-doc-keeper` — **Step 4** (`ask`: `RUN.md` rows instead of workbook sections; leave the `decisions.md` / `traceability.md` stubs alone).
+- `milestone-verifier` — **the report** (`ask`: one page, and it is the `accept` gate's evidence).
+- `build-step-runner` and `step-tester` — **no branch.** A step is a step at every scale, and that is the point.
+
+### Worked example — "add a validation rule so Opportunity Amount can't go down after Closed Won"
+
+1. `init` prints `scale: ask (D=1, S=2, O=1, integration=no)`.
+2. Clarifier harvests `admin/validation-rules` and `admin/formula-fields-and-rollups`: five blocking rows — which profiles are exempt (default: none), does it fire on insert as well as update (default: update only), do integration users get the same rule (default: yes), where does the error show (default: on the Amount field), what does it say (default: the skill's worded example). Informational rows land pre-filled.
+3. Human accepts all five defaults in `CLARIFICATIONS.md`, then `ingest-answers`. **[read 1]**
+4. Planner: 1 milestone, 1 step `M1-S01`, type `validation`, agent `metadata-builder`, skill `admin/validation-rules`, outputs the rule XML plus `package.xml`, tests: the skill's checker, always-on `xml` and `manifest`, one `manual` line.
+5. Verifier: three lenses, one round, no blockers; status `verified`.
+6. **Decision 1** — `gate go approve`, after the one-page `PLAN.md`. **[read 2]**
+7. `/run-build-step`: `metadata-builder` writes the rule; `check-outputs` passes; `built`.
+8. `/test-build-step`: the checker runs verbatim; `results.json` `"passed": true`; `tested`.
+9. Doc keeper renders `RUN.md`; milestone verifier writes the one-page report.
+10. **Decision 2** — `gate accept approve`, after `RUN.md`. **[read 3]**
+11. Printed, never run: `python3 scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone M1`.
+
+**Two human decisions, one answer edit, three files read** — `CLARIFICATIONS.md`, `PLAN.md`, `RUN.md`, plus `reports/mock-deploy/<ts>/summary.md` if the human runs the dry run. `examples/builds/case-onboarding/` is the same loop at `scale: project`.
+
+### The driver's log
+
+Every scenario, at every scale, records how the loop was to drive, appended to
+`reports/drivers-log.md`. This is the human-experience grade, and it is the
+evidence this section is working; five lines, one block per run:
+
+```text
+scale:     ask (D=1 S=2 O=1 X=no; override: none)
+questions: 5 asked · 5 defaults accepted · 0 deferred · rounds 1
+gates:     go approved 14:02 · accept approved 14:19 · rejections 0 · re-plans 0
+reads:     CLARIFICATIONS.md, PLAN.md, RUN.md (3 files)
+minutes:   clarify 3 · plan+verify 4 · build+test 6 · read+decide 4 · total 17
+```
+
+A run whose `minutes` or `reads` are out of proportion to its `scale` is a
+defect in this section, not in the driver.
+
 ## 4. Steps and step types
 
 A step is the unit of build. Each step has exactly one owning run-time agent
