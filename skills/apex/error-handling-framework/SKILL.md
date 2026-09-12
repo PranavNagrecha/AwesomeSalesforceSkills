@@ -36,9 +36,9 @@ outputs:
   - "correlation ID threading pattern for Queueable and Batch contexts"
   - "code review findings against the error framework review checklist"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-09-12
 ---
 
 # Error Handling Framework
@@ -59,13 +59,31 @@ Gather this context before designing or reviewing a framework:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before the first class is written. Each one traces to a gotcha in `references/gotchas.md` that the answer prevents; an LLM that skips them produces a framework that logs beautifully on the paths that were never going to lose the log anyway.
+
+| Ask | Why it matters | What a good answer adds | Traces to |
+|---|---|---|---|
+| "Which entry points can die on a governor limit rather than a business error?" | Uncatchable exceptions skip `catch` and `finally` alike, so a `try/catch` logger produces nothing for exactly the failures that most need a record | The list of entry points that need `Database.RaisesPlatformEvents` or a Finalizer instead of a catch block | Gotcha 7 |
+| "Is `ErrorLog__e` set to publish immediately or after commit, and who can show me the event definition?" | The setting lives on the event, not in the Apex, so rollback safety cannot be assessed from the publisher class — and the two behaviors bill to different limits | The durability claim becomes testable, and the DML budget for a bulk failure becomes calculable | Gotcha 10 |
+| "How many failures can one execution realistically produce — one, or the whole scope?" | A 200-record scope where everything fails puts 200 rows through the subscriber, which has its own limits and fails silently when it hits them | The bulk-collection requirement at each call site, and a monitoring threshold on failed deliveries | Gotcha 1 |
+| "What must the payload contain, and is any of it the exception object itself?" | From API 63.0 serializing an exception throws, replacing the failure being logged with a JSON error | A payload built from extracted scalars, and a field-level decision about what is safe to store | Gotcha 8 |
+| "Who starts the async jobs — Apex, or a Flow or Quick Action?" | An invocable entry point has nowhere to put a correlation ID unless the signature is designed for it, and retrofitting the constructor later is a breaking change | The correlation ID source for every async path, decided before the constructors are frozen | Gotcha 6 |
+| "When a write fails, does anything retry — and with the same in-memory records?" | Rolling back to a savepoint leaves Ids on the discarded records, so the obvious retry fails on every row with an error about Ids rather than about the original problem | An explicit re-query step in the retry path, or a decision that there is no retry | Gotcha 11 |
+| "Who reads the error message — a support engineer, or the person who clicked the button?" | The `AuraHandledException` message reaches the browser verbatim, and DML messages carry the org's field names | Two distinct message surfaces: a full record for support, a correlation ID for the user | Gotcha 5 |
+
+What a proper framework adds over scattered try/catch: the failures that destroy transactions are recorded rather than only the ones that were already survivable, every log row can be joined back to the transaction that produced it, and the message the user sees is a deliberate sentence rather than whatever the platform happened to say.
+
+---
+
 ## Core Concepts
 
 ### Concept 1: Log-via-Platform-Event Is the Only Rollback-Safe Logging Pattern
 
-Standard DML (`insert errorLog;`) inside a failing transaction rolls back with the transaction. If a Batch `execute` method throws an uncaught exception, any `Error_Log__c` records inserted during that chunk are lost. Platform Events published via `EventBus.publish()` survive transaction rollback. The event publish is committed even if the surrounding transaction fails, because Platform Event delivery is independent of DML commit. This makes the pattern: catch the exception, build a log Platform Event payload, publish it with `EventBus.publish()`, and let a subscriber trigger insert the `Error_Log__c` record in a fresh transaction. The `Error_Log__c` write happens in the subscriber's independent transaction and cannot be rolled back by the caller's failure.
+Standard DML (`insert errorLog;`) inside a failing transaction rolls back with the transaction. If a Batch `execute` method throws an uncaught exception, any `Error_Log__c` records inserted during that chunk are lost. A Platform Event published via `EventBus.publish()` can survive transaction rollback — but only on the right publish behavior, and the Apex source does not show which one the org configured. The limits table treats the two as different operations: publish-immediately events have their own ceiling of 150 `EventBus.publish` calls per transaction (`apexdev L19598-19599`), while publish-after-commit events count against the transaction's DML statements (`apexdev L19635`). UNVERIFIED (2026-09-12): the Apex Developer Guide does not state what an after-commit event does when the publishing transaction rolls back; the Platform Events Developer Guide is the authority, and the answer decides whether this pattern is durable at all. Read the event definition before claiming rollback safety — see `references/gotchas.md` Gotcha 10. This makes the pattern: catch the exception, build a log Platform Event payload, publish it with `EventBus.publish()`, and let a subscriber trigger insert the `Error_Log__c` record in a fresh transaction. The `Error_Log__c` write happens in the subscriber's independent transaction and cannot be rolled back by the caller's failure.
 
-This is not just a performance optimization — it is the only architecturally correct way to guarantee log durability in Apex.
+This is not a performance optimization but a durability decision, and it is not the only one available: a Finalizer attached to a Queueable runs in a separate Apex and Database transaction (`apexdev L16296-16297`), so DML inside it is outside the range the parent's rollback discards. `references/code-examples.md` builds the whole failure path that way, with no Platform Event definition at all.
 
 ### Concept 2: BatchApexErrorEvent Fires Automatically on Batch Failures
 
@@ -180,6 +198,8 @@ try {
 }
 ```
 
+UNVERIFIED (2026-09-12): the `this(message)` chaining in the `AppException(ErrorCode, String)` constructor above. The Apex Developer Guide documents the four generated constructor forms for an exception class — no-arg, `String`, `Exception`, and `(String, Exception)` (`apexdev L40167-40180`) — and says nothing about chaining into them from a custom constructor. Question to settle in a scratch org before adopting this form: does it compile at API 67.0? `references/code-examples.md` § 2 uses the construct-then-assign form instead, which needs no undocumented behavior.
+
 **Why not the alternative:** Catching `Exception` and parsing `getMessage()` for string keywords is fragile and produces inconsistent behavior when Salesforce changes system exception message text.
 
 ### Pattern 3: BatchApexErrorEvent Subscriber
@@ -271,7 +291,7 @@ System.enqueueJob(new AccountSyncQueueable(accountIds, corrId));
 4. **Implement `ErrorLogger` utility class** — single static method that accepts level, context, exception, correlationId, and optional payload JSON, then calls `EventBus.publish()`. Never do DML inside this class.
 5. **Add `BatchApexErrorEvent` trigger** — subscribe to `BatchApexErrorEvent`, extract `AsyncApexJobId`, `ExceptionType`, `Message`, `StackTrace`, `Phase`, `JobScope`, and route through `ErrorLogger` so batch failures land in the same `Error_Log__c` store.
 6. **Enforce AuraHandledException boundary** — review all Aura/LWC controllers and ensure `AuraHandledException` is constructed only at the controller layer. Service classes should throw `AppException` subclasses. Add this as a code review rule.
-7. **Validate** — run the checker script, confirm `Error_Log__c` records appear after both synchronous failures and batch failures in a sandbox, and verify correlation IDs are populated on async log entries.
+7. **Validate** — run `python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir <source dir>` over the Apex source (exit 0 and `No issues found.`, exit 1 with one `ISSUE:` line per finding; a directory holding no `.cls` or `.trigger` file is a failure, not a pass), then confirm in a sandbox that log records appear after a synchronous failure, a batch failure, and a job killed by a governor limit, and that correlation IDs are populated on the async entries.
 
 ---
 
@@ -294,6 +314,7 @@ System.enqueueJob(new AccountSyncQueueable(accountIds, corrId));
 2. **`BatchApexErrorEvent.JobScope` is truncated when `DoesExceedJobScopeMaxLength` is true** — for large batch scopes the comma-separated ID list exceeds the field character limit. Always check `DoesExceedJobScopeMaxLength` before using `JobScope` and fall back to querying `AsyncApexJob` by `AsyncApexJobId` for the full scope.
 3. **`AuraHandledException` thrown in service classes loses the Apex stack trace** — the platform treats it as an intentional, user-safe error and does not include server-side stack trace in the Lightning response. Developers who throw it in service layers to "pass the message up" end up unable to diagnose where the exception originated in production.
 4. **Typed exceptions require explicit `code` assignment in the constructor** — Apex's generated `Exception` constructors do not call custom constructors. Always use the explicit `AppException(ErrorCode, String)` constructor form; calling `new IntegrationException('message')` without the error code leaves `code` null and breaks downstream branching.
+5. **A limit failure reaches no catch block** — governor-limit terminations are uncatchable, so the logging call in the `catch`, and in the `finally` if there is one, never executes. Batch classes get a platform substitute through `Database.RaisesPlatformEvents`; Queueables get one through a Finalizer; synchronous entry points get neither, and must be budgeted so they cannot reach the ceiling. Depth in `references/gotchas.md` Gotcha 7.
 
 ---
 
@@ -311,10 +332,22 @@ System.enqueueJob(new AccountSyncQueueable(accountIds, corrId));
 
 ---
 
+## Reference Files
+
+| File | Read it when |
+|---|---|
+| `references/code-examples.md` | You are writing the code — a contract-amendment service with a custom exception tree, partial-success DML captured one row per rejection, a Savepoint path, a Queueable whose Finalizer logs through a governor limit, a test class of negative paths, the `-meta.xml` and `package.xml`, deploy order, and how to run the checker |
+| `references/gotchas.md` | Something already behaves oddly — silent subscriber failures, truncated job scope, a log that never appeared, a retry that fails on Ids |
+| `references/llm-anti-patterns.md` | You are reviewing generated code, or checking your own output before handing it over |
+| `references/examples.md` | You want the narrative walk-through of the Platform Event logging path rather than a deployable package |
+| `references/well-architected.md` | You are justifying the design, or need the source behind a specific claim |
+
+---
+
 ## Related Skills
 
 - `apex/exception-handling` — use for individual try/catch block guidance, DmlException semantics, `addError` in triggers, and bulk DML SaveResult patterns. This skill (error-handling-framework) covers the org-wide framework design; exception-handling covers the in-method mechanics.
 - `apex/platform-events-apex` — use for Platform Event publish/subscribe mechanics, trigger ordering, high-volume events, and replay ID management when building the log subscriber.
 - `apex/batch-apex-patterns` — use alongside this skill when the batch job design (scope size, stateful vs stateless, job chaining) needs review alongside the error capture strategy.
 - `apex/async-apex` — use when the right remediation for a failure is moving work to Queueable rather than retrying synchronously.
-- `lwc/error-handling-in-lwc` — use for the LWC-side pattern of receiving structured error responses from Apex and surfacing them in the UI component.
+- `lwc/lwc-error-boundaries` — use for the LWC-side pattern: `errorCallback`, normalising the `error.body` shapes an Apex controller returns, and the fallback UI that keeps one failed tile from blanking the page.

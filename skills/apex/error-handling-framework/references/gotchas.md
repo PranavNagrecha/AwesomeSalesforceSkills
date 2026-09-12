@@ -59,3 +59,53 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any `@InvocableMethod` or `@AuraEnabled` method that starts a Batch job from a Flow, LWC, or Quick Action where the originating record context is meaningful for support diagnosis.
 
 **How to avoid:** Expose the correlation ID as a parameter on the `@InvocableMethod` and require the Flow to pass it (the Flow can compute it from `$Record.Id` concatenated with `NOW()`). Alternatively, store a `Correlation_Id__c` field on the triggering record before the job starts and have the Batch `start()` method read it from the query — making the correlation ID queryable from the source data rather than requiring it to be passed in memory.
+
+---
+
+## Gotcha 7: An Uncatchable Exception Skips Every catch AND finally Block, So the Logger Never Runs
+
+**What happens:** A framework built on `try { ... } catch (Exception e) { ErrorLogger.logException(...); }` produces no log line at all for the most damaging class of failure. The Apex Developer Guide is explicit: some built-in exceptions "can't be caught", `System.LimitException` is the headline example — heap, CPU time, SOQL count, row count — and "when exceptions are uncatchable, catch blocks, as well as finally blocks if any, aren't executed" (`apexdev L39721-39728`). Moving the logging call into `finally` to make it unconditional does not help; `finally` is skipped too. The transaction dies with nothing written, and the only trace is an unhandled-exception email and the debug log.
+
+**When it occurs:** Any long transaction that hits a governor ceiling: a trigger cascading into recursive automation, a batch chunk whose scope is too wide, a Queueable that loops over a large collection. It is exactly the failure mode that most needs a log entry, because the stack trace in the email names the line that tipped over the limit, not the work that consumed it.
+
+**How to avoid:** Do not rely on `catch` for limit failures. Batch Apex has a platform-level answer — events "are also fired for Salesforce Platform internal errors and other uncatchable Apex exceptions such as LimitExceptions" once the class implements `Database.RaisesPlatformEvents` (`apexdev L17855-17866`). Queueable has the Finalizer, which runs in its own transaction after the job ends; the guide's Logging Finalizer example commits its buffered log after a Queueable body that is literally `while (true)`, a deliberate limit error (`apexdev L16364-16430`). For synchronous entry points there is no equivalent: budget the transaction so it cannot reach the ceiling, and treat "no log row but an unhandled-exception email" as the diagnostic signature of this case.
+
+---
+
+## Gotcha 8: JSON.serialize on the Exception Object Throws, Replacing the Real Failure
+
+**What happens:** A logger that builds its payload with `JSON.serialize(ex)` compiles and works up to API 62.0, then stops. "In API version 63.0 and later, JSON serialization of custom exceptions and most built-in exceptions isn't supported. Attempting to serialize an exception throws an error: `Type unsupported in JSON: MyException`" (`apexdev L36804-36806`). The throw happens inside the catch block, so the new exception replaces the original one: the stack trace the support engineer receives points at the logger, and the failure that started it is gone.
+
+**When it occurs:** On the first deploy that raises the class's API version to 63.0 or later — which is a metadata change nobody associates with logging — or the first time an org-wide API version bump touches the logger class. It also occurs in the payload-building convenience wrapper, not just the logger itself: any `JSON.serialize(new Map<String, Object>{ 'exception' => ex })` has an exception inside the graph.
+
+**How to avoid:** Serialize the extracted scalars, never the exception object: `getTypeName()`, `getMessage()`, `getLineNumber()` and `getStackTraceString()` are the documented accessors (`apexdev L39973-39981`), and all four are Strings or Integers. Put those into the payload map. Where a chained cause matters, walk `getCause()` and extract the same four from each level rather than handing the graph to the serializer.
+
+---
+
+## Gotcha 9: A Log Job Enqueued by the Failing Transaction Is Never Processed
+
+**What happens:** "Log it asynchronously so it survives" is a reasonable-sounding instinct that the platform contradicts twice. "If an Apex transaction rolls back, any queueable jobs queued for execution by the transaction aren't processed" (`apexdev L15961`), and future jobs behave the same way: "Future jobs queued by a transaction aren't processed if the transaction rolls back" (`apexdev L18081`). `System.enqueueJob` returns an Id and the code looks like it worked, but the job is discarded with the rest of the transaction. Async is a durability mechanism for work the transaction *succeeds* in scheduling, not an escape hatch from its failure.
+
+**When it occurs:** Any catch block that calls `System.enqueueJob(new LogWriterQueueable(...))` or a `@future` logging method, in a transaction that then rethrows or fails on a later statement. The symptom is a job Id in the debug log with no matching `AsyncApexJob` row.
+
+**How to avoid:** For the rollback-exposed path, the durable options are the Platform Event publisher in this skill's Pattern 1 — subject to Gotcha 10 — and the Finalizer, which is attached to a job that has already started rather than queued by the failing transaction. Where the log write is genuinely conditional on success, keep it async and accept that the failure case is covered elsewhere; just do not describe it as rollback-safe.
+
+---
+
+## Gotcha 10: The Platform Event's Publish Behavior Decides Whether the Log Survives — and Which Limit It Spends
+
+**What happens:** "Publish the log as a Platform Event" is only rollback-safe under one of the two publish behaviors, and the platform quietly bills them to different limits. The Apex Developer Guide's limits table lists "Maximum number of `EventBus.publish` calls for platform events configured to publish immediately — 150" as its own line (`apexdev L19598-19599`), while a separate list of operations that "count against the number of DML statements issued in a request" includes "`EventBus.publish` for platform events configured to publish after commit" (`apexdev L19635`). An event on the after-commit setting therefore consumes one of the transaction's 150 DML statements, and UNVERIFIED (2026-09-12): the Apex Developer Guide does not state what happens to an after-commit event when the publishing transaction rolls back — the name says it, but the behavior belongs to the Platform Events Developer Guide. Question to settle before shipping the pattern: with `publishBehavior` set to `PublishAfterCommit`, does a rolled-back transaction deliver the event?
+
+**When it occurs:** At definition time, invisibly. The publish behavior is a property of the event definition, not of the `EventBus.publish()` call, so nothing in the Apex source shows which mode the org is running. A framework reviewed only as Apex cannot be assessed for rollback safety.
+
+**How to avoid:** Read the event definition, not the publisher class, and record the setting in the framework's design notes. Budget accordingly: an after-commit logger publishing once per failing record competes with the business DML for the same 150 statements, which is the real reason bulk collection before a single publish matters. Prove the choice in a sandbox — force an uncaught exception after the publish and check whether the log row exists.
+
+---
+
+## Gotcha 11: Rolling Back to a Savepoint Leaves Ids on the Records It Discarded
+
+**What happens:** A retry path that re-inserts the same in-memory records after `Database.rollback(sp)` fails on every record. "The ID on an sObject inserted after setting a savepoint isn't cleared after a rollback. Attempting to insert the sObject using the variable" — the records still look inserted to Apex, so the platform treats the insert as invalid (`apexdev L8697`). The list in memory and the database now disagree, and the error message is about Ids rather than about the original failure, which sends the diagnosis in the wrong direction.
+
+**When it occurs:** Any compensating-transaction design: take a savepoint, attempt the write, roll back on failure, then retry with corrected values or write a failure record built from the same sObject instances. It also bites the log write itself when the framework holds a pre-built log sObject from before the rollback.
+
+**How to avoid:** After a rollback, re-query or rebuild the sObjects rather than reusing the instances. Build failure records after the rollback, from the `DmlException` accessors (`getDmlId`, `getDmlMessage`, `getDmlFieldNames`, `getNumDml` — `apexdev L40018-40023`) rather than from the rolled-back instances. And keep savepoint use rare: "Each savepoint you set counts against the governor limit for DML statements" (`apexdev L8691`), so one savepoint per transaction, never one per record.

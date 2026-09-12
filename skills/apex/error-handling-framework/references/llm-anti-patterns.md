@@ -169,6 +169,8 @@ if (!errorsToPublish.isEmpty()) {
 **What the LLM generates:**
 
 ```apex
+try {
+    update records;
 } catch (DmlException e) {
     throw new AuraHandledException(e.getMessage());
 }
@@ -179,6 +181,8 @@ if (!errorsToPublish.isEmpty()) {
 **Correct pattern:**
 
 ```apex
+try {
+    update records;
 } catch (DmlException e) {
     ErrorLogger.logException('ERROR', 'MyController.doWork', e, correlationId, null);
     throw new AuraHandledException(
@@ -223,3 +227,72 @@ trigger BatchApexErrorEventTrigger on BatchApexErrorEvent (after insert) {
 ```
 
 **Detection hint:** Any use of `evt.JobScope` in a `BatchApexErrorEvent` trigger without a preceding `if (evt.DoesExceedJobScopeMaxLength)` guard.
+
+---
+
+## Anti-Pattern 7: Making the Log Write Async to "Survive the Failure"
+
+**What the LLM generates:**
+
+```apex
+try {
+    update amendments;
+} catch (DmlException e) {
+    // "Queue the log so it is written outside this transaction"
+    System.enqueueJob(new LogWriterQueueable(e.getMessage(), e.getStackTraceString()));
+    throw e;
+}
+```
+
+**Why it happens:** The model has learned the correct premise — that DML inside a failing transaction is lost — and reaches for the async primitive it knows, because in most runtimes handing work to a background worker does decouple it from the caller. On this platform it does not. "If an Apex transaction rolls back, any queueable jobs queued for execution by the transaction aren't processed" (`apexdev L15961`), and `@future` behaves identically (`apexdev L18081`). The rethrow on the next line guarantees exactly the rollback that discards the job.
+
+**Correct pattern:**
+
+```apex
+public void execute(QueueableContext ctx) {
+    // Attached before the work, so a failure on any later line still reaches it.
+    System.attachFinalizer(new PostingFinalizer(correlationId));
+    ContractAmendmentService.postLines(lines, correlationId);
+}
+```
+
+The Finalizer is attached to a job that is already running rather than queued by the failing transaction, and it "runs in separate Apex and Database transactions" from the Queueable (`apexdev L16296-16297`).
+
+**Detection hint:** `System.enqueueJob(` or a `@future` call inside a `catch` block, especially one followed by `throw`.
+
+---
+
+## Anti-Pattern 8: Serializing the Exception Object Into the Log Payload
+
+**What the LLM generates:**
+
+```apex
+try {
+    amendmentService.post(lines);
+} catch (AppException ae) {
+    ErrorLogger.logException('ERROR', 'MyService.run', ae, correlationId,
+        JSON.serialize(ae));
+}
+```
+
+**Why it happens:** `JSON.serialize` accepts `Object`, so the call compiles, and "serialize the exception into the payload column" is idiomatic in ecosystems where exceptions are ordinary serializable objects. The model has no reason to know that Salesforce carved out an exception: from API 63.0 onward "JSON serialization of custom exceptions and most built-in exceptions isn't supported" and the attempt throws `Type unsupported in JSON: MyException` (`apexdev L36804-36806`). Because the throw happens inside the catch block, the logger's own failure replaces the failure being logged.
+
+**Correct pattern:**
+
+```apex
+try {
+    amendmentService.post(lines);
+} catch (AppException ae) {
+    Map<String, Object> payload = new Map<String, Object>{
+        'type'  => ae.getTypeName(),
+        'line'  => ae.getLineNumber(),
+        'stack' => ae.getStackTraceString()
+    };
+    ErrorLogger.logException('ERROR', 'MyService.run', ae, correlationId,
+        JSON.serialize(payload));
+}
+```
+
+Every value in that map is a String or Integer taken from the documented exception accessors (`apexdev L39973-39981`), so nothing in the graph is an exception.
+
+**Detection hint:** `JSON.serialize(` whose argument is the caught exception variable, or a map or list literal that contains it.
