@@ -2048,6 +2048,21 @@ def cmd_set_milestone(args: argparse.Namespace) -> int:
     if not report.is_file():
         print(f"WARN report {args.report_path} does not exist under {plan_path.parent} — "
               f"the milestone verifier writes MILESTONE-<id>-REPORT.md before recording it")
+    # F-12 (dry-run v2 report): an 'accepted' milestone is the human's G3 record.
+    # A re-verification records its report but never moves the status away from
+    # accepted; only `gate milestone:<id> reject` undoes a human's approval.
+    if milestone.get("status") == "accepted" and args.status != "accepted":
+        milestone["report_path"] = args.report_path
+        milestone.setdefault("reverifications", []).append(
+            {"at": _now(getattr(args, "at", None)), "verdict": args.status, "report_path": args.report_path})
+        schema = load_schema(args.schema)
+        rc = write_plan(plan_path, plan, Path(args.repo_root), schema)
+        if rc:
+            return rc
+        print(f"milestone {args.milestone}: status stays 'accepted' (human gate on record); "
+              f"re-verification '{args.status}' recorded with report -> {args.report_path}. "
+              f"To withdraw the approval: `build_plan.py gate {plan_path} milestone:{args.milestone} reject --by <who>`")
+        return 0
     milestone["status"] = args.status
     milestone["report_path"] = args.report_path
     schema = load_schema(args.schema)

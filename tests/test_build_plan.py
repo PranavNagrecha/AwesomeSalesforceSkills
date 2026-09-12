@@ -2304,3 +2304,25 @@ def test_documented_step_can_be_rebuilt():
     assert "running" in ALLOWED_TRANSITIONS["documented"]
     assert "running" not in ALLOWED_TRANSITIONS["built"]
     assert "running" not in ALLOWED_TRANSITIONS["tested"]
+
+
+def test_set_milestone_never_moves_an_accepted_milestone(tmp_path, fixture_repo, requirement, capsys):
+    """F-12: an accepted milestone is the human's record; re-verification is appended, not overwritten."""
+    build_dir = tmp_path / "b"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Build B", "--requirement", str(requirement),
+               "--repo-root", str(fixture_repo), "--now", "2026-09-05T09:00:00Z") == 0
+    path = build_dir / "plan.json"
+    plan = json.loads(path.read_text())
+    plan["milestones"] = [{"id": "M1", "title": "Intake", "steps": [],
+                           "acceptance_tests": [{"type": "manifest", "description": "ok"}], "status": "accepted"}]
+    plan["human_gates"].append({"name": "milestone:M1", "status": "approved", "by": "t", "at": "2026-09-05T10:00:00Z"})
+    path.write_text(json.dumps(plan))
+    (build_dir / "reports").mkdir(exist_ok=True)
+    (build_dir / "reports" / "r.md").write_text("# r\n")
+    capsys.readouterr()
+    assert run("set-milestone", str(path), "M1", "--status", "verified", "--report-path", "reports/r.md",
+               "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())["milestones"][0]
+    assert after["status"] == "accepted"
+    assert after["report_path"] == "reports/r.md"
+    assert after["reverifications"][0]["verdict"] == "verified"
