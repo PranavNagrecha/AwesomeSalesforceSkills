@@ -14,6 +14,23 @@ The repo contains:
 
 The goal is to keep new skill creation deterministic, searchable, and self-maintaining.
 
+## Two Ways In — Pick One Before Reading Further
+
+1. **You were asked to make a Salesforce change** (a field, a flow, a rule, an
+   integration, a whole process) for a client or an org. Do NOT follow the
+   skill-authoring workflow below. Read `standards/build-orchestration.md` § 3.1
+   and start the requirement-to-build loop at the tier its sizing rule prints
+   (`python3 scripts/build_plan.py init --help`, or `/build-from-requirements`
+   in Claude Code). The loop asks the questions the skills say must be asked,
+   plans, verifies, builds into `.sfskills/builds/<id>/`, runs every skill's
+   checker, and stops at human gates; it never deploys. The smallest worked
+   example is `examples/builds/opp-amount-lock/` (one ask → `RUN.md` → two
+   gates); `examples/builds/cold-start-lead-source/README.md` shows what a
+   session that skipped the loop produced and what it missed.
+2. **You are adding to or fixing the library itself** (a skill, a checker, an
+   agent, a template). Follow "Required Workflow For Skill Creation Or Skill
+   Updates" below.
+
 ## Canonical Rules
 
 - `SKILL.md` frontmatter is the canonical metadata source for each skill.

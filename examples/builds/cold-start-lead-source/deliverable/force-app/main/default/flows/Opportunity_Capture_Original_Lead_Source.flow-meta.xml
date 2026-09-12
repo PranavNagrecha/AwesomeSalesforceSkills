@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Opportunity_Capture_Original_Lead_Source
+
+    Adapted from templates/flow/RecordTriggered_Skeleton.flow-meta.xml (SfSkills repo).
+    Before-save, single-object, field-update-only flow — per
+    standards/decision-trees/automation-selection.md Q1 -> Q2, this is the correct (and cheapest)
+    automation surface: "Does the logic run in under ~10s and touch only fields on the record
+    itself? Yes -> Before-save record-triggered Flow."
+
+    Purpose: snapshot Opportunity.LeadSource into Opportunity.Original_Lead_Source__c exactly once,
+    at Opportunity creation, so the value is preserved even if a rep later edits the standard
+    Lead Source field. Fires regardless of how the Opportunity was created (Lead conversion is the
+    expected path, but the guard is creation-time, not conversion-specific, because Opportunity has
+    no standard lookup back to the Lead it was converted from).
+
+    Entry criteria (on the start element, evaluated before the interview runs):
+      - LeadSource is not null (nothing to capture otherwise)
+      - Original_Lead_Source__c is null (never overwrite an existing snapshot)
+    recordTriggerType Create only: this is a create-time snapshot, not a running sync.
+-->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <assignments>
+        <name>Set_Original_Lead_Source</name>
+        <label>Set Original Lead Source</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Original_Lead_Source__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.LeadSource</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>Captures Opportunity Lead Source into Original_Lead_Source__c once, at creation, so marketing attribution survives later edits to the standard Lead Source field.</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity Capture Original Lead Source {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity - Capture Original Lead Source</label>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>DefaultMode</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Set_Original_Lead_Source</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>LeadSource</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Original_Lead_Source__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+    </start>
+    <status>Draft</status>
+</Flow>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Original_Lead_Source__c</fullName>
+    <description>Snapshot of the Opportunity's Lead Source at the moment the record was created (including via Lead conversion). Owner: Marketing Ops. Populated once by the "Opportunity - Capture Original Lead Source" before-save flow and never updated again — use this field, not the standard Lead Source field, for source-attribution reporting.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Read-only historical record of the Lead Source captured when this Opportunity was created. The standard Lead Source field above can be changed later by reps; this field cannot. Marketing reporting should use this field.</inlineHelpText>
+    <label>Original Lead Source</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
