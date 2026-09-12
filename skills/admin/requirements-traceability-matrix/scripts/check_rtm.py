@@ -61,6 +61,7 @@ per-type suffix table, so it is deliberately not cited per row here.
 | SharingRules | ``Object`` | ``sharingRules/Object.sharingRules-meta.xml`` |
 | Layout | ``Object-Layout Name`` (spaces legal) | ``layouts/Object-Layout Name.layout-meta.xml`` |
 | Settings | e.g. ``Case`` | ``settings/Case.settings-meta.xml`` |
+| Settings (entry-bearing — currently ``BusinessHours``) | ``Settings:BusinessHours`` (container) or ``BusinessHoursEntry:<calendar name>`` (one entry) | ``settings/BusinessHours.settings-meta.xml`` — one shared file holding every entry. A row naming the container covers every entry inside it; a row naming one entry covers that entry and, transitively, the container (Gotcha 18, same key-based resolution as Gotcha 17). |
 | StandardValueSet | e.g. ``Industry`` | ``standardValueSets/Industry.standardValueSet-meta.xml`` |
 | Queue / Group | bare name | ``queues/Name.queue-meta.xml`` / ``groups/Name.group-meta.xml`` |
 | PermissionSet / PermissionSetGroup / Profile | bare name, may contain spaces | ``permissionsets/Name.permissionset-meta.xml`` / ``profiles/System Administrator.profile-meta.xml`` |
@@ -209,6 +210,10 @@ RULE_CONTAINERS = {
 # Settings components hold named entries in ONE file per settings component
 # (api_meta.txt L111264-111273): every calendar in the org lives in
 # settings/businessHours.settings. Index the entries so a row can name one.
+# Same container/child shape as RULE_CONTAINERS above (one shared file mints
+# several derived keys) — both feed the same `container_children` map in
+# `index_manifest`, so container <-> child coverage resolves identically for
+# either deriver (Gotcha 18).
 # settings stem (lowercased) -> (entry type, container tag, name tag)
 SETTINGS_ENTRIES = {
     "businesshours": ("BusinessHoursEntry", "businessHours", "name"),
@@ -400,19 +405,22 @@ def discover_matrix(manifest_dir: Path) -> Path | None:
 def index_manifest(manifest_dir: Path) -> tuple[dict[str, str], dict[str, list[str]]]:
     """Map ``Type:FullName`` -> the path that evidences it.
 
-    Also returns ``rule_children``: each rule-container key (``AssignmentRules:
-    Case``) mapped to the singular per-rule keys read out of that same
-    container file (``AssignmentRule:Case.Case_Intake_Routing``, ...).
-    Container/member coverage is resolved from this map, not from the
-    ``where`` path either key happens to carry — ``package.xml`` and the
-    container's own file both mint the *same* container key via
-    ``index.setdefault``, so whichever ``os.walk`` visits first wins that
-    path, and either way it legitimately differs from the per-rule members'
-    path (always the rule file itself). See ``references/gotchas.md``
-    Gotcha 17.
+    Also returns ``container_children``: every key minted for a container
+    whose file also mints per-member child keys — rule containers
+    (``AssignmentRules:Case`` -> ``AssignmentRule:Case.Case_Intake_Routing``,
+    ...; RULE_CONTAINERS) and entry-bearing settings components
+    (``Settings:BusinessHours`` -> ``BusinessHoursEntry:US Support``, ...;
+    SETTINGS_ENTRIES) both populate the same map. Container/child coverage is
+    resolved from this map, not from the ``where`` path either key happens to
+    carry — ``package.xml`` and the container's own file both mint the *same*
+    container key via ``index.setdefault``, so whichever ``os.walk`` visits
+    first wins that path, and either way it legitimately differs from the
+    children's path (always the one shared container file). No path-based
+    sibling sweep is used for this reason. See ``references/gotchas.md``
+    Gotcha 17 (rules) and Gotcha 18 (settings entries).
     """
     index: dict[str, str] = {}
-    rule_children: dict[str, list[str]] = {}
+    container_children: dict[str, list[str]] = {}
 
     def add(mtype: str, name: str, where: str) -> None:
         if mtype and name:
@@ -469,16 +477,20 @@ def index_manifest(manifest_dir: Path) -> tuple[dict[str, str], dict[str, list[s
                 container_key = f"{mtype}:{member_name}"
                 for rule_name in read_rule_names(path, child_tag):
                     add(singular, f"{stem}.{rule_name}", rel)
-                    rule_children.setdefault(container_key, []).append(
+                    container_children.setdefault(container_key, []).append(
                         f"{singular}:{stem}.{rule_name}"
                     )
 
             if mtype == "Settings" and stem.lower() in SETTINGS_ENTRIES:
                 entry_type, container_tag, name_tag = SETTINGS_ENTRIES[stem.lower()]
+                container_key = f"{mtype}:{member_name}"
                 for entry in read_settings_entries(path, container_tag, name_tag):
                     add(entry_type, entry, rel)
+                    container_children.setdefault(container_key, []).append(
+                        f"{entry_type}:{entry}"
+                    )
 
-    return index, rule_children
+    return index, container_children
 
 
 def read_manifest_members(path: Path) -> list[tuple[str, str]]:
@@ -545,21 +557,24 @@ def resolve_artefact(artefact: str, index: dict[str, str]) -> str | None:
     return None
 
 
-def rule_key_match(artefact: str, rule_children: dict[str, list[str]]) -> str | None:
-    """Return the canonical RULE_CONTAINERS key ``artefact`` names, or None.
+def container_key_match(artefact: str, container_children: dict[str, list[str]]) -> str | None:
+    """Return the canonical container key ``artefact`` names, or None.
 
-    Every rule inside one object's container file (``AssignmentRule:Case.Rule_A``,
-    ``AssignmentRule:Case.Rule_B``) shares that file's evidencing path, so the
+    Covers both derivers that mint several keys out of one shared file:
+    RULE_CONTAINERS (``AssignmentRule:Case.Rule_A``, ``AssignmentRule:Case.Rule_B``
+    inside ``AssignmentRules:Case``) and SETTINGS_ENTRIES (``BusinessHoursEntry:
+    US Support`` inside ``Settings:BusinessHours``). Every child sharing a
+    container's file also shares that file's evidencing path, so the
     path-based sweep in ``_validate_build_row`` cannot be used to decide
-    coverage between them — it would mark every sibling rule referenced the
-    moment any one of them, or the container, is named. Container/member
+    coverage between them — it would mark every sibling child referenced the
+    moment any one of them, or the container, is named. Container/child
     coverage is resolved on keys instead: this match feeds the container ↔
-    member expansion in ``validate`` (see its comment and
-    ``references/gotchas.md`` Gotcha 17). Case-insensitive, matching
-    ``resolve_artefact``.
+    child expansion in ``validate`` (see its comment and
+    ``references/gotchas.md`` Gotcha 17 / Gotcha 18). Case-insensitive,
+    matching ``resolve_artefact``.
     """
     lowered = artefact.lower()
-    for container_key, children in rule_children.items():
+    for container_key, children in container_children.items():
         if container_key.lower() == lowered:
             return container_key
         for child_key in children:
@@ -607,11 +622,11 @@ def validate(
     manifest_index: dict[str, str] | None = None,
     repo_root: Path | None = None,
     manifest_dir: Path | None = None,
-    rule_children: dict[str, list[str]] | None = None,
+    container_children: dict[str, list[str]] | None = None,
 ) -> Result:
     res = Result()
     manifest_index = manifest_index or {}
-    rule_children = rule_children or {}
+    container_children = container_children or {}
 
     if not rows:
         res.warnings.append("matrix has zero data rows")
@@ -666,17 +681,18 @@ def validate(
 
         _validate_build_row(
             res, line_no, label, row, status, manifest_index, repo_root, referenced,
-            manifest_dir, rule_children,
+            manifest_dir, container_children,
         )
 
-    # Container/singular-rule coverage (RULE_CONTAINERS): a row naming the
-    # container key (`AssignmentRules:Case`) covers every singular member read
-    # out of that same file; a row naming one singular member covers that
-    # member and, since the container's own row need not be repeated per
-    # rule, the container key too. Resolved on keys via `rule_children`, not
-    # on `where` paths — see `index_manifest`'s docstring and
-    # references/gotchas.md Gotcha 17 for why the paths are not comparable.
-    for container_key, children in rule_children.items():
+    # Container/child coverage (RULE_CONTAINERS, SETTINGS_ENTRIES): a row
+    # naming the container key (`AssignmentRules:Case`, `Settings:
+    # BusinessHours`) covers every child key read out of that same file; a
+    # row naming one child covers that child and, since the container's own
+    # row need not be repeated per child, the container key too. Resolved on
+    # keys via `container_children`, not on `where` paths — see
+    # `index_manifest`'s docstring and references/gotchas.md Gotcha 17 /
+    # Gotcha 18 for why the paths are not comparable.
+    for container_key, children in container_children.items():
         if container_key in referenced:
             referenced.update(children)
         elif any(child in referenced for child in children):
@@ -737,9 +753,9 @@ def _validate_audit_row(res, line_no, label, row, status) -> None:
 
 def _validate_build_row(
     res, line_no, label, row, status, manifest_index, repo_root, referenced,
-    manifest_dir=None, rule_children=None,
+    manifest_dir=None, container_children=None,
 ) -> None:
-    rule_children = rule_children or {}
+    container_children = container_children or {}
     source = clean(row.get("source"))
     step_id = clean(row.get("step_id"))
     artefact = clean(row.get("artefact"))
@@ -856,15 +872,16 @@ def _validate_build_row(
                     f"if the Metadata API cannot carry it"
                 )
             else:
-                rule_key = rule_key_match(artefact, rule_children)
-                if rule_key is not None:
-                    # RULE_CONTAINERS: coverage between the container and its
-                    # rules is resolved by key in `validate` (container ->
-                    # every member, one member -> just itself + container),
-                    # not by this path sweep — every rule in the file shares
-                    # one evidencing path, so the sweep would wrongly cover
-                    # every sibling rule the moment any one of them is named.
-                    referenced.add(rule_key)
+                container_key = container_key_match(artefact, container_children)
+                if container_key is not None:
+                    # RULE_CONTAINERS / SETTINGS_ENTRIES: coverage between a
+                    # container and its children is resolved by key in
+                    # `validate` (container -> every child, one child -> just
+                    # itself + container), not by this path sweep — every
+                    # child sharing one container file shares one evidencing
+                    # path, so the sweep would wrongly cover every sibling
+                    # child the moment any one of them is named.
+                    referenced.add(container_key)
                 else:
                     referenced.update(
                         k for k in manifest_index
@@ -1054,10 +1071,10 @@ def main() -> int:
         return 0
 
     rows = load_matrix(matrix_path)
-    manifest_index, rule_children = index_manifest(manifest_dir) if manifest_dir else ({}, {})
+    manifest_index, container_children = index_manifest(manifest_dir) if manifest_dir else ({}, {})
     res = validate(
         rows, manifest_index=manifest_index, repo_root=repo_root,
-        manifest_dir=manifest_dir, rule_children=rule_children,
+        manifest_dir=manifest_dir, container_children=container_children,
     )
 
     for warning in res.warnings:

@@ -291,3 +291,30 @@ every rule inside it covered, and a row naming one rule marks that rule and the 
 the container remains correct and sufficient whenever no requirement calls out an individual rule.
 If this still surfaces on a repo pinned to an older `check_rtm.py`, that is the signal to update the
 script, not to rewrite the row.
+
+---
+
+## Gotcha 18: Naming the Settings Container Doesn't Look Like It Covers Its Own Entries
+
+**What happens:** A row correctly names the deployable member — `Settings:BusinessHours`, the whole
+settings component, not one calendar inside it. The linter still reports every individual entry read
+out of that same file (`BusinessHoursEntry:US Support`, `BusinessHoursEntry:EMEA Support`, ...) as an
+orphan, because `SETTINGS_ENTRIES` derives one child key per entry from the settings component's
+single shared file and `package.xml`/the row both name only the container. The team either files a
+false orphan ticket or starts adding a row per calendar just to quiet the linter, which makes the row
+wrong (`BusinessHoursEntry:US Support` is not what `package.xml` declares) to make the orphan report
+clean.
+
+**When it occurs:** Any settings component indexed in `SETTINGS_ENTRIES` (currently `BusinessHours`)
+with more than one named entry inside its one shared file, once a row exists that correctly names the
+container. This is the same failure shape as Gotcha 17, one deriver over: below `check_rtm.py` v1.1.4
+the checker's manifest indexer minted the per-entry keys but never fed them into the same
+container/child coverage map the rule containers already used, so a container row never propagated to
+the entries the checker itself had derived.
+
+**How to avoid:** Nothing to do in the row — `check_rtm.py` v1.1.4+ resolves container ↔ entry
+coverage by key, exactly as it does for rule containers (Gotcha 17): a row naming the container marks
+every entry inside it covered, and a row naming one entry marks that entry and the container covered
+(not its sibling entries). Naming the container remains correct and sufficient whenever no
+requirement calls out an individual calendar. If this still surfaces on a repo pinned to an older
+`check_rtm.py`, that is the signal to update the script, not to rewrite the row.
