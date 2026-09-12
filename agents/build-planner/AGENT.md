@@ -405,6 +405,8 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 | `REFUSAL_COMPETING_ARTIFACT` | The build directory holds a plan at `status: verified`, `approved`, `building` or `done` — re-planning in place would discard a recorded gate. `build_plan.py gate <plan> plan reject --by <name> --notes <reason>` is what opens the way to a re-plan — it archives the current body into `history[]` and sets the status this agent accepts, and the version increments on the `set-plan` that follows; ask the human to record the rejection first. A plan at `plan-rejected` is the re-plan case and is planned, not refused. |
 | `REFUSAL_OVER_SCOPE_LIMIT` | The answered requirement would need more than six milestones — split it into more than one build rather than writing a plan no gate can accept. |
 
+Pending-step corrections discovered mid-build — a wrong output path, a manifest member typo, a spaced `inputs{}` value, a checker missing from `acceptance_tests[]` — go through `build_plan.py amend-step <plan> <step-id> --file <json> --by <who> --reason "<why>"`, not a re-plan: it is not this agent's tool to reach for, and it exists precisely so a `building`/`approved` plan's already-gated milestones are not disturbed by a single step's field-level fix.
+
 ---
 
 ## What This Agent Does NOT Do

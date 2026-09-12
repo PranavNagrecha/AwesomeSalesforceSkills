@@ -664,6 +664,43 @@
         }
       }
     },
+    "amendment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at",
+        "by",
+        "reason",
+        "fields",
+        "before"
+      ],
+      "description": "Section 8: one `build_plan.py amend-step` correction to a pending/blocked step's declared fields, mid-build. Records who, when, why, which fields changed and their prior values so a rebuilt step's history is not lost.",
+      "properties": {
+        "at": {
+          "type": "string"
+        },
+        "by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "before": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "The amended fields' prior values, keyed by field name. A field absent here was absent on the step before the amendment."
+        }
+      }
+    },
     "run": {
       "type": "object",
       "additionalProperties": false,
@@ -830,6 +867,17 @@
         "blocked_reason": {
           "type": "string",
           "description": "Required when status is blocked. 'skill-gap' is the reserved reason for section 8's deepen-a-skill signal."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Free-form note on the step. Amendable via `build_plan.py amend-step`."
+        },
+        "amendments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/amendment"
+          },
+          "description": "History of `build_plan.py amend-step` corrections to this step's declared fields, oldest first. Never written by hand."
         }
       }
     }

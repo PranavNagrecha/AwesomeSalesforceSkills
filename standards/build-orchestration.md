@@ -48,9 +48,31 @@ directly, then records its path with `build_plan.py set-milestone <plan> <Mk>
 
 No agent hand-edits `plan.json` either. Every field an agent owns has a
 subcommand that writes it (§ 8) — `set-clarifications`, `set-plan`,
-`set-verification`, `set-milestone`, `set-status`, `gate`, `ensure-gates`. A
-surgical JSON edit is a defect, not a shortcut: it is how a plan acquires a
-shape the validator never saw.
+`set-verification`, `set-milestone`, `set-status`, `amend-step`, `gate`,
+`ensure-gates`. A surgical JSON edit is a defect, not a shortcut: it is how a
+plan acquires a shape the validator never saw.
+
+`set-plan` refuses to run while the build is `verified`, `approved`, `building`
+or `done` (`PLAN_FROZEN_STATUSES`) — replacing scope/milestones/steps wholesale
+mid-build would discard recorded gates. That leaves no writer for the ordinary
+case of a pending step's declared fields turning out to be wrong once the build
+is under way (a missing output path, a manifest member typo in a test
+description, a spaced value in `inputs{}`, a checker to add to
+`acceptance_tests[]`). `build_plan.py amend-step <plan> <step-id> --file
+<amendment.json> --by <who> --reason "<why>"` is that writer: it replaces one
+or more of `inputs`, `outputs`, `acceptance_tests`, `skills`, `templates`,
+`decision_trees`, `notes`, `title` on a single step, wholesale per field (no
+merge). It is scoped narrowly on purpose — refused unless the build status is
+`building` or `approved`, the step's own status is still `pending` or
+`blocked` (a step that has already run is rebuilt via `documented` ->
+`running`, or reset via `failed` -> `pending`, never amended in place), and the
+step's own `step:<id>` gate, if it carries one, is not yet `approved` (an
+amendment would invalidate what the human signed off; reject that gate first).
+It **never** touches `human_gates[]`, a step's `status`, or `runs[]` — those
+stay `gate`'s and `set-status`'s alone — and it records what changed (who,
+when, why, which fields, their prior values) in the step's `amendments[]`
+before re-validating the whole plan, refusing the write if the result carries
+any ERROR.
 
 ### Build mode
 
@@ -433,11 +455,12 @@ keeper. Fable is never invoked at run time.
 
 - `scripts/build_plan.py` (stdlib-only) is the single writer of plan state,
   derived views and gate records. Its subcommands: `init`, `validate`,
-  `render`, `ingest-answers`, `next`, `set-status`, `check-outputs`, `gate`,
-  `status`, `ensure-gates`, `set-clarifications` (which also takes `--summary
-  "<paragraph>"`, the only writer of `requirement.summary`), `set-plan`,
-  `set-verification`, `set-milestone`, `export`. Agents call it; they do not
-  re-implement it, and they do not edit `plan.json` by hand.
+  `render`, `ingest-answers`, `next`, `set-status`, `amend-step`,
+  `check-outputs`, `gate`, `status`, `ensure-gates`, `set-clarifications`
+  (which also takes `--summary "<paragraph>"`, the only writer of
+  `requirement.summary`), `set-plan`, `set-verification`, `set-milestone`,
+  `export`. Agents call it; they do not re-implement it, and they do not edit
+  `plan.json` by hand.
 - `python3 scripts/validate_envelope.py <envelope.json>` validates an agent's
   output envelope against `agents/_shared/schemas/output-envelope.schema.json`
   with its `urn:` sub-schema refs resolved (bare `jsonschema` cannot resolve

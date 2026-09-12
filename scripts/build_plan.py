@@ -1146,6 +1146,17 @@ def render_plan_md(plan: dict) -> str:
         if not steps_by_milestone.get(mid):
             out.append("| — | _no steps_ | — | — | — | — | — | — |")
         out.append("")
+        amended = [s for s in steps_by_milestone.get(mid, []) if s.get("amendments")]
+        if amended:
+            out.append("Amended (via `build_plan.py amend-step`):")
+            out.append("")
+            for s in amended:
+                for a in s["amendments"]:
+                    field_list = ", ".join(a.get("fields") or [])
+                    out.append(f"- `{s.get('id')}` — {field_list} "
+                               f"by {_cell(a.get('by'))} at {_cell(a.get('at'))}: "
+                               f"{_cell(a.get('reason'))}")
+            out.append("")
         out.append("Milestone acceptance tests:")
         out.append("")
         out.append(_bullets(
@@ -1964,6 +1975,126 @@ def cmd_set_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+# Fields `amend-step` may replace on one step. Deliberately a subset of the
+# step object: `id`, `milestone`, `type`, `agent`, `status`, `depends_on`,
+# `runs`, `human_gate` and `blocked_reason` stay off-limits — those are
+# structural (id/milestone/type/agent), owned by another writer (`status` and
+# `runs` by `set-status`, `blocked_reason` alongside it), or would let an
+# amendment silently rewire the DAG (`depends_on`) or the gate a human already
+# saw (`human_gate`). Only the declarative content a runner/tester actually
+# reads is amendable.
+AMENDABLE_STEP_FIELDS = (
+    "inputs", "outputs", "acceptance_tests", "skills", "templates",
+    "decision_trees", "notes", "title",
+)
+
+# Build statuses `amend-step` accepts. Contract § 3: a plan not yet approved is
+# still a draft and is corrected with `set-plan`; one that is `verified` is
+# corrected the same way (re-planning discards no gate yet); `done` has no
+# pending steps left to correct. `building` and `approved` are the window
+# where steps exist, some are still `pending`/`blocked`, and `set-plan` is
+# refused (`PLAN_FROZEN_STATUSES`) because rewriting the whole plan would
+# discard recorded gates — that is exactly the gap `amend-step` fills.
+AMEND_STEP_PLAN_STATUSES = {"building", "approved"}
+
+# Step statuses `amend-step` accepts: the step has not started running yet
+# (contract § 4's `pending`), or was parked without having run
+# (`blocked`). Anything from `running` on has already produced runs, artefacts
+# or test results an amendment would silently orphan.
+AMEND_STEP_STATUSES = {"pending", "blocked"}
+
+
+def cmd_amend_step(args: argparse.Namespace) -> int:
+    plan_path = Path(args.plan)
+    schema = load_schema(args.schema)
+    plan = read_plan_on_schema(plan_path, schema)
+
+    status = plan.get("status")
+    if status not in AMEND_STEP_PLAN_STATUSES:
+        _die(f"refusing to amend a step while the build status is '{status}' — amend-step only "
+             f"corrects a pending/blocked step's declared fields mid-build (status 'building' or "
+             f"'approved'); a '{status}' plan has no in-flight steps to correct this way — "
+             f"re-plan it with `set-plan` instead")
+
+    step = next((s for s in plan.get("steps") or [] if s.get("id") == args.step_id), None)
+    if step is None:
+        _die(f"no step {args.step_id!r} in {plan_path}")
+
+    step_status = step.get("status")
+    if step_status not in AMEND_STEP_STATUSES:
+        if step_status == "documented":
+            _die(f"{args.step_id} is 'documented' — amend-step only corrects a step that has not "
+                 f"run yet; rebuild it first (`build_plan.py set-status {args.plan} "
+                 f"{args.step_id} running` — contract § 8's documented -> running rebuild path), "
+                 f"then amend the re-opened step")
+        if step_status == "failed":
+            _die(f"{args.step_id} is 'failed' — reset it first (`build_plan.py set-status "
+                 f"{args.plan} {args.step_id} pending`), then amend it")
+        _die(f"{args.step_id} is '{step_status}' — amend-step only corrects a step that has not "
+             f"started running yet (status 'pending' or 'blocked')")
+
+    gate_name = f"step:{args.step_id}"
+    if gate_status(plan, gate_name) == "approved":
+        _die(f"gate '{gate_name}' is already approved — amending {args.step_id} would "
+             f"invalidate what the human signed off; reject it first (`build_plan.py gate "
+             f"{args.plan} {gate_name} reject --by <who>`), then amend {args.step_id}")
+
+    doc = _read_json_file(Path(args.file))
+    if not isinstance(doc, dict):
+        _die(f"{args.file} must be a JSON object with any of: "
+             f"{', '.join(AMENDABLE_STEP_FIELDS)}")
+    unknown = sorted(set(doc) - set(AMENDABLE_STEP_FIELDS))
+    if unknown:
+        _die(f"{args.file}: amend-step writes only {', '.join(AMENDABLE_STEP_FIELDS)} — refusing "
+             f"{', '.join(unknown)} (id/milestone/type/agent are structural; status/runs/"
+             f"blocked_reason belong to set-status; depends_on and human_gate are not amendable)")
+    if not doc:
+        _die(f"{args.file} names none of the amendable fields "
+             f"({', '.join(AMENDABLE_STEP_FIELDS)}) — nothing to amend")
+
+    before = {field: copy.deepcopy(step[field]) for field in doc if field in step}
+    for field, value in doc.items():
+        step[field] = value
+    fields = sorted(doc)
+    step.setdefault("amendments", []).append({
+        "at": _now(args.at),
+        "by": args.by,
+        "reason": args.reason,
+        "fields": fields,
+        "before": before,
+    })
+
+    # Mirrors write_plan()'s validate-then-atomic-write, but the printed
+    # warnings are scoped to this step: a plan-wide WARN dump on every
+    # amendment would bury the one line the human who typed --reason needs.
+    # ERRORs still block on the WHOLE plan — an amendment that leaves some
+    # other step's declaration invalid is not this step's business, but it is
+    # still a plan the layer must refuse to write (contract § 8: "the plan
+    # must stay valid").
+    hard = schema_errors(plan, schema, schema)
+    if hard:
+        print(f"refusing to write {plan_path} — the result would be off-schema:", file=sys.stderr)
+        for msg in hard:
+            print(f"  ERROR {msg}", file=sys.stderr)
+        return 1
+    issues = semantic_issues(plan, Path(args.repo_root))
+    errors = [msg for level, msg in issues if level == "ERROR"]
+    if errors:
+        print(f"refusing to amend {args.step_id} — the plan would become invalid:",
+              file=sys.stderr)
+        for msg in errors:
+            print(f"  ERROR {msg}", file=sys.stderr)
+        return 1
+    step_warnings = [msg for level, msg in issues if level == "WARN" and args.step_id in msg]
+    for msg in step_warnings:
+        print(f"WARN {msg}")
+    _atomic_write(plan_path, plan_json(plan))
+    print(f"step {args.step_id}: amended {', '.join(fields)} by {args.by} — "
+          f"{len(step_warnings)} warning(s)")
+    print("next: `build_plan.py render`")
+    return 0
+
+
 def cmd_set_clarifications(args: argparse.Namespace) -> int:
     plan_path = Path(args.plan)
     plan = read_plan(plan_path)
@@ -2211,6 +2342,10 @@ Walkthrough:
                          ('built' needs the outputs on disk; 'tested' needs a
                          passing tests/<step>/results.json)
  12. check-outputs       do this step's declared outputs[] exist, non-empty, parseable?
+ 11a. amend-step         correct a pending/blocked step's declared fields mid-build
+                         (inputs/outputs/acceptance_tests/skills/templates/decision_trees/
+                         notes/title) without a re-plan; refused once the step has a run,
+                         or its own step:<id> gate is approved
  13. set-milestone       the milestone verifier's verdict + report path
  14. gate milestone:M1 approve --by <who>        G3 — refused until every step is
                          documented (or blocked with a reason); last milestone → 'done'
@@ -2442,6 +2577,32 @@ def build_parser() -> argparse.ArgumentParser:
                         "sharpen the clarifier's paragraph; omit the flag to leave the stored "
                         "summary alone.")
     p.set_defaults(func=cmd_set_plan)
+
+    p = sub.add_parser("amend-step", parents=[common],
+                       help="correct one pending/blocked step's declared fields mid-build",
+                       description="Replace one or more of a step's amendable fields "
+                                   f"({', '.join(AMENDABLE_STEP_FIELDS)}) from a JSON object in "
+                                   "--file; each named key REPLACES that field wholesale (no "
+                                   "merge). Refused unless the build status is 'building' or "
+                                   "'approved' (a 'planned'/'verified' plan is corrected with "
+                                   "set-plan; 'done' has no pending steps left), the step's own "
+                                   "status is 'pending' or 'blocked' (a step already run is "
+                                   "rebuilt via documented -> running, or reset via failed -> "
+                                   "pending, not amended), and the step's own step:<id> gate, if "
+                                   "any, is not yet approved (reject it first — an amendment "
+                                   "invalidates what the human signed). Records who/when/why/"
+                                   "which-fields/prior-values in the step's amendments[], "
+                                   "re-validates the whole plan, and refuses the write (leaving "
+                                   "the file untouched) if any ERROR results. Never touches "
+                                   "gates, statuses or runs[].")
+    p.add_argument("plan", help="path to plan.json")
+    p.add_argument("step_id", metavar="step-id", help="e.g. M1-S01")
+    p.add_argument("--file", required=True,
+                   help=f"JSON object of amendable step fields ({', '.join(AMENDABLE_STEP_FIELDS)})")
+    p.add_argument("--by", required=True, help="who is making the correction")
+    p.add_argument("--reason", required=True, help="why the step is being amended")
+    p.add_argument("--at", default=None, help="ISO timestamp (default: UTC now)")
+    p.set_defaults(func=cmd_amend_step)
 
     p = sub.add_parser("set-verification", parents=[common],
                        help="record the plan verifier's outcome",

@@ -1255,6 +1255,110 @@ def test_set_plan_refused_once_the_plan_is_signed_off(tmp_path, fixture_repo):
     assert json.loads(path.read_text())["status"] == "planned"
 
 
+def test_amend_step_replaces_declared_fields_and_records_before(tmp_path, fixture_repo, capsys):
+    """A pending step's fields get corrected mid-build without a re-plan.
+
+    Two milestones, M1 fully documented and gated (approving a non-last
+    milestone puts the build status at 'building' — see
+    test_middle_milestone_gate_sets_building_not_done), M2-S01 still pending.
+    That is exactly the window set-plan refuses and amend-step exists for.
+    """
+    plan = plan_dict([step("M1-S01", "M1", status="documented"), step("M2-S01", "M2")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    assert run("gate", str(path), "milestone:M1", "approve", "--by", "pranav",
+               "--at", "2026-09-05T13:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    before_doc = json.loads(path.read_text())
+    assert before_doc["status"] == "building"
+    original_outputs = before_doc["steps"][1]["outputs"]
+    assert before_doc["steps"][1]["id"] == "M2-S01"
+
+    amendment = write_json(tmp_path / "amend-outputs.json", {
+        "outputs": original_outputs + ["artefacts/M2-S01/deploy-order.md"],
+    })
+    capsys.readouterr()
+    rc = run("amend-step", str(path), "M2-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "deploy order note was missing",
+             "--at", "2026-09-05T14:00:00Z", "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "M2-S01: amended outputs by pranav" in out
+    assert "next:" in out
+
+    after = json.loads(path.read_text())
+    m2 = next(s for s in after["steps"] if s["id"] == "M2-S01")
+    assert m2["outputs"] == original_outputs + ["artefacts/M2-S01/deploy-order.md"]
+    assert len(m2["amendments"]) == 1
+    record = m2["amendments"][0]
+    assert record["by"] == "pranav"
+    assert record["reason"] == "deploy order note was missing"
+    assert record["at"] == "2026-09-05T14:00:00Z"
+    assert record["fields"] == ["outputs"]
+    assert record["before"] == {"outputs": original_outputs}
+    # amend-step never touches gates, status or runs
+    assert m2["status"] == "pending"
+    assert m2["runs"] == []
+    assert after["human_gates"] == before_doc["human_gates"]
+
+
+def test_amend_step_refused_on_documented_step(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    advance(path, fixture_repo, "M1-S01", upto="documented")
+    before = path.read_bytes()
+
+    amendment = write_json(tmp_path / "amend.json", {"notes": "tweak"})
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "late fix", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_step_refused_when_step_gate_already_approved(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1", human_gate=True)])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("ensure-gates", str(path), "--repo-root", str(fixture_repo)) == 0
+    open_gates(path, fixture_repo)  # status -> approved
+    assert run("gate", str(path), "step:M1-S01", "approve", "--by", "pranav",
+               "--at", "2026-09-05T12:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    before = path.read_bytes()
+
+    amendment = write_json(tmp_path / "amend.json", {"notes": "tweak"})
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "late fix", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_step_refused_on_unknown_field(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    before = path.read_bytes()
+
+    amendment = write_json(tmp_path / "amend.json", {"status": "documented"})
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "sneaky", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_step_refused_when_result_is_invalid(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    before = path.read_bytes()
+
+    amendment = write_json(tmp_path / "amend.json", {
+        "acceptance_tests": [{"type": "bogus"}],
+    })
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "bad type", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before, "a refused amendment must leave the file untouched"
+
+
 def test_set_verification_records_both_outcomes(tmp_path, fixture_repo):
     plan = plan_dict([step("M1-S01", "M1")])
     path = write_plan_file(tmp_path / "b", plan)
