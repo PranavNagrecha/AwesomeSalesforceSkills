@@ -23,6 +23,9 @@ triggers:
   - "writing and generating an Apex test class"
   - "migrate System.assertEquals to the Assert class"
   - "mock an Apex service class with the Stub API"
+  - "every test failed at deploy with No such column on entity Case"
+  - "Operation failed due to fields being inaccessible on Sobject during a validation deploy"
+  - "which permission set should my test user hold"
 inputs:
   - "class or trigger under test and its entry points"
   - "required data setup including users, permissions, and related records"
@@ -32,7 +35,7 @@ outputs:
   - "review findings for test hygiene and coverage quality"
   - "test class scaffold with factory, assertions, and mocks"
 dependencies: []
-version: 1.2.0
+version: 1.3.0
 author: Pranav Nagrecha
 updated: 2026-09-12
 ---
@@ -57,6 +60,7 @@ Every row below exists because a gotcha in `references/gotchas.md` bit someone w
 | Does the path enqueue async work or publish a platform event, and who consumes it? | Queueable, Batch and future work runs at `Test.stopTest()`; a published event does nothing until the test delivers it. | The correct boundary placement, and a `Test.getEventBus().deliver()` call per subscriber hop. | Gotchas 1, 10 |
 | Does the path make an HTTP callout, and does DML have to run before it? | DML leaves uncommitted work that blocks callouts unless `Test.startTest()` is called before `Test.setMock(...)`. | The exact statement order, plus the failure status codes the mock must also return. | Gotcha 9 |
 | Whose access does the behaviour depend on, and which permission set grants it? | Sharing and field-level bugs are invisible to a test that runs as the deploying admin, and every `runAs` call spends a DML statement. | A named profile plus permission set for the `runAs` user, and a bounded number of `runAs` blocks. | Gotchas 3, 11 |
+| Which permission set does the running user hold in production, and does this deployment contain it? | Code that enforces user mode is read through the *running* user's FLS. At validation the running user is whoever is deploying, and a profile deployed by Metadata API carries field permissions only for objects in the same request — so fields shipped alongside the code are invisible to that profile and every test method fails before it asserts anything. | The exact permission set API name to assign inside `@TestSetup`, which turns the `runAs` user from decoration into the thing that makes the suite deployable. | Gotcha 13 |
 | Does the code rely on static state or cached configuration between invocations? | Statics reinitialise for every test method, so state seeded in `@TestSetup` is gone by the time a test method reads it. | State passed through records rather than statics, and an explicit cache reset where the code under test caches. | Gotcha 8 |
 
 A proper test design differs from "just write a test" in what it buys you later: the suite tells you *which* contract broke and *for whom*, rather than telling you that something somewhere in a 400-line class no longer compiles or no longer passes.
@@ -134,6 +138,7 @@ Callouts never belong in real tests. Use `Test.setMock(HttpCalloutMock.class, mo
 1. **Name the contracts before the fixture.** Work through the questions above and write one observable outcome per entry point. Each becomes a test method name; anything you cannot state as an outcome is not yet testable.
 2. **Choose the fixture source.** `templates/apex/tests/TestDataFactory.cls` covers Account, Contact, Opportunity, Case and Lead through `createXxx(count, overrides)`; `templates/apex/tests/TestRecordBuilder.cls` covers everything the factory does not; `templates/apex/tests/TestUserFactory.cls` mints the `System.runAs` user with its permission sets. Put the shared baseline in `@TestSetup` — unless the class needs `SeeAllData=true`, which forbids it.
 3. **Write the four mandatory methods:** a bulk-200 method modelled on `templates/apex/tests/BulkTestPattern.cls`, a negative method that names the expected exception, an access method wrapped in `System.runAs`, and — whenever the path calls out — a mock method built on `templates/apex/tests/MockHttpResponseGenerator.cls`, ordered DML, `Test.startTest()`, `Test.setMock(...)`, action, `Test.stopTest()`.
+   **If the code under test enforces user mode** — `WITH USER_MODE` on a query, `as user` on a DML statement, `AccessLevel.USER_MODE` on a `Database` method, `Security.stripInaccessible`, or a legacy `WITH SECURITY_ENFORCED` clause — `System.runAs` stops being one method's concern and becomes the shape of the whole class: mint the user in `@TestSetup` with `TestUserFactory`, assign the permission set(s) the deployment ships, and put every body that touches the code under test inside `System.runAs(testUser)`. Skipping it does not weaken the suite, it breaks the deploy (Gotcha 13). Worked example: `references/examples.md` Example 5.
 4. **Ship every template class the test names.** A test that references `TestDataFactory` and deploys without `TestDataFactory.cls` fails with `Variable does not exist`. Copy each template verbatim with its `-meta.xml` and record it in the deploy order.
 5. **Run the checker** — `python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir <class directory>`. Exit 1 means an ERROR rule fired (missing assertion, unjustified `SeeAllData=true`, unmocked callout); add `--strict` in CI to fail on WARN findings too.
 6. **Deploy dry.** `sf project deploy start --manifest package.xml --dry-run --test-level RunSpecifiedTests --tests <TestClass>` compiles the package and runs the tests without persisting metadata — the last check that the provenance set is complete. UNVERIFIED (2026-09-12): the `sf` CLI flag spellings are not corpus-grounded — check `sf project deploy start --help` before using this command in a runbook.
@@ -151,6 +156,7 @@ A full worked package — service, Queueable, test class, `-meta.xml`, `package.
 - [ ] Async code is exercised with `Test.startTest()` and `Test.stopTest()`.
 - [ ] Bulk-sensitive code has multi-record tests, not only single-record happy paths.
 - [ ] Callout code uses mocks and verifies error handling as well as success.
+- [ ] Tests for user-mode code run inside `System.runAs` of a user holding the permission set(s) the deployment ships — not the deploying admin, and not `runAs(new User(Id = UserInfo.getUserId()))`.
 
 ## Salesforce-Specific Gotchas
 
@@ -158,6 +164,7 @@ A full worked package — service, Queueable, test class, `-meta.xml`, `package.
 2. **`SeeAllData=true` couples tests to org state** — a passing sandbox test can still fail in another org because the hidden data assumptions differ.
 3. **Mixed DML still affects tests** — creating Users and setup-related data in the wrong sequence can fail test methods even when business logic is correct.
 4. **One assertion at the end is not enough** — bulk, negative, and security-sensitive behaviors need focused assertions, not just a single record-count check.
+5. **User-mode code makes the test suite a deployment gate** — when the running user cannot see a field that shipped in the same request, the tests fail during `--dry-run` validation rather than merely passing for the wrong reason. See `references/gotchas.md` Gotcha 13.
 
 ## Output Artifacts
 

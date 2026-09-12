@@ -9,6 +9,10 @@ Rules
 ERROR  no-assertions          a test class whose test methods contain no assertion
 ERROR  seealldata-unjustified `SeeAllData=true` with no adjacent comment explaining why
 ERROR  callout-without-mock   a test that exercises a callout without `Test.setMock(...)`
+ERROR  user-mode-test-without-runas  a test class with no permissioned `System.runAs` block
+                                  while a non-test class in the same tree enforces the running
+                                  user's FLS (`WITH USER_MODE`, `AccessLevel.USER_MODE`,
+                                  `WITH SECURITY_ENFORCED`, `stripInaccessible`)
 WARN   eventbus-result-discarded  `EventBus.publish(...)` called as a bare statement in a test
 WARN   bulk-insert-no-starttest   a test method building more than 200 records outside
                                   a `Test.startTest()` / `Test.stopTest()` boundary
@@ -65,6 +69,27 @@ CALLOUT_MARKERS = (
     re.compile(r"@future\s*\(\s*callout\s*=\s*true", re.IGNORECASE),
     re.compile(r"\bWebServiceCallout\.invoke\b", re.IGNORECASE),
 )
+
+# User-mode / FLS evidence inside a non-test class body. Code carrying any of
+# these evaluates the RUNNING USER's object permissions and field-level security
+# ("In user mode, the object permissions, field-level security, and sharing rules
+# of the current user are enforced", apexdev L11437; L11955-L11967). A test that
+# never leaves the deploying user's context therefore proves nothing about FLS —
+# and when the custom fields ship in the same deployment, it does not merely prove
+# nothing, it fails outright at validation time.
+USER_MODE_MARKERS = (
+    re.compile(r"\bWITH\s+USER_MODE\b", re.IGNORECASE),
+    re.compile(r"\bAccessLevel\.USER_MODE\b", re.IGNORECASE),
+    re.compile(r"\bWITH\s+SECURITY_ENFORCED\b", re.IGNORECASE),
+    re.compile(r"\bstripInaccessible\s*\(", re.IGNORECASE),
+)
+
+RUNAS_CALL_RE = re.compile(r"\bSystem\.runAs\s*\(", re.IGNORECASE)
+SELF_USER_VAR_RE = re.compile(
+    r"(\w+)\s*=\s*new\s+User\s*\(\s*Id\s*=\s*UserInfo\.getUserId\s*\(\s*\)",
+    re.IGNORECASE,
+)
+VERSION_ARG_RE = re.compile(r"^new(?:System\.)?Version\(", re.IGNORECASE)
 
 # Canonical shared test classes (templates/apex/tests). A test that names one of
 # these must ship it — see agents/apex-builder/AGENT.md Step 6 provenance check.
@@ -178,6 +203,51 @@ def has_callout(text: str) -> bool:
     return any(marker.search(text) for marker in CALLOUT_MARKERS)
 
 
+def has_user_mode(text: str) -> bool:
+    return any(marker.search(text) for marker in USER_MODE_MARKERS)
+
+
+def runas_arguments(text: str) -> list[str]:
+    """The argument expression of every `System.runAs(...)` call, parens balanced."""
+    args: list[str] = []
+    for match in RUNAS_CALL_RE.finditer(text):
+        depth = 1
+        i = match.end()
+        n = len(text)
+        while i < n and depth:
+            if text[i] == "(":
+                depth += 1
+            elif text[i] == ")":
+                depth -= 1
+            i += 1
+        args.append(text[match.end(): max(match.end(), i - 1)])
+    return args
+
+
+def has_permissioned_runas(text: str) -> bool:
+    """True when at least one `System.runAs` block runs as somebody other than the
+    user executing the test.
+
+    Two overloads do not count. `System.runAs(new User(Id = UserInfo.getUserId()))`
+    is the mixed-DML idiom (apexdev L8931-L8942) — it re-enters the *same* user's
+    context and grants no permission. `System.runAs(System.Version)` switches the
+    managed-package version, not the user (apexdev L41417)."""
+    stripped = strip_literals(text)
+    self_users = {m.group(1) for m in SELF_USER_VAR_RE.finditer(stripped)}
+    for arg in runas_arguments(stripped):
+        flat = re.sub(r"\s+", "", arg)
+        if not flat:
+            continue
+        if "UserInfo.getUserId()" in flat:
+            continue
+        if flat in self_users:
+            continue
+        if VERSION_ARG_RE.match(flat):
+            continue
+        return True
+    return False
+
+
 def seealldata_is_justified(lines: list[str], idx: int) -> bool:
     """True when a comment sits on, or within the two lines above, the annotation."""
     window = lines[max(0, idx - 2): idx + 1]
@@ -196,7 +266,13 @@ def max_record_count(body: str) -> int:
 # ---------------------------------------------------------------- audit
 
 
-def audit_class(path: Path, text: str, callout_classes: set[str], shipped: set[str]) -> list[dict]:
+def audit_class(
+    path: Path,
+    text: str,
+    callout_classes: set[str],
+    shipped: set[str],
+    user_mode_classes: set[str],
+) -> list[dict]:
     findings: list[dict] = []
 
     def add(severity: str, rule: str, message: str, line: int = 0) -> None:
@@ -241,6 +317,24 @@ def audit_class(path: Path, text: str, callout_classes: set[str], shipped: set[s
             )
         if HARD_CODED_ID_RE.search(line):
             add("WARN", "hardcoded-id", "hard-coded Salesforce-style Id literal in a test", idx + 1)
+
+    if user_mode_classes and not has_permissioned_runas(text):
+        named = sorted(user_mode_classes)
+        shown = ", ".join(f"`{name}`" for name in named[:3])
+        if len(named) > 3:
+            shown += f" (+{len(named) - 3} more)"
+        add(
+            "ERROR",
+            "user-mode-test-without-runas",
+            f"test class `{path.stem}` has no `System.runAs` block for a permissioned user, but "
+            f"{shown} in the same tree enforce(s) the running user's FLS. A validation deploy runs "
+            "these tests as the deploying user, whose profile carries no field permissions for "
+            "custom fields shipped in the same request, so the suite fails with "
+            "\"No such column 'X__c' on entity 'Y'\" or \"Operation failed due to fields being "
+            "inaccessible on Sobject Y\". Put the assertions inside `System.runAs` of a user built "
+            "by `templates/apex/tests/TestUserFactory.cls` holding the permission set(s) this "
+            "deployment ships.",
+        )
 
     squashed = re.sub(r"\s+", "", text)
     if "System.assert(true" in squashed or "System.assertEquals(true,true" in squashed:
@@ -323,6 +417,7 @@ def main() -> int:
     texts = {p: p.read_text(encoding="utf-8", errors="ignore") for p in files}
     shipped = {p.stem for p in files}
     callout_classes = {p.stem for p, t in texts.items() if has_callout(t) and not TEST_ARTIFACT_RE.search(t)}
+    user_mode_classes = {p.stem for p, t in texts.items() if has_user_mode(t) and not TEST_ARTIFACT_RE.search(t)}
 
     findings: list[dict] = []
     audited = 0
@@ -330,7 +425,7 @@ def main() -> int:
         text = texts[path]
         if TEST_ARTIFACT_RE.search(text):
             audited += 1
-        findings.extend(audit_class(path, text, callout_classes, shipped))
+        findings.extend(audit_class(path, text, callout_classes, shipped, user_mode_classes))
 
     if audited == 0:
         findings.append(

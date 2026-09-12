@@ -22,6 +22,7 @@ triggers:
   - "should i call stripinaccessible after a user_mode soql query"
   - "our security review flagged crud and fls issues"
   - "appexchange security review crud fls finding remediation"
+  - "validation deploy failed every test with fields being inaccessible on Sobject"
 inputs:
   - User-supplied SObject records about to be inserted, updated, or upserted
   - Query results that will be returned to a less-privileged caller (LWC, REST, Aura)
@@ -33,9 +34,9 @@ outputs:
   - Test class proving FLS enforcement under a non-admin profile
   - "Decision: stripInaccessible vs WITH USER_MODE vs proactive describe checks"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-09-12
 ---
 
 # Apex stripInaccessible and FLS Enforcement
@@ -52,6 +53,23 @@ Activate when Apex code accepts records from a less-privileged context (LWC, Aur
 - Read the `apiVersion` in the class's `.cls-meta.xml` before judging what the surrounding code already enforces — that value is the gate, not the org's release. At 67.0+ (Summer '26) SOQL, SOSL, DML and `Database` methods default to user mode and a class with no sharing keyword runs `with sharing`; at 66.0 and earlier both defaulted the other way, so a class pinned to 58.0 in a Summer '26 org keeps the old behaviour. Canonical table: [`agents/_shared/AGENT_CONTRACT.md` → Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version). Either way `Security.stripInaccessible` is unaffected — it evaluates the running user's FLS at every version.
 - Apex **triggers** are the exception at every API version: a trigger body runs in system mode, cannot declare a sharing or access mode, and bypasses sharing, FLS and object permissions. The 67.0 default-user-mode change does not reach it. Delegate to a handler class where the keyword and access level can be set.
 - If the SOQL itself is fetching records to return to a less-privileged caller, prefer `WITH USER_MODE` (Spring '23 / API 57.0+) on the query and skip a redundant strip pass.
+
+---
+
+## Questions to Ask Before Configuring
+
+Every row below exists because a gotcha in `references/gotchas.md` bit someone who skipped it.
+
+| Ask the requester | Why it matters | What a good answer adds | Traces to |
+|---|---|---|---|
+| Which caller supplies these records, and can that caller set every field in the payload? | `stripInaccessible` only earns its CPU cost on records that crossed a trust boundary; on trigger-context or Apex-constructed records it is ceremony. | A marked list of entry points, so the strip sits at the boundary instead of being sprinkled through the call stack. | SKILL.md § Before Starting |
+| Which DML runs on the result — insert, update, or upsert? | The `AccessType` enum must match the operation, and `UPSERTABLE` is the intersection of creatable and updatable, not the union. | The right enum per entry point, and an early warning where a create-only field would vanish on every upsert. | Gotcha 4 |
+| Is a field stripped silently acceptable here, or must the caller be told? | `WITH USER_MODE` throws and `stripInaccessible` removes-and-continues; picking the wrong one turns a visible error into silent data loss, or vice versa. | A per-path decision plus a logging or warning contract for `getRemovedFields()`. | SKILL.md § When stripInaccessible is the right choice |
+| Which permission set does the running user hold in production, and does this deployment contain it? | The test suite is the first user-mode caller this code ever has, and it runs at validation time as the *deploying* user — who has no FLS on fields created by the same deployment. | The permission set API name to assign inside `@TestSetup`, which is what makes the suite deployable at all, not merely meaningful. | Gotchas 5, 6 |
+| What is the `apiVersion` in the `.cls-meta.xml`, and is it 67.0 or later? | 67.0 flips the default access mode to user mode and removes `WITH SECURITY_ENFORCED`; a class pinned to 58.0 in the same org keeps the old behaviour. | The correct idiom for this class rather than for the org's release, and a list of classes whose behaviour changes on an API-version bump. | SKILL.md § Before Starting |
+| How many records pass through the strip in the worst case? | FLS is evaluated per field per record against the 10-second synchronous CPU limit; it costs no SOQL or DML. | A chunking threshold agreed up front instead of a CPU-limit incident. | SKILL.md § Performance |
+
+A proper enforcement design differs from "add stripInaccessible everywhere" in what it buys later: you can say which boundary each call guards, what the caller is told when a field is removed, and which permission set the behaviour actually depends on — so a permission-set regression fails a test instead of quietly widening or narrowing access in production.
 
 ---
 
@@ -220,6 +238,7 @@ Without `runAs`, test code runs as whoever is running the test — normally an a
 3. **Tests pass regardless of FLS unless you supply a restricted user.** Without `System.runAs(nonAdminUser)` the running user is the admin executing the test, so every field is accessible and your strip call is a no-op — the test proves nothing. Unchanged at 67.0+, where user mode still enforces that same unrestricted user's permissions.
 4. **`AccessType.UPSERTABLE` is the intersection of CREATABLE and UPDATABLE.** A field accessible for create but not update gets stripped on UPSERTABLE — this is correct behavior for upsert but surprising if you expected union semantics.
 5. **`SObjectAccessDecision` is immutable.** You cannot mutate `getRecords()` results and have those changes reflect anywhere; call DML directly on the returned list.
+6. **The test suite is the first user-mode caller, and it runs at deploy time.** When the fields ship in the same request as the enforcing code, tests that stay in the deploying admin's context do not merely prove nothing — they fail the validation deploy outright with `No such column 'X__c' on entity 'Y'` or `Operation failed due to fields being inaccessible on Sobject Y`. `references/gotchas.md` Gotcha 6 has the mechanism; the rule, a worked class and the checker that enforces it are in `skills/apex/test-class-standards/` (SKILL.md workflow step 3, Gotcha 13, examples.md Example 5).
 
 ---
 
@@ -239,4 +258,5 @@ Without `runAs`, test code runs as whoever is running the test — normally an a
 - `apex/apex-with-user-mode-soql` — when to prefer USER_MODE on the SOQL itself
 - `apex/apex-sharing-keywords` — class-level `with sharing` / `without sharing` / `inherited sharing` (record visibility, complements FLS)
 - `apex/apex-security-utils` — using the shared `templates/apex/SecurityUtils.cls` helpers
+- `apex/test-class-standards` — how to build the `System.runAs` user that makes an FLS test real, and why a user-mode build fails `--dry-run` validation without one
 - `security/security-fls-crud-enforcement` — broader CRUD/FLS strategy across the org

@@ -245,3 +245,59 @@ static void testAuraMethod_asStandardUser() {
 ```
 
 **Detection hint:** Test methods for `@AuraEnabled` or REST resource methods that never use `System.runAs()` with a non-admin user.
+
+---
+
+## Anti-Pattern 7: Treating `System.runAs` as an optional security nicety when the code under test enforces user mode
+
+**What the LLM generates:**
+
+```apex
+@IsTest
+private class Tier2EscalationServiceTest {
+
+    @TestSetup
+    static void seed() {
+        // Mixed-DML fence. The LLM has seen this idiom and believes it is "the runAs part".
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert new Group(Name = 'Tier 2', DeveloperName = 'Tier_2', Type = 'Queue');
+        }
+        insert TestDataFactory.createCases(200, null, null);
+    }
+
+    @IsTest
+    static void escalationStampsTheCase() {
+        // Runs as whoever is deploying. Tier2EscalationService queries WITH USER_MODE.
+        List<Case> due = [SELECT Id, Tier2_Notified_At__c FROM Case LIMIT 2];
+        Test.startTest();
+        Tier2EscalationService.escalate(due);
+        Test.stopTest();
+        Assert.areEqual(2, [SELECT COUNT() FROM Case WHERE Tier2_Notified_At__c != NULL]);
+    }
+}
+```
+
+**Why it happens:** the model has absorbed "tests should use `runAs` to check FLS and sharing" as a quality suggestion — something that makes a good test better — and prioritises it below assertions, bulk coverage, and mocking. It has separately absorbed `System.runAs(new User(Id = UserInfo.getUserId()))` as the mixed-DML fix, and the presence of that block makes the class *look* like it handles user context. Both beliefs are load-bearing and both are wrong here. When the code under test enforces user mode, `runAs` is not a quality improvement, it is a compile-and-deploy dependency: the test suite is the first user-mode caller the code ever has, and it runs at validation time. Anti-Pattern 6 describes the same missing construct with a milder consequence (a test that passes for the wrong reason); this is the version where the deploy does not happen at all.
+
+**Correct pattern:** build the user with `templates/apex/tests/TestUserFactory.cls`, assign the permission set(s) the deployment ships, and put the assertions inside `System.runAs(testUser)` — full worked class in `references/examples.md` Example 5. The minimum shape:
+
+```apex
+@TestSetup
+static void seed() {
+    User agent;
+    System.runAs(new User(Id = UserInfo.getUserId())) {          // mixed-DML fence only
+        agent = TestUserFactory.createUser('Standard User',
+            new List<String>{ 'Tier2_Webhook_Admin' });          // the permission set this build ships
+    }
+    System.runAs(agent) { insert TestDataFactory.createCases(200, null, null); }
+}
+
+@IsTest
+static void escalationStampsTheCase() {
+    System.runAs([SELECT Id FROM User WHERE Alias LIKE 'tu%' ORDER BY CreatedDate DESC LIMIT 1]) {
+        // ... query, act, assert, all as the permissioned user
+    }
+}
+```
+
+**Detection hint:** grep the tree for `WITH USER_MODE`, `AccessLevel.USER_MODE`, `as user`, `as system`, `WITH SECURITY_ENFORCED` or `stripInaccessible` in non-test classes; then check whether the test classes beside them contain a `System.runAs` whose argument is anything other than `new User(Id = UserInfo.getUserId())`. `check_test_class_standards.py` automates exactly this as `user-mode-test-without-runas` (ERROR). A second, cheaper tell: the permission set is in `package.xml` and the string `PermissionSetAssignment` appears nowhere in the test classes.

@@ -119,3 +119,41 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** "Some standard objects aren't creatable" (apexdev L40772); field history and `FeedTrackedChange` records "can't be created in test methods because they require other sObject records to be committed first" (apexdev L40776-L40782); and sObjects with unique constraints (`CollaborationGroup`, for example) reject duplicate inserts whether or not `SeeAllData=true` is set (apexdev L40773-L40775).
 
 **How to avoid:** Check creatability before designing the fixture. Where the record genuinely cannot be made, test the layer above it against a stub or a mock instead of the record, and say so in a comment. `Test.loadData(Account.sObjectType, 'myResource')` (apexdev L40896-L40904) covers the separate case of bulk fixture data that is tedious to build in code but perfectly creatable.
+
+---
+
+## Gotcha 13: A Test For User-Mode Code Fails At Validation Unless It Runs As A Permissioned User
+
+**What happens:** A package compiles clean — every component reports `ok` — and then every single test method fails, at validation, before any assertion runs. The two error strings, verbatim, so you can grep a deploy log for them:
+
+```
+System.QueryException: No such column 'Tier2_Notified_At__c' on entity 'Case'. If you are
+attempting to use a custom field, be sure to append the '__c' after the custom field name.
+
+System.DmlException: Operation failed due to fields being inaccessible on Sobject
+Integration_Failure__c, check errors on Exception or Result!
+```
+
+The first is what `WITH USER_MODE` SOQL does when the running user has no read FLS on a field; the second is what `Database.insert(records, AccessLevel.USER_MODE)` (or `insert as user`) does when the running user has no create FLS. Neither says "permissions" in the headline, which is why the usual first reaction is to go looking for a missing field in `package.xml` that is in fact present and deployed.
+
+**When it occurs:** Four conditions have to line up, and in a greenfield build they always do.
+
+1. The code under test enforces user mode. "In user mode, the object permissions, field-level security, and sharing rules of the current user are enforced" (apexdev L11437-L11439; see also L11955-L11987 for the `WITH USER_MODE`, `as user` and `AccessLevel.USER_MODE` spellings). From API 67.0 onward this is not a choice — "In API version 67.0 and later, Apex runs in user context by default, meaning that the current user's permissions and field-level security (FLS) are enforced during code execution" (apexdev L11744-L11745), and `WITH SECURITY_ENFORCED` no longer compiles — "In API version 67.0 and later, you can't use the WITH SECURITY_ENFORCED clause in SOQL SELECT queries in Apex code. Instead, use the WITH USER_MODE clause" (apexdev L11741-L11743). A build created today is therefore in this trap by default, not by choosing to be.
+2. The custom fields ship **in the same deployment** as the code.
+3. The test methods run as the deploying user, because the class has no `System.runAs` block for anybody else.
+4. That deploying user's FLS comes from a profile, and the profile is not in the request. Profile deployment is an overlay — "We designed Profile metadata deployment to overlay the existing Profile settings in a target org" (api_meta L97626-L97631) — so a profile absent from the request is not touched, and keeps exactly the FLS it already had. For a field created by this very deployment, that is none. Including the profile is not a fix on its own either, because profile metadata is scoped to what travelled with it: "profiles only include field-level security for fields included in custom objects returned in the same RetrieveRequest as the profiles" (api_meta L97622-L97625), and a wildcard retrieve of profiles carries permissions "for all custom objects in your organization but don't include permissions for standard objects, such as Account, and standard fields" (api_meta L98487-L98492) — which is precisely the shape of `Case.Tier2_Notified_At__c`, a custom field on a standard object. UNVERIFIED (2026-09-12): the corpus states this scoping for `RetrieveRequest`; that deployment applies the identical scoping is an inference from the overlay semantics above, not a quoted deploy-side sentence.
+
+So the permission set in the deployment does carry the field permissions — and nothing assigns it to the user the tests actually run as. A System Administrator profile does not save you: on a field created by this very deployment, that profile has whatever FLS the deployment gave it, which is nothing.
+
+`RunSpecifiedTests` and `RunLocalTests` both hit this, and `--dry-run` hits it exactly as a production deploy would. That is the useful part: the validation run is not being pedantic, it is showing you the outage.
+
+**How to avoid:** Make the permissioned user part of the fixture, not part of one method.
+
+- Build the user with `templates/apex/tests/TestUserFactory.cls` — `createUser(profileName, permissionSetNames)` already inserts the `User` and the `PermissionSetAssignment` rows for the named sets.
+- Name the permission set(s) the deployment ships. If the answer is "none", the build has an access gap that no test can paper over, and that is the finding.
+- Put the assertions inside `System.runAs(testUser)`. Salesforce's own integration-test example does exactly this — "use `System.runAs()` to run integration test logic as a specific user, including setting up the necessary permission set assignments" (apexdev L42448-L42462).
+- Do not mistake `System.runAs(new User(Id = UserInfo.getUserId()))` for this. That idiom exists to separate setup-object DML from ordinary DML in one transaction (apexdev L8931-L8942); it re-enters the *same* user's context and grants no permission. A class can be full of it and still be running as the admin who has no FLS.
+- `System.runAs` is the right tool rather than a wish: "the user's sharing rules and object-level and field-level permissions are enforced within a `runAs` block, regardless of the sharing mode (`with sharing` or `without sharing`) of the test class" (apexdev L41331-L41333). Budget for Gotcha 11 — each call spends a DML statement.
+- Catch it before the org does: `python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir <classes dir>` raises `user-mode-test-without-runas` (ERROR) when a non-test class in the tree carries `WITH USER_MODE`, `AccessLevel.USER_MODE`, `WITH SECURITY_ENFORCED` or `stripInaccessible` and the test class alongside it has no permissioned `runAs` block.
+
+**Where this came from:** a validate-only deploy (`sf project deploy start --dry-run --test-level RunSpecifiedTests`) of the `tier2-webhook` build: 38 components `ok`, 28 of 28 test methods failed, coverage 34.9%. Evidence in `.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T13-08-43Z/summary.md`.
