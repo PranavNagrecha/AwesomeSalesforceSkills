@@ -35,6 +35,39 @@ Checks performed
 9.  Orphans: components in the manifest that no row's ``artefact`` names.
 10. Multi-value cells use the pipe delimiter (audit schema).
 
+Member-form to file-path resolution
+------------------------------------
+Several Metadata API types name their members in a form that is not the bare
+file stem: a folder-qualified name, an ``<Object>.<Child>`` composite, or a
+name that lives inside one shared container file rather than its own file.
+``index_manifest`` maps each of these back to the source-format path that
+evidences it. The suffixes below are the Metadata API's own per-type
+``fileSuffix`` / ``directoryName`` pairs (Metadata API Developer Guide,
+per-type reference pages) — this repo's
+``skills/devops/salesforce-dx-project-structure`` package documents the
+project-level ``sfdx-project.json`` / ``packageDirectories`` layer, not a
+per-type suffix table, so it is deliberately not cited per row here.
+
+| Metadata type | RTM ``artefact`` member form | Source-format file(s) |
+|---|---|---|
+| CustomField | ``Object.Field__c`` | ``objects/Object/fields/Field__c.field-meta.xml`` |
+| ValidationRule | ``Object.Rule_Name`` | ``objects/Object/validationRules/Rule_Name.validationRule-meta.xml`` |
+| RecordType | ``Object.Record_Type`` | ``objects/Object/recordTypes/Record_Type.recordType-meta.xml`` |
+| CompactLayout | ``Object.Layout_Name`` | ``objects/Object/compactLayouts/Layout_Name.compactLayout-meta.xml`` |
+| BusinessProcess | ``Object.Process_Name`` | ``objects/Object/businessProcesses/Process_Name.businessProcess-meta.xml`` |
+| EmailTemplate | ``Folder/Name`` | ``email/Folder/Name.email`` + ``email/Folder/Name.email-meta.xml`` |
+| EmailFolder | ``Folder`` | ``email/Folder.emailFolder-meta.xml`` |
+| SharingRules | ``Object`` | ``sharingRules/Object.sharingRules-meta.xml`` |
+| Layout | ``Object-Layout Name`` (spaces legal) | ``layouts/Object-Layout Name.layout-meta.xml`` |
+| Settings | e.g. ``Case`` | ``settings/Case.settings-meta.xml`` |
+| StandardValueSet | e.g. ``Industry`` | ``standardValueSets/Industry.standardValueSet-meta.xml`` |
+| Queue / Group | bare name | ``queues/Name.queue-meta.xml`` / ``groups/Name.group-meta.xml`` |
+| PermissionSet / PermissionSetGroup / Profile | bare name, may contain spaces | ``permissionsets/Name.permissionset-meta.xml`` / ``profiles/System Administrator.profile-meta.xml`` |
+
+Anything not in this table falls back to a same-name, any-type stem match
+(the final loop in ``resolve_artefact``), so a slightly wrong type spelling
+still resolves against the right file.
+
 Both derived views — coverage gaps and orphans — are printed, and written as
 markdown to ``--report-dir`` when one is given.
 
@@ -136,8 +169,11 @@ SUFFIX_TYPE = {
     ".presenceDeclineReason": "PresenceDeclineReason",
     ".businessProcess": "BusinessProcess",
     ".email": "EmailTemplate",
+    ".emailFolder": "EmailFolder",
     ".labels": "CustomLabels",
     ".settings": "Settings",
+    ".sharingRules": "SharingRules",
+    ".standardValueSet": "StandardValueSet",
     ".cls": "ApexClass",
     ".trigger": "ApexTrigger",
 }
@@ -150,7 +186,16 @@ OBJECT_CHILD_DIR = {
     "listViews": "ListView",
     "webLinks": "WebLink",
     "compactLayouts": "CompactLayout",
+    "businessProcesses": "BusinessProcess",
 }
+
+# Metadata types whose FullName is folder-qualified: <container>/<Folder>/.../
+# <Name>.<suffix> for the contained item (member key "Folder/Name"), or
+# <container>/<Folder>.<folderSuffix>-meta.xml for the folder itself (member
+# key "Folder"). Top-level container directory name -> nothing extra needed;
+# the folder path segments between the container and the file ARE the prefix.
+# See the docstring table above for EmailTemplate / EmailFolder.
+FOLDERED_CONTAINERS = {"email"}
 
 # Rule containers hold named rules whose members use the SINGULAR type name
 # (api_meta.txt L23675-23682): Case.assignmentRules holds AssignmentRule members.
@@ -386,7 +431,24 @@ def index_manifest(manifest_dir: Path) -> dict[str, str]:
             mtype = SUFFIX_TYPE.get(suffix)
             if not mtype:
                 continue
-            add(mtype, stem, rel)
+
+            # Foldered metadata (EmailTemplate/EmailFolder): the member key is
+            # folder-qualified. The directory segments between the container
+            # (e.g. "email") and the file ARE the folder path; join them with
+            # "/" ahead of the stem. A file straight under the container (the
+            # folder's own -meta.xml) has no segments, so the key is the bare
+            # stem — see the docstring table above. Detected off the
+            # immediate parent/grandparent (not the path from manifest_dir)
+            # so an arbitrary root nesting depth — e.g. a per-step
+            # artefacts/<step-id>/email/... layout — does not matter: the
+            # template's grandparent is the container ("email"); the
+            # folder's own -meta.xml sits directly in the container, so its
+            # grandparent is whatever wraps the container instead.
+            if grandparent in FOLDERED_CONTAINERS:
+                member_name = f"{parent}/{stem}"
+            else:
+                member_name = stem
+            add(mtype, member_name, rel)
 
             if mtype in RULE_CONTAINERS:
                 singular, child_tag = RULE_CONTAINERS[mtype]

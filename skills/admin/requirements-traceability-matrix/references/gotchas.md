@@ -233,3 +233,32 @@ it is named `destructiveChanges.xml`, wildcards are not supported in it, and it 
 `destructiveChangesPre.xml` / `destructiveChangesPost.xml` when order against the additions matters
 (`api_meta.txt` L4645–4656). And never bundle the removal into the feature deploy — that makes the
 feature's rollback also a restore.
+
+---
+
+## Gotcha 16: The Member Form Is Not the File Stem for Every Type
+
+**What happens:** `check_rtm.py --manifest-dir` reports a real component as an orphan, or a row's
+artefact as unresolved, even though the file is right there. The row wrote the member the way most
+types actually work — `Type:BareName`, matching the file's own stem — but a handful of types name
+their member differently from their file: an `EmailTemplate` member is `Folder/Name` (the file is
+`email/Folder/Name.email`), an `EmailFolder` member is the folder's own bare name (`email/
+Folder.emailFolder-meta.xml`), and a `BusinessProcess` member is `Object.Process_Name` (the file is
+`objects/Object/businessProcesses/Process_Name.businessProcess-meta.xml`) — the same object-qualified
+shape `CustomField`, `ValidationRule`, `RecordType` and `CompactLayout` already use, but easy to miss
+for a type introduced later.
+
+**When it occurs:** Whenever a row is written against the Setup label or the file name alone instead
+of the Metadata API's actual `fullName` for that member shape. It is the same class of mistake as
+Gotcha 10 (label vs. `fullName`), but one level up: even a row that already writes a real `fullName`
+still needs the *folder* or *object* qualifier some types require and others don't.
+
+**How to avoid:** Before writing an `artefact` cell for a type you have not used in this matrix
+before, check the member-form table in `check_rtm.py`'s module docstring — it lists the file path
+next to the exact member shape for every type this skill's rows commonly name (`CustomField`,
+`ValidationRule`, `RecordType`, `CompactLayout`, `BusinessProcess`, `EmailTemplate`, `EmailFolder`,
+`SharingRules`, `Layout`, `Settings`, `StandardValueSet`, `Queue`/`Group`,
+`PermissionSet`/`PermissionSetGroup`/`Profile`). A type not in that table still resolves through the
+checker's same-name, any-type fallback, so a wrong type spelling recovers — a wrong *shape*
+(folder or object qualifier missing entirely) does not, because the fallback matches on the full name
+string, not just the file stem.

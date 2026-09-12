@@ -41,9 +41,9 @@ outputs:
   - "Audit packet: per-requirement evidence chain (req → story → test → defect → release)"
   - "Deferred / dropped requirements log with rationale and decision owner"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 # Requirements Traceability Matrix (RTM) for Salesforce
