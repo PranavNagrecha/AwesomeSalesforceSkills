@@ -18,6 +18,19 @@ Checks
           editing standard objects on standard profiles is disabled in API 50.0+
 5. INFO   the same object granted by both a profile and a permission set reachable
           through a permission set group -- redundant grant, ambiguous revocation
+6. PSVP-DESC-01 (ERROR) / PSVP-DESC-02 (WARN) -- `description` length on any
+          Profile, PermissionSet, or PermissionSetGroup file. PermissionSet.description
+          and Profile.description are both "Limit: 255 characters" in the Metadata API
+          Developer Guide (api_meta L94788, L97678). Empirically confirmed by
+          `sf project deploy start --dry-run` against a Summer '26 developer org on
+          2026-09-11: four PermissionSet files and three Profile files were rejected
+          with `Description: data value too large ... (max length=255)`
+          (examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md, once exported).
+          PermissionSetGroup.description carries no documented limit (api_meta L95328)
+          -- UNVERIFIED (2026-09-11) as a direct rejection; the same 255-character
+          threshold is applied here anyway because a PSG that references a rejected
+          member PermissionSet fails to deploy as a cascade ("permission set names
+          are invalid") regardless of its own description length.
 """
 
 from __future__ import annotations
@@ -80,6 +93,12 @@ METADATA_SUFFIXES = (
     ".permissionset",
     ".permissionsetgroup",
 )
+# PSVP-DESC-01 / PSVP-DESC-02 thresholds. 255 is the Metadata API's documented
+# ceiling for PermissionSet.description and Profile.description; 200 is
+# headroom to catch a description before it grows past the limit.
+DESC_MAX_LEN = 255
+DESC_WARN_LEN = 200
+
 SEVERITY_WEIGHTS = {
     "CRITICAL": 20,
     "ERROR": 15,
@@ -159,6 +178,39 @@ def emit_result(findings: list[str], summary: str) -> int:
 
 
 # --------------------------------------------------------------------------- checks
+
+
+def check_description_length(path: Path, root: ET.Element, root_type: str) -> list[str]:
+    """PSVP-DESC-01 (ERROR, >255 chars) / PSVP-DESC-02 (WARN, >200 chars).
+
+    Grounded for PermissionSet and Profile: Metadata API Developer Guide,
+    "The permission set description. Limit: 255 characters." (api_meta
+    L94788) and "The profile description. Limit: 255 characters." (api_meta
+    L97678). PermissionSetGroup.description has no documented limit (api_meta
+    L95328) -- UNVERIFIED (2026-09-11) as a direct rejection, applied here for
+    symmetry because a PSG deploy fails as a cascade once a member
+    PermissionSet it references is rejected on this exact error (verified by
+    `sf project deploy start --dry-run` against a Summer '26 developer org on
+    2026-09-11, examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md,
+    once exported).
+    """
+    findings: list[str] = []
+    description = child_text(root, "description")
+    if not description:
+        return findings
+    length = len(description)
+    if length > DESC_MAX_LEN:
+        findings.append(
+            f"ERROR {path}: PSVP-DESC-01 {root_type} description is {length} characters, "
+            f"over the {DESC_MAX_LEN}-character limit; move rationale to deploy-order.md "
+            "or the configuration workbook."
+        )
+    elif length > DESC_WARN_LEN:
+        findings.append(
+            f"WARN {path}: PSVP-DESC-02 {root_type} description is {length} characters, "
+            f"approaching the {DESC_MAX_LEN}-character limit."
+        )
+    return findings
 
 
 def check_dangerous_grants(path: Path, root: ET.Element, root_type: str) -> list[str]:
@@ -360,10 +412,12 @@ def audit_file(path: Path) -> list[str]:
         return [f"ERROR {path}: file is not well-formed XML and could not be parsed"]
 
     root_type = local_name(root.tag)
-    if root_type == "PermissionSetGroup":
-        return []
+    findings = check_description_length(path, root, root_type)
 
-    findings = check_dangerous_grants(path, root, root_type)
+    if root_type == "PermissionSetGroup":
+        return findings
+
+    findings.extend(check_dangerous_grants(path, root, root_type))
 
     if root_type == "Profile":
         findings.extend(check_profile_carries_migratable_grants(path, root))

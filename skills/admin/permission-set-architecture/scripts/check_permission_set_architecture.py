@@ -24,6 +24,22 @@ Checks performed:
      Grounded: Object Reference, SessionPermSetActivation — session-based
      permission sets in a permission set group don't require activation.
   8. Feature-heavy custom profiles (profile-sprawl signal).
+  9. PSA-DESC-01 / PSA-DESC-02 — description length on PermissionSet,
+     MutingPermissionSet, PermissionSetGroup, and Profile files.
+     Grounded: Metadata API Developer Guide, PermissionSet.description and
+     Profile.description are both "Limit: 255 characters" (api_meta L94788,
+     L97678); MutingPermissionSet shares PermissionSet's field table.
+     Empirically confirmed by `sf project deploy start --dry-run` against a
+     Summer '26 developer org on 2026-09-11: four PermissionSet files and
+     three Profile files were rejected with
+     `Description: data value too large ... (max length=255)`
+     (examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md, once
+     exported). PermissionSetGroup.description carries no documented limit
+     (api_meta L95328) — UNVERIFIED (2026-09-11) whether 255 is enforced
+     directly on the group itself; the same threshold is applied here anyway
+     because a PSG that references a rejected member set fails to deploy as a
+     cascade ("permission set names are invalid") regardless of its own
+     description length.
 """
 
 from __future__ import annotations
@@ -34,6 +50,12 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 SEVERITIES = ("ERROR", "WARN", "INFO")
+
+# PSA-DESC-01 / PSA-DESC-02 thresholds. 255 is the Metadata API's documented
+# ceiling for PermissionSet.description and Profile.description; 200 is
+# headroom to catch a description before it grows past the limit.
+DESC_MAX_LEN = 255
+DESC_WARN_LEN = 200
 
 
 def parse_args() -> argparse.Namespace:
@@ -123,6 +145,42 @@ def check_field_permissions(path: Path, root: ET.Element, issues: list[tuple[str
                     f"{path}: fieldPermissions {field} grants a field on {owner}, "
                     "but this set's objectPermissions for that object do not set allowRead=true.",
                 ))
+
+
+def check_description_length(
+    path: Path, root: ET.Element, kind: str, issues: list[tuple[str, str]]
+) -> None:
+    """PSA-DESC-01 (ERROR, >255 chars) / PSA-DESC-02 (WARN, >200 chars).
+
+    Grounded for PermissionSet and Profile: Metadata API Developer Guide,
+    "The permission set description. Limit: 255 characters." (api_meta
+    L94788) and "The profile description. Limit: 255 characters." (api_meta
+    L97678). MutingPermissionSet has the same field table as PermissionSet.
+    PermissionSetGroup.description has no documented limit (api_meta L95328)
+    — UNVERIFIED (2026-09-11) as a direct rejection, applied here for
+    symmetry because a PSG deploy fails as a cascade once a member
+    PermissionSet it references is rejected on this exact error (verified by
+    `sf project deploy start --dry-run` against a Summer '26 developer org on
+    2026-09-11, examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md,
+    once exported).
+    """
+    description = child_text(root, "description")
+    if not description:
+        return
+    length = len(description)
+    if length > DESC_MAX_LEN:
+        issues.append((
+            "ERROR",
+            f"PSA-DESC-01 {path}: {kind} description is {length} characters, "
+            f"over the {DESC_MAX_LEN}-character limit; move rationale to "
+            "deploy-order.md or the configuration workbook.",
+        ))
+    elif length > DESC_WARN_LEN:
+        issues.append((
+            "WARN",
+            f"PSA-DESC-02 {path}: {kind} description is {length} characters, "
+            f"approaching the {DESC_MAX_LEN}-character limit.",
+        ))
 
 
 def check_object_permissions(
@@ -248,6 +306,7 @@ def check_permission_set_architecture(manifest_dir: Path, max_objects: int) -> l
         ps_activation[api_name(path)] = is_true(root, "hasActivationRequired")
         check_field_permissions(path, root, issues)
         check_object_permissions(path, root, max_objects, issues)
+        check_description_length(path, root, "PermissionSet", issues)
 
     muting_roots: dict[str, ET.Element] = {}
     for path in muting_sets:
@@ -256,12 +315,15 @@ def check_permission_set_architecture(manifest_dir: Path, max_objects: int) -> l
             issues.append(("ERROR", f"{path}: unable to parse muting permission set metadata."))
             continue
         muting_roots[api_name(path)] = root
+        check_description_length(path, root, "MutingPermissionSet", issues)
 
     for path in groups:
         root = parse_xml(path)
         if root is None:
             issues.append(("ERROR", f"{path}: unable to parse permission set group metadata."))
             continue
+
+        check_description_length(path, root, "PermissionSetGroup", issues)
 
         members = [(elem.text or "").strip() for elem in children(root, "permissionSets")]
         muters = [(elem.text or "").strip() for elem in children(root, "mutingPermissionSets")]
@@ -309,6 +371,13 @@ def check_permission_set_architecture(manifest_dir: Path, max_objects: int) -> l
             f"Found {len(permission_sets)} permission sets but no permission set groups; "
             "recurring access bundles may be managed as manual assignments.",
         ))
+
+    for profile_path in profiles:
+        root = parse_xml(profile_path)
+        if root is None:
+            issues.append(("ERROR", f"{profile_path}: unable to parse profile metadata."))
+            continue
+        check_description_length(profile_path, root, "Profile", issues)
 
     custom_profiles = [path for path in profiles if "-" not in path.stem]
     if len(custom_profiles) > 8:

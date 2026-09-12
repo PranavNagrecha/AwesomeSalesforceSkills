@@ -203,4 +203,14 @@ The recalculation lifecycle is asynchronous; treating it as instantaneous is the
 python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir force-app/main/default
 ```
 
-Exit 1 means an ERROR: a PSG with no `<permissionSets>`, the same permission set listed twice in one group, a missing `<label>` on a PSG or muting permission set, an unknown `<status>` value, or a file that will not parse. Naming-convention violations and unresolved references are WARNs and exit 0 — add `--strict` where the `PSG_<persona>_<env>` convention is actually enforced.
+Exit 1 means an ERROR: a PSG with no `<permissionSets>`, the same permission set listed twice in one group, a missing `<label>` on a PSG or muting permission set, an unknown `<status>` value, a `description` over 255 characters (`PSGC-DESC-01`), or a file that will not parse. Naming-convention violations, unresolved references, and a `description` over 200 characters (`PSGC-DESC-02`) are WARNs and exit 0 — add `--strict` where the naming convention (or the description headroom) is actually enforced.
+
+---
+
+## Description length
+
+`PermissionSet.description` is capped at 255 characters — the Metadata API Developer Guide: "The permission set description. Limit: 255 characters" (`api_meta` L94788). `MutingPermissionSet` has the same fields as `PermissionSet`, so the same ceiling applies to `MutePS_NoOpportunityDelete.description` above.
+
+`PermissionSetGroup.description` has no stated limit in the guide (`api_meta` L95328 — "The permission set group description provided by the permission set group creator", no `Limit:` clause). Treat it as 255 anyway — **UNVERIFIED (2026-09-11)**: no dry run has directly rejected an over-length PSG description, but `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-11 rejected four over-length `PermissionSet` files, and the `PermissionSetGroup` files that referenced the rejected sets then failed as a cascade with `permission set names are invalid` (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md`, once exported) — the group never gets far enough to have its own description checked.
+
+**Where rationale goes instead.** "Why this PSG exists instead of a mute variant", "which persona this composes", "what license this depends on" belongs in `templates/permission-set-group-composition-template.md`, not in `description`. `scripts/check_permission_set_group_composition.py` enforces the field's own limit: `PSGC-DESC-01` (ERROR) at 255+ characters on any `PermissionSet`, `PermissionSetGroup`, or `MutingPermissionSet` file; `PSGC-DESC-02` (WARN) at 200+ characters as headroom.

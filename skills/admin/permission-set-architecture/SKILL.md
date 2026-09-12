@@ -24,6 +24,7 @@ triggers:
   - "deploy permission sets and permission set groups from sandbox to production"
   - "need a least privilege access bundle model"
   - "permission set group strategy for multiple personas"
+  - "description data value too large max length 255"
 inputs:
   - "current profile, permission-set, and permission-set-group inventory"
   - "target personas, feature bundles, and license constraints"
@@ -35,9 +36,9 @@ outputs:
   - "review findings for profile-heavy or inconsistent access models"
   - "migration plan from profile-centric access to governed bundles"
 dependencies: []
-version: 1.1.1
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-11
 ---
 
 Use this skill when the problem is no longer "which permission do I grant" and has become "how should the org structure access so future changes stay safe?" The goal is to produce a layered access model that supports least privilege, lowers operational risk, and makes persona-based changes predictable.
@@ -142,7 +143,7 @@ Deployable examples of all three, plus `package.xml`, retrieve/deploy commands, 
 2. Draw the license boundaries — group the slices into families per user or permission set license, and decide per set whether `license` is populated or deliberately empty. A shared set assigned across Salesforce and Platform users must leave it empty.
 3. Write object access before field access — `objectPermissions` first, honouring the dependency chain, then `fieldPermissions` only for fields the object grant can carry. Shapes and the full element list are in `references/metadata-examples.md`.
 4. Compose the personas — one PSG per persona listing its `permissionSets`; add a `mutingPermissionSets` entry only for a delta that splitting a set cannot express, and record the business reason in the muting set's `description`.
-5. Check the tree — `python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir force-app/main/default`. It flags edit-without-read FLS, sharing-bypass grants, oversized sets, dangling PSG members, session sets inside groups, and no-op muting entries.
+5. Check the tree — `python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir force-app/main/default`. It flags edit-without-read FLS, sharing-bypass grants, oversized sets, dangling PSG members, session sets inside groups, no-op muting entries, and an over-length `description` (`PSA-DESC-01` ERROR at 255+ characters, `PSA-DESC-02` WARN at 200+).
 6. Deploy in order and wait for recalculation — permission sets before groups before muting; then poll `PermissionSetGroup.Status` until it reads `Updated` (see `references/metadata-examples.md`). A `Failed` status is silent in the deploy result.
 7. Verify against a real user — run the `PermissionSetAssignment` and `ObjectPermissions` verification queries in `references/metadata-examples.md` for one member of each persona, then record the persona-to-bundle matrix in `templates/permission-set-architecture-template.md`.
 
@@ -160,6 +161,7 @@ Deployable examples of all three, plus `package.xml`, retrieve/deploy commands, 
 - [ ] Session-based sets are assigned directly, not through a PSG.
 - [ ] Every PSG reached `Updated` status after deploy and effective access was confirmed with a real user.
 - [ ] The architecture distinguishes feature entitlements from record-sharing decisions.
+- [ ] No `description` on a permission set, muting set, PSG, or profile exceeds 255 characters; rationale lives in `deploy-order.md` or the workbook, not the metadata.
 
 ## Salesforce-Specific Gotchas
 
@@ -168,6 +170,7 @@ Deployable examples of all three, plus `package.xml`, retrieve/deploy commands, 
 3. **Muting only subtracts from grouped permissions** — it never grants access and it cannot fix a poor base design that should have been split into smaller capabilities.
 4. **Apex class, tab, app, and object access often drift separately** — teams sometimes move object permissions into permission sets but forget Apex class access and UI entry points, creating half-migrated bundles.
 5. **A session-based set loses its step-up requirement inside a group** — the Object Reference is explicit that permissions in session-based sets included in a PSG no longer require session activation.
+6. **A `description` over 255 characters fails the deploy, and PSGs fail as a cascade** — the Metadata API guide caps `PermissionSet.description` and `Profile.description` at 255 characters; a permission set rejected on that limit takes every PSG that composes it down with it (`references/gotchas.md`).
 
 Deeper treatment, each with the platform behaviour behind it, in `references/gotchas.md`.
 

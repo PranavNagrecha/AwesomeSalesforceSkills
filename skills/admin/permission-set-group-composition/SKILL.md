@@ -22,6 +22,7 @@ triggers:
   - "expiration date on permission set group assignment"
   - "PSG explosion fifty permission set groups overlapping"
   - "PSG naming convention environment persona"
+  - "description data value too large max length 255"
 inputs:
   - "Existing PSG inventory and the permission sets each PSG includes"
   - "Target persona and the delta between persona and the closest existing PSG"
@@ -35,9 +36,9 @@ outputs:
   - "Naming-convention check report and consolidation candidates"
   - "Assignment lifecycle plan covering expiration, activation, and audit trail"
 dependencies: []
-version: 1.0.1
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-11
 ---
 
 # Permission Set Group Composition
@@ -140,7 +141,7 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 
 ## Recommended Workflow
 
-1. **Inventory existing PSGs.** Run `python3 scripts/check_permission_set_group_composition.py --manifest-dir <path>` (add `--strict` to fail the run on the naming convention as well) against the `permissionsetgroups/` and `permissionsets/` directories — capture which PSes are referenced in multiple PSGs (good — reuse), which PSGs have zero included PSes (orphan), which PSGs use mute PSes (good — explicit subtract), and which names violate the convention.
+1. **Inventory existing PSGs.** Run `python3 scripts/check_permission_set_group_composition.py --manifest-dir <path>` (add `--strict` to fail the run on the naming convention as well) against the `permissionsetgroups/` and `permissionsets/` directories — capture which PSes are referenced in multiple PSGs (good — reuse), which PSGs have zero included PSes (orphan), which PSGs use mute PSes (good — explicit subtract), which names violate the convention, and any `description` over length (`PSGC-DESC-01` ERROR at 255+ characters, `PSGC-DESC-02` WARN at 200+).
 2. **Identify the closest existing PSG.** Compare the target persona to existing PSGs and decide: subtractive delta (mute), additive delta (new PS), or different combination (new PSG).
 3. **Apply the Decision Guidance table.** Choose mute, new PS, or new PSG based on the row that matches the request. Avoid cloning; cloning is the explosion vector.
 4. **Compose the PSG.** Use the template at `templates/permission-set-group-composition-template.md`. Fill persona name, included PSes, mute PS (if any), license dependency, and lifecycle stage (draft / piloted / production).
@@ -159,6 +160,7 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 - [ ] Each included PS appears in ≥2 PSGs OR is documented as persona-specific.
 - [ ] Mute Permission Sets retrieved as separate metadata in source-tracked deployments.
 - [ ] Setup Audit Trail change reviewed for the rollout.
+- [ ] No `description` on a permission set, PSG, or mute set exceeds 255 characters; composition rationale lives in the template, not the metadata.
 
 ## Salesforce-Specific Gotchas
 
@@ -167,6 +169,7 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 3. **You cannot delete a PS while any PSG still references it.** Salesforce returns a delete error; the fix is the detach → wait → delete sequence.
 4. **Mute Permission Sets are separate metadata.** A change set or `package.xml` retrieve that pulls only `PermissionSetGroup` will not bring the mutes — they require an explicit `MutingPermissionSet` (Metadata API type) entry.
 5. **License mismatch on an included PS silently breaks the PSG for some users.** A PSG that includes a PS scoped to "Salesforce" license cannot grant those permissions to a user on the "Platform" license — the PSG is valid, but the effective access for that user is reduced without warning.
+6. **A `description` over 255 characters fails the deploy, and the PSG fails as a cascade.** `PermissionSet.description` is capped at 255 characters; a PSG that composes a rejected set fails too, with `permission set names are invalid` — a composition-layer symptom of a field-length problem one layer down.
 
 ## Output Artifacts
 
@@ -175,7 +178,7 @@ Use this when the request is "I need persona Y who is mostly like persona X exce
 | Composition plan | Persona, included PSes, mute PS, license dependency, lifecycle stage (uses the template) |
 | Recalculation rollout sequence | Ordered list of PSGs that will recalc when a referenced PS changes, with a quiet-window recommendation |
 | Deletion plan | Detach → wait → delete sequence for retiring a PS that is referenced by one or more PSGs |
-| Composition checker report | Output of `scripts/check_permission_set_group_composition.py` — ERRORs on platform facts (empty PSG, duplicate PS in a group, missing `label`, unknown `status`), WARNs on naming-convention violations and unresolved references, GOODs on multi-PSG reuse and mute usage |
+| Composition checker report | Output of `scripts/check_permission_set_group_composition.py` — ERRORs on platform facts (empty PSG, duplicate PS in a group, missing `label`, unknown `status`, a `description` over 255 characters — `PSGC-DESC-01`), WARNs on naming-convention violations, unresolved references, and a `description` over 200 characters (`PSGC-DESC-02`), GOODs on multi-PSG reuse and mute usage |
 
 ## Related Skills
 

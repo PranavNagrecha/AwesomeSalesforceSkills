@@ -109,3 +109,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** API version 25.0 and later, where every profile is associated with a permission set holding its user, object, and field permissions, exposed as `PermissionSet.IsOwnedByProfile = true` with a populated `ProfileId`. Those sets are queryable but not modifiable.
 
 **How to avoid:** Filter on `IsOwnedByProfile = false` for anything that counts or audits real permission sets, and use `IsOwnedByProfile = true` deliberately when the question is "what does this profile still carry". The Object Reference also warns not to rely on the `Name` and `Label` returned for profile-owned sets, because those values can change.
+
+---
+
+## A `description` Over 255 Characters Fails The Deploy, And Takes The Group With It
+
+**What happens:** A permission set, muting permission set, or profile carries a long rationale-style `description` — who owns it, why it exists, what it composes into — and the deploy is rejected with `Description: data value too large … (max length=255)`. Every `PermissionSetGroup` that lists the failed set among its `permissionSets` then fails too, with the unrelated-looking `permission set names are invalid`, because the member it depends on never landed.
+
+**When it occurs:** Any deploy where `description` reads like a design note instead of a label. The Metadata API guide states the limit directly for `PermissionSet` and `Profile`: "Limit: 255 characters" on both. `MutingPermissionSet` shares `PermissionSet`'s field table. Verified by `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-11: four permission sets and three profiles were rejected on this exact error, and the three permission set groups that referenced the rejected sets failed as a cascade (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md`, once exported).
+
+**How to avoid:** Keep `description` to a one-line capability/owner statement and move the rationale to `deploy-order.md` or the configuration workbook. `scripts/check_permission_set_architecture.py` flags this before deploy: `PSA-DESC-01` (ERROR) at 255+ characters, `PSA-DESC-02` (WARN) at 200+.

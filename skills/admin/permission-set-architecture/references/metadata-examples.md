@@ -290,3 +290,15 @@ WHERE (PermissionsModifyAllRecords = true OR PermissionsViewAllRecords = true)
 ```
 
 Note the limits of these queries: absence of an `ObjectPermissions` row means no access, so you cannot filter on `PermissionsRead = false` to find sets without access — the query returns nothing. And a set holding `Modify All Data` shows object rows whose Id begins with `000`, because that user permission grants full object access without storing real permission records.
+
+---
+
+## 7. Description length
+
+`PermissionSet.description` and `Profile.description` are both capped at 255 characters — the Metadata API Developer Guide: "The permission set description. Limit: 255 characters" (`api_meta` L94788) and "The profile description. Limit: 255 characters" (`api_meta` L97678). `MutingPermissionSet` has the same fields as `PermissionSet`, so the same ceiling applies to its `description` too.
+
+`PermissionSetGroup.description` carries no stated limit in the guide (`api_meta` L95328 — "The permission set group description provided by the permission set group creator", no `Limit:` clause). Treat it as 255 anyway — **UNVERIFIED (2026-09-11)**: no dry run has directly rejected an over-length PSG description, but `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-11 rejected four over-length `PermissionSet` files, and the three `PermissionSetGroup` files that referenced them then failed as a cascade with `permission set names are invalid` (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md`, once exported) — a PSG cannot deploy once a member set it depends on is rejected, regardless of the group's own description length.
+
+**Where rationale goes instead.** A 300–450 character justification — who owns a set, why it exists, what it composes into, which open question it resolves — does not fit in `description` and should never be squeezed into it. Write that in the build's `deploy-order.md` or the configuration workbook, next to the component it explains, and keep `description` to what a Setup user reads at a glance: capability and owner, one line.
+
+`scripts/check_permission_set_architecture.py` enforces this: `PSA-DESC-01` (ERROR) at 255+ characters on any `PermissionSet`, `MutingPermissionSet`, `PermissionSetGroup`, or `Profile` file; `PSA-DESC-02` (WARN) at 200+ characters as headroom.

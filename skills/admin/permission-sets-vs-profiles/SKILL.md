@@ -25,12 +25,13 @@ triggers:
   - "where are a profile's object permissions stored in soql"
   - "copied tabVisibilities into a permission set and the deploy failed"
   - "should I move this permission from the profile to a permission set"
+  - "description data value too large max length 255"
 inputs: ["persona matrix", "current access model", "managed package constraints"]
 outputs: ["permission model recommendation", "profile residue list — what cannot move", "deployable base-profile and permission-set XML", "access migration findings", "least-privilege guidance"]
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-11
 ---
 
 You are a Salesforce Admin expert in access control architecture. Your goal is to design a permission model that follows least-privilege, scales as the org grows, and follows Salesforce's recommended permission-set-led model — a recommendation, not a deadline (see **Salesforce roadmap callout** below). Use this skill when there are too many profiles and the user wants to know how to simplify—typically by moving to permission sets and permission set groups.
@@ -158,7 +159,7 @@ Every user =
 2. **Build the manifest before the retrieve** — name every object, field, tab, app, record type, layout and class whose permissions are in scope, then retrieve with `--manifest`. A `Profile:` retrieve without them returns an incomplete file (`references/gotchas.md`, "A Profile Retrieve Returns Only What the Rest of the Manifest Asked For")
 3. **Write the pair** — the base profile and the receiving permission set, from the shapes in `references/metadata-examples.md`. Map `tabVisibilities`→`tabSettings` and drop every `<default>` from the permission-set side; leave the `default` app and record type on the profile
 4. **Check the licence pairing** — `SELECT Id, Profile.UserLicenseId FROM User` against `SELECT Id, LicenseId FROM PermissionSet`. A mismatch blocks the assignment, so resolve it before the cutover rather than during it
-5. **Lint the files** — `python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir force-app/main/default`. It flags migratable grants still sitting on a profile, profile-only elements wrongly placed in a permission set, edits to `custom=false` profiles, and object permissions duplicated across a profile and a group member
+5. **Lint the files** — `python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir force-app/main/default`. It flags migratable grants still sitting on a profile, profile-only elements wrongly placed in a permission set, edits to `custom=false` profiles, object permissions duplicated across a profile and a group member, and an over-length `description` (`PSVP-DESC-01` ERROR at 255+ characters, `PSVP-DESC-02` WARN at 200+)
 6. **Deploy in order, permission set first** — validate-only, then permission set, then group, then the stripped profile. Reversing the order leaves a window with no access; and because profile deploy *overlays*, any permission you mean to revoke must be written out explicitly as `false`
 7. **Verify against the org, not the deploy log** — run the `IsOwnedByProfile` and assignment-count SOQL in `references/metadata-examples.md` § Verify, and open Setup → Users → the migrated user → **View Summary** to confirm effective access matches the pre-migration baseline
 
@@ -175,8 +176,9 @@ For a full org-scale decomposition of a live profile — inventory, category cla
 - **Managed packages and profiles**: Some AppExchange packages require their managed profile to be assigned. You can layer Permission Sets on top, but you cannot always replace the package profile. Document this as an exception.
 - **A profile's permissions are not stored on the Profile object**: since API 25.0 they live in a `PermissionSet` row flagged `IsOwnedByProfile = true`. Query `ObjectPermissions` with `WHERE Parent.IsOwnedByProfile = TRUE`, key on `ProfileId`, and treat those rows as read-only.
 - **Profile metadata deploy overlays, it does not replace**: deleting a block from the XML revokes nothing. Write the permission out explicitly as `false` or the strip phase silently does nothing.
+- **`description` over 255 characters fails the deploy; PSGs fail as a cascade**: both `Profile.description` and `PermissionSet.description` are capped at 255 characters, and a PSG that composes a rejected set fails too, with an unrelated-looking `permission set names are invalid`.
 
-Deeper treatment of all twelve, with the guide passages behind them, in `references/gotchas.md`.
+Deeper treatment of all fourteen, with the guide passages behind them, in `references/gotchas.md`.
 
 ## Proactive Triggers
 
@@ -187,6 +189,7 @@ Surface these WITHOUT being asked:
 - **`ViewAllData` or `ModifyAllData` on any non-admin permission set** → Flag as Critical immediately. No justification is acceptable for community/portal users. Internal users require documented approval.
 - **Permission Set Group not used where 3+ Perm Sets overlap for the same persona** → Flag. If users of the same type always get the same 3 Perm Sets, that's a PSG waiting to be created. Managing individual Perm Set assignments at scale is an administrative burden and an audit nightmare.
 - **Perm Set with 50+ object permissions checked** → Flag. This is likely a copy of a legacy profile being ported into a Perm Set. It defeats the purpose of granular permission management.
+- **`description` reads like a design note, not a label** → Flag before deploy. Over 255 characters fails outright (`Description: data value too large … (max length=255)`); over 200 is worth trimming now. Rationale belongs in `templates/permission-set-design-template.md` or `deploy-order.md`.
 
 ## Output Artifacts
 

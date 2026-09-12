@@ -33,6 +33,22 @@ and reports, by severity:
   INFO   No PSG files under the scanned tree; nothing to compose.
   GOOD   PSes referenced in multiple PSGs (composition reuse — desired)
   GOOD   PSGs that include a Mute Permission Set (explicit subtract — desired)
+  ERROR  PSGC-DESC-01 -- a PermissionSet, PermissionSetGroup, or
+         MutingPermissionSet file whose <description> exceeds 255 characters.
+         Grounded for PermissionSet: Metadata API Developer Guide, "The
+         permission set description. Limit: 255 characters." (api_meta
+         L94788); MutingPermissionSet shares PermissionSet's field table.
+         Empirically confirmed by `sf project deploy start --dry-run` against
+         a Summer '26 developer org on 2026-09-11: four PermissionSet files
+         rejected with `Description: data value too large ... (max
+         length=255)` (examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md,
+         once exported). PermissionSetGroup.description has no documented
+         limit (api_meta L95328) -- UNVERIFIED (2026-09-11) as a direct
+         rejection, applied here anyway because a PSG that references a
+         rejected member set fails to deploy as a cascade ("permission set
+         names are invalid").
+  WARN   PSGC-DESC-02 -- the same file types with a <description> over 200
+         characters (headroom below the 255-character limit).
 
 Naming conventions are house style, not platform behaviour, so they never
 fail the run on their own. Use `--strict` in a governance gate where the
@@ -73,6 +89,12 @@ MUTE_NAME_RE = re.compile(r"^MutePS_[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*$")
 # PermissionSetGroup.status is read-only on deploy; the Metadata API documents
 # exactly these values. Absence is normal, an unknown value is not.
 PSG_STATUS_VALUES = {"Updated", "Outdated", "Updating", "Failed"}
+
+# PSGC-DESC-01 / PSGC-DESC-02 thresholds. 255 is the Metadata API's documented
+# ceiling for PermissionSet.description; 200 is headroom to catch a
+# description before it grows past the limit.
+DESC_MAX_LEN = 255
+DESC_WARN_LEN = 200
 
 
 def parse_args() -> argparse.Namespace:
@@ -146,6 +168,44 @@ def child_text_values(root: ET.Element, child_name: str) -> list[str]:
     return results
 
 
+def check_description_length(
+    path: Path, root: ET.Element, kind: str
+) -> tuple[list[str], list[str]]:
+    """PSGC-DESC-01 (ERROR, >255 chars) / PSGC-DESC-02 (WARN, >200 chars).
+
+    Grounded for PermissionSet: Metadata API Developer Guide, "The permission
+    set description. Limit: 255 characters." (api_meta L94788).
+    MutingPermissionSet has the same field table as PermissionSet.
+    Empirically confirmed by `sf project deploy start --dry-run` against a
+    Summer '26 developer org on 2026-09-11: four PermissionSet files rejected
+    with `Description: data value too large ... (max length=255)`
+    (examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md, once
+    exported). PermissionSetGroup.description has no documented limit
+    (api_meta L95328) -- UNVERIFIED (2026-09-11) as a direct rejection,
+    applied here anyway because a PSG that references a rejected member set
+    fails to deploy as a cascade ("permission set names are invalid")
+    regardless of its own description length.
+    """
+    errs: list[str] = []
+    warns: list[str] = []
+    description = "".join(child_text_values(root, "description"))
+    if not description:
+        return errs, warns
+    length = len(description)
+    if length > DESC_MAX_LEN:
+        errs.append(
+            f"{path}: PSGC-DESC-01 {kind} description is {length} characters, "
+            f"over the {DESC_MAX_LEN}-character limit; move rationale to "
+            "deploy-order.md or the configuration workbook."
+        )
+    elif length > DESC_WARN_LEN:
+        warns.append(
+            f"{path}: PSGC-DESC-02 {kind} description is {length} characters, "
+            f"approaching the {DESC_MAX_LEN}-character limit."
+        )
+    return errs, warns
+
+
 def analyse(
     manifest_dir: Path,
 ) -> tuple[list[str], list[str], list[str], list[str]]:
@@ -179,6 +239,18 @@ def analyse(
                 f"{mute_path}: muting permission set has no <label>; label is a "
                 f"required field and the file will not deploy without one."
             )
+        desc_errs, desc_warns = check_description_length(mute_path, mute_root, "MutingPermissionSet")
+        errors.extend(desc_errs)
+        warns.extend(desc_warns)
+
+    for ps_path in ps_files:
+        ps_root = parse_xml(ps_path)
+        if ps_root is None:
+            errors.append(f"{ps_path}: unable to parse permission set metadata.")
+            continue
+        desc_errs, desc_warns = check_description_length(ps_path, ps_root, "PermissionSet")
+        errors.extend(desc_errs)
+        warns.extend(desc_warns)
 
     ps_names_known: set[str] = {stem_developer_name(p) for p in ps_files}
     mute_names_known: set[str] = {stem_developer_name(p) for p in mute_files}
@@ -198,6 +270,10 @@ def analyse(
         if root is None:
             errors.append(f"{psg_path}: unable to parse PSG metadata.")
             continue
+
+        desc_errs, desc_warns = check_description_length(psg_path, root, "PermissionSetGroup")
+        errors.extend(desc_errs)
+        warns.extend(desc_warns)
 
         included_pses = child_text_values(root, "permissionSets")
         included_mutes = child_text_values(root, "mutingPermissionSets")

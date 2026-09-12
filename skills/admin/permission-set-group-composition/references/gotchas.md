@@ -104,3 +104,13 @@ Two deployments, one wait. The wait is non-negotiable.
 **When it occurs:** In orgs that allow direct production admin work alongside source-tracked deployments. The two control planes do not share a history view by default.
 
 **How to avoid:** When access behaviour changes unexpectedly, check Setup Audit Trail for `PermissionSetGroup` and `PermissionSet` entries before assuming a bad deployment. The audit trail captures the assignor, timestamp, and old/new value.
+
+---
+
+## 9. `description` over 255 characters fails the deploy; PSGs fail as a cascade
+
+**What happens:** A permission set or muting permission set going into a PSG carries a long rationale-style `description` and is rejected with `Description: data value too large … (max length=255)`. Every PSG that composes it then fails too, with `permission set names are invalid` — a composition-layer symptom of a field-length problem one layer down.
+
+**When it occurs:** Any time `description` is used to record why a PS exists rather than what it is. The Metadata API guide states the limit directly for `PermissionSet`: "Limit: 255 characters"; `MutingPermissionSet` shares the same field table. Verified by `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-11: four permission sets were rejected on this exact error, and the permission set groups that referenced them failed as a cascade (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md`, once exported).
+
+**How to avoid:** Keep `description` to a one-line label and record composition rationale in `templates/permission-set-group-composition-template.md`. `scripts/check_permission_set_group_composition.py` flags this: `PSGC-DESC-01` (ERROR) at 255+ characters, `PSGC-DESC-02` (WARN) at 200+.

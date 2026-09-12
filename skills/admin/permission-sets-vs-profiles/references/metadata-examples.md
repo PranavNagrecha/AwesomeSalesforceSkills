@@ -355,6 +355,16 @@ WHERE PermissionSetId IN (
 
 **Setup check.** Confirm the residue actually took effect on a real user: Setup → Users → the migrated user → **View Summary** shows combined effective access across the profile and every assigned permission set. If Read appears there and step 2 returned nothing, the grant came from the permission set — which is the intended end state.
 
+## Description length
+
+`Profile.description` and `PermissionSet.description` are both capped at 255 characters — the Metadata API Developer Guide: "The profile description. Limit: 255 characters" (`api_meta` L97678) and "The permission set description. Limit: 255 characters" (`api_meta` L94788).
+
+`PermissionSetGroup.description` has no stated limit in the guide (`api_meta` L95328 — "The permission set group description provided by the permission set group creator", no `Limit:` clause). Treat it as 255 anyway — **UNVERIFIED (2026-09-11)**: no dry run has directly rejected an over-length PSG description, but `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-11 rejected four over-length `PermissionSet` files and three over-length `Profile` files, and the `PermissionSetGroup` files that referenced the rejected sets then failed as a cascade with `permission set names are invalid` (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md`, once exported).
+
+**Where rationale goes instead.** Residue reasoning ("why this stays on the profile", "which persona this base is for", "what was deferred to a later phase") belongs in the build's `deploy-order.md` or `templates/permission-set-design-template.md`, not in `description`. Keep the metadata field to a one-line label a Setup user can scan.
+
+`scripts/check_access_model.py` enforces this: `PSVP-DESC-01` (ERROR) at 255+ characters on any `Profile`, `PermissionSet`, or `PermissionSetGroup` file; `PSVP-DESC-02` (WARN) at 200+ characters as headroom.
+
 ## Also read
 
 - `references/gotchas.md` — the platform behaviours that break this split in practice

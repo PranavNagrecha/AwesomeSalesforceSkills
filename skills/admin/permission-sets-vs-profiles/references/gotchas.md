@@ -168,3 +168,13 @@ UNVERIFIED (2026-09-04): whether a standard profile can be deleted at all is not
 **When it occurs:** Field-level audits, and any diff that counts `fieldPermissions` entries to measure how permissive a permission set is. An object with `viewAllFields` scores as the most restrictive one in the file while granting read on every field it has.
 
 **How to avoid:** Read `<viewAllFields>` before reading the field list, and treat `viewAllFields=true` as a full-object read grant regardless of what `fieldPermissions` shows. Two adjacent retrieval limits belong in the same check: from API 30.0 onward permissions for **required** fields can be neither retrieved nor deployed, and from API 54.0 onward only field permissions that are *enabled* in the permission set are returned in queries — so absence of a field never means "explicitly denied", only "no record exists".
+
+---
+
+## `description` Over 255 Characters Fails The Deploy; PSGs Fail As A Cascade
+
+**What happens:** The base profile or the receiving permission set carries a long rationale-style `description` — why the residue split was made, which persona this is for, what was deferred — and the deploy is rejected with `Description: data value too large … (max length=255)`. Any `PermissionSetGroup` that composes the failed permission set then fails too, with `permission set names are invalid`, which reads as an unrelated error.
+
+**When it occurs:** Any deploy where `description` is used as a design note. The Metadata API guide states it directly for both types: "The profile description. Limit: 255 characters" and "The permission set description. Limit: 255 characters." Verified by `sf project deploy start --dry-run` against a Summer '26 developer org on 2026-09-11: four permission sets and three profiles were rejected on this exact error, and the permission set groups that referenced the rejected sets failed as a cascade (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md`, once exported).
+
+**How to avoid:** Keep `description` to a one-line label and put the residue rationale in `templates/permission-set-design-template.md` or the build's `deploy-order.md`. `scripts/check_access_model.py` flags this before deploy: `PSVP-DESC-01` (ERROR) at 255+ characters, `PSVP-DESC-02` (WARN) at 200+.
