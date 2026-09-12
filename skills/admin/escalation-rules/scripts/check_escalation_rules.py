@@ -44,6 +44,12 @@ ERROR (exit 1)
   E8  An active rule has no <ruleEntry>: the rule is live and nothing escalates.
   E9  An active entry has no <escalationAction>: the entry can match and nothing
       happens.
+  E10 An action has <notifyCaseOwner>true</notifyCaseOwner> or a non-empty
+      <notifyTo>, and no non-empty <notifyToTemplate>. Neither field carries a
+      Required marker in the guide's EscalationAction table, but a dry-run
+      deploy of exactly this shape fails: "EscalationRules Case:
+      notifyToTemplate is required". UNVERIFIED (2026-09-12): proven live, not
+      stated in the guide.
 
 WARN (printed, exit 0)
   W0  No EscalationRules file found under --manifest-dir.
@@ -63,6 +69,11 @@ INFO (printed, exit 0)
       table and NOT in the App Limits cheat sheet, so it is reported, not enforced.
   I3  minutesToEscalation restated in hours, so an hours-for-minutes
       transcription error is visible in the lint output.
+  I4  notifyToTemplate or assignedToTemplate is set but is not folder-qualified
+      (<folder>/<name>). Both resolve at deploy time by folder path, the same
+      way an assignedTo queue/user name resolves against the manifest (E7).
+      Reported, not enforced — a template can legitimately live in a
+      root-less personal folder.
 
 Worked examples
 ---------------
@@ -72,9 +83,21 @@ fences under ``escalationRules/``) and the checker exits 0 with INFO notes only:
     $ python3 check_escalation_rules.py --manifest-dir /tmp/fixture
     INFO  I2  [Case.escalationRules-meta.xml :: Support_SLA_Escalation :: entry 1] 2 ...
     WARN  W6  [... :: action 1] minutesToEscalation 15 is below 60 ...
-    OK: no ERROR findings (2 warning(s), 12 info note(s)).
+    OK: no ERROR findings (1 warning(s), 10 info note(s)).
     $ echo $?
     0
+
+An action that notifies the case owner with no ``notifyToTemplate`` — valid XML,
+rejected only at org validation (``EscalationRules Case: notifyToTemplate is
+required``), caught here before the deploy::
+
+    $ python3 check_escalation_rules.py --manifest-dir /tmp/e10-negative
+    ERROR E10  [... :: action 1] notifyCaseOwner is true but notifyToTemplate is
+               empty. ... Set notifyToTemplate to a folder-qualified Classic
+               email template, e.g. 'unfiled$public/Template_Name'.
+    1 error(s), 0 warning(s), 2 info note(s).
+    $ echo $?
+    1
 
 The hours-for-minutes transcription error, with a target that is not in the
 package (``minutesToEscalation`` 8, ``assignedTo`` ``Nonexistent_Queue``,
@@ -452,11 +475,12 @@ def check_escalation_rules_file(
                     )
 
                 # --- W4: does the action do anything? -----------------------
-                notifies = bool(
-                    _text(action, t("notifyTo"))
-                    or _text(action, t("notifyEmail"))
-                    or _text(action, t("notifyCaseOwner")).lower() == "true"
-                )
+                notify_case_owner = _text(action, t("notifyCaseOwner")).lower() == "true"
+                notify_to = _text(action, t("notifyTo"))
+                notify_email = _text(action, t("notifyEmail"))
+                notify_to_template = _text(action, t("notifyToTemplate"))
+                assigned_to_template = _text(action, t("assignedToTemplate"))
+                notifies = bool(notify_to or notify_email or notify_case_owner)
                 if not notifies and not assigned_to:
                     findings.append(
                         Finding(
@@ -466,6 +490,51 @@ def check_escalation_rules_file(
                             "nothing observable.",
                         )
                     )
+
+                # --- E10: notifyToTemplate is required whenever the case owner or
+                # a named user is notified. Not stated as Required in the Metadata
+                # API guide's EscalationAction table (notifyCaseOwner, notifyTo,
+                # notifyToTemplate all carry plain `string`/`boolean` types with no
+                # Required marker), but proven live: a dry-run deploy of an action
+                # with notifyCaseOwner true and no notifyToTemplate fails with
+                # "EscalationRules Case: notifyToTemplate is required". -----------
+                if (notify_case_owner or notify_to) and not notify_to_template:
+                    trigger = (
+                        "notifyCaseOwner is true" if notify_case_owner
+                        else f"notifyTo is '{notify_to}'"
+                    )
+                    findings.append(
+                        Finding(
+                            "ERROR", "E10", action_where,
+                            f"{trigger} but notifyToTemplate is empty. "
+                            "UNVERIFIED (2026-09-12): not marked Required in the Metadata "
+                            "API guide's EscalationAction table, but proven live in a "
+                            "dry-run deploy: \"EscalationRules Case: notifyToTemplate is "
+                            "required\". Set notifyToTemplate to a folder-qualified Classic "
+                            "email template, e.g. 'unfiled$public/Template_Name'.",
+                        )
+                    )
+
+                # --- I4: template names resolve at deploy time by folder path,
+                # the same way an assignedTo queue/user name resolves against the
+                # manifest (E7 above). An unqualified name is not wrong metadata —
+                # it is reported, not enforced, because a template can legitimately
+                # live in a root-less personal folder — but it is where a copy-paste
+                # from a different org silently points at the wrong folder. --------
+                for template_field, template_value in (
+                    ("notifyToTemplate", notify_to_template),
+                    ("assignedToTemplate", assigned_to_template),
+                ):
+                    if template_value and "/" not in template_value:
+                        findings.append(
+                            Finding(
+                                "INFO", "I4", action_where,
+                                f"{template_field} '{template_value}' is not "
+                                "folder-qualified (<folder>/<name>, e.g. "
+                                "'unfiled$public/Template_Name'). Deploy-time resolution "
+                                "matches by folder and name; confirm this is deliberate.",
+                            )
+                        )
 
     if len(active_rule_names) > 1:
         findings.append(

@@ -59,13 +59,16 @@ Three entries in one rule, each with a different clock, and a second rule deploy
                 <notifyTo>duty.manager@acme.example</notifyTo>
                 <notifyToTemplate>unfiled$public/Sev1_Escalation_Warning</notifyToTemplate>
             </escalationAction>
-            <!-- Stage 2 at 60 wall-clock minutes: change of owner. This writes OwnerId. -->
+            <!-- Stage 2 at 60 wall-clock minutes: change of owner. This writes OwnerId.
+                 notifyCaseOwner true also requires notifyToTemplate — see the E10 note
+                 below the file; assignedToTemplate covers the new-owner email. -->
             <escalationAction>
                 <minutesToEscalation>60</minutesToEscalation>
                 <assignedTo>Sev1_Bridge_Queue</assignedTo>
                 <assignedToType>Queue</assignedToType>
                 <assignedToTemplate>unfiled$public/Sev1_Handover</assignedToTemplate>
                 <notifyCaseOwner>true</notifyCaseOwner>
+                <notifyToTemplate>unfiled$public/Sev1_Escalation_Warning</notifyToTemplate>
                 <notifyEmail>incident-bridge@acme.example</notifyEmail>
             </escalationAction>
         </ruleEntry>
@@ -106,11 +109,13 @@ Three entries in one rule, each with a different clock, and a second rule deploy
             <escalationStartTime>CaseLastModified</escalationStartTime>
             <!-- Any edit disables escalation for this tier: touching the case is the SLA. -->
             <disableEscalationWhenModified>true</disableEscalationWhenModified>
-            <!-- 24 business hours = 1440 minutes, the value used in the guide's own sample. -->
+            <!-- 24 business hours = 1440 minutes, the value used in the guide's own sample.
+                 notifyCaseOwner true requires notifyToTemplate at deploy time (E10). -->
             <escalationAction>
                 <minutesToEscalation>1440</minutesToEscalation>
                 <notifyCaseOwner>true</notifyCaseOwner>
                 <notifyTo>support.manager@acme.example</notifyTo>
+                <notifyToTemplate>unfiled$public/Case_Escalation_Warning</notifyToTemplate>
             </escalationAction>
         </ruleEntry>
     </escalationRule>
@@ -134,6 +139,7 @@ Three entries in one rule, each with a different clock, and a second rule deploy
                 <minutesToEscalation>120</minutesToEscalation>
                 <notifyCaseOwner>true</notifyCaseOwner>
                 <notifyTo>support.manager@acme.example</notifyTo>
+                <notifyToTemplate>unfiled$public/Case_Escalation_Warning</notifyToTemplate>
             </escalationAction>
         </ruleEntry>
     </escalationRule>
@@ -150,6 +156,8 @@ How to read it:
 - **`booleanFilter` numbers the `criteriaItems` in document order.** Without it they are ANDed.
 - **`escalationStartTime` and `disableEscalationWhenModified` are different levers.** `CaseLastModified` *restarts* the clock on an edit; `disableEscalationWhenModified` *stops* escalation on an edit. Entry 3 uses both, so any touch ends escalation for that case.
 - **Templates must be Classic** — the guide notes Lightning email templates are not packageable and recommends Classic for `assignedToTemplate`.
+- **`notifyToTemplate` is required whenever `notifyCaseOwner` is `true` or `notifyTo` is set.** Neither field is marked Required in the Metadata API guide's `EscalationAction` table, but a dry-run deploy of an action with `notifyCaseOwner` `true` and no `notifyToTemplate` fails with `EscalationRules Case: notifyToTemplate is required` — UNVERIFIED (2026-09-12): proven live, not stated in the guide. `scripts/check_escalation_rules.py` E10 catches it before the deploy does. Every action above that sets `notifyCaseOwner` `true` or `notifyTo` also carries a folder-qualified `notifyToTemplate` for this reason.
+- **Template names should be folder-qualified** (`<folder>/<name>`, e.g. `unfiled$public/Sev1_Handover`) — they resolve at deploy time by folder path, the same way `assignedTo` resolves a queue or user name against the manifest. An unqualified name is not invalid metadata, but `scripts/check_escalation_rules.py` I4 reports it because it is where a template copied from a different org silently points at the wrong folder.
 - Every queue, user, calendar, and template named here must already exist in the target org, or the deploy fails on the reference, not on the rule.
 
 ### Adding one entry to a retrieved file
@@ -177,6 +185,7 @@ Rule entries are positional — order in the file is evaluation order. To insert
                 <minutesToEscalation>10</minutesToEscalation>
                 <notifyEmail>secops@acme.example</notifyEmail>
                 <notifyCaseOwner>true</notifyCaseOwner>
+                <notifyToTemplate>unfiled$public/Security_Incident_Warning</notifyToTemplate>
             </escalationAction>
         </ruleEntry>
     </escalationRule>
@@ -229,6 +238,48 @@ sf project deploy start --source-dir force-app/main/default/escalationRules \
 ```
 
 Deploy order: business-hours calendars (`Settings:BusinessHours`), then queues and Classic email templates, then the escalation rules that name them.
+
+## Verification: E10 catches the missing `notifyToTemplate` before the deploy does
+
+Live finding (case-onboarding M4-S04, `sf project deploy start --dry-run` at API 67.0, 2026-09-12): an action with `<notifyCaseOwner>true</notifyCaseOwner>` and no `<notifyToTemplate>` deploys as valid XML and fails only at org validation, with `EscalationRules Case: notifyToTemplate is required`. The negative fixture below reproduces it locally, with no org needed:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<EscalationRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <escalationRule>
+        <fullName>Broken_SLA_Escalation</fullName>
+        <active>true</active>
+        <ruleEntry>
+            <businessHoursSource>None</businessHoursSource>
+            <criteriaItems>
+                <field>Case.Priority</field>
+                <operation>equals</operation>
+                <value>High</value>
+            </criteriaItems>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+            <!-- notifyCaseOwner true with no notifyToTemplate: valid XML shape,
+                 rejected by the org at deploy time, caught here by E10. -->
+            <escalationAction>
+                <minutesToEscalation>240</minutesToEscalation>
+                <notifyCaseOwner>true</notifyCaseOwner>
+            </escalationAction>
+        </ruleEntry>
+    </escalationRule>
+</EscalationRules>
+```
+
+```bash
+$ python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir /tmp/e10-negative
+ERROR E10  [Case.escalationRules-meta.xml :: Broken_SLA_Escalation :: entry 1 :: action 1] notifyCaseOwner is true but notifyToTemplate is empty. UNVERIFIED (2026-09-12): not marked Required in the Metadata API guide's EscalationAction table, but proven live in a dry-run deploy: "EscalationRules Case: notifyToTemplate is required". Set notifyToTemplate to a folder-qualified Classic email template, e.g. 'unfiled$public/Template_Name'.
+INFO  I2  [Case.escalationRules-meta.xml :: Broken_SLA_Escalation :: entry 1] 1 escalation action(s) on this entry. The five-actions-per-entry ceiling is not in the Metadata API guide or the App Limits cheat sheet, so this is reported, not enforced.
+INFO  I3  [Case.escalationRules-meta.xml :: Broken_SLA_Escalation :: entry 1 :: action 1] minutesToEscalation 240 = 4h. Setup shows hours; the metadata is minutes. Confirm against the agreed SLA.
+
+1 error(s), 0 warning(s), 2 info note(s).
+$ echo $?
+1
+```
+
+Fix it by adding a folder-qualified `<notifyToTemplate>`, and the same fixture exits 0.
 
 ## Parallel run and cutover
 

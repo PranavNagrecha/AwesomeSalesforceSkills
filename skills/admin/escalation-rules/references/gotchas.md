@@ -129,3 +129,15 @@ UNVERIFIED (2026-09-04): the Metadata API guide's `RuleEntry` and `EscalationAct
 **When it occurs:** On any tier whose entry criteria do not mention `Status` or `IsClosed`, in an org where cases are closed before the longest threshold expires.
 
 **How to avoid:** Do not rely on either belief. Put the exclusion in the entry criteria explicitly — `Case.Status notEqual Closed` as a `criteriaItems` entry, or `NOT(IsClosed)` inside a `formula`, as the entries in `references/metadata-examples.md` do. It costs one criterion, it is visible in review, and it makes the behaviour identical whichever belief is correct. Then prove it once in a sandbox: create a case, close it before the threshold, and check whether the escalation email arrives.
+
+---
+
+## Gotcha 13: `notifyToTemplate` Is Required Whenever the Case Owner Is Notified — But the Guide Never Says So
+
+**What happens:** An `escalationAction` with `<notifyCaseOwner>true</notifyCaseOwner>` (or a populated `<notifyTo>`) and no `<notifyToTemplate>` is well-formed XML. It parses, and nothing in the Metadata API guide's `EscalationAction` field table marks `notifyToTemplate` Required — `notifyCaseOwner`, `notifyTo`, and `notifyToTemplate` are each documented as a plain `boolean` or `string` with no dependency noted between them. The org disagrees: `sf project deploy start --dry-run` rejects the action with `EscalationRules Case: notifyToTemplate is required`. The failure surfaces at validation, not at authoring time, and not from anything printed in this skill's own metadata table.
+
+UNVERIFIED (2026-09-12): proven live in a dry-run deploy (case-onboarding build, milestone M4-S04, API 67.0); not stated in the Metadata API Developer Guide's `EscalationAction` table (`notifyCaseOwner`, `notifyTo`, `notifyToTemplate` field entries).
+
+**When it occurs:** Any escalation action written to notify the case owner or a named user — commonly the first, warn-only stage of a tiered rule, exactly the shape in `references/metadata-examples.md` entries 1–3 before a `notifyToTemplate` is added.
+
+**How to avoid:** Whenever `notifyCaseOwner` is `true` or `notifyTo` is set, also set `notifyToTemplate` to a folder-qualified Classic email template (`unfiled$public/Template_Name` — folder-qualification matters the same way it matters for `assignedTo` queue and user names). `scripts/check_escalation_rules.py` **E10** flags this before the deploy leaves your machine; I4 separately flags a `notifyToTemplate` or `assignedToTemplate` that is not folder-qualified.

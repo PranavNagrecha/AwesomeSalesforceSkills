@@ -38,9 +38,9 @@ outputs:
   - "Cutover plan: deploy inactive, activate one rule, compare against the incumbent"
   - "Monitoring query and report definition for escalated cases"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 # Escalation Rules
@@ -210,7 +210,7 @@ The step-by-step with XML and CLI is in `references/metadata-examples.md`.
 2. **Design the tiers** — one entry per distinct clock-and-criteria combination, staged actions inside each entry; capture the design in `templates/escalation-rules-template.md` so the minutes, the calendar source, and the action targets are agreed before they are typed.
 3. **Confirm the calendar** — check each entry's `businessHoursSource` against the calendar design in `admin/business-hours-and-holidays`; a `Case` source needs `Case.BusinessHoursId` populated at creation.
 4. **Build as metadata** — shape `escalationRules/Case.escalationRules-meta.xml` from `references/metadata-examples.md`, with the new rule `<active>false</active>` for now.
-5. **Lint** — run `python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir force-app/main/default`; it flags two active rules, a `Static` entry with no calendar, non-positive `minutesToEscalation`, `assignedTo` without `assignedToType`, and catch-all entries.
+5. **Lint** — run `python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir force-app/main/default`; it flags two active rules, a `Static` entry with no calendar, non-positive `minutesToEscalation`, `assignedTo` without `assignedToType`, a notified-but-templateless action (`notifyCaseOwner` or `notifyTo` with no `notifyToTemplate`), and catch-all entries.
 6. **Test the clock** — reuse the after-hours clock test in `admin/business-hours-and-holidays` `references/examples.md` (Example 4) against a real case, then verify with the monitoring query in `references/metadata-examples.md`.
 7. **Cut over and watch** — activate in its own deploy, then run the escalated-case monitoring query for one full SLA period; if nothing fired, work `references/gotchas.md` in order.
 
@@ -227,7 +227,8 @@ Run through these before marking escalation rule work complete:
 - [ ] `escalationStartTime` and `disableEscalationWhenModified` were chosen deliberately per entry, not left at defaults
 - [ ] No entry sets both `criteriaItems` and `formula`
 - [ ] Every action with `assignedTo` also sets `assignedToType`, and the target user or queue exists in the target org
-- [ ] Email templates referenced by `notifyToTemplate` / `assignedToTemplate` exist and are Classic templates
+- [ ] Every action with `notifyCaseOwner` true or a populated `notifyTo` also sets `notifyToTemplate` — the org rejects the deploy without it even though the guide does not mark it Required
+- [ ] Email templates referenced by `notifyToTemplate` / `assignedToTemplate` exist, are Classic templates, and are named folder-qualified (`<folder>/<name>`)
 - [ ] The record automation that watches `OwnerId` has been reviewed for any reassigning action
 - [ ] A test case has been aged past the threshold and escalation fired as expected
 - [ ] Entry criteria values match the actual field values used in the org
@@ -247,6 +248,7 @@ Non-obvious platform behaviors that cause real production problems. Full treatme
 5. **Reassignment writes `OwnerId`.** Every record-triggered automation on ownership fires again, hours after the case was created.
 6. **Holidays on the calendar suspend the escalation rules that use it.** An unmaintained holiday list silently changes SLA behaviour a year later.
 7. **`IsEscalated` is a plain writable boolean.** Anything with update access — a data load, a flow, an integration — can set or clear it.
+8. **`notifyToTemplate` is required whenever the case owner or a named user is notified, but the guide never says so.** An action with `notifyCaseOwner` true and no `notifyToTemplate` deploys as valid XML and fails only at org validation.
 
 ---
 

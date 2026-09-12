@@ -136,3 +136,27 @@ Ensure escalation criteria exclude resolved/closed cases:
 UNVERIFIED (2026-09-04): whether the engine itself skips closed cases is not documented in any fetchable official source, and this file and `references/gotchas.md` Gotcha 4 have stated opposite positions. The advice above stands regardless — an explicit `Status notEqual Closed` criterion makes the behaviour the same either way. See `references/gotchas.md` Gotcha 12.
 
 **Detection hint:** If the escalation rule entry criteria do not explicitly filter out Closed/Resolved statuses, closed cases may escalate. Search for `Closed` or `Resolved` in the rule entry criteria.
+
+---
+
+## Anti-Pattern 6: Generating a `notifyCaseOwner` action with no `notifyToTemplate`
+
+**What the LLM generates:** `<escalationAction><minutesToEscalation>240</minutesToEscalation><notifyCaseOwner>true</notifyCaseOwner></escalationAction>` — a notify-only action that omits `notifyToTemplate` because the Metadata API guide's `EscalationAction` field table does not mark it Required, and `notifyCaseOwner`/`notifyTo` read as self-contained.
+
+**Why it happens:** The LLM pattern-matches the guide's field table literally: no Required marker, no dependency stated, so the field looks optional. In practice, an org rejects this shape at deploy validation with `EscalationRules Case: notifyToTemplate is required` — a runtime constraint the Metadata API guide does not document (`references/gotchas.md` Gotcha 13).
+
+**Correct pattern:**
+
+```
+Any action that sets notifyCaseOwner true or a non-empty notifyTo
+must also set notifyToTemplate, to a folder-qualified Classic
+template (e.g. unfiled$public/Case_Escalation_Warning):
+
+<escalationAction>
+    <minutesToEscalation>240</minutesToEscalation>
+    <notifyCaseOwner>true</notifyCaseOwner>
+    <notifyToTemplate>unfiled$public/Case_Escalation_Warning</notifyToTemplate>
+</escalationAction>
+```
+
+**Detection hint:** `scripts/check_escalation_rules.py` E10 catches this before generated XML reaches an org — run it on any generated `EscalationRules` file rather than trusting the field table's silence on the requirement.
