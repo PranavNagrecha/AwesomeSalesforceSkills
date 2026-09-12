@@ -129,3 +129,54 @@ target as inactive. Code that depended on it now fails at runtime.
 **How to avoid.** Verify class status (`Active` vs `Inactive`)
 matches the intent before deploy. The metadata version-controls
 the activation state.
+
+---
+
+## Gotcha 11: "Operation failed due to fields being inaccessible" at deploy-time test execution names no field
+
+**What happens.** A validation deploy (`--test-level RunSpecifiedTests`
+or `RunLocalTests`) compiles every component clean, then every test
+method fails at its own seed `insert`:
+
+```
+System.DmlException: Operation failed due to fields being inaccessible
+on Sobject Case, check errors on Exception or Result!
+```
+
+The message says a field is inaccessible and does not say which one.
+At API 67.0+ this is FLS, not a syntax problem: Apex runs in user
+context by default, so `insert` inside `System.runAs(user)` — or any
+DML at `AccessLevel.USER_MODE` — checks create access on every
+populated field, including one a factory method assigned from a null
+argument (the field still counts as "populated"; see
+`apex/test-class-standards` Gotcha 14 for that half of the bug).
+
+**How to avoid.** Don't guess the field from the object's shape —
+print it. Wrap the failing insert in try/catch inside the test and
+rethrow with the diagnostic attached:
+
+```apex
+try {
+    insert seedRecords;
+} catch (DmlException e) {
+    List<String> failedFields = e.getDmlFieldNames(0);
+    Map<String, Schema.SObjectField> fieldMap =
+        seedRecords[0].getSObjectType().getDescribe().fields.getMap();
+    for (String f : failedFields) {
+        System.debug(f + ' createable=' + fieldMap.get(f).getDescribe().isCreateable());
+    }
+    System.debug('profile=' + [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId()].Profile.Name);
+    System.debug('psa=' + [SELECT COUNT() FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId()]);
+    throw e;
+}
+```
+
+`e.getDmlFieldNames(0)` turns the generic message into an explicit
+field list; the describe loop shows which of those the running user
+actually can't create; the profile and `PermissionSetAssignment`
+count rule out "wrong user" versus "permission set never assigned."
+Re-run the same deploy — the fix is either the permission set the
+build ships, or the test's own factory populating a field it didn't
+need to. Evidence: `.sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md`
+run 7, where the probe isolated the field to `AccountId` on a
+Standard User holding the build's permission set.

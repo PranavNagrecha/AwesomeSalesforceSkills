@@ -157,3 +157,48 @@ So the permission set in the deployment does carry the field permissions — and
 - Catch it before the org does: `python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir <classes dir>` raises `user-mode-test-without-runas` (ERROR) when a non-test class in the tree carries `WITH USER_MODE`, `AccessLevel.USER_MODE`, `WITH SECURITY_ENFORCED` or `stripInaccessible` and the test class alongside it has no permissioned `runAs` block.
 
 **Where this came from:** a validate-only deploy (`sf project deploy start --dry-run --test-level RunSpecifiedTests`) of the `tier2-webhook` build: 38 components `ok`, 28 of 28 test methods failed, coverage 34.9%. Evidence in `.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T13-08-43Z/summary.md`.
+
+**See also:** fixing this gotcha does not finish the job — Gotcha 14 is the failure that surfaces next, once the tests actually run as a permissioned user.
+
+---
+
+## Gotcha 14: User-Mode DML Counts A Null-Assigned Field As Populated
+
+**What happens:** Gotcha 13's fix lands — every test method now runs inside `System.runAs(agent)` — and the `@TestSetup` seed insert still fails, for every test class in the deployment, at the same line:
+
+```
+System.DmlException: Operation failed due to fields being inaccessible on Sobject
+Case, check errors on Exception or Result! ... fieldNames: AccountId
+```
+
+The running user holds the permission set the deployment ships, and grants create access on the fields the test actually cares about. The field the org names is not one any test method populates on purpose.
+
+**When it occurs:** The seed calls a shared factory — `TestDataFactory.createCases(count, accountId, overrides)`, or the `Contact` / `Opportunity` builders, same shape — and passes `null` for `accountId` because the test has no Account to link. The factory's constructor assigns the lookup unconditionally: `Case c = new Case(..., AccountId = accountId);`. Assigning a variable into a field in the constructor marks that field populated on the sObject regardless of the value — the platform cannot distinguish "explicitly set to null" from "never touched" once the constructor runs, so the field rides along on the DML request. At API 67.0+, Apex runs in user context by default (apexdev L11744-L11745), so that DML — a plain `insert` inside `System.runAs`, no `AccessLevel` keyword needed — checks FLS on every field the request carries, including the null one. If the running user has no create access on that field (a Standard User rarely has create on `Case.AccountId`, `Contact.AccountId`, or `Opportunity.AccountId` by default, even holding a permission set scoped to the build's own custom fields), the insert fails on a field the test never meant to set.
+
+**How to probe it:** the org's message names no field until you make it. Wrap the seed in try/catch and rethrow with the diagnostic attached:
+
+```apex
+try {
+    insert TestDataFactory.createCases(1, null, null);
+} catch (DmlException e) {
+    List<String> failedFields = e.getDmlFieldNames(0);
+    Map<String, Schema.SObjectField> fieldMap = Case.SObjectType.getDescribe().fields.getMap();
+    for (String f : failedFields) {
+        System.debug(f + ' createable=' + fieldMap.get(f).getDescribe().isCreateable());
+    }
+    System.debug('profile=' + [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId()].Profile.Name);
+    System.debug('psa=' + [SELECT COUNT() FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId()]);
+    throw e;
+}
+```
+
+`e.getDmlFieldNames(0)` turns the generic message into `fieldNames: AccountId`; the describe loop turns that into `AccountId createable=false`; the last two lines rule out "wrong user" or "permission set never assigned" as the cause. This is the exact probe that closed S2-F-12 in the `tier2-webhook` build: `createable=true Subject=true Status=true Origin=true AccountId=false Tier2_Notified_At__c=true profile=Standard User psa=1 | fields=AccountId | code=CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY`.
+
+**How to avoid:** two fixes, and both are required — one without the other reproduces the failure in a different shape.
+
+- The factory must populate a lookup only when it is given one: construct the record without the field, then `if (accountId != null) { record.AccountId = accountId; }` — never assign a possibly-null parameter directly inside a constructor's field list. `templates/apex/tests/TestDataFactory.cls` follows this for every lookup argument (`Contact`, `Opportunity`, `Case`).
+- Independently, the permissioned user built for Gotcha 13 must be able to create every field the seed actually does populate. The factory fix removes a field the test never needed; it does not grant FLS for the fields the test does need.
+
+**Where this came from:** run 7 of the `tier2-webhook` M1 mock deploy, immediately after the Gotcha 13 fix landed — 30 of 30 test methods failed on the same `@TestSetup` seed insert, inside `System.runAs`, on a factory-populated `AccountId` no test method referenced. See `.sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md` run 7.
+
+**See also:** Gotcha 13 gets a test into `System.runAs` with a permissioned user; this gotcha is the layer underneath — the shared factory itself has to stop volunteering fields nobody asked for.

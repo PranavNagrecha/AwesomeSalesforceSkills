@@ -35,7 +35,7 @@ outputs:
   - "review findings for test hygiene and coverage quality"
   - "test class scaffold with factory, assertions, and mocks"
 dependencies: []
-version: 1.3.0
+version: 1.3.1
 author: Pranav Nagrecha
 updated: 2026-09-12
 ---

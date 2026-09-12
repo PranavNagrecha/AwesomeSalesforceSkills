@@ -301,3 +301,31 @@ static void escalationStampsTheCase() {
 ```
 
 **Detection hint:** grep the tree for `WITH USER_MODE`, `AccessLevel.USER_MODE`, `as user`, `as system`, `WITH SECURITY_ENFORCED` or `stripInaccessible` in non-test classes; then check whether the test classes beside them contain a `System.runAs` whose argument is anything other than `new User(Id = UserInfo.getUserId())`. `check_test_class_standards.py` automates exactly this as `user-mode-test-without-runas` (ERROR). A second, cheaper tell: the permission set is in `package.xml` and the string `PermissionSetAssignment` appears nowhere in the test classes.
+
+---
+
+## Anti-Pattern 8: A test data factory assigns a nullable lookup argument unconditionally
+
+**What the LLM generates:**
+
+```apex
+public static List<Case> createCases(Integer count, Id accountId, Map<String, Object> overrides) {
+    List<Case> out = new List<Case>();
+    for (Integer i = 0; i < count; i++) {
+        Case c = new Case(
+            Subject   = 'Test Case ' + i,
+            Status    = 'New',
+            AccountId = accountId   // caller passed null — this still "sets" the field
+        );
+        applyOverrides(c, overrides);
+        out.add(c);
+    }
+    return out;
+}
+```
+
+**Why it happens:** the LLM treats a constructor field list as documentation of "the fields this object has," not as the literal set of fields the DML request will carry. It doesn't model that assigning a variable — even a null one — into a field marks that field populated on the sObject, indistinguishable from a real value once the constructor returns. This is invisible in every ordinary test because `Database.insert` in system mode ignores FLS entirely; the bug only fires once the DML runs as a real user (Gotcha 14), by which point the factory looks unrelated to the failure.
+
+**Correct pattern:** construct the record without the lookup, then assign it conditionally — `if (accountId != null) { c.AccountId = accountId; }` — for every lookup argument in the factory, not only the one the current test happens to exercise. See `templates/apex/tests/TestDataFactory.cls`.
+
+**Detection hint:** grep factory methods for `<Field> = <parameter>` inside an object constructor where `<parameter>` is a nullable `Id` argument. If the caller ever passes `null` for that argument and the class under test enforces user-mode DML, the seed will fail with `Operation failed due to fields being inaccessible on Sobject <Type>` naming exactly that field once probed with `getDmlFieldNames` (Gotcha 14).
