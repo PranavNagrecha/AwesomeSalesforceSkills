@@ -14,7 +14,7 @@ for (CaseMilestone cm : milestones) {
 update milestones;
 ```
 
-**Why it happens:** `IsCompleted` is a boolean field and LLMs trained on general Salesforce patterns assume boolean checkboxes are writable. The field name semantically implies it controls completion. Training data rarely contains the counter-intuitive detail that this specific field is a read-only formula derived from `CompletionDate`.
+**Why it happens:** `IsCompleted` is a boolean field and LLMs trained on general Salesforce patterns assume boolean checkboxes are writable. The field name semantically implies it controls completion. Training data rarely contains the counter-intuitive detail that `IsCompleted` carries no `Update` property on this object while `CompletionDate` does.
 
 **Correct pattern:**
 
@@ -29,30 +29,33 @@ update milestones;
 
 ---
 
-## Anti-Pattern 2: Attempting to Write SlaExitDate
+## Anti-Pattern 2: Referencing SlaExitDate on CaseMilestone
 
 **What the LLM generates:**
 
 ```apex
 // Extend deadline by 1 hour for high-priority cases
 for (CaseMilestone cm : milestones) {
-    cm.SlaExitDate = cm.SlaExitDate.addHours(1);  // WRONG — silently discarded
+    cm.SlaExitDate = cm.SlaExitDate.addHours(1);  // WRONG — no such field on CaseMilestone
 }
 update milestones;
 ```
 
-**Why it happens:** LLMs infer that if a field exists on an object and is not explicitly documented as formula-derived, it must be writable. The requirement to adjust deadlines dynamically is common, and the LLM generates the most direct-looking implementation. Training data from Stack Overflow and community boards often contains this incorrect pattern without the correction.
+**Why it happens:** `SlaExitDate` is a real Salesforce field name — it exists on `WorkOrder` — so it is present in training data in an entitlement context. The model carries it across to `CaseMilestone`, where it does not exist. The requirement to adjust deadlines dynamically is common, and this is the most direct-looking implementation of it.
+
+**What actually happens:** a compile error, not a silent discard. That is the good outcome. The dangerous variant of this anti-pattern is the write to `TargetDate`, which *is* a `CaseMilestone` field and is also not updateable.
 
 **Correct pattern:**
 
 ```
-Deadline adjustment is not achievable through Apex on SlaExitDate. Use separate
+Deadline adjustment is not achievable through Apex at all — TargetDate is not updateable
+and SlaExitDate is not a CaseMilestone field. Use separate
 entitlement processes (e.g., Priority-Platinum, Priority-Standard) with different
 milestone time triggers, and apply the correct process to the case based on attributes
 at case creation time.
 ```
 
-**Detection hint:** Search generated code for `SlaExitDate\s*=` — any write assignment is incorrect.
+**Detection hint:** Search generated code for `SlaExitDate` anywhere in a file that mentions `CaseMilestone`, and for `\.TargetDate\s*=`. Checker rules `EAH003` and `EAH002` flag both.
 
 ---
 
@@ -186,11 +189,11 @@ trigger CaseTrigger on Case (before update) {
     // Milestone DML here — WRONG context for writing to a different object
     List<CaseMilestone> ms = [SELECT Id FROM CaseMilestone WHERE CaseId IN :caseIds];
     for (CaseMilestone m : ms) { m.CompletionDate = System.now(); }
-    update ms;  // Can cause mixed-DML issues depending on org setup
+    update ms;  // WRONG context — see below
 }
 ```
 
-**Why it happens:** LLMs default to `before update` for performance (avoids a re-query of the saved record) without recognizing that writing to a related object (CaseMilestone) from a `before update` trigger on Case can produce mixed-DML errors and is architecturally incorrect because the Case record has not yet been committed when the trigger fires.
+**Why it happens:** LLMs default to `before update` for performance, avoiding a re-query of the saved record. The real objection is not mixed DML — `CaseMilestone` is not a setup object, so mixed DML does not apply here — it is the order of execution. Before triggers run at step 4 and after triggers at step 8, while the entitlement rules that create milestone rows run at step 15. Neither context sees rows the current save is about to produce, and `before update` additionally reads a Case state the platform has not finished validating.
 
 **Correct pattern:** Use `after update` on Case when the business logic requires writing to related `CaseMilestone` records. The case is already committed and the related record write is a separate, clean DML operation.
 

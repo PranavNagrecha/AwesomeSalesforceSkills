@@ -55,7 +55,11 @@ public class CaseMilestoneService {
 }
 ```
 
-**Why it works:** `CompletionDate` is the actual writable control field. Once a non-null `CompletionDate` is persisted, the platform formula `IsCompleted` evaluates to `true`. The trigger is `after update` because the milestone DML is a separate transaction from the case update.
+**Why it works:** `CompletionDate` is the writable control field — it is one of only two fields on `CaseMilestone` that carry the `Update` property, and `IsCompleted` is not one of them. The trigger is `after update` because entitlement rules run at step 15 of the order of execution, after every trigger context.
+
+For the deployable form of this example — the same two class names, plus the handler, the test, the `-meta.xml` files at `apiVersion` 67.0, and the `package.xml` — see `references/code-examples.md`.
+
+UNVERIFIED (2026-09-12): that persisting `CompletionDate` is what makes `IsCompleted` read back as `true`. The corpus establishes only which field is updateable. Assert on `CompletionDate`.
 
 ---
 
@@ -159,5 +163,5 @@ for (CaseMilestone cm : milestonesToComplete) {
     cm.CompletionDate = System.now();
 }
 update milestonesToComplete;
-// Result: IsCompleted is now true (formula recalculation)
+// Result: the milestone is completed. Assert on CompletionDate, not on IsCompleted.
 ```

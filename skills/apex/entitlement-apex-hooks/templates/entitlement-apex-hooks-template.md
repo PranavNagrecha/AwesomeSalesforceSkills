@@ -12,7 +12,7 @@ Use this template when implementing or reviewing Apex code that interacts with C
 
 - **Entitlement Management enabled:** Yes / No
 - **Active entitlement process name(s):**
-- **MilestoneType.Name values to target:** (exact strings, case-sensitive)
+- **MilestoneType.Name values to target:** (exact strings, copied from Setup)
 - **Trigger condition:** (e.g., Case.Status changes from 'New' to any other value)
 - **Is violation detection required:** Yes / No
 - **Existing triggers on Case:** (list any — check for bulk-safety interactions)
@@ -31,10 +31,12 @@ Choose one:
 
 - [ ] Trigger context is `after update` (not `before update`)
 - [ ] `CompletionDate = System.now()` used — NOT `IsCompleted = true`
-- [ ] No write to `SlaExitDate`
+- [ ] No reference to `SlaExitDate` (not a CaseMilestone field) and no write to `TargetDate` (not updateable)
 - [ ] IDs collected into a `Set<Id>` before SOQL (no SOQL inside loop)
 - [ ] SOQL filters: `CaseId IN :idSet AND CompletionDate = null AND MilestoneType.Name = '<exact name>'`
 - [ ] DML issued on list, not inside loop
+- [ ] `Database.update(list, false)` results iterated; failures logged somewhere queryable
+- [ ] `scripts/check_entitlement_apex_hooks.py --manifest-dir <tree> --strict` returns clean
 
 ### Scheduled Apex (if applicable)
 

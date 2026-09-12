@@ -23,9 +23,13 @@ A scheduled job that processes violations without an idempotency guard will re-t
 
 1. **Writing IsCompleted instead of CompletionDate** — This is the highest-impact anti-pattern in the domain. It produces no error, passes all tests written against the wrong expectation, and silently leaves milestones open. The architectural risk is undetected SLA breaches. Always write `CompletionDate`.
 
-2. **Trigger-based violation detection** — Implementing a `CaseMilestone` after-update trigger and checking for `IsViolated` state transitions assumes the platform fires a trigger when the background process sets `IsViolated = true`. It does not. The result is that the violation handler never runs, giving a false sense of security while violations are silently missed.
+2. **Trigger-based violation detection** — Implementing a `CaseMilestone` after-update trigger and checking for `IsViolated` state transitions assumes the platform fires a trigger when the violation state is set. Nothing in the Apex Developer Guide describes such an event, and `IsViolated` is not an updateable field, so the assumption is unsafe to build on. The architectural risk is asymmetric: a scheduled poll works whether or not a trigger would also fire, while a trigger that never fires gives a false sense of security and misses violations silently. Choose the poll, or the entitlement process's native milestone violation actions.
 
-3. **Writing SlaExitDate to adjust deadlines at runtime** — Attempting to implement "dynamic SLA deadlines" by reading and writing `SlaExitDate` via Apex looks like it works in the Developer Console (no error) but has no effect. Organizations that require variable deadlines must model this through multiple entitlement processes with different time triggers, not through runtime field writes.
+   UNVERIFIED (2026-09-12): whether a trigger genuinely never fires on the violation transition. Verify in a sandbox before designing around either answer.
+
+3. **Treating the milestone deadline as runtime-adjustable** — "Dynamic SLA deadlines" implemented in Apex fail in two different ways depending on which field the attempt lands on. `SlaExitDate` is not a `CaseMilestone` field at all, so that variant does not compile; `TargetDate` is a `CaseMilestone` field but carries no `Update` property, so that variant does not persist. Architecturally the answer is the same either way: model variable deadlines as multiple entitlement processes with different milestone time triggers and apply the right process to the case, rather than mutating a deadline at runtime.
+
+4. **Partial-success DML with no results loop** — `Database.update(list, false)` is the right choice here, because one inaccessible milestone should not roll back the agent's case save. But it throws nothing, so dropping the `Database.SaveResult` iteration converts a recoverable error into an invisible one. In a domain whose whole failure mode is silence, that is the most expensive line of code to delete.
 
 ## Official Sources Used
 
@@ -35,3 +39,6 @@ A scheduled job that processes violations without an idempotency guard will re-t
 - CaseMilestone Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_casemilestone.htm
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Object Reference for the Salesforce Platform (v62) — CaseMilestone, SlaProcess, Entitlement, MilestoneType supported calls and field properties — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/
+- Apex Developer Guide — Triggers and Order of Execution — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
+- Metadata API Developer Guide — ApexClass and ApexTrigger (`apiVersion`, `status`) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_classes.htm

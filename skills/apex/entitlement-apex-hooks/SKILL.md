@@ -12,6 +12,13 @@ triggers:
   - "CaseMilestone.IsCompleted is read-only — how do I mark a milestone as complete in Apex?"
   - "How do I detect and react to SLA milestone violations in Apex without a native callback?"
   - "auto complete case milestone apex CompletionDate IsViolated hooks"
+  - "complete a case milestone from apex"
+  - "stop the SLA clock when a case is pending customer"
+  - "write CompletionDate on an open CaseMilestone in a bulk-safe trigger"
+  - "test a CaseMilestone trigger when you cannot create an SlaProcess"
+  - "poll for violated case milestones on a schedule"
+  - "pause and resume an entitlement process on a case from apex"
+  - "why does my case milestone query return nothing in an after update trigger"
 tags:
   - entitlements
   - milestones
@@ -28,14 +35,14 @@ outputs:
   - "Scheduled Apex class that queries and processes violated milestones"
   - "Test class covering IsCompleted read-only constraint and bulk DML patterns"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-12
 ---
 
 # Entitlement Apex Hooks
 
-Use this skill when you need Apex code that reads or writes to `CaseMilestone` records as part of entitlement and SLA enforcement. It covers the platform constraints that make this area unexpectedly difficult: `IsCompleted` is read-only, `SlaExitDate` is system-managed, and there is no native Apex callback for milestone violations.
+Use this skill when you need Apex code that reads or writes to `CaseMilestone` records as part of entitlement and SLA enforcement. It covers the platform constraints that make this area unexpectedly difficult: `IsCompleted` carries no `Update` property, the only supported call on `CaseMilestone` is `update()`, entitlement rules run after every trigger, and there is no documented Apex event for milestone violations.
 
 ---
 
@@ -44,22 +51,49 @@ Use this skill when you need Apex code that reads or writes to `CaseMilestone` r
 Gather this context before working on anything in this domain:
 
 - Confirm that Entitlement Management is enabled in the org (Setup > Entitlement Settings). Triggers on `CaseMilestone` compile but produce no records if entitlement processes are not active.
-- Know the exact `MilestoneType.Name` values whose completion the trigger should control. Name strings are case-sensitive and must match what is configured in Setup.
+- Know the exact `MilestoneType.Name` values whose completion the trigger should control. Copy them from Setup rather than from the requirement document — a name that does not match returns zero rows, and zero rows is not an exception.
 - Understand whether you need synchronous completion (trigger on Case field change) or asynchronous violation detection (scheduled Apex polling). These are separate patterns and require separate implementations.
+
+---
+
+## Questions to Ask Before Configuring
+
+Milestone automation fails silently more often than it fails loudly, so most of the cost
+of getting it wrong is discovered months later in an SLA report. Each question below is
+the one that would have prevented a specific gotcha; the gotcha number points at the full
+write-up in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| **1. Which exact `MilestoneType` name should this complete, and who is allowed to rename it?** (Gotcha 1, Gotcha 11) | The completion query filters on `MilestoneType.Name`. A wrong or renamed string returns zero rows, which is not an error — the automation just stops working. | A name copied from Setup rather than from the requirement document, plus the name of the admin who owns it. | The name lands in one named constant or a Custom Metadata record instead of a literal per call site, so a Setup rename is a one-line change and not a hunt. |
+| **2. Does the case status change that completes the milestone ever happen on the same save that puts the case into the entitlement process?** (Gotcha 3) | Entitlement rules run at step 15 of the order of execution, after all after triggers at step 8. On the entitlement-applying save the milestone rows do not exist yet. | A concrete answer about the intake path — web-to-case, an integration upsert, a Flow that sets `EntitlementId` and `Status` together. | The trigger is hung off a later save, or moved to a post-commit async path, instead of shipping a trigger that works in manual testing and returns nothing in production. |
+| **3. Are there workflow field updates, escalation rules, or record-triggered flows on `Case` in this org?** (Gotcha 4) | A workflow field update re-fires before-update and after-update triggers one more time on the same save, so the completion body genuinely runs twice. | An inventory of the existing `Case` automation, not an assumption that this trigger is alone. | `CompletionDate = NULL` is in the query as a deliberate idempotency guard with a test that proves the second pass is a no-op — rather than as an incidental filter nobody can explain. |
+| **4. Is the requirement to complete milestones, or to change when they are due, or to pause them?** (Gotcha 2, Gotcha 8) | These are three different problems with three different answers. Only the first is an Apex write. `TargetDate` is not updateable and there is no `SlaExitDate` on `CaseMilestone` at all; pausing is `Case.IsStopped`. | The business rule in plain language — "the clock should not run while we are waiting on the customer" — rather than a proposed field write. | A deadline requirement becomes an entitlement-process design change in Setup and a pause requirement becomes a `Case.IsStopped` write, instead of Apex against a field that does not compile. |
+| **5. Which org will this be tested in, and does it have an active entitlement process?** (Gotcha 5, Gotcha 6) | A test cannot create an `SlaProcess` and cannot create a `CaseMilestone` — neither object supports `create()`. Without a configured process the test queries an empty list and passes vacuously. | A named sandbox with entitlement management configured, and a decision on whether `@IsTest(SeeAllData=true)` is acceptable to the team. | The test asserts loudly on the missing prerequisite and keeps one method that still runs without it, instead of producing a green build that certifies automation which has never executed. |
+| **6. What should happen when one milestone in a bulk update fails — abort the case save, or complete the rest?** (Gotcha 10) | All-or-nothing `update` rolls the case save back; `Database.update(list, false)` completes the rest but throws nothing, so failures vanish unless the results array is iterated. | An explicit business answer about whether a failed milestone should block the agent's save. | The `Database.SaveResult` loop and a logging destination are part of the design, rather than boilerplate that gets trimmed in review and takes the error signal with it. |
+| **7. How does the business need to see violations and time remaining — a notification, a report, or custom logic?** (Gotcha 7, Gotcha 9) | Notifications and field updates are native milestone actions and need no Apex. Custom logic needs a scheduled poll, because there is no documented DML event for the `IsViolated` transition. And `TimeRemainingInMins` is a text field, so a "due within 30 minutes" report cannot filter on it. | A distinction between "tell someone" and "do something", plus the actual shape of the report. | Half the requirement is met declaratively with no code to maintain, and the half that needs Apex is a scheduled job with an idempotency guard rather than a trigger that never fires. |
+
+**What proper configuration adds over just doing it:** the three failure modes in this
+domain — a query that returns nothing, a write to a field that is not updateable, and a
+test that passes without ever touching a milestone — all produce no error message. Asking
+these seven questions first is what converts them from a silent SLA breach discovered in a
+quarterly report into a loud failure at build time.
 
 ---
 
 ## Core Concepts
 
-### CaseMilestone.IsCompleted Is Read-Only
+### CaseMilestone.IsCompleted Is Not an Updateable Field
 
-`CaseMilestone.IsCompleted` is a formula-derived field. The platform sets it to `true` automatically when `CompletionDate` is non-null. You cannot write `IsCompleted = true` in DML — the attempt compiles silently but the field is ignored at save time, leaving the milestone incomplete. The correct write is `caseMilestone.CompletionDate = System.now()` in an `update` DML call.
+The Object Reference lists `IsCompleted`'s properties on `CaseMilestone` as `Defaulted on create, Filter` — no `Update`. `CompletionDate` carries `Filter, Nillable, Update`, and is one of only two fields on the object that do (the other is `StartDate`). So "complete this milestone" has exactly one implementation: `caseMilestone.CompletionDate = System.now()` followed by an `update`.
 
-This is the single most common source of broken milestone automation. The field appears writable in the schema explorer because it is not marked as a formula field in the UI, but the Salesforce Entitlements Implementation Guide explicitly states that `CompletionDate` is the control field.
+This is the single most common source of broken milestone automation, because the field whose *name* describes the outcome is not the field the API lets you set. Assert on `CompletionDate` being non-null; treat `IsCompleted` as a reporting convenience rather than the thing your code controls. See Gotcha 1 in `references/gotchas.md` for what is grounded here and what is not.
 
-### SlaExitDate Is System-Managed
+### There Is No SlaExitDate on CaseMilestone
 
-`CaseMilestone.SlaExitDate` represents when the SLA window closes. It is calculated and maintained entirely by the platform based on the entitlement process definition and business hours. Apex cannot write to this field. Any attempt to set it in DML is silently discarded. If your requirement involves changing when a milestone deadline occurs, that change must be made through the entitlement process configuration in Setup, not through Apex.
+`SlaExitDate` is not a `CaseMilestone` field. The field of that name belongs to `WorkOrder`, where it is read-only. Referencing it on a `CaseMilestone` variable or in a `CaseMilestone` `SELECT` list is a compile error, not a silently-discarded write — which is the good kind of failure.
+
+The `CaseMilestone` deadline field is `TargetDate`, and its only documented property is `Filter`: it is not updateable. Milestone deadlines are therefore not adjustable from Apex at all. Variable deadlines are modelled as separate entitlement processes with different milestone time triggers, applied to the case based on its attributes. Pausing the clock is a different field again — `Case.IsStopped`, which *is* writable. See Gotcha 2 and Gotcha 8.
 
 ### No Native Apex Callback for Milestone Violations
 
@@ -83,7 +117,7 @@ Milestone completion triggered by a case field change (e.g., Status becomes "Res
 3. Set `CompletionDate = System.now()` on each returned record.
 4. `update` the list.
 
-The trigger must be `after update` (not `before update`) because writing `CompletionDate` requires a separate DML call. Writing to `CaseMilestone` in a `before update` trigger on `Case` is unsupported and will cause mixed-DML errors in certain contexts.
+The trigger must be `after update`, not `before update`, and the reason is the order of execution rather than mixed DML (`CaseMilestone` is not a setup object, so mixed DML does not apply). Before triggers run at step 4 and after triggers at step 8, while entitlement rules — the engine that creates the milestone rows — run at step 15. Neither trigger context can see milestones created by the save it is running inside, so completion has to hang off a *later* save than the one that applies the entitlement. See Gotcha 3.
 
 ---
 
@@ -124,7 +158,8 @@ The trigger must be `after update` (not `before update`) because writing `Comple
 |---|---|---|
 | Mark milestone complete when a Case field changes | `after update` trigger on Case writing `CompletionDate = System.now()` | Only supported write path; IsCompleted is read-only |
 | React to milestone violations with custom logic | Scheduled Apex polling `IsViolated = true` | No native callback exists; polling is the only Apex path |
-| Change when a milestone deadline occurs | Modify entitlement process configuration in Setup | `SlaExitDate` is system-managed and cannot be written by Apex |
+| Change when a milestone deadline occurs | Modify entitlement process configuration in Setup | `TargetDate` is not updateable, and there is no `SlaExitDate` on `CaseMilestone` |
+| Pause the SLA clock while waiting on the customer | Write `Case.IsStopped = true` from a Case trigger or Flow | It is the writable switch; nothing on `CaseMilestone` pauses anything |
 | Send email or update fields on violation | Declarative milestone violation actions in entitlement process | No Apex required; native and more reliable than polling |
 | Bulk-complete milestones for many cases | Batch Apex querying `CaseMilestone` and writing `CompletionDate` | Avoids trigger CPU/heap limits; respects governor limits per batch |
 
@@ -134,7 +169,7 @@ The trigger must be `after update` (not `before update`) because writing `Comple
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Confirm entitlement setup** — Verify Entitlement Management is enabled and at least one entitlement process with milestones is active. Identify the exact `MilestoneType.Name` strings you need to target (case-sensitive).
+1. **Confirm entitlement setup** — Verify Entitlement Management is enabled and at least one entitlement process with milestones is active. Copy the exact `MilestoneType.Name` strings from Setup and put them in one constant or Custom Metadata record.
 2. **Choose the correct pattern** — Decide whether you need synchronous completion (trigger on Case field change) or asynchronous violation detection (Scheduled Apex). Document the requirement before writing code.
 3. **Write the trigger or class** — For completion: `after update` on Case, query open `CaseMilestone` records for affected cases, write `CompletionDate`, bulk-safe DML. For violation detection: `Schedulable` class, query `IsViolated = true AND CompletionDate = null`, apply business logic with idempotency guard.
 4. **Write the test class** — Cover: (a) the `CompletionDate` write path succeeds, (b) `IsCompleted` reads back as `true` after the write, (c) bulk scenario with 200 cases, (d) the `IsViolated` polling query returns expected records in test context.
@@ -149,7 +184,10 @@ Run through these before marking work in this area complete:
 
 - [ ] Trigger writes `CompletionDate = System.now()` — NOT `IsCompleted = true`
 - [ ] Trigger is `after update` on Case (not `before update`, not a trigger on CaseMilestone itself for completion)
-- [ ] No attempt to write `SlaExitDate` anywhere in the code
+- [ ] No reference to `SlaExitDate` and no write to `TargetDate` anywhere in the code
+- [ ] `CompletionDate = NULL` is in the milestone query — both the open-milestone filter and the idempotency guard
+- [ ] `Database.update(list, false)` results are iterated and failures are logged somewhere queryable
+- [ ] `scripts/check_entitlement_apex_hooks.py --manifest-dir <tree> --strict` returns clean
 - [ ] Violation detection uses `IsViolated = true` query, not a trigger callback
 - [ ] Bulk-safe: trigger uses `Trigger.new` list, queries use `IN :idSet`, DML uses list `update`
 - [ ] Test class creates the full entitlement process hierarchy so `CaseMilestone` records actually exist during test execution
@@ -161,11 +199,21 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **IsCompleted silently ignores direct writes** — Writing `caseMilestone.IsCompleted = true` does not throw an exception but the value is discarded. The milestone remains incomplete. Always write `CompletionDate` instead.
-2. **SlaExitDate DML is silently discarded** — Attempting to set `SlaExitDate` in an update call produces no error but the field value is not persisted. The only way to change the milestone deadline is through the entitlement process setup in the admin UI.
-3. **No trigger fires on IsViolated state transition** — The platform sets `IsViolated = true` through a background calculation, not through a DML operation. No Apex trigger on `CaseMilestone` fires at the moment of violation. Relying on a `CaseMilestone` after-update trigger to catch violations will produce false results.
-4. **CaseMilestone records do not exist in developer or partial-copy sandboxes without entitlement processes** — If the sandbox org does not have an active entitlement process configured and applied to cases, `CaseMilestone` records are never created and trigger code runs against empty result sets. This causes all tests to pass vacuously.
-5. **MilestoneType.Name is case-sensitive in SOQL** — `MilestoneType.Name = 'first response'` will not match a type named `'First Response'`. Query failures here produce no records, not an exception, so the silent failure is easy to miss in testing.
+The full write-up, with source lines and explicit `UNVERIFIED` markers where the corpus does not support a widely-repeated claim, is in `references/gotchas.md`. The short list:
+
+| # | Gotcha | One-line form |
+|---|---|---|
+| 1 | `IsCompleted` is not updateable | `CompletionDate` and `StartDate` are the only two fields on the object that carry `Update` |
+| 2 | No `SlaExitDate` on `CaseMilestone` | It belongs to `WorkOrder`; the milestone deadline field is the read-only `TargetDate` |
+| 3 | Entitlement rules run at step 15 | After every trigger — milestone rows do not exist on the entitlement-applying save |
+| 4 | Workflow field updates re-fire the trigger | The body runs twice per save; `CompletionDate = NULL` is the idempotency guard |
+| 5 | Only `update()` is supported | No `create()`, no `delete()` — the platform owns the row lifecycle |
+| 6 | A test cannot create an `SlaProcess` | No `create()` call; the process must exist in the org, so the test must fail loudly without it |
+| 7 | `TimeRemainingInMins` is text | Typed `text`, formatted "minutes and seconds" — a numeric comparison is meaningless |
+| 8 | Pausing is `Case.IsStopped` | Writable on `Case`; `Case.StopStartDate` is read-only |
+| 9 | No documented DML event for `IsViolated` | Poll with Scheduled Apex or use native milestone violation actions |
+| 10 | Partial-success DML hides failures | `Database.update(list, false)` throws nothing; iterate the `SaveResult` array |
+| 11 | The milestone type name is a string match | A Setup rename returns zero rows, not an error |
 
 ---
 
@@ -181,5 +229,14 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `admin/case-management-setup` — Entitlement process and milestone configuration in Setup UI; required before any Apex milestone code has records to act on
-- `apex/opportunity-trigger-patterns` — General Apex trigger bulk-safety patterns applicable here
+- `admin/entitlements-and-milestones` — the Setup side: entitlement process, milestone types, and the deployable metadata. Nothing in this skill has records to act on until that one is done
+- `admin/case-management-setup` — broader case configuration around the entitlement process
+- `apex/case-trigger-patterns` — entitlement auto-association and assignment logic in a Case trigger, which is a different job from milestone completion
+- `apex/opportunity-trigger-patterns` — general Apex trigger bulk-safety patterns applicable here
+
+## Deployable Reference
+
+`references/code-examples.md` carries the complete bundle: `CaseMilestoneService.cls`,
+`CaseMilestoneTriggerHandler.cls`, `CaseMilestoneTrigger.trigger`,
+`CaseMilestoneServiceTest.cls`, every `-meta.xml` at `apiVersion` 67.0, a `package.xml`,
+the deploy order, and the checker run that verifies it.
