@@ -41,6 +41,26 @@
         <fridayStartTime>08:00:00.000Z</fridayStartTime>
         <fridayEndTime>18:00:00.000Z</fridayEndTime>
     </businessHours>
+    <businessHours>
+        <active>true</active>
+        <default>false</default>
+        <name>Severity 1 24x7</name>
+        <timeZoneId>America/New_York</timeZoneId>
+        <mondayStartTime>00:00:00.000Z</mondayStartTime>
+        <mondayEndTime>00:00:00.000Z</mondayEndTime>
+        <tuesdayStartTime>00:00:00.000Z</tuesdayStartTime>
+        <tuesdayEndTime>00:00:00.000Z</tuesdayEndTime>
+        <wednesdayStartTime>00:00:00.000Z</wednesdayStartTime>
+        <wednesdayEndTime>00:00:00.000Z</wednesdayEndTime>
+        <thursdayStartTime>00:00:00.000Z</thursdayStartTime>
+        <thursdayEndTime>00:00:00.000Z</thursdayEndTime>
+        <fridayStartTime>00:00:00.000Z</fridayStartTime>
+        <fridayEndTime>00:00:00.000Z</fridayEndTime>
+        <saturdayStartTime>00:00:00.000Z</saturdayStartTime>
+        <saturdayEndTime>00:00:00.000Z</saturdayEndTime>
+        <sundayStartTime>00:00:00.000Z</sundayStartTime>
+        <sundayEndTime>00:00:00.000Z</sundayEndTime>
+    </businessHours>
     <holidays>
         <name>New Year's Day</name>
         <businessHours>US Support Hours</businessHours>
@@ -77,6 +97,7 @@ How to read it:
 - `startTime` / `endTime` are both absent for a whole-day holiday and both present for a partial day.
 - Recurring holidays use `recurrenceStartDate` (and optionally `recurrenceEndDate`); one-off holidays use `activityDate`.
 - Weekend days are omitted here because the file was retrieved from a calendar built in Setup with those days closed; do not add `00:00:00.000Z` pairs by hand (gotchas #6).
+- `Severity 1 24x7` is every day `00:00:00.000Z` to `00:00:00.000Z` on purpose — a named, non-default calendar for a Sev-1 entitlement that must never pause. No holiday is attached to it, which is also deliberate. This is the same shape as the shipped `Default` calendar (gotcha #1), but it is not the org default and is not named `Default`, so the checker treats it differently — see the verification output below.
 
 package.xml and CLI:
 
@@ -92,6 +113,17 @@ sf project retrieve start --metadata Settings:BusinessHours --target-org my-sand
 python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir force-app/main/default
 sf project deploy start --metadata Settings:BusinessHours --target-org my-sandbox
 ```
+
+Verification — the checker exits 0 on this file, but prints a non-blocking note about the always-open calendar for someone reviewing the diff:
+
+```
+$ python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir force-app/main/default
+INFO: BusinessHours.settings-meta.xml / always-open calendar 'Severity 1 24x7': SLA clocks on it never pause — intended for 24/7 severity tiers; confirm it is not attached to entitlements that expect business-hour pauses.
+$ echo $?
+0
+```
+
+INFO never changes the exit code, even with `--strict` (`--strict` only promotes WARN, such as a missing settings file). Had `Severity 1 24x7` instead been `default`, or literally named `Default`, the same shape would print as `ERROR` and exit 1 — see gotcha #1.
 
 ## Example 2: Setting the Case calendar at creation (before-save Flow)
 

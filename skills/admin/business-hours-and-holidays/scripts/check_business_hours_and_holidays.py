@@ -5,13 +5,30 @@ Parses ``settings/BusinessHours.settings-meta.xml`` (or ``BusinessHours.settings
 from a retrieved package) and flags the configuration mistakes that make an SLA
 clock keep running: no or several default calendars, inactive defaults, holidays
 attached to no calendar or to an unknown one, calendars with no weekday window,
-calendars stored as midnight-to-midnight on every day (the shipped 24/7 shape),
-and one-off holidays already in the past.
+a calendar stored as midnight-to-midnight on every day when that calendar is
+the org default (the shipped, never-edited 24/7 shape), and one-off holidays
+already in the past.
+
+Severity levels
+----------------
+ERROR  Always fails the check (exit 1): no/duplicate/inactive default calendar,
+       missing timeZoneId, a day with only a start or only an end time, a
+       calendar with no open day at all, an unattached or misconfigured
+       holiday, and the midnight-to-midnight-every-day shape when it belongs
+       to the org DEFAULT calendar (``<default>true</default>``) or is named
+       literally ``Default`` — i.e. the shipped calendar nobody edited.
+WARN   Fails only with ``--strict``: no BusinessHours settings file found
+       under the manifest directory at all.
+INFO   Never affects the exit code: the same midnight-to-midnight-every-day
+       shape on a calendar that is neither the org default nor named
+       ``Default`` — a deliberately named always-open calendar (a 24/7
+       severity tier is a legitimate, intentional use of this shape).
 
 Stdlib only.
 
 Usage:
     python3 check_business_hours_and_holidays.py --manifest-dir force-app/main/default
+    python3 check_business_hours_and_holidays.py --manifest-dir force-app/main/default --strict
 """
 
 from __future__ import annotations
@@ -25,6 +42,11 @@ from pathlib import Path
 SF_NS = "http://soap.sforce.com/2006/04/metadata"
 DAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 MIDNIGHT = "00:00:00.000Z"
+
+ERROR = "ERROR"
+WARN = "WARN"
+INFO = "INFO"
+Finding = tuple[str, str]  # (severity, message)
 
 
 def _tag(local: str) -> str:
@@ -61,6 +83,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Override today's date (YYYY-MM-DD) for the past-holiday check; used by tests.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Also fail (exit 1) on WARN findings. Never promotes INFO.",
+    )
     return parser.parse_args()
 
 
@@ -70,12 +97,12 @@ def find_settings_files(root: Path) -> list[Path]:
     return results
 
 
-def check_file(path: Path, today: dt.date) -> list[str]:
-    issues: list[str] = []
+def check_file(path: Path, today: dt.date) -> list[Finding]:
+    issues: list[Finding] = []
     try:
         root = ET.parse(path).getroot()
     except ET.ParseError as exc:
-        return [f"{path.name}: XML parse error — {exc}"]
+        return [(ERROR, f"{path.name}: XML parse error — {exc}")]
 
     calendars = _findall(root, "businessHours")
     holidays = _findall(root, "holidays")
@@ -90,9 +117,9 @@ def check_file(path: Path, today: dt.date) -> list[str]:
         if is_default:
             defaults.append(name)
             if not active:
-                issues.append(f"{path.name} / calendar '{name}': marked default but inactive.")
+                issues.append((ERROR, f"{path.name} / calendar '{name}': marked default but inactive."))
         if not _text(cal, "timeZoneId"):
-            issues.append(f"{path.name} / calendar '{name}': no timeZoneId — windows have no frame.")
+            issues.append((ERROR, f"{path.name} / calendar '{name}': no timeZoneId — windows have no frame."))
 
         windows = 0
         all_midnight = True
@@ -105,72 +132,97 @@ def check_file(path: Path, today: dt.date) -> list[str]:
                     all_midnight = False
                 if (start is None) != (end is None):
                     issues.append(
-                        f"{path.name} / calendar '{name}': {day} has a start or end time but not both."
+                        (ERROR, f"{path.name} / calendar '{name}': {day} has a start or end time but not both.")
                     )
         if windows == 0:
             issues.append(
-                f"{path.name} / calendar '{name}': no day has a window — the calendar is never open."
+                (ERROR, f"{path.name} / calendar '{name}': no day has a window — the calendar is never open.")
             )
         elif windows == 7 and all_midnight:
-            issues.append(
-                f"{path.name} / calendar '{name}': every day is 00:00:00.000Z to 00:00:00.000Z — "
-                "this is the shipped 24/7 shape; SLA clocks on this calendar never pause."
-            )
+            # The shape itself (every day 00:00:00.000Z-00:00:00.000Z) is not the
+            # problem: it is exactly how a deliberate, named 24/7 severity-tier
+            # calendar is stored. The problem is an org's DEFAULT calendar never
+            # having been edited off the shipped shape — every consumer with no
+            # calendar of its own falls back to it. So this rule is scoped to the
+            # default calendar (by <default>true</default> or by the literal
+            # shipped name "Default"); any other all-midnight calendar is a
+            # non-blocking INFO note, not an ERROR.
+            if is_default or name == "Default":
+                issues.append(
+                    (
+                        ERROR,
+                        f"{path.name} / calendar '{name}': every day is 00:00:00.000Z to 00:00:00.000Z — "
+                        "this is the shipped 24/7 shape; SLA clocks on this calendar never pause.",
+                    )
+                )
+            else:
+                issues.append(
+                    (
+                        INFO,
+                        f"{path.name} / always-open calendar '{name}': SLA clocks on it never pause — "
+                        "intended for 24/7 severity tiers; confirm it is not attached to entitlements "
+                        "that expect business-hour pauses.",
+                    )
+                )
 
     if not calendars:
-        issues.append(f"{path.name}: no businessHours entries found.")
+        issues.append((ERROR, f"{path.name}: no businessHours entries found."))
     elif not defaults:
-        issues.append(f"{path.name}: no calendar is marked default — consumers with no calendar have nothing to fall back to.")
+        issues.append(
+            (ERROR, f"{path.name}: no calendar is marked default — consumers with no calendar have nothing to fall back to.")
+        )
     elif len(defaults) > 1:
-        issues.append(f"{path.name}: more than one default calendar: {defaults}. Exactly one is allowed.")
+        issues.append((ERROR, f"{path.name}: more than one default calendar: {defaults}. Exactly one is allowed."))
 
     for hol in holidays:
         hname = _text(hol, "name") or "<unnamed>"
         attached = [el.text.strip() for el in _findall(hol, "businessHours") if el.text]
         if not attached:
             issues.append(
-                f"{path.name} / holiday '{hname}': attached to no calendar — it suspends nothing."
+                (ERROR, f"{path.name} / holiday '{hname}': attached to no calendar — it suspends nothing.")
             )
         for cal_name in attached:
             if cal_name not in names:
                 issues.append(
-                    f"{path.name} / holiday '{hname}': attached to unknown calendar '{cal_name}'."
+                    (ERROR, f"{path.name} / holiday '{hname}': attached to unknown calendar '{cal_name}'.")
                 )
         recurring = (_text(hol, "isRecurring") or "false").lower() == "true"
         activity = _text(hol, "activityDate")
         start_t, end_t = _text(hol, "startTime"), _text(hol, "endTime")
         if (start_t is None) != (end_t is None):
             issues.append(
-                f"{path.name} / holiday '{hname}': startTime and endTime must both be set or both be absent."
+                (ERROR, f"{path.name} / holiday '{hname}': startTime and endTime must both be set or both be absent.")
             )
         if not recurring:
             if not activity:
-                issues.append(f"{path.name} / holiday '{hname}': non-recurring holiday has no activityDate.")
+                issues.append((ERROR, f"{path.name} / holiday '{hname}': non-recurring holiday has no activityDate."))
             else:
                 try:
                     when = dt.date.fromisoformat(activity[:10])
                     if when < today:
                         issues.append(
-                            f"{path.name} / holiday '{hname}': activityDate {activity[:10]} is in the past — "
-                            "stale one-off holiday; add next year's date."
+                            (
+                                ERROR,
+                                f"{path.name} / holiday '{hname}': activityDate {activity[:10]} is in the past — "
+                                "stale one-off holiday; add next year's date.",
+                            )
                         )
                 except ValueError:
-                    issues.append(f"{path.name} / holiday '{hname}': activityDate '{activity}' is not a date.")
+                    issues.append((ERROR, f"{path.name} / holiday '{hname}': activityDate '{activity}' is not a date."))
         elif not _text(hol, "recurrenceStartDate"):
-            issues.append(f"{path.name} / holiday '{hname}': recurring holiday has no recurrenceStartDate.")
+            issues.append((ERROR, f"{path.name} / holiday '{hname}': recurring holiday has no recurrenceStartDate."))
 
     return issues
 
 
-def check_business_hours_and_holidays(manifest_dir: Path, today: dt.date | None = None) -> list[str]:
+def check_business_hours_and_holidays(manifest_dir: Path, today: dt.date | None = None) -> list[Finding]:
     today = today or dt.date.today()
     if not manifest_dir.exists():
-        return [f"Manifest directory not found: {manifest_dir}"]
+        return [(ERROR, f"Manifest directory not found: {manifest_dir}")]
     files = find_settings_files(manifest_dir)
     if not files:
-        print(f"INFO: No BusinessHours settings file found under {manifest_dir}.")
-        return []
-    issues: list[str] = []
+        return [(WARN, f"No BusinessHours settings file found under {manifest_dir}.")]
+    issues: list[Finding] = []
     for f in files:
         issues.extend(check_file(f, today))
     return issues
@@ -179,13 +231,25 @@ def check_business_hours_and_holidays(manifest_dir: Path, today: dt.date | None 
 def main() -> int:
     args = parse_args()
     today = dt.date.fromisoformat(args.today) if args.today else None
-    issues = check_business_hours_and_holidays(Path(args.manifest_dir), today)
-    if not issues:
+    findings = check_business_hours_and_holidays(Path(args.manifest_dir), today)
+    if not findings:
         print("No business hours issues found.")
         return 0
-    for issue in issues:
-        print(f"ISSUE: {issue}")
-    return 1
+
+    has_error = False
+    has_warn = False
+    for severity, message in findings:
+        print(f"{severity}: {message}")
+        if severity == ERROR:
+            has_error = True
+        elif severity == WARN:
+            has_warn = True
+
+    if has_error:
+        return 1
+    if args.strict and has_warn:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

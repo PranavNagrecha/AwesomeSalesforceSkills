@@ -31,9 +31,9 @@ outputs:
   - "Consumer map: which escalation entries, milestones, and Apex read which calendar"
   - "Troubleshooting result for a clock that did not pause"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-12
 ---
 
 # Business Hours and Holidays

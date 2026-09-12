@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "1c30d39e9ead661bb2ccc06c2d2c5829cd278a46b16ca23c839ea7cda88e7bd7",
+  "generated_from_hash": "1348ce4e8d606aec3a014915542fa7449542f562c65b82c73f5ad66bdbe23509",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -4536,6 +4536,7 @@
         "0eb0438b2e32559d60cb",
         "182d183df71f539e96db",
         "19ece7edf3e2808a432b",
+        "1b4200079593a7eed7da",
         "1cc12209b7ce98372a81",
         "2302bb3e069f15b5ac33",
         "25ba417426e2748e5c13",
@@ -4551,7 +4552,9 @@
         "40be3e2cca2eb277489b",
         "41bea90b2aa4fa1f2869",
         "4656a12d73b6f775dd07",
+        "4bea1640f1679007854e",
         "4f046c05e0e4ecfe882f",
+        "4f2f6f90826efb7e11c5",
         "5349dc7c59c0e181efc0",
         "5440a3d5650e9ca73a9a",
         "569bbd7f0822f8e05a19",
@@ -4560,6 +4563,7 @@
         "5945a1ba5a9903ed9b29",
         "5aab53d33d051a8736b8",
         "5b9a1248794ada2a4ab8",
+        "5be79e2ac6f59fb5a70c",
         "5c74276295d07bfab81c",
         "63e093122ba7137a556a",
         "71c8cda97173ea4f0d6b",
@@ -4590,6 +4594,8 @@
         "c61ba2befef5cb4dccd7",
         "c658f90e0f522c50d42e",
         "d83aa63d387048d29b4c",
+        "db4e2987774df79eeee3",
+        "de766192ff57ee5fe1c6",
         "dfa83cec38410fd09c8a",
         "e241c86d3c18603bed76",
         "e502cdd293fc5fa28d32",
@@ -4600,9 +4606,10 @@
         "ee48157ae7bbeb4c53ca",
         "eeec4f8777c306846ed1",
         "efa5b40d31b2efc68613",
-        "f76b3b75d42482b1c18d"
+        "f76b3b75d42482b1c18d",
+        "fa08e7613cc7c74e9428"
       ],
-      "content_hash": "b2e794ddf31cfe2cb69c45b8cb95f0c0b6156f6425e92b91d57a0359923a571f",
+      "content_hash": "a09ade404859708fb9b04d9c44c091819c28238fc59b6e5798d30090005f9446",
       "dependencies": [],
       "description": "Use this skill when creating, deploying, or troubleshooting Salesforce Business Hours and Holidays: the calendars that pause Case escalation rules, entitlement milestones, and Apex BusinessHours math outside working hours. Covers the BusinessHoursSettings metadata, the default calendar, per-region calendars, holiday attachment, the Case Business Hours field, and the BusinessHours Apex class. Trigger keywords: business hours, holidays, SLA clock, escalation not pausing, working hours, support hours, milestone timer weekend. NOT for the escalation rule entries themselves \u2014 use admin/escalation-rules. NOT for entitlement process design \u2014 use admin/entitlements-and-milestones. NOT for Field Service operating hours or shift scheduling \u2014 use admin/fsl-scheduling-setup.",
       "file_location": "skills/admin/business-hours-and-holidays",
@@ -4653,9 +4660,9 @@
       "templates": [
         "skills/admin/business-hours-and-holidays/templates/business-hours-and-holidays-template.md"
       ],
-      "updated": "2026-09-04",
+      "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "admin",

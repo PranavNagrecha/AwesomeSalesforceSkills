@@ -6,9 +6,11 @@ Non-obvious platform behaviors that cause real production problems. Each is grou
 
 **What happens:** Every new org contains a calendar named `Default` with `default` = `true` and every weekday stored as start `00:00:00.000Z`, end `00:00:00.000Z`. The Metadata API guide's own sample definition shows exactly this shape, and the same pair of values means "open the whole day". Escalation entries left on the default, entitlement processes with no calendar, and Apex calls that fall back to `IsDefault = true` all count wall-clock time.
 
+**Scoped to the default, not to the shape.** The midnight-to-midnight-every-day shape is not itself a mistake — it is exactly how a deliberately named, always-open calendar is stored (a `Severity 1 24x7` tier that genuinely must never pause, for example). The mistake is that shape sitting on the calendar every unconfigured consumer falls back to: the org's `<default>true</default>` calendar, or one still named literally `Default`. `scripts/check_business_hours_and_holidays.py` reflects this: the 24/7 shape on the default (or on a calendar named `Default`) is an ERROR; the same shape on any other, deliberately named calendar prints as an INFO line — "always-open calendar '\<name>': SLA clocks on it never pause — intended for 24/7 severity tiers; confirm it is not attached to entitlements that expect business-hour pauses" — and never fails the check.
+
 **When it occurs:** Any org that enabled escalation rules or entitlements before anyone edited the default calendar. The symptom is an SLA that "breaches over the weekend".
 
-**How to avoid:** Decide explicitly what the default should be. Either edit it to the primary region's hours or create regional calendars and set one of them as default. Never leave the shipped 24/7 calendar as the default in an org that promises business-hours SLAs.
+**How to avoid:** Decide explicitly what the default should be. Either edit it to the primary region's hours or create regional calendars and set one of them as default. Never leave the shipped 24/7 calendar as the default in an org that promises business-hours SLAs. If a genuinely always-open calendar is needed for a severity tier, give it its own name, leave `default` false, and confirm nothing that expects business-hour pauses (an entitlement milestone, say) is accidentally attached to it — that confirmation is exactly what the checker's INFO line asks for.
 
 ---
 
