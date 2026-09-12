@@ -32,13 +32,30 @@ Rules
                            but no externalCredentialPrincipalAccesses grant.
     NC-RSS-001   ADVISORY  a RemoteSiteSetting covers the same host as a Named
                            Credential's Url parameter.
+    NC-AUTH-01   ERROR     an ExternalCredential AuthHeader parameter with no
+                           (or empty) parameterValue. Proven live in a
+                           `sf project deploy start --dry-run`: "The parameter
+                           type "AuthHeader" requires these fields:
+                           ParameterValue." Not stated in the Metadata API
+                           Developer Guide — see gotcha 14.
+    NC-AUTH-02   WARN      an AuthHeader parameterValue formula referencing
+                           {!$Credential.<EC>.<Param>} whose <EC> does not
+                           match the file's own developer name — usually a
+                           credential's example copied without rescoping it.
+    NC-PS-01     INFO      a permission set's externalCredentialPrincipalAccesses
+                           entry names a principal that resolves to no
+                           ExternalCredential (or no matching principal
+                           parameter) under this manifest dir. A deploy-order
+                           dependency to confirm, not necessarily a defect —
+                           the credential may deploy from an earlier step or a
+                           separate manifest dir.
 
 Exit status
 -----------
-    0  no ERROR findings (WARN and ADVISORY do not fail the run)
+    0  no ERROR findings (WARN, ADVISORY and INFO do not fail the run)
     1  at least one ERROR, or --manifest-dir does not exist
 
-    --strict promotes every WARN to ERROR. ADVISORY is never promoted.
+    --strict promotes every WARN to ERROR. ADVISORY and INFO are never promoted.
 
 Usage
 -----
@@ -58,6 +75,7 @@ from urllib.parse import urlparse
 ERROR = "ERROR"
 WARN = "WARN"
 ADVISORY = "ADVISORY"
+INFO = "INFO"
 
 # --------------------------------------------------------------------------
 # Apex regexes
@@ -82,6 +100,13 @@ AUTH_HEADER_RE = re.compile(
 QUOTED_LITERAL_RE = re.compile(r"""(['"])((?:(?!\1).)*)\1""", re.DOTALL)
 
 MERGE_FIELD_MARKER = "{!$credential"
+
+# $Credential.<ExternalCredentialDeveloperName>.<ParameterName> inside an AuthHeader
+# parameterValue formula — the External-Credential-scoped form, distinct from the
+# unscoped Apex-side $Credential.Username / $Credential.OAuthToken merge fields.
+CREDENTIAL_SCOPED_MERGE_RE = re.compile(
+    r"""\$Credential\.([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)"""
+)
 
 
 # --------------------------------------------------------------------------
@@ -269,11 +294,14 @@ def check_named_credentials(tree: Tree, creds: dict) -> list[Finding]:
     return findings
 
 
-def check_external_credentials(tree: Tree) -> tuple[list[Finding], list[str]]:
-    """Returns (findings, external credential API names present in the tree)."""
+def check_external_credentials(
+    tree: Tree,
+) -> tuple[list[Finding], list[str], dict[str, set[str]]]:
+    """Returns (findings, EC API names present, EC name -> set of principal parameterNames)."""
     findings: list[Finding] = []
     names: list[str] = []
     principal_types = {"NamedPrincipal", "PerUserPrincipal"}
+    principal_map: dict[str, set[str]] = {}
 
     for path in tree.external_credentials:
         root = parse_xml(path)
@@ -286,6 +314,9 @@ def check_external_credentials(tree: Tree) -> tuple[list[Finding], list[str]]:
         principals = [
             p for p in params if child_text(p, "parameterType") in principal_types
         ]
+        principal_map[name] = {
+            child_text(p, "parameterName") for p in principals if child_text(p, "parameterName")
+        }
         if not principals:
             findings.append(
                 Finding(
@@ -298,7 +329,141 @@ def check_external_credentials(tree: Tree) -> tuple[list[Finding], list[str]]:
                     "it will fail authorization.",
                 )
             )
-    return findings, names
+    return findings, names, principal_map
+
+
+def check_auth_headers(tree: Tree) -> list[Finding]:
+    """NC-AUTH-01 / NC-AUTH-02 over ExternalCredential AuthHeader parameters.
+
+    NC-AUTH-01 (ERROR): an AuthHeader parameter with no (or empty) parameterValue.
+    Proven live in a dry-run deploy — "The parameter type "AuthHeader" requires
+    these fields: ParameterValue." — not stated in the Metadata API Developer
+    Guide (gotcha 14). NC-AUTH-02 (WARN): a parameterValue formula scoped to an
+    ExternalCredential ({!$Credential.<EC>.<Param>}) whose <EC> segment does not
+    match the file's own developer name — usually a copied example left
+    unrescoped.
+    """
+    findings: list[Finding] = []
+    for path in tree.external_credentials:
+        root = parse_xml(path)
+        if root is None:
+            continue
+        name = api_name(path)
+        where = tree.rel(path)
+
+        for param in children(root, "externalCredentialParameters"):
+            if child_text(param, "parameterType") != "AuthHeader":
+                continue
+            header_name = child_text(param, "parameterName") or "(unnamed)"
+            value = child_text(param, "parameterValue")
+
+            if not value:
+                findings.append(
+                    Finding(
+                        ERROR,
+                        "NC-AUTH-01",
+                        where,
+                        f"AuthHeader parameter '{header_name}' on '{name}' has no "
+                        "parameterValue. Deploy validation rejects this — proven "
+                        'live: \'The parameter type "AuthHeader" requires these '
+                        "fields: ParameterValue.\' Write the header formula (for "
+                        f"example {{!$Credential.{name}.<ParameterName>}}), naming "
+                        "an authentication parameter that gets created in Setup "
+                        "against the principal after this file deploys, never in "
+                        "this metadata.",
+                    )
+                )
+                continue
+
+            match = CREDENTIAL_SCOPED_MERGE_RE.search(value)
+            if match and match.group(1) != name:
+                findings.append(
+                    Finding(
+                        WARN,
+                        "NC-AUTH-02",
+                        where,
+                        f"AuthHeader parameter '{header_name}' on '{name}' formula "
+                        f"references '$Credential.{match.group(1)}.{match.group(2)}' "
+                        f"— a different External Credential than this file's own "
+                        f"developer name ('{name}'). Likely a copied example left "
+                        "unrescoped.",
+                    )
+                )
+    return findings
+
+
+def _parse_principal_ref(value: str) -> tuple[str, str] | None:
+    """'<EC>-<principal>' or 'ns__<EC>-<principal>' -> (EC name, principal name).
+
+    The dash between EC and principal is authoritative (api_meta L94995-94999);
+    a packaging namespace prefix is joined to the EC name with two underscores
+    (api_meta L94999-95003), so the namespace prefix is stripped before the
+    comparison.
+    """
+    if not value or "-" not in value:
+        return None
+    ec_part, principal = value.split("-", 1)
+    if "__" in ec_part:
+        ec_part = ec_part.rsplit("__", 1)[-1]
+    if not ec_part or not principal:
+        return None
+    return ec_part, principal
+
+
+def check_permission_set_principal_refs(
+    tree: Tree, ec_principals: dict[str, set[str]]
+) -> list[Finding]:
+    """NC-PS-01 (INFO): each externalCredentialPrincipalAccesses entry resolves
+    to a principal declared on an ExternalCredential in this manifest dir.
+
+    INFO, not ERROR/WARN: the External Credential legitimately may deploy from
+    an earlier step or a separate manifest-dir invocation, so an unresolved
+    reference here is a deploy-order dependency to confirm, not necessarily a
+    defect in this file.
+    """
+    findings: list[Finding] = []
+    for path in tree.permission_sets:
+        root = parse_xml(path)
+        if root is None:
+            continue
+        where = tree.rel(path)
+        for access in children(root, "externalCredentialPrincipalAccesses"):
+            ref = child_text(access, "externalCredentialPrincipal")
+            parsed = _parse_principal_ref(ref)
+            if parsed is None:
+                continue
+            ec_name, principal_name = parsed
+            principals = ec_principals.get(ec_name)
+
+            if principals is None:
+                findings.append(
+                    Finding(
+                        INFO,
+                        "NC-PS-01",
+                        where,
+                        f"externalCredentialPrincipalAccesses names '{ref}', but no "
+                        f"{ec_name}.externalCredential-meta.xml exists under this "
+                        "manifest dir. Deploy-order dependency, not necessarily a "
+                        "defect — confirm the External Credential deploys (from an "
+                        "earlier step or another manifest dir) before this "
+                        "permission set.",
+                    )
+                )
+            elif principal_name not in principals:
+                findings.append(
+                    Finding(
+                        INFO,
+                        "NC-PS-01",
+                        where,
+                        f"externalCredentialPrincipalAccesses names '{ref}', but "
+                        f"'{ec_name}.externalCredential-meta.xml' declares no "
+                        f"NamedPrincipal/PerUserPrincipal parameter named "
+                        f"'{principal_name}'. Deploy-order dependency, not "
+                        "necessarily a defect — confirm the principal name against "
+                        "the External Credential that will actually be deployed.",
+                    )
+                )
+    return findings
 
 
 def check_permission_sets(tree: Tree, ec_names: list[str]) -> list[Finding]:
@@ -478,10 +643,12 @@ def run(manifest_dir: Path) -> tuple[list[Finding], bool]:
     creds = read_named_credentials(tree)
     findings: list[Finding] = []
     findings += check_named_credentials(tree, creds)
-    ec_findings, ec_names = check_external_credentials(tree)
+    ec_findings, ec_names, ec_principals = check_external_credentials(tree)
     findings += ec_findings
     findings += check_permission_sets(tree, ec_names)
     findings += check_remote_sites(tree, creds)
+    findings += check_auth_headers(tree)
+    findings += check_permission_set_principal_refs(tree, ec_principals)
     findings += check_apex(tree, creds)
     return findings, False
 
@@ -529,11 +696,11 @@ def main() -> int:
         print("OK: no Named Credential findings.")
         return 0
 
-    order = {ERROR: 0, WARN: 1, ADVISORY: 2}
+    order = {ERROR: 0, WARN: 1, ADVISORY: 2, INFO: 3}
     findings.sort(key=lambda f: (order[f.severity], f.rule, f.where))
 
     failed = 0
-    counts = {ERROR: 0, WARN: 0, ADVISORY: 0}
+    counts = {ERROR: 0, WARN: 0, ADVISORY: 0, INFO: 0}
     for finding in findings:
         effective = finding.severity
         if args.strict and effective == WARN:
@@ -545,7 +712,7 @@ def main() -> int:
 
     print(
         f"\n{counts[ERROR]} error(s), {counts[WARN]} warning(s), "
-        f"{counts[ADVISORY]} advisory"
+        f"{counts[ADVISORY]} advisory, {counts[INFO]} info"
         + (" — --strict is on, warnings fail the run" if args.strict else ""),
         file=sys.stderr,
     )

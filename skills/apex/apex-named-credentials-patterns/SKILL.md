@@ -21,6 +21,7 @@ triggers:
   - "deploy named credential and apex to sandbox without changing the endpoint in code"
   - "test an apex callout that goes through a named credential"
   - "stop apex from setting the authorization header twice on a named credential callout"
+  - "the parameter type AuthHeader requires these fields ParameterValue deploy error"
 tags:
   - named-credentials
   - callouts
@@ -40,9 +41,9 @@ outputs:
   - "Guidance on Enhanced vs. Legacy model differences affecting Apex code"
   - "Deployable ExternalCredential + NamedCredential + PermissionSet metadata with deploy order"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 # Apex Named Credentials Patterns
@@ -73,6 +74,8 @@ Boundary: `integration/named-credentials-setup` owns the declarative security de
 | Which permission set grants the principal, and is it assigned to the user the callout runs as? | A principal is inert until `externalCredentialPrincipalAccesses` grants it (`api_meta` L94794–94796). Nothing in the deploy fails without it. See gotcha 6 and anti-pattern 8. | The change set includes the grant and the assignment step, so the integration works on first run instead of returning 401 for every user. |
 | Who owns the `Authorization` header — the platform or your Apex? | `generateAuthorizationHeader` defaults to `true` (`api_meta` L90039–90046). Apex adding its own on top is a collision that surfaces as a 401. See gotcha 4. | One owner, encoded in metadata that travels with the code, instead of an implicit default nobody deployed. |
 | Does the endpoint need a credential value in a specific header name or in the body? | That is what `{!$Credential.*}` merge fields are for, and they need `allowMergeFieldsInHeader` / `allowMergeFieldsInBody`, both defaulting to `false` (`api_meta` L89914–89940). See gotchas 2 and 3. | The flags ship with the Apex that depends on them, so the endpoint receives the credential rather than the literal merge-field text. |
+| What is the endpoint URL — host and path — and do sandbox and production share a host? | A `SecuredEndpoint` credential's `Url` parameter needs a real value before deploy, and it is one of the two facts an `AuthHeader` formula depends on. Proven live in a dry-run (`sf project deploy start --dry-run`, API 67.0), not stated in the guide. See gotcha 14. | The `NamedCredential` deploys with a real endpoint on the first attempt, and sandbox-vs-production drift is a decision instead of a placeholder left behind. |
+| What is the name of the authentication parameter the header formula will merge in (e.g. `ApiKey`, `ApiToken`), and who enters its value in Setup after deploy? | An `AuthHeader` parameter needs a non-empty `parameterValue`, or the deploy fails with `The parameter type "AuthHeader" requires these fields: ParameterValue.` — and a `PermissionSet` naming that credential's principal fails in the same request. Proven live in a dry-run, not stated in the guide. See gotcha 14. | The `ExternalCredential` deploys with the `{!$Credential.<EC>.<ParameterName>}` formula in place, and the post-deploy Setup step that creates the actual parameter is scheduled instead of discovered at deploy time. |
 | What kind of transaction makes the callout — synchronous, Queueable, Batch, or a Continuation? | Timeout budget, principal choice and framework support all follow from this. Continuations do accept `callout:` endpoints; the documented exclusion is Private Connect (`apexdev` L36006–36070). See gotcha 11. | The right timeout and the right mocking API (`Test.setMock` vs `Test.setContinuationResponse`) are chosen up front rather than discovered in a failing test. |
 
 **What a proper configuration adds over just doing it:** a hardcoded endpoint and a concatenated `Authorization` header will call the API successfully today — what the credential model buys is that the secret is never in source or in an export, the endpoint changes per org without a code change, and access is granted and revoked with the same permission sets that govern everything else.
@@ -235,7 +238,7 @@ req.setEndpoint('callout:Acme_Orders_NC/v2/orders/' + id);
 3. **Write the Apex against `templates/apex/HttpClient.cls`.** Name the credential, set an explicit timeout, and branch on 401/403 separately from other non-2xx codes so an access failure reads as an access failure. Section 4 of `references/code-examples.md` is the reference implementation.
 4. **Write the test with `templates/apex/tests/MockHttpResponseGenerator.cls`.** Cover the success shape, the endpoint's not-found code, and the 401 path. Do not assert on `req.getEndpoint()` inside the mock — route on the path substring instead (section 6 explains why).
 5. **Run the checker.** `python3 scripts/check_apex_named_credentials_patterns.py --manifest-dir force-app --strict`. It resolves every `callout:` name against the credentials in the tree, flags a legacy `namedCredentialType`, catches a `SecuredEndpoint` credential with no `externalCredential` link, and reports an Authorization header that collides with the platform's.
-6. **Deploy in dependency order and verify.** External Credential → Named Credential → permission set → Apex, then the two steps no deploy performs: a human entering the credential values against the principal in Setup, and `sf org assign permset`. Verify with the `NamedCredential` SOQL in section 8 and `sf apex run test`.
+6. **Deploy in dependency order and verify.** External Credential (with its principal) deploys first, then Named Credential, then the permission set, then Apex. Only after the External Credential deploys does a human enter the API key against the principal in Setup — never in metadata — and only then does `sf org assign permset` run. A validate-only deploy (`--dry-run` / `checkOnly`) of the credential can pass with the `AuthHeader` formula in place while that Setup value is still empty; the deploy checks the formula's shape, not the secret behind it, so the runtime 401 on a live callout is the real UAT check, not the green deploy (gotcha 14). Verify with the `NamedCredential` SOQL in section 8 and `sf apex run test`.
 7. **Retire what the credential replaced.** Delete the Remote Site Setting and the Custom Label or Custom Setting that held the old secret, and rotate the secret — it was in source control, so it is compromised.
 
 ---
@@ -258,13 +261,14 @@ req.setEndpoint('callout:Acme_Orders_NC/v2/orders/' + id);
 
 ## Salesforce-Specific Gotchas
 
-Full detail, with line citations, in `references/gotchas.md`. The five that most often break a first deployment:
+Full detail, with line citations, in `references/gotchas.md`. The six that most often break a first deployment:
 
 1. **A `SecuredEndpoint` credential's URL belongs in a `Url` parameter.** `<endpoint>` is legacy-only and deprecated at API 56.0, so a copied file can carry a URL the modern type ignores.
 2. **`generateAuthorizationHeader` is `true` unless you deploy `false`.** Apex that adds its own `Authorization` on top collides with the platform's.
 3. **Merge fields are Apex-side, but inert until the flags are on.** Both `allowMergeFields*` fields default to `false`; the literal text reaches the endpoint instead of the credential value.
 4. **The principal grant lives on the permission set from API 59.0.** `ExternalCredentialParameter.principal` was removed at 58.0; without `externalCredentialPrincipalAccesses` every callout is unauthorized.
 5. **Continuations do support `callout:`.** The widely repeated incompatibility is not in the guide; the documented exclusion is Private Connect.
+6. **An `AuthHeader` parameter with no `parameterValue` fails deploy validation.** Proven live in a dry-run, not stated in the guide — and a permission set naming that credential's principal fails in the same deploy as a cascade. See gotcha 14.
 
 ---
 
@@ -278,7 +282,7 @@ Full detail, with line citations, in `references/gotchas.md`. The five that most
 | Apex client class + `-meta.xml` | `callout:` endpoint via `templates/apex/HttpClient.cls`, explicit timeout, 401/403 branch |
 | Apex test class | `MockHttpResponseGenerator` covering success, not-found and 401 |
 | `package.xml` + deploy order | EC → NC → PermissionSet → Apex, with the manual credential-entry and assignment steps called out |
-| Checker report | `NC-APEX-*`, `NC-META-*`, `NC-XREF-*`, `NC-PERM-*`, `NC-RSS-*` findings by severity |
+| Checker report | `NC-APEX-*`, `NC-META-*`, `NC-XREF-*`, `NC-PERM-*`, `NC-RSS-*`, `NC-AUTH-*`, `NC-PS-*` findings by severity |
 
 ---
 

@@ -89,6 +89,16 @@ number, and authentication parameters" — which is exactly this scenario.
   encrypted… Salesforce encrypts your credentials by auto-creating org-specific keys"
   (`api_meta` L63604–63608), and the credential values are entered against the principal in
   Setup after the metadata is deployed.
+- **`ApiToken` is not declared anywhere in this file, and that is deliberate.** It is the name
+  given to an **authentication parameter**, created in **Setup → Named Credentials → External
+  Credentials → Partner Orders Credential → Principals → PartnerOrdersNamedPrincipal → New
+  (Authentication Parameter)** — a step that happens only after this `ExternalCredential`
+  deploys, never inside its metadata. The formula above and the Setup-created parameter simply
+  have to agree on the same name; nothing in the deploy cross-checks them for you (gotcha 14).
+  A deploy of this file with the formula in place can validate cleanly while the `ApiToken`
+  parameter itself is still unset in Setup — the deploy checks the formula's shape, not that
+  the value behind it exists yet. Get the parameter's name from the requester before writing
+  the formula; do not guess it.
 
 The guide's own sample uses `AwsSv4` with a `NamedPrincipal` and two `AuthParameter`
 entries (`api_meta` L63856–63875) — the same skeleton with a different protocol.
@@ -149,7 +159,10 @@ control authentication and permissions" — that is the modern model.
   Store the actual URL in the `parameterValue` field" (`api_meta` L90352–90354). In a
   `SecuredEndpoint` credential the URL lives here, **not** in the top-level `<endpoint>`
   element — that element "is valid only when NamedCredentialType is set to Legacy" and "is
-  deprecated in API version 56.0" (`api_meta` L90022–90030).
+  deprecated in API version 56.0" (`api_meta` L90022–90030). Get the real host and path from
+  the requester before writing this file — including whether sandbox and production share a
+  host — the same way you get the `AuthHeader` parameter name in section 1; both are inputs
+  the metadata cannot supply on its own (gotcha 14).
 - `parameterType` `Authentication`: "Specifies that this parameter configures authentication
   using the credentials specified in the external credential, referenced by the
   `externalCredential` field" (`api_meta` L90318–90321). `externalCredential` is a field of
@@ -219,6 +232,9 @@ credential and principal, separated by a dash. For example,
 - The value is `<ExternalCredential API name>-<principal parameterName>`. Both halves come
   from section 1: `Partner_Orders_EC` is the file stem, `PartnerOrdersNamedPrincipal` is the
   `parameterName` of the `NamedPrincipal` parameter. A dash, not an underscore, joins them.
+  This grant fails in the same deploy as an `ExternalCredential` whose `AuthHeader` parameter
+  has no `parameterValue` — the checker's `NC-PS-01` treats that as a deploy-order dependency
+  to confirm, not a defect in this file (gotcha 14).
 - Packaged credentials prefix the namespace with two underscores:
   `namespacePrefix__myExternalCredential-myPrincipal` (`api_meta` L94999–95003).
 - Before API 58.0 the link ran the other way: `ExternalCredentialParameter.principal`
