@@ -298,3 +298,53 @@ Best practice: Store the last successfully processed ReplayId and resume from th
 ```
 
 **Detection hint:** Replay ID set to `-2` in production code (could cause event flood), or `-1` for a consumer that must not miss events during downtime.
+
+---
+
+## Anti-Pattern 9: Scaffolding a publisher's permission set without granting Create on the event object
+
+**What the LLM generates:**
+
+```xml
+<!-- force-app/main/default/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Tier2 Webhook Admin</label>
+    <objectPermissions>
+        <object>Case</object>
+        <allowCreate>false</allowCreate>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+    </objectPermissions>
+    <!-- Tier2_Escalation__e is never mentioned -->
+</PermissionSet>
+```
+
+**Why it happens:** LLMs scaffold a permission set by enumerating the standard and custom sObjects the persona's automation touches — Case, Account, custom fields — and stop there, because a platform event reads like a message, not an object, so it never makes the list. Before API 67.0 this was invisible: `EventBus.publish` ran in system mode and object permissions were never checked. At the 67.0 user-mode default, the same generated permission set deploys cleanly (the event's `CustomObject`, the Apex, and the permission set all validate independently) and only fails at runtime, once a publish executes as that persona — `Database.SaveResult` carrying `"<Event>__e publish rejected: Access to entity '<Event>__e' denied"`, with the calling code's own `try`/`catch` never seeing it because `EventBus.publish` does not throw (Anti-Pattern 1).
+
+**Correct pattern:**
+
+```xml
+<!-- force-app/main/default/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Tier2 Webhook Admin</label>
+    <objectPermissions>
+        <object>Case</object>
+        <allowCreate>false</allowCreate>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+    </objectPermissions>
+    <objectPermissions>
+        <object>Tier2_Escalation__e</object>
+        <allowCreate>true</allowCreate>
+        <allowRead>true</allowRead>
+        <allowEdit>false</allowEdit>
+        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+    </objectPermissions>
+</PermissionSet>
+```
+
+**Detection hint:** an `EventBus.publish(new <Name>__e(...))` (or a `List<<Name>__e>` built for a bulk publish) anywhere in the scanned Apex tree with no `*.permissionset-meta.xml` or `*.profile-meta.xml` in the same tree carrying an `<objectPermissions>` block for that exact `<Name>__e` with `<allowCreate>true</allowCreate>`. `scripts/check_platform_events_apex.py` flags this as R9 (WARN by default — a build may grant the permission from a permission set outside the scanned tree; `--strict` promotes it to a failing exit code).

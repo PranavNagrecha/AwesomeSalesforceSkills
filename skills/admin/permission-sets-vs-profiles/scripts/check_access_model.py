@@ -37,12 +37,35 @@ Checks
           headroom, not a deploy risk: it is printed and counted in the JSON findings
           list but is exempt from --strict -- it never contributes to the exit code,
           unlike the WARN findings below.
+7. PSVP-FLS-01 (WARN) -- a permission set grants `allowCreate` or `allowEdit` on an
+          object but carries zero `fieldPermissions` on any *standard* (non-`__c`) field
+          of that object. Standard fields carry field-level security exactly as custom
+          fields do (api_meta L94802-L94805 documents `fieldPermissions` on
+          `PermissionSet` with no standard/custom distinction), so a permission set that
+          is a persona's only access source and skips every standard field is a persona
+          that can create or edit the record but cannot populate the fields its layouts
+          and processes actually write. Proven live: `case-onboarding` F-60 (M5 run 5) --
+          a Tier 1 agent holding exactly this shape failed a fixture insert with
+          `Operation failed due to fields being inaccessible on Sobject Case ...
+          fieldNames: Subject,Origin,AccountId,Priority,EntitlementId`, five standard
+          fields, none of them granted anywhere in the persona's permission sets. See
+          `references/gotchas.md`, "An Object Grant Without Field Grants Is A Persona
+          That Cannot Fill In A Form".
+8. PSVP-FLS-02 (WARN) -- a `.profile-meta.xml` in the scanned tree carries zero
+          `objectPermissions` and zero `fieldPermissions`, and the tree contains no
+          `PermissionSetGroup` file at all. Deliberately simplified (see
+          `check_empty_profile_without_group_coverage`'s docstring): it does not verify
+          that a specific group grants the objects this profile's users need -- only
+          that some group exists to be the claimed access source. An empty profile with
+          a description that says "all access comes from the group" and zero groups
+          anywhere in the same manifest-dir is a design with no reachable evidence
+          behind it.
 
 Exit policy
 -----------
 Exit 1 only on CRITICAL/ERROR/HIGH-class findings -- checks 1, 2, 3, and
-PSVP-DESC-01. WARN/INFO findings (checks 4, 5, and an empty scan) print but
-exit 0; pass --strict to promote those to a failure. PSVP-DESC-02 is a
+PSVP-DESC-01. WARN/INFO findings (checks 4, 5, 7, 8, and an empty scan) print
+but exit 0; pass --strict to promote those to a failure. PSVP-DESC-02 is a
 separate advisory bucket: always printed and counted, never promoted by
 --strict. A missing --manifest-dir is a usage error, not a finding, and exits
 1 immediately with a single-line message on stderr.
@@ -408,6 +431,101 @@ def check_standard_profile_edited(path: Path, root: ET.Element) -> list[str]:
     return findings
 
 
+def check_permission_set_object_grant_without_standard_fls(path: Path, root: ET.Element) -> list[str]:
+    """Check 7 (PSVP-FLS-01, WARN) -- object Create/Edit granted with no standard-field FLS.
+
+    Standard fields carry field-level security exactly as custom fields do -- the
+    Metadata API Developer Guide's `fieldPermissions` entry on `PermissionSet` makes no
+    standard/custom distinction (api_meta L94802-L94805). A permission set that grants
+    `allowCreate` or `allowEdit` on an object but lists zero `fieldPermissions` for any
+    of that object's *standard* (non-`__c`) fields is a persona that can create or edit
+    the record but cannot populate the fields its layouts and processes actually write.
+
+    This is exactly the case-onboarding F-60 shape: `Case_Agent_Core` granted
+    Create+Edit on Case with a single custom-field grant (`Case.Severity__c`) and zero
+    standard-field grants; a Tier 1 agent test user failed a fixture insert on
+    `Subject, Origin, AccountId, Priority, EntitlementId`.
+
+    WARN, not ERROR: a permission set legitimately granting Create/Edit with no
+    standard-field FLS at all is unusual but not always wrong (e.g. a set scoped
+    purely to a custom-field feature toggle on an object another set already covers
+    for standard fields) -- the finding names the set and object so a reviewer decides.
+    """
+    findings: list[str] = []
+    creatable_or_editable_objects: set[str] = set()
+    standard_field_objects: set[str] = set()
+
+    for block in root:
+        tag = local_name(block.tag)
+        if tag == "objectPermissions":
+            object_name = child_text(block, "object")
+            if object_name and (is_true(block, "allowCreate") or is_true(block, "allowEdit")):
+                creatable_or_editable_objects.add(object_name)
+        elif tag == "fieldPermissions":
+            field = child_text(block, "field")
+            object_name, sep, field_name = field.partition(".")
+            if sep and not field_name.endswith("__c"):
+                standard_field_objects.add(object_name)
+
+    for object_name in sorted(creatable_or_editable_objects - standard_field_objects):
+        findings.append(
+            f"WARN {path}: PSVP-FLS-01 permission set grants Create/Edit on `{object_name}` "
+            "with no field permissions on any of its standard fields — standard fields "
+            "have FLS too; list the fields this persona writes"
+        )
+
+    return findings
+
+
+def check_empty_profile_without_group_coverage(files: list[Path]) -> list[str]:
+    """Check 8 (PSVP-FLS-02, WARN) -- an empty profile with no PSG anywhere in the tree.
+
+    Deliberately simple, by design (see the "Exit policy" module docstring section for
+    the rule statement). This does NOT verify that a specific PermissionSetGroup grants
+    the objects this profile's population actually needs -- doing that precisely would
+    require resolving PSG membership out to member PermissionSet objectPermissions per
+    object and then asking "does *this* profile's users get *that* coverage", which the
+    file's flat, per-file structure gives no link for (nothing in a Profile or
+    PermissionSetGroup file names which users or profiles are meant to pair with it).
+    So the check only asserts the cruder, unambiguous fact: a Profile file with zero
+    `objectPermissions` and zero `fieldPermissions` exists, and not a single
+    PermissionSetGroup file exists anywhere in the scanned tree to be its claimed
+    access source. If a real coverage gap needs catching (this PSG doesn't grant that
+    object), PSVP-FLS-01 above is the check that does it, one permission set at a time.
+    """
+    findings: list[str] = []
+    empty_profiles: list[Path] = []
+    has_any_group = False
+
+    for path in files:
+        root = parse_file(path)
+        if root is None:
+            continue
+        root_type = local_name(root.tag)
+        if root_type == "PermissionSetGroup":
+            has_any_group = True
+            continue
+        if root_type != "Profile":
+            continue
+        has_object_perm = any(local_name(block.tag) == "objectPermissions" for block in root)
+        has_field_perm = any(local_name(block.tag) == "fieldPermissions" for block in root)
+        if not has_object_perm and not has_field_perm:
+            empty_profiles.append(path)
+
+    if not empty_profiles or has_any_group:
+        return findings
+
+    for path in empty_profiles:
+        findings.append(
+            f"WARN {path}: PSVP-FLS-02 profile carries zero objectPermissions and zero "
+            "fieldPermissions, and no PermissionSetGroup exists anywhere in the scanned "
+            "tree — if access is meant to come from a group, the group is missing from "
+            "this manifest"
+        )
+
+    return findings
+
+
 def check_duplicate_object_grants(files: list[Path]) -> list[str]:
     """Check 5 -- an object granted by both a profile and a PSG member."""
     findings: list[str] = []
@@ -495,6 +613,7 @@ def audit_file(path: Path) -> tuple[list[str], list[str]]:
         findings.extend(check_standard_profile_edited(path, root))
     elif root_type == "PermissionSet":
         findings.extend(check_permission_set_holds_profile_only(path, root))
+        findings.extend(check_permission_set_object_grant_without_standard_fls(path, root))
 
     return findings, advisory
 
@@ -544,6 +663,7 @@ def main() -> int:
         findings.extend(file_findings)
         advisory.extend(file_advisory)
     findings.extend(check_duplicate_object_grants(files))
+    findings.extend(check_empty_profile_without_group_coverage(files))
 
     summary = (
         f"Scanned {len(files)} access-model metadata file(s); "

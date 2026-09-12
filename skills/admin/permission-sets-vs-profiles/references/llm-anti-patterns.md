@@ -136,3 +136,48 @@ Managed package considerations:
 ```
 
 **Detection hint:** If the output migrates all profiles to minimal without mentioning managed package impact, package functionality may break. Search for `managed package` or `ISV` in the migration plan.
+
+---
+
+## Anti-Pattern 6: Granting object Create/Edit and calling the persona's field access done
+
+**What the LLM generates:** a permission set with `<objectPermissions><allowCreate>true</allowCreate><allowEdit>true</allowEdit>...<object>Case</object></objectPermissions>` and a single `<fieldPermissions>` block for the one custom field the requirement named (e.g. `Case.Severity__c`), then moves on — no `fieldPermissions` entries for `Subject`, `Origin`, `Priority`, `AccountId`, or any other standard field the persona's layout puts in edit mode.
+
+**Why it happens:** the model treats `fieldPermissions` as something you add only for *custom* fields — the ones a requirement explicitly calls out — because standard fields "already exist" and object-level CRUD reads, to the model, as if it already covers them. It does not. `allowCreate`/`allowEdit` on `objectPermissions` governs whether the persona can create or edit a row of that object at all; each field on that row, standard or custom, needs its own `fieldPermissions` entry to be writable. A permission set that is the persona's only access source and skips every standard field deploys clean, passes every checker that doesn't cross-reference layouts, and then fails the first Apex test that inserts a record as that persona with `Operation failed due to fields being inaccessible on Sobject <Type>` naming exactly the fields nobody granted — case-onboarding's F-60, five standard Case fields, discovered five milestone verifications and two org dry runs after the metadata shipped.
+
+**Correct pattern:**
+
+```xml
+<!-- Grant fieldPermissions for every field the persona's layout/compact-layout/
+     intake process actually writes -- standard fields included, not just the
+     custom field the requirement named. -->
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Case.Subject</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Case.Origin</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Case.Priority</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Case.AccountId</field>
+    <readable>true</readable>
+</fieldPermissions>
+<fieldPermissions>
+    <editable>false</editable>
+    <field>Case.Severity__c</field>
+    <readable>true</readable>
+</fieldPermissions>
+```
+
+Source the field list from the layout, compact layout, and intake process — not from the requirement's prose, which usually names only the custom field being introduced. See `references/gotchas.md`, "An Object Grant Without Field Grants Is A Persona That Cannot Fill In A Form."
+
+**Detection hint:** a permission set (or PSG member) with `allowCreate=true` or `allowEdit=true` on an object and zero `fieldPermissions` entries for that object's non-`__c` fields. `scripts/check_access_model.py` automates this as `PSVP-FLS-01` (WARN).

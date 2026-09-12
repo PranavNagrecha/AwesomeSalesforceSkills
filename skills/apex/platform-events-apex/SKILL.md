@@ -39,9 +39,9 @@ outputs:
   - "Apex publish and subscribe pattern with error handling"
   - "deployable __e object XML, publisher class, subscriber trigger, PlatformEventSubscriberConfig, test class and package.xml"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 Use this skill when a design is moving toward event-driven integration and Apex is involved on the publishing or subscriber side. The goal is to publish events deliberately, consume them in a decoupled way, and separate Platform Events from Change Data Capture instead of treating them as interchangeable.
@@ -65,6 +65,7 @@ Ask these before writing the first line of Apex. Each one changes an element in 
 | "Who should own the records this subscriber creates, and will it ever send email?" | The trigger runs as the Automated Process entity by default; email is not supported from that context (`api_meta` L96453–96462) | A `PlatformEventSubscriberConfig` with a real `user`, or a documented decision that Automated Process is correct |
 | "What peak event rate must one trigger invocation survive?" | The platform-event trigger batch is 2,000, not 200 (`apexdev` L19862) | A handler sized or chunked for 2,000, and a deliberate `batchSize` — never 1 (`api_meta` L96416–96419) |
 | "Who is alerted, and how, when the subscription stops?" | Nothing in Apex reports a dead subscription; only `EventBusSubscriber` does | A scheduled query on `Status`, `Retries` and `LastError`, so a month-long gap becomes a same-day one |
+| "Which personas publish this event, and which permission set carries Create on it?" | At the API 67.0 user-mode default, `EventBus.publish` needs Create on the `__e` object for the running user; nothing about the trigger, the Apex, or the object file fails at deploy time if it's missing — only the runtime publish is rejected (`references/gotchas.md`, "API 67.0 Silently Moves Publishing Into User Mode") | A named permission set per publishing persona that grants Create (and Read) on the event, checked by `scripts/check_platform_events_apex.py`, instead of a publish that fails silently into a failure log the first time a version bump or a new persona hits it |
 
 What a proper configuration adds over just calling `EventBus.publish`: the event's transactional semantics are written down in the object file instead of inherited by accident, rejected publishes are visible, redelivery cannot duplicate downstream work, the retry budget cannot silently kill the subscription, and the subscriber's health is a monitored number rather than something discovered during an incident.
 
@@ -155,7 +156,7 @@ Change Data Capture is best when the event should represent Salesforce row chang
 2. **Build the publisher against `templates/apex/BaseService.cls`** and inspect `List<Database.SaveResult>` by index, logging through `templates/apex/ApplicationLogger.cls`. Add the `EventPublishFailureCallback` (Artifact 3) if the answer to "what if one is lost" was anything other than "nothing".
 3. **Build the subscriber as trigger-plus-handler** (Artifact 4): one-line `(after insert)` trigger, handler that is idempotent on `EventUuid`, chunked for a 2,000-event batch, checkpointed after each chunk, and retry-capped below nine. Ship the `PlatformEventSubscriberConfig` (Artifact 5) alongside it if the subscriber writes records or sends email.
 4. **Write the test class before deploying** (Artifact 6). Every delivery path needs an explicit `Test.getEventBus().deliver()`; the failure-callback path needs `Test.getEventBus().fail()`. A green test with no `deliver()` call proves nothing.
-5. **Run the checker** over the source tree: `python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir force-app/main/default`. Its eight rules map one-to-one to gotchas in `references/gotchas.md`; exit 0 is the gate.
+5. **Run the checker** over the source tree: `python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir force-app/main/default`. Its nine rules map one-to-one to gotchas in `references/gotchas.md`; exit 0 is the gate (add `--strict` to also fail on the WARN-level permission-set gap, rule R9).
 6. **Deploy in dependency order** (`references/code-examples.md`, Deploy order) and run `sf apex run test --tests <YourEventTest>`.
 7. **Verify the live subscription**, not just the tests: query `EventBusSubscriber` for `Status`, `Retries`, `LastError` and the `LastProcessed` / `LastPublished` gap, and put that query on a schedule. `references/examples.md` Example 3 explains how to read each column.
 
@@ -185,7 +186,7 @@ Change Data Capture is best when the event should represent Salesforce row chang
 5. **Exceeding the `RetryableException` budget stops the subscription** — and when it is fixed it resumes from the tip, so the backlog is lost.
 6. **`setResumeCheckpoint` only accepts a `ReplayId` from the current batch** — it is a within-invocation bookmark, not a durable cursor.
 7. **The subscriber runs as Automated Process by default** — no meaningful record ownership, no email, and no debug log under the user you enabled.
-8. **API 67.0 moves publishing from system mode to user mode** — a version bump alone can start failing.
+8. **API 67.0 moves publishing from system mode to user mode** — a version bump alone can start failing, with `Database.SaveResult` errors reading `"<Event>__e publish rejected: Access to entity '<Event>__e' denied"` until a permission set grants Create on the event.
 
 Full detail, with line-cited sources, in `references/gotchas.md`.
 
@@ -205,7 +206,7 @@ Full detail, with line-cited sources, in `references/gotchas.md`.
 | `references/code-examples.md` | You are building or reviewing the actual slice — event XML, publisher, callback, subscriber trigger + handler, subscriber config, test class, `package.xml`, deploy order, verification |
 | `references/gotchas.md` | A publish or a subscription is behaving in a way the code does not explain, or you are choosing `publishBehavior` / batch size / retry cap |
 | `references/examples.md` | You want worked scenarios: bulk publishing from a service, a thin trigger delegating to Queueable, and how to read `EventBusSubscriber` to prove a subscriber is alive |
-| `references/llm-anti-patterns.md` | You are reviewing generated Apex or XML — eight failure modes with detection hints, including the limit and retention numbers assistants routinely invent |
+| `references/llm-anti-patterns.md` | You are reviewing generated Apex or XML — nine failure modes with detection hints, including the limit and retention numbers assistants routinely invent |
 | `references/well-architected.md` | You are tagging findings by pillar, or you need the exact source and line range behind a claim in this package |
 
 ## Related Skills

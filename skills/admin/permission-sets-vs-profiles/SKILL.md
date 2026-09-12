@@ -29,7 +29,7 @@ triggers:
 inputs: ["persona matrix", "current access model", "managed package constraints"]
 outputs: ["permission model recommendation", "profile residue list — what cannot move", "deployable base-profile and permission-set XML", "access migration findings", "least-privilege guidance"]
 dependencies: []
-version: 1.2.2
+version: 1.2.3
 author: Pranav Nagrecha
 updated: 2026-09-12
 ---
@@ -60,6 +60,7 @@ Ask these before writing any XML. Each answer removes one of the failure modes i
 | "Is the profile standard (`custom=false`) or custom?" | Editing standard objects on standard profiles is disabled in API 50.0+, so the strip phase will not apply | A clone-first decision before any deploy is attempted |
 | "Does a managed package require this profile to be assigned?" | Some packages ship profile-dependent configuration that a permission set cannot replace | A documented exception list, or confirmation that the package ships its own permission sets |
 | "Who verifies afterwards, and against what?" | "It deployed" is not evidence. Effective access is the union of the profile and every assigned permission set, visible per user in Setup | A named verification step: a View Summary check plus the assignment-count SOQL |
+| "For each object this persona can create or edit, which of its standard fields does the persona's layout, compact layout, or intake process actually write?" | An object-level Create/Edit grant says nothing about which fields on that object are writable — each field, standard or custom, needs its own `fieldPermissions` entry, and a profile carrying zero object/field permissions grants none of them by default. A clean deploy and a passing checker prove the metadata is well-formed, not that the persona can fill in the record | The field list per object, sourced from the layout/compact-layout/intake process rather than guessed, and a permission set that grants every one of them (`references/gotchas.md`, "An Object Grant Without Field Grants Is A Persona That Cannot Fill In A Form") |
 
 What a proper configuration adds over just moving permissions across: the profile keeps exactly the settings that cannot live anywhere else, the permission set carries a complete and licence-compatible grant, and the strip phase actually revokes what it claims to revoke instead of silently overlaying.
 
@@ -159,7 +160,7 @@ Every user =
 2. **Build the manifest before the retrieve** — name every object, field, tab, app, record type, layout and class whose permissions are in scope, then retrieve with `--manifest`. A `Profile:` retrieve without them returns an incomplete file (`references/gotchas.md`, "A Profile Retrieve Returns Only What the Rest of the Manifest Asked For")
 3. **Write the pair** — the base profile and the receiving permission set, from the shapes in `references/metadata-examples.md`. Map `tabVisibilities`→`tabSettings` and drop every `<default>` from the permission-set side; leave the `default` app and record type on the profile
 4. **Check the licence pairing** — `SELECT Id, Profile.UserLicenseId FROM User` against `SELECT Id, LicenseId FROM PermissionSet`. A mismatch blocks the assignment, so resolve it before the cutover rather than during it
-5. **Lint the files** — `python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir force-app/main/default`. It flags migratable grants still sitting on a profile, profile-only elements wrongly placed in a permission set, edits to `custom=false` profiles, object permissions duplicated across a profile and a group member, and an over-length `description` (`PSVP-DESC-01` ERROR at 255+ characters, `PSVP-DESC-02` INFO headroom at 200+). Exit policy: exit 1 only on a dangerous-permission grant, a migratable grant left on a profile, a profile-only element in a permission set, or `PSVP-DESC-01` (255+ characters) — all CRITICAL/ERROR/HIGH-class findings; a standard-profile edit, a duplicate grant, or an empty scan print as WARN/INFO and exit 0, and `--strict` promotes those to a failure. `PSVP-DESC-02` is a separate advisory bucket — always printed and counted, never promoted even by `--strict`. A missing `--manifest-dir` is a usage error and exits 1 immediately.
+5. **Lint the files** — `python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir force-app/main/default`. It flags migratable grants still sitting on a profile, profile-only elements wrongly placed in a permission set, edits to `custom=false` profiles, object permissions duplicated across a profile and a group member, an over-length `description` (`PSVP-DESC-01` ERROR at 255+ characters, `PSVP-DESC-02` INFO headroom at 200+), a permission set granting object Create/Edit with no standard-field FLS for that object (`PSVP-FLS-01` WARN), and an empty profile with no permission set group anywhere in the tree to be its claimed access source (`PSVP-FLS-02` WARN). Exit policy: exit 1 only on a dangerous-permission grant, a migratable grant left on a profile, a profile-only element in a permission set, or `PSVP-DESC-01` (255+ characters) — all CRITICAL/ERROR/HIGH-class findings; a standard-profile edit, a duplicate grant, `PSVP-FLS-01`, `PSVP-FLS-02`, or an empty scan print as WARN/INFO and exit 0, and `--strict` promotes those to a failure. `PSVP-DESC-02` is a separate advisory bucket — always printed and counted, never promoted even by `--strict`. A missing `--manifest-dir` is a usage error and exits 1 immediately.
 6. **Deploy in order, permission set first** — validate-only, then permission set, then group, then the stripped profile. Reversing the order leaves a window with no access; and because profile deploy *overlays*, any permission you mean to revoke must be written out explicitly as `false`
 7. **Verify against the org, not the deploy log** — run the `IsOwnedByProfile` and assignment-count SOQL in `references/metadata-examples.md` § Verify, and open Setup → Users → the migrated user → **View Summary** to confirm effective access matches the pre-migration baseline
 
@@ -178,7 +179,7 @@ For a full org-scale decomposition of a live profile — inventory, category cla
 - **Profile metadata deploy overlays, it does not replace**: deleting a block from the XML revokes nothing. Write the permission out explicitly as `false` or the strip phase silently does nothing.
 - **`description` over 255 characters fails the deploy; PSGs fail as a cascade**: both `Profile.description` and `PermissionSet.description` are capped at 255 characters, and a PSG that composes a rejected set fails too, with an unrelated-looking `permission set names are invalid`.
 
-Deeper treatment of all fourteen, with the guide passages behind them, in `references/gotchas.md`.
+Deeper treatment of all fifteen, with the guide passages behind them, in `references/gotchas.md`.
 
 ## Proactive Triggers
 

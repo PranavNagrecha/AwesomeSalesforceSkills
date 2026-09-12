@@ -329,3 +329,47 @@ public static List<Case> createCases(Integer count, Id accountId, Map<String, Ob
 **Correct pattern:** construct the record without the lookup, then assign it conditionally — `if (accountId != null) { c.AccountId = accountId; }` — for every lookup argument in the factory, not only the one the current test happens to exercise. See `templates/apex/tests/TestDataFactory.cls`.
 
 **Detection hint:** grep factory methods for `<Field> = <parameter>` inside an object constructor where `<parameter>` is a nullable `Id` argument. If the caller ever passes `null` for that argument and the class under test enforces user-mode DML, the seed will fail with `Operation failed due to fields being inaccessible on Sobject <Type>` naming exactly that field once probed with `getDmlFieldNames` (Gotcha 14).
+
+---
+
+## Anti-Pattern 9: Widening the persona's permission set to make a fixture insert succeed
+
+**What the LLM generates:** a `@TestSetup` seed insert running inside `System.runAs(agent)` fails with `Operation failed due to fields being inaccessible on Sobject Case ... fieldNames: EntitlementId`, and the fix the model proposes is to add `EntitlementId` to the persona's permission set:
+
+```xml
+<!-- "fixing" the test by widening what the persona can do in production -->
+<fieldPermissions>
+    <editable>true</editable>
+    <field>Case.EntitlementId</field>
+    <readable>true</readable>
+</fieldPermissions>
+```
+
+**Why it happens:** the model treats a fixture-insert failure inside `System.runAs(persona)` as proof the persona needs that field, because Gotcha 13 taught it that `runAs`-failures-on-DML mean "grant the missing permission." That heuristic is correct when the field is one the persona's own layout or process writes. It is wrong when the field is fixture plumbing — populated only so the test record is complete enough to exercise the logic under test, not because the persona's job requires setting it. The model has no signal distinguishing the two failure shapes, so it applies the Gotcha 13 fix uniformly and ships a persona with more access than any layout, process, or requirement asked for — silently reintroducing the mirror-image defect `admin/permission-sets-vs-profiles` Gotcha "An Object Grant Without Field Grants Is A Persona That Cannot Fill In A Form" describes, this time as an over-grant discovered by a test rather than an under-grant discovered by one.
+
+**Correct pattern:** ask whether the field is on the persona's own layout, compact layout, or intake process before touching the permission set. If it is not, the fixture is the thing to fix, not the access model — seed it in system mode:
+
+```apex
+@TestSetup
+static void seed() {
+    User agent;
+    System.runAs(new User(Id = UserInfo.getUserId())) {
+        agent = TestUserFactory.createUser('Standard User',
+            new List<String>{ 'Case_Agent_Core', 'Case_Tier1' });
+    }
+    // Fixture-only field (EntitlementId): not on the Tier 1 layout or intake
+    // process, so it is not the persona's to grant. Seed in system mode.
+    List<Case> cases = TestDataFactory.createCases(200, null,
+        new Map<String, Object>{ 'EntitlementId' => testEntitlementId });
+    TestDataFactory.insertAsSystem(cases);
+}
+
+@IsTest
+static void agentEscalatesCase() {
+    System.runAs(getSeededAgent()) {
+        // only the action under test runs as the persona
+    }
+}
+```
+
+**Detection hint:** a permission-set edit made in direct response to a test failure, where the added field does not appear in the layout, compact layout, or intake process cited anywhere in the same PR or build step. Cross-check against `skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py`'s `PSVP-FLS-01` finding history — a field added to silence a test failure without a matching layout citation is the tell.

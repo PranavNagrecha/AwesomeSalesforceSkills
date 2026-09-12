@@ -202,3 +202,29 @@ try {
 **Where this came from:** run 7 of the `tier2-webhook` M1 mock deploy, immediately after the Gotcha 13 fix landed — 30 of 30 test methods failed on the same `@TestSetup` seed insert, inside `System.runAs`, on a factory-populated `AccountId` no test method referenced. See `.sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md` run 7.
 
 **See also:** Gotcha 13 gets a test into `System.runAs` with a permissioned user; this gotcha is the layer underneath — the shared factory itself has to stop volunteering fields nobody asked for.
+
+---
+
+## Gotcha 15: Seed In System Mode, Act As The Persona
+
+**What happens:** Gotchas 13 and 14 are both fixed — every test runs inside `System.runAs(agent)`, the factory no longer volunteers a null lookup — and the `@TestSetup` seed insert *still* fails, on a field neither of those gotchas mentions:
+
+```
+System.DmlException: Operation failed due to fields being inaccessible on Sobject Case,
+check errors on Exception or Result! fieldNames: EntitlementId
+```
+
+The permissioned user holds every permission set the persona is meant to hold. The field failing is real, deliberately populated, and correct for the fixture. The persona genuinely does not have Create access to it — and should not, because an entitlement assignment is an admin-configured value, not something the agent sets by hand.
+
+**When it occurs:** at API 67.0+, Apex runs in user context by default (apexdev L11744-L11745), so a plain `insert` inside `System.runAs(persona)` checks the persona's FLS on every populated field — including fixture-only fields the test needs to exist but that the persona's job never requires them to write: an `EntitlementId` set by an entitlement process, a lookup an integration user populates, a field an admin sets once at record creation. Gotcha 13 established that the test must run as a permissioned user, not the deploying admin; Gotcha 14 established that the factory must not volunteer fields nobody asked for. Neither gotcha distinguishes "fields the persona's code path writes" from "fields the fixture needs populated for the test to be meaningful" — and conflating the two produces a false choice: either grant the persona Create access to fields it does not use (widening the persona past what its layouts and processes justify, and reintroducing Gotcha 15's mirror image, F-60 in `admin/permission-sets-vs-profiles` — a persona with field access nobody asked it to have), or leave the fixture unable to seed at all.
+
+**How to avoid:** Do not choose. Seed the fixture in system mode; run only the action under test as the persona.
+
+- Build the fixture with `Database.insert(records, AccessLevel.SYSTEM_MODE)` — "In system mode, the object and field-level permissions of the current user are ignored, and the record sharing rules are controlled by the class sharing keywords" (apexdev L11436-L11439; `AccessLevel.SYSTEM_MODE` documented for `Database` DML methods including `insert` at apexdev L11995-L12003). Equivalently, insert inside `System.runAs` of an admin-set user (a `TestUserFactory` user on a profile that genuinely has the field, or the mixed-DML-fence idiom `System.runAs(new User(Id = UserInfo.getUserId()))` for setup-object DML) when the fixture also needs setup objects created in the same transaction.
+- Keep `System.runAs(persona)` scoped to the action under test — the trigger, service call, or DML the requirement is actually about — not the fixture setup around it. `templates/apex/tests/TestDataFactory.insertAsSystem(List<SObject>)` wraps the system-mode insert so call sites read as intent, not as an incantation.
+- Do not read a system-mode fixture insert failing as a permission gap to fix by widening the persona's permission set. Ask instead whether the field belongs on the persona's own permission set at all — `EntitlementId`, most admin-set lookups, and fields no layout or process for that persona ever writes usually do not, and granting them anyway is the exact anti-pattern `admin/permission-sets-vs-profiles` Gotcha "An Object Grant Without Field Grants Is A Persona That Cannot Fill In A Form" warns against in the other direction.
+- Keep the two seams separate in the class: `@TestSetup` (or a helper called from it) does the system-mode seed; the `@IsTest` method's body — the part that calls the code under test — is what sits inside `System.runAs(persona)`.
+
+**Where this came from:** `case-onboarding` build F-60 follow-on (M5 run 5/6): once the Tier 1 persona's permission sets were reviewed against F-60, the fixture still needed `EntitlementId` populated to exercise milestone logic, and the honest fix was a system-mode seed, not a wider grant. `.sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md` run 5.
+
+**See also:** Gotcha 13 gets the *action* under test into `System.runAs` with a permissioned user; Gotcha 14 stops the factory from volunteering fields nobody asked for; this gotcha draws the line between what the fixture needs to exist and what the persona is allowed to write, and puts each on the correct side of `System.runAs`.

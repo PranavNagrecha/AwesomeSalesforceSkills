@@ -113,6 +113,12 @@ public class TestDataFactory {
         };
     }
 
+    // Seed fixtures in system mode so FLS on fixture-only fields (e.g. an admin-set
+    // lookup) never blocks setup; run only the action under test as the persona.
+    public static Database.SaveResult[] insertAsSystem(List<SObject> records) {
+        return Database.insert(records, AccessLevel.SYSTEM_MODE);
+    }
+
     private static void applyOverrides(SObject record, Map<String, Object> overrides) {
         if (overrides == null || overrides.isEmpty()) { return; }
         for (String key : overrides.keySet()) {

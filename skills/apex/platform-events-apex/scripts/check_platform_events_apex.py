@@ -32,8 +32,18 @@ Rules (each maps to a gotcha in ../references/gotchas.md):
       body, or precedes the only DML in the loop)
       -> apexrefguide L157866-157874: the trigger resumes AFTER the checkpoint,
          so checkpointing early silently skips unprocessed events.
+  R9  EventBus.publish(...) of a <Name>__e with no *.permissionset-meta.xml or
+      *.profile-meta.xml under the scanned tree granting <allowCreate>true
+      on that <Name>__e via <objectPermissions>
+      -> apexdev L11735-11737, L11760-11763: Apex enforces the running user's
+         object permissions by default; at API 67.0 that includes Create on a
+         published platform event (apexrefguide L214529-214531, cited on the
+         same gotcha). WARN only, not ERROR: a build may grant the permission
+         from a permission set or profile outside the scanned tree. Pass
+         --strict to fail the run on this rule too.
 
-Exit codes: 0 clean, 1 findings or a missing --manifest-dir.
+Exit codes: 0 clean, 1 on any finding other than a bare WARN (WARN alone does
+not fail unless --strict is passed), or a missing --manifest-dir.
 """
 
 from __future__ import annotations
@@ -47,11 +57,15 @@ from pathlib import Path
 
 APEX_SUFFIXES = {".cls", ".trigger"}
 OBJECT_SUFFIX = ".object-meta.xml"
+PERMSET_SUFFIX = ".permissionset-meta.xml"
+PROFILE_SUFFIX = ".profile-meta.xml"
 MDAPI_NS = "http://soap.sforce.com/2006/04/metadata"
 
-SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0}
+SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0, "WARN": 3}
 
 PUBLISH_RE = re.compile(r"\bEventBus\s*\.\s*publish(?:WithAccessLevel)?\s*\(")
+INLINE_EVENT_RE = re.compile(r"EventBus\s*\.\s*publish(?:WithAccessLevel)?\s*\(\s*new\s+(\w+__e)\b")
+EVENT_TYPE_TOKEN_RE = re.compile(r"\b(\w+__e)\b")
 ASSIGNED_PUBLISH_RE = re.compile(
     r"(?:List\s*<\s*Database\.SaveResult\s*>|Database\.SaveResult|\w+)\s*(?:\w+\s*)?=\s*EventBus\s*\.\s*publish"
 )
@@ -84,6 +98,12 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=".",
         help="Root of the source tree to scan (e.g. force-app/main/default).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Also fail (exit 1) on WARN-level findings, such as R9's missing "
+        "permission-set Create grant on a published platform event.",
     )
     return parser.parse_args()
 
@@ -312,6 +332,79 @@ def audit_object(path: Path, rel: str) -> list[str]:
     return findings
 
 
+def published_events_in_file(code: str) -> set[str]:
+    """Best-effort set of <Name>__e types published via EventBus in this file.
+
+    Prefers the inline-construction shape (`EventBus.publish(new Foo__e(...))`).
+    Falls back to the nearest preceding `__e` type token in the file for the
+    common case of publishing a variable or a pre-built list — a heuristic,
+    not a type resolver, matching the rest of this checker's approach (R8).
+    """
+    events: set[str] = set()
+    for m in INLINE_EVENT_RE.finditer(code):
+        events.add(m.group(1))
+    if events:
+        return events
+    for m in PUBLISH_RE.finditer(code):
+        preceding = list(EVENT_TYPE_TOKEN_RE.finditer(code, 0, m.start()))
+        if preceding:
+            events.add(preceding[-1].group(1))
+    return events
+
+
+def collect_granted_create_objects(root: Path) -> set[str]:
+    """<Name>__e object names with <allowCreate>true in any permission set or
+    profile under root, so R9 can check a publisher against the whole tree
+    rather than just the object file's own folder."""
+    granted: set[str] = set()
+    files = sorted(root.rglob(f"*{PERMSET_SUFFIX}")) + sorted(root.rglob(f"*{PROFILE_SUFFIX}"))
+    for path in files:
+        try:
+            root_el = ET.parse(path).getroot()
+        except ET.ParseError:
+            continue
+        for node in root_el.iter():
+            tag = node.tag.rsplit("}", 1)[-1]
+            if tag != "objectPermissions":
+                continue
+            obj_name = None
+            allow_create = False
+            for child in node:
+                child_tag = child.tag.rsplit("}", 1)[-1]
+                if child_tag == "object":
+                    obj_name = (child.text or "").strip()
+                elif child_tag == "allowCreate":
+                    allow_create = (child.text or "").strip().lower() == "true"
+            if obj_name and obj_name.endswith("__e") and allow_create:
+                granted.add(obj_name)
+    return granted
+
+
+def audit_publish_permissions(apex_files: list[Path], root: Path) -> list[str]:
+    """R9 — a publisher with no permission-set/profile Create grant anywhere
+    in the scanned tree. WARN, not ERROR: a build may grant the permission
+    from a permission set that lives outside --manifest-dir."""
+    granted = collect_granted_create_objects(root)
+    publishers: dict[str, set[str]] = {}
+    for path in apex_files:
+        raw = path.read_text(encoding="utf-8", errors="ignore")
+        code = strip_noise(raw)
+        for event in published_events_in_file(code):
+            publishers.setdefault(event, set()).add(str(path))
+
+    findings: list[str] = []
+    for event in sorted(publishers):
+        if event in granted:
+            continue
+        for rel in sorted(publishers[event]):
+            findings.append(
+                f"WARN {rel}: publishes {event} but no *{PERMSET_SUFFIX} or *{PROFILE_SUFFIX} under "
+                f"{root} grants <allowCreate>true on {event}; at the API 67.0 user-mode default this "
+                "rejects the publish for any running user without it (R9)"
+            )
+    return findings
+
+
 def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
@@ -336,12 +429,14 @@ def main() -> int:
         findings.extend(audit_apex(path, str(path)))
     for path in object_files:
         findings.extend(audit_object(path, str(path)))
+    findings.extend(audit_publish_permissions(apex_files, root))
 
     summary = (
         f"Scanned {len(apex_files)} Apex file(s) and {len(object_files)} object file(s); "
         f"{len(findings)} platform-event finding(s)."
     )
-    return emit_result(findings, summary, 1 if findings else 0)
+    blocking = findings if args.strict else [f for f in findings if not f.startswith("WARN ")]
+    return emit_result(findings, summary, 1 if blocking else 0)
 
 
 if __name__ == "__main__":

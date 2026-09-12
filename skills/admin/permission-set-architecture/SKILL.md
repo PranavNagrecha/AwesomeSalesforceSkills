@@ -36,7 +36,7 @@ outputs:
   - "review findings for profile-heavy or inconsistent access models"
   - "migration plan from profile-centric access to governed bundles"
 dependencies: []
-version: 1.2.1
+version: 1.2.2
 author: Pranav Nagrecha
 updated: 2026-09-12
 ---
@@ -171,6 +171,7 @@ Deployable examples of all three, plus `package.xml`, retrieve/deploy commands, 
 4. **Apex class, tab, app, and object access often drift separately** — teams sometimes move object permissions into permission sets but forget Apex class access and UI entry points, creating half-migrated bundles.
 5. **A session-based set loses its step-up requirement inside a group** — the Object Reference is explicit that permissions in session-based sets included in a PSG no longer require session activation.
 6. **A `description` over 255 characters fails the deploy, and PSGs fail as a cascade** — the Metadata API guide caps `PermissionSet.description` and `Profile.description` at 255 characters; a permission set rejected on that limit takes every PSG that composes it down with it (`references/gotchas.md`).
+7. **A Platform Event is an object for permission purposes** — a persona bundle that publishes a `__e` via automation needs an `objectPermissions` grant for that event just like any other object, and at the API 67.0 user-mode default a missing grant fails silently at runtime, not at deploy (`references/gotchas.md`).
 
 Deeper treatment, each with the platform behaviour behind it, in `references/gotchas.md`.
 
@@ -203,3 +204,4 @@ Deeper treatment, each with the platform behaviour behind it, in `references/got
 - admin/permission-set-expiration — time-boxing an assignment with `ExpirationDate` instead of a standing grant.
 - admin/custom-permissions — creating the custom permissions that a Feature-category set carries.
 - admin/sharing-and-visibility — when the real issue is record access, OWD, roles, or sharing rules.
+- apex/platform-events-apex — when the persona's capability set publishes a Platform Event and the gap is Create on the `__e` object, not on a normal sObject.

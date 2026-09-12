@@ -31,6 +31,7 @@
     "3474177dbbd335596801",
     "3546c6d1ad5e91585382",
     "35a334f170d9733761b0",
+    "3667d1bc0fbda20a3870",
     "3a2bab92ee280eabddf8",
     "3be04fa5fcd843ee931e",
     "3cc272e962cd7893b945",
@@ -54,6 +55,7 @@
     "6415ff99d20c577d240c",
     "6433a07342ed8543455f",
     "669dc7e3e8ee231c430e",
+    "6c1ba78ef5e0b17cf29a",
     "6d2122fe3e140ee83f4e",
     "6d7ffca51a07710ac591",
     "71c192d19e1bfca8f61b",
@@ -95,6 +97,7 @@
     "b7befa773d752e691235",
     "bb9fae0d653564ad50bc",
     "bbf8b98bf88ac3178730",
+    "bf21cbad784a831f6792",
     "bfd14a8c4808584eb18a",
     "c16fa9401dc793ab35fa",
     "c587fa4be80e73e16e0d",
@@ -128,7 +131,7 @@
     "f7bb52e3d137f809effa",
     "f8e3b96550fa172bb515"
   ],
-  "content_hash": "ffaf026a19367a4e4024beae2264e4c9bab657e1d32ea21cc65d1c5d40abdf2a",
+  "content_hash": "384853a1d30601b9f05b320e6a887d364c7103a0593ec714df1b1d1ab6545bdf",
   "dependencies": [],
   "description": "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege', 'how to slice permission sets', 'permission set naming convention', 'permission set license restriction', 'PSG status Outdated', 'permissionset-meta.xml'. NOT for PSG muting mechanics and recalculation order \u2014 use admin/permission-set-group-composition. NOT for record-sharing model design \u2014 use admin/sharing-and-visibility. NOT for time-boxing an assignment \u2014 use admin/permission-set-expiration.",
   "file_location": "skills/admin/permission-set-architecture",
@@ -180,5 +183,5 @@
   ],
   "updated": "2026-09-12",
   "vector_embedding": null,
-  "version": "1.2.1"
+  "version": "1.2.2"
 }
