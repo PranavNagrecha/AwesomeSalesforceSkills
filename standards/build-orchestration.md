@@ -362,6 +362,18 @@ types.
 
    The layer never deploys, never fetches, never pipes a download into a shell,
    never inlines a `-c` program the reviewer cannot read, and never pushes.
+
+   The one org-facing check the layer offers is validation, and it is the
+   human's to run, not an agent's: `scripts/mock_deploy.py <plan.json>
+   --org-alias <alias> --milestone <id> [--mode source|manifest]` assembles the
+   selected steps' artefacts into a source tree and runs `sf project deploy
+   start --dry-run` (`checkOnly: true` — the flag is hard-coded and the script
+   has no deploy option). Run it after a milestone verifies and before the G3
+   decision; its `summary.md` under `reports/mock-deploy/<ts>/` is evidence for
+   the gate. Manifest mode is the only check that reads the merged
+   `package.xml`. The case-onboarding example shows why it matters: three
+   milestones' worth of green checkers let five platform rules through that
+   only the org caught (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`).
 2. **Checker shape.** A `checker` test's `command` must match
    `^python3 skills/[a-z]+/[a-z0-9-]+/scripts/check_[a-z0-9_]+\.py\b`, and the
    file must exist on disk. A checker that does not exist is an ERROR at plan
