@@ -131,6 +131,7 @@ Refuse on two conditions and no others:
 | Condition | Code |
 |---|---|
 | The `clarifications` gate is `pending`, `rejected`, or has no record at all (the usual shape of a build still at `intake`) | `REFUSAL_NEEDS_HUMAN_REVIEW` — the human has not signed the answers this plan would rest on |
+| **scale: ask** exception — the `clarifications` gate is `pending` but `scale` is `ask`, `status` is `clarifying` and no `blocking` clarification is `open`: proceed. The human's own answers are G1 at this tier and the merged `gate go` signs both records after the verifier (§ 3.1); `set-plan` enforces the same condition. A `rejected` gate still refuses. | — |
 | `status` is `verified`, `approved`, `building` or `done` | `REFUSAL_COMPETING_ARTIFACT` — see below |
 
 Everything else proceeds. Alongside the gate, each `blocking` clarification must be answered or explicitly deferred with a reason on the record; an unanswered blocking question is not a small gap, it is precisely the decision the skill said would change the design. A deferral is not a dead end — it is carried into `assumptions[]` in Step 7, where the verifier can challenge it and the G2 human can see it.

@@ -27,7 +27,7 @@ Check the gate before planning:
 python3 scripts/build_plan.py status .sfskills/builds/<build-id>/plan.json
 ```
 
-Refuse (`REFUSAL_NEEDS_HUMAN_REVIEW`) unless G1 is `approved` and every `blocking` clarification is answered or explicitly deferred. An unanswered blocking question is precisely the decision the skill said would change the design.
+Refuse (`REFUSAL_NEEDS_HUMAN_REVIEW`) unless G1 is `approved` and every `blocking` clarification is answered or explicitly deferred — except at `scale: ask`, where a `pending` G1 with every blocking clarification answered is the entry state (the human's answers are G1; `gate go` signs both gates after the verifier, contract § 3.1). An unanswered blocking question is precisely the decision the skill said would change the design.
 
 Re-planning is allowed from exactly one status: `plan-rejected`, where the rejected gate has already bumped `plan.version` and archived the old plan into `history[]`. Refuse (`REFUSAL_COMPETING_ARTIFACT`) at `verified`, `approved`, `building` or `done` — re-planning in place would discard a recorded gate — and tell the user that `build_plan.py gate <plan> plan reject` is what creates the next version.
 
