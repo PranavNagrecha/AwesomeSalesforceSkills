@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "6f0143e7d0aa9f6825a6595ffa7426648bfa5474e8f15d3423589f2969a9da8d",
+  "generated_from_hash": "87a224a01936406fb9f0a5846a2a93940c3c7a98f8c5642bfdf1bd8d99268a6e",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -35374,6 +35374,7 @@
         "c356f9895308dbc79ab5",
         "c3b30ff2006d9c97f925",
         "c3f828e28a693ca79f2f",
+        "c4f596d50d107832701f",
         "c70a02dee0162bbfc449",
         "c7f07177a96b78d7f837",
         "c871f3e7fc7a25d4f6e5",
@@ -35411,7 +35412,7 @@
         "f97bf6ffb1aa03e59d6a",
         "fae908b2fc5b22968f67"
       ],
-      "content_hash": "db55f1f7c4b1aee421bb06ff995e3ea3bff6665b105de0d4f96aefc1a3be216f",
+      "content_hash": "d14580dcb07659ed8ed92064c90ed5587be4f215e6ad700f89fa41ae976cbc96",
       "dependencies": [],
       "description": "Use when designing or auditing Salesforce access control \u2014 deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration', 'what stays on the profile', 'profile only settings', 'login hours permission set', 'layout assignment permission set', 'IsOwnedByProfile', 'profile retrieve empty'. NOT for sharing rules or record-level access \u2014 use admin/sharing-and-visibility for that.",
       "file_location": "skills/admin/permission-sets-vs-profiles",
@@ -35461,7 +35462,7 @@
       ],
       "updated": "2026-09-11",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "admin",

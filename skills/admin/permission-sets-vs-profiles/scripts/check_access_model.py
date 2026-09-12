@@ -9,8 +9,11 @@ Two entry shapes, both supported:
 Checks
 ------
 1. HIGH   dangerous system permissions and object-level sharing bypass on any file
-2. WARN   a profile carrying object/field permissions or system permissions outside
-          the documented residue allow-list -- those belong in a permission set
+2. HIGH   a profile carrying object/field permissions or system permissions outside
+          the documented residue allow-list -- those belong in a permission set.
+          Kept blocking (not downgraded to WARN) alongside check 1: a permission
+          still sitting on a profile after a permission-set-led decomposition is
+          exactly the residual-access bug this skill exists to catch.
 3. ERROR  a permission set carrying an element that only a Profile can hold
           (loginHours, loginIpRanges, layoutAssignments, `default` app/record type,
           tabVisibilities), which the PermissionSet schema has no home for
@@ -31,6 +34,14 @@ Checks
           threshold is applied here anyway because a PSG that references a rejected
           member PermissionSet fails to deploy as a cascade ("permission set names
           are invalid") regardless of its own description length.
+
+Exit policy
+-----------
+Exit 1 only on CRITICAL/ERROR/HIGH-class findings -- checks 1, 2, 3, and
+PSVP-DESC-01. WARN/INFO findings (checks 4, 5, PSVP-DESC-02, and an empty scan)
+print but exit 0; pass --strict to promote every finding to a failure. A
+missing --manifest-dir is a usage error, not a finding, and exits 1 immediately
+with a single-line message on stderr.
 """
 
 from __future__ import annotations
@@ -168,13 +179,35 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+BLOCKING_SEVERITIES = {"CRITICAL", "ERROR", "HIGH"}
+
+
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
+    """Print the JSON report and return the exit code.
+
+    Exit 1 only on CRITICAL/ERROR/HIGH findings (platform facts that will fail
+    or misbehave at deploy or run time -- dangerous grants, migratable
+    permissions still on a profile, profile-only elements in a permission set,
+    and PSVP-DESC-01). WARN/INFO findings (a standard-profile edit, a
+    duplicate grant, PSVP-DESC-02, an empty scan) are advisory and exit 0 so a
+    build with only cosmetic findings stays green; pass --strict to promote
+    every finding to a failure.
+    """
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
-    print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
+    blocking = [item for item in normalized if item["severity"] in BLOCKING_SEVERITIES]
+    print(json.dumps(
+        {"score": score, "findings": normalized, "summary": summary, "blocking": len(blocking)},
+        indent=2,
+    ))
     if normalized:
-        print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+        print(
+            f"WARN: {len(normalized)} finding(s) detected ({len(blocking)} blocking)",
+            file=sys.stderr,
+        )
+    if blocking:
+        return 1
+    return 1 if (strict and normalized) else 0
 
 
 # --------------------------------------------------------------------------- checks
@@ -238,7 +271,12 @@ def check_dangerous_grants(path: Path, root: ET.Element, root_type: str) -> list
 
 
 def check_profile_carries_migratable_grants(path: Path, root: ET.Element) -> list[str]:
-    """Check 2 -- migratable permissions still sitting on a profile."""
+    """Check 2 -- migratable permissions still sitting on a profile.
+
+    HIGH, not WARN: this is a permission-set-led model's core residual-access
+    bug -- a grant the design meant to move already has a permission-set
+    equivalent and stayed reachable through the profile anyway.
+    """
     findings: list[str] = []
 
     objects: list[str] = []
@@ -260,19 +298,19 @@ def check_profile_carries_migratable_grants(path: Path, root: ET.Element) -> lis
 
     if objects:
         findings.append(
-            f"WARN {path}: profile grants object permissions on "
+            f"HIGH {path}: profile grants object permissions on "
             f"{len(objects)} object(s) ({', '.join(sorted(set(objects))[:5])}"
             f"{', ...' if len(set(objects)) > 5 else ''}) — object CRUD has a "
             "permission-set equivalent and belongs there"
         )
     if fields:
         findings.append(
-            f"WARN {path}: profile grants field permissions on {len(fields)} field(s) "
+            f"HIGH {path}: profile grants field permissions on {len(fields)} field(s) "
             "— field-level security has a permission-set equivalent and belongs there"
         )
     if permissions:
         findings.append(
-            f"WARN {path}: profile enables {len(permissions)} system permission(s) "
+            f"HIGH {path}: profile enables {len(permissions)} system permission(s) "
             f"({', '.join(sorted(set(permissions))[:5])}"
             f"{', ...' if len(set(permissions)) > 5 else ''}) — `userPermissions` "
             "has a permission-set equivalent and belongs there"
@@ -441,7 +479,16 @@ def main() -> int:
         "--manifest-dir",
         help="Root directory of the Salesforce metadata (e.g. force-app/main/default).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding, including WARN/INFO advisories.",
+    )
     args = parser.parse_args()
+
+    if args.manifest_dir and not Path(args.manifest_dir).exists():
+        print(f"ERROR: --manifest-dir does not exist: {args.manifest_dir}", file=sys.stderr)
+        return 1
 
     targets = [Path(value) for value in args.paths]
     if args.manifest_dir:
@@ -452,8 +499,9 @@ def main() -> int:
     files = iter_metadata_files(targets)
     if not files:
         return emit_result(
-            ["HIGH no profile, permission set, or permission set group metadata files found"],
+            ["WARN no profile, permission set, or permission set group metadata files found"],
             "Scanned 0 access-model metadata file(s); no files matched the provided paths.",
+            strict=args.strict,
         )
 
     findings: list[str] = []
@@ -465,7 +513,7 @@ def main() -> int:
         f"Scanned {len(files)} access-model metadata file(s); "
         f"{len(findings)} finding(s) detected."
     )
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, strict=args.strict)
 
 
 if __name__ == "__main__":
