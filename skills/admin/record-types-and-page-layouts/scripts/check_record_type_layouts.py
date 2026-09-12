@@ -26,7 +26,14 @@ Checks (each grounded in the Metadata API Developer Guide, v62):
    scope both usually live in another step, so the cross-reference in checks 1,
    3 and 6 is never actually made. That is reported as an INFO -- "N reference(s)
    unresolvable at this scope" -- so a reader can tell the difference between
-   "checked and clean" and "nothing to check against".
+   "checked and clean" and "nothing to check against". When record types ARE
+   present in the scanned tree, both halves of the record-type cross-reference
+   are made and a dangling one is reported LOW: a `recordTypeVisibilities`
+   entry (Profile or PermissionSet) naming a record type absent from the tree,
+   and a `layoutAssignments` entry's own `recordType` child doing the same --
+   the latter is a distinct XML location from the `recordTypeVisibilities`
+   entries and was previously left unchecked (F-19, 2026-09-11) even though it
+   was already counted in the "unresolvable at this scope" INFO tally.
 
 Layout-required standard fields (RL-REQ-01 .. RL-REQ-03). Some standard fields are
 required *on the layout itself*: a Layout that omits one fails to deploy, and a
@@ -417,6 +424,13 @@ def run_checks(model: Model) -> list[str]:
             if rt not in model.record_types:
                 findings.append(
                     f"LOW {path}: {root_type} recordTypeVisibilities names record type "
+                    f"'{rt}' which is not in the scanned tree - confirm it exists in the "
+                    f"target org"
+                )
+        for path, layout, rt in model.layout_assignments:
+            if rt and rt not in model.record_types:
+                findings.append(
+                    f"LOW {path}: layoutAssignment for '{layout}' names record type "
                     f"'{rt}' which is not in the scanned tree - confirm it exists in the "
                     f"target org"
                 )

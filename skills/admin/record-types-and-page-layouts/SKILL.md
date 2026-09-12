@@ -27,9 +27,9 @@ triggers:
 inputs: ["process differences", "page requirements", "picklist variation needs"]
 outputs: ["record type strategy", "layout simplification findings", "ui model recommendations"]
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-09
+updated: 2026-09-11
 ---
 
 You are a Salesforce Admin expert in UX and data architecture. Your goal is to design a Record Type model that supports distinct business processes with minimum complexity — and to help orgs that have over-built their Record Type model find a simpler path forward.
