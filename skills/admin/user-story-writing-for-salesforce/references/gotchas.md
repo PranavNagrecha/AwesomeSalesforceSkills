@@ -91,3 +91,53 @@ Non-obvious pitfalls when writing Salesforce user stories. These mistakes pass c
 **When it occurs:** BA wrote the markdown story but skipped the JSON block. Or wrote the JSON but left `recommended_agents` as `[]` to "let the build team decide."
 
 **How to avoid:** `recommended_agents[]` is **required and non-empty**. If genuinely unclear, default to `["object-designer"]` and note it in `notes`. The lint enforces presence; agent runners enforce non-empty.
+
+---
+
+## Gotcha 10: Trigger Event Left Implicit
+
+**What happens:** The story names the persona and the outcome but never says what starts the work — "As a Support Agent, I want High-priority Cases to get a follow-up Task, so that nothing sits untouched." Created? Updated? Every save? The build agent has to guess which record event the automation should key on, and guesses wrong roughly as often as it guesses right.
+
+**When it occurs:** The BA is confident about the *before* (persona) and the *after* (outcome) but never wrote down the *when*. It reads as complete because both ends are strong.
+
+**How to avoid:** Name the record event or user action in business terms in the `I want` clause itself — "when a Case's Priority becomes High," "when a rep clicks Generate Quote," "on the nightly batch." That is a business fact, not an implementation choice, so naming it does not violate INVEST-Negotiable — it is *which Flow trigger type* (create vs. update vs. both) that stays for the build agent to pick.
+
+---
+
+## Gotcha 11: `Then` Clause Names No Concrete Salesforce State
+
+**What happens:** The AC reads "Then the case gets handled" or "Then it's tracked properly." UAT can't script it, test-class-generator can't pick an assertion, and the story passes review because it *looks* like a Given/When/Then.
+
+**When it occurs:** The BA wrote the shape of an AC (Given/When/Then keywords present) without forcing the Then to name a field, a record, an error string, or a queue — the same gap Gotcha 7 covers for a story with zero AC, one level down, inside an AC that technically exists.
+
+**How to avoid:** Every `Then` must name something a query or a screenshot could confirm: a field and its value, a record that now exists (or doesn't), the exact error message text, or the queue/user that now owns the record. If the Then can't be finished with "...and here's how I'd check that in the sandbox," it isn't done yet.
+
+---
+
+## Gotcha 12: Data Volume Never Named, Sizing Guessed
+
+**What happens:** A story sizes to M on the heuristic table, ships, and then times out or throws a limit exception the first time someone runs it through Data Loader on 5,000 records instead of the one record the BA and the build agent both pictured while writing and sizing it.
+
+**When it occurs:** Nobody asked "one record or a bulk load?" during refinement, so the complexity call was made against an assumed volume of one. `admin/acceptance-criteria-given-when-then` gotcha 1 has the governor-limit mechanics (why 200 is the number that matters); this skill's job is upstream of that — naming the volume before the AC author or the sizing heuristic has to guess it.
+
+**How to avoid:** Ask for the expected volume — daily average and worst case — before sizing. If the answer is "could be bulk-loaded," flag it in `notes` so `admin/acceptance-criteria-given-when-then` knows to add a bulk-path scenario, and size with that volume in mind rather than the single-record demo case.
+
+---
+
+## Gotcha 13: Story Collides With Automation Already On The Object
+
+**What happens:** A new record-triggered story ships cleanly in isolation, then fires in a different order than an existing flow on the same object once both are live — a field the new story depends on hasn't been set yet by the other automation, or vice versa. Nobody sees it until production, because sandbox testing only ever exercised the new story alone.
+
+**When it occurs:** The BA (and the build agent after them) treated the object as a blank slate. Salesforce record-triggered flows on the same object and the same save event actually run in an explicit sequence — `triggerOrder`, an integer from 1 to 2,000 set on the flow (api_meta L68438) — so a second flow added without checking what's already there is entering a race whether anyone names it or not.
+
+**How to avoid:** Ask what automation already exists on the object before drafting. If the story is adding a second flow (or a validation rule, or a trigger) that touches the same save event as something already live, say so explicitly in `dependencies[]` or `notes` so the build agent sets `triggerOrder` deliberately instead of accepting whatever default the org assigns.
+
+---
+
+## Gotcha 14: No Named Sandbox Or Verification Precondition
+
+**What happens:** A story ships with clean Given/When/Then criteria that nobody has actually run anywhere. At UAT, the tester discovers the queue named in the AC doesn't exist in that sandbox, or the persona's permission set was never assigned there — and the defect gets logged against the build when the real gap is upstream, in this skill's output.
+
+**When it occurs:** The BA treats "testable in a sandbox" (INVEST-Testable) as satisfied by the AC's *shape* (Given/When/Then present) rather than by anyone having confirmed the *preconditions* — the queue, the PSG assignment, the seed record — actually exist somewhere.
+
+**How to avoid:** Name the sandbox the story will be proven in and list what has to exist there first (queue, PSG assignment, seed data) in `notes`. This is a handoff, not new work — `admin/uat-and-acceptance-criteria` owns the full pre-UAT environment checklist; this skill only has to say enough that the UAT plan isn't starting from zero.
