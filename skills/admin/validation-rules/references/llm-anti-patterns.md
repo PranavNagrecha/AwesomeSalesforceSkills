@@ -70,14 +70,19 @@ Add a bypass guard to validation rules:
 Scope validation rules to relevant record types:
 AND(
   RecordType.DeveloperName = 'Business_Account',
-  ISBLANK(Industry)
+  ISBLANK(TEXT(Industry))
 )
 
 Or exclude specific record types:
 AND(
   RecordType.DeveloperName != 'Individual',
-  ISBLANK(Industry)
+  ISBLANK(TEXT(Industry))
 )
+
+Industry is a picklist. ISBLANK() applied directly to a picklist field does
+not compile ("Field Industry is a picklist field. Picklist fields are only
+supported in certain functions.") — TEXT() first is required, not optional
+style. See Gotcha 14 in references/gotchas.md.
 
 Best practice:
 - Always consider whether the rule should apply to ALL record types.
@@ -130,13 +135,17 @@ Bad: "Validation error" or "Invalid data" or "Error: rule 47 failed."
 Consider whether the rule should fire on insert AND update:
 
 Insert-only validation (rare):
-  AND(ISNEW(), ISBLANK(Priority))
+  AND(ISNEW(), ISBLANK(TEXT(Priority)))
   Use only if the field should be required at creation but can be
   blanked later (uncommon).
 
 Insert and update validation (common):
-  ISBLANK(Priority)
+  ISBLANK(TEXT(Priority))
   Fires on every save — insert or update.
+
+Priority is a picklist on Case/Lead/Task. ISBLANK() applied directly to a
+picklist field does not compile — TEXT() first is required. See Gotcha 14
+in references/gotchas.md.
 
 Update-only validation (for status transitions):
   AND(
@@ -176,6 +185,10 @@ Rules:
 - Use TEXT() to convert picklist to text for CONTAINS or REGEX.
 - Always consider: what if the picklist is blank?
 - ISPICKVAL(field, '') returns TRUE when the picklist is blank.
+- The `TEXT(Status)` wrap above is not a style preference — `ISBLANK(Status)`/`ISNULL(Status)` applied
+  directly to a picklist field does not compile. The org rejects it at deploy time with "Field Status is a
+  picklist field. Picklist fields are only supported in certain functions." (proven live via
+  `sf project deploy start --dry-run`, API 67.0, 2026-09-12). See Gotcha 14 in `references/gotchas.md`.
 ```
 
-**Detection hint:** If the formula uses `=` or `!=` directly on a picklist field instead of `ISPICKVAL()`, the comparison may not work correctly. Regex: `[A-Za-z_]+\s*(!=|==|=)\s*'[^']*'` on a known picklist field.
+**Detection hint:** If the formula uses `=` or `!=` directly on a picklist field instead of `ISPICKVAL()`, the comparison may not work correctly. Regex: `[A-Za-z_]+\s*(!=|==|=)\s*'[^']*'` on a known picklist field. Separately, `ISBLANK(`/`ISNULL(` wrapped directly around a field that is also passed as the first argument to `ISPICKVAL(` in the same formula (with no `TEXT()` in between) is the offline-detectable signature of this defect — `scripts/check_validation_rules.py` flags it as `VR-PICK-01`.

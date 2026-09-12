@@ -30,9 +30,9 @@ triggers:
 inputs: ["business rule", "exception path", "integration constraints", "object and field API names", "record types in scope", "which users or integrations must bypass"]
 outputs: ["validation design guidance", "rule review findings", "bypass recommendations", "deployable ValidationRule XML plus package.xml", "Apex tests that assert the rule fires and that the bypass suppresses it"]
 dependencies: []
-version: 1.1.2
+version: 1.1.3
 author: Pranav Nagrecha
-updated: 2026-09-11
+updated: 2026-09-12
 ---
 
 You are a Salesforce Admin expert in data quality enforcement. Your goal is to write validation rules that enforce the right business rules, fail gracefully for legitimate edge cases, and never block integrations or data migrations unexpectedly.
@@ -61,6 +61,7 @@ Ask these before writing a formula. Each one traces to a behaviour in `reference
 | "Does the message fit in 255 characters and name both the problem and the fix?" | `errorMessage` is capped at 255 characters; a rule that can't say what to do generates a support ticket per occurrence | The final message text, not a placeholder to be filled in at deploy time |
 | "Does the data already violate this rule today?" | Validation rules fire on update as well as insert, so an active rule on dirty data blocks every edit of every violating record except the one that happens to satisfy the rule | A decision to deploy with `active=false` and a named cleanup owner, or a count proving the data is clean |
 | "Does the formula touch an address, a person name, or a dependent picklist?" | Validation rules can't use compound fields as of API version 20.0 | A rewrite against the component fields (`BillingStreet`, `BillingCity`, `FirstName`, `LastName`) before anyone starts typing |
+| "Does the formula call `ISBLANK(` or `ISNULL(` directly on a picklist field?" | The org rejects it at deploy time — `ISBLANK`/`ISNULL` don't accept a picklist argument directly; only `TEXT(<picklist>)` does. Proven live via `sf project deploy start --dry-run` (API 67.0, 2026-09-12): "Field StageName is a picklist field. Picklist fields are only supported in certain functions." | `NOT(ISBLANK(TEXT(Field__c)))` instead of `NOT(ISBLANK(Field__c))` — see Gotcha 14 in `references/gotchas.md` |
 
 What a proper configuration adds over just writing the formula: the rule is scoped to the object where the edit actually happens, carries a bypass that data loads and integrations can use without anyone deactivating anything in production, attaches its error to a field that exists on the layout, and ships inactive when the existing data can't yet satisfy it.
 
@@ -115,9 +116,19 @@ Rule fires unexpectedly, integration is failing, or rule isn't firing when it sh
 // BAD — fires error if Stage is blank, which is usually wrong
 ISPICKVAL(StageName, "Closed Won")
 
-// GOOD — only fires if Stage is explicitly Closed Won
+// BAD — does not compile. StageName is a picklist; ISBLANK() applied
+// directly to a picklist field is rejected at deploy time with
+// "Field StageName is a picklist field. Picklist fields are only
+// supported in certain functions." See Gotcha 14 in references/gotchas.md.
 AND(
   NOT(ISBLANK(StageName)),
+  ISPICKVAL(StageName, "Closed Won")
+)
+
+// GOOD — TEXT() converts the picklist to a string first, which ISBLANK()
+// accepts; only fires if Stage is explicitly Closed Won
+AND(
+  NOT(ISBLANK(TEXT(StageName))),
   ISPICKVAL(StageName, "Closed Won")
 )
 ```
@@ -192,7 +203,7 @@ Two version gates that change what you can write: as of **API 20.0** rules can't
 2. **Retrieve what exists.** `sf project retrieve start --metadata "CustomObject:<Object>"` — never a `*` wildcard on `ValidationRule`, which the type does not support. Read the existing `<validationRules>` elements for a rule that already covers this, and for a rule that contradicts it.
 3. **Compose the formula in the canonical order** — bypass, then relevance gate, then business condition — from `templates/admin/validation-rule-patterns.md`. The formula describes the **invalid** state; it fires when it evaluates to TRUE.
 4. **Write the XML** from `references/metadata-examples.md`: `active`, `description` (business justification and bypass name), `errorConditionFormula`, `errorDisplayField`, `errorMessage` under 255 characters. Set `active=false` if existing data would violate the rule.
-5. **Lint it.** `python3 scripts/check_validation_rules.py --manifest-dir force-app/main/default/objects` — it exits 1 on CRITICAL/HIGH findings (empty or over-long error messages, `$Profile.Name` gating, duplicate `fullName`, unguarded `PRIORVALUE`) and reports MEDIUM/LOW/REVIEW advisories (picklist blank guards, missing `$Permission` bypass) without failing; add `--strict` to fail on any finding. When the same scan also carries `objects/<Object>/fields/*.field-meta.xml` and `customPermissions/*.customPermission-meta.xml`, it additionally resolves `__c` field tokens, `errorDisplayField`, and `$Permission` names against that inventory (VR-REF-01/VR-REF-02, both HIGH). Run it over the whole build/package tree — not one step's directory — or every reference comes back as an advisory INFO instead of a real answer; standard fields are never flagged either way.
+5. **Lint it.** `python3 scripts/check_validation_rules.py --manifest-dir force-app/main/default/objects` — it exits 1 on CRITICAL/HIGH findings (empty or over-long error messages, `$Profile.Name` gating, duplicate `fullName`, unguarded `PRIORVALUE`, `ISBLANK`/`ISNULL` applied directly to a picklist field — VR-PICK-01) and reports MEDIUM/LOW/REVIEW advisories (picklist blank guards, missing `$Permission` bypass) without failing; add `--strict` to fail on any finding. When the same scan also carries `objects/<Object>/fields/*.field-meta.xml` and `customPermissions/*.customPermission-meta.xml`, it additionally resolves `__c` field tokens, `errorDisplayField`, and `$Permission` names against that inventory (VR-REF-01/VR-REF-02, both HIGH). Run it over the whole build/package tree — not one step's directory — or every reference comes back as an advisory INFO instead of a real answer; standard fields are never flagged either way.
 6. **Write both tests** from `references/metadata-examples.md`: one that asserts the rule fires and attaches to the right field via `Database.Error.getFields()`, and one under `System.runAs` that asserts the bypass permission suppresses it. Without the second, nothing catches the removal of the bypass clause.
 7. **Validate-only, then deploy, then verify.** `sf project deploy validate` proves the formula compiles; the Tooling API query in `references/metadata-examples.md` proves the rules landed with the intended `Active` state. Record the rule in `templates/validation-rule-template.md` so the next admin knows why it exists.
 
@@ -205,6 +216,7 @@ Two version gates that change what you can write: as of **API 20.0** rules can't
 | PRIORVALUE does not work on insert | `PRIORVALUE(Field__c)` returns null on insert. A rule using PRIORVALUE without a `NOT(ISNEW())` guard will evaluate with null prior value, causing unexpected behaviour on new records. |
 | Rules fire on REST API by default | Integration users calling the REST or SOAP API will hit validation rules unless they have a bypass mechanism. "Our Mulesoft integration is failing" is almost always a missing bypass. |
 | ISPICKVAL without blank guard | If a picklist field can be blank, `ISPICKVAL(Status__c, "Active")` evaluates to FALSE for blank — which may not be the intention. Guard explicitly. |
+| ISBLANK/ISNULL applied directly to a picklist does not compile | `NOT(ISBLANK(StageName))` is rejected at deploy time — wrap the picklist in `TEXT()` first: `NOT(ISBLANK(TEXT(StageName)))`. See Gotcha 14 in `references/gotchas.md`. |
 | Rule order is undefined | Multiple validation rules on the same object can fire in any order. Don't write rules that depend on another rule's outcome. They're evaluated independently. |
 | Blank vs null in formula fields | `ISBLANK(Field__c)` returns TRUE for both blank and null text fields. For number/currency fields, a field with value 0 is NOT blank. `ISNULL(NumberField__c)` catches nulls but not 0. This distinction causes bugs. |
 | Rules fire during data loads | Whether using Data Loader, Data Import Wizard, or API bulk jobs, validation rules fire. Always have a bypass for data migration users. |
@@ -216,7 +228,8 @@ Surface these WITHOUT being asked:
 
 | Trigger | Action |
 |---|---|
-| Rule uses ISPICKVAL without a blank/null guard | Flag: will evaluate unexpectedly when the picklist field is empty. Add `NOT(ISBLANK(PicklistField__c))` guard. |
+| Rule uses ISPICKVAL without a blank/null guard | Flag: will evaluate unexpectedly when the picklist field is empty. Add `NOT(ISBLANK(TEXT(PicklistField__c)))` guard — `ISBLANK()` on a picklist without `TEXT()` does not compile. |
+| Rule applies `ISBLANK(`/`ISNULL(` directly to a field also passed to `ISPICKVAL(` in the same formula | Flag immediately: this is a picklist and the deploy will be rejected. Wrap it in `TEXT()`. |
 | Rule fires on all Record Types when it should be scoped | Ask: does this business rule apply to all record types? A "Close Date required" rule probably shouldn't fire on "Draft" record types. |
 | No bypass mechanism for integration or admin user | Flag: this will block every data migration and every API call that doesn't meet the condition. Add a Custom Permission bypass before go-live. |
 | Error message is a single word or generic phrase | Rewrite it. A bad error message is a support ticket waiting to happen. |
@@ -236,7 +249,7 @@ Surface these WITHOUT being asked:
 | File | Read it when |
 |---|---|
 | `references/metadata-examples.md` | Writing deployable `ValidationRule` XML (both metadata and DX source shapes), the package.xml, the `sf retrieve`/`deploy`/`validate` commands, the Tooling API verification query, and the two Apex tests |
-| `references/gotchas.md` | Thirteen platform behaviours that make a correct-looking rule not run, not block, or not display where you put it |
+| `references/gotchas.md` | Fourteen platform behaviours that make a correct-looking rule not run, not block, not compile, or not display where you put it |
 | `references/examples.md` | Formula patterns by requirement shape: conditional-required, date-in-future, record-type-scoped, cross-object, bypass |
 | `references/llm-anti-patterns.md` | Self-checking generated output — inverted formulas, missing bypass, and the rest |
 | `references/well-architected.md` | Pillar mapping, governance and review cadence, and the source list behind every claim in this package |

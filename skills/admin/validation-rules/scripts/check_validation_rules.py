@@ -11,6 +11,14 @@ for whether e.g. `Priority` exists. This is scope-dependent: point the scan at
 one build step's directory and the fields it depends on usually live in a
 different step, so there is nothing to resolve against -- see the INFO finding
 below rather than reading that silence as "checked and clean".
+
+VR-PICK-01 is offline-detectable too, and needs no field inventory: it flags
+any field passed directly to ISBLANK()/ISNULL() that this same formula also
+passes as the first argument to ISPICKVAL() -- the signature of a picklist.
+Salesforce rejects ISBLANK()/ISNULL() applied directly to a picklist at
+deploy time; TEXT(<field>) first is the fix. Works for standard fields (e.g.
+`Priority`, `StageName`) exactly as well as `__c` fields, since it never
+needs to check a field-type inventory -- it only needs the formula text.
 """
 
 from __future__ import annotations
@@ -49,6 +57,40 @@ COMPOUND_FIELDS = (
     "OTHERADDRESS",
     "GEOCODEACCURACY",
 )
+
+# VR-PICK-01: ISBLANK()/ISNULL() applied directly to a field that is also
+# passed as the first argument of ISPICKVAL() in the same formula -- the
+# offline-detectable signature of a picklist field. Proven live via
+# `sf project deploy start --dry-run` (API 67.0, 2026-09-12): the org rejects
+# ISBLANK()/ISNULL() applied directly to a picklist with "Field <X> is a
+# picklist field. Picklist fields are only supported in certain functions."
+# ISPICKVAL(), PRIORVALUE() and ISCHANGED() already accept the picklist
+# directly and need no TEXT() wrapper -- see references/gotchas.md Gotcha 14.
+# The dotted form (e.g. Account.Industry) is supported on both sides so a
+# cross-object reference matches identically.
+ISPICKVAL_FIRST_ARG = re.compile(
+    r"ISPICKVAL\s*\(\s*([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*,", re.IGNORECASE
+)
+DIRECT_BLANK_OR_NULL = re.compile(
+    r"IS(?:BLANK|NULL)\s*\(\s*([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*\)", re.IGNORECASE
+)
+
+
+def find_direct_picklist_blank_calls(formula: str) -> list[str]:
+    """Fields passed directly to ISBLANK()/ISNULL() that this same formula
+    also passes as the first argument to ISPICKVAL() -- i.e. a picklist.
+    `ISBLANK(TEXT(Field))` does not match DIRECT_BLANK_OR_NULL (the `)`
+    doesn't immediately follow the identifier), so the TEXT()-wrapped, correct
+    form is never flagged.
+    """
+    picklist_fields = {match.upper() for match in ISPICKVAL_FIRST_ARG.findall(formula)}
+    if not picklist_fields:
+        return []
+    hits = []
+    for field in DIRECT_BLANK_OR_NULL.findall(formula):
+        if field.upper() in picklist_fields:
+            hits.append(field)
+    return hits
 
 
 def local_name(tag: str) -> str:
@@ -420,6 +462,18 @@ def audit_rule(path: Path, rule: Rule) -> list[str]:
             f"REVIEW {path}::{name}: picklist logic has no explicit blank guard"
         )
 
+    # --- VR-PICK-01: ISBLANK()/ISNULL() applied directly to a picklist -------
+    for field in find_direct_picklist_blank_calls(rule.formula):
+        findings.append(
+            f"HIGH {path}::{name}: VR-PICK-01 applies ISBLANK()/ISNULL() directly to "
+            f"{field}, which this formula also passes to ISPICKVAL() as a picklist "
+            f"field -- the deploy is rejected with \"Field {field} is a picklist "
+            "field. Picklist fields are only supported in certain functions.\" "
+            f"(proven live via sf project deploy start --dry-run, API 67.0, "
+            f"2026-09-12). Fix: wrap it in TEXT() -- ISBLANK(TEXT({field})) / "
+            f"ISNULL(TEXT({field}))"
+        )
+
     # Compound fields are not allowed in validation rules as of API version 20.0
     for compound in COMPOUND_FIELDS:
         if compound in upper_formula:
@@ -452,7 +506,11 @@ def main() -> int:
             "<fields>/<CustomField> elements) and/or customPermissions/*.customPermission-meta.xml, "
             "also resolves `__c` field tokens, `errorDisplayField`, and `$Permission` "
             "references against that inventory (VR-REF-01/VR-REF-02). Standard fields "
-            "are never flagged. Run over the whole build/package tree, not one step's "
+            "are never flagged for VR-REF-01/02, but VR-PICK-01 (ISBLANK()/ISNULL() "
+            "applied directly to a field also passed to ISPICKVAL() in the same "
+            "formula -- a picklist, which does not compile without TEXT()) needs no "
+            "inventory and checks standard and custom fields alike. Run over the "
+            "whole build/package tree, not one step's "
             "directory, or those references come back as an advisory INFO instead of "
             "a real answer."
         )

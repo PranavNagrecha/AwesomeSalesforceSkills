@@ -69,6 +69,9 @@ AND(
 - For number/currency required-field checks: `ISBLANK(Revenue__c)` is correct — it fires only when no value is entered (null), not when 0 is entered
 - If you need to catch both null AND zero: `OR(ISBLANK(Revenue__c), Revenue__c = 0)`
 - Document in the rule description which values the rule is designed to catch
+- This gotcha is about **number/currency/date/text** fields only. A **picklist** field behaves differently
+  again — `ISBLANK()`/`ISNULL()` don't just give a surprising answer on a picklist, they don't compile at all.
+  See Gotcha 14 below.
 
 ---
 
@@ -243,3 +246,45 @@ requested validation rule and the compound field `BillingAddress` cannot express
 - For a dependent picklist, `ISPICKVAL` the controlling and dependent fields independently; the dependency
   itself is enforced by the field configuration, not by the rule.
 - `admin/formula-fields` covers which field types are addressable in formula syntax generally.
+
+---
+
+## Gotcha 14: ISBLANK() / ISNULL() Applied Directly to a Picklist Field Does Not Compile
+
+**What happens:** `ISBLANK(StageName)` and `ISNULL(StageName)` look like the same null/blank guard that
+works on every other field type, and the "GOOD" pattern for guarding a picklist check against blank looks
+exactly like guarding a text or date field against blank. It isn't. Applying `ISBLANK(` or `ISNULL(` directly
+to a picklist field is rejected at deploy/save time with:
+
+> `Field StageName is a picklist field. Picklist fields are only supported in certain functions.`
+
+Proven live on **2026-09-12** via `sf project deploy start --dry-run` at **API 67.0** against a formula of the
+shape `AND(NOT(ISBLANK(StageName)), ISPICKVAL(StageName, "Closed Won"), ...)` — this is the exact defect this
+skill previously shipped in its own "Formula Best Practices → GOOD" example in `SKILL.md`, corrected
+2026-09-12 to `NOT(ISBLANK(TEXT(StageName)))`.
+
+**When it occurs:** Any formula that null-guards a picklist the "obvious" way — `NOT(ISBLANK(Field__c))` or
+`NOT(ISNULL(Field__c))` — before or alongside an `ISPICKVAL(Field__c, ...)` check on the same field. It fails
+at compile time (deploy or Setup save), not at run time, so no record ever has to hit the rule to find the
+bug — the deploy itself is rejected.
+
+**How to avoid it:**
+- Wrap the picklist in `TEXT()` first — `TEXT()` converts a picklist to a string, and `ISBLANK()`/`ISNULL()`
+  accept a string. `NOT(ISBLANK(StageName))` → `NOT(ISBLANK(TEXT(StageName)))`.
+- Functions confirmed (by this skill's own metadata-examples and formula patterns) to accept a picklist field
+  **directly**, with no `TEXT()` wrapper needed: `ISPICKVAL(Field, "Value")` (equality check — see every
+  example in `references/examples.md`), `PRIORVALUE(Field)` (prior value — see the PRIORVALUE gotcha above),
+  and `ISCHANGED(Field)` (change detection — see `templates/admin/validation-rule-patterns.md`). None of these
+  fail in this skill's own worked examples, which is the closest thing to a corpus confirmation available here.
+- `CASE(Field, ...)` is commonly documented elsewhere as accepting a picklist directly, and `TEXT(Field)` by
+  definition takes a picklist as input (that is its purpose) — both are consistent with the platform's own
+  "certain functions" framing in the error text.
+  > UNVERIFIED (2026-09-12): the exact list of functions that accept a picklist field directly is a Formula
+  > Language / Functions reference claim. It is **not** confirmed in this skill's fetched corpus
+  > (`api_meta.txt` — Metadata API Developer Guide — and `salesforce_apex_developer_guide.txt` — Apex
+  > Developer Guide); neither documents formula-function argument-type semantics. Only the compile failure
+  > itself is proven, via the live `sf project deploy start --dry-run` probe cited above. Verify the full
+  > function list against the Formula Language reference before treating it as exhaustive.
+- Run `scripts/check_validation_rules.py` before deploying — it flags this pattern as `VR-PICK-01` (HIGH,
+  blocking) whenever a field is passed to both `ISBLANK(`/`ISNULL(` directly and to `ISPICKVAL(` as its first
+  argument in the same formula.
