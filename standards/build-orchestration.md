@@ -630,10 +630,12 @@ keeper. Fable is never invoked at run time.
   <json> --outcome verified|plan-rejected` (the verifier's block), and
   `set-milestone <plan> <Mk> --status verified|rejected --report-path <path>`
   (the milestone verifier's verdict and report path).
-- Every agent invocation in the loop is recorded in `plan.json.steps[].runs[]`
-  with the envelope path. Re-running a step appends a run; it never overwrites
-  history. `set-status … --started <iso>` alone records a run entry, with the
-  agent defaulting to the step's own `agent`.
+- Every agent invocation in the loop is recorded in `plan.json.steps[].runs[]`,
+  carrying the envelope path when `--envelope` names one actually written.
+  Re-running a step appends a run; it never overwrites history. `set-status …
+  --started <iso>` alone (no `--envelope`) records a run entry with no
+  `envelope_path` rather than a fabricated one, with the agent defaulting to
+  the step's own `agent`.
 - The planner may only assign agents that are eligible per § 4 — `class:
   runtime`, a non-deprecated `status` from the agent-frontmatter enum, and
   org-free unless `build_mode` is `org-connected` — and it may only cite skills

@@ -768,8 +768,43 @@ def test_set_status_records_a_run_from_started_alone(tmp_path, fixture_repo):
     assert run("set-status", str(path), "M1-S01", "running",
                "--started", "2026-09-05T10:00:00Z", "--repo-root", str(fixture_repo)) == 0
     runs = json.loads(path.read_text())["steps"][0]["runs"]
+    # No --envelope was given, so no envelope was ever written for this run —
+    # the record must not carry a fabricated envelope_path pointing at a file
+    # that does not exist on disk.
     assert runs == [{"agent": "alpha-designer", "started": "2026-09-05T10:00:00Z",
-                     "envelope_path": "envelopes/M1-S01/running.json", "result": "running"}], runs
+                     "result": "running"}], runs
+    assert "envelope_path" not in runs[0]
+
+
+def test_set_status_with_envelope_keeps_the_real_path(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--envelope", "envelopes/M1-S01/running.json",
+               "--started", "2026-09-05T10:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    runs = json.loads(path.read_text())["steps"][0]["runs"]
+    assert runs == [{"agent": "alpha-designer", "started": "2026-09-05T10:00:00Z",
+                     "envelope_path": "envelopes/M1-S01/running.json",
+                     "result": "running"}], runs
+
+
+def test_set_status_mixed_runs_only_the_enveloped_one_carries_a_path(tmp_path, fixture_repo):
+    """A step re-run several times may mix bare status transitions with real
+    envelopes; each run record reflects only what actually happened for it."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--started", "2026-09-05T10:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    write_outputs(path, "M1-S01")
+    assert run("set-status", str(path), "M1-S01", "built",
+               "--envelope", "envelopes/M1-S01/built.json",
+               "--repo-root", str(fixture_repo)) == 0
+    runs = json.loads(path.read_text())["steps"][0]["runs"]
+    assert len(runs) == 2
+    assert "envelope_path" not in runs[0]
+    assert runs[1]["envelope_path"] == "envelopes/M1-S01/built.json"
 
 
 def test_failed_resets_to_pending_and_running_can_be_reclaimed(tmp_path, fixture_repo):

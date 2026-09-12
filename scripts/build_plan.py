@@ -1997,14 +1997,19 @@ def cmd_set_status(args: argparse.Namespace) -> int:
     run_agent = args.run_agent
     if args.run_agent or args.envelope or args.started:
         run_agent = args.run_agent or step.get("agent")
-        envelopes_dir = (plan.get("docs") or {}).get("envelopes") or "envelopes/"
-        envelope = args.envelope or f"{envelopes_dir.rstrip('/')}/{args.step_id}/{new}.json"
-        step.setdefault("runs", []).append({
+        # Only a real `--envelope` earns an `envelope_path` on the run record.
+        # A bare status transition (no --envelope) has no envelope on disk to
+        # point at, so the key is omitted rather than filled with a path that
+        # was never written — a reader joining runs[] to disk must never hit
+        # a fabricated dead path (contract section 8).
+        run_record = {
             "agent": run_agent,
             "started": _now(args.started),
-            "envelope_path": envelope,
-            "result": args.result or new,
-        })
+        }
+        if args.envelope:
+            run_record["envelope_path"] = args.envelope
+        run_record["result"] = args.result or new
+        step.setdefault("runs", []).append(run_record)
 
     rc = write_plan(plan_path, plan, Path(args.repo_root), schema)
     if rc:
@@ -3066,7 +3071,7 @@ def build_parser() -> argparse.ArgumentParser:
                    help="agent id to append to runs[] (default: the step's own agent)")
     p.add_argument("--envelope", default=None,
                    help="envelope path for the appended run "
-                        "(default: envelopes/<step-id>/<status>.json)")
+                        "(omitted entirely when not given — never fabricated)")
     p.add_argument("--result", default=None, help="run result text (default: the new status)")
     p.add_argument("--started", default=None,
                    help="ISO start time (default: UTC now). Any of --run-agent/--envelope/"

@@ -720,10 +720,9 @@
       "required": [
         "agent",
         "started",
-        "envelope_path",
         "result"
       ],
-      "description": "Section 8: every agent invocation in the loop is recorded here with its envelope path. Re-running a step appends; it never overwrites history.",
+      "description": "Section 8: every agent invocation in the loop is recorded here, with its envelope path when one was actually written. A bare status transition (`set-status ... --started <iso>` with no `--envelope`) has no envelope on disk yet, so `envelope_path` is absent on that run rather than a fabricated path. Re-running a step appends; it never overwrites history.",
       "properties": {
         "agent": {
           "type": "string",
