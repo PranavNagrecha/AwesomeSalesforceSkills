@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Suppresses the Case intake validation rules for Cases created through the API. Consumers: Case.Priority_Required_On_Agent_Save, Case.Origin_Must_Be_Known (M3-S01). Granted only by the Case_Intake_Integration permission set. Owner: Security architect.</description>
+    <label>Bypass Case Intake Validation</label>
+</CustomPermission>

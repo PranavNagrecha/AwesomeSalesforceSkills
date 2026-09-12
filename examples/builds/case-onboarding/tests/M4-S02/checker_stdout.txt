@@ -1,0 +1,5 @@
+INFO  W4  [First_Response_Premier.entitlementProcess-meta.xml] Milestone 'First_Response_Premier / First Response' has neither <timeTriggers> nor <successActions>: no warning or completion action is configured; the milestone still counts down and reports violation — intended when completion is driven by a trigger/flow and no notification is wanted; confirm that is the design.
+INFO  W4  [First_Response_Standard.entitlementProcess-meta.xml] Milestone 'First_Response_Standard / First Response' has neither <timeTriggers> nor <successActions>: no warning or completion action is configured; the milestone still counts down and reports violation — intended when completion is driven by a trigger/flow and no notification is wanted; confirm that is the design.
+
+0 error(s), 0 warning(s), 2 info note(s).
+OK: no ERROR findings.

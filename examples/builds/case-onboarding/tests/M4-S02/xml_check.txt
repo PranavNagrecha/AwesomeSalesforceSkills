@@ -1,0 +1,6 @@
+PARSE_OK	artefacts/M4-S02/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml	
+PARSE_OK	artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml	
+PARSE_OK	artefacts/M4-S02/milestoneTypes/First Response.milestoneType-meta.xml	
+PARSE_OK	artefacts/M4-S02/package.xml	
+
+TOTAL=4 PARSED=4 FAILED=0

@@ -1,0 +1,13 @@
+{
+  "step_id": "M4-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given the step claims to have built the calendars, when artefacts/M4-S01/settings/BusinessHours.settings-meta.xml is read, then all three are present and named: EMEA Support (Europe/London 08:00-18:00 Mon-Fri), US Support (America/New_York 08:00-20:00 Mon-Fri, the org default) and Severity 1 24x7."
+  ]
+}

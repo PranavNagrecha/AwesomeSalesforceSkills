@@ -1,0 +1,129 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T07-35-25Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T07-35-25Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T07-35-25Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S04",
+    "precondition_status": "built"
+  },
+  "summary": "Ran the molecular tests for M4-S04 (Case escalation rules, type sla, owner metadata-builder): the declared build-scope checker check_escalation_rules.py --manifest-dir artefacts exited 0 with the expected W1 (no rule active, expected under Q47) and two I3 lines (480 minutes = 8h, expected under Q46); check-outputs returned ok; both always-on xml and manifest checks passed (2/2 files parsed, EscalationRules member Case present in package.xml with a matching file, no wildcard, no exclusion needed). Both declared manual tests carry an explicit Given/When/Then shape with a named observable outcome, so both are reported as usable and deferred to the milestone gate rather than ticked here. Zero failures. Status set to tested via build_plan.py.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH row: every declared test either ran (checker, xml, manifest) or was correctly classified as manual (2), both always-on checks completed, and every result came from an exit code this agent observed directly (checker exit 0, check-outputs exit 0). No command test was refused, no manifest exclusion was needed for a coverage-gap type, and check-outputs reported no missing/empty/malformed output.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared checker's exit-code behaviour matched the plan's own step-note prediction exactly: exit 0 with W1 (no rule active) and two I3 lines (480 = 8h), with no E2 or E7 firing, confirming the builder avoided both fixture-found constraints by construction.",
+      "domain": "checker-accuracy",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M4-S04/checker_stdout.txt"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The manifest check is fully consistent on the first pass: one type (EscalationRules), one member (Case), one file, no wildcard and no coverage-gap exclusion needed — the simplest possible shape for this always-on check.",
+      "domain": "manifest-consistency",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M4-S04/manifest_results.json"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The status transition to tested applied cleanly via build_plan.py while a concurrent runner was writing plan.json for M4-S02; the two steps share no artefact path and both writers used the CLI only, so no conflict occurred.",
+      "domain": "concurrency",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/plan.json"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "observation": "Carried verbatim from the owning agent's envelope and artefacts/M4-S04/deploy-order.md § 5, not resolved by this test run: notifyCaseOwner true on a Billing-queue-owned case resolves at run time to billing@acme.example, a live Email-to-Case intake address, so a case escalating while owned by the Billing queue notifies into its own intake mailbox. This is a milestone-gate adjudication, not a checker failure — no declared test asserts sender/recipient identity.",
+      "domain": "mail-loop",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T07-22-10Z.json"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "deploy-order.md § 3 records five UNVERIFIED items (U1 custom-field criteriaItems spelling, U2 null Case.BusinessHoursId behaviour, U3 email routing to a queue with no <email>, U4 the escalation engine's batching interval, U5 a possible one-active-rule ceiling). None is covered by any declared acceptance test on this step — all five require sandbox verification the tester cannot perform — so they are carried forward as context rather than adjudicated here.",
+      "domain": "grounding-gaps",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/deploy-order.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Both manual acceptance tests are now recorded as usable (Given/When/Then shape present, observable outcome named) but neither is ticked; they and the milestone-scoped businessHoursSource/24x7-calendar assertion still need collection into the human checklist.",
+      "domain": "process",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/tests/M4-S04/results.json", "count": 2},
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because milestone-verifier owns collecting step- and milestone-scoped manual tests into the M4 gate's human checklist, and this agent never ticks a manual test"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The confirmed Billing mail-loop exposure and the five UNVERIFIED items still need decisions.md entries before the M4 gate, per O-M3S04-02.",
+      "domain": "process",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/deploy-order.md"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because build-doc-keeper writes decisions.md and this agent writes only tests/ and its own envelope"
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "agent-rules", "path": "AGENT_RULES.md", "used_for": "the run-time rules binding this invocation, including the ban on org writes and on auto-chaining into the doc keeper"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "the eight-section shape, the Process Observations requirement, and the confidence rubric this agent's Step 7 overrides"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence and the atomic-write rule for results.json, summary.md and the run envelope"},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "the canonical refusal enum — none was used on this run"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "§ 4 the sla step type and its molecular tests; § 5 the checker scope table (check_escalation_rules.py is listed as cross-referential, declared build scope here, matching the plan), the check-outputs precondition, and the rule that the always-on manifest check fails rather than skips on a metadata step type"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the shape of acceptance_tests[] and outputs[] read from plan.json for M4-S04"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "the package.xml grammar the manifest check judged artefacts/M4-S04/package.xml against"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "the source-format filename-to-metadata-type mapping used to derive the EscalationRules/Case member from escalationRules/Case.escalationRules-meta.xml"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "confirming EscalationRules has a standalone source file so no manifest-check exclusion applied here"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate rather than re-interpreted by them"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then shape both declared manual tests were checked against before being carried into skipped_manual[] as usable"}
+  ],
+  "followups": [
+    {"agent": "milestone-verifier", "because": "the two manual tests and the milestone-scoped businessHoursSource/24x7 assertion still need collection into the M4 gate's human checklist"},
+    {"agent": "build-doc-keeper", "because": "the confirmed Billing mail-loop exposure and the five UNVERIFIED items need decisions.md entries before the M4 gate"}
+  ],
+  "extensions": {
+    "step_id": "M4-S04",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M4-S04/results.json",
+    "results": [
+      {
+        "name": "check_escalation_rules.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs plan.json M4-S04",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c ... xml.etree.ElementTree (stdlib)",
+        "exit_code": null,
+        "verdict": "pass (2/2 files parsed)"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way file-to-member / member-to-file consistency check",
+        "exit_code": null,
+        "verdict": "pass (consistent)"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given the rule ships inactive (Q47), when the sandbox proof is signed off, then a named owner activates it inside an agreed comparison window and records the first hour's escalation count. The checker's W1 finding ('no rule in this file is active') is the expected state here, not a defect.",
+      "Given Q46 measures 8 business hours, when Case.escalationRules-meta.xml is read, then the Tier 2 entry's minutesToEscalation is 480 (8 x 60), not 8; its businessHoursSource is Case with no <businessHours> child; it reassigns to the queue developer name Tier_2_Engineering built in M2-S04; and the Severity 1 entry's businessHoursSource is None. check_business_hours_and_holidays.py is not declared on this step — at artefacts/M4-S04 it prints 'No BusinessHours settings file found' and exits 0 vacuously, because the calendars are M4-S01's artefacts; M4's milestone test runs it at --manifest-dir artefacts, which is where the 24/7 calendar assertion lives."
+    ],
+    "tests_run": 3,
+    "terminal_status": "tested"
+  }
+}

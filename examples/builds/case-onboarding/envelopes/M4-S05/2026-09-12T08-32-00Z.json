@@ -1,0 +1,330 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T08-32-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-32-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-32-00Z.json",
+  "summary": "Rebuild of M4-S05 for F-37. The operator's dry-run validation (checkOnly, sfskills-dev, API 67.0) compiled CaseMilestoneTrigger and CaseMilestoneService but rejected CaseMilestoneServiceTest five times with 'Variable does not exist: TestDataFactory' \u2014 the test referenced templates/apex/tests/TestDataFactory.cls by repo-relative path, which templates/README.md defines as a block to be copied into the consuming project rather than a deploy-time reference, and no step shipped it. Exactly two files were added: classes/TestDataFactory.cls, a byte-identical copy of the template (diff is empty, the template itself untouched), and its -meta.xml at apiVersion 67.0 / Active. The trigger, the service, the test and their three meta files are unchanged byte for byte; the factory copy changed no reference, because the class name the test already called is the class name now shipped beside it. No behaviour was added to the factory.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "GATES.md Gate D row 3 again: 0 unresolved symbols, no target_org_alias, so this agent ran no compile check of its own. The org error that forced the rebuild is now addressed by shipping the missing class, but that remedy is confirmed only by the operator's next dry run (run 3), not by anything this agent can execute.",
+  "inputs_received": {
+    "kind": "trigger",
+    "primary_sobject": "Case",
+    "feature_summary": "After-update Apex trigger on Case that writes CaseMilestone.CompletionDate to complete the First Response milestone, plus its test class.",
+    "api_version": "67.0",
+    "milestone_name": "First Response",
+    "decisions": [
+      "D10"
+    ],
+    "assumptions": [
+      "A27"
+    ],
+    "answers": [
+      "Q50",
+      "Q53",
+      "Q16"
+    ],
+    "rebuild_reason": "F-37 \u2014 reports/MOCK-DEPLOY-M4.md run 2: ApexClass CaseMilestoneServiceTest x5 'Variable does not exist: TestDataFactory'",
+    "amended_outputs": "steps[M4-S05].amendments[0] (2026-09-12T08:27:30Z, dry-run operator) added classes/TestDataFactory.cls and classes/TestDataFactory.cls-meta.xml; outputs[] is now 8 paths",
+    "include_logger": "false (unchanged)",
+    "target_org_alias": "(absent \u2014 build_mode design-only)"
+  },
+  "dimensions_compared": [
+    "class-decomposition",
+    "governor-budget",
+    "security-posture",
+    "secret-handling",
+    "id-handling",
+    "bulk-safety"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "error-handling",
+      "state": "partial",
+      "reason": "Unchanged by this rebuild. The Database.SaveResult loop is intact but ApplicationLogger is not wired, because its Application_Log__c and Logger_Setting__mdt dependencies are deployed by no step; code-examples.md option 2 (System.debug) was taken.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "A shared Apex-foundations step carrying ApplicationLogger and its two metadata dependencies \u2014 the same step that should own TestDataFactory."
+    },
+    {
+      "dimension": "test-coverage",
+      "state": "not-run",
+      "reason": "No org on file, so this agent executed no test and has no coverage number. The operator's run-2 validation reached the compile stage and failed there; whether the tests pass is open until run 3.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Re-run the checkOnly validation against sfskills-dev now that TestDataFactory ships in the same request."
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-M4S05-06",
+      "severity": "P1",
+      "title": "F-37 addressed: TestDataFactory now ships with the step that depends on it",
+      "detail": "The test's five TestDataFactory references were unresolvable in the org because the class was cited as a repo path rather than shipped. classes/TestDataFactory.cls is now a verbatim copy of templates/apex/tests/TestDataFactory.cls and a declared output. The template was not edited, and no method was added to it: the test needed createAccounts(Integer, Map) and createCases(Integer, Id, Map), both of which the template already defines with those exact signatures.",
+      "evidence": {
+        "org_error": "Variable does not exist: TestDataFactory (x5)",
+        "report": "reports/MOCK-DEPLOY-M4.md run 2",
+        "diff": "diff templates/apex/tests/TestDataFactory.cls artefacts/M4-S05/classes/TestDataFactory.cls \u2014 empty",
+        "checker_exit": 0
+      },
+      "recommendation": "Confirm at the operator's next dry run (run 3). Nothing else in the step changed, so a fresh failure would be a different fault."
+    },
+    {
+      "id": "AB-M4S05-07",
+      "severity": "P2",
+      "title": "The factory is now a step-local copy of a shared template, which a second Apex step would duplicate",
+      "detail": "This is the only Apex step in the plan, so nothing duplicates today. A second Apex step declaring classes/TestDataFactory.cls would deploy the same class twice under one package.xml member \u2014 a conflict, not a merge. The same applies to TriggerHandler / TriggerControl / ApplicationLogger if the handler shape is ever adopted (AB-M4S05-02).",
+      "evidence": {
+        "path": "artefacts/M4-S05/deploy-order.md \u00a7 0",
+        "plan_search": "one step of type automation owned by apex-builder"
+      },
+      "recommendation": "Planner v6 owns a shared 'Apex foundations' step whose outputs[] carry TestDataFactory and, if adopted, the trigger-framework classes; every Apex step depends_on it. F-37's own remedy line says the same."
+    },
+    {
+      "id": "AB-M4S05-08",
+      "severity": "P2",
+      "title": "This build's validation rules are satisfied in the test, not in the factory",
+      "detail": "M3-S01's Origin_Must_Be_Known and Priority_Required_On_Agent_Save reject the factory's Case defaults (Origin = 'Email', no Priority). The overrides are passed from CaseMilestoneServiceTest.caseOverrides(Id) through the factory's own overrides map \u2014 Origin = 'Web', Priority = 'Medium' \u2014 rather than by changing the factory, whose defaults are shared with every future consumer while this build's validation rules are not.",
+      "evidence": {
+        "path": "artefacts/M3-S01/objects/Case/validationRules/",
+        "template": "templates/apex/tests/TestDataFactory.cls:57-70",
+        "test_method": "caseOverrides(Id)"
+      },
+      "recommendation": "Keep the line where it is. If a later Apex step tests Cases through the same factory it needs the same two overrides \u2014 worth one line in the build's test conventions."
+    },
+    {
+      "id": "AB-M4S05-05",
+      "severity": "INFO",
+      "title": "No local check could have caught F-37, and none can confirm the fix",
+      "detail": "check_entitlement_apex_hooks.py reads one tree for CaseMilestone mistakes and has no cross-class symbol resolution; check-outputs confirms declared paths, not references; there is no offline Apex compiler in the sf CLI. It took a real org to surface the missing class, and it takes the same org to confirm it is gone.",
+      "evidence": {
+        "build_mode": "design-only",
+        "org": "none"
+      },
+      "recommendation": "Treat run 3 of the operator's dry run as the acceptance evidence for F-37."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuild was two added files and zero edits: the trigger, service and test kept their original modification times, so the fix is auditable as an addition rather than a rewrite.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The template already carried both factory methods the test calls with the exact signatures, so the copy needed no adaptation and the shared template stayed untouched.",
+      "domain": "apex-testing",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/apex/tests/TestDataFactory.cls"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "A skill's reference file listed a template as 'referenced by relative path, not copied into this bundle' while templates/README.md defines templates as blocks copied into the consuming project, and the two readings disagreed in a way only an org surfaced.",
+      "domain": "skill-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/entitlement-apex-hooks/references/code-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Every Apex artefact this build produces now carries its own copy of a shared template class, which is correct for one step and a deploy conflict for two.",
+      "domain": "automation-governance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/classes/TestDataFactory.cls"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The completion-signal question from the first build is untouched by this rebuild and still open: D10 settled the mechanism, Q50's answer named the first outbound EmailMessage, and the emitted service completes when a Case leaves Status New.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json clarifications[Q50], decisions[D10]"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step's four acceptance tests must run again over a tree that now holds a fourth Apex file.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Its earlier results.json was written against a six-output tree and is stale now that the outputs are eight."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "F-37's remedy names a plan change \u2014 a shared Apex-foundations step \u2014 that no agent has yet recorded as a decision.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M4.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "It is the agent that folds F-37, the rebuild and the planner-v6 recommendation into decisions.md once the step is tested again."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/SKILL.md",
+      "used_for": "Unchanged from the first build \u2014 the domain rules behind the trigger, service and test that this rebuild did not touch"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/code-examples.md",
+      "used_for": "Its 'Referenced by relative path, not copied into this bundle' table is the line F-37 contradicts; re-read to confirm the test's factory calls and their signatures"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/examples.md",
+      "used_for": "The two-file trigger/service shape, unchanged by this rebuild"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/gotchas.md",
+      "used_for": "Gotcha 6 \u2014 why the test needs the org's entitlement process and cannot build one, which is unrelated to F-37 and still stands"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-design-patterns",
+      "path": "skills/apex/apex-design-patterns/references/code-examples.md",
+      "used_for": "The ApexTrigger meta shape, and the 'do not re-implement the base classes, extend them' rule that makes shipping a copy the exception it is"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/metadata-examples.md",
+      "used_for": "\u00a7 9 \u2014 the completion shape the unchanged service implements"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "Copied verbatim into artefacts/M4-S05/classes/TestDataFactory.cls; diff is empty and the template was not edited"
+    },
+    {
+      "type": "template",
+      "id": "apex/TriggerHandler.cls-meta.xml",
+      "path": "templates/apex/TriggerHandler.cls-meta.xml",
+      "used_for": "The ApexClass meta shape reused for the factory's -meta.xml (apiVersion 67.0, status Active)"
+    },
+    {
+      "type": "template",
+      "id": "apex/TriggerHandler.cls",
+      "path": "templates/apex/TriggerHandler.cls",
+      "used_for": "Re-read to confirm the handler decision is unchanged: its TriggerControl dependency is still shipped by no step"
+    },
+    {
+      "type": "standard",
+      "id": "templates-readme",
+      "path": "templates/README.md",
+      "used_for": "The rule F-37 turns on \u2014 a template is a canonical block copied into the consuming project, so a repo-relative path is a citation for a human, not a reference an org resolves"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "\u00a7 Apex security idiom by API version (67.0 on the new meta file too) and \u00a7 Gate C, checks 1-3"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-gates",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate B symbol grounding \u2014 TestDataFactory is now a resolved symbol rather than a repo-path citation \u2014 and Gate D's row for a compile check that did not run"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 amend-step as the only writer of a pending step's outputs[], and \u00a7 4's documented \u2192 running rebuild path the operator used"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2 \u2192 Q13 \u2192 Q15 \u2014 'a clock that can pause outside business hours' \u2192 Entitlement milestones",
+      "used_for": "Unchanged: the SLA engine choice this step builds the completion side of"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "The earlier results.json was written against a six-output tree and is stale now that the step declares eight."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "F-37, the rebuild and the shared Apex-foundations recommendation are not yet in decisions.md."
+    }
+  ],
+  "extensions": {
+    "rebuild_of": "2026-09-12T08-12-19Z",
+    "files_added": [
+      "artefacts/M4-S05/classes/TestDataFactory.cls",
+      "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml"
+    ],
+    "files_edited": [
+      "artefacts/M4-S05/deploy-order.md (\u00a7 0 rebuild record added; \u00a7\u00a7 1, 6, 7 and Sources updated for the fourth class)"
+    ],
+    "files_unchanged_byte_for_byte": [
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml"
+    ],
+    "template_integrity": "diff templates/apex/tests/TestDataFactory.cls artefacts/M4-S05/classes/TestDataFactory.cls \u2014 no output; git status --porcelain templates/ \u2014 no output",
+    "factory_behaviour_added": "none. createAccounts(Integer, Map<String, Object>) and createCases(Integer, Id, Map<String, Object>) already existed with those signatures. The Origin = 'Web' / Priority = 'Medium' values this build's validation rules require are passed from the TEST via the factory's own overrides map (CaseMilestoneServiceTest.caseOverrides(Id)), not added to the factory.",
+    "gate_results": {
+      "gate_b_symbol_grounding": {
+        "unresolved": 0,
+        "note": "TestDataFactory moves from 'traced to a file under repo_path' to 'shipped in the same deploy request', which is what the org required."
+      },
+      "gate_c_identifier_provenance": {
+        "status": "passed",
+        "note": "No identifier changed. The two factory methods the test calls are now quoted from a file inside the step's own artefacts as well as from the template."
+      },
+      "gate_c_compile": {
+        "status": "not-run",
+        "note": "No target_org_alias; design-only. The operator's dry run is the compile check, and run 3 is the one that confirms F-37."
+      },
+      "declared_checker": {
+        "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05",
+        "exit": 0,
+        "stdout": "scanned 4 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN",
+        "strict_exit": 0
+      },
+      "brace_balance": "CaseMilestoneService 16/16, CaseMilestoneServiceTest 15/15, TestDataFactory 17/17, CaseMilestoneTrigger 1/1 \u2014 parens and brackets balanced in all four"
+    },
+    "governor_budget": {
+      "TestDataFactory": "Test-only, @IsTest. No SOQL. The only DML is inside bulkInsertStandardSet, which this step's test does not call; every createXxx method builds records and returns them uninserted.",
+      "CaseMilestoneTrigger": "unchanged \u2014 0 SOQL, 0 DML of its own",
+      "CaseMilestoneService.completeMilestones": "unchanged \u2014 1 SOQL and at most 1 DML per invocation regardless of Trigger.new size"
+    },
+    "integration_notes": [
+      "M5-S05's build-level package.xml must now carry FOUR ApexClass members: CaseMilestoneService, CaseMilestoneServiceTest, TestDataFactory, and the ApexTrigger member CaseMilestoneTrigger. TestDataFactory was not in the first build's list.",
+      "TestDataFactory is @IsTest, so it does not count toward the org's Apex character limit for non-test code and needs no coverage of its own.",
+      "If the target org already has a TestDataFactory class, this deploy overwrites it. Check before the first real deploy \u2014 the org that surfaced F-37 did not have one, which is why the error was 'does not exist' rather than a silent divergence."
+    ]
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T08-18-40Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-18-40Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-18-40Z.json",
+  "summary": "Step M4-S05 ('After-update Apex trigger on Case that completes the First Response milestone, plus its test class'), owning agent apex-builder, run inline. All six declared outputs exist and check-outputs exited 0; one undeclared artefact (deploy-order.md) was written, following this build's established pattern. No relocation was needed \u2014 the owner was asked for the build path and honoured it. Terminal status: built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM row: an undeclared artefact appeared (artefacts/M4-S05/deploy-order.md) and two optional inputs of the owning agent (api_version, target_org_alias) had no value from the plan \u2014 api_version was resolved from the step's own templates[] rather than defaulted to the agent's 60.0, and the absent org caps the owner's own Gate D confidence at MEDIUM. Everything else is HIGH-row: the step was in next --milestone M4, every required input resolved from plan.json, both envelopes validate, check-outputs exited 0, and nothing was written outside artefacts/M4-S05/.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M4-S05",
+    "reason": "(not supplied \u2014 ordinary pending-step run)",
+    "mapped_to_owning_agent": {
+      "kind": "trigger (step inputs)",
+      "primary_sobject": "Case (step inputs)",
+      "feature_summary": "(step inputs) After-update Apex trigger on Case that writes CaseMilestone.CompletionDate to complete the First Response milestone, plus its test class.",
+      "milestone_name": "First Response (step inputs)",
+      "decisions": "D10 (step inputs \u2192 resolved from plan.json decisions[])",
+      "assumptions": "A27 (step inputs \u2192 resolved from plan.json assumptions[])",
+      "answers": "Q50, Q53, Q16 (step inputs \u2192 resolved from plan.json clarifications[] by recorded id, not by text match)",
+      "upstream_outputs": "artefacts/M4-S02/ via depends_on \u2014 milestone-completion-decision.md and milestoneTypes/ passed as paths, not contents",
+      "reading_list": "skills[] apex/entitlement-apex-hooks, apex/apex-design-patterns, admin/entitlements-and-milestones; templates[] TriggerHandler.cls, TriggerHandler.cls-meta.xml, tests/TestDataFactory.cls; decision_trees[] automation-selection.md",
+      "acceptance_tests": "passed as context; the runner did not run them \u2014 that is step-tester's",
+      "api_version": "(optional, absent from inputs{}) \u2014 NOT left to the agent's 60.0 default: the step's templates[] pins TriggerHandler.cls-meta.xml at 67.0 and inputs.note states the apiVersion decides the security idiom",
+      "target_org_alias": "(absent \u2014 build_mode design-only; apex-builder is requires_org: false, so the \u00a7 4 eligibility rule holds)"
+    },
+    "redactions": "none \u2014 no value in inputs{} or in any upstream artefact matched a credential shape"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The plan bound every required input of the borrowed agent explicitly, so nothing had to be inferred from the step title \u2014 the W08 note records that this was a deliberate fix.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].inputs.note"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The launch brief and plan.json agreed on every bound value, so no Step 5 source conflict arose; the two named artefacts to read first were the same ones depends_on already pointed at.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].inputs, depends_on"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "apex-builder has no build-layer contract \u2014 grep for artefact/build_dir/step_id/.sfskills over its AGENT.md returns 0 \u2014 so the artefact path is a request it happens to honour rather than a clause it owes; every run of this step depends on that.",
+      "domain": "agent-contract",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/apex-builder/AGENT.md",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "deploy-order.md is written by four steps of this build and declared by none of them, which means the file a human reads before deploying is the one check-outputs never confirms.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S01..M4-S05/deploy-order.md",
+        "count": 5
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The owning agent recorded a P1 finding that the plan settles the completion mechanism but not the completion signal, which is a question the runner cannot adjudicate and the M4 gate has to.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json clarifications[Q50], decisions[D10]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's templates[] names templates/apex/TriggerHandler.cls, but no step in this build deploys it or its TriggerControl dependency, so a template the plan told the agent to read is one it could not use.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "plan.json steps[].outputs[] search for TriggerControl / Trigger_Setting__mdt",
+        "count": 0
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step is built and its four acceptance tests have not been run by this agent.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It is the only agent that runs the declared checker, the XML parse and the manifest check and writes tests/M4-S05/results.json, which is what moves the step from built to tested."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Four deviations and six UNVERIFIED items were recorded in this step's deploy-order.md and none of them is yet in decisions.md.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/deploy-order.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "It is the agent that folds a step's decisions and open items into decisions.md and traceability.md once the step is tested."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 build_mode and the no-hand-edit rule, \u00a7 4 step record + agent eligibility + borrowed-agent conditions 1 and 2, \u00a7 5 acceptance-test types and The Apex exception, \u00a7 8 the CLI as the only writer"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES",
+      "path": "AGENT_RULES.md",
+      "used_for": "The repo-wide run-time rules this invocation is bound by, including never writing to an org"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The 8-section shape, the Process Observations requirement, and \u00a7 Apex security idiom by API version, which fixed 67.0 as the version the emitted code is written against"
+    },
+    {
+      "type": "standard",
+      "id": "DELIVERABLE_CONTRACT",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence, the atomic-write rule, and the redaction requirement on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "REFUSAL_CODES",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The canonical enum \u2014 no refusal was raised on this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "Field-level truth for steps[], inputs{}, outputs[], depends_on[] and runs[], so only the fields this agent owns were read and written"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format layout the artefacts obey \u2014 classes/ and triggers/ as sibling directories, each .cls and .trigger paired with its own -meta.xml"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "Confirming ApexClass and ApexTrigger are Metadata API types, so the step's declared outputs are deployable metadata rather than notes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The workbook row schema behind the step's inputs{} \u2014 the cells were mapped onto apex-builder's Inputs table rather than paraphrasing the step title at it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The Q/D/A id conventions echoed into this envelope so the doc keeper can join step to requirement without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "The credential shapes checked for before echoing inputs into a build-directory envelope \u2014 none matched"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It runs M4-S05's four declared acceptance tests and writes tests/M4-S05/results.json, which is the precondition for tested."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once the step is tested it folds this step's four deviations and six UNVERIFIED items into decisions.md and traceability.md."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S05",
+    "owning_agent": "apex-builder",
+    "owning_agent_build_aware": false,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/apex-builder/AGENT.md \u2192 0. Run inline per the invocation instruction; the build-path clause was stated as a request and was honoured, so no Step 7 relocation was needed.",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-12-19Z.json",
+    "owning_envelope_validation": "OK \u2014 python3 scripts/validate_envelope.py exited 0",
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S05/deploy-order.md",
+        "declared": false,
+        "note": "Undeclared. Written per the same pattern decisions.md O-M3S02-03 records for M3-S01..M3-S04 and artefacts/M4-S01 / M4-S02 follow. Carries the deploy order, the two-file-shape rationale, the completion-signal open item, the test's org prerequisites and six UNVERIFIED items. Declare it with build_plan.py amend-step if the build wants check-outputs to confirm it."
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S05 built --run-agent apex-builder --envelope envelopes/M4-S05/2026-09-12T08-12-19Z.json --result \"<one-line outcome>\" --started 2026-09-12T08-12-19Z",
+    "running_claim_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S05 running --started 2026-09-12T08-12-19Z",
+    "next_command_printed_for_human": "python3 scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json --milestone M4",
+    "acceptance_tests_not_run_here": "All four are step-tester's. The declared checker was nevertheless executed once by the owning agent as its own Gate C evidence (exit 0, and exit 0 under --strict); that is evidence, not the test run, and results.json was not written.",
+    "concurrency": "M4-S03 is being built concurrently by another runner. Nothing under artefacts/M4-S03/, tests/M4-S03/ or envelopes/M4-S03/ was read for content, written or touched, and plan.json was changed only through build_plan.py set-status on M4-S05.",
+    "org_contact": "none \u2014 no sf command of any kind was run, no deploy, no test execution, no gate approved"
+  }
+}

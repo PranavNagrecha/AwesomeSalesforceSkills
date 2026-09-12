@@ -1,0 +1,362 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T08-12-19Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-12-19Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-12-19Z.json",
+  "summary": "kind=trigger, feature 'After-update Apex trigger on Case that writes CaseMilestone.CompletionDate to complete the First Response milestone, plus its test class'. Three components emitted at apiVersion 67.0: CaseMilestoneTrigger (after update on Case, one line), CaseMilestoneService (one SOQL, one DML, partial-success SaveResult loop, CompletionDate = NULL as both the open-milestone filter and the idempotency guard) and CaseMilestoneServiceTest (@IsTest(SeeAllData=true), four assert-bearing methods, one of which drives a real Case update so the trigger itself runs). The skill's four-file bundle was reduced to the documented two-file shape because the plan declares no handler output and no step in this build deploys TriggerHandler/TriggerControl/Trigger_Setting__mdt. No compile check ran: the build is design-only with no org, and there is no offline Apex compiler in the sf CLI.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "GATES.md Gate D row 3: 0 unresolved symbols, but no target_org_alias, so the dry-run compile did not run and coverage is unknown. Capped at MEDIUM, and the envelope says so rather than implying the code was checked.",
+  "inputs_received": {
+    "kind": "trigger",
+    "primary_sobject": "Case",
+    "feature_summary": "After-update Apex trigger on Case that writes CaseMilestone.CompletionDate to complete the First Response milestone, plus its test class.",
+    "api_version": "67.0 (not supplied as an input; taken from the step's templates[] TriggerHandler.cls-meta.xml and the cited skill's bundle, both 67.0 \u2014 the agent default of 60.0 was NOT used)",
+    "milestone_name": "First Response",
+    "decisions": [
+      "D10"
+    ],
+    "assumptions": [
+      "A27"
+    ],
+    "answers": [
+      "Q50",
+      "Q53",
+      "Q16"
+    ],
+    "namespace": "(absent \u2014 non-packaged org)",
+    "include_logger": "false (ApplicationLogger and its Application_Log__c / Logger_Setting__mdt dependencies are deployed by no step in this build)",
+    "test_bulk_size": "200 (default)",
+    "async_hint": "(absent \u2014 not an async kind)",
+    "target_org_alias": "(absent \u2014 build_mode is design-only)"
+  },
+  "dimensions_compared": [
+    "class-decomposition",
+    "governor-budget",
+    "security-posture",
+    "secret-handling",
+    "id-handling",
+    "bulk-safety"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "error-handling",
+      "state": "partial",
+      "reason": "The Database.SaveResult loop is intact and every Database.Error is captured into CompletionResult.failures, but ApplicationLogger is not wired: it depends on Application_Log__c and Logger_Setting__mdt, which no step in this build deploys. code-examples.md option 2 (System.debug(LoggingLevel.ERROR, ...)) was taken and recorded.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Add ApplicationLogger and its two metadata dependencies to some step's outputs[], then rebuild this step and replace the two System.debug calls."
+    },
+    {
+      "dimension": "test-coverage",
+      "state": "not-run",
+      "reason": "No org is on file (build_mode design-only) and there is no offline Apex compiler in the sf CLI, so no test executed and no coverage number exists. The test class is present and every method asserts on a value rather than on lines executed.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Deploy to a sandbox that already has an active entitlement process carrying a 'First Response' milestone, then run sf project deploy start --dry-run --test-level RunLocalTests."
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-M4S05-01",
+      "severity": "P1",
+      "title": "The completion signal is a proxy, and Q50's answer named a different one",
+      "detail": "D10 settled the mechanism (after-update Apex stamping CompletionDate) but no clarification settles the Case change that means 'the agent responded'. Q50's recorded answer names the first outbound EmailMessage. The emitted service completes when a Case leaves Status 'New' \u2014 the transition references/examples.md Example 1 documents and the one both of this build's business processes share. A case can leave New without a customer-facing reply, and an agent can reply without leaving New.",
+      "evidence": {
+        "answer": "Q50",
+        "decision": "D10",
+        "artefact": "artefacts/M4-S05/deploy-order.md \u00a7 3",
+        "businessProcesses": "artefacts/M1-S01/objects/Case/businessProcesses/"
+      },
+      "recommendation": "Take it to the M4 gate: either accept 'leaves New' as the signal, or re-answer Q50 and plan an after-insert trigger on EmailMessage (Incoming = false) as a separate step. The rule is one @TestVisible constant (OPENING_STATUS), so a change is one line."
+    },
+    {
+      "id": "AB-M4S05-02",
+      "severity": "P2",
+      "title": "Two-file shape emitted instead of the skill's four-file handler bundle",
+      "detail": "references/code-examples.md and apex/apex-design-patterns both name a TriggerHandler subclass as the trigger adapter. plan.json steps[M4-S05].outputs[] declares no handler, and a search of plan.json returns zero occurrences of TriggerControl, ApplicationLogger or Trigger_Setting__mdt in any step's outputs[] \u2014 so a handler extending templates/apex/TriggerHandler.cls would not compile in the org this build produces. The cost is no recursion guard, no depth counter, no skipOnce() and no TriggerControl kill switch.",
+      "evidence": {
+        "path": "artefacts/M4-S05/deploy-order.md \u00a7 2",
+        "plan_search": "TriggerControl=0, ApplicationLogger=0, Trigger_Setting__mdt=0, TriggerHandler=1 (this step's templates[] only)"
+      },
+      "recommendation": "If the handler shape is wanted, it is a plan amendment (amend-step) adding the handler to outputs[] and the three template components to some step's outputs, then a rebuild \u2014 not a code tweak."
+    },
+    {
+      "id": "AB-M4S05-03",
+      "severity": "P2",
+      "title": "TestDataFactory defaults collide with this build's two active Case validation rules",
+      "detail": "templates/apex/tests/TestDataFactory.createCases ships Origin = 'Email', which is not one of the three values this build's CaseOrigin standard value set defines, and sets no Priority. M3-S01's Origin_Must_Be_Known and Priority_Required_On_Agent_Save would both reject every Case the factory builds. The test passes Origin = 'Web' and Priority = 'Medium' through the factory's overrides map.",
+      "evidence": {
+        "path": "artefacts/M3-S01/objects/Case/validationRules/",
+        "template": "templates/apex/tests/TestDataFactory.cls:57-70",
+        "standardValueSet": "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml"
+      },
+      "recommendation": "No change needed here. Any later step whose test builds a Case through the same factory needs the same two overrides \u2014 worth a line in the build's own test conventions."
+    },
+    {
+      "id": "AB-M4S05-04",
+      "severity": "P2",
+      "title": "code-examples.md's COMPLETING_STATUSES set does not fit this build's status ladder",
+      "detail": "The cited bundle's constant is {'Working','Escalated','Closed'}. 'Working' appears in neither Support_Process nor Billing_Process in this build, so two thirds of that set would never match and the remaining value would complete the first-response milestone only at case closure. The emitted service uses 'leaves New' instead.",
+      "evidence": {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+        "values": "New, Escalated, Closed (Support); New, Closed (Billing)"
+      },
+      "recommendation": "None \u2014 recorded so a reviewer comparing the emitted service against the skill sees the divergence was deliberate."
+    },
+    {
+      "id": "AB-M4S05-05",
+      "severity": "INFO",
+      "title": "No compile check ran, and no offline one is possible",
+      "detail": "The sf CLI apex command group retrieves logs, runs tests and executes anonymous blocks; only sf apex run --file reads a local file, and it executes that file against a required --target-org. This build is design-only with no org on file, so AGENT_CONTRACT.md Gate C check 3 did not run. Reported as not run, never as passed.",
+      "evidence": {
+        "build_mode": "design-only",
+        "org": "none"
+      },
+      "recommendation": "The reviewer's manual acceptance line at the M4 gate is what stands in for it: every non-platform identifier traced to the cited skill or template."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The upstream step's artefacts and this step's code agree on the one string that binds them: MilestoneType.Name 'First Response' matches the milestoneType file M4-S02 wrote, and the skill's gotcha 11 names a mismatch there as a silent zero-row failure.",
+      "domain": "sla",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S02/milestoneTypes/First Response.milestoneType-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The cited skill was corrected today (commit b821294e2) and its code-examples.md now carries a deployable bundle with source-line citations and explicit UNVERIFIED markers, so this step copied identifiers rather than recalling them.",
+      "domain": "skill-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/entitlement-apex-hooks/references/code-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This build deploys no shared Apex foundation \u2014 TriggerHandler, TriggerControl and ApplicationLogger are cited as templates but owned by no step \u2014 so the only Apex in the build ships without a kill switch and without a queryable failure log.",
+      "domain": "automation-governance",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "plan.json steps[].outputs[] search for TriggerControl / ApplicationLogger / Trigger_Setting__mdt",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "A second record-triggered automation on Case is being built concurrently at M4-S03 (a before-save flow) while this step adds an after-update trigger, and nothing in either step's declared outputs records the combined order of execution on a Case save.",
+      "domain": "automation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M4-S03], steps[M4-S05]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "observation": "Nothing in the plan names the Case change that means an agent responded; Q50's answer named the first outbound EmailMessage and D10 replaced the mechanism without replacing the signal.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json clarifications[Q50], decisions[D10]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "requireActiveProcess() takes LIMIT 1 over any active SlaProcess, so in an org with an unrelated active process the run fails on the milestone assertion rather than on a sharper filter; the skill documents no narrower query and none was invented.",
+      "domain": "testing",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/entitlement-apex-hooks/references/code-examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "A second automation on Case now exists in this milestone, and the order in which the before-save flow and this after-update trigger touch a Case save is not recorded anywhere.",
+      "domain": "automation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M4-S03]"
+      },
+      "suggested_followup_agent": "automation-transaction-profiler",
+      "followup_reason": "It is the agent that budgets a whole Case save across flow and Apex, which is the question two concurrent automations on one object raise."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The emitted bundle is the only Apex in the build and the only artefact under a coverage gate, and no compile or test run was possible here.",
+      "domain": "testing",
+      "evidence": {
+        "source": "input",
+        "build_mode": "design-only"
+      },
+      "suggested_followup_agent": "test-class-generator",
+      "followup_reason": "If the M4 gate wants coverage that does not depend on an org's entitlement configuration, it is the agent that designs the seam and the additional cases."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/SKILL.md",
+      "used_for": "The whole domain: CompletionDate is the only completion write, after update on Case, CompletionDate = NULL as the idempotency guard, and the seven questions the design had to answer"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/examples.md",
+      "used_for": "Example 1 \u2014 the two-file shape actually emitted, the trigger body, and the 'left New status' completion signal"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/code-examples.md",
+      "used_for": "The service body (one SOQL, one DML, SaveResult loop), the test class structure and its SeeAllData=true rationale, both -meta.xml shapes, and the documented System.debug fallback for the ApplicationLogger dependency"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/gotchas.md",
+      "used_for": "Gotchas 1-11: IsCompleted not updateable, no SlaExitDate, entitlement rules at step 15, the workflow re-fire, no create() on CaseMilestone or SlaProcess, TimeRemainingInMins is text, partial-success DML, the string match on MilestoneType.Name"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-design-patterns",
+      "path": "skills/apex/apex-design-patterns/references/code-examples.md",
+      "used_for": "The ApexTrigger -meta.xml shape at line 781, and the thin-entry-point rule whose handler form this step could not use"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/metadata-examples.md",
+      "used_for": "\u00a7 9 \u2014 the canonical bulk-safe completion shape (query open milestone, stamp CompletionDate, one DML) and the Workflow/INFO debug events for org-side verification"
+    },
+    {
+      "type": "template",
+      "id": "apex/TriggerHandler.cls",
+      "path": "templates/apex/TriggerHandler.cls",
+      "used_for": "Read to decide whether to subclass it; its TriggerControl.isActive() dependency is what ruled the handler shape out for this build"
+    },
+    {
+      "type": "template",
+      "id": "apex/TriggerHandler.cls-meta.xml",
+      "path": "templates/apex/TriggerHandler.cls-meta.xml",
+      "used_for": "The ApexClass -meta.xml shape copied verbatim into all three class meta files (apiVersion 67.0, status Active)"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "createAccounts(Integer, Map) and createCases(Integer, Id, Map) signatures quoted into the test, and the overrides map that carries Origin and Priority past this build's validation rules"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2 \u2192 Q13 \u2192 Q15 \u2014 'a clock that can pause outside business hours' \u2192 Entitlement milestones",
+      "used_for": "Confirms entitlement milestones as the SLA engine; recorded with D10 that no leaf in Q13-Q15 says who writes CompletionDate, which is why the completion mechanism is a decision rather than a tree branch"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "\u00a7 Apex security idiom by API version (67.0: user mode by default, WITH SECURITY_ENFORCED does not compile) and \u00a7 Gate C, checks 1-3"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-gates",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate B symbol grounding, Gate C's no-offline-compiler statement, and Gate D's computed-confidence table row for 'compile not run'"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 4 borrowed-agent condition 2 and \u00a7 5 'The Apex exception', which settle why no package.xml is written here"
+    },
+    {
+      "type": "probe",
+      "id": "none",
+      "path": "agents/_shared/probes/README.md",
+      "used_for": "No probe was run: build_mode is design-only and no org is on file, so every symbol was grounded against files under the build directory and the repo rather than against a describe response"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It runs this step's four declared acceptance tests and writes tests/M4-S05/results.json, which is what moves the step from built to tested."
+    },
+    {
+      "agent": "automation-transaction-profiler",
+      "because": "M4-S03's before-save flow and this after-update trigger now share a Case save and nothing records their combined cost or order."
+    }
+  ],
+  "extensions": {
+    "artefacts_written": [
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+      "artefacts/M4-S05/deploy-order.md"
+    ],
+    "gate_results": {
+      "gate_b_symbol_grounding": {
+        "unresolved": 0,
+        "note": "Every non-platform symbol traced to a file: CaseMilestone / Case / Entitlement / SlaProcess / MilestoneType fields to the skill's object_reference citations; TestDataFactory.createAccounts and createCases to templates/apex/tests/TestDataFactory.cls; MilestoneType.Name 'First Response' to artefacts/M4-S02/milestoneTypes/; Status values to artefacts/M1-S01/objects/Case/businessProcesses/; Origin and Priority values to artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml and artefacts/M3-S03/settings/Case.settings-meta.xml. No // UNKNOWN: marker was needed."
+      },
+      "gate_c_identifier_provenance": {
+        "status": "passed",
+        "note": "Every non-platform Type.method() in the emitted code is quoted from the cited skill or template: CaseMilestoneService.completeMilestones / completeFirstResponseMilestone, TestDataFactory.createAccounts / createCases, Database.update(list, false), Database.SaveResult.isSuccess / getErrors, Database.Error.getStatusCode / getMessage. The three-argument Database.update overload was NOT used because the skill marks it UNVERIFIED."
+      },
+      "gate_c_compile": {
+        "status": "not-run",
+        "note": "No target_org_alias; build_mode is design-only. There is no offline Apex compiler in the sf CLI."
+      },
+      "gate_c_requirements_deviation": {
+        "status": "reported",
+        "note": "Findings AB-M4S05-01 through -04 are the deviations from what the plan's inputs and the cited skills call for; none is presented as a bonus."
+      },
+      "declared_checker": {
+        "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05",
+        "exit": 0,
+        "stdout": "scanned 3 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN",
+        "strict_exit": 0
+      }
+    },
+    "governor_budget": {
+      "CaseMilestoneTrigger": "0 SOQL, 0 DML of its own \u2014 one static call.",
+      "CaseMilestoneService.completeMilestones": "1 SOQL and at most 1 DML per invocation regardless of Trigger.new size; 0 SOQL and 0 DML when no Case left the opening Status. SOQL rows capped at 10000 by an explicit LIMIT. CPU is two passes over Trigger.new plus one over the milestone list \u2014 linear, no nested iteration.",
+      "CaseMilestoneServiceTest": "Test-only. The bulk method asserts exactly 1 query and at most 1 DML for 200 Cases."
+    },
+    "integration_notes": [
+      "No existing file is modified. The three components are new files.",
+      "Deploy the entitlement process (Setup) before the test class, or CaseMilestoneServiceTest fails loudly on requireActiveProcess() \u2014 which is the correct failure.",
+      "M5-S05 must carry ApexClass members CaseMilestoneService and CaseMilestoneServiceTest and ApexTrigger member CaseMilestoneTrigger in the build-level package.xml."
+    ],
+    "test_plan_summary": {
+      "covered": [
+        "trigger adapter (via a real Case update)",
+        "the leaves-New filter",
+        "the open-milestone query and its three-clause WHERE",
+        "the CompletionDate write and DML",
+        "the SaveResult success path",
+        "the early-return path when no Status changed",
+        "the early-return path when the query returns nothing"
+      ],
+      "not_covered": [
+        "the Database.Error failure branch \u2014 it needs a milestone the running user cannot update, which no test can construct without an org-specific fixture",
+        "the MAX_MILESTONES ceiling warning \u2014 it needs 10000 open milestones"
+      ],
+      "expected_coverage": "not measured; no org and no test run"
+    }
+  }
+}

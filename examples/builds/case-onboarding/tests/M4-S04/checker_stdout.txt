@@ -1,0 +1,6 @@
+WARN  W1  [Case.escalationRules-meta.xml] no rule in this file is active. Nothing escalates until one is.
+INFO  I2  [Case.escalationRules-meta.xml :: Case_SLA_Escalation :: entry 1] 1 escalation action(s) on this entry. The five-actions-per-entry ceiling is not in the Metadata API guide or the App Limits cheat sheet, so this is reported, not enforced.
+INFO  I3  [Case.escalationRules-meta.xml :: Case_SLA_Escalation :: entry 1 :: action 1] minutesToEscalation 480 = 8h. Setup shows hours; the metadata is minutes. Confirm against the agreed SLA.
+INFO  I2  [Case.escalationRules-meta.xml :: Case_SLA_Escalation :: entry 2] 1 escalation action(s) on this entry. The five-actions-per-entry ceiling is not in the Metadata API guide or the App Limits cheat sheet, so this is reported, not enforced.
+INFO  I3  [Case.escalationRules-meta.xml :: Case_SLA_Escalation :: entry 2 :: action 1] minutesToEscalation 480 = 8h. Setup shows hours; the metadata is minutes. Confirm against the agreed SLA.
+OK: no ERROR findings (1 warning(s), 4 info note(s)). Warnings are judgement calls — read them.

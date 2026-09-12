@@ -1,0 +1,13 @@
+{
+  "ran": 2,
+  "files": [
+    {
+      "path": "artefacts/M4-S04/package.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml",
+      "parsed": true
+    }
+  ]
+}

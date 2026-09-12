@@ -1,0 +1,2 @@
+INFO: BusinessHours.settings-meta.xml / always-open calendar 'Severity 1 24x7': SLA clocks on it never pause — intended for 24/7 severity tiers; confirm it is not attached to entitlements that expect business-hour pauses.
+EXIT=0

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowTest xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>A Severity 1 Case arrives on the web form with no account. Asserts the documented no-matching-account fallback: no EntitlementId is stamped, the US Support calendar is stamped anyway, and Priority is derived to High because Priority arrived null.</description>
+    <flowApiName>Case_BeforeSave_StampEntitlementAndCalendar</flowApiName>
+    <label>Web Severity 1 case with no account takes the documented fallback</label>
+    <testPoints>
+        <elementApiName>Start</elementApiName>
+        <parameters>
+            <leftValueReference>$Record</leftValueReference>
+            <type>InputTriggeringRecordUpdated</type>
+            <value>
+                <sobjectValue>{&quot;Subject&quot;:&quot;Production outage reported through the web form&quot;,&quot;Origin&quot;:&quot;Web&quot;,&quot;Status&quot;:&quot;New&quot;,&quot;Severity__c&quot;:&quot;Severity 1&quot;}</sobjectValue>
+            </value>
+        </parameters>
+    </testPoints>
+    <testPoints>
+        <assertions>
+            <conditions>
+                <leftValueReference>$Record.EntitlementId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <errorMessage>A Case with no account was given an EntitlementId; the no-matching-account fallback did not hold.</errorMessage>
+        </assertions>
+        <assertions>
+            <conditions>
+                <leftValueReference>$Record.BusinessHoursId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <errorMessage>No business hours calendar was stamped; the US Support fallback for an unknown region did not fire.</errorMessage>
+        </assertions>
+        <assertions>
+            <conditions>
+                <leftValueReference>$Record.Priority</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>High</stringValue>
+                </rightValue>
+            </conditions>
+            <errorMessage>Priority was not derived to High for a Severity 1 case that arrived with Priority null.</errorMessage>
+        </assertions>
+        <elementApiName>Finish</elementApiName>
+    </testPoints>
+    <testType>WithAssertion</testType>
+</FlowTest>

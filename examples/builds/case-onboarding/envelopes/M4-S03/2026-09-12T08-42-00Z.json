@@ -1,0 +1,97 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T08-42-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-42-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-42-00Z.json",
+  "summary": "Re-test of M4-S03 (before-save record-triggered Flow stamping EntitlementId, BusinessHoursId and Priority on Case) after the third build, which corrected F-38: the org's run-3 mock-deploy message ('The test point for elementApiName Start contains the incompatible parameter value $Record of type InputTriggeringRecordUpdated. Remove the parameter or change the recordTriggerType for the flow.') led the builder to remove the InputTriggeringRecordUpdated parameter from the FlowTest's Start test point, leaving InputTriggeringRecordInitial as the sole test input -- confirmed by direct inspection: the flowtest file contains exactly one InputTriggeringRecordInitial occurrence and zero InputTriggeringRecordUpdated occurrences. Every other declared output (flow, Flow.settings, package.xml, flow-governance-policy.yaml, no-account-fallback-note.md) is byte-identical to build 1 per the runner's own SHA-256 comparison recorded in envelopes/M4-S03/2026-09-12T08-40-00Z.json. Both always-on checks (xml parse, manifest consistency) and all three declared checkers (record-triggered-flow-patterns, flow-element-naming-conventions, flow-governance) exit 0, check-outputs reports ok with nothing missing/empty/malformed, and the one declared manual test remains a well-formed Given/When/Then naming observable outcomes, deferred to the milestone gate. Status moved built -> tested. This run's tests/M4-S03/results.json and summary.md were overwritten in place and supersede the build-2 test record (run 2026-09-12T08-33-09Z), which tested the flow while it still carried the (org-rejected) InputTriggeringRecordUpdated parameter.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared acceptance test either ran to an observed exit code or was correctly classified as manual; both always-on checks completed; check-outputs was ok; no checker was missing and no command test needed the deny-list.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The three-run correction sequence for F-38 (add InputTriggeringRecordInitial in build 2, then remove the co-existing InputTriggeringRecordUpdated in build 3) is fully traceable in the run history and in artefacts/M4-S03/deploy-order.md section 0's three-run table: the settled rule, proven live in both directions by the two mock-deploy rejections, is that a Create-triggered FlowTest takes InputTriggeringRecordInitial only, while Update/CreateAndUpdate take both. Direct grep of the flowtest file this run confirms exactly one InputTriggeringRecordInitial and zero InputTriggeringRecordUpdated occurrences.",
+      "domain": "automation-drift",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three declared checkers reproduced the same verdicts as the prior two test runs (record-triggered-flow-patterns: No issues found; naming: 0 error(s), 4 warning(s); governance: 0 error(s), 2 advisory), which is exactly what an unchanged flow XML plus a corrected-but-still-parseable FlowTest should produce -- none of the three checkers inspects FlowTest parameters, so their stability across all three builds is expected rather than a coverage gap being missed by chance.",
+      "domain": "automation-drift",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M4-S03/check_flow_governance.stdout"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "check_flow_element_naming_conventions.py still reports four W-FAULT-TARGET warnings because every fault path on this before-save flow reconverges on a Decision element instead of a LogFault_<Parent> target; deploy-order.md already records this as a library gap rather than a defect in this artefact. Advisory only, exit 0, unchanged across all three builds.",
+      "domain": "automation-drift",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M4-S03/check_flow_element_naming_conventions.stdout"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "deploy-order.md still carries the derived CasePriority value mapping (Severity 1 -> High, Premier -> High, else Medium) as UNVERIFIED rather than answered by a clarification; unrelated to the F-38 fix and still unresolved by this run, since step-tester does not adjudicate Salesforce design questions. Carried forward to the milestone gate unchanged.",
+      "domain": "requirements-traceability",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/deploy-order.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M4-S03 is tested again with zero failures after the third build, and one manual test remains deferred to the milestone gate.",
+      "domain": "build-orchestration",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/tests/M4-S03/results.json"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "the step is tested and ready to be re-folded into the workbook, traceability matrix and deploy-order compilation now that F-38 is corrected and verified by this run; another doc-keeper invocation (M4-S05) is running concurrently against the same plan.json via the CLI, per the task instructions."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "the run-time rulebook binding this invocation, including the org-write ban"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "the 8-section shape, Process Observations schema, and the confidence rubric step-tester overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence paths and the atomic-write rule for this envelope"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "confirming the canonical refusal enum before determining no refusal applied"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 4 metadata step types and the manifest fail-vs-skip rule; § 5 the five acceptance-test types, checker-scope rules, and the check-outputs precondition"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the shape of acceptance_tests[] and outputs[] read from plan.json"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "the package.xml grammar (one <types> block per type, <members>, <name>, wildcard semantics) the manifest check is judged against"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "deriving Flow/FlowTest/Settings member names from the source-format filenames under artefacts/M4-S03/"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "confirming none of this step's three non-metadata build artefacts (yaml/md notes) needed a coverage-gap exclusion, since they map to no metadata type at all"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "checking the step's manual test against the Given/When/Then shape and the named-observable-outcome requirement"},
+    {"type": "skill", "id": "flow/record-triggered-flow-patterns", "path": "skills/flow/record-triggered-flow-patterns/SKILL.md", "used_for": "ran its checker check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03, exit 0"},
+    {"type": "skill", "id": "flow/flow-element-naming-conventions", "path": "skills/flow/flow-element-naming-conventions/SKILL.md", "used_for": "ran its checker check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03, exit 0 with 4 WARNs"},
+    {"type": "skill", "id": "flow/flow-governance", "path": "skills/flow/flow-governance/SKILL.md", "used_for": "ran its checker check_flow_governance.py --manifest-dir artefacts/M4-S03, exit 0 with 2 advisories"}
+  ],
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the step is now tested (post-F-38 correction, build 3) and ready to be folded into the workbook, traceability matrix and deploy-order compilation"}
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M4-S03/results.json",
+    "tests_run": 5,
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "always-on ElementTree parse of every *.xml/*-meta.xml under artefacts/M4-S03/", "exit_code": null, "verdict": "pass - 4/4 files parsed"},
+      {"name": "manifest", "type": "manifest", "runner": "always-on two-way file<->package.xml consistency check", "exit_code": null, "verdict": "pass - consistent (3/3 members mapped both directions; 3 non-metadata build artefacts correctly excluded)"},
+      {"name": "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py", "type": "checker", "runner": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03", "exit_code": 0, "verdict": "pass - No issues found."},
+      {"name": "skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py", "type": "checker", "runner": "python3 skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03", "exit_code": 0, "verdict": "pass - 0 error(s), 4 warning(s), 0 info"},
+      {"name": "skills/flow/flow-governance/scripts/check_flow_governance.py", "type": "checker", "runner": "python3 skills/flow/flow-governance/scripts/check_flow_governance.py --manifest-dir artefacts/M4-S03", "exit_code": 0, "verdict": "pass - 0 error(s), 2 advisory (matches the step's own declared expected outcome)"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given the flow claims to stamp three fields, when the flow XML is read, then it sets Case.EntitlementId, Case.BusinessHoursId and Case.Priority, each guarded so it writes only into a null value (assumption A2), and the no-matching-account path is the documented fallback rather than a fault. The entitlement-to-process cross-reference is NOT asserted here: check_entitlements_and_milestones.py is carried by M4-S02 at build scope. S3: the flow's <description> carries the 'Owner:' marker and at least 60 characters, its <interviewLabel> is present, its <apiVersion> is 59 or higher and its <runInMode> is DefaultMode - all four are policy requirements check_flow_governance.py enforces, and the reviewer confirms them here as well because the checker reports them by file rather than by field."
+    ],
+    "check_outputs": {"ok": true, "step": "M4-S03", "missing": [], "empty": [], "malformed": []},
+    "rebuild_retest": {
+      "prior_test_run": "2026-09-12T08-33-09Z",
+      "prior_test_verdict": "passed: true",
+      "build3_change": "FlowTest Start test point's InputTriggeringRecordUpdated parameter removed, leaving InputTriggeringRecordInitial as the sole test input (F-38 corrected per MOCK-DEPLOY-M4 run 3)",
+      "unchanged_outputs": [
+        "flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+        "package.xml",
+        "settings/Flow.settings-meta.xml",
+        "flow-governance-policy.yaml",
+        "no-account-fallback-note.md"
+      ]
+    }
+  }
+}

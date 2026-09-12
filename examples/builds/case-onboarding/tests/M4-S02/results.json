@@ -1,0 +1,13 @@
+{
+  "step_id": "M4-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given assumption A27, when artefacts/M4-S02/ is listed, then it holds exactly two entitlementProcesses files (First_Response_Premier, First_Response_Standard) and exactly one milestoneTypes file (First Response), the Premier process carries minutesToComplete 240, and both processes name a <businessHours> that is a <name> in M4-S01's BusinessHours settings file."
+  ]
+}

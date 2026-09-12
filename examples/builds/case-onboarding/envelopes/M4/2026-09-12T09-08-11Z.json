@@ -1,0 +1,927 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T09-08-11Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4/2026-09-12T09-08-11Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4/2026-09-12T09-08-11Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "milestone_id": "M4",
+    "approver_name": "not supplied - the gate line is rendered with a <name> placeholder"
+  },
+  "outcome": "completed",
+  "confidence": "MEDIUM",
+  "summary": "Verified milestone M4 (SLA clocks, entitlements and escalation) across its five documented steps. Verdict ready-with-findings, recorded with set-milestone --status verified. All five steps are documented, the preceding milestone:M3 gate is approved, and no step is blocked - two steps were blocked mid-build (M4-S01 checker-policy, M4-S02 ambiguity) and both blocks were closed at a SKILL rather than at an artefact, with the byte-identical rejected file passing on re-run. All five runnable milestone acceptance tests pass, run verbatim from the build directory: check_business_hours_and_holidays.py exit 0 (one INFO on the always-open Severity 1 24x7 calendar), check_entitlements_and_milestones.py --strict exit 0 (0 error/0 warning/2 info, and the W3 calendar cross-reference --strict exists for did NOT fire, so the assertion is live), check_escalation_rules.py exit 0 (W1 no-rule-active is the intended state under Q47; E2 and E7 both clear), check_entitlement_apex_hooks.py exit 0 (4 files, 0 ERROR 0 WARN), and the always-on manifest check consistent. 35 references resolved, 2 unassertable, 0 unresolved. Every recorded deploy-order position agrees with its artefact type - automation at 8, SLA at 10 - with no backwards metadata dependency. The merged manifest built clean: 6 types, 8 members, uniform version 67.0, no member collision, no version conflict. Ten findings, F-39 to F-48, two HIGH. F-40 is the one the gate must not miss: milestone M4's own goal field promises a Premier EMEA case's first-response clock runs on the EMEA calendar, and both entitlement processes pin businessHours US Support on the process AND on the milestone, so the EMEA calendar M4-S03 stamps reaches only the escalation clock - 17:00 Friday London expires at 21:00 the same Friday London on New York hours. O-M4S02-02 records the divergence; no step reads milestones[].goal, so nobody compared the two. F-39: settings/Entitlement.settings-meta.xml (enableEntitlements) is declared in no step's outputs anywhere in the plan, and the dependency is wider than O-M4S02-01 could see at M4-S02's scope - three of M4's five steps need it, because the flow names $Record.EntitlementId and the Entitlement object and the Apex names CaseMilestone and SlaProcess. Mock deploy run 4's 55/55 does not clear it: sfskills-dev already has the feature on. Six of the ten findings are compositions of facts two different files already recorded accurately and nothing read together. Nine gate decision items presented with a recommendation each; item 9 (the RTM's 3 residual orphans) is CLOSED - check_rtm.py v1.1.5 landed today as 0c585e185 and the build-scope re-run reports 47 rows, 0 orphans, 0 gaps, 0 warnings, so the only residue is stale prose in traceability.md (F-48). The merged manifest deliberately carries NO ApexClass or ApexTrigger member: M4-S05 declares no package.xml per the Apex exception and M5-S05 aggregates its members, but M5-S05 is pending, so until it runs no manifest in this build carries the Apex and a manifest-mode dry run would deploy the SLA clocks without the trigger that stops them (F-43). No sf command, no mock_deploy.py, no org contact, no gate write, no manual test ticked, no artefact touched, nothing deployed.",
+  "confidence_rationale": "Step 10 rubric, MEDIUM branch, on its first named trigger: some references were unclassifiable. Two reference classes could not be closed against this build's own symbol inventory - the flow's Priority values High/Medium, which resolve only against the platform's standard CasePriority value set that this build never declares (F-42), and the Entitlement feature switch that no step owns and on which three of five steps depend (F-39). Neither is an unresolved reference in Step 9's sense, which is why the verdict is ready-with-findings rather than not-ready, and the distinction is stated in the report rather than left to be inferred. HIGH was unreachable for exactly one leg of its four: every step was documented, the merged manifest built without conflict, and every declared acceptance test ran, but 'every reference class resolved with no unclassifiable references' did not hold. No LOW trigger fired: no declared checker was missing, no artefact directory was empty, no step was blocked, and the earlier-milestone inventory built completely from M1-S01 through M3-S04.",
+  "dimensions_compared": [
+    "reference-resolution",
+    "deploy-order",
+    "merged-manifest",
+    "milestone-acceptance-tests",
+    "manual-checklist",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "reference-resolution",
+      "state": "partial",
+      "reason": "35 of 37 references resolved against the build's symbol inventory. Two are unassertable rather than unresolved: Case.Priority values High/Medium resolve against the platform's standard CasePriority value set, which the build never modifies and therefore never declares (F-42), and the Entitlement feature switch enableEntitlements that three of five steps depend on is owned by no step (F-39). Neither is a query failure; both are genuine boundary-of-the-build facts.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Declare standardValueSets/CasePriority as an M5 output so the three values the build relies on become assertable, and declare or name-as-prerequisite settings/Entitlement.settings-meta.xml."
+    },
+    {
+      "dimension": "merged-manifest",
+      "state": "partial",
+      "reason": "The merged manifest covers 6 of M4's deployable component types and 8 members. It carries no ApexClass or ApexTrigger member because M4-S05 declares no package.xml, which is the Apex exception in standards/build-orchestration.md section 5 working correctly - the members belong to the build-level manifest step M5-S05. Ten Apex files under artefacts/M4-S05/ therefore reach no types block in this milestone manifest, deliberately and by contract. Recorded as partial rather than complete because M5-S05 is pending, so the coverage gap is currently live rather than merely deferred.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run M5-S05 (type docs, metadata-builder, depends_on M4-S05) to aggregate the four ApexClass and one ApexTrigger members into the build-level package.xml, then re-derive this milestone manifest if a manifest-mode dry run of M4 alone is wanted."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-39",
+      "severity": "P1",
+      "title": "The merged M4 manifest cannot deploy itself into an org that does not already have Entitlement Management enabled",
+      "detail": "settings/Entitlement.settings-meta.xml carrying enableEntitlements is declared in no step's outputs[] anywhere in plan.json. O-M4S02-01 established that at M4-S02's scope and called it a gate item; what no step could see is that the dependency is wider than M4-S02's own two files. Three of M4's five steps need the feature: M4-S02's two EntitlementProcess files and the MilestoneType are the components themselves; M4-S03's flow names $Record.EntitlementId and queries the Entitlement object in Get_Active_Entitlement; M4-S05's Apex names the CaseMilestone and SlaProcess sObjects. Predicted deploy-time error per skills/devops/deployment-error-diagnosis: INVALID_TYPE: sObject type 'Entitlement' is not supported on the flow's record lookup, plus a feature-not-enabled rejection on the EntitlementProcess components - a failure whose message points at the flow rather than at the missing switch. Mock deploy run 4's 55/55 does not clear this: sfskills-dev already has the feature on, so run 4 proves the artefacts are correct, not that the manifest is self-sufficient. enableMilestoneStoppedTime rides in the same unowned file and gotchas.md #10 wants it on before go-live rather than after the first dispute.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M4-package.xml",
+        "grounded_in": "decisions.md O-M4S02-01; artefacts/M4-S02/deploy-order.md section 5; artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml (object Entitlement, $Record.EntitlementId); artefacts/M4-S05/classes/CaseMilestoneService.cls (CaseMilestone SOQL); reports/MOCK-DEPLOY-M4.md run 4"
+      },
+      "recommendation": "Option (b): record enabling Entitlement Management in Setup as a named deploy prerequisite alongside F-28, with an owner and a date, naming BOTH enableEntitlements (before anything in M4 deploys) and enableMilestoneStoppedTime (before go-live). Same shape the M3 gate already accepted for F-28. Amending an M4 step's outputs[] would force a rebuild of a documented step for a file that changes nothing about the artefacts already proven."
+    },
+    {
+      "id": "F-40",
+      "severity": "P1",
+      "title": "Milestone M4's own goal is not met: a Premier EMEA case's first-response clock runs on US Support hours, not EMEA",
+      "detail": "plan.json milestones[M4].goal states: 'Given a Premier case created at 17:00 London time on a Friday (Q39), when the first-response clock is read, then it is running on the EMEA calendar, shows 4 business hours remaining, does not tick over the weekend.' As built, First_Response_Premier carries <businessHours>US Support</businessHours> on the process AND on its <milestones> block, and a milestone's own businessHours is the most specific of the three sources the engine consults - so the EMEA calendar M4-S03's flow stamps onto Case.BusinessHoursId is overridden for milestone timing and reaches only the escalation clock, whose businessHoursSource is Case. Worked against the goal's own scenario: 17:00 Friday London is 12:00 New York; US Support is 08:00-20:00 New York, so 240 business minutes expire at 16:00 New York = 21:00 the same Friday London - after EMEA close, on the day of arrival, weekend untouched. All three of the goal's clauses fail. business-hours-and-holidays/references/gotchas.md #5 names this exact failure as the one it exists to prevent. O-M4S02-02 records the divergence precisely and names three remedies; what no step could do is compare it to the milestone's own acceptance goal, because no step reads milestones[].goal and no checker asserts against it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml",
+        "grounded_in": "plan.json milestones[M4].goal; decisions.md O-M4S02-02; artefacts/M4-S02/deploy-order.md section 4.4; skills/admin/business-hours-and-holidays/references/gotchas.md #5; artefacts/M4-S01/settings/BusinessHours.settings-meta.xml (US Support 08:00-20:00 America/New_York, EMEA Support 08:00-18:00 Europe/London)"
+      },
+      "recommendation": "Accept the divergence for this phase (O-M4S02-02 option a) AND amend plan.json's M4 goal to state what the build actually promises. Option (b) - a US and an EMEA process per tier - is a re-plan contradicting assumption A27 and quadruples the process count for a two-tier promise; option (c) - businessHoursSource Static on US Support - contradicts Q43's answered value and makes every EMEA case escalate on New York hours, worse than the divergence it fixes. A goal that promises an EMEA clock nobody built will mis-set M5's UAT script, the release note, and the first support manager who reads it. If the Process Owner says EMEA Premier must genuinely count on London hours, this is a re-plan - better discovered at this gate than in UAT."
+    },
+    {
+      "id": "F-41",
+      "severity": "P2",
+      "title": "Nothing in the build selects First_Response_Premier over First_Response_Standard",
+      "detail": "The two processes differ only in minutesToComplete (240 vs 720). Which one a case enters is decided by the SlaProcessId on the Entitlement record its Account holds, and no step in this build creates an Entitlement, an EntitlementTemplate, or anything binding Account.Support_Tier__c to one process rather than the other. The flow's Get_Active_Entitlement filters on AccountId and Status = 'Active' with getFirstRecordOnly true and NO tier filter; an Account with two active entitlements gets whichever the query returns first. workbook/01-objects-and-fields.md CWB-OBJ-009 asserts the binding ('Support_Tier__c is what selects which of these two processes an account's entitlement points at') and M4-S02's deploy-order.md section 5 records that EntitlementTemplate is 'not in this phase' - so both halves are written down, in two different files, and neither says the binding is unimplemented. REQ-040 is therefore delivered as metadata that can express the promise, not as a mechanism that applies it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+        "grounded_in": "the Get_Active_Entitlement recordLookups filters (AccountId, Status Active, getFirstRecordOnly true, no Support_Tier__c filter); artefacts/M4-S02/deploy-order.md section 5; workbook/01-objects-and-fields.md CWB-OBJ-009; traceability.md REQ-040"
+      },
+      "recommendation": "Record entitlement creation and its per-tier SlaProcessId as a data/Setup prerequisite with a named owner - cheapest and honest - or scope an EntitlementTemplate plus a tier-aware assignment in a later phase."
+    },
+    {
+      "id": "F-42",
+      "severity": "P2",
+      "title": "The flow's Priority values resolve against nothing in this build",
+      "detail": "Assignment_Priority_High writes <stringValue>High</stringValue> and Assignment_Priority_Medium writes Medium. No standardValueSets/CasePriority exists anywhere under artefacts/ - verified by exhaustive grep and independently recorded by D-M4S03-03 and M3-S03's web-to-case-form-contract.md section 7. The contrast with CaseOrigin is the point: M1-S01 DID ship standardValueSets/CaseOrigin.standardValueSet-meta.xml because the build changes it; it did not ship CasePriority because the build does not, which is legitimate and is why this is classed unassertable rather than unresolved. But four separate places now depend on the target org's untouched CasePriority values with nothing able to assert them: this flow's two writes, M3-S03's two <casePriority>Medium</casePriority> intake defaults, M3-S01's Priority_Required_On_Agent_Save, and CaseMilestoneServiceTest.caseOverrides' 'Priority' => 'Medium'. If a target org has restricted or renamed CasePriority - a common hardening step - the flow writes an invalid value and the insert fails.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+        "query": "grep -rn 'Priority' --include=*.xml artefacts/ ; find artefacts -name 'CasePriority*' (no match)",
+        "grounded_in": "decisions.md D-M4S03-03 ('no CasePriority value set exists anywhere under artefacts/'); artefacts/M3-S03/settings/Case.settings-meta.xml lines 25, 35; artefacts/M3-S01/objects/Case/validationRules/Priority_Required_On_Agent_Save.validationRule-meta.xml"
+      },
+      "recommendation": "Either declare standardValueSets/CasePriority as an M5 output so the build asserts the three values it relies on, or record 'the target org's CasePriority still carries High and Medium' as a one-line pre-deploy check. Decide it together with gate decision item 6, which is the separate question of WHICH value each case should get."
+    },
+    {
+      "id": "F-43",
+      "severity": "P2",
+      "title": "Between now and M5-S05, no manifest in this build carries M4-S05's Apex",
+      "detail": "The Apex exception is correctly applied: M4-S05 declares no package.xml because apex-builder's Output Contract names none, section 4 borrowed-agent condition 2 forbids declaring an output the owning agent does not produce, and the step's always-on manifest check correctly recorded skipped-not-applicable naming M5-S05. The gap is one of timing. M5-S05 is pending, so a manifest-mode validation of MILESTONE-M4-package.xml today deploys the entitlement processes, the milestone type and the before-save flow WITHOUT the trigger that completes their milestones - precisely the half-build the milestone goal's second sentence warns against. Mock deploy runs 1 to 4 used source mode, which copies the tree whole and therefore did include the Apex, which is why run 4 reached 55 components; a manifest-mode run of this file would deploy 8 members and no Apex. Same shape as F-18 (M2's stale merged manifest before any manifest-mode deploy): this build has now twice produced a merged manifest whose coverage differs from what the operator actually validated.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M4-package.xml",
+        "count": 8,
+        "grounded_in": "standards/build-orchestration.md section 5 'The Apex exception'; plan.json steps[M4-S05].acceptance_tests[2]; plan.json steps[M5-S05].status = pending; reports/MOCK-DEPLOY-M4.md run 4 (source mode, 55 components)"
+      },
+      "recommendation": "Nothing required for the gate. State on the merged manifest and in M5's plan that MILESTONE-M4-package.xml is deliberately Apex-free and that M5-S05 closes it. Anyone wanting a manifest-mode dry run of M4 before M5-S05 must hand-add the four ApexClass and one ApexTrigger members; this agent did not, because inventing members the contract assigns to another step is what section 4 condition 2 forbids."
+    },
+    {
+      "id": "F-44",
+      "severity": "P2",
+      "title": "The escalation's assignedToTemplate notification may reach nobody - the Tier 2 queue has no mailbox",
+      "detail": "Both escalation actions set assignedTo Tier_2_Engineering with assignedToTemplate case_intake/Case_Escalated_To_Tier2, a template that mails the NEW owner - the Tier 2 queue. But artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml has doesSendEmailToMembers false and NO <email> element at all. M4-S04's deploy-order.md U3 records this as UNVERIFIED at M4-S04's scope ('where an assignedToTemplate email goes when the target queue has no <email> and doesSendEmailToMembers is false'); the queue is M2-S04's artefact, so only a milestone-or-wider read can close it, and the answer is that the queue has no mailbox. The M2 gate already noted it from the other side ('checklist line 4 (Tier 2 mailbox) NOT ticked - artefact has no <email>') and D-M2S04-02 deliberately refused to invent an address. Nobody has composed the two. As built, REQ-023's 'Tier 2 receive Support cases that go untouched for 8 business hours' is delivered as an ownership change Tier 2 must discover from a list view - consistent with REQ-023's own 'pick work from a list' but not with REQ-033's 'Tier 2 receives a named handover notice'.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+        "grounded_in": "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml (assignedToTemplate x2); artefacts/M4-S04/deploy-order.md U3; decisions.md D-M2S04-02; plan.json human_gates milestone:M2 notes ('checklist line 4 (Tier 2 mailbox) NOT ticked'); traceability.md REQ-023, REQ-033"
+      },
+      "recommendation": "Name a Tier 2 mailbox and add <email> to the queue - a one-line M2 amendment, which re-opens an accepted milestone, so weigh that - or accept that the handover notice reaches only the outgoing owner and record REQ-033 as half-delivered. Decide it in one pass with gate decision item 1, which is the same question for the Billing queue."
+    },
+    {
+      "id": "F-45",
+      "severity": "P2",
+      "title": "A split deploy that ships position 8 before position 10 will fail its own Apex tests",
+      "detail": "Settings:Flow sets enableFlowDeployAsActiveEnabled true and the flow is <status>Active</status>, so a production deploy of an active flow runs the org's Apex tests (O-M4S03-02, quoting api_meta.txt L116877). The build's only test, CaseMilestoneServiceTest, is @IsTest(SeeAllData=true); requireActiveProcess() asserts an active SlaProcess exists and the first test method asserts an open First Response CaseMilestone was generated for a Case it inserts. Both depend on the position-10 entitlement process being in the org and active. O-M4S03-02 records the active-flow/Apex-test coupling; D-M4S05-04 records the test's org prerequisites; neither composes them with the deploy-order buckets, and the composition is where the risk lives. Inside one Metadata API request everything lands before tests run and the path is sound; across two requests ordered by the ten-slot sequence, position 8 runs tests position 10 has not yet satisfied and the deploy rolls back naming the Apex rather than the ordering. Smaller observation in the same class, not raised to its own finding: requireActiveProcess()'s SOQL is SELECT Id, Name FROM SlaProcess WHERE IsActive = true LIMIT 1 and does not filter on the process carrying a First Response milestone, though its assertion message says it must - the over-claim is caught one assertion later by the before.isEmpty() check, so the test still fails loudly rather than silently; the message is imprecise, not the logic.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+        "grounded_in": "decisions.md O-M4S03-02, D-M4S05-04; artefacts/M4-S03/settings/Flow.settings-meta.xml; workbook/06-automation.md CWB-AUT-022, CWB-AUT-028 (position 8) and CWB-AUT-015 to 017 (position 10); skills/devops/flow-deployment-activation-ordering"
+      },
+      "recommendation": "Deploy M4 as one Metadata API request, or state in the deploy-order note that positions 8 and 10 of this milestone must travel together to production. Shares one remedy with F-46 - decide both once."
+    },
+    {
+      "id": "F-46",
+      "severity": "INFO",
+      "title": "The position-8 flow reads by name the BusinessHours records position 10 creates",
+      "detail": "No metadata reference crosses backwards - CWB-AUT-026 records the direction explicitly and correctly ('the flow's conditions name fields from M1-S01 (deploy-time dependency) and read M4-S01/M4-S02 calendars and entitlement processes at run time only') - so nothing fails at deploy. But Get_EMEA_Support_Calendar and Get_US_Support_Calendar filter on Name at run time. In a split deploy, any Case created between request 8 and request 10 gets NO BusinessHoursId stamped, and the escalation rule's entry 2 (businessHoursSource Case) then falls back to the org default for those cases, silently. M4-S04's deploy-order.md U2 asks exactly this question - what entry 2 does when Case.BusinessHoursId is null - and leaves it UNVERIFIED.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+        "grounded_in": "the two BusinessHours recordLookups (filters on Name); workbook/06-automation.md CWB-AUT-026; artefacts/M4-S04/deploy-order.md U2"
+      },
+      "recommendation": "Same as F-45: one request, or an explicit statement that positions 8 and 10 travel together. The two findings share one remedy."
+    },
+    {
+      "id": "F-47",
+      "severity": "P2",
+      "title": "The Billing-queue mail loop: notifyCaseOwner on a Billing-owned case posts into a live Email-to-Case intake address",
+      "detail": "Listed for register completeness; documented in full at O-M4S04-01 and presented as gate decision item 1. notifyCaseOwner is true on both escalation actions; the case owner at escalation time is whichever queue M3-S04's assignment rule chose; the Billing queue's <email> is billing@acme.example; and M3-S03 configures that same address as a live Email-to-Case routing address. An escalation notification to a Billing-owned case therefore posts into an intake address, creating a new case that escalates 480 minutes later and posts again. Severity is split deliberately: the rule ships <active>false</active> so nothing loops on deploy, making this LOW as deployed and HIGH the moment checklist line 4 is signed. F-36's fix is what made it real - before notifyToTemplate was added, notifyCaseOwner could not send mail at all. Recorded here at P2 as the as-deployed severity; the activation severity is stated in the report.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Billing.queue-meta.xml",
+        "grounded_in": "decisions.md O-M4S04-01 (closing O-M3S04-02), D-M2S04-04, D-M4S04-01; artefacts/M3-S03/settings/Case.settings-meta.xml line 32; artefacts/M4-S04/escalation-activation-runbook.md section 4 R2"
+      },
+      "recommendation": "O-M4S04-01 option (c) - give the Billing queue a notification address that is not an intake address - paired with F-44's Tier 2 mailbox as ONE decision, because both are the same question (which mailboxes do these queues notify) deferred for the same reason. If no address is forthcoming, choose option (b) and record explicitly that escalation is a silent ownership change this phase, so M5's UAT script tests for a list-view handover rather than an email."
+    },
+    {
+      "id": "F-48",
+      "severity": "INFO",
+      "title": "Documentation staleness: traceability.md still reports 3 RTM orphans; there are now 0",
+      "detail": "traceability.md section 'Linter result - after M4-S05' states 'The 3 orphans that remain are all M4-S05's own Apex classes'. Re-run verbatim by this agent from the build directory: 'traceability.md: 47 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 0 warning(s)', exit 0. The fix landed today as 0c585e185 - check_rtm.py v1.1.5, 'a row's artefact_paths entries cover the components their files produce (Apex classes shipped by a one-row-per-requirement step; M4-S05 doc-keeper: 3 false orphans -> 0; live build 47 rows, 0 orphans)', gotcha 19. This is the fourth instalment of the same skill-depth fix (v1.1.2 -> v1.1.3 -> v1.1.4 -> v1.1.5), each closing false orphans this build's doc-keeper runs reported. It closes gate decision item 9: there is nothing for the gate to decide. The only residue is the prose in traceability.md, which the doc keeper rewrites at its next touch.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts",
+        "count": 0,
+        "grounded_in": "git log skills/admin/requirements-traceability-matrix/ -> 0c585e185 (v1.1.5); skills/admin/requirements-traceability-matrix/SKILL.md line 44 (version 1.1.5); decisions.md O-M4S01-03, O-M3S04-03, O-M3S02-05 (the three earlier instalments)"
+      },
+      "recommendation": "Record the closure at the gate in one sentence and move on. No rebuild, no amendment. Worth the sentence because it is the fourth instalment of one skill-depth fix driven entirely by this build's doc-keeper runs."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "skill-flywheel",
+      "observation": "Three of the five blocks or org rejections in this milestone were closed at a skill rather than at an artefact, and in two of the three the file that was rejected is the file that now passes, byte-identical with SHA-256 confirmed at each run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 3,
+        "detail": "D-M4S01-01 (admin/business-hours-and-holidays v1.0.1, commit 5b206697a), D-M4S02-01 (admin/entitlements-and-milestones v1.1.2, commit a18f9164d), D-M4S04-01 (admin/escalation-rules, the F-36 notifyToTemplate rule)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "builder-restraint",
+      "observation": "The builders refused to invent a value or a component at least five times in this milestone, each refusal recorded with its reasoning and its rejected alternatives, so every placeholder in the build is a labelled placeholder.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 5,
+        "detail": "D-M4S01-02 (no fabricated holiday owner), D-M4S04-02 (no invented Severity 1 threshold), D-M4S04-04 (no second email template), D-M2S04-02 held across milestones (no Tier 2 mailbox address), D-M4S02-01 rejected repair A (no WorkflowAlert that exists in no step)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "apex-quality",
+      "observation": "CaseMilestoneService is genuinely good Apex: one query and one DML regardless of batch size, a three-clause WHERE doing selection and idempotency at once, Database.update(records, false) with its results array actually iterated, WITH USER_MODE stated at apiVersion 67.0 where it is redundant precisely so a later version downgrade cannot change behaviour silently, and a header comment explaining why after update is a correctness requirement rather than a style choice.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S05/classes/CaseMilestoneService.cls",
+        "detail": "check_entitlement_apex_hooks.py --manifest-dir artefacts: scanned 4 Apex file(s), 0 ERROR, 0 WARN"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-scope",
+      "observation": "Both cross-referential checkers in this milestone are declared at the scope where they can actually assert, each with the fixture evidence for why in its own test description, so section 5's cross-referential-checker rule is being followed rather than merely cited.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "check_escalation_rules.py at scope build because E7 matches assignedTo against queue developer names that are M2-S04 artefacts; check_entitlements_and_milestones.py --strict at scope build because W3 needs M4-S01's BusinessHours settings file, and W6 is the settings-file-absent case so the two are distinguishable"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "cross-step-composition",
+      "observation": "Six of this run's ten findings are not new facts but joins: every component fact was already recorded accurately by a builder or the doc keeper, in two different files, and nothing read both.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M4-REPORT.md",
+        "count": 6,
+        "detail": "F-44 (U3 asks whether the Tier 2 queue has a mailbox; M2-S04's artefact answers it), F-45 (O-M4S03-02 names the active-flow Apex-test coupling; D-M4S05-04 names the test's org prerequisites), F-40 (plan.json states M4's goal; O-M4S02-02 states why it cannot be met), plus F-39, F-41, F-46. Suggested convention: a step-level agent recording an UNVERIFIED item names the file it expects the other half to be answered in."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "acceptance-criteria",
+      "observation": "plan.json's M4 goal was never re-read after the design diverged from it: no step reads milestones[].goal, no checker asserts against it, and the doc keeper's rows trace to REQ ids rather than to the milestone goal, so a milestone goal that nothing verifies is effectively a comment.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "milestones[M4].goal promises an EMEA first-response clock; both entitlement processes pin businessHours US Support on the process and on the milestone. See F-40."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-currency",
+      "observation": "A checker fix landed mid-verification and changed a result this milestone's own documentation asserts, the fourth such fix in four milestones, so a build document's recorded checker output currently has a shelf life measured in hours.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+        "detail": "v1.1.5 commit 0c585e185 landed today; traceability.md's 'after M4-S05' section says 3 orphans, the re-run says 0 (F-48). v1.1.2, v1.1.3 and v1.1.4 each did the same for M2/M3, M3 and M4-S01 respectively. Suggested convention: record the checker version alongside the output, so a reader can tell a stale result from a wrong one."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "build-layer-scale",
+      "observation": "plan.json carries no scale field, so the build is project by default, and no sizing line with D/S/O/X counts was printed anywhere - which means there are no counts for the tier to disagree with, rather than a disagreement to flag.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "scale absent; no 'scale: <tier> (D=.. S=.. O=.. integration=..)' line in plan.json, CLARIFICATIONS.md or the clarify envelopes. The tier is almost certainly right - 5 milestones, 22 steps, ~15 metadata types, 3 objects - so no re-tier is implied. This build predates standards/build-orchestration.md section 3.1 and is the canonical example that section was written against; the observation is for the layer, not for this build."
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-hygiene",
+      "observation": "Three runs[] entries in M4 carry a started timestamp in the filesystem-safe dash form where the field wants ISO hh:mm:ss, which is schema-passing and cosmetic but makes runs[] unsortable by time against the correctly-formed entries beside them.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 3,
+        "detail": "steps[M4-S04].runs[2].started = '2026-09-12T07-35-25Z'; steps[M4-S05].runs[1].started = '2026-09-12T08-12-19Z'; steps[M4-S05].runs[2].started = '2026-09-12T08-24-48Z'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "sla-semantics",
+      "observation": "Whether a midnight-to-midnight start and end pair on all seven days means open all day or closed cannot be settled from documents, and the skill's own prescribed resolution is an org round-trip this design-only build cannot make.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+        "detail": "O-M4S01-02. Three sources point one way (gotchas.md #1, examples.md Example 1 since 5b206697a, and the Metadata API guide documenting 00:00:00.000Z as 'midnight'); gotchas.md #6 still marks the PAIR UNVERIFIED. Remedy is holiday-maintenance-runbook.md section 5's clock test against a sandbox."
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "manifest-grammar",
+      "observation": "Whether the EntitlementProcess file names and manifest members survive a retrieve is unproven, because the Metadata API guide says the file name is slaProcess.NameNorm - lowercased - while the plan declared and this merged manifest carries the mixed-case form.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M4-package.xml",
+        "detail": "artefacts/M4-S02/deploy-order.md sections 4.1 and 4.2, citing api_meta.txt:59078-59084. Mock deploy run 4 accepted the mixed-case members, which is evidence but not proof - a deploy is not a retrieve. The merged manifest inherits the uncertainty; the remedy is one retrieve after the first deploy."
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "settings-deploy",
+      "observation": "Whether a one-element FlowSettings file leaves the org's other twelve values untouched or resets them is not stated in either cited skill, and Settings:Flow is a member of the merged manifest, so this is the merged manifest's uncertainty too.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/settings/Flow.settings-meta.xml",
+        "detail": "O-M4S03-02, citing api_meta.txt L116824-116826 (one settings file per settings component, and nothing about partial writes). Confirm against a sandbox retrieve before a production deploy."
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "flowtest-grammar",
+      "observation": "The CreateAndUpdate half of the F-38 rule is inferred rather than observed, and it is the only flywheel record in M4 with no closing commit - the skill fix is still pending.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml",
+        "detail": "D-M4S03-01. Create -> InputTriggeringRecordInitial only is proven over two org rejections (MOCK-DEPLOY-M4.md runs 2 and 3); CreateAndUpdate -> both is inferred from the guide's update-triggered sample and run 3's error text, never observed. No flow in this build is CreateAndUpdate, so it costs nothing here and will cost the next build that hits it."
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "deployment-risk",
+      "observation": "deployment-risk-scorer is the agent that would have caught F-39 mechanically - a manifest whose components need a feature switch the manifest does not carry - and would put a number on the active-flow Apex-test coupling in F-45.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M4-package.xml",
+        "detail": "Recommendation only; this agent invoked nothing. Needs an org for the human to score the merged manifest against."
+      },
+      "suggested_followup_agent": "deployment-risk-scorer",
+      "followup_reason": "Because it scores a manifest against a real org, which is the check that would have caught F-39 mechanically - a merged manifest whose components need a feature switch the manifest does not carry - and it would put a number on F-45 rather than a paragraph."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "release-readiness",
+      "observation": "release-readiness-reviewer is not yet due: M4 is not the last milestone before a release, M5 is, and M5 carries the sandbox proof, the UAT pack and the build-level manifest that closes F-43.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "detail": "plan.json milestones[M5].status = pending, steps M5-S01 to M5-S05. Run it after M5, not now."
+      },
+      "suggested_followup_agent": "release-readiness-reviewer",
+      "followup_reason": "Because M5, not M4, is the last milestone before a release, and M5 carries the sandbox proof, the UAT pack and the build-level manifest that closes F-43 - so this agent has the whole picture then and only half of it now."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation: never write to an org, never chain into another agent"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "8-section shape, the Process Observations requirement, the confidence rubric, and the Apex security idiom by API version used to read CaseMilestoneService's WITH USER_MODE at 67.0"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence paths, the atomic-write rule, dimensions_skipped states, and the declared --no-persist deviation recorded in the report section 14"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the refusal enum - checked against Step 1 preconditions and the manifest merge; none raised this run"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (this report is written not rendered, recorded with set-milestone --report-path), section 3 (the three gate:approve conditions and the blocked-step rule), section 3.1 (scale and the missing sizing line), section 4 (borrowed-agent conditions 1 and 2, agent eligibility), section 5 (acceptance-test types, checker scope, cross-referential checkers, and The Apex exception governing M4-S05's absent manifest), section 7 (this agent runs after the milestone's steps and returns for the human)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the milestone, step-status and human_gates fields this agent reads"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "this envelope's shape, validated with scripts/validate_envelope.py before returning"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the manifest grammar and the single <version> element the merged milestone package.xml must carry, and what one deploy request does and does not carry across"
+    },
+    {
+      "type": "skill",
+      "id": "devops/permission-set-deployment-ordering",
+      "path": "skills/devops/permission-set-deployment-ordering/SKILL.md",
+      "used_for": "the objects-and-fields-before-permission-sets constraint, checked against M4's order - no PermissionSet or Profile instance exists in M4, so the class is reported as having no instances rather than as clean"
+    },
+    {
+      "type": "skill",
+      "id": "devops/flow-deployment-activation-ordering",
+      "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md",
+      "used_for": "where automation sits in the deploy order and what a Flow's Active state means on arrival - the basis of the position-8 observations and of F-45's active-flow Apex-test coupling"
+    },
+    {
+      "type": "skill",
+      "id": "devops/deployment-error-diagnosis",
+      "path": "skills/devops/deployment-error-diagnosis/SKILL.md",
+      "used_for": "the deploy-time error each unresolved reference predicts, which is what turns F-39 from a name in a list into something the human can act on"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pre-deployment-checklist",
+      "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+      "used_for": "the go/no-go items report sections 11 and 13 must cover so 'verified' means checked rather than merely quiet"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the tickable Given/When/Then form every line of the seven-line manual checklist must take for someone who was not in the build loop"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "stating requirement closure in the same REQ ids traceability.md carries, and re-running check_rtm.py v1.1.5 to settle gate decision item 9 and raise F-48"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py",
+      "used_for": "milestone acceptance test M4-T1, run verbatim from the build directory at --manifest-dir artefacts: exit 0 with one INFO on the always-open Severity 1 24x7 calendar"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py",
+      "used_for": "milestone acceptance test M4-T2, run verbatim at --manifest-dir artefacts --strict: exit 0, 0 error 0 warning 2 info, with the W3 calendar cross-reference not firing"
+    },
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/scripts/check_escalation_rules.py",
+      "used_for": "milestone acceptance test M4-T3, run verbatim at --manifest-dir artefacts: exit 0 with W1 (no rule active, intended under Q47), 2x I2 and 2x I3; E2 and E7 both clear"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py",
+      "used_for": "milestone acceptance test M4-T4, run verbatim at --manifest-dir artefacts: scanned 4 Apex files, 0 ERROR 0 WARN"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "deployment-risk-scorer",
+      "because": "it would have caught F-39 mechanically - a merged manifest whose components need a feature switch the manifest does not carry - and would put a number on F-45's active-flow Apex-test coupling, once the human has an org to score reports/MILESTONE-M4-package.xml against. Recommendation only; not invoked."
+    },
+    {
+      "agent": "release-readiness-reviewer",
+      "because": "M4 is not the last milestone before a release - M5 is, and it carries the sandbox proof, the UAT pack and the build-level manifest that closes F-43 - so this is due after M5, not now. Recommendation only; not invoked."
+    }
+  ],
+  "extensions": {
+    "milestone": "M4",
+    "milestone_title": "SLA clocks, entitlements and escalation",
+    "report_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M4-REPORT.md",
+    "report_path_disambiguation": "The top-level report_path field is THIS agent's own markdown report under envelopes/M4/. The acceptance report at reports/MILESTONE-M4-REPORT.md is a different document and its path is the one here under extensions. Conflating the two is how a milestone report gets claimed as the run's own report.",
+    "merged_manifest_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M4-package.xml",
+    "verdict": "ready-with-findings",
+    "passed": false,
+    "passed_note": "passed is the boolean projection of the Step 9 verdict and nothing softer: true only for ready-for-gate. ready-with-findings projects to false. That is not a statement that M4 failed - all five runnable acceptance tests pass and no step is blocked - it is a statement that there are findings a human must weigh before approving.",
+    "verdict_grounds": [
+      "No Step 9 not-ready trigger is present: no unresolved reference, no ordering contradiction, no failing acceptance test, no blocked step.",
+      "F-42 is explicitly NOT counted as an unresolved reference: High and Medium are values of the platform's standard CasePriority value set, which this build never modifies and therefore never needed to declare - the same reason M1-S01 DID declare CaseOrigin (it changed it). F-42 is unassertable, not unresolved.",
+      "ready-for-gate is unreachable because it would tell the human there is nothing to decide, and F-39 and F-40 are both findings the human must weigh - F-40 contradicts the milestone's own goal field."
+    ],
+    "blocked_steps": [],
+    "blocked_steps_note": "None at verification time. Two steps were blocked mid-build and both blocks were closed at a skill rather than at an artefact: M4-S01 (checker-policy, admin/business-hours-and-holidays v1.0.1, commit 5b206697a) and M4-S02 (ambiguity, admin/entitlements-and-milestones v1.1.2, commit a18f9164d). Approving this gate therefore accepts no step-level gap - unlike the M3 gate, which was signed over the blocked M3-S05.",
+    "preceding_gate": {
+      "name": "milestone:M3",
+      "status": "approved",
+      "at": "2026-09-12T06:24:17Z",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)"
+    },
+    "steps": [
+      {
+        "id": "M4-S01",
+        "type": "sla",
+        "agent": "metadata-builder",
+        "status": "documented",
+        "builds": 2,
+        "deploy_position": "10 of 10 (SLA)",
+        "artefacts": [
+          "settings/BusinessHours.settings-meta.xml",
+          "holiday-maintenance-runbook.md",
+          "package.xml",
+          "deploy-order.md"
+        ]
+      },
+      {
+        "id": "M4-S02",
+        "type": "sla",
+        "agent": "metadata-builder",
+        "status": "documented",
+        "builds": 2,
+        "deploy_position": "10 of 10 (SLA)",
+        "artefacts": [
+          "entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml",
+          "entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml",
+          "milestoneTypes/First Response.milestoneType-meta.xml",
+          "milestone-completion-decision.md",
+          "package.xml",
+          "deploy-order.md"
+        ]
+      },
+      {
+        "id": "M4-S03",
+        "type": "automation",
+        "agent": "metadata-builder",
+        "status": "documented",
+        "builds": 3,
+        "deploy_position": "8 of 10 (automation)",
+        "artefacts": [
+          "flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+          "flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml",
+          "settings/Flow.settings-meta.xml",
+          "flow-governance-policy.yaml",
+          "no-account-fallback-note.md",
+          "package.xml",
+          "deploy-order.md"
+        ]
+      },
+      {
+        "id": "M4-S04",
+        "type": "sla",
+        "agent": "metadata-builder",
+        "status": "documented",
+        "builds": 2,
+        "deploy_position": "10 of 10 (SLA)",
+        "artefacts": [
+          "escalationRules/Case.escalationRules-meta.xml",
+          "escalation-activation-runbook.md",
+          "escalation-monitoring-note.md",
+          "package.xml",
+          "deploy-order.md"
+        ]
+      },
+      {
+        "id": "M4-S05",
+        "type": "automation",
+        "agent": "apex-builder",
+        "status": "documented",
+        "builds": 2,
+        "deploy_position": "8 of 10 (automation)",
+        "artefacts": [
+          "triggers/CaseMilestoneTrigger.trigger",
+          "triggers/CaseMilestoneTrigger.trigger-meta.xml",
+          "classes/CaseMilestoneService.cls",
+          "classes/CaseMilestoneService.cls-meta.xml",
+          "classes/CaseMilestoneServiceTest.cls",
+          "classes/CaseMilestoneServiceTest.cls-meta.xml",
+          "classes/TestDataFactory.cls",
+          "classes/TestDataFactory.cls-meta.xml",
+          "deploy-order.md"
+        ],
+        "manifest": "none, by contract - the Apex exception; members aggregated by M5-S05"
+      }
+    ],
+    "reference_totals": {
+      "resolved_in_this_milestone": 8,
+      "resolved_in_earlier_milestones": 15,
+      "resolved_platform": 12,
+      "unassertable": 2,
+      "unresolved": 0,
+      "unclassifiable": 0
+    },
+    "reference_resolution": [
+      {
+        "class": "Validation rule field references",
+        "instances": 0,
+        "outcome": "no instance in M4 - M3-S01 owns them"
+      },
+      {
+        "class": "Assignment rule criteria",
+        "instances": 0,
+        "outcome": "no instance in M4 - M3-S04 owns them"
+      },
+      {
+        "class": "Permission set grants",
+        "instances": 0,
+        "outcome": "no instance in M4 - M2 owns them"
+      },
+      {
+        "class": "Flow field references",
+        "instances": 17,
+        "outcome": "15 resolved (Account.Region__c + EMEA/US, Account.Support_Tier__c + Premier, Case.Severity__c + 'Severity 1', Case.Origin + Email-Support/Email-Billing all in M1-S01; Case.AccountId/EntitlementId/BusinessHoursId/Priority and objects Account/Entitlement/BusinessHours platform), 2 unassertable (Priority values High and Medium - F-42)"
+      },
+      {
+        "class": "Entitlement process milestones",
+        "instances": 6,
+        "outcome": "all 6 resolved - milestoneName 'First Response' x2 within M4-S02 itself, businessHours 'US Support' x4 against M4-S01's settings file. Asserted mechanically too: W3 in check_entitlements_and_milestones.py --strict fires on a calendar name absent from the settings file and did not fire"
+      },
+      {
+        "class": "Layout and path assignments",
+        "instances": 0,
+        "outcome": "no instance in M4 - M1-S02 owns them"
+      },
+      {
+        "class": "Escalation rule criteria and actions (not in the AGENT.md Step 3 table; added because M4 is the first milestone to carry the type)",
+        "instances": 10,
+        "outcome": "all 10 resolved - Case.Severity__c + 'Severity 1' and Case.Status + 'Closed' in M1-S01 (Closed is in BOTH business processes, so the criterion is record-type-independent), Tier_2_Engineering in M2-S04 in the developer-name form E7 requires, case_intake/Case_Escalated_To_Tier2 x4 in M3-S02 with both the EmailFolder and the folder-qualified EmailTemplate members in its manifest"
+      },
+      {
+        "class": "Apex symbol references (not in the Step 3 table; added for the same reason)",
+        "instances": 4,
+        "outcome": "all 4 resolved - MILESTONE_TYPE_NAME 'First Response' matches M4-S02's MilestoneType fullName exactly including the space, across three independent spellings; OPENING_STATUS 'New' is in both business processes; CaseMilestone.CompletionDate and MilestoneType.Name are platform"
+      }
+    ],
+    "operator_cross_checks": {
+      "1_m4s02_processes_reference_calendars_in_m4s01": "PASS - 4 references, all US Support, all resolving to a <name> in M4-S01 carrying <default>true</default>. But see F-40: resolving is not the same as being right.",
+      "2a_m4s03_stamps_calendar_names_that_exist": "PASS - Get_EMEA_Support_Calendar filters Name EqualTo 'EMEA Support', Get_US_Support_Calendar filters Name EqualTo 'US Support'; both are <name>s in M4-S01.",
+      "2b_m4s03_stamps_entitlement_names_that_exist": "NO METADATA REFERENCE EXISTS - the flow names no EntitlementProcess. Get_Active_Entitlement queries Entitlement WHERE AccountId = ... AND Status = 'Active', getFirstRecordOnly true, and assigns .Id to $Record.EntitlementId. The link to First_Response_Premier/Standard is a DATA binding (Entitlement.SlaProcessId) that no step in this build creates - F-41.",
+      "2c_m4s03_priority_values_in_the_casepriority_set": "UNASSERTABLE - no standardValueSets/CasePriority anywhere under artefacts/ - F-42.",
+      "3a_m4s04_queue_resolves": "PASS - assignedTo Tier_2_Engineering x2 in the developer-name form; artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml exists (M2 accepted). E7 fires only at build scope, which is why the test is declared scope: build.",
+      "3b_m4s04_templates_resolve": "PASS - case_intake/Case_Escalated_To_Tier2 x4 (assignedToTemplate x2, notifyToTemplate x2); M3-S02 ships the emailFolder and the template, and its package.xml names both members. M3 accepted.",
+      "4_m4s05_milestone_name_matches_m4s02_milestonetype": "PASS exactly - 'First Response' in CaseMilestoneService.MILESTONE_TYPE_NAME, in CaseMilestoneServiceTest.MILESTONE_TYPE, as the MilestoneType file stem, and as the merged manifest member. Byte-identical including the space.",
+      "5_flow_and_trigger_share_a_case_save": "THEY DO NOT CONTEND, and that is the design - see order_of_execution below.",
+      "6_no_senderemail_equals_a_routing_address": "PASS - the build's only senderEmail and replyToEmail are both support-noreply@acme.example (M3-S04 autoResponseRules); the two routing addresses are support@acme.example and billing@acme.example. Neither equals either. D-M3S02-04's decision holds and the M3 gate's rejection of the replyToEmail = support@ alternative still stands. A DIFFERENT address collision is live and it is M4's own - F-47, the Billing queue's <email> against the billing@ routing address."
+    },
+    "order_of_execution": {
+      "why_they_never_contend": "The flow is <triggerType>RecordBeforeSave</triggerType> with <recordTriggerType>Create</recordTriggerType> - insert only. The trigger is 'on Case (after update)' - update only. No contention, no double-write, and triggerOrder 10 has nothing to order against (this is the build's only record-triggered flow on Case, so checker rule 8 is satisfied by its presence rather than by a conflict).",
+      "insert": "The before-save flow runs ahead of Apex before-triggers and ahead of custom validation rules, stamping EntitlementId, BusinessHoursId and Priority. Two consequences the build depends on: (1) Priority_Required_On_Agent_Save (M3-S01) evaluates AFTER the stamp, so a web case with no Priority is rescued rather than rejected - this is the closure of F-32 that the M3 gate's decision (2) anticipated and could not prove because M4-S03 did not exist, and it is now proven at the artefact level; (2) entitlement rules run near the END of the insert's order of execution, after all before AND after triggers, so CaseMilestone rows created by this save are invisible to any trigger inside it. The trigger's own header comment records this, and it is why 'after update' is a correctness requirement rather than a style choice.",
+      "first_update_out_of_new": "The after-update trigger fires, the CaseMilestone rows created by the insert already exist, the three-clause WHERE (case Ids AND milestone type AND CompletionDate = NULL) finds the open one, and one DML writes CompletionDate.",
+      "idempotency": "CompletionDate = NULL in the same WHERE makes a second pass a no-op, which is the guard that substitutes for the recursion control the two-file shape does not have (D-M4S05-03).",
+      "the_one_real_interaction_runs_forwards": "The escalation rule's entry 2 uses businessHoursSource Case, reading Case.BusinessHoursId - the field the flow stamped during the SAME insert, before the escalation engine sees the record. Forwards, not backwards."
+    },
+    "deploy_order": [
+      "M4-S03 (Settings:Flow -> Flow -> FlowTest) at position 8",
+      "M4-S05 (TestDataFactory -> CaseMilestoneService -> CaseMilestoneTrigger -> CaseMilestoneServiceTest) at position 8",
+      "M4-S01 (Settings:BusinessHours) at position 10",
+      "M4-S02 (MilestoneType -> EntitlementProcess x2) at position 10",
+      "M4-S04 (EscalationRules:Case) at position 10"
+    ],
+    "deploy_order_verdict": "No contradiction. Every recorded workbook position agrees with its artefact's own type against the canonical sequence (objects, fields, picklists, record types, layouts, permission sets, sharing, automation, routing, SLA). No permission set grants a field defined later; no routing component precedes what it triggers. Intra-step order within position 10 is correct and stated on the rows: Settings:BusinessHours before both processes (the <businessHours> name must bind), MilestoneType before EntitlementProcess in the same request (the <milestoneName> reference must bind), EscalationRules last of everything it names.",
+    "deploy_order_observations": [
+      "Automation (8) reads SLA (10) - at RUN TIME only. No metadata reference crosses backwards, which is why nothing fails at deploy and why CWB-AUT-026 records the direction explicitly. The consequence is a run-time one across a multi-request deploy - F-46.",
+      "The active-flow / Apex-test coupling: Settings:Flow's enableFlowDeployAsActiveEnabled is true and the flow is Active, so a production deploy runs the org's Apex tests, and the build's only test needs the position-10 entitlement process active in the org. One request is sound; a split deploy fails its own tests - F-45."
+    ],
+    "merged_manifest": {
+      "types": 6,
+      "members": 8,
+      "version": "67.0",
+      "version_conflict": "none - all four step manifests declare 67.0. The build carries two API versions overall (M1/M2/M3-S02 manifests at 62.0) but that is O-M3S03-01/F-31, decided at the M3 gate and out of M4's scope, so there is nothing for this agent to escalate under REFUSAL_NEEDS_HUMAN_REVIEW.",
+      "member_collisions": "none - no member appears in two steps. The two Settings members come from different steps but are different members, so they union into one block rather than colliding.",
+      "contents": {
+        "EntitlementProcess": [
+          "First_Response_Premier",
+          "First_Response_Standard"
+        ],
+        "EscalationRules": [
+          "Case"
+        ],
+        "Flow": [
+          "Case_BeforeSave_StampEntitlementAndCalendar"
+        ],
+        "FlowTest": [
+          "Case_BeforeSave_StampEntitlementAndCalendar_Test"
+        ],
+        "MilestoneType": [
+          "First Response"
+        ],
+        "Settings": [
+          "BusinessHours",
+          "Flow"
+        ]
+      },
+      "files_reaching_no_types_block": 10,
+      "apex_treatment": "The merged manifest carries NO ApexClass and NO ApexTrigger member, and that is the contract rather than an oversight. M4-S05 declares no package.xml at all, because section 4 borrowed-agent condition 2 forbids declaring an output the owning agent's Output Contract does not name and apex-builder's nine numbered outputs include no manifest; section 5 'The Apex exception' assigns its ApexClass and ApexTrigger members to the build-level manifest step M5-S05 (type docs, metadata-builder, depends_on M4-S05). The step's own always-on manifest check correctly recorded skipped-not-applicable naming M5-S05 rather than failing. M4-S03 carries no Apex at all - its three members are all in the manifest - so the exception applies to M4-S05 alone. The consequence the contract does not state and the gate should: M5-S05 is pending, so until it runs no manifest anywhere in this build carries the Apex, and a --mode manifest validation of this file deploys the SLA clocks without the trigger that stops them. Mock deploy runs 1-4 used SOURCE mode, which copies the tree whole and therefore did include the Apex - that is why run 4 reached 55 components. See F-43."
+    },
+    "acceptance_tests": [
+      {
+        "id": "M4-T1",
+        "type": "checker",
+        "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "result": "PASS",
+        "output": "INFO: BusinessHours.settings-meta.xml / always-open calendar 'Severity 1 24x7': SLA clocks on it never pause - intended for 24/7 severity tiers; confirm it is not attached to entitlements that expect business-hour pauses.",
+        "note": "The INFO's question is answered by cross-check 1: no entitlement process names it - both name US Support. That is O-M4S01-01's finding restated as a verified fact. Exactly one <default>true</default> calendar (US Support)."
+      },
+      {
+        "id": "M4-T2",
+        "type": "checker",
+        "command": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+        "exit_code": 0,
+        "result": "PASS",
+        "output": "0 error(s), 0 warning(s), 2 info note(s). OK: no ERROR findings.",
+        "note": "Both INFOs are W4 (no timeTriggers/successActions), the intended shape here because completion is driven by the M4-S05 trigger. The assertion --strict exists for is live: W3 (a businessHours name absent from the settings file) is a WARN --strict promotes to a failure, and it did not fire - so the calendar cross-reference is genuinely asserted, not merely quiet."
+      },
+      {
+        "id": "M4-T3",
+        "type": "checker",
+        "command": "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "result": "PASS",
+        "output": "WARN W1 no rule in this file is active; 2x I2 (one escalation action per entry); 2x I3 (minutesToEscalation 480 = 8h). OK: no ERROR findings (1 warning, 4 info).",
+        "note": "W1 is the INTENDED state under Q47, not a defect. No ERROR: E2 (a <businessHours> child under a non-Static source) and E7 (an assignedTo that is not a queue developer name in the manifest) both clear, and E7 can only clear at build scope because the queue is M2-S04's."
+      },
+      {
+        "id": "M4-T4",
+        "type": "checker",
+        "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "result": "PASS",
+        "output": "scanned 4 Apex file(s) under artefacts: 0 ERROR, 0 WARN",
+        "note": "Asserts what the description claims: CompletionDate written rather than IsCompleted, DML bulk-safe (one query one DML), test class present."
+      },
+      {
+        "id": "M4-T5",
+        "type": "manifest",
+        "command": "merged-manifest two-way consistency over artefacts/M4-S01..S05",
+        "exit_code": null,
+        "result": "PASS",
+        "note": "All 8 merged members have a file; all 6 non-Apex deployable files have a member. 16/16 XML files parse. The 10 Apex files are the documented Apex-exception carve-out."
+      },
+      {
+        "id": "M4-T6",
+        "type": "manual",
+        "command": null,
+        "exit_code": null,
+        "result": "deferred to the checklist, line 7 - not ticked by this agent",
+        "note": "Q27's two by-design post-save OwnerId writers. One of the two (Omni-Channel, M3-S05) is blocked and accepted as a known gap at the M3 gate, so the line is half-applicable this phase."
+      }
+    ],
+    "acceptance_test_summary": {
+      "declared": 6,
+      "runnable": 5,
+      "ran": 5,
+      "passed": 5,
+      "failed": 0,
+      "manual_deferred": 1,
+      "missing_checkers": 0
+    },
+    "acceptance_test_caveat": "Four of the five run at --manifest-dir artefacts and each prints a benign line and exits 0 against an EMPTY tree (the W09 vacuity class the plan's own test descriptions document). Their exit codes carry an assertion only because check-outputs confirmed the declared artefacts exist and are non-empty before the tests ran, and because this run re-confirmed all 11 deployable files are on disk. Stated so the gate reader does not read 'exit 0' as 'something was checked' without the precondition.",
+    "org_facing_evidence": "reports/MOCK-DEPLOY-M4.md - four checkOnly runs by the operator against sfskills-dev, not by this agent. Run 4: 55 components, 55 ok, 1 error - the single failure being F-28 (support-noreply@acme.example is an invalid From email address), the known org-wide-address prerequisite already accepted at the M3 gate and outside this build's power to fix. F-36, F-37 and F-38 closed at source and proven by the org. This agent ran no sf command and no mock_deploy.py.",
+    "manual_checklist": [
+      "M4-S01 - Read artefacts/M4-S01/settings/BusinessHours.settings-meta.xml: all three calendars are present and named - EMEA Support (Europe/London 08:00-18:00 Mon-Fri), US Support (America/New_York 08:00-20:00 Mon-Fri, the org default) and Severity 1 24x7. Verifier note: all three are present and so named; the tick is the human's confirmation that they are the right three.",
+      "M4-S02 - List artefacts/M4-S02/: exactly two entitlementProcesses files (First_Response_Premier, First_Response_Standard) and exactly one milestoneTypes file (First Response) per assumption A27, Premier carries minutesToComplete 240, and both processes name a <businessHours> that is a <name> in M4-S01's BusinessHours settings file. Verifier note: all four sub-clauses hold as built - read it alongside gate decision item 3, because the clause is satisfied and the design behind it is still in question.",
+      "M4-S03 - Read the flow XML: it sets Case.EntitlementId, Case.BusinessHoursId and Case.Priority; the first two are null-guarded (A2) and Priority is deliberately NOT, on the two email origins, per the M3 gate's decision (2); the no-matching-account path is the documented fallback rather than a fault. Plus the four check_flow_governance.py policy fields the checker reports by file rather than by field: <description> carries the 'Owner:' marker and at least 60 characters, <interviewLabel> is present, <apiVersion> is 59 or higher, <runInMode> is DefaultMode. Verifier note: all four policy fields confirmed present - 'Owner: Service Operations', interview label present, 67.0, DefaultMode.",
+      "M4-S04 - Sign off activation: a named owner activates the rule inside an agreed comparison window and records the first hour's escalation count. The checker's W1 finding is the expected state here, not a defect. Verifier note: this line CANNOT be ticked at this gate - it requires a sandbox and a named owner, neither of which exists yet. Sign it outstanding, with an owner and a date, as standards/build-orchestration.md section 3 permits.",
+      "M4-S04 - Read Case.escalationRules-meta.xml: the Tier 2 entry's minutesToEscalation is 480 (8 x 60), not 8; its businessHoursSource is Case with no <businessHours> child; it reassigns to the queue developer name Tier_2_Engineering built in M2-S04; and the Severity 1 entry's businessHoursSource is None. Verifier note: all four confirmed as built - weigh it with gate decision item 4, because the same 480 also sits on the Severity 1 entry and that number is composed, not answered.",
+      "M4-S05 - Confirm identifier provenance: every non-platform identifier in the emitted Apex is quoted from skills/apex/entitlement-apex-hooks/references/examples.md or the cited template, and CaseMilestoneServiceTest asserts CompletionDate is non-null after the trigger runs. Verifier note: the org compiled all four classes and the trigger clean at mock-deploy run 4, which settles the provenance half far more strongly than a read can; the assertion half is a read of the test body and remains the human's.",
+      "M4 (milestone) - Read artefacts/M3-S04/owner-writer-map.md alongside artefacts/M4-S04/escalation-activation-runbook.md: Q27's two by-design post-save OwnerId writers (Omni-Channel and the escalation rule) are both described and neither contradicts the assignment rule. Verifier note: Omni-Channel is M3-S05, which is blocked and accepted as a known gap at the M3 gate, so one of the two writers named in this line does not exist in the build - tick the escalation half and record the Omni-Channel half as not-applicable-this-phase rather than ticked."
+    ],
+    "manual_checklist_accounting": {
+      "from_step_results_json": 6,
+      "from_milestone_acceptance_tests": 1,
+      "total": 7,
+      "sources": {
+        "M4-S01": 1,
+        "M4-S02": 1,
+        "M4-S03": 1,
+        "M4-S04": 2,
+        "M4-S05": 1,
+        "M4 milestone": 1
+      },
+      "lines_stating_no_observable_outcome": 0,
+      "lines_that_cannot_be_ticked_at_this_gate": [
+        "line 4 - needs a sandbox and a named owner; sign outstanding",
+        "line 7 (half) - Omni-Channel does not exist this phase; record not-applicable"
+      ]
+    },
+    "g4_decision_items": [
+      {
+        "n": 1,
+        "id": "O-M4S04-01",
+        "title": "The R2 Billing-queue mail loop, with its three remedies",
+        "recommendation": "Option (c) - give the Billing queue a notification address that is not an intake address - PAIRED WITH F-44's Tier 2 mailbox as one decision, because both are the same question (which mailboxes do these queues notify) deferred for the same reason (D-M2S04-02 refused to invent an address, correctly). Option (a) is cleanest technically and most likely wrong - it silently drops a whole queue out of an SLA requirement.md states unqualified. Option (b) is WEAKENED BY F-44: the assignedToTemplate recipient is the Tier 2 queue, which has no mailbox, so choosing (b) today means NEITHER notification reaches anyone. If no address is forthcoming, choose (b) and record explicitly that escalation is a silent ownership change this phase, so M5's UAT script tests for a list-view handover rather than an email."
+      },
+      {
+        "n": 2,
+        "id": "O-M4S02-01",
+        "title": "Entitlement settings owned by no step",
+        "recommendation": "Option (b) - record it as a named deploy prerequisite, not a plan amendment. Three reasons: it is the same shape the M3 gate already accepted for F-28, so the build has a precedent and a place to keep it; enabling Entitlement Management is a one-time org-lifetime action that does not belong in a per-release manifest; and amending an M4 step's outputs[] now would force a rebuild of a documented step for a file that changes nothing about the artefacts already proven. The gate must record a named owner, a date, and BOTH switches - enableEntitlements before anything in M4 deploys, enableMilestoneStoppedTime before go-live rather than after the first SLA dispute (gotchas.md #10). F-39 widens the blast radius from M4-S02's two files to three of M4's five steps."
+      },
+      {
+        "n": 3,
+        "id": "O-M4S02-02",
+        "title": "The Q51 calendar divergence",
+        "recommendation": "Option (a) accept the divergence for this phase, AND amend plan.json's M4 goal to match. This is the item that matters most, because it is the one the milestone's own goal contradicts (F-40). Option (b) is a re-plan contradicting A27 and quadruples the process count for a two-tier promise; option (c) contradicts Q43's answered value and makes every EMEA case escalate on New York hours, worse than the divergence it fixes. Option (a) costs nothing to build and everything to FORGET, which is exactly why the goal text must change with it - a goal promising an EMEA clock nobody built will mis-set M5's UAT script, the release note, and the first support manager who reads it. If the Process Owner says EMEA Premier must genuinely count on London hours, this is a re-plan, better discovered at this gate than in UAT."
+      },
+      {
+        "n": 4,
+        "id": "D-M4S02-02 + D-M4S04-02",
+        "title": "The 720 and 480 placeholder numbers",
+        "recommendation": "Confirm both at the gate; neither is a blocker. The builder was right to refuse to invent either - a builder-composed number reads as a customer commitment nobody made. Two things to put to the Process Owner in the same breath: (1) the 720 derivation is COUPLED to the US Support calendar's 12-hour day, so if decision item 3 ever moves Standard onto EMEA hours (10 open hours) the '1 business day' figure becomes 600, not 720 - one decision silently changes the other; (2) a Severity 1 outage escalating on the SAME 480 as a routine case is the reading most likely to surprise a support manager reading the rule for the first time. Each fix is one integer in one file."
+      },
+      {
+        "n": 5,
+        "id": "D-M4S01-02",
+        "title": "The seeded holidays and the Q90 owner",
+        "recommendation": "The OWNER half is the one to close at this gate; the holiday list can follow. An unnamed owner is the more corrosive of the two - a calendar with wrong holidays fails visibly on a known date, while a calendar with no owner silently stops pausing in a year and nobody is accountable for noticing. Name the individual at this gate and give them the runbook's section 4 yearly procedure plus a date to replace the seed with Acme's real list before production. Do NOT let the 14-entry seed deploy to production as-is: it is the right shape and the wrong data, and it is convincing enough to be mistaken for confirmed by anyone who reads the calendar rather than the runbook. Same restraint D-M4S01-02 exercised in refusing to invent a name, carried one step further."
+      },
+      {
+        "n": 6,
+        "id": "D-M4S03-03",
+        "title": "The Priority value mapping",
+        "recommendation": "Confirm the first two rows (Severity 1 -> High, grounded in requirement.md L18 the only unconditional urgency statement; everything else -> Medium, consistent with M3-S03's intake default) and put the PREMIER row specifically to the Process Owner. Conflating 'contractually faster' with 'more urgent' is a real design claim: it means a routine Premier question outranks a Standard customer's production problem in every priority-sorted list view and report M5 builds. The builder says so itself - this is the weakest of the three rows. If the answer is that tier should not drive Priority, the fix is to delete one <rules> condition, and the SLA difference still lands because it comes from the entitlement process not from Priority. Decide it TOGETHER WITH F-42: item 6 is which value, F-42 is whether the target org still carries that value at all."
+      },
+      {
+        "n": 7,
+        "id": "D-M4S05-02",
+        "title": "The completion-signal proxy",
+        "recommendation": "RAISE THIS ABOVE THE OTHER EIGHT. It is the only item where the built behaviour can make a FALSE SLA CLAIM - a milestone reported met on a case no customer heard from. Both error directions are live and the first will happen constantly: M4-S04's escalation changes ownership, and an agent handling that case will move it off New, completing the first-response milestone with no reply sent. Two things make it cheap to fix if the Process Owner wants Q50's literal signal: the rule lives in one @TestVisible constant (OPENING_STATUS) so changing WHICH status is a one-line edit, but moving to the first outbound EmailMessage is a DIFFERENT artefact (an after-insert trigger on EmailMessage filtered to Incoming = false) which this step's outputs[] does not declare and which is therefore a plan amendment plus a rebuild, not an edit. If the answer is 'accept the proxy this phase', record it as an explicit dated acceptance with the false-positive direction named, and put a line in M5's UAT script that watches for milestones completed on cases with no outbound email."
+      },
+      {
+        "n": 8,
+        "id": "D-M4S05-03",
+        "title": "The two-file trigger shape",
+        "recommendation": "Accept for this phase. This is the WEAKEST of the nine items and should take the least gate time. The idempotency guard (CompletionDate = NULL in the query, asserted by skipsAMilestoneThatIsAlreadyCompleted) is domain-correct and arguably stronger than a recursion counter for a trigger that fires once in a Case's life; the trigger does no DML on Case so it cannot re-enter itself; and the alternative - shipping four framework classes nobody asked for - enlarges the deploy for a benefit the build cannot use. The builder's reasoning was mechanically verified: a plan-wide search found TriggerControl=0, ApplicationLogger=0, Trigger_Setting__mdt=0, TriggerHandler=1, the one occurrence being this step's own templates[] citation. Record it as a planner v6 backlog item (a shared 'Apex foundations' step owning TestDataFactory, TriggerHandler, TriggerControl and ApplicationLogger, with every Apex step depending on it) rather than as an M4 remedy - D-M4S05-05 already names that step for a different reason, so ONE backlog item closes both."
+      },
+      {
+        "n": 9,
+        "id": "RTM residual orphans",
+        "title": "The RTM's three residual orphans - CLOSED, nothing to decide",
+        "recommendation": "Record the closure and move on. check_rtm.py v1.1.5 landed today (0c585e185) and the build-scope re-run reports 47 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings, exit 0. The three ApexClass orphans were a checker limitation, they were correctly dispositioned REVIEW rather than papered over, and the fix went into the skill rather than into the matrix. The only residue is stale prose in traceability.md (F-48), which the doc keeper rewrites at its next touch. Worth one sentence at the gate because it is the fourth instalment of one skill-depth fix (v1.1.2 -> v1.1.5) driven entirely by this build's doc-keeper runs - the flywheel producing exactly what it is for."
+      }
+    ],
+    "requirement_closure": {
+      "closes": [
+        {
+          "req": "REQ-038",
+          "step": "M4-S01",
+          "rtm_status": "In UAT",
+          "note": "Closed as metadata. The Severity-1-runs-24/7 half is carried operationally by M4-S04's businessHoursSource None; the calendar itself is unconsumed (O-M4S01-01)."
+        },
+        {
+          "req": "REQ-039",
+          "step": "M4-S01",
+          "rtm_status": "In UAT",
+          "note": "Presence only, not content - the RTM row says so itself. Gate decision item 5."
+        },
+        {
+          "req": "REQ-040",
+          "step": "M4-S02",
+          "rtm_status": "In Build",
+          "note": "Metadata complete; F-40 (wrong calendar for EMEA) and F-41 (no selection mechanism) both bear on it."
+        },
+        {
+          "req": "REQ-041",
+          "step": "M4-S02",
+          "rtm_status": "In Build",
+          "note": "As REQ-040, plus the 720 placeholder (gate decision item 4)."
+        },
+        {
+          "req": "REQ-042",
+          "step": "M4-S02",
+          "rtm_status": "In Build",
+          "note": "Closed. One shared identity serving both tiers, as assumption A27 fixed."
+        },
+        {
+          "req": "REQ-043",
+          "step": "M4-S04",
+          "rtm_status": "In UAT",
+          "note": "Closed as metadata, inactive by design (Q47). Gate decision item 1 and F-44 both bear on it."
+        },
+        {
+          "req": "REQ-044",
+          "step": "M4-S05",
+          "rtm_status": "In UAT",
+          "note": "Closed as mechanism; gate decision item 7 questions the signal it fires on. The RTM row itself records Q50's divergence."
+        },
+        {
+          "req": "REQ-045",
+          "step": "M4-S03",
+          "rtm_status": "In UAT",
+          "note": "Closed. Also closes F-32 from M3 - the before-save Priority stamp now precedes Priority_Required_On_Agent_Save."
+        },
+        {
+          "req": "REQ-046",
+          "step": "M4-S03",
+          "rtm_status": "In UAT",
+          "note": "Closed, over two org round-trips (D-M4S03-01). The skill fix is still PENDING - the one flywheel record in M4 that cannot cite a closing commit."
+        },
+        {
+          "req": "REQ-047",
+          "step": "M4-S03",
+          "rtm_status": "In UAT",
+          "note": "Closed. F-45 and O-M4S03-02 bear on WHEN it deploys."
+        }
+      ],
+      "consumed_from_earlier_accepted_milestones": [
+        "REQ-008 (Account.Region__c, M1-S01)",
+        "REQ-009 (Account.Support_Tier__c, M1-S01)",
+        "REQ-023 (Queue:Tier_2_Engineering, M2-S04)",
+        "REQ-033 (EmailTemplate:case_intake/Case_Escalated_To_Tier2, M3-S02)",
+        "REQ-034 (the two routing addresses, M3-S03)"
+      ],
+      "still_open_across_the_build_unchanged_by_m4": [
+        "REQ-022's push half - M3-S05 blocked on Q32-Q35, accepted as a known gap at the M3 gate",
+        "the 25 deferred clarifications whose owners and dates M5's gate will ask for"
+      ],
+      "rtm_checker_result": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts -> 'traceability.md: 47 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 0 warning(s)', exit 0 (v1.1.5)"
+    },
+    "optional_validate_only_command": "sf project deploy start --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M4-package.xml --dry-run --target-org <sandbox-alias>",
+    "optional_production_command": "sf project deploy validate --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M4-package.xml --target-org <production-alias>",
+    "optional_command_note": "OPTIONAL and HUMAN-RUN. This agent ran neither, ran no sf command at all, ran no mock_deploy.py, and made no org contact. The sandbox form is a dry run; the production form is documented production-only, requires Apex tests and returns a job id for a later quick deploy - naming the right one matters, because offering the production form for a sandbox sends the human into an error that has nothing to do with their build. Three things to know before running either, none of which the command will tell you: this manifest carries NO Apex (F-43); the target org must already have Entitlement Management enabled (F-39); and the production form runs Apex tests, and this build's only test needs an active SlaProcess the same deploy is creating (F-45).",
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/case-onboarding/plan.json M4 --status verified --report-path reports/MILESTONE-M4-REPORT.md",
+    "set_milestone_result": "milestone M4: status -> verified, report -> reports/MILESTONE-M4-REPORT.md. The only write this agent made to plan.json, made through the subcommand, no JSON hand-edited. 'verified' is a statement about what the checks found, not an approval - the gate record stays empty until a human writes it.",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M4 approve --by \"<name>\"",
+    "gate_reject_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M4 reject --by \"<name>\" --notes \"<why>\"",
+    "gate_command_note": "Printed, never run. gate is the only writer of a gate decision and a human is the only decider. Returning the line is not approving it.",
+    "gate_conditions": {
+      "plan_gate_approved": "yes - 2026-09-05T19:35:19Z",
+      "preceding_milestone_gate_approved": "yes - milestone:M3, 2026-09-12T06:24:17Z",
+      "every_step_documented_or_blocked_with_a_reason": "yes - all five documented, NO blocked step, so approving this gate accepts no step-level gap. Unlike M3's gate, which was signed over the blocked M3-S05."
+    },
+    "files_written_by_this_run": [
+      "reports/MILESTONE-M4-REPORT.md",
+      "reports/MILESTONE-M4-package.xml",
+      "envelopes/M4/2026-09-12T09-08-11Z.json",
+      "envelopes/M4/2026-09-12T09-08-11Z.md",
+      "plan.json (milestones[M4].status and .report_path, via set-milestone only)"
+    ],
+    "nothing_else_touched": "No artefact, no tests/<step>/results.json, no step status, no gate record, no decisions.md, no traceability.md, no workbook file, no PLAN.md, no CLARIFICATIONS.md, and nothing outside this build directory.",
+    "persistence_deviation": "agents/_shared/DELIVERABLE_CONTRACT.md also calls for a markdown/JSON pair at docs/reports/milestone-verifier/<run_id>.{md,json}. This invocation scoped writes to the build directory, which is the --no-persist case: the build-scoped envelope under envelopes/M4/ and its markdown twin carry the same content, and the structured envelope is returned in the run output. Recorded rather than left as a silent omission.",
+    "severity_mapping_note": "The report uses the build's HIGH/MEDIUM/LOW convention; the envelope schema's findings[].severity enum is P0/P1/P2/INFO. Mapping used: HIGH -> P1, MEDIUM -> P2, LOW -> INFO. No P0 is used, because a P0 would contradict a ready-with-findings verdict. F-47 carries its as-deployed severity (P2, the rule ships inactive) and its on-activation severity is stated in the finding detail rather than by inflating the enum value.",
+    "run_kind": "first verification of M4; no prior M4 report exists to supersede"
+  }
+}

@@ -2744,3 +2744,872 @@ blocks the step — `M3-S01` passed every executable test it declares.
 - **Evidence:** `skills/admin/requirements-traceability-matrix/scripts/check_rtm.py`
   (`RULE_CONTAINERS`, `build_manifest_index()`, `resolve_artefact()`); `traceability.md` §
   "Linter result — after M3-S04"; `artefacts/M3-S04/package.xml`.
+
+## D-M4S01-01 — Checker-policy block on `Severity 1 24x7` closed at the skill, not the artefact: the flywheel record
+
+- **Date:** 2026-09-12 · **Step:** `M4-S01` (`sla`) · **Agent:** `metadata-builder` (blocked run
+  `2026-09-12T06-31-35Z`; closed at re-run `2026-09-12T06-52-00Z`); recorded here by
+  `build-doc-keeper`
+- **Kind:** skill gap — the gap the runner recorded verbatim when it set the step `blocked`
+- **What was recorded:** the step's own declared checker, `check_business_hours_and_holidays.py`,
+  rejected the file `steps[M4-S01].inputs.calendars` required: `ISSUE: … calendar 'Severity 1
+  24x7': every day is 00:00:00.000Z to 00:00:00.000Z — this is the shipped 24/7 shape; SLA clocks on
+  this calendar never pause.` That shape was, at the time, the only always-open form
+  `admin/business-hours-and-holidays` documented, and `requirement.md` L18 ("Severity 1 outages are
+  24/7 and never pause") is what asked for exactly that shape. `agents/build-step-runner` set the
+  step `blocked` with reason `checker-policy` rather than force a repair, because the two repairs
+  that would have passed the gate were each worse than the block: deleting the calendar contradicts
+  the step's own `inputs{}`, and trimming it to Mon–Fri passes every automated check while closing a
+  never-pausing calendar at weekends — verified on scratch copies outside the build directory, never
+  applied to the artefact.
+- **The gap was closed at the skill, not the artefact.** Commit `5b206697a` (`admin/business-hours-and-holidays`
+  v1.0.1) scoped the shipped-24/7-shape rule to the org default (`<default>true</default>`) or a
+  calendar literally named `Default`, downgrading the same shape on any other, deliberately named
+  always-open calendar to an INFO line that never affects the exit code, and added this exact
+  `Severity 1 24x7` calendar to `references/examples.md` Example 1 as a documented worked example.
+  The re-run executed the declared command verbatim from the build directory against the
+  byte-identical file and observed `EXIT=0` with one INFO line. No repair pass was spent; the file
+  that was rejected is the file that now passes.
+- **Alternative rejected:** repairing the artefact instead of the rule (see the two rejected repairs
+  above), and leaving the block standing pending a human amendment to the plan (dropping the third
+  calendar). Both were live options named in the blocked run's own envelope; the skill fix pre-empted
+  the need to choose between them.
+- **Grounded in:** `envelopes/M4-S01/2026-09-12T06-31-35Z.md` §§ 1, 5 (the block, the two rejected
+  repairs); `envelopes/M4-S01/2026-09-12T06-52-00Z.md` §§ 1, 5 (the closure, the verbatim re-run);
+  `skills/admin/business-hours-and-holidays` v1.0.1 `references/examples.md` Example 1;
+  `artefacts/M4-S01/deploy-order.md` § 0.
+- **Evidence:** `plan.json` `steps[M4-S01].runs[1]` (blocked, `checker-policy`), `runs[3]` (built);
+  `tests/M4-S01/checker-business-hours-and-holidays.stdout.txt` (`INFO: … EXIT=0`).
+
+## D-M4S01-02 — The 14-holiday seed is a placeholder, not Acme's list; Q90 named a role and a cadence, not a person — both carried to the M4 gate
+
+- **Date:** 2026-09-12 · **Step:** `M4-S01` (`sla`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T06:31:35Z`, unchanged by the re-run); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an ambiguity recorded rather than filled, the same shape as
+  `decisions.md` D-M1S01-02
+- **What was recorded:** no clarification anywhere in this build supplies Acme's actual holiday
+  dates — Q39 established only that each region observes its own set, and `answers-key.md` has no
+  row naming them. `holiday-maintenance-runbook.md` § 3 carries 14 entries (6 on `US Support`, 9 on
+  `EMEA Support`, computed for the 12 months from 2026-09-12) as a seed so the calendars pause on
+  *something* and the shape is reviewable, every weekday computed rather than recalled, marked
+  UNCONFIRMED. Separately, Q90 answered *who is accountable* (Service Operations) and *how often*
+  (one deploy per year, each Q4) but not *which named individual* — the runbook's own owner row is
+  left explicitly OPEN.
+- **Alternative rejected:** inventing a plausible individual name to fill Q90's owner cell, or
+  omitting the holiday entries entirely pending Acme's confirmed list. Both rejected for the same
+  reason `agents/metadata-builder/AGENT.md` gives against inventing an unconfirmed value: a named
+  individual with no source would look confirmed while being fabricated, and a calendar with zero
+  holidays would silently assert Acme observes none, which no source states either.
+- **Grounded in:** `plan.json` clarifications `Q39` (answered, calendar list only), `Q90` (answered,
+  role + cadence only); `requirement.md` L16 ("Clocks pause on weekends and regional holidays");
+  `artefacts/M4-S01/holiday-maintenance-runbook.md` §§ 1, 3.
+- **Remedy, both halves carried to the M4 gate:** (1) the Service Operations owner names the
+  accountable individual before this file is deployed to production; (2) the same owner replaces
+  the seeded 14-entry table with Acme's actual holiday list per region before deploy — the runbook's
+  yearly procedure (§ 4) is what that owner then repeats every Q4.
+- **Evidence:** `artefacts/M4-S01/holiday-maintenance-runbook.md` § 1 (owner row, "OPEN"), § 3 (the
+  seed table and its UNCONFIRMED framing); `envelopes/M4-S01/2026-09-12T06-31-35Z.md` § 4 ("Which
+  holidays does each region observe? — no source anywhere").
+
+## O-M4S01-01 — `Severity 1 24x7` is presently unconsumed: a metadata placeholder for a Severity 1 entitlement process that has not been built
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the rebuilt-run envelope and
+  `deploy-order.md` § 0
+- **What was recorded:** the checker's INFO line on the always-open calendar asks the author to
+  "confirm it is not attached to entitlements that expect business-hour pauses." `deploy-order.md`
+  § 0 answers it by checking every step that could read the calendar by name: `M4-S02`'s two
+  entitlement processes are both business-time promises (Premier 240 minutes, Standard 1 business
+  day); `M4-S03`'s before-save Flow stamps `Case.BusinessHoursId` from `Account.Region__c`, which
+  yields only `EMEA Support` or `US Support`; `M4-S04`'s Severity 1 escalation entry uses
+  `businessHoursSource = None`, which reads no calendar at all. No holiday in this file is attached
+  to it, deliberately. So `Severity 1 24x7` is built and correct, but nothing in this build's
+  current scope names it.
+- **Why this is worth a gate line rather than a defect:** the calendar is the metadata expression of
+  the 24/7 promise `M4-S04` already carries operationally through `businessHoursSource = None`. It
+  earns its place the moment a Severity 1 **entitlement process** exists, because a milestone
+  entitlement has no `None` source and must read a process calendar
+  (`skills/admin/business-hours-and-holidays/references/gotchas.md` #5). Anyone adding such a
+  process in a later phase should point it at this calendar; anyone adding a business-hours-based
+  process must not.
+- **Remedy:** carry this line to the M4 gate alongside D-M4S01-01/-02; no action needed unless or
+  until a Severity 1 entitlement process is scoped.
+- **Evidence:** `artefacts/M4-S01/deploy-order.md` § 0 (the consumer table); `plan.json`
+  `steps[M4-S02].inputs`, `steps[M4-S03].inputs`, `steps[M4-S04].inputs.note`.
+
+## O-M4S01-02 — UNVERIFIED: whether a midnight-to-midnight start/end pair on every day means "open all day" rather than "closed" cannot be settled from documents alone
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `deploy-order.md` § 4
+- **What was recorded:** `Severity 1 24x7` writes `00:00:00.000Z`–`00:00:00.000Z` on all seven days.
+  Three sources now stand behind that shape — `references/gotchas.md` #1 (the shipped 24/7
+  `Default` calendar stores every day the same way and states the pair "means open the whole day");
+  `references/examples.md` Example 1, which since commit `5b206697a` carries this exact calendar as
+  a documented worked example; and the Metadata API Developer Guide (`api_meta`
+  L111304–111306), which documents `00:00:00.000Z` on the `*EndTime` fields as **"midnight"** — the
+  value's meaning, not the pair's. `references/gotchas.md` #6 is unchanged and still marks the pair
+  UNVERIFIED: from the documented shape alone, "open 24 hours" and "closed" are indistinguishable,
+  and the skill's own prescribed resolution is not a document but an org — set one day closed and
+  one day 24-hour in Setup, retrieve, and compare.
+- **Why it stays open:** this build is `design-only` and has no org connection, so the prescribed
+  clock test cannot be run here. The worked-example addition in `5b206697a` narrowed the *positional*
+  question (where `saturday*`/`sunday*` sit in the element sequence) but settled neither this pair's
+  semantics nor whether the Metadata API enforces a different child-element order than the sample
+  shows.
+- **Remedy:** before trusting `Severity 1 24x7` in any org, run the clock test
+  `holiday-maintenance-runbook.md` § 5 describes, against a sandbox, ahead of any production deploy;
+  this is a pre-deploy gate item, not a rebuild of this step's artefact.
+- **Evidence:** `artefacts/M4-S01/deploy-order.md` § 4 ("UNVERIFIED — the midnight pair");
+  `skills/admin/business-hours-and-holidays/references/gotchas.md` #1, #6;
+  `artefacts/M4-S01/holiday-maintenance-runbook.md` § 5.
+
+## O-M4S01-03 — Skill-depth signal: `check_rtm.py` derives a per-calendar key inside `Settings:BusinessHours`, and the container-level row cannot also satisfy it
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the RTM checker run over
+  `traceability.md` after this step's two rows were added
+- **What was recorded:** `check_rtm.py --manifest-dir artefacts` reports **3 orphans** —
+  `BusinessHoursEntry:US Support`, `BusinessHoursEntry:EMEA Support` and `BusinessHoursEntry:Severity
+  1 24x7`, all evidenced by `artefacts/M4-S01/settings/BusinessHours.settings-meta.xml` — exit 0, 0
+  errors, 0 coverage gaps, 39 rows, 1 warning (this orphan WARN). The pre-existing two `M1-S01`
+  `BusinessProcess` file-stem orphans (`decisions.md` D-M1S01-03) are unaffected and still counted
+  separately in earlier linter runs' history; this run's 3 are new, all from `M4-S01`.
+- **Why, read from the script:** `SETTINGS_ENTRIES` maps the `businesshours` settings stem to
+  `("BusinessHoursEntry", "businessHours", "name")`. For any `Settings` component whose stem matches,
+  `index_manifest()` registers the container-level member `package.xml` actually declares
+  (`Settings:BusinessHours`, evidenced by `package.xml` — the form `REQ-038` and
+  `workbook/06-automation.md` `CWB-AUT-013` both name, matching every other Settings row in this
+  build) **and, separately**, one `BusinessHoursEntry:<name>` key per `<businessHours>` block read
+  **inside** the file, exactly the same shape `RULE_CONTAINERS` already uses for
+  `AssignmentRules`/`AutoResponseRules` (`decisions.md` **O-M3S04-03**) and structurally identical to
+  the `EmailTemplate` folder-qualification mismatch (`decisions.md` **O-M3S02-05**) before it. The
+  script's own comment names the intent — "Index the entries so a row can name one" — but
+  `resolve_artefact()` still matches a row's `artefact` cell against these keys by exact string, so
+  naming the deployable container (`Settings:BusinessHours`, what actually appears in `package.xml`
+  and what every reader of this build's other Settings rows expects) can never also satisfy three
+  independently-orphanable per-entry keys.
+- **Alternative rejected:** renaming `REQ-038`'s `artefact` cell to one calendar's singular form
+  (e.g. `BusinessHoursEntry:US Support`) to quiet two-thirds of the warning while still missing the
+  third, or minting three additional rows purely to name each calendar. Both rejected for the same
+  reason `O-M3S02-05` and `O-M3S04-03` already give: renaming the cell would make the row describe a
+  component nobody deploys as such (the Metadata API deploys `Settings:BusinessHours`, not three
+  separate members), and minting rows with no requirement behind them is the anti-pattern
+  `agents/build-doc-keeper/AGENT.md`'s Output Contract guards against — a traceability row exists to
+  join a requirement to a delivery, not to pre-empt a specific checker's per-entry key derivation.
+- **Remedy:** record `admin/requirements-traceability-matrix`'s `check_rtm.py` `SETTINGS_ENTRIES`
+  deriver as a third instance of the same skill-depth gap `O-M3S02-05` and `O-M3S04-03` name: a
+  derived sub-key should be additive evidence toward the *same* orphan check as its container key
+  (matching by container membership, not treated as a second, independently-orphanable component).
+  All three instances now point at one fix in one place (`resolve_artefact()`'s key-matching logic),
+  not three separate patches.
+- **Evidence:** `skills/admin/requirements-traceability-matrix/scripts/check_rtm.py`
+  (`SETTINGS_ENTRIES`, `index_manifest()`, `resolve_artefact()`); `traceability.md` §
+  "Linter result — after M4-S01"; `artefacts/M4-S01/package.xml`;
+  `artefacts/M4-S01/settings/BusinessHours.settings-meta.xml`.
+
+## D-M4S02-01 — Checker-policy block on the First Response milestones' missing `<timeTriggers>`/`<successActions>` closed at the skill, not the artefact: the flywheel record
+
+- **Date:** 2026-09-12 · **Step:** `M4-S02` (`sla`) · **Agent:** `metadata-builder` (blocked run
+  `2026-09-12T07-20-25Z`; closed at re-run `2026-09-12T07-45-00Z`); recorded here by
+  `build-doc-keeper`
+- **Kind:** skill gap — the gap the runner recorded verbatim when it set the step `blocked`
+- **What was recorded:** the step's own declared checker, `check_entitlements_and_milestones.py
+  --manifest-dir artefacts --strict`, rejected both entitlement processes: `WARN W4 … Milestone
+  '… / First Response' has neither <timeTriggers> nor <successActions>. It counts down and
+  nothing observable happens at any point.` — `0 error(s), 2 warning(s), 0 info note(s)`,
+  `--strict: failing on 2 warning(s)`, `EXIT=1`. Clearing W4 as it then read required a
+  `WorkflowAlert` or `WorkflowFieldUpdate` referenced from `<timeTriggers>`, and two facts made
+  that unsatisfiable from this step's own inputs: no step anywhere in `plan.json` builds a
+  `Workflow` file, and no clarification (the full Q38–Q53, Q90–Q92 group was read) names a
+  milestone notification's recipient, offset, sender or template — only `M4-S04`'s escalation
+  rule has an answered notify question (Q45), and it is a different component. `agents/build-step-
+  runner` set the step `blocked` with reason `ambiguity` rather than force a repair, because the
+  two repairs that would have passed the gate were each worse than the block: repair A named a
+  `WorkflowAlert` (`First_Response_Warning`) that exists in no step and no clarification, which
+  `metadata-examples.md` § 3 says fails the whole deploy rather than just the milestone; repair B
+  used an action-less `<timeTriggers>` shape the skill documented nowhere. Both were verified on
+  scratch copies outside the build directory — same checker exit (`0/0/2 info`, EXIT=0) for both,
+  proving the checker cannot distinguish an invented-but-dangling action from no action at all —
+  and neither was applied to the artefact.
+- **The gap was closed at the skill, not the artefact.** Commit `a18f9164d`
+  (`admin/entitlements-and-milestones` v1.1.2) moves the "neither `<timeTriggers>` nor
+  `<successActions>`" finding from WARN to INFO, grounded in api_meta.txt:59162–59169 listing both
+  elements with no "Required." qualifier (unlike `apiVersion` at api_meta.txt:5481) — making an
+  action-less milestone a documented-legal shape, "intended when completion is driven by a
+  trigger/flow and no notification is wanted." The same commit splits the stale-`timeLength` case
+  that previously shared the W4 code into its own code **W7**, still a strict-promoted WARN, so no
+  real check was weakened. The re-run executed the declared command verbatim from the build
+  directory against the byte-identical file (SHA-256 confirmed) and observed `EXIT=0` with
+  `0 error(s), 0 warning(s), 2 info note(s)`. No repair pass was spent; the file that was rejected
+  is the file that now passes.
+- **Alternative rejected:** repairing the artefact instead of the rule (the two rejected repairs
+  above), amending the acceptance test to drop `--strict` (would have lost the W3 calendar
+  cross-reference assertion), and scoping a new `Workflow:Case` step (a re-plan needing new
+  clarifications and Case fields no step in this build owns). All three were live options named in
+  the blocked run's own envelope; the skill fix pre-empted the need to choose between them.
+- **Grounded in:** `envelopes/M4-S02/2026-09-12T07-20-25Z.md` §§ 1, 5 (the block, the two rejected
+  repairs); `envelopes/M4-S02/2026-09-12T07-45-00Z.md` §§ 1, 5, 7 (the closure, the verbatim
+  re-run, resolved-since list); `skills/admin/entitlements-and-milestones` v1.1.2
+  `scripts/check_entitlements_and_milestones.py` (W4 now INFO, W7 split out);
+  `artefacts/M4-S02/deploy-order.md` § 0.
+- **Evidence:** `plan.json` `steps[M4-S02].runs[1]` (blocked run, result text verbatim), `runs[3]`
+  (built run, result text verbatim); `tests/M4-S02/checker_stdout.txt` (`0 error(s), 0 warning(s),
+  2 info note(s)`, `EXIT=0`); `tests/M4-S02/checker_exit.txt`.
+
+## D-M4S02-02 — Standard's `minutesToComplete` 720 is a DERIVED placeholder, not an answered value — carried to the M4 gate like the holiday seed
+
+- **Date:** 2026-09-12 · **Step:** `M4-S02` (`sla`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T07-20-25Z`, unchanged by the re-run); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a computed value shown rather than asserted, the same shape as
+  `decisions.md` D-M4S01-02
+- **What was recorded:** Premier's target is not in question — Q38 answers "a first response
+  within 4 business hours" and `4 × 60 = 240` is exact. Standard's is: Q38 answers "standard
+  accounts within 1 business day," and nothing anywhere in this build converts a business *day*
+  into minutes — `minutesToComplete` is a mandatory int (checker rule E1) so the file cannot be
+  written without choosing a number. The chain that produced `720`: Q51 makes the Case's calendar
+  the SLA authority, so the process calendar is the Case default calendar; Q40/`answers-key.md`
+  name that calendar `US Support`; `artefacts/M4-S01/settings/BusinessHours.settings-meta.xml`
+  gives `US Support` as 08:00–20:00 Monday–Friday, 12 open hours = 720 business minutes per day.
+  Two other readings were considered and rejected as equally defensible and equally unsourced: a
+  conventional 8-hour day (`480`, which would also collide numerically with `M4-S04`'s 8-business-
+  hour escalation threshold) and "by the end of the next business day" (not expressible — the
+  milestone model carries only an integer minute target, no calendar-date element).
+- **Alternative rejected:** `480` (a conventional working day) and a next-business-day promise
+  (not expressible in the metadata model). Both rejected in `artefacts/M4-S02/deploy-order.md` § 3
+  for the reasons above; neither is grounded in any clarification, requirement line, or answered
+  assumption in this build.
+- **Grounded in:** `plan.json` clarifications `Q38` (answered, "1 business day," no minute
+  conversion), `Q51` (answered, Case's calendar is the SLA authority), `Q40`/`answers-key.md`
+  (US Support is the default calendar); `artefacts/M4-S01/settings/BusinessHours.settings-meta.xml`
+  (`US Support` 08:00–20:00 Mon–Fri); `artefacts/M4-S02/deploy-order.md` § 3.
+- **Remedy:** carried to the M4 gate — the Process Owner confirms what "1 business day" means
+  contractually (720, 480, or a next-business-day promise needing a different design) before this
+  file is deployed to production. The edit is one integer in one file.
+- **Evidence:** `artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml`
+  (`<minutesToComplete>720</minutesToComplete>`); `artefacts/M4-S02/deploy-order.md` § 3 (the full
+  derivation chain and the two rejected readings).
+
+## O-M4S02-01 — `settings/Entitlement.settings-meta.xml` (`enableEntitlements`) is owned by no step in this plan — every file this step writes is inert without it
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `deploy-order.md` § 5 and the
+  step's own `outputs[]`
+- **What was recorded:** `enableEntitlements` is the org-level master switch for Entitlement
+  Management (`metadata-examples.md` § 5) — without it, both `EntitlementProcess` files and the
+  `MilestoneType` this step deploys are inert metadata that never fires. `steps[M4-S02].outputs[]`
+  does not declare `settings/Entitlement.settings-meta.xml`, and a search of every step's
+  `outputs[]` in `plan.json` finds no other step that declares it either. `enableMilestoneStopped
+  Time` (`gotchas.md` #10 — turn on *before* go-live, not after the first dispute) lives in the
+  same unowned file.
+- **Why this is worth a gate line rather than a defect:** no clarification in this build asks
+  whether Entitlement Management itself needs enabling as a distinct deployable — Q38–Q53 all
+  presume the feature is available and go straight to configuring processes and milestones on top
+  of it. Nothing in this step's own scope could have written the setting without inventing an
+  `outputs[]` path the plan does not declare.
+- **Remedy:** carry this line to the M4 gate alongside `D-M4S02-01`/`-02` — either a plan amendment
+  adds `settings/Entitlement.settings-meta.xml` to some M4 step's declared outputs, or the gate
+  records enabling it as a manual Setup prerequisite before any of this milestone's metadata is
+  deployed.
+- **Evidence:** `artefacts/M4-S02/deploy-order.md` § 5 ("What this step does NOT write, and who
+  does"); `plan.json` `steps[].outputs[]` (searched, no match for `Entitlement.settings-meta.xml`).
+
+## O-M4S02-02 — Q51 half-honoured: an EMEA case's first-response milestone counts on US hours while its escalation timer counts on EMEA hours
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `deploy-order.md` § 4.4 and the
+  builder's own envelope
+- **What was recorded:** Q51's answer is "the Case's calendar is the authority for the first-
+  response SLA; set the process and milestone calendars to match it explicitly rather than relying
+  on a default." This step honours the "explicitly, not by default" half — both processes and both
+  milestone overrides name `<businessHours>US Support</businessHours>` outright — but cannot honour
+  the "match the Case's calendar" half: an `EntitlementProcess` takes exactly one calendar name and
+  has no `businessHoursSource` element (that element belongs to escalation rules, `gotchas.md` #3),
+  while `M4-S03`'s before-save Flow stamps `Case.BusinessHoursId` to `EMEA Support` or `US Support`
+  from `Account.Region__c` per case. `US Support` was written because it is the org default
+  (`<default>true</default>`) and the documented fallback for unknown accounts (Q40).
+  `business-hours-and-holidays` `gotchas.md` #5 names this exact divergence as the failure it
+  exists to prevent: "a Case with a regional calendar can escalate on the regional clock while its
+  first-response milestone counts on the process calendar."
+- **The consequence, stated for the gate:** an EMEA-region case's first-response milestone counts
+  down on **US Support** hours (08:00–20:00 New York) while its *escalation* timer
+  (`businessHoursSource = Case`, Q43) counts on **EMEA Support** hours (08:00–18:00 London). The
+  two SLA clocks on one case pause on different holidays and can disagree about how much time has
+  elapsed.
+- **Remedy, none of it this step's to choose:** (a) accept the divergence and record it at the
+  gate; (b) split each tier into a US and an EMEA process — four processes, contradicting
+  assumption A27's fixed count of two, a re-plan; or (c) re-point `M4-S04`'s Tier 2 entry to
+  `businessHoursSource = Static` on `US Support` so both clocks agree — contradicting Q43's
+  answered `businessHoursSource = Case`. Not resolvable inside this step or this documentation
+  pass.
+- **Evidence:** `artefacts/M4-S02/deploy-order.md` § 4.4; `skills/admin/business-hours-and-
+  holidays/references/gotchas.md` #5; `plan.json` clarifications `Q51`, `Q40`, `Q43`; `plan.json`
+  `assumptions[A27]`.
+
+## D-M4S04-01 — F-36: `notifyToTemplate is required` closed at the skill, not the artefact: the second flywheel record in M4
+
+- **Date:** 2026-09-12 · **Step:** `M4-S04` (`sla`) · **Agent:** `metadata-builder` (first build
+  `2026-09-12T07-22-10Z`; org-rejected by `reports/MOCK-DEPLOY-M4.md` run 1; rebuilt at
+  `2026-09-12T07-58-40Z`); recorded here by `build-doc-keeper`
+- **Kind:** skill gap — the same flywheel shape `decisions.md` **D-M4S01-01** already names as the
+  first instance in this milestone: an org rejection the library could not have caught, closed by
+  amending the skill rather than by a one-off artefact patch
+- **What was recorded:** the first build set `<notifyCaseOwner>true</notifyCaseOwner>` on both
+  escalation actions with no `<notifyToTemplate>` — every worked example in
+  `admin/escalation-rules` at v1.1.1 did the same, and the Metadata API guide's `EscalationAction`
+  table marks `notifyToTemplate` a plain `string` with no Required marker and no stated dependency
+  on `notifyCaseOwner`. `reports/MOCK-DEPLOY-M4.md` run 1 (`checkOnly`, `sfskills-dev`, API 67.0)
+  rejected the byte-identical file: `EscalationRules Case: notifyToTemplate is required`. The
+  operator reset the step `tested → failed → pending` and re-claimed it `running`.
+- **The gap was closed at the skill, not the artefact.** Commit `9ae71856d`
+  (`admin/escalation-rules` v1.1.2) adds rule **E10** (ERROR: `notifyCaseOwner` true or a populated
+  `notifyTo` with no `notifyToTemplate`), rule **I4** (INFO: a template reference that is not
+  folder-qualified), `references/gotchas.md` **#13** carrying the org's exact error text, and
+  `llm-anti-patterns.md` **Anti-Pattern 6**. Re-running the declared checker against the
+  byte-identical first-build file after the skill update produced two `ERROR E10` lines — the
+  rule now bites on the file that had passed an hour earlier. The rebuild added one
+  `<notifyToTemplate>case_intake/Case_Escalated_To_Tier2</notifyToTemplate>` to each of the two
+  `escalationAction` blocks and changed nothing else — same rule, same two entries and order, same
+  criteria, clocks and 480-minute threshold, same `assignedTo`/`assignedToType`/`assignedToTemplate`,
+  still `<active>false</active>`, `package.xml` untouched. The checker then exited 0 (`W1` + two
+  `I3`, no `I4` — both references are folder-qualified).
+- **What this is not:** the first build was not careless. The constraint was only discoverable
+  against a live org, exactly as `D-M4S01-01`'s checker-policy gap was — "the builder should have
+  known" is the wrong lesson for either. It is now in the skill, so the next build that sets
+  `notifyCaseOwner` gets the check for free, and a future deploy fails at the checker rather than
+  at the org.
+- **Alternative rejected:** none — there was no artefact-level alternative once the org's rule was
+  known; the single grounded fix is to name the template the constraint requires, and the template
+  itself was resolved from the plan's upstream outputs rather than invented (see `D-M4S04-04` for
+  which template and why one, not two).
+- **Grounded in:** `reports/MOCK-DEPLOY-M4.md` run 1; `envelopes/M4-S04/2026-09-12T07-58-40Z.md`
+  §§ 1, 4 (the before/after checker output); `admin/escalation-rules` v1.1.2
+  `references/metadata-examples.md` § "Verification: E10 catches the missing `notifyToTemplate`
+  before the deploy does"; `artefacts/M4-S04/deploy-order.md` § 0.
+- **Evidence:** `plan.json` `steps[M4-S04].runs[3]` (mock-deploy failure, F-36); `runs[5]`
+  (rebuilt); `tests/M4-S04/checker_stdout.txt` (post-rebuild `EXIT=0`).
+
+## O-M4S04-01 — R2 confirmed real, closing `O-M3S04-02`'s open check: `notifyCaseOwner` on a Billing-owned case posts into a live Email-to-Case intake address — M4 gate item, three remedies
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the `M4-S04` builder envelope
+  (both builds) and `artefacts/M4-S04/escalation-activation-runbook.md` § 4 R2
+- **What was recorded:** `decisions.md` **O-M3S04-02** asked the next step that adds a
+  notification to the `Billing` entry to confirm it does not post into `billing@acme.example`
+  itself before doing so. `M4-S04` is that step: `notifyCaseOwner` is `true` on both entries
+  (Q45), the case owner at escalation time is whichever queue `M3-S04`'s assignment rule placed
+  the case in, and the `Billing` queue's `<email>` is `billing@acme.example`
+  (`artefacts/M2-S04/queues/Billing.queue-meta.xml`) — the same address `M3-S03` configured as a
+  live Email-to-Case routing address. **The answer is that the exposure is real:** an escalation
+  notification to that address becomes a new case, which itself escalates 480 minutes later and
+  notifies it again. The F-36 rebuild (`D-M4S04-01`) makes this concrete rather than theoretical —
+  before `notifyToTemplate` was added, `notifyCaseOwner` could not actually send mail at all; after
+  it, the mail R2 describes actually sends.
+- **Because the rule ships `<active>false</active>`, nothing loops on deploy.** This is an
+  **activation** prerequisite, not a deployment defect — recorded as an M4 **gate** item, not a
+  blocker to `documented`.
+- **Three remedies, none of which this step (or this documentation pass) may choose** — each needs
+  an answer this build does not hold:
+
+  | Option | What it needs |
+  |---|---|
+  | a. Exclude Billing-owned cases from escalation (a third entry, or a criterion on entry 2) | An answer saying finance cases do **not** escalate to Tier 2 Engineering — `requirement.md` L16 says "anything untouched", unqualified, so narrowing it is not this agent's to invent, the same restraint `D-M3S04-02` exercised |
+  | b. Drop `notifyCaseOwner` and rely on `assignedToTemplate` alone | Accepting that the notify half of Q45 may reach nobody, given the `assignedToTemplate` recipient is itself unverified (`deploy-order.md` § 3 U3) |
+  | c. Give the `Billing` queue a notification address that is not an intake address | A Finance mailbox nobody has named — `D-M2S04-02` already refused to invent the equivalent address for Tier 2 |
+- **Alternative rejected:** choosing one of the three remedies unilaterally in this documentation
+  pass. Rejected because a traceability/decisions record exists to state what was found and built,
+  not to pre-empt a process-owner call none of the seven answered clarifications on this step
+  makes.
+- **Grounded in:** `decisions.md` **D-M2S04-04** (the risk first named, latent), **O-M3S04-02**
+  (the open check this entry closes); `artefacts/M4-S04/escalation-activation-runbook.md` § 4 R2;
+  `artefacts/M4-S04/deploy-order.md` § 5.
+- **Evidence:** `artefacts/M2-S04/queues/Billing.queue-meta.xml` (`<email>`);
+  `artefacts/M3-S03/settings/Case.settings-meta.xml` line 32 (the same address as a routing
+  address); `envelopes/M4-S04/2026-09-12T07-22-10Z.md` § 9 ("Concerning", R2, high).
+
+## D-M4S04-02 — Both entries carry `minutesToEscalation` 480; Severity 1's threshold is a composed reading of `requirement.md`, not an answered value
+
+- **Date:** 2026-09-12 · **Step:** `M4-S04` (`sla`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T07-22-10Z`, unchanged by the F-36 rebuild); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a value composed from the weakest of four Step 4 sources
+  (`requirement.md` itself) rather than read off an answered clarification, the same shape
+  `decisions.md` **D-M4S01-02**'s holiday seed already carries for this milestone
+- **What was recorded:** Q46 binds one number, 480 minutes, and its own acceptance test asserts it
+  for the Tier 2 entry only. `requirement.md` L16 states one threshold ("anything untouched for 8
+  business hours escalates to Tier 2") and L18 says only that Severity 1 outages "are 24/7 and
+  never pause" — it does not give Severity 1 a *faster* threshold, and no clarification asks for
+  one. Writing a shorter Severity 1 value would have been an invented SLA; entry 1 therefore
+  carries the same 480 as entry 2, and the difference between the two entries is the clock
+  (`businessHoursSource None` vs `Case`), not the number.
+- **Alternative rejected:** inventing a shorter Severity 1 threshold (e.g. treating a 24/7
+  severity as implying a faster SLA) on the reasoning that a Severity 1 outage "should" escalate
+  sooner. Rejected because no source — not `requirement.md`, not any answered clarification —
+  states a Severity 1-specific number, and a builder-composed number would read as a customer
+  commitment nobody made.
+- **Grounded in:** `requirement.md` L16, L18; `plan.json` clarifications `Q46` (answered, 480
+  minutes, Tier 2 entry only), `Q43` (answered, the per-entry calendar split); `envelopes/M4-
+  S04/2026-09-12T07-22-10Z.md` § 4 ("On the Severity 1 480").
+- **Remedy:** if Acme intends Severity 1 to escalate sooner than 8 business-hour-equivalent
+  minutes, that is an answer this build does not hold and a one-line change to entry 1's
+  `minutesToEscalation` — carried to the M4 gate rather than guessed here.
+- **Evidence:** `artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml` (both entries'
+  `<minutesToEscalation>480</minutesToEscalation>`); `artefacts/M4-S04/deploy-order.md` § 4 item 1.
+
+## D-M4S04-03 — Q42's `CaseCreation` clock start is narrower than `requirement.md`'s word "untouched"
+
+- **Date:** 2026-09-12 · **Step:** `M4-S04` (`sla`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T07-22-10Z`, unchanged by the F-36 rebuild); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an answered clarification whose effect diverges from the
+  requirement's own wording, named explicitly rather than left for a reader to notice
+- **What was recorded:** `escalationStartTime` is `CaseCreation` and `disableEscalationWhenModified`
+  is `false` on both entries (Q42). `requirement.md` L16 reads "anything **untouched** for 8
+  business hours escalates to Tier 2" — as built, a case an agent is actively working still
+  escalates 480 minutes after **creation**, because the clock measures from creation and no edit
+  stops it. That is narrower than "untouched": a literal reading of the word would restart or
+  suppress the clock on activity, which is exactly the `CaseLastModified` / `disableEscalationWhen
+  Modified` alternative Q42's own answer declines.
+- **Why the narrower reading was chosen, not a default:** Q42's answer states the reason directly —
+  "because the requirement measures from creation, not from last touch" — and
+  `references/gotchas.md` #6 gives the operational reason the alternative is worse here: with
+  `CaseLastModified`, any automation write pushes the threshold out, and in an org with chatty
+  automation (this build has at least the assignment rule and, once built, `M4-S03`'s flow) a case
+  can escalate never. `gotchas.md` #7 is the third lever
+  (`disableEscalationWhenModified` `true`, "any touch ends escalation"), also declined for the
+  same reason. All three are explicit choices per Q42's answer, not a default.
+- **Alternative rejected:** `escalationStartTime = CaseLastModified`, and
+  `disableEscalationWhenModified = true`. Both rejected per Q42's own stated reasoning above.
+- **Grounded in:** `requirement.md` L16; `plan.json` clarification `Q42` (answered); `skills/
+  admin/escalation-rules/references/gotchas.md` #6, #7.
+- **Remedy:** none required to deploy — this is the one place the built behaviour and the
+  requirement's literal wording diverge, worth re-reading at the M4 gate rather than discovering
+  in UAT, not a defect to fix.
+- **Evidence:** `artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml` (both entries'
+  `<escalationStartTime>CaseCreation</escalationStartTime>`,
+  `<disableEscalationWhenModified>false</disableEscalationWhenModified>`); `artefacts/M4-
+  S04/deploy-order.md` § 4 item 3.
+
+## D-M4S04-04 — U6: one escalation template serves both `notifyToTemplate` and `assignedToTemplate`, where the cited skill's example uses two
+
+- **Date:** 2026-09-12 · **Step:** `M4-S04` (`sla`) · **Agent:** `metadata-builder` (introduced at
+  the F-36 rebuild, run `2026-09-12T07-58-40Z`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a build-scope limitation (one template exists, not two) accepted
+  rather than worked around by inventing a component
+- **What was recorded:** the two elements address **different recipients** —
+  `assignedToTemplate` is the template for the email sent to the new owner (the
+  `Tier_2_Engineering` queue), and `notifyToTemplate` (added by the F-36 rebuild, `D-M4S04-01`) is
+  the template for the notification to the outgoing case owner `notifyCaseOwner` selects. The
+  cited skill's own worked example uses two distinct templates for exactly this reason. This build
+  holds **one** escalation template: `M3-S02` is titled "Classic acknowledgement and escalation
+  email templates" and its `outputs[]` declares exactly two templates in total —
+  `case_intake/Case_Acknowledgement` (customer-facing) and `case_intake/Case_Escalated_To_Tier2`
+  (the one escalation template). No clarification and no line of `requirement.md` asks for a
+  second, owner-warning template. So both elements name
+  `case_intake/Case_Escalated_To_Tier2` — the outgoing owner and the incoming Tier 2 queue receive
+  the same body, whose subject reads correctly in both directions but is one template doing two
+  jobs.
+- **Alternative rejected:** inventing a second template name (e.g.
+  `case_intake/Case_Escalation_Warning`). Rejected on two independent grounds, either sufficient:
+  it is a component no step in this build produces, so the deploy would fail on the reference
+  rather than on the rule; and naming a template nobody wrote is the same class of invention
+  `decisions.md` **D-M2S04-02** already refused for the Tier 2 mailbox address.
+- **Grounded in:** `skills/admin/escalation-rules` worked example (two templates,
+  `unfiled$public/Sev1_Handover` / `unfiled$public/Sev1_Escalation_Warning`); `plan.json`
+  `steps[M3-S02].outputs[]` (exactly two templates, total); `artefacts/M4-S04/deploy-order.md`
+  § 3 U6.
+- **Remedy:** carried to the M4 gate, not fixed here — if Acme wants a distinct "your case was
+  escalated away from you" notice, that is a new `EmailTemplate` on a `ui` step and a one-line
+  change to this rule's `notifyToTemplate`.
+- **Evidence:** `artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml` (both actions'
+  `<assignedToTemplate>` and `<notifyToTemplate>`, identical values);
+  `artefacts/M4-S04/escalation-activation-runbook.md` § "R6".
+
+## D-M4S05-01 — F-37: `TestDataFactory` unresolved in a real org, closed by shipping the template as a declared output — the third flywheel-adjacent record in this build, and the one no skill fix could close
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`) · **Agent:** `apex-builder` (first build
+  `2026-09-12T08-12-19Z`; rejected by the operator's dry-run validation `2026-09-12T08:27:29Z`;
+  rebuilt `2026-09-12T08-32-00Z`); recorded here by `build-doc-keeper`
+- **Kind:** deviation — the rebuild added two declared outputs
+  (`classes/TestDataFactory.cls`, `classes/TestDataFactory.cls-meta.xml`) that the step's original
+  `outputs[]` never named, per `amend-step`'s own recorded reason (`plan.json`
+  `steps[M4-S05].amendments[0]`)
+- **What was recorded:** `CaseMilestoneServiceTest` calls `TestDataFactory.createAccounts(...)`
+  and `TestDataFactory.createCases(...)`, which the step's `templates[]` and
+  `skills/apex/entitlement-apex-hooks/references/code-examples.md` both cite by repo-relative
+  path. `templates/README.md` is explicit that a template under `templates/` is a canonical
+  building block **copied into the consuming project**, not a deploy-time reference an org can
+  resolve — and no step in this plan shipped the class. The first build's four declared acceptance
+  tests (checker, `xml`, `manifest`, manual) and `check-outputs` all passed anyway, because none of
+  them resolves a symbol across files: `check_entitlement_apex_hooks.py` reads one tree for
+  `CaseMilestone` mistakes and has no cross-class symbol resolution, `check-outputs` confirms
+  declared paths rather than references, and there is no offline Apex compiler in the `sf` CLI
+  (`agents/_shared/AGENT_CONTRACT.md` Gate C row 3). It took `reports/MOCK-DEPLOY-M4.md` run 2 — a
+  real `sf project deploy start --dry-run` against `sfskills-dev` — to reject `ApexClass
+  CaseMilestoneServiceTest` five times with `Variable does not exist: TestDataFactory`.
+- **The gap is a library gap, and no artefact-level repair alone closes it.** The operator reset
+  the step `tested → failed → pending`, amended `outputs[]` to add the factory class and its meta
+  XML, and re-claimed it. The rebuild shipped `classes/TestDataFactory.cls` as a **byte-identical**
+  copy of `templates/apex/tests/TestDataFactory.cls` (`diff` empty) — the template itself was not
+  edited, and no method was added, because the test's two calls already match signatures the
+  template already defines. `reports/MOCK-DEPLOY-M4.md` F-37 names the durable remedy, carried to
+  planner v6: `apex/entitlement-apex-hooks` and the `apex-builder` playbook should state that a
+  test referencing a template class ships that class in the same step (or an earlier step the plan
+  owns), and a build with more than one Apex step should route this through a shared "Apex
+  foundations" step rather than repeat the same fix per step (see **D-M4S05-05** below).
+- **Alternative rejected:** writing a step-local test-data helper instead of shipping the
+  canonical `TestDataFactory` template. Rejected because `AGENT_RULES.md`'s template-reuse rule
+  and `agents/_shared/AGENT_CONTRACT.md` rule 2 both forbid re-inventing a canonical idiom inline
+  once a template exists for it — a parallel implementation would have been a second class doing
+  the same job as the one already in `templates/apex/tests/`, not a fix to the citation problem.
+- **Grounded in:** `reports/MOCK-DEPLOY-M4.md` run 2 (F-37, the rejection) and run 3 (closure
+  confirmed — all four Apex classes and the trigger compiled); `envelopes/M4-S05/2026-09-12T08-32-00Z.md`
+  §§ 1, 5 (findings `AB-M4S05-05`, `AB-M4S05-06`); `artefacts/M4-S05/deploy-order.md` § 0;
+  `templates/README.md` (template-vs-deploy-reference distinction).
+- **Evidence:** `plan.json` `steps[M4-S05].amendments[0]` (who, when, why, prior `outputs[]`
+  value); `steps[M4-S05].runs[]` (the mock-deploy failure entry and the rebuilt-run entry);
+  `tests/M4-S05/results.json` (checker now scans 4 Apex files, `0 ERROR, 0 WARN`, versus 3 on the
+  superseded pre-rebuild run).
+
+## D-M4S05-02 — The completion signal is a proxy ("leaves Status `New`"), and Q50's recorded answer named a different one — held open as an M4 gate decision
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`) · **Agent:** `apex-builder` (run
+  `2026-09-12T08-12-19Z`, unchanged by the F-37 rebuild); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off, held open as a milestone-gate decision — the same shape
+  `decisions.md` **D-M3S02-04**, **D-M3S03-02** and **D-M3S04-03** already carry for this build:
+  the artefact takes a defensible reading and the gate is where the alternative reading gets its
+  say
+- **What was recorded:** `D10` settled the completion **mechanism** — an after-update Apex trigger
+  on `Case` stamping `CaseMilestone.CompletionDate` — but no clarification settles the completion
+  **event**, the Case change that means "the agent has responded." `Q50`'s recorded answer names
+  *"satisfiable completion criteria on the first outbound `EmailMessage`, or a Flow that stamps
+  `CompletionDate`"* — the first outbound email is the signal that answer has in mind. No
+  clarification in the `Q38`–`Q53` SLA group names a `Case` field change as the signal instead.
+  What this step implemented is narrower and Case-only: the milestone completes the moment a Case
+  **leaves `Status = New`** — the transition `skills/apex/entitlement-apex-hooks/references/examples.md`
+  Example 1 documents, and the one transition both of this build's business processes share
+  (`New → Escalated → Closed` on `Support_Process`; `New → Closed` on `Billing_Process`,
+  `artefacts/M1-S01/objects/Case/businessProcesses/`).
+- **Why a proxy, not the requirement.** A case can leave `New` without a customer-facing reply (an
+  agent triaging and escalating it untouched), and an agent can reply without leaving `New`. The
+  literal signal Q50 names — the first outbound `EmailMessage` — is a **different artefact**: an
+  after-insert trigger on `EmailMessage` filtered to `Incoming = false`, which this step's
+  `outputs[]` does not declare and this step did not write. The rule is held in one named,
+  `@TestVisible` constant (`OPENING_STATUS`) specifically so that changing the signal later is a
+  one-line edit, not a rewrite.
+- **Alternative rejected:** planning the `EmailMessage`-triggered artefact as part of this step.
+  Rejected because it is a distinct component this step's declared `outputs[]` does not name — per
+  `standards/build-orchestration.md` § 4 borrowed-agent condition 2, an agent declares only the
+  outputs its contract and the step's own `outputs[]` name — and because choosing between the two
+  readings is a business-process call this documentation pass has no answered clarification to
+  resolve, the same restraint `decisions.md` **D-M3S04-02** exercised for a criterion `M3-S04`
+  chose not to invent.
+- **Grounded in:** `envelopes/M4-S05/2026-09-12T08-12-19Z.md` finding `AB-M4S05-01`;
+  `artefacts/M4-S05/deploy-order.md` § 3; `plan.json` `clarifications[Q50, Q16]`, `decisions[D10]`;
+  `artefacts/M1-S01/objects/Case/businessProcesses/`.
+- **Evidence:** `artefacts/M4-S05/classes/CaseMilestoneService.cls` (the `OPENING_STATUS`
+  `@TestVisible` constant and the query filtering on it); `artefacts/M4-S05/deploy-order.md` § 3
+  (the not-implemented `COMPLETING_STATUSES` set and why).
+
+## D-M4S05-03 — The two-file trigger shape (trigger calling the service directly) ships with no recursion guard or `TriggerControl` kill switch, because no step in this build deploys the base classes a handler needs
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`) · **Agent:** `apex-builder` (run
+  `2026-09-12T08-12-19Z`, unchanged by the F-37 rebuild); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a build-scope limitation accepted rather than worked around, the
+  same shape `decisions.md` **D-M4S04-04** already carries for a template gap
+- **What was recorded:** `skills/apex/entitlement-apex-hooks/references/code-examples.md` and
+  `skills/apex/apex-design-patterns` both ship a **four-file** bundle — service, trigger, test, and
+  `CaseMilestoneTriggerHandler.cls`, a subclass of `templates/apex/TriggerHandler.cls`. This step
+  wrote the **two-file** shape instead — the trigger calls the service directly — which is the
+  shape `skills/apex/entitlement-apex-hooks/references/examples.md` Example 1 documents. Two facts
+  settled it: `plan.json` `steps[M4-S05].outputs[]` declares three components and a handler is not
+  one of them, and a search of `plan.json` for `TriggerControl`, `ApplicationLogger` and
+  `Trigger_Setting__mdt` returns **zero** occurrences in any step's `outputs[]` — `TriggerHandler`
+  appears exactly once, in this step's own `templates[]`, which is an instruction to *read* the
+  file, not to deploy it. A handler extending `TriggerHandler` would not compile in the org this
+  build produces.
+- **What the two-file shape costs, named rather than left implicit:** no recursion guard, no depth
+  counter, no `skipOnce()`, and no `TriggerControl` kill switch to disable the trigger from Setup
+  without a deploy. What is **not** missing is the idempotency guard that matters in this specific
+  domain — `CompletionDate = NULL` in the query means a second pass finds nothing to stamp, and the
+  test method `skipsAMilestoneThatIsAlreadyCompleted` asserts it — which is arguably the stronger
+  of the two protections for a trigger that only ever runs once per Case's lifetime.
+- **Alternative rejected:** writing the handler shape without shipping `TriggerControl` and
+  `Trigger_Setting__mdt`. Rejected because it would not compile in this build's org — declaring an
+  output the plan does not carry the dependencies for is not a remedy, per
+  `standards/build-orchestration.md` § 4 borrowed-agent condition 2.
+- **Grounded in:** `envelopes/M4-S05/2026-09-12T08-12-19Z.md` finding `AB-M4S05-02`;
+  `artefacts/M4-S05/deploy-order.md` § 2; `skills/apex/entitlement-apex-hooks/references/examples.md`
+  Example 1; `skills/apex/apex-design-patterns`.
+- **Evidence:** `plan.json` `steps[M4-S05].outputs[]` (three components, no handler); the
+  builder's own plan-wide search recorded in `deploy-order.md` § 2
+  (`TriggerControl=0, ApplicationLogger=0, Trigger_Setting__mdt=0, TriggerHandler=1`, the one
+  occurrence being this step's `templates[]` citation).
+- **Remedy, if the build wants the handler shape:** a plan amendment adding
+  `classes/CaseMilestoneTriggerHandler.cls` (+ meta) to this step's `outputs[]` and the three
+  template components to some step's outputs, then a rebuild — carried to the M4 gate as an open
+  item, not fixed here.
+
+## D-M4S05-04 — `CaseMilestoneServiceTest` is forced to `@IsTest(SeeAllData=true)` because `SlaProcess` and `CaseMilestone` carry no `create()` call; an active `SlaProcess` with a `First Response` milestone is now a deploy/gate prerequisite
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`) · **Agent:** `apex-builder` (run
+  `2026-09-12T08-12-19Z`, unchanged by the F-37 rebuild); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off, held open as a milestone-gate prerequisite — the same shape
+  `decisions.md` **D-M3S04-03** already carries for `support-noreply@acme.example`: a platform
+  constraint the builder did not choose and cannot repair from the artefact side
+- **What was recorded:** two objects in the chain this test needs cannot be created in Apex —
+  `SlaProcess` and `CaseMilestone` — while `MilestoneType` and `Entitlement` can. The test can build
+  the `Entitlement` and the `MilestoneType`, but not the `SlaProcess` that joins them and not the
+  `CaseMilestone` rows that are the thing under test; both must come from the org. That forces
+  `@IsTest(SeeAllData=true)` on the whole class and rules out combining it with
+  `@IsTest(IsParallel=true)` — the two annotations cannot coexist. `requireActiveProcess()` asserts
+  on the org state directly, with a message naming what is missing, rather than returning early,
+  so a skipped assertion here is not mistaken for a passing one.
+- **What the target org must satisfy before this test proves anything, named as gate/deploy
+  prerequisites rather than left implicit:** (1) an **active** `SlaProcess` exists; (2) that
+  process includes a milestone whose `MilestoneType.Name` is exactly `First Response` — a Setup
+  rename returns zero rows, which the automation treats as silence, not an exception; (3)
+  `Status = 'Closed'` is reachable for the running user's default Case record type; (4) every Case
+  the test builds carries `Origin = 'Web'` and `Priority = 'Medium'`, because `TestDataFactory`'s
+  own defaults (`Origin = 'Email'`, no `Priority`) are rejected by `M3-S01`'s two active validation
+  rules (`Origin_Must_Be_Known`, `Priority_Required_On_Agent_Save`) — supplied through the
+  factory's own `overrides` map in `CaseMilestoneServiceTest.caseOverrides(Id)`, not by editing the
+  factory's shared defaults (see **D-M4S05-05**'s reasoning for why the factory itself was left
+  untouched).
+- **Alternative rejected:** none — this is a documented platform constraint (the Apex Testing
+  Guide lists `SlaProcess` and `CaseMilestone` among objects a test cannot `insert`), not a design
+  choice the builder made. The one thing that was a choice — passing `Origin`/`Priority` overrides
+  through the test rather than changing `TestDataFactory`'s shared defaults — is the right side of
+  the line: the factory's defaults are shared across every future consumer, and this build's
+  validation rules are not.
+- **Grounded in:** `artefacts/M4-S05/deploy-order.md` § 4 (the prerequisite table and the four
+  proof methods); `skills/apex/entitlement-apex-hooks` (the `SeeAllData` constraint as documented);
+  `templates/apex/tests/TestDataFactory.cls:57-70` (the `overrides` map).
+- **Evidence:** `artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls`
+  (`@IsTest(SeeAllData=true)`, `requireActiveProcess()`, `caseOverrides(Id)`);
+  `artefacts/M3-S01/objects/Case/validationRules/` (the two rules the overrides satisfy).
+
+## D-M4S05-05 — `TestDataFactory` ships as a step-local copy of a shared template; a second Apex step declaring the same output would deploy the same class twice under one `package.xml` member, not merge with it
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`) · **Agent:** `apex-builder` (rebuild run
+  `2026-09-12T08-32-00Z`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a build-scope limitation accepted because it costs nothing today,
+  the same shape `decisions.md` **D-M4S04-04** already carries for a single shared template
+  serving two recipients
+- **What was recorded:** `classes/TestDataFactory.cls` is now a **step-local** copy of
+  `templates/apex/tests/TestDataFactory.cls` (byte-identical, per **D-M4S05-01**). `M4-S05` is the
+  only Apex step in this plan, so nothing duplicates today. But a second Apex step whose plan
+  declared the same output path would deploy the **same class twice under one `package.xml`
+  member** — a deploy conflict, not a merge — because `package.xml` names a member once and two
+  steps writing the identical file to the identical path is not a case the manifest aggregation
+  (`M5-S05`) can reconcile by itself. The same collision would apply to
+  `TriggerHandler`/`TriggerControl`/`ApplicationLogger` if the handler shape named in **D-M4S05-03**
+  is ever adopted by a later step.
+- **Alternative rejected:** none chosen now — there is nothing to choose between while this is the
+  only Apex step. The remedy `reports/MOCK-DEPLOY-M4.md` F-37 and this step's own `apex-builder`
+  envelope both name for the future is a **planner v6** backlog item: a shared "Apex foundations"
+  step whose `outputs[]` carry `TestDataFactory` (and the trigger-framework classes, if adopted),
+  with every Apex step `depends_on` it rather than shipping its own copy.
+- **Grounded in:** `envelopes/M4-S05/2026-09-12T08-32-00Z.md` finding `AB-M4S05-07`;
+  `artefacts/M4-S05/deploy-order.md` § 0, § 6; `reports/MOCK-DEPLOY-M4.md` F-37's remedy line.
+- **Evidence:** the builder's plan-wide search recorded in `deploy-order.md` § 0 ("one step of type
+  automation owned by `apex-builder`" — confirming no second Apex step exists yet to collide with);
+  `plan.json` `steps[M4-S05].outputs[]` (now 8 paths, including the factory class and its meta).
+
+## D-M4S03-01 — F-38: a Create-triggered `FlowTest` takes `InputTriggeringRecordInitial` only, settled over two org round-trips — the fourth flywheel-adjacent record in this build, and the first the skill fix has not yet closed
+
+- **Date:** 2026-09-12 · **Step:** `M4-S03` (`automation`) · **Agent:** `metadata-builder` (first
+  build `2026-09-12T08-11-40Z`; rejected by `reports/MOCK-DEPLOY-M4.md` run 2; rebuilt
+  `2026-09-12T08-30-00Z`; rejected again by run 3, the mirror error; corrected build
+  `2026-09-12T08-40-00Z`); recorded here by `build-doc-keeper`
+- **Kind:** skill gap — the same flywheel shape `decisions.md` **D-M4S01-01** and **D-M4S04-01**
+  already name in this milestone, and the one `D-M4S05-01` calls "flywheel-adjacent" because no
+  skill file closes it: an org-only constraint no checker in the library could have caught, closed
+  here at the artefact rather than at the skill, **and the skill fix is still pending** — unlike
+  its three predecessors, this entry cannot cite a commit that closes the gap.
+- **What was recorded:** the rule the org's two rejections settle is
+  `recordTriggerType Create` → `InputTriggeringRecordInitial` **only**; `Update`/`CreateAndUpdate`
+  → **both** `Initial` and `Updated`. The first build's `FlowTest` carried `Updated` only and was
+  rejected — *"missing a parameter of type InputTriggeringRecordInitial"*. The first rebuild added
+  `Initial` **alongside** `Updated` and was rejected again, with the mirror error — *"contains the
+  incompatible parameter value `$Record` of type InputTriggeringRecordUpdated. Remove the parameter
+  or change the record trigger type."* Only the second rebuild, which removed `Updated` and left
+  `Initial` alone, validated. The first rejection is what makes this the first two-round case:
+  *"missing `Initial`"* is satisfied by both the two-parameter shape and the correct one-parameter
+  shape, so one org round-trip could not distinguish them.
+- **Why the guide pointed the wrong way:** `api_meta.txt` L74351–74365 supplies both parameters and
+  L74326–74327 enumerates both types with no trigger-type scoping — neither fact is wrong, but the
+  sample flow is **update-triggered**, and the only worked `FlowTest` in
+  `flow/record-triggered-flow-patterns/references/metadata-examples.md` § 4
+  (`Opportunity_AfterSave_ClosedWon`) is explicitly a **transition** test: *"The two `$Record`
+  parameters below are what makes this a transition test."* This step inherited that shape for a
+  create-triggered flow, where there is no transition to express.
+- **The gap is NOT closed at the skill.** `flow/record-triggered-flow-patterns` is being corrected
+  in parallel with a Create-triggered `FlowTest` example and a checker rule for the
+  `Create → Initial only` direction, but **no skill file was edited by any of these three runs** —
+  the artefact was corrected twice against the org directly. The five other artefacts in this step
+  (flow, `Flow.settings`, `package.xml`, `flow-governance-policy.yaml`,
+  `no-account-fallback-note.md`) are byte-identical across all three builds (SHA-256 confirmed at
+  each run); only the `FlowTest` and `deploy-order.md` changed.
+- **Alternative rejected:** none chosen — both wrong shapes (two-parameter, then correct-looking
+  one-parameter-plus-Updated) were tried in turn and each was org-rejected; the settled rule came
+  from the org's two error messages, not from a design choice between named options.
+- **What is still open, and carried forward rather than closed here:** the converse half of the
+  rule — that `CreateAndUpdate` requires **both** parameters — is inferred from the guide's sample
+  and run 3's error text, not observed; no flow in this build is `CreateAndUpdate`. What a
+  create-context `Initial` payload means to the engine is also unproven beyond "the record as
+  submitted." Both are named `deploy-order.md` § 0 UNVERIFIED items, and the durable remedy —
+  adding a Create-triggered `FlowTest` worked example and a `Create → Initial only` checker rule to
+  `flow/record-triggered-flow-patterns` — is the § 8 deepen-a-skill signal this entry opens rather
+  than closes.
+- **Grounded in:** `artefacts/M4-S03/deploy-order.md` § 0; `reports/MOCK-DEPLOY-M4.md` runs 2 and
+  3; `api_meta.txt` L74305–74306, L74326–74327, L74351–74365;
+  `flow/record-triggered-flow-patterns/references/metadata-examples.md` § 4.
+- **Evidence:** `plan.json` `steps[M4-S03].runs[]` (the three `metadata-builder` builds, the two
+  `mock-deploy` rejections, the three `step-tester` re-runs); `tests/M4-S03/summary.md` (post-
+  correction re-run, `passed: true`).
+
+## D-M4S03-02 — Priority mechanism: G3 (`milestone:M3`) decision (2) supersedes assumption A2's null guard for `Priority`, on the two email origins only
+
+- **Date:** 2026-09-12 · **Step:** `M4-S03` (`automation`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T08-11-40Z`, unchanged across the F-38 rebuilds); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — this step implementing an option the gate already chose, not a
+  choice made here
+- **What was recorded:** the step's `notes` (amendment `2026-09-12T04:50:22Z`, F-27) put two
+  options to the builder — derive `Priority` and **overwrite** the Email-to-Case intake default, or
+  **accept** `Medium` for email cases — and asked it to say which in `deploy-order.md`. That choice
+  was not this step's to make: the `milestone:M3` human gate (**G3**), approved
+  `2026-09-12T06:24:17Z`, records it as gate decision (2), confirming `decisions.md`
+  **D-M3S03-02** on option 2 — *"M4-S03 derives Priority from Severity__c/Support_Tier__c and
+  OVERWRITES the routing-address default for Email-* origins."* This step implements the approved
+  option and adds nothing to it. Implemented as one condition set on `Decision_Derive_Priority`:
+  `$Record.Origin EqualTo Email-Support` OR `$Record.Origin EqualTo Email-Billing` OR
+  `$Record.Priority IsNull`, so the flow may write `Priority` on the two email origins (overwriting
+  `M3-S03`'s routing-address `Medium`) or wherever it arrives null.
+- **Where assumption A2's null guard still holds, and where it is superseded.** `inputs.note` says
+  the flow *"writes only when the field is null and never overwrites an agent's value"*
+  (assumption **A2**, from deferred **Q14**). That rule is **unchanged** for `EntitlementId` and
+  `BusinessHoursId` — both keep an explicit `IsNull` guard — and for `Priority` on every origin
+  other than the two email ones, including `Web` and a manually created Case: a Case matching none
+  of the three conditions keeps whatever `Priority` a human typed (`Priority_Entered_By_A_Human_Is_
+  Kept`). It is superseded **only** for `Priority` on `Email-Support` and `Email-Billing`, where the
+  flow overwrites the routing address's `Medium` per G3 decision (2).
+- **Alternative rejected:** none newly rejected by this step — the three-way choice was raised and
+  closed at the G3 gate, not here.
+- **Grounded in:** `decisions.md` **D-M3S03-02**; `plan.json` `human_gates` `milestone:M3` decision
+  (2); `plan.json` `steps[M4-S03].notes` / `amendments[0]` (F-27); `artefacts/M4-S03/deploy-order.md`
+  § 0b.
+- **Evidence:** `artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml`
+  (`Decision_Derive_Priority`'s three conditions); `artefacts/M4-S03/deploy-order.md` § 0b's
+  condition table.
+
+## D-M4S03-03 — The Priority VALUE mapping (Severity 1 → High, Premier → High, else Medium) is derived, not answered — carried to the M4 gate like the holiday seed and the 720-minute placeholder
+
+- **Date:** 2026-09-12 · **Step:** `M4-S03` (`automation`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T08-11-40Z`, unchanged across the F-38 rebuilds); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a computed value shown rather than asserted, the same shape as
+  `decisions.md` **D-M4S02-02** and **D-M4S01-02**
+- **What was recorded:** G3 decision (2) (`D-M4S03-02` above) chose the *mechanism* — derive and
+  sometimes overwrite `Priority` — but no answered clarification anywhere in this build states
+  which `CasePriority` value a Severity 1, a Premier or a Standard case should end up with;
+  `M3-S03`'s own `web-to-case-form-contract.md` § 7 already recorded the same gap from the other
+  side. The mapping written into the flow: `Severity__c = Severity 1` → `High`, grounded in
+  `requirement.md` L18 ("Severity 1 outages are 24/7 and never pause") — the only unconditional
+  urgency statement in the requirement, and `Severity__c` has exactly one value on file.
+  `Support_Tier__c = Premier` → `High`, grounded in Q38 (Premier's 4-business-hour promise against
+  Standard's 1-business-day) and the fact that G3 decision (2) names `Support_Tier__c` as a
+  derivation input, so a rule that never reads it would not implement the approved option — this is
+  the weakest row: nothing says a Premier case is *urgent*, only that it is contractually faster.
+  Everything else writable → `Medium`, matching `M3-S03`'s own F-27 intake default. `High`/`Medium`
+  themselves are copied from `skills/admin/case-management-setup/references/metadata-examples.md`
+  § 1 (`CasePriority`, `Medium` carrying `<default>true</default>`); **no `CasePriority` value set
+  exists anywhere under `artefacts/`**, so no checker in this build can assert `High` is a value the
+  target org actually carries.
+- **Alternative rejected:** *severity-only* (`Severity 1` → `High`, everything else `Medium`,
+  leaving `Support_Tier__c` unread) — rejected because G3 decision (2) names `Support_Tier__c` as a
+  derivation input. *Tier-only* (`Premier` → `High`, `Standard` → `Medium`, ignoring severity) —
+  rejected because `requirement.md` L18 is the stronger of the two statements and a Severity 1 case
+  on a Standard account would otherwise land `Medium`.
+- **Grounded in:** `requirement.md` L18; `plan.json` clarification `Q38` (answered); `plan.json`
+  `human_gates` `milestone:M3` decision (2); `skills/admin/case-management-setup/references/
+  metadata-examples.md` § 1; `artefacts/M4-S03/deploy-order.md` § 1.
+- **Remedy:** carried to the M4 gate — the Process Owner confirms the three rows above before this
+  file is deployed to production. The edit is two `<stringValue>` elements in one file, the same
+  shape as `D-M4S02-02`'s `720`.
+- **Evidence:** `artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml`
+  (`Decision_Derive_Priority`'s outcomes); `artefacts/M4-S03/deploy-order.md` § 1's mapping table.
+
+## D-M4S03-04 — `<apiVersion>67.0</apiVersion>`, matching the cited template and the build-wide floor, not the cited skill's own 66.0 worked examples
+
+- **Date:** 2026-09-12 · **Step:** `M4-S03` (`automation`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T08-11-40Z`, unchanged across the F-38 rebuilds); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off (minor) — matching an already-settled build-wide floor rather than a
+  skill's older worked examples
+- **What was recorded:** the flow carries `<apiVersion>67.0</apiVersion>`, matching
+  `package.xml`'s `<version>67.0</version>` and this step's own cited template,
+  `templates/flow/RecordTriggered_Skeleton.flow-meta.xml`, which itself carries `67.0`.
+  `flow/record-triggered-flow-patterns/references/metadata-examples.md` writes `66.0` in all three
+  of its worked flows. The difference is recorded rather than hidden, and it changes nothing here:
+  the flow-governance policy floor is `min_api_version: 59`, and every element this flow uses has a
+  version floor far below both 66.0 and 67.0 — `RecordBeforeSave` 48.0, `triggerOrder` 54.0,
+  `FlowTest` 55.0, `<testType>WithAssertion</testType>` 66.0.
+- **Alternative rejected:** matching the cited skill's `66.0` worked examples instead. Rejected
+  because the build's API version was already settled at 67.0 at the G3 gate (`decisions.md`
+  **O-M3S03-01**, finding **F-31**, gate decision (6)), and the template this step is grounded in
+  already carries 67.0 — following the skill's older examples over the template and the build-wide
+  floor would have introduced a third `package.xml` version into a build that already carries the
+  cost of two (`O-M3S03-01`).
+- **Grounded in:** `artefacts/M4-S03/deploy-order.md` § 3; `decisions.md` **O-M3S03-01**;
+  `plan.json` `human_gates` `milestone:M3` decision (6);
+  `templates/flow/RecordTriggered_Skeleton.flow-meta.xml`.
+- **Evidence:** `artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml`
+  (`<apiVersion>67.0</apiVersion>`); `artefacts/M4-S03/package.xml` (`<version>67.0</version>`).
+
+## O-M4S03-01 — Neither cited skill documents a before-save fault-path shape; the flow's four `faultConnector`s route to the next Decision instead, and `check_flow_element_naming_conventions.py` reports it as four advisory `W-FAULT-TARGET` warnings
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `deploy-order.md` § 5 U2 and
+  `tests/M4-S03/summary.md`
+- **What was recorded:** `flow/flow-element-naming-conventions` Pattern 5 wants every fault routed
+  to `LogFault_<Parent>`, and `templates/flow/FaultPath_Template.md` defines that target as one
+  that logs *"via an `Application_Log__c` record"* — summarised by
+  `flow/record-triggered-flow-patterns/references/metadata-examples.md` as *"capture
+  `{!$Flow.FaultMessage}`, write one `Application_Log__c` row."* A `RecordBeforeSave` flow may
+  contain **no** `recordCreates` element at all (`check_record_triggered_flow_patterns.py` rule 2),
+  so that fault target structurally cannot exist here. The flow's four `faultConnector`s instead
+  route to the next `Decision`, so the interview continues on the documented no-match fallback
+  rather than stopping silently — which is what rule 4 exists to prevent —
+  and `check_flow_element_naming_conventions.py` reports four `W-FAULT-TARGET` warnings for it,
+  advisory only, exit 0 with no `--strict` declared.
+- **Why this is worth a gate line rather than a defect:** neither cited skill documents what a
+  before-save fault path should look like when the standard `LogFault_<Parent>` target is
+  structurally unavailable. The flow implements the only fault behaviour a before-save context
+  permits; the gap is in the library, not in this artefact.
+- **Remedy:** carried to the M4 gate; the durable fix is a documented before-save fault-path
+  pattern added to `flow/flow-element-naming-conventions` and/or
+  `flow/record-triggered-flow-patterns` — the § 8 deepen-a-skill signal.
+- **Grounded in:** `artefacts/M4-S03/deploy-order.md` § 5 U2; `templates/flow/FaultPath_Template.md`;
+  `flow/record-triggered-flow-patterns/references/metadata-examples.md` L20–21;
+  `check_record_triggered_flow_patterns.py` rule 2 (no `recordCreates` in a `RecordBeforeSave`
+  flow); `check_flow_element_naming_conventions.py` rule 4 (`W-FAULT-TARGET`).
+- **Evidence:** `tests/M4-S03/summary.md` (`check_flow_element_naming_conventions.py` — "4
+  W-FAULT-TARGET warnings"); `tests/M4-S03/check_flow_element_naming_conventions.stdout`.
+
+## O-M4S03-02 — `Settings:Flow`'s `enableFlowDeployAsActiveEnabled true` means a production deploy of this step runs Apex tests, and this build's only Apex (`M4-S05`) landed after this step was first built
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `artefacts/M4-S03/deploy-order.md`
+  § 4
+- **What was recorded:** `settings/Flow.settings-meta.xml` sets one field,
+  `enableFlowDeployAsActiveEnabled`, because it defaults to `false` and an `<status>Active</status>`
+  flow would otherwise land `Draft`. `flow/flow-governance/references/metadata-examples.md` § 1
+  quotes the guide directly: *"deploying an active process or flow in a production org causes your
+  Apex tests to run. If Apex tests don't launch your org's required percentage of active processes
+  and autolaunched flows, the deployment is rolled back"* (`api_meta.txt` L116877). This build's
+  only Apex is `M4-S05`'s trigger/service/test bundle. A production deploy of this step at
+  `<status>Active</status>` can therefore be rolled back for a reason that has nothing to do with
+  this flow, if the required launch percentage is not met. The sandbox path is unaffected — the
+  same field defaults `true` in non-production orgs. Separately **UNVERIFIED**: whether a
+  `FlowSettings` file carrying one element leaves the org's other twelve values untouched or resets
+  them is not stated in either cited skill; `api_meta.txt` L116824–116826 says only that there is
+  one settings file per settings component.
+- **Why this is worth a gate line rather than a defect:** the risk is a sequencing one, not an
+  artefact defect — `M4-S05` (the build's only Apex) is now `documented`, but no plan-level
+  sequencing states that this step's production-active deploy must be timed against it, and the
+  partial-settings-deploy behaviour is unconfirmed either way.
+- **Remedy:** confirm the partial-settings-deploy question against a sandbox retrieve before
+  deploying to production; sequence this step's production deploy alongside or after `M4-S05`'s so
+  the org's required active-automation launch percentage is met.
+- **Grounded in:** `artefacts/M4-S03/deploy-order.md` § 4; `flow/flow-governance/references/
+  metadata-examples.md` §§ 1, 8 row 2; `api_meta.txt` L116824–116826, L116877.
+- **Evidence:** `artefacts/M4-S03/settings/Flow.settings-meta.xml`
+  (`enableFlowDeployAsActiveEnabled` `true`).

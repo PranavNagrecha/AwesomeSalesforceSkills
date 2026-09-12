@@ -1,0 +1,262 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T07-45-25Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-45-25Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-45-25Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S02",
+    "status_at_entry": "built"
+  },
+  "summary": "M4-S02 tested after its W4 ambiguity block was closed at the source (commit a18f9164d, admin/entitlements-and-milestones v1.1.2). Both always-on structural checks passed: xml 4/4 files parse; manifest two-way consistent (3 derived members, all literal, all covered in both directions, 0 wildcards, no coverage-gap exclusions applicable). The one declared checker (check_entitlements_and_milestones.py --manifest-dir artefacts --strict, scope build) ran verbatim from the build directory and exited 0 with 0 errors, 0 warnings, 2 info notes (W4, now INFO not WARN, so --strict does not promote it); check-outputs reported ok:true, 5/5 declared outputs present, non-empty, and the 4 XML/meta-XML among them parse. The one manual test was checked against the Given/When/Then shape and found usable (names an observable, boolean outcome) and deferred verbatim to the M4 milestone gate, not ticked. Step set to tested. This run added no new finding beyond what artefacts/M4-S02/deploy-order.md sections 1-7 already carry to the gate as open items.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 rubric, HIGH row: the one declared acceptance test ran and the one manual test was correctly classified, both always-on checks completed, and every result came from an exit code this agent observed directly. No MEDIUM trigger fired: no command test was refused (none was declared), no manifest exclusion was needed for a coverage-gap type (none of the two types present -- EntitlementProcess, MilestoneType -- lacks a standalone file or manifest member), and check-outputs reported no missing, empty or malformed declared output. No LOW trigger fired: the one declared checker resolved to exactly one existing script, the artefact directory holds 6 files (4 metadata/manifest + 2 markdown), and every exit code was captured to tests/M4-S02/.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "The checker's W4 finding is not being waved through by a weakened rule -- it is consistent with this step's own recorded design. milestone-completion-decision.md records D10: the First Response milestone is completed by an after-update Apex trigger built in M4-S05, not by a workflow alert or field update, and no clarification anywhere in this build names a milestone notification's recipient, offset, sender or template. An action-less <timeTriggers>/<successActions> pair on both processes is therefore the designed shape, not a gap the rule change papered over. Re-running the same command this session reproduced the identical 0 error/0 warning/2 info result recorded in deploy-order.md section 0.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M4-S02/checker_stdout.txt",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "The manifest is fully explicit -- no wildcard members -- despite both EntitlementProcess and MilestoneType supporting the * wildcard per the skill's own metadata reference. deploy-order.md section 1 records this was a deliberate choice so the step's own manifest acceptance test can assert two-way member<->file consistency, which a wildcard member cannot be checked against in the manifest-to-file direction. All 3 derived members (2 EntitlementProcess, 1 MilestoneType) matched literal <members> entries with nothing left over in either direction.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/package.xml",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "admin",
+      "observation": "Standard's minutesToComplete (720) is a derived value, not an answered one -- Q38 says '1 business day' and nothing in this build converts a business day to minutes directly; deploy-order.md section 3 documents the derivation chain (US Support calendar, 08:00-20:00, 12 open hours x 60). The checker's E1 rule only confirms the field is present and numeric; it cannot and does not confirm 720 is the number the Process Owner meant. This is unchanged by this test run and remains open at the M4 gate exactly as deploy-order.md records it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "This step's declared checker is scope build (--manifest-dir artefacts, not artefacts/M4-S02), and the intent and the command agree -- the W3 BusinessHours cross-reference this checker also makes needs M4-S01's settings file, which lives outside this step's own artefacts. Recorded here because the same class of cross-referential-checker-at-wrong-scope defect is what standards/build-orchestration.md section 5 warns against for four named checkers; this one is not on that list but behaves the same way, and step scope alone (as v3's superseded test ran it) silently produced 4 W6 warnings instead of a real cross-reference, per deploy-order.md section 0's kept record.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "Entitlement Management's org-level switch (settings/Entitlement.settings-meta.xml: enableEntitlements, enableEntitlementVersioning, enableMilestoneStoppedTime) is owned by no step in this plan, per deploy-order.md section 5. Every file this step writes is inert without enableEntitlements on. This agent cannot resolve who owns it -- that is a plan-scoping decision for the M4 gate, not a test-time judgment.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "The file names and package.xml member forms this step wrote (First_Response_Premier, mixed case, no _v suffix) are UNVERIFIED against what a real org retrieve would return -- deploy-order.md sections 4.1-4.2 record that the skill documents the file name as NameNorm (lowercased) plus a version suffix when versioning is on, and this build is design-only with no org to retrieve against. Not resolvable by this test run; the checker has no rule for file-name casing and none was expected to fire.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/entitlementProcesses",
+        "count": 2
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "M4-S02 is tested; the doc keeper is the next stage of the loop.",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the workbook rows, traceability entries and decisions log for this step need to record the closed W4 ambiguity and the tested status before the M4 gate.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "M4-S05 (the CompletionDate writer this step's design depends on) is still pending, and M4-S04 is being rebuilt concurrently by another runner.",
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "Because until M4-S05 is built and tested, the two processes this step deployed are tracking-only -- CaseMilestone rows open and never close -- and milestone-verifier cannot pass the M4 acceptance report while that dependency is pending.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "Section 5 - Acceptance tests; Checker scope; deploy deny-list; check-outputs; Section 4 metadata step types",
+      "used_for": "The five test types and their runners, the rule that a declared checker command is run verbatim from the build directory, the deny-list the checker command was screened against, the rule that scope is declared intent rather than a path source, and the rule that a metadata step with no package.xml fails rather than skips the manifest check"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the mandatory Process Observations block and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence of the report/envelope pair and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked against the precondition; none applied because the step's status was built"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "branch": "Run-time Agents",
+      "used_for": "The ban on org writes, on mutating files outside the supplied build directory, and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "branch": "$defs.acceptanceTest, $defs.step.properties.outputs",
+      "used_for": "The shape of acceptance_tests[] and outputs[], and the meaning of scope as declared intent rather than a path source"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format directory-per-type layout that turns each of this step's artefact files into the metadata type and member the manifest check compares against package.xml"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar the manifest was judged against - one types block per type, explicit members naming components, and what a wildcard member would have meant had one been used"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Confirming that neither EntitlementProcess nor MilestoneType is a no-standalone-file or no-manifest-member type, so no exclusion applies to either direction of the manifest check"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then shape the manual test was checked against before deferral; it names an explicit Given, When and a Then made of concrete checkable facts, so it was reported usable rather than unusable"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "The bar for a manual line being boolean and tickable by a human without re-interpretation, applied to the same manual test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/SKILL.md",
+      "used_for": "Owns the declared checker (check_entitlements_and_milestones.py) run verbatim as this step's one checker test"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "build_id": "case-onboarding",
+    "status_set": "tested",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M4-S02/results.json",
+    "tests_run": 3,
+    "failed": [],
+    "skipped_manual": [
+      "Given assumption A27, when artefacts/M4-S02/ is listed, then it holds exactly two entitlementProcesses files (First_Response_Premier, First_Response_Standard) and exactly one milestoneTypes file (First Response), the Premier process carries minutesToComplete 240, and both processes name a <businessHours> that is a <name> in M4-S01's BusinessHours settings file."
+    ],
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree over artefacts/M4-S02/** (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "4 files, 4 parsed, 0 failed",
+        "capture": "tests/M4-S02/xml_check.txt"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way file<->member derivation against artefacts/M4-S02/package.xml (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "3 mapped files, 3 explicit members (2 EntitlementProcess, 1 MilestoneType), 0 wildcards, 0 unmatched in either direction; deploy-order.md and milestone-completion-decision.md excluded as non-metadata markdown",
+        "capture": "tests/M4-S02/summary.md (Detail > manifest)"
+      },
+      {
+        "name": "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py",
+        "type": "checker",
+        "declared_scope": "build",
+        "runner": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "0 error(s), 0 warning(s), 2 info note(s); OK: no ERROR findings. Both info notes are W4, promoted to INFO (not WARN) by commit a18f9164d, so --strict does not fail on them.",
+        "capture": "tests/M4-S02/checker_stdout.txt"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M4-S02",
+        "exit_code": 0,
+        "verdict": "ok",
+        "detail": "{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []} - the second half of the checker test's pass condition",
+        "capture": "tests/M4-S02/check_outputs.json"
+      },
+      {
+        "name": "manual: file-count / minutesToComplete / businessHours-name",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M4 milestone gate",
+        "detail": "Given/When/Then shape present and an observable, boolean outcome named (exact file names, exact count, exact minutesToComplete value, exact cross-file name match), so usable. NOT ticked here."
+      }
+    ],
+    "deny_list_screening": {
+      "standard": "standards/build-orchestration.md section 5 deploy deny-list",
+      "commands_screened": 1,
+      "commands_refused": 0,
+      "detail": "The one declared checker command was screened against the full deny-list pattern before execution; it did not match, so it ran verbatim as declared with no flag appended, removed, re-ordered or substituted"
+    },
+    "dimensions_skipped": []
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "the workbook rows, traceability entries and decisions log for M4-S02 need to record the closed W4 ambiguity (commit a18f9164d) and the tested status before the M4 gate"
+    },
+    {
+      "agent": "build-step-runner",
+      "because": "M4-S05, the CompletionDate writer this step's design depends on (D10), is still pending, and this step's two processes remain tracking-only until it is built and tested"
+    }
+  ]
+}

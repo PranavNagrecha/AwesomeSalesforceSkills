@@ -1,0 +1,287 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T08-40-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-40-00Z-runner.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-40-00Z-runner.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S03",
+    "reason": "F-38 corrected: reports/MOCK-DEPLOY-M4.md run 3; the operator had already reset the step tested -> failed -> pending -> running",
+    "credentials_present": false
+  },
+  "summary": "Re-ran step M4-S03 for the corrected F-38 rebuild, the third build of this step. The step arrived already claimed running by the operator, who had reset it tested -> failed -> pending after reports/MOCK-DEPLOY-M4.md run 3, so no second running claim was appended. metadata-builder ran inline and removed one <parameters> block from the FlowTest's Start test point plus rewrote deploy-order.md section 0; five artefacts remain byte-identical to the first build by SHA-256. All three declared checkers exit 0 verbatim from the build directory, check-outputs is ok, and the step was set built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "build-step-runner Step 9: MEDIUM, unchanged and for the same reason as the first run - deploy-order.md is an undeclared artefact. Every other HIGH condition held: every required input resolved from plan.json plus the named finding, check-outputs exited 0, nothing was written outside artefacts/M4-S03/. The owning agent's MEDIUM on the derived Priority mapping is carried.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "runnability",
+    "input-binding",
+    "artefact-capture",
+    "status-transition"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The six acceptance_tests on this step belong to agents/step-tester per standards/build-orchestration.md section 5; this agent does not run them and did not.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "process",
+      "observation": "Three builds of this step changed one file twice and left five untouched, because the first build's declared outputs isolated the uncertain artefact from the expensive one - the flow has validated against the org since run 2 and was never reopened.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/deploy-order.md",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "process",
+      "observation": "The step's inputs.note and its notes amendment disagreed about the Priority null guard, and the disagreement was resolved by an approved human gate rather than by the builder picking a side - the amendment, decisions.md D-M3S03-02 and the milestone:M3 gate note all point the same way.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "process",
+      "observation": "The step was already at running when this invocation began, with the operator's reset and re-claim recorded in runs[]; no second claim was made, so runs[] shows one running entry for this rebuild rather than two.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "process",
+      "observation": "This is the second round-trip on one finding: run 2's error text was satisfiable by two different shapes, so following it literally produced a second rejection - a cost the step-tester and the checkers could not have avoided, because nothing in the library inspects FlowTest parameters.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M4.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "process",
+      "observation": "steps[M4-S03].outputs[] does not declare artefacts/M4-S03/deploy-order.md even though agents/build-planner Step 6 and metadata-builder Step 7 both make that file unconditional; M4-S01, M4-S02 and M4-S04 all declare it.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "process",
+      "observation": "M4-S03 is built and not tested.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the step's six acceptance tests, three checkers and three review lines, are what move it from built to tested, and this agent does not run them."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "process",
+      "observation": "Once tested, three new decisions from this run need recording.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the Priority value mapping, the 67.0-over-66.0 apiVersion choice and the before-save fault-path skill gap are decisions.md entries, not deploy-order.md footnotes."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "flow/record-triggered-flow-patterns",
+      "path": "skills/flow/record-triggered-flow-patterns/SKILL.md",
+      "used_for": "references/metadata-examples.md section 1 supplied the RecordBeforeSave element set, the <start> child ordering, the alphabetical top-level ordering, triggerOrder, and section 4 the FlowTest shape"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-decision-element-patterns",
+      "path": "skills/flow/flow-decision-element-patterns/SKILL.md",
+      "used_for": "outcome ordering most-specific-first, the IsNull-against-booleanValue null-guard shape, the named default, and the advanced conditionLogic form '(1 OR 2 OR 3) AND (4 OR 5)'"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-element-naming-conventions",
+      "path": "skills/flow/flow-element-naming-conventions/SKILL.md",
+      "used_for": "the Get_ / Decision_ / Assignment_ element verb prefixes and the non-default, non-duplicate label rules; its Pattern 5 LogFault_<Parent> target is the convention U2 records as unsatisfiable in a before-save flow"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-governance",
+      "path": "skills/flow/flow-governance/SKILL.md",
+      "used_for": "references/metadata-examples.md section 6 is the source of flow-governance-policy.yaml verbatim; section 1 the FlowSettings element set and enableFlowDeployAsActiveEnabled semantics; section 8 the settings-before-flows deploy order"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "gotcha 4 (Case.BusinessHoursId is empty unless something sets it, and empty means the org default) is what makes the explicit US fallback stamp a choice rather than a formality"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/SKILL.md",
+      "used_for": "gotcha 2 (no EntitlementId at creation = no milestone at all) and references/metadata-examples.md section 8 (WHERE Status = 'Active') grounded the Entitlement Get Records filter"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "references/metadata-examples.md section 1 CasePriority standard value set is the only grounded source in this build for the literals High and Medium"
+    },
+    {
+      "type": "template",
+      "id": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "path": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "used_for": "the flow skeleton and its apiVersion 67.0, which is the value written rather than the cited skill's 66.0"
+    },
+    {
+      "type": "template",
+      "id": "templates/flow/FaultPath_Template.md",
+      "path": "templates/flow/FaultPath_Template.md",
+      "used_for": "read to confirm the canonical fault-path target writes an Application_Log__c record, which a before-save flow cannot do - the basis of U2"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2 - 'Yes' leaf: same-record field write in under ~10s",
+      "used_for": "D1 routed this step to a before-save flow rather than Apex; cited, not re-decided"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/flow-pattern-selector.md",
+      "path": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q3 - 'No' leaf: before-save flow, read-only cross-object lookup permitted",
+      "used_for": "D2 settled that the Account, Entitlement and BusinessHours Get Records are legal in a before-save flow"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table (automation, declarative half owned by metadata-builder) and the status machine"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{}, outputs[] and runs[] this agent reads and writes"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format directory-per-type layout the artefacts obey: flows/, flowtests/, settings/"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming Flow, FlowTest and Settings are Metadata API component types, so the step's declared outputs are deployable and flow-governance-policy.yaml correctly is not"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step was derived from, mapped onto metadata-builder's Inputs rather than paraphrased from the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the Q-id and decision-id conventions echoed into this envelope so the doc keeper can join step to requirement without re-deriving it"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "checking the step's inputs for credential-shaped values before echoing them; none were present, so nothing was redacted"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md returned 39 - the owner declares outputs under artefacts/<step-id>/ and takes a build_dir, so no Step 7 relocation was needed",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-40-00Z.json",
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S03/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S03/no-account-fallback-note.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S03/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S03/settings/Flow.settings-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S03/flow-governance-policy.yaml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S03/deploy-order.md",
+        "declared": false
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S03 built --run-agent metadata-builder --envelope envelopes/M4-S03/2026-09-12T08-40-00Z.json --result \"<one-line outcome>\" --started 2026-09-12T08:40:00Z",
+    "next_command": "python3 scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json --milestone M4",
+    "terminal_status": "built",
+    "rebuild": {
+      "finding": "F-38 (corrected)",
+      "build_number": 3,
+      "previous_runs": [
+        "2026-09-12T08-11-40Z",
+        "2026-09-12T08-30-00Z"
+      ],
+      "reset_by": "operator (tested -> failed -> pending -> running)",
+      "closes": "deploy-order.md U4, in both directions"
+    }
+  }
+}

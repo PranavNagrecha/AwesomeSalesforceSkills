@@ -1,0 +1,53 @@
+{
+  "step_id": "M4-S05",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given no offline Apex compiler exists in the sf CLI, when the step is accepted, then the reviewer confirms every non-platform identifier in the emitted code is quoted from skills/apex/entitlement-apex-hooks/references/examples.md or from the cited template, and that CaseMilestoneServiceTest asserts CompletionDate is non-null after the trigger runs."
+  ],
+  "details": {
+    "run_note": "Re-run superseding the stale 2026-09-12T08-24-48Z results, which were written against the pre-rebuild six-output / three-Apex-file tree. This run is against the F-37 rebuild (run 2026-09-12T08-32-00Z): eight declared outputs, four Apex files including the added classes/TestDataFactory.cls.",
+    "xml": {
+      "files": [
+        "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+        "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+        "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml",
+        "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml"
+      ],
+      "result": "all parse"
+    },
+    "manifest": {
+      "result": "skipped-not-applicable",
+      "reason": "step type automation, owning agent apex-builder — The Apex exception (standards/build-orchestration.md § 5): no package.xml exists in this step's own artefacts, and none is expected here. Its ApexClass/ApexTrigger members are aggregated into the build-level manifest by M5-S05 (type docs, metadata-builder, depends_on this step), which is what plan.json acceptance_tests[2].expected names.",
+      "note": "artefacts/M4-S02/package.xml exists but belongs to a different step's own metadata type and is not a manifest for this step's Apex members; the Apex exception applies to this step unconditionally regardless of a dependency's own manifest."
+    },
+    "checker": {
+      "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05",
+      "exit_code": 0,
+      "stdout": "scanned 4 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN",
+      "stderr": "",
+      "check_outputs": {
+        "ok": true,
+        "missing": [],
+        "empty": [],
+        "malformed": []
+      },
+      "verdict": "pass"
+    },
+    "brace_balance_supplemental": {
+      "description": "Supplemental structural sanity check run at the invoking agent's explicit instruction, not one of plan.json's declared acceptance_tests. Not counted toward passed/failed.",
+      "files": {
+        "artefacts/M4-S05/classes/CaseMilestoneService.cls": "balanced ({}=16/16, ()=36/36, []=3/3)",
+        "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls": "balanced ({}=15/15, ()=77/77, []=8/8)",
+        "artefacts/M4-S05/classes/TestDataFactory.cls": "balanced ({}=17/17, ()=48/48, []=3/3)",
+        "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger": "balanced ({}=1/1, ()=2/2, []=0/0)"
+      },
+      "raw_output_path": "tests/M4-S05/brace-balance.txt"
+    }
+  }
+}

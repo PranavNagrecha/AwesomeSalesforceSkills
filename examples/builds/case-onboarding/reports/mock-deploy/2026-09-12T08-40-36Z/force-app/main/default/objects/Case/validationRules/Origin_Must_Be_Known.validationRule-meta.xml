@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Origin_Must_Be_Known</fullName>
+    <active>true</active>
+    <description>Origin must carry one of the three CaseOrigin values M1-S01 defines; routing and the acknowledgement read it. Bypass: Bypass_Case_Intake_Validation (M2-S01). Rationale: deploy-order.md.</description>
+    <errorConditionFormula>AND(
+  NOT($Permission.Bypass_Case_Intake_Validation),
+  OR(
+    ISBLANK(TEXT(Origin)),
+    NOT(
+      OR(
+        ISPICKVAL(Origin, "Email-Support"),
+        ISPICKVAL(Origin, "Email-Billing"),
+        ISPICKVAL(Origin, "Web")
+      )
+    )
+  )
+)</errorConditionFormula>
+    <errorDisplayField>Origin</errorDisplayField>
+    <errorMessage>Set Origin to Email-Support, Email-Billing or Web before saving this case. Assignment and the customer acknowledgement both read Origin, so a case with a blank or unrecognised Origin is neither routed nor acknowledged.</errorMessage>
+</ValidationRule>

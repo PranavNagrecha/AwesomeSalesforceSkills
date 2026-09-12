@@ -1,0 +1,330 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T08-01-15Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T08-01-15Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T08-01-15Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S04",
+    "reason": "F-36 rebuild. reports/MOCK-DEPLOY-M4.md run 1 (checkOnly, sfskills-dev, API 67.0) rejected the 07-22-10Z build with 'EscalationRules Case: notifyToTemplate is required'. The operator reset the step tested -> failed -> pending and re-claimed it running with a run appended; this agent ran no running transition of its own.",
+    "credentials_present": false,
+    "note": "No org alias exists to pass: plan.build_mode is design-only and plan.org is null."
+  },
+  "summary": "Rebuilt M4-S04 after F-36 and set it built again. The step was already `running` when this run started - the operator reset it tested -> failed -> pending and re-claimed it - so no running transition was made here and the Step 2 next-list check did not apply. The owning agent re-read admin/escalation-rules at v1.1.2 (commit 9ae71856d, which turned the org's rejection into checker rule E10), confirmed the declared checker now fails the byte-identical file with two E10 lines, added one folder-qualified notifyToTemplate to each of the two actions from the plan's own M3-S02 outputs, and changed nothing else. Declared build-scope checker exits 0 with W1 and two I3 lines; check-outputs ok; both envelopes validate. The same five files stand under artefacts/M4-S04/ - three edited, two untouched - and nothing was written outside that directory.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM row: the undeclared deploy-order.md artefact is still present, and one required value - the notifyToTemplate - resolved from an upstream step's outputs rather than from the step's own inputs, because no answer bound to this step names a template. Every other HIGH condition held.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The owning agent needed no repair pass: the plan's step note had already found both checker constraints (E2 and E7) with a fixture at plan time, and the builder avoided both by construction.",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every required input of metadata-builder resolved from plan.json step inputs or from a depends_on step's artefacts; nothing fell through to requirement.md except the Severity 1 threshold, which the builder recorded as a decision rather than a default.",
+      "domain": "input-binding",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 7
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "M4-S02 was being built concurrently by another runner and the two steps share no artefact path, no declared output and no package.xml; both write plan.json only through the CLI, and the M4-S04 transitions applied cleanly against a plan the other runner was also appending runs to.",
+      "domain": "concurrency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The owning agent's envelope carries a high-severity finding the runner is passing through unchanged: notifyCaseOwner true on a Billing-queue-owned case posts into billing@acme.example, a live Email-to-Case intake address, which makes a new case that escalates and notifies again.",
+      "domain": "mail-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T07-22-10Z.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The step declares four outputs and the owning agent writes five files, because deploy-order.md is written on every metadata-builder run and no metadata step in this build declares it; the mismatch has now recurred on six steps.",
+      "domain": "plan-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/deploy-order.md",
+        "count": 6
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's outputs[] names escalation-activation-runbook.md and escalation-monitoring-note.md but not deploy-order.md, so the plan already anticipates prose artefacts from this step and simply omits the one the owning agent's contract guarantees.",
+      "domain": "plan-drift",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step is built; its four declared acceptance tests have not been run by anyone.",
+      "domain": "process",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 4
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because build-step-runner never runs a step's acceptance tests, and the two manual tests on this step carry the 480-not-8 and businessHoursSource assertions"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Three decisions came out of this step, one of which closes an open check O-M3S04-02 left for the next step.",
+      "domain": "process",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/deploy-order.md",
+        "count": 3
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because the equal-480 reading, the confirmed Billing mail-loop exposure and the Q42 narrowing need decisions.md entries before the M4 gate, and this agent writes none of those files"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The operator's reset made the rebuild ordinary rather than exceptional: the step arrived running with a run already appended, so this agent claimed nothing, skipped no gate and reached around nothing.",
+      "domain": "status-machine",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 5
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The launch instruction asserted that Q45 names the escalation template; it does not, and the runner's own Step 5 rule that an invocation is not a source is what caught it - the plan resolves the same template through M3-S02's declared outputs instead.",
+      "domain": "input-binding",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Two of this milestone's four steps have now been blocked or failed by a checker or an org on a constraint no library file carried at build time (M4-S01's 24/7 calendar, M4-S04's notifyToTemplate), and both were closed at the skill rather than in the artefact.",
+      "domain": "skill-depth",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 2
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step record fields and the status machine, section 5 checker scope (why this step's checker is declared at build scope), section 8 the plan CLI as sole writer of derived state"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rules, and the requirement to redact anything credential-shaped in an echoed input"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum - none was used on this run"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules binding this invocation, including the ban on org writes and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{}, outputs[] and runs[] this agent reads and the fields it leaves alone"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming escalationRules/Case.escalationRules-meta.xml sits in the source-format directory-per-type shape a later deploy and the tester's manifest check can read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming EscalationRules is a Metadata API type, so the step's one metadata output is deployable rather than a document with an xml suffix"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema behind the step's inputs, so the owning agent was handed the plan's cells rather than a paraphrase of the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ/US id conventions echoed into the envelope so the doc keeper can join step to requirement without re-deriving it"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "checking the step's inputs for credential shapes before echoing them - none present, so nothing was redacted"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the four declared acceptance tests on M4-S04 are the tester's to execute; this agent never runs them"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "three decisions from this step, including the confirmed Billing mail-loop exposure, need decisions.md entries before the M4 gate"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S04",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md returned 39, so the owner has a build-layer contract and was given the artefacts/M4-S04/ constraint as a constraint rather than a preference.",
+    "owning_envelope_path": "envelopes/M4-S04/2026-09-12T07-58-40Z.json",
+    "terminal_status": "built",
+    "blocked_reason": null,
+    "relocations": [],
+    "relocations_note": "None. The owner is build-aware and wrote directly under artefacts/M4-S04/; no file landed in docs/reports/metadata-builder/ or anywhere else to move.",
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml",
+        "declared": true,
+        "changed_in_rebuild": true
+      },
+      {
+        "path": "artefacts/M4-S04/escalation-activation-runbook.md",
+        "declared": true,
+        "changed_in_rebuild": true
+      },
+      {
+        "path": "artefacts/M4-S04/escalation-monitoring-note.md",
+        "declared": true,
+        "changed_in_rebuild": false
+      },
+      {
+        "path": "artefacts/M4-S04/package.xml",
+        "declared": true,
+        "changed_in_rebuild": false
+      },
+      {
+        "path": "artefacts/M4-S04/deploy-order.md",
+        "declared": false,
+        "changed_in_rebuild": true,
+        "note": "Undeclared. metadata-builder writes it on every run; no metadata step in this build declares it (O-M3S02-03). This is the MEDIUM in Step 9."
+      }
+    ],
+    "missing_outputs": [],
+    "files_outside_step_dir": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "declared_checker_observed": {
+      "command": "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+      "scope": "build",
+      "exit_code_before_edit": 1,
+      "exit_code_after_edit": 0,
+      "note": "Run by the owning agent under its AGENT.md Step 8, verbatim and from the build directory, not as an acceptance test - step-tester owns the declared tests and must run again."
+    },
+    "input_map": {
+      "build_dir": "invocation",
+      "step_id": "invocation",
+      "api_version": "67.0 - from the milestone:M3 gate note decision 6 (finding F-31) and consistent with M3-S01..M4-S01 package.xml files",
+      "step_inputs.decisions": "plan.json steps[M4-S04].inputs.decisions = [D7]",
+      "step_inputs.answers": "plan.json steps[M4-S04].inputs.answers = [Q42,Q43,Q44,Q45,Q46,Q47,Q91], matched to plan.json.clarifications by recorded id",
+      "step_inputs.note": "plan.json steps[M4-S04].inputs.note - carries the two fixture-found checker constraints (E2, E7)",
+      "upstream_outputs": "resolved to real paths under artefacts/ for all four depends_on steps: M4-S01, M2-S04, M3-S02, M3-S04",
+      "invocation_overrides": "One. The launch instruction said Q45 names the escalation template; Q45's answer names no template. Built from the plan per Step 5 (an invocation is not a source); the plan supplies the same value through M3-S02's outputs. Reported here rather than reconciled silently.",
+      "notifyToTemplate": "case_intake/Case_Escalated_To_Tier2, from upstream outputs (M3-S02, a depends_on step). NOT from Q45, which names no template despite the launch instruction saying so."
+    },
+    "step_gate": "steps[M4-S04].human_gate is false and gate milestone:M3 is approved; no gate was approved, requested or recorded by this agent, and milestone:M4 remains pending",
+    "concurrency": "M4-S02 was being built concurrently by a second runner. No artefact of M4-S02 was read, written or listed by this run; plan.json was touched only through build_plan.py set-status and check-outputs.",
+    "set_status_commands": [
+      "(no running transition - the operator had already claimed the step)",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S04 built --run-agent metadata-builder --envelope envelopes/M4-S04/2026-09-12T07-58-40Z.json --result \"<one-line outcome>\" --started 2026-09-12T07:55:00Z"
+    ],
+    "envelope_validation": [
+      {
+        "path": "envelopes/M4-S04/2026-09-12T07-58-40Z.json",
+        "result": "OK"
+      },
+      {
+        "path": "envelopes/M4-S04/2026-09-12T08-01-15Z.json",
+        "result": "OK"
+      }
+    ],
+    "persistence_deviation": "The Wave 10 report pair under docs/reports/build-step-runner/ and docs/reports/metadata-builder/ was not written: the invocation constrained writes to the build directory. Both build-scoped envelope pairs were written and both validate.",
+    "carried_from_owning_envelope": {
+      "confidence": "MEDIUM",
+      "high_severity_finding": "R2 unchanged and now more live - notifyToTemplate addresses the same recipient notifyCaseOwner selects, so it makes the mail R2 describes actually send. Still an activation prerequisite; the rule ships inactive.",
+      "unverified_items": [
+        "U1 Case.Severity__c in criteriaItems",
+        "U2 null Case.BusinessHoursId under a Case source",
+        "U3 assignedToTemplate delivery to an email-less queue",
+        "U4 engine batching interval",
+        "U5 one-active-rule ceiling",
+        "U6 one template serving both notifyToTemplate and assignedToTemplate"
+      ]
+    },
+    "prior_envelopes": [
+      "envelopes/M4-S04/2026-09-12T07-22-10Z.json",
+      "envelopes/M4-S04/2026-09-12T07-27-10Z.json"
+    ],
+    "prior_terminal_status": "built -> tested -> failed -> pending -> running (operator), rebuilt here",
+    "rebuild": {
+      "finding": "F-36",
+      "org_error": "EscalationRules Case: notifyToTemplate is required",
+      "source": "reports/MOCK-DEPLOY-M4.md run 1 (checkOnly, sfskills-dev, API 67.0)",
+      "who_reset": "operator - set-status tested -> failed -> pending -> running, run appended before this invocation",
+      "runner_did_not_claim": "The step was already running on arrival, so no set-status running was issued here. Step 2's next-list check does not apply to a step the operator has already claimed; build_plan.py next lists pending steps only.",
+      "skill_fix": "commit 9ae71856d - admin/escalation-rules v1.1.2: E10, I4, gotcha 13, anti-pattern 6, folder-qualified templates on every example",
+      "change": "One notifyToTemplate element plus a comment on each of two escalationAction blocks; deploy-order.md and the activation runbook updated to record it. package.xml and escalation-monitoring-note.md untouched.",
+      "stale_records": "step-tester run 2026-09-12T07-35-25Z and the 07-22-10Z / 07-27-10Z envelope pairs are superseded. M4 carries no milestone verdict, so nothing above the step is invalidated."
+    }
+  }
+}

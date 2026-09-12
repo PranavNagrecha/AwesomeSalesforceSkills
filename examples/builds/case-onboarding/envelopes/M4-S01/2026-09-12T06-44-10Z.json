@@ -1,0 +1,294 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T06-44-10Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-44-10Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-44-10Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S01",
+    "reason": "not supplied — the step was pending and appeared in `build_plan.py next --milestone M4`, so no Step 2 carve-out applied",
+    "build_mode": "design-only",
+    "owning_agent": "metadata-builder",
+    "owning_agent_requires_org": false,
+    "credentials_present": "none — no value in steps[M4-S01].inputs{} or in the answers it names matched a credential shape per skills/devops/pipeline-secrets-management, so nothing was redacted"
+  },
+  "summary": "Ran one step: M4-S01, owned by metadata-builder. The step was returned by `build_plan.py next --milestone M4` (plain `next` stops at M3 because M3-S05 is blocked), was claimed pending -> running, and the owning agent's Plan was executed inline — this host's non-Agent-tool form. It wrote four files under artefacts/M4-S01/, three declared and one (deploy-order.md) undeclared by design, and check-outputs returned ok on all three declared outputs. The step was nonetheless set blocked with reason `checker-policy`, because the owning agent returned a REFUSAL_NEEDS_HUMAN_REVIEW envelope: the checker this step's own acceptance_tests[0] declares with expected exit 0 rejects the plan-mandated 'Severity 1 24x7' calendar, whose all-midnight seven-day shape is both the only always-open form the cited skill documents and the exact shape that checker rule exists to catch. Setting the step built would have handed the tester a step with a known-red declared test; deleting the calendar would have overruled the plan. Both envelopes validate.",
+  "confidence": "LOW",
+  "confidence_rationale": "Step 9 rubric, LOW row: the step was set blocked. The HIGH conditions otherwise held — the step was in `next`, every required input resolved from the plan, both envelopes validate, check-outputs exited 0 and nothing was written outside artefacts/M4-S01/.",
+  "outcome": "completed",
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The step's four acceptance tests belong to agents/step-tester per standards/build-orchestration.md section 5. The declared checker was run by the owning agent as part of building, and its exit 1 is quoted as evidence rather than recorded as a test result.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Once the checker-policy decision is made and the step is re-run to `built`, run /test-build-step on M4-S01."
+    },
+    {
+      "dimension": "terminal-status-built",
+      "state": "not-run",
+      "reason": "The step did not reach `built`, so no `set-status ... built` transition was attempted; `blocked` was set instead with the mandatory --blocked-reason.",
+      "confidence_impact": "LOW",
+      "retry_hint": "`build_plan.py set-status ... M4-S01 running` is allowed from `blocked` when a reason is supplied, so the step can be re-run in place once a human decides."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The CLI quirk the caller flagged reproduced exactly: plain `next` stops at M3 because M3-S05 is blocked, while `next --milestone M4` returns M4-S01 as the only runnable step, and `set-status running` then accepted the claim without argument.",
+      "evidence": {
+        "source": "input",
+        "path": "scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json --milestone M4"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The owning agent is build-aware — the Step 4 grep over agents/metadata-builder/AGENT.md returned 39 build-layer mentions — so every file landed under artefacts/M4-S01/ on the first attempt and no Step 7 relocation was needed.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 39
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "plan-quality",
+      "observation": "A step whose inputs and manual acceptance test both require an always-open calendar declares, as its own first acceptance test, a checker that rejects every always-open calendar; the test's description enumerates three of that checker's rules and not the one that fires, so plan verification had nothing to catch it on.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S01].inputs.calendars vs acceptance_tests[0])"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "build-orchestration",
+      "observation": "Blocking M4-S01 blocks the milestone: M4-S02 and M4-S04 both list it in depends_on, and M4-S03 depends on M4-S02, so three of M4's five steps wait on a decision that is one amend-step or one checker-rule change.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S02..S04].depends_on)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "deliverable-contract",
+      "observation": "Neither agent's Wave 10 report pair under docs/reports/ was written, because the invocation constrained writes to the build directory; the build-scoped envelopes under envelopes/M4-S01/ are complete and both validate.",
+      "evidence": {
+        "source": "input",
+        "path": "agents/build-step-runner/AGENT.md (Persistence (Wave 10 contract))"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "build-orchestration",
+      "observation": "The blocked reason `checker-policy` is not one of the two slugs the runner's Step 8 names; it was coined because the cause is neither a skill gap (the skill documents every element written) nor a missing input, and Step 8 explicitly allows a short slug of its own for any other blocking cause.",
+      "evidence": {
+        "source": "input",
+        "path": "agents/build-step-runner/AGENT.md (Step 8, --blocked-reason)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-orchestration",
+      "observation": "The owning agent returned a refusal block (REFUSAL_NEEDS_HUMAN_REVIEW) alongside a complete deliverable rather than instead of one, which this agent's Step 8 reads as the `blocked` path ('the agent refused') rather than as a runner-level refusal that would have left the step stranded at `running`.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-31-35Z.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The decision this step is blocked on is a plan question — whether the 24/7 promise lives in a calendar or in an escalation entry — and it touches M4-S01 and M4-S04 together.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S04].inputs.note)"
+      },
+      "suggested_followup_agent": "plan-verifier",
+      "followup_reason": "Because it re-reads the amended step against the checker it declares, which is precisely the class of conflict that reached build time here."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Once a human resolves the policy question and the step is re-run to built, its four acceptance tests still have to be run by their owner.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S01].acceptance_tests)"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the declared checker, the XML parse and the manifest consistency check are its tests to run, not this agent's."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S01",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md -> 39",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-31-35Z.json",
+    "terminal_status": "blocked",
+    "blocked_reason": "checker-policy",
+    "relocations": [],
+    "artefacts": [
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/holiday-maintenance-runbook.md",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/package.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/deploy-order.md",
+        "declared": false
+      }
+    ],
+    "missing_outputs": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "input_map": [
+      {
+        "agent_input": "build_dir",
+        "value": ".sfskills/builds/case-onboarding/",
+        "source": "caller"
+      },
+      {
+        "agent_input": "step_id",
+        "value": "M4-S01",
+        "source": "caller"
+      },
+      {
+        "agent_input": "api_version",
+        "value": "67.0",
+        "source": "caller (G3 decision 6) — overrides the agent's documented 62.0 default"
+      }
+    ],
+    "step_gate": "steps[M4-S01].human_gate is false and gate milestone:M3 is approved, so no step:<id> gate stood in the way; no gate was approved, requested or recorded by this agent",
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S01 running --started 2026-09-12T06:31:35Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S01 blocked --blocked-reason \"checker-policy\" --run-agent metadata-builder --envelope envelopes/M4-S01/2026-09-12T06-31-35Z.json --result \"<the owning agent's own message>\" --started 2026-09-12T06:31:35Z"
+    ],
+    "blocking_finding": {
+      "id": "F-M4S01-01",
+      "severity": "P1",
+      "title": "The step's declared checker rejects the calendar the step's own inputs require",
+      "checker": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py",
+      "rule": "windows == 7 and all_midnight",
+      "output": "ISSUE: BusinessHours.settings-meta.xml / calendar 'Severity 1 24x7': every day is 00:00:00.000Z to 00:00:00.000Z - this is the shipped 24/7 shape; SLA clocks on this calendar never pause.",
+      "options": [
+        "Amend the step: drop 'Severity 1 24x7' from steps[M4-S01].inputs.calendars and from acceptance_tests[3], leaving the 24/7 promise to M4-S04's businessHoursSource=None entry, which steps[M4-S04].inputs.note already specifies and which the skill's Decision Guidance names as the mechanism. Cost: a future Severity 1 entitlement process has no None source and would read the process calendar (gotchas #5).",
+        "Change the checker so an always-open calendar that is not the org default is INFO rather than ISSUE — a skill change outside this build directory, the same shape as the M2 finding resolved in commit 214da9abd."
+      ],
+      "verified_variants": [
+        {
+          "variant": "Severity 1 24x7 removed",
+          "exit": 0,
+          "note": "proves every other rule passes over the same file"
+        },
+        {
+          "variant": "Severity 1 24x7 trimmed to Mon-Fri",
+          "exit": 0,
+          "note": "passes the gate while closing a never-pausing calendar at weekends — recorded so a later run does not adopt it as a fix"
+        }
+      ]
+    },
+    "persistence_deviation": "The Wave 10 report pair under docs/reports/build-step-runner/ and docs/reports/metadata-builder/ was not written: the invocation constrained writes to the build directory. Both build-scoped envelope pairs were written and both validate."
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step record fields and the status machine including the blocked side exit, section 5 on who owns the acceptance tests, section 8 on the plan CLI being the only writer of derived state"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields of steps[] this agent reads and the ones it must leave alone"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape that puts step_id, artefacts and check_outputs under extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming settings/BusinessHours.settings-meta.xml is the source-format directory-per-type location a later deploy can read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming Settings is a Metadata API type, so the step's declared outputs are deployable metadata rather than a report"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step's inputs were mapped from rather than paraphrasing the step title at the owning agent"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the question-id convention (Q38, Q39, Q40, Q90) echoed into the envelope so the doc keeper can join step to requirement"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes checked for before echoing the step's inputs into a git-tracked build directory; none matched"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "carried through from the owning agent's citations — the metadata shape and Questions-to-Ask rows every emitted element came from"
+    },
+    {
+      "type": "probe",
+      "id": "check_business_hours_and_holidays",
+      "path": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py",
+      "used_for": "the declared acceptance checker whose exit 1 is the blocking finding"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "plan-verifier",
+      "because": "the block is a plan question — whether the 24/7 promise lives in a calendar or in an escalation entry — and it touches M4-S01 and M4-S04 together"
+    },
+    {
+      "agent": "step-tester",
+      "because": "once a human resolves the policy question and the step reaches built, its four acceptance tests are that agent's to run"
+    }
+  ]
+}

@@ -2461,7 +2461,8 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending"
+      "status": "accepted",
+      "report_path": "reports/MILESTONE-M4-REPORT.md"
     },
     {
       "id": "M5",
@@ -4215,8 +4216,45 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T06:31:35Z",
+          "envelope_path": "envelopes/M4-S01/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T06:31:35Z",
+          "envelope_path": "envelopes/M4-S01/2026-09-12T06-31-35Z.json",
+          "result": "Artefacts written and check-outputs ok, but check_business_hours_and_holidays.py exits 1 on the plan-mandated 'Severity 1 24x7' calendar: 'every day is 00:00:00.000Z to 00:00:00.000Z - this is the shipped 24/7 shape; SLA clocks on this calendar never pause.' That is the only shape the skill documents for an always-open calendar and requirement.md L18 is what asked for it. Human decides: amend the step to drop the third calendar (M4-S04's businessHoursSource=None already carries the 24/7 promise), or raise the checker rule to INFO for a non-default always-open calendar."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T06:50:00Z",
+          "envelope_path": "envelopes/M4-S01/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T06:50:00Z",
+          "envelope_path": "envelopes/M4-S01/2026-09-12T06-52-00Z.json",
+          "result": "Three calendars (US Support default, EMEA Support, Severity 1 24x7) and 14 holidays as one Settings:BusinessHours file, plus the Q90 holiday runbook, package.xml at 67.0 and deploy-order.md. Declared checker re-run verbatim after commit 5b206697a scoped the 24/7-shape rule to the org default: exit 0 with an INFO line on the always-open calendar, answered in deploy-order.md section 0. Artefacts unchanged from the blocked run; check-outputs ok."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T06:57:56Z",
+          "envelope_path": "envelopes/M4-S01/2026-09-12T06-57-56Z.json",
+          "result": "ran 4, failed 0, manual 1"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T07:12:28Z",
+          "envelope_path": "envelopes/M4-S01/2026-09-12T07-12-28Z.json",
+          "result": "workbook rows 4 (CWB-AUT-013..014, CWB-OTHER-025..026); traceability rows 2 (REQ-038, REQ-039); decisions appended 5 (D-M4S01-01..02, O-M4S01-01..03)"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -4287,8 +4325,45 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:20:25Z",
+          "envelope_path": "envelopes/M4-S02/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:20:25Z",
+          "envelope_path": "envelopes/M4-S02/2026-09-12T07-20-25Z.json",
+          "result": "Declared checker exits 1 under --strict on 2x W4 ('neither <timeTriggers> nor <successActions>'). Clearing W4 needs a WorkflowAlert/WorkflowFieldUpdate: no step in this plan builds a Workflow file and no clarification names a milestone notification's recipient, offset, sender or template. Both passing repairs rejected on scratch copies - A names a component that exists nowhere (deploy failure per metadata-examples section 3), B uses an action-less timeTrigger shape the skill does not document; the checker cannot tell them apart. All other rules green: E1-E4 clean, W3 calendar cross-reference resolves at build scope. check-outputs ok:true, 5/5 declared outputs written, 4/4 XML parse."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:45:00Z",
+          "envelope_path": "envelopes/M4-S02/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:45:00Z",
+          "envelope_path": "envelopes/M4-S02/2026-09-12T07-45-00Z.json",
+          "result": "Ambiguity block closed at the skill (a18f9164d, entitlements-and-milestones v1.1.2): W4 moved WARN->INFO on api_meta L59162-59169 (neither timeTriggers nor successActions is Required), stale-timeLength split out as strict-promoted W7. No artefact changed - all four XML files SHA-256 identical to the blocked run; only deploy-order.md section 0 rewritten. Declared test 'check_entitlements_and_milestones.py --manifest-dir artefacts --strict' re-run verbatim: 0 error(s), 0 warning(s), 2 info note(s), EXIT=0. check-outputs ok:true, 4/4 XML parse. Open at the M4 gate: derived 720 minutes for Standard, mixed-case file names vs NameNorm, member form with versioning off, Q51 half-honoured (EMEA case counts on US hours), Entitlement settings owned by no step."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T07:45:25Z",
+          "envelope_path": "envelopes/M4-S02/2026-09-12T07-45-25Z.json",
+          "result": "ran 3 (checker exit0, xml 4/4, manifest consistent), failed 0, manual 1 (deferred to M4 gate)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T08:01:36Z",
+          "envelope_path": "envelopes/M4-S02/2026-09-12T08-01-36Z.json",
+          "result": "workbook rows 6; traceability rows 3; decisions appended 4"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -4378,8 +4453,76 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T08:11:40Z",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T08:11:40Z",
+          "envelope_path": "envelopes/M4-S03/2026-09-12T08-11-40Z.json",
+          "result": "Built: Case_BeforeSave_StampEntitlementAndCalendar (RecordBeforeSave/Create on Case) + FlowTest + settings/Flow.settings-meta.xml + package.xml@67.0 + flow-governance-policy.yaml + no-account-fallback-note.md + deploy-order.md. All 3 declared checkers exit 0 (record-triggered 'No issues found.'; naming 0 error/4 warn; governance '0 error(s), 2 advisory'), plus 2 cited-skill checkers exit 0, zero repair passes. EntitlementId and BusinessHoursId keep the A2 null guard; Priority is derived from Severity__c/Support_Tier__c and OVERWRITES on Email-Support/Email-Billing per the approved milestone:M3 gate decision (2) on D-M3S03-02. UNVERIFIED and carried to the M4 gate: the Priority VALUE mapping (Severity 1->High, Premier->High, else Medium) is derived, not answered - deploy-order.md section 1. deploy-order.md is an undeclared artefact."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T08:23:49Z",
+          "envelope_path": "envelopes/M4-S03/2026-09-12T08-23-49Z.json",
+          "result": "ran 5 (xml, manifest, 3 checkers), failed 0, manual 1 deferred to milestone gate"
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T08:27:00Z",
+          "result": "Dry-run validation (checkOnly, sfskills-dev, API 67.0; reports/MOCK-DEPLOY-M4.md run 2): FlowTest Case_BeforeSave_StampEntitlementAndCalendar_Test — 'The test point for elementApiName Start is missing a parameter of type InputTriggeringRecordInitial' (F-38; the builder had marked this U4 UNVERIFIED). The flow itself and Flow.settings validated. Rebuild: add the InputTriggeringRecordInitial parameter per api_meta L74326–74365."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T08:30:00Z",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T08:30:00Z",
+          "envelope_path": "envelopes/M4-S03/2026-09-12T08-30-00Z.json",
+          "result": "F-38 rebuild: added the InputTriggeringRecordInitial parameter to the FlowTest Start test point, same sObject payload as the Updated parameter (a Create-triggered flow has no prior state). Grounded in api_meta L74305-74306, L74326-74327 and the guide's own two-parameter sample at L74351-74365, plus the org's rejection in reports/MOCK-DEPLOY-M4.md run 2. Closes the first build's U4. Flow, Flow.settings, package.xml, flow-governance-policy.yaml and no-account-fallback-note.md are byte-identical to run 2026-09-12T08-11-40Z (SHA-256 in the envelope's extensions.rebuild); only the flowtest and deploy-order.md changed. All 3 declared checkers exit 0 verbatim from the build dir (record-triggered 'No issues found.'; naming 0 error/4 warn; governance '0 error(s), 2 advisory'), plus 2 cited-skill checkers, zero repair passes. Still open and carried to the M4 gate: the derived Priority value mapping (deploy-order.md section 1)."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T08:33:09Z",
+          "envelope_path": "envelopes/M4-S03/2026-09-12T08-33-09Z.json",
+          "result": "ran 5 (xml, manifest, 3 checkers), failed 0, manual 1 (F-38 rebuild retest)"
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T08:36:24Z",
+          "result": "Dry-run validation run 3 (reports/MOCK-DEPLOY-M4.md): FlowTest — 'The test point for elementApiName Start contains the incompatible parameter value $Record of type InputTriggeringRecordUpdated. Remove the parameter or change the recordTriggerType for the flow.' F-38 corrected: a Create-triggered FlowTest takes InputTriggeringRecordInitial only. Rebuild: remove the Updated parameter."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T08:40:00Z",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T08:40:00Z",
+          "envelope_path": "envelopes/M4-S03/2026-09-12T08-40-00Z.json",
+          "result": "F-38 corrected (build 3): removed the InputTriggeringRecordUpdated parameter from the FlowTest Start test point, leaving InputTriggeringRecordInitial as the whole test input. Settled rule, proven live in both directions by MOCK-DEPLOY-M4 runs 2 and 3: recordTriggerType Create takes Initial ONLY; Update/CreateAndUpdate take both. The guide's sample (api_meta L74351-74365) carries both because its flow is update-triggered, and the skill's only FlowTest example is a transition test. Flow, Flow.settings, package.xml, flow-governance-policy.yaml and no-account-fallback-note.md byte-identical to build 1 (SHA-256 in the envelope's extensions.rebuild); only the flowtest and deploy-order.md changed. All 3 declared checkers exit 0 verbatim from the build dir plus 2 cited-skill checkers, zero repair passes - note none of them inspects FlowTest parameters. UNVERIFIED: the CreateAndUpdate half of the rule is inferred, not observed. Still carried to the M4 gate: the derived Priority value mapping (deploy-order.md section 1)."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T08:42:00Z",
+          "envelope_path": "envelopes/M4-S03/2026-09-12T08-42-00Z.json",
+          "result": "ran 5 (xml, manifest, 3 checkers), failed 0, manual 1 deferred to milestone gate (F-38 corrected build retest)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T08:50:00Z",
+          "envelope_path": "envelopes/M4-S03/2026-09-12T08-50-00Z.json",
+          "result": "workbook rows 7; traceability rows 3; decisions appended 6"
+        }
+      ],
       "human_gate": false,
       "notes": "F-27 (reports/MOCK-DEPLOY-M3.md run 4, 2026-09-12): the org requires EmailToCaseRoutingAddress.casePriority, so M3-S03 sets Priority = Medium on both routing addresses. Email-originated cases therefore arrive with Priority already populated and a null-guarded priority stamp in this flow never fires for them; only Web-to-Case cases (no such setting) arrive with Priority null. The builder must either derive Priority from Severity__c / Support_Tier__c and overwrite the intake default for Origin in (Email-Support, Email-Billing), or record that the plan accepts Medium for email cases — and say which in deploy-order.md. The 'writes only when the field is null' rule in this step's inputs still holds for EntitlementId and BusinessHoursId; it is superseded for Priority on the email channels. Also read decisions.md D-M3S02-04 before touching any sender or template reference.",
       "amendments": [
@@ -4463,8 +4606,57 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:20:31Z",
+          "envelope_path": "envelopes/M4-S04/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:20:31Z",
+          "envelope_path": "envelopes/M4-S04/2026-09-12T07-22-10Z.json",
+          "result": "One EscalationRules file for Case: rule Case_SLA_Escalation shipped active=false (Q47) with two entries - Severity 1 first on businessHoursSource None (24/7), then all other open cases on businessHoursSource Case with no <businessHours> child; both at minutesToEscalation 480 (8x60, Q46) reassigning to queue developer name Tier_2_Engineering with assignedToTemplate case_intake/Case_Escalated_To_Tier2 and notifyCaseOwner true (Q45); closed cases excluded by explicit criterion. Plus the declared activation runbook and monitoring note, package.xml at 67.0, and the undeclared deploy-order.md. Declared build-scope checker exit 0 first pass (W1 no-rule-active expected under Q47; I3 480=8h; E2 and E7 both avoided by construction); check-outputs ok. Five UNVERIFIED items recorded; one high finding carried for the M4 gate - notifyCaseOwner on a Billing-queue-owned case posts into billing@acme.example, a live Email-to-Case intake address (closes O-M3S04-02's open check)."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T07-35-25Z",
+          "envelope_path": "envelopes/M4-S04/2026-09-12T07-35-25Z.json",
+          "result": "ran 3 (checker, xml, manifest), failed 0, manual 2 deferred"
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T07:38:10Z",
+          "envelope_path": "envelopes/M4-S04/failed.json",
+          "result": "Dry-run validation (checkOnly, sfskills-dev, API 67.0; reports/MOCK-DEPLOY-M4.md run 1) failed: 'EscalationRules Case: notifyToTemplate is required' — both entries set notifyCaseOwner true without notifyToTemplate (api_meta L59517 documents the element without a Required marker; proven live). F-36. Rebuild with a folder-qualified notifyToTemplate from the plan's template inputs; admin/escalation-rules gains rule E8."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:55:00Z",
+          "envelope_path": "envelopes/M4-S04/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T07:55:00Z",
+          "envelope_path": "envelopes/M4-S04/2026-09-12T07-58-40Z.json",
+          "result": "F-36 rebuild: <notifyToTemplate>case_intake/Case_Escalated_To_Tier2</notifyToTemplate> added to both escalationAction blocks after reports/MOCK-DEPLOY-M4.md run 1 failed with 'EscalationRules Case: notifyToTemplate is required'. Template resolved from the plan's upstream outputs (M3-S02 declares exactly one escalation template; Q45 names none, contrary to the launch instruction) and is folder-qualified, so I4 does not fire. Everything else byte-identical: same rule, same two entries and order, same criteria, clocks, 480 minutes, assignedTo and assignedToTemplate, still active=false, package.xml untouched. Skill read at v1.1.2 (9ae71856d, rule E10) which failed the prior file with 2 E10 lines; declared build-scope checker now exit 0 (W1 + 2x I3 only); check-outputs ok. New: deploy-order.md section 0 rebuild record, U6 (one template serves both template elements), decision 7; runbook risk R6. R2 Billing mail-loop exposure unchanged and now sends."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T07:51:46Z",
+          "envelope_path": "envelopes/M4-S04/2026-09-12T07-51-46Z.json",
+          "result": "ran 3 (checker build-scope, xml, manifest), failed 0, manual 2 deferred"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T08:05:12Z",
+          "envelope_path": "envelopes/M4-S04/2026-09-12T08-05-12Z.json",
+          "result": "workbook rows 5; traceability rows 1; decisions appended 5"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -4580,7 +4772,9 @@
         "artefacts/M4-S05/classes/CaseMilestoneService.cls",
         "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
         "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
-        "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml"
+        "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+        "artefacts/M4-S05/classes/TestDataFactory.cls",
+        "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml"
       ],
       "depends_on": [
         "M4-S02"
@@ -4608,9 +4802,75 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
-      "human_gate": false
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T08:12:19Z",
+          "result": "running"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T08-12-19Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T08-12-19Z.json",
+          "result": "Built: CaseMilestoneTrigger (after update on Case) + CaseMilestoneService + CaseMilestoneServiceTest at apiVersion 67.0; check_entitlement_apex_hooks exit 0 (0 ERROR, 0 WARN, also 0 under --strict); check-outputs ok on all 6 declared outputs; undeclared deploy-order.md written; no compile check ran (design-only, no org)"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T08-24-48Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T08-24-48Z.json",
+          "result": "ran 3 (checker, xml, manifest), failed 0, manifest skipped-not-applicable (Apex exception, M5-S05 carries members), manual 1 deferred to gate"
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T08:27:29Z",
+          "result": "Dry-run validation (checkOnly, sfskills-dev, API 67.0; reports/MOCK-DEPLOY-M4.md run 2): ApexClass CaseMilestoneServiceTest ×5 'Variable does not exist: TestDataFactory' — the test references templates/apex/tests/TestDataFactory.cls by relative path but no step ships it (F-37). CaseMilestoneTrigger and CaseMilestoneService compiled. Rebuild: ship TestDataFactory.cls (+ meta, apiVersion 67.0) verbatim from the template in this step's outputs."
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T08:32:00Z",
+          "result": "running"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T08:32:00Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T08-32-00Z.json",
+          "result": "Rebuilt for F-37: classes/TestDataFactory.cls (+ meta, apiVersion 67.0) copied verbatim from templates/apex/tests/TestDataFactory.cls; trigger, service and test unchanged byte for byte; check_entitlement_apex_hooks exit 0 on 4 Apex files (0 ERROR, 0 WARN, also 0 under --strict); check-outputs ok on all 8 declared outputs; deploy-order.md gains the F-37 rebuild record; no compile check ran (design-only, no org) - run 3 of the operator's dry run is the acceptance evidence"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T08:45:00Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T08-45-00Z.json",
+          "result": "ran 3 (checker exit 0 on 4 files, xml, manifest), failed 0, manifest skipped-not-applicable (Apex exception, M5-S05 carries members), manual 1 deferred to gate"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T08:52:00Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T08-52-00Z.json",
+          "result": "workbook rows 5; traceability rows 1; decisions appended 5"
+        }
+      ],
+      "human_gate": false,
+      "amendments": [
+        {
+          "at": "2026-09-12T08:27:30Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "F-37: the test class depends on templates/apex/tests/TestDataFactory.cls, which templates/README.md says is copied into the consuming project; no step shipped it, so the org rejected the test class. Outputs gain the factory class + meta.",
+          "fields": [
+            "outputs"
+          ],
+          "before": {
+            "outputs": [
+              "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+              "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+              "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+              "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+              "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+              "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml"
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "M5-S02",
@@ -4986,7 +5246,10 @@
     },
     {
       "name": "milestone:M4",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T09:23:14Z",
+      "notes": "G4 (milestone:M4) approved by the dry-run operator (Fable; design-only, nothing deploys) on reports/MILESTONE-M4-REPORT.md (verdict ready-with-findings, F-39..F-48; verifier envelope envelopes/M4/2026-09-12T09-08-11Z). Org evidence: reports/MOCK-DEPLOY-M4.md run 4 — 55/55 components validate except F-28 (auto-response sender, org prerequisite). Decisions: (1) O-M4S04-01 / R2 Billing mail loop + F-44 (Tier 2 queue has no email, so the escalation notification reaches nobody there): ONE decision — both queues get non-routing mailboxes (billing-queue@acme.example, tier2-queue@acme.example) BEFORE the escalation rule is activated; the rule ships inactive (Q47) so activation is the gate; M2-S04's queue email is rebuilt at the next M2 touch or corrected in Setup — recorded as an activation prerequisite. (2) F-39 / O-M4S02-01 enableEntitlements (and the second switch the report names) owned by no step — three of five M4 steps depend on it: planner v6 adds it to M5's settings step, or the operator enables it in Setup — deploy prerequisite. (3) F-40 (HIGH) / O-M4S02-02: the M4 goal promises a Premier EMEA clock on the EMEA calendar and both processes pin US Support — accepted for this phase AND the M4 milestone goal is to be amended at planner v6 to say so (no step reads milestones[].goal — contract gap filed) — the first-response milestone counts on US Support hours for all cases while escalation counts on the regional calendar; revisit when Premier volume in EMEA justifies a second process. (4) D-M4S02-02 Standard 720 minutes and D-M4S04-02 Severity 1 480 minutes: accepted as placeholders; Sales/Support Ops to confirm the SLA numbers before the sandbox UAT. (5) D-M4S01-02 the 14 seeded holidays and the Q90 owner: UNCONFIRMED, Service Operations to confirm before go-live. (6) M4-S03 Priority mapping (Severity 1 → High, Premier → High, else Medium): accepted as the derived default; the G3 option-2 overwrite is honoured. (7) RAISED ABOVE THE OTHERS — M4-S05 completion signal (leaving Status New) is a PROXY for Q50's first outbound EmailMessage: accepted for this phase with the proxy named in the UAT script; an EmailMessage-triggered completion is a backlog item. (8) M4-S05 two-file trigger shape (no TriggerControl kill switch / recursion guard) accepted because the plan ships no TriggerControl; planner v6 adds an Apex-foundations step (TriggerControl, ApplicationLogger, TestDataFactory shared). (9) M4-S05 SeeAllData=true test + org prerequisites (active SlaProcess with a First Response milestone) recorded for the deploy runbook. (10) Flywheel: F-36 (escalation E10), F-37 (ship template classes), F-38 (Create-triggered FlowTest → Initial only), plus the business-hours 24/7 and entitlements W4 checker scopings — all closed at the source. Also accepted: deploy-order.md undeclared on every M4 step (planner v6 declares it).\n F-43: no manifest in the build carries the Apex until M5-S05 is built — manifest-mode validation of M4 must wait for M5-S05; source-mode run 4 is the evidence today. F-42: Priority values High/Medium are platform CasePriority values this build does not declare — accepted. Verifier process note adopted: record the checker version beside every recorded checker result (tooling backlog)."
     },
     {
       "name": "milestone:M5",

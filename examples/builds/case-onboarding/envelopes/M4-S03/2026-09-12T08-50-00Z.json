@@ -1,0 +1,88 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "per-step",
+  "run_id": "2026-09-12T08-50-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-50-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-50-00Z.json",
+  "summary": "Documented M4-S03 (the before-save record-triggered Flow Case_BeforeSave_StampEntitlementAndCalendar, its FlowTest, Flow.settings and flow-governance policy) after it reached `tested` for the third time, following two F-38 rebuilds. Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json; appended 6 decisions.md entries covering F-38's two-round closure at the artefact with the skill fix still pending (D-M4S03-01, the fourth flywheel-adjacent record in this build), the G3 gate decision (2) this step implements and the resulting scope of assumption A2's null-guard supersession for Priority (D-M4S03-02), the derived-not-answered Priority value mapping carried to the M4 gate (D-M4S03-03), the apiVersion 67.0 choice against the cited skill's 66.0 examples (D-M4S03-04), the before-save fault-path library gap (O-M4S03-01), and the Flow.settings production Apex-test-run consequence (O-M4S03-02); wrote 7 workbook rows (CWB-AUT-026..030 in Section 6, CWB-OTHER-032..033 in Other Configuration); added 3 traceability rows (REQ-045 Flow, REQ-046 FlowTest, REQ-047 Settings:Flow, one row per manifest member per resolve_artefact()'s one-member-per-row rule, the same split M4-S02 uses) plus their Requirement-id-derivation entries; ran check_rtm.py from the build dir both at build scope (before: 3 orphans belonging to this step per the M4-S05 documentation pass's own prediction, plus a decision_ref schema warning on the first draft of REQ-045; after: 0 orphans from this step, 3 remaining orphans all M4-S05's own pre-existing Apex classes, 0 warnings, 47 rows, 0 coverage gaps, 0 errors) and at step scope (0 orphans, 42 unresolved-at-this-scope warnings for other steps' components, this step's 3 rows resolve cleanly); set the step to `documented`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact produced a workbook row with a real source_req_id and a verification cell, all three new requirements have traceability rows, and re-running the RTM checker at build scope produced 0 orphans attributable to this step (the HIGH conditions largely hold). Held to MEDIUM rather than HIGH for two reasons this pass cannot resolve itself: the step's central open item, the Priority VALUE mapping (D-M4S03-03), is an unconfirmed placeholder carried to the M4 gate exactly like two prior M4 steps' placeholders, and F-38's skill gap (D-M4S03-01) is closed at the artefact only — the durable fix (a Create-triggered FlowTest example and a Create-to-Initial-only checker rule in flow/record-triggered-flow-patterns) is still pending, unlike this build's three prior flywheel entries which all cite a closing commit.",
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "F-38 was caught twice by the organization's own dry-run validation before it reached a human, and each rejection narrowed the fix rather than being treated as a single pass/fail: the first rejection (missing InputTriggeringRecordInitial) was satisfied by two different shapes, and only the second rejection's mirror-image error text (the incompatible InputTriggeringRecordUpdated) closed the ambiguity. All five non-FlowTest artefacts stayed byte-identical across all three builds (SHA-256 confirmed each run), so the rebuild loop touched exactly the one file that was wrong.",
+      "evidence": {"source": "repo_scan", "query": "artefacts/M4-S03/deploy-order.md section 0; reports/MOCK-DEPLOY-M4.md runs 2-3; plan.json steps[M4-S03].runs[]"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The three new traceability rows (REQ-045/046/047) resolved to 0 orphans at build scope on the first check_rtm.py run after fixing one decision_ref schema warning, and independently confirmed the M4-S05 documentation pass's own forward-looking claim that its 2 inherited orphans (this step's Flow and FlowTest) were pre-existing and outside its scope rather than a defect.",
+      "evidence": {"source": "repo_scan", "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo root> (before: 3 orphans incl. this step's 2; after: 3 orphans, all M4-S05's own, 0 warnings)"}
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The Priority VALUE mapping this flow deploys (Severity 1 -> High, Premier -> High, else Medium) is derived from a requirement line and a clarification about the mechanism, not answered by any clarification about the values themselves, and no CasePriority value set exists anywhere under artefacts/ for any checker in this build to assert High is a value the target org actually carries.",
+      "evidence": {"source": "input", "query": "artefacts/M4-S03/deploy-order.md section 1; decisions.md D-M4S03-03"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "deploy-order.md is undeclared in M4-S03's outputs[], extending the same undeclared-artefact pattern (decisions.md O-M3S02-03) into an eighth consecutive step.",
+      "evidence": {"source": "input", "query": "plan.json steps[M4-S03].outputs[]"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Neither cited flow skill documents what a before-save fault path should look like once the standard LogFault_<Parent>/Application_Log__c target is ruled out by a RecordBeforeSave flow's own no-recordCreates constraint; this flow's four faultConnectors route to the next Decision instead, which check_flow_element_naming_conventions.py accepts only as an advisory WARN rather than as a documented pattern.",
+      "evidence": {"source": "input", "query": "artefacts/M4-S03/deploy-order.md section 5 U2; decisions.md O-M4S03-01"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "milestone-verifier should run once every M4 step is documented, because the Priority value mapping (D-M4S03-03), the F-38 skill-fix-pending gap (D-M4S03-01), and the Settings:Flow production sequencing risk against M4-S05 (O-M4S03-02) are all M4-gate items no single step's own tests settle.",
+      "evidence": {"source": "input", "query": "decisions.md D-M4S03-01, D-M4S03-03, O-M4S03-02"},
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because the Priority-value confirmation, the pending skill fix, and the Apex-sequencing risk are gate-level adjudications this step's own documentation pass cannot settle."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "config-workbook-author is the eventual compiler of this build's ten-section workbook once M5-S04 runs, and the Section 6 rows this run adds (CWB-AUT-026..030) are among the sources it will collate.",
+      "evidence": {"source": "input", "query": "workbook/06-automation.md CWB-AUT-026..030"},
+      "suggested_followup_agent": "config-workbook-author",
+      "followup_reason": "because it is the agent that compiles this step's per-step workbook rows into the release-level document once the build's design phase is complete."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation, including the file-scope prohibition"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations schema, confidence rubric"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence and atomic-write rule"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum (not triggered this run)"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "section 2 (rendered-view/plan-state rules), section 4 (step-type to workbook-section map - automation maps to Section 6), section 6 (this agent's per-step job), section 8 (skill-gap-to-decisions.md rule)"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "fields read from and left alone in plan.json"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "ten canonical sections and row schema for the 7 new workbook rows"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "canonical column set, REQ-id convention, the one-manifest-member-per-row resolve_artefact() rule, and the check_rtm.py checker runs"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "decision-entry shape (date, alternative rejected, source grounded in) for the 6 new decisions.md entries"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how the step's one manual test is recorded as acceptance evidence in the traceability rows rather than a plain pass/fail"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "mandatory read for a per-step pass; no UAT case pack compiled this run (that is M5-S04's compile-run job)"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "mandatory read for a per-step pass; no criteria document compiled this run (M5-S04's job)"}
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": ["CWB-AUT-026", "CWB-AUT-027", "CWB-AUT-028", "CWB-AUT-029", "CWB-AUT-030", "CWB-OTHER-032", "CWB-OTHER-033"],
+    "traceability_rows": ["REQ-045", "REQ-046", "REQ-047"],
+    "decisions_appended": ["D-M4S03-01", "D-M4S03-02", "D-M4S03-03", "D-M4S03-04", "O-M4S03-01", "O-M4S03-02"],
+    "rows_replaced": []
+  }
+}

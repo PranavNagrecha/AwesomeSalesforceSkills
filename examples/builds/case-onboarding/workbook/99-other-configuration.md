@@ -214,3 +214,84 @@ undeclared-artefact pattern (`decisions.md` **O-M3S02-03**) to a fourth consecut
 than closing it. Both new rows use `;` for multi-value, the same convention every prior addition
 to this file uses.
 
+
+| CWB-OTHER-025 | `artefacts/M4-S01/package.xml` — one `Settings` types block, one explicit member (`BusinessHours`), no wildcard (feature settings do not accept one). `<version>67.0</version>`, matching every M3/M4 manifest since `M3-S03`'s move off the 62.0 floor. | Process owner (role; the plan names no person) | REQ-038; REQ-039 | pending:M5-S03 | metadata-builder | admin/business-hours-and-holidays | executed | Deploy position: not a component. Verified by: `manifest` two-way (`Settings:BusinessHours` present, the one file has a matching member) and `xml` parse. **Declared in `outputs[]` from the first build run**, joining every M2–M3 step's manifest as one a gate can confirm — only `M1-S01` and `M1-S02` remain undeclared (`decisions.md` **O-M3S02-03**). |
+| CWB-OTHER-026 | `artefacts/M4-S01/deploy-order.md` — § 0 the full checker-policy block-and-closure record (`decisions.md` **D-M4S01-01**), including the two rejected repairs kept as a record; § 1 the one deployable component; § 2 order inside the file (calendars before the holidays that name them); § 3 the three later steps that read a calendar by name and why deploying this file first matters; § 4 five grounding markers, two narrowed and none closed by the skill fix; § 5 the validate-only command for a human. | Process owner (role; the plan names no person) | REQ-038; REQ-039 | pending:M5-S03 | metadata-builder | admin/business-hours-and-holidays | executed | Deploy position: not a component. Verified by: `check-outputs` ok (present, non-empty, per `tests/M4-S01/check-outputs.json`). **Not declared in `M4-S01`'s `outputs[]`** — the same undeclared-artefact pattern `decisions.md` **O-M3S02-03** records for every M3 step, now recurring in M4; recorded here rather than by reopening that entry. |
+
+**The two rows added after `M4-S01` (`CWB-OTHER-025`, `CWB-OTHER-026`).** Same artefact-level
+routing as every row above: `agents/build-doc-keeper/AGENT.md` Step 4 sends `package.xml` and the
+deploy-order note to "10 — Data + Migration only when they are a migration artefact, otherwise to
+**Other configuration**", and `M4-S01` loads no data. The step's own **type** (`sla`) is in Step
+4's map — it produced the two Section 6 rows in `workbook/06-automation.md`
+(`CWB-AUT-013`–`014`) — so this is the artefact-level default again, not an unmapped-step-type
+case. Both rows carry both new requirement ids (`REQ-038`; `REQ-039`), the same
+one-manifest-two-requirements shape `CWB-OTHER-023`/`-024` used for `REQ-036`/`REQ-037`, because
+the manifest and the deploy note serve both declared outputs at once. `CWB-OTHER-025`'s
+`package.xml` is declared in `outputs[]`, continuing the pattern every step since `M2-S01` has
+followed for its manifest; `CWB-OTHER-026`'s `deploy-order.md` instead extends the
+undeclared-artefact pattern (`decisions.md` **O-M3S02-03**) into M4. Neither row needed `;`
+multi-value beyond the shared `source_req_id` pair, the same convention every prior addition to
+this file uses.
+
+| CWB-OTHER-027 | `artefacts/M4-S02/package.xml` — one `EntitlementProcess` types block with two explicit members (`First_Response_Premier`, `First_Response_Standard`), one `MilestoneType` types block with one explicit member (`First Response`); both types support the `*` wildcard but members are named explicitly so the step's `manifest` acceptance test can assert two-way consistency. `<version>67.0</version>`, matching every M3/M4 manifest since `M3-S03`'s move off the 62.0 floor. | Process owner (role; the plan names no person) | REQ-040; REQ-041; REQ-042 | pending:M5-S03 | metadata-builder | admin/entitlements-and-milestones | executed | Deploy position: not a component. Verified by: `manifest` two-way (3 derived members ↔ 3 explicit `<members>`, 0 wildcards, nothing unmatched in either direction, confirmed independently by `step-tester`) and `xml` parse. **Member form is UNVERIFIED against a real retrieve** — the guide's own worked example gives the member as the file base name with a version suffix when versioning is on; with versioning off (assumption A24) no worked example covers the member form, and the two `EntitlementProcess` members here are the declared file base names, the only form consistent with the two-way check (`deploy-order.md` § 4.2). |
+| CWB-OTHER-028 | `artefacts/M4-S02/deploy-order.md` — § 0 the checker-policy block-and-closure record (`decisions.md` **D-M4S02-01**), including the two rejected repairs kept as a record; § 1 the three deployable components; § 2 order inside the step (`MilestoneType` before `EntitlementProcess`, one request); § 3 the derived `minutesToComplete` 720 for Standard (`decisions.md` **D-M4S02-02**); § 4 five UNVERIFIED/ungrounded items, including the mixed-case file names (§ 4.1), the `package.xml` member form (§ 4.2), and the Q51 calendar divergence (§ 4.4, `decisions.md` **O-M4S02-02**); § 5 what this step does not write, including `settings/Entitlement.settings-meta.xml` (`decisions.md` **O-M4S02-01**); §§ 6–7 the file list and the validate-only command for a human. | Process owner (role; the plan names no person) | REQ-040; REQ-041; REQ-042 | pending:M5-S03 | metadata-builder | admin/entitlements-and-milestones | executed | Deploy position: not a component. Verified by: `check-outputs` ok (present, non-empty, per `tests/M4-S02/check_outputs.json`). **Not declared in `M4-S02`'s `outputs[]`** — the same undeclared-artefact pattern `decisions.md` **O-M3S02-03** records for every M3 step and `M4-S01`, now a fifth consecutive step (`envelopes/M4-S02/2026-09-12T07-41-02Z.md` § 4 names the count explicitly); recorded here rather than by reopening that entry. |
+
+**The two rows added after `M4-S02` (`CWB-OTHER-027`, `CWB-OTHER-028`).** Same artefact-level
+routing as every row above: `agents/build-doc-keeper/AGENT.md` Step 4 sends `package.xml` and the
+deploy-order note to "10 — Data + Migration only when they are a migration artefact, otherwise to
+**Other configuration**", and `M4-S02` loads no data. The step's own **type** (`sla`) is in Step
+4's map — it produced the four Section 6 rows in `workbook/06-automation.md`
+(`CWB-AUT-015`–`018`) — so this is the artefact-level default again, not an unmapped-step-type
+case. Both rows carry all three new requirement ids (`REQ-040`; `REQ-041`; `REQ-042`), extending
+the one-manifest-many-requirements shape `CWB-OTHER-025`/`-026` used for `REQ-038`/`REQ-039`,
+because the manifest and the deploy note serve all three declared members at once.
+`CWB-OTHER-027`'s `package.xml` is declared in `outputs[]`, continuing the pattern every step
+since `M2-S01` has followed for its manifest; `CWB-OTHER-028`'s `deploy-order.md` instead extends
+the undeclared-artefact pattern (`decisions.md` **O-M3S02-03**) to a fifth consecutive step. Both
+rows use `;` for multi-value, the same convention every prior addition to this file uses.
+
+| CWB-OTHER-029 | `artefacts/M4-S04/package.xml` — one `EscalationRules` types block, one explicit member (`Case`). `<version>67.0</version>`, matching every M3/M4 manifest since `M3-S03`'s move off the 62.0 floor (confirmed at the M3 gate, decision 6, finding **F-31**). Unchanged by the F-36 rebuild. | Process owner (role; the plan names no person) | REQ-043 | pending:M5-S03 | metadata-builder | admin/escalation-rules | executed | Deploy position: not a component. Verified by: `manifest` two-way (`EscalationRules:Case` present, the one file has a matching member, unaffected by the RULE_CONTAINERS per-rule key derivation this same file also mints — see `CWB-AUT-019`) and `xml` parse. **Declared in `outputs[]`**, continuing the pattern every step since `M2-S01` has followed for its manifest. |
+| CWB-OTHER-030 | `artefacts/M4-S04/deploy-order.md` — § 0 the F-36 rebuild record (the org's `notifyToTemplate is required` rejection, the skill fix at commit `9ae71856d`, the before/after checker evidence, `decisions.md` **D-M4S04-01**); § 1 the one deployable component; § 2 the six-item order table, ending in this file and naming `M4-S03` as an activation-only, not deploy-time, dependency; § 3 six UNVERIFIED items (U1–U6, U6 added at the rebuild); § 4 seven decisions worth reading before deploy; § 5 what this step does and does not touch on sender identity, and the confirmed R2 exposure; § 6 the validate-only command for a human. | Process owner (role; the plan names no person) | REQ-043 | pending:M5-S03 | metadata-builder | admin/escalation-rules | executed | Deploy position: not a component. Verified by: `check-outputs` ok (present, non-empty, per `tests/M4-S04/check_outputs.json`). **Not declared in `M4-S04`'s `outputs[]`** — the same undeclared-artefact pattern `decisions.md` **O-M3S02-03** records for every M3 step and `M4-S01`/`M4-S02`, now a sixth consecutive step (`envelopes/M4-S04/2026-09-12T07-22-10Z.md` § 3 names the count explicitly); recorded here rather than by reopening that entry. |
+
+**The two rows added after `M4-S04` (`CWB-OTHER-029`, `CWB-OTHER-030`).** Same artefact-level
+routing as every row above: `agents/build-doc-keeper/AGENT.md` Step 4 sends `package.xml` and the
+deploy-order note to "10 — Data + Migration only when they are a migration artefact, otherwise to
+**Other configuration**", and `M4-S04` loads no data. The step's own **type** (`sla`) is in Step
+4's map — it produced the three Section 6 rows in `workbook/06-automation.md`
+(`CWB-AUT-019`–`021`) — so this is the artefact-level default again, not an unmapped-step-type
+case. Both rows carry the one new requirement id (`REQ-043`) rather than the multi-id shape
+`CWB-OTHER-027`/`-028` used for `M4-S02`, because this step's `package.xml` and deploy-order note
+serve one manifest member, not three. `CWB-OTHER-029`'s `package.xml` is declared in `outputs[]`,
+continuing the pattern every step since `M2-S01` has followed for its manifest;
+`CWB-OTHER-030`'s `deploy-order.md` instead extends the undeclared-artefact pattern
+(`decisions.md` **O-M3S02-03**) to a sixth consecutive step. Neither row needed `;` multi-value —
+`source_req_id` is single-valued on both.
+
+| CWB-OTHER-031 | `artefacts/M4-S05/deploy-order.md` — § 0 the F-37 rebuild record (the org's `Variable does not exist: TestDataFactory` rejection ×5, the byte-identical template copy shipped in response, `decisions.md` **D-M4S05-01**); § 1 the five deployable components and the order inside the step; § 2 why there is no `CaseMilestoneTriggerHandler` and what the two-file shape costs (`decisions.md` **D-M4S05-03**); § 3 the completion-signal proxy, UNVERIFIED (`decisions.md` **D-M4S05-02**); § 4 what the test needs from the org and the four prerequisites (`decisions.md` **D-M4S05-04**); § 5 six UNVERIFIED items carried forward from the skills, restated beside the code they affect; § 6 what this step does not write and who does (`M5-S05`'s manifest aggregation, the shared-Apex-foundations gap — `decisions.md` **D-M4S05-05**); § 7 the declared checker's verbatim run plus the org-side debug-log verification a human runs after a real deploy. | Process owner (role; the plan names no person) | REQ-044 | pending:M5-S03 | apex-builder | apex/entitlement-apex-hooks | executed | Deploy position: not a component. Verified by: `check-outputs` ok (present, non-empty, per `tests/M4-S05/check-outputs.json`). **Not declared in `M4-S05`'s `outputs[]`** — the same undeclared-artefact pattern `decisions.md` **O-M3S02-03** records for every M3 step and `M4-S01`/`-S02`/`-S04`, now a seventh consecutive step; recorded here rather than by reopening that entry. **No `package.xml` row accompanies this one** — unlike every prior step in this section, `M4-S05` is the Apex exception (`standards/build-orchestration.md` § 5): its owning agent's Output Contract names no manifest, so no `artefacts/M4-S05/package.xml` exists to document, and its `ApexClass`/`ApexTrigger` members are aggregated into the build-level manifest by `M5-S05` instead — say so here rather than leave a reader looking for a row that was never going to exist. |
+
+**The one row added after `M4-S05` (`CWB-OTHER-031`).** Unlike every prior step filed in this
+section, `M4-S05` contributes exactly one row, not two: it is the Apex exception
+(`standards/build-orchestration.md` § 5), so it has no local `package.xml` for `check-outputs` to
+confirm and no manifest row to pair with the deploy-order note — `M5-S05` (`type: docs`,
+`metadata-builder`, `depends_on` this step) carries the aggregated `ApexClass`/`ApexTrigger`
+members instead, on its own row when that step is documented. `CWB-OTHER-031`'s `source_req_id`
+(`REQ-044`) matches every `06-automation.md` row this step added
+(`CWB-AUT-022`–`025`), the same one-step-one-requirement convention every prior addition to this
+file follows for its own `deploy-order.md` row.
+
+| CWB-OTHER-032 | `artefacts/M4-S03/package.xml` — `Flow`, `FlowTest` and `Settings:Flow` types blocks, one member each. `<version>67.0</version>` (`decisions.md` **D-M4S03-04**). `flow-governance-policy.yaml` is deliberately **not** a member — a build artefact, not deployable metadata. Unchanged in content across the F-38 rebuilds except the always-current `FlowTest` member name, already present at build 1. | Process owner (role; the plan names no person) | REQ-045 | pending:M5-S03 | metadata-builder | flow/record-triggered-flow-patterns; flow/flow-governance | executed | Deploy position: not a component. Verified by: `manifest` two-way (`Flow`, `FlowTest`, `Settings:Flow` each present, each with a matching member; `flow-governance-policy.yaml` correctly excluded) across all three builds; `xml` parse. **Declared in `outputs[]`**, continuing the pattern every step since `M2-S01` has followed for its manifest. |
+| CWB-OTHER-033 | `artefacts/M4-S03/deploy-order.md` — § 0 the F-38 rebuild record, over two org round-trips (the org's two mirror-image `FlowTest`-parameter rejections, the settled `Create → Initial only` rule, the skill fix still pending — `decisions.md` **D-M4S03-01**); § 0b the G3 gate decision (2) this step implements and the surviving A2 null-guard scope (`decisions.md` **D-M4S03-02**); § 1 the derived Priority value mapping, UNVERIFIED (`decisions.md` **D-M4S03-03**); § 2 the six-item deploy order, naming `M4-S01`/`M4-S02` as run-time-only dependencies and `M4-S04` as a step that depends on this one activating first; § 3 the `apiVersion` 67.0 choice against the cited skill's 66.0 examples (`decisions.md` **D-M4S03-04**); § 4 why `Settings:Flow` carries one field and its production Apex-test consequence (`decisions.md` **O-M4S03-02**); § 5 eight UNVERIFIED/ungrounded items (U1–U8, including the before-save fault-path library gap — `decisions.md` **O-M4S03-01**) plus three decision-checker advisories that are design, not defect; § 6 the post-deploy verification queries a human runs. | Process owner (role; the plan names no person) | REQ-045 | pending:M5-S03 | metadata-builder | flow/record-triggered-flow-patterns; flow/flow-governance | executed | Deploy position: not a component. Verified by: `check-outputs` ok (present, non-empty, per `tests/M4-S03/check_outputs.json`). **Not declared in `M4-S03`'s `outputs[]`** — the same undeclared-artefact pattern `decisions.md` **O-M3S02-03** records for every M3 step and `M4-S01`/`-S02`/`-S04`/`-S05`, now an eighth consecutive step; recorded here rather than by reopening that entry. |
+
+**The two rows added after `M4-S03` (`CWB-OTHER-032`, `CWB-OTHER-033`).** Same artefact-level
+routing as every row above: `agents/build-doc-keeper/AGENT.md` Step 4 sends `package.xml` and the
+deploy-order note to "10 — Data + Migration only when they are a migration artefact, otherwise to
+**Other configuration**", and `M4-S03` loads no data. The step's own **type** (`automation`) is in
+Step 4's map — it produced the five Section 6 rows in `workbook/06-automation.md`
+(`CWB-AUT-026`–`030`) — so this is the artefact-level default again, not an unmapped-step-type
+case. Both rows carry the one new requirement id (`REQ-045`) rather than a multi-id shape, because
+this step's `package.xml` and deploy-order note both serve the one requirement its five
+`06-automation.md` rows already share. `CWB-OTHER-032`'s `package.xml` is declared in `outputs[]`,
+continuing the pattern every step since `M2-S01` has followed for its manifest;
+`CWB-OTHER-033`'s `deploy-order.md` instead extends the undeclared-artefact pattern
+(`decisions.md` **O-M3S02-03**) to an eighth consecutive step. Neither row needed `;` multi-value —
+`source_req_id` is single-valued on both.

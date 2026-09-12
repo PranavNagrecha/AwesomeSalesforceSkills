@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>First_Response_Premier</members>
+        <members>First_Response_Standard</members>
+        <name>EntitlementProcess</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>EscalationRules</name>
+    </types>
+    <types>
+        <members>Case_BeforeSave_StampEntitlementAndCalendar</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>Case_BeforeSave_StampEntitlementAndCalendar_Test</members>
+        <name>FlowTest</name>
+    </types>
+    <types>
+        <members>First Response</members>
+        <name>MilestoneType</name>
+    </types>
+    <types>
+        <members>BusinessHours</members>
+        <members>Flow</members>
+        <name>Settings</name>
+    </types>
+    <version>67.0</version>
+</Package>

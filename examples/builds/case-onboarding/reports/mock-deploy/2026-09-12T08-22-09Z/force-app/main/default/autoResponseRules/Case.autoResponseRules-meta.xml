@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AutoResponseRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <autoResponseRule>
+        <fullName>Case_Acknowledgement</fullName>
+        <active>true</active>
+        <!-- One entry, and only one, can match any given case (Q63: one
+             acknowledgement per case creation, auto-response only, no parallel
+             Flow email alert on the same event).
+
+             senderEmail is support-noreply@acme.example per the operator
+             decision recorded on this step (plan.json steps[M3-S04].notes,
+             2026-09-12T05:12:42Z) resolving decisions.md D-M3S02-04 for this
+             step: a verified org-wide address that is NOT an Email-to-Case
+             routing address. support@acme.example and billing@acme.example are
+             this org's routing addresses (M3-S03 settings/Case.settings-meta.xml)
+             and must never appear here — reusing one loops auto-response ->
+             customer reply -> routing address -> new case -> auto-response
+             (admin/assignment-rules gotcha 6; admin/email-to-case-configuration
+             gotcha 3). The M3 gate may still overturn this in favour of Q22's
+             reading; if it does, only this element changes. -->
+        <ruleEntry>
+            <criteriaItems>
+                <field>Case.Origin</field>
+                <operation>equals</operation>
+                <value>Email-Support,Email-Billing,Web</value>
+            </criteriaItems>
+            <replyToEmail>support-noreply@acme.example</replyToEmail>
+            <senderEmail>support-noreply@acme.example</senderEmail>
+            <senderName>Acme Support</senderName>
+            <template>case_intake/Case_Acknowledgement</template>
+        </ruleEntry>
+    </autoResponseRule>
+</AutoResponseRules>

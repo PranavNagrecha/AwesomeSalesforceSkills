@@ -1,0 +1,271 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T06-52-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-52-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-52-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S01",
+    "step_type": "sla",
+    "api_version": "67.0 — from the build's G3 decision 6",
+    "build_mode": "design-only",
+    "reason": "re-run after the operator resolved the checker-policy block at the source (commit 5b206697a) and set the step blocked -> running at 2026-09-12T06:50:00Z",
+    "prior_run": "2026-09-12T06-31-35Z — same agent, same artefacts, blocked exit",
+    "credentials_present": "none — nothing in steps[M4-S01].inputs{} or the answers it names matched a credential shape per skills/devops/pipeline-secrets-management"
+  },
+  "summary": "Second run of M4-S01, on artefacts this run did not change. The block was resolved at the source rather than in the XML: commit 5b206697a (admin/business-hours-and-holidays v1.0.1) scopes the shipped-24/7-shape rule to the org default or a calendar named literally 'Default', making the same shape on a deliberately named non-default calendar an INFO line that never affects the exit code, and adds this exact 'Severity 1 24x7' calendar to references/examples.md Example 1. The declared checker, re-run verbatim from the build directory, now exits 0 with that INFO line. The file that was rejected is byte-for-byte the file that passes; only deploy-order.md changed, to close its section 0, answer the INFO line's one confirmation, and narrow two of its five grounding markers. check-outputs returned ok and the step is handed back to the runner for a built transition.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 rubric, MEDIUM row: check-outputs is ok, every declared output was written and nothing else, every emitted element traces to the Step 3 inventory — but one Questions-to-Ask row (which holidays each region observes) had no answer and no documented default, so a seeded set stands in for it, and two grounding markers in deploy-order.md section 4 remain open (the midnight-pair semantics, which gotcha #6 still marks UNVERIFIED, and the weekend element ordering, now documented-by-example but not org-verified).",
+  "outcome": "completed",
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "No source in the plan, CLARIFICATIONS.md or answers-key.md supplies Acme's holiday dates; Q39 settled only that each region has its own set. A 12-month seed set with computed weekdays was written and is marked UNCONFIRMED in the runbook section 3 and deploy-order.md section 4.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "The Q90 Service Operations owner confirms or replaces the table in holiday-maintenance-runbook.md section 3 before deploy."
+    },
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Two shape facts remain unconfirmed against an org. The midnight-pair-means-open-all-day reading is now backed by gotcha #1, by the worked example commit 5b206697a added, and by api_meta L111304-111306 documenting 00:00:00.000Z on the *EndTime fields as 'midnight' — but gotcha #6 is unchanged and still marks the pair UNVERIFIED, because the value's meaning is not the pair's. The saturday*/sunday* element positions are now copied from that same worked example rather than inferred, which is documented-by-example, not verified by a retrieve or a --dry-run deploy.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "In a sandbox: build one 24-hour day and one closed day in Setup, retrieve Settings:BusinessHours, compare; then run the clock test in the runbook section 5."
+    },
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The step's four acceptance tests belong to agents/step-tester per standards/build-orchestration.md section 5. The declared checker was run here as part of building and its exit 0 is quoted as evidence, not recorded as a test result; the xml, manifest and manual tests were not run.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run /test-build-step on M4-S01."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "skill-quality",
+      "observation": "The block was closed by scoping the rule rather than by editing the artefact, and the commit carried the fix into the skill's prose and worked example as well as the script — gotcha #1 now states that the 24/7 shape is a mistake only on the default calendar, and examples.md carries the always-open calendar with its verification output.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/references/gotchas.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "metadata-grounding",
+      "observation": "The re-run needed no repair pass: the same bytes that exited 1 under the old rule exit 0 under the new one, so the artefact never depended on which way the policy went.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/settings/BusinessHours.settings-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "The INFO line asks the reviewer to confirm nothing expecting business-hour pauses is attached to the always-open calendar, and today the answer is that nothing at all reads it: M4-S02's two processes are business-time, M4-S03 stamps EMEA or US only, and M4-S04's Severity 1 entry uses businessHoursSource None. The calendar is the metadata expression of a promise another step carries operationally.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S02..S04].inputs)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "metadata-grounding",
+      "observation": "The corpus citation the operator supplied (api_meta L111304-111306) documents 00:00:00.000Z on the *EndTime fields as 'midnight', which settles what the value means and not what a start-and-end-both-midnight pair means, so gotcha #6's UNVERIFIED marker stays in deploy-order.md section 4 rather than being retired on a near-miss citation.",
+      "evidence": {
+        "source": "input",
+        "path": "skills/admin/business-hours-and-holidays/references/gotchas.md (Gotcha 6, unchanged by 5b206697a)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "Acme's holiday list is still unasked and unanswered; the 14 entries remain a seeded set and the Q90 owner is still a role rather than a person.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/CLARIFICATIONS.md (Q39, Q90)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The step is built but untested: its checker, XML, manifest and manual tests are all still outstanding.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S01].acceptance_tests)"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the four declared acceptance tests are its to run, and this agent ran the checker only as part of building."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The consumer map the skill's template asks for spans M4-S01 through M4-S04 and no single step's artefact carries it end to end.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/templates/business-hours-and-holidays-template.md"
+      },
+      "suggested_followup_agent": "business-hours-and-holidays-configurator",
+      "followup_reason": "Because it produces the referenced-by inventory across escalation entries, entitlement processes and Apex that one step cannot see."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S01",
+    "step_type": "sla",
+    "terminal_outcome": "built",
+    "prior_outcome": "blocked (checker-policy) on run 2026-09-12T06-31-35Z; resolved at the source by commit 5b206697a, not by changing this step's metadata",
+    "status_path_taken": "Invoked by agents/build-step-runner, so this agent ran neither set-status transition; check-outputs was run and is quoted below.",
+    "artefacts_changed_this_run": [
+      {
+        "path": "artefacts/M4-S01/deploy-order.md",
+        "change": "section 0 rewritten from the block notice to a resolved checker-status section quoting the new exit-0 run and answering the INFO line's confirmation; section 4 intro and two grounding markers updated (midnight pair narrowed and still UNVERIFIED, weekend element ordering now documented-by-example)"
+      }
+    ],
+    "artefacts_unchanged_this_run": [
+      "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+      "artefacts/M4-S01/holiday-maintenance-runbook.md",
+      "artefacts/M4-S01/package.xml"
+    ],
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+        "type": "Settings:BusinessHours",
+        "declared": true,
+        "source": "skills/admin/business-hours-and-holidays/references/examples.md Example 1, which since 5b206697a carries the Severity 1 24x7 calendar verbatim"
+      },
+      {
+        "path": "artefacts/M4-S01/holiday-maintenance-runbook.md",
+        "type": "build artefact",
+        "declared": true,
+        "source": "Q90 + SKILL.md Questions-to-Ask + references/gotchas.md #8"
+      },
+      {
+        "path": "artefacts/M4-S01/package.xml",
+        "type": "manifest",
+        "declared": true,
+        "source": "references/examples.md package.xml fragment; version 67.0 per G3 decision 6"
+      },
+      {
+        "path": "artefacts/M4-S01/deploy-order.md",
+        "type": "build artefact",
+        "declared": false,
+        "source": "agents/metadata-builder/AGENT.md Step 7 — written on every run; same undeclared pattern as decisions.md O-M3S02-03"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S01",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "INFO: BusinessHours.settings-meta.xml / always-open calendar 'Severity 1 24x7': SLA clocks on it never pause - intended for 24/7 severity tiers; confirm it is not attached to entitlements that expect business-hour pauses.",
+        "note": "The declared command run verbatim, from the build directory, against unchanged artefacts. Checker version 1.0.1; INFO never affects the exit code, including under --strict (--strict promotes only the WARN for a missing settings file, which does not apply — the file is this step's declared output and check-outputs confirms it)."
+      },
+      {
+        "command": "python3 -c \"import xml.etree.ElementTree as ET ... rglob('*.xml')\" on artefacts/M4-S01",
+        "exit_code": 0,
+        "output": "2 files parsed OK"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "info_line_confirmation": {
+      "asked": "confirm it is not attached to entitlements that expect business-hour pauses",
+      "answer": "Nothing in the plan reads 'Severity 1 24x7'. M4-S02 builds Premier (240 minutes) and Standard (1 business day), both business-time; M4-S03 stamps Case.BusinessHoursId from Account.Region__c, which yields EMEA Support or US Support; M4-S04's Severity 1 entry uses businessHoursSource None and reads no calendar. No holiday is attached to it, deliberately.",
+      "recorded_in": "artefacts/M4-S01/deploy-order.md section 0"
+    },
+    "unverified_items": [
+      {
+        "claim": "start and end both 00:00:00.000Z on all seven days means the calendar is open 24/7",
+        "basis": "gotchas.md #1; the worked example added by 5b206697a; api_meta L111304-111306 documents 00:00:00.000Z on the *EndTime fields as 'midnight'",
+        "why_unverified": "gotcha #6 is unchanged and still marks the pair UNVERIFIED — the cited line gives the value's meaning, not the pair's, so 'open 24 hours' and 'closed' remain indistinguishable from the documented shape",
+        "marked_in": "artefacts/M4-S01/deploy-order.md section 4",
+        "resolution": "Build one 24-hour day and one closed day in Setup, retrieve Settings:BusinessHours, compare; then the clock test in runbook section 5."
+      },
+      {
+        "claim": "saturday*/sunday* belong after fridayEndTime in the element sequence",
+        "basis": "references/examples.md Example 1 as extended by 5b206697a, which places them exactly there",
+        "why_unverified": "documented-by-example rather than confirmed by a retrieve or a --dry-run deploy",
+        "marked_in": "artefacts/M4-S01/deploy-order.md section 4",
+        "resolution": "Any retrieve from an org with a weekend-open calendar settles it."
+      },
+      {
+        "claim": "a holidays entry may omit <description>",
+        "basis": "no entry in the skill's worked example carries one",
+        "why_unverified": "SKILL.md lists the field but its position in the sequence is unstated, so it was omitted rather than placed by guess",
+        "marked_in": "artefacts/M4-S01/deploy-order.md section 4",
+        "resolution": "Same retrieve settles it."
+      },
+      {
+        "claim": "the 14 holiday dates are the set Acme observes",
+        "basis": "none — no clarification, answer-key row or requirement line names a holiday",
+        "why_unverified": "business content, not metadata shape",
+        "marked_in": "artefacts/M4-S01/holiday-maintenance-runbook.md section 3 and deploy-order.md section 4",
+        "resolution": "The Q90 Service Operations owner confirms or replaces the table before deploy."
+      }
+    ]
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "the BusinessHoursSettings element set, the one-file Settings:BusinessHours deploy shape, and the Questions-to-Ask rows bound in the first run's decision record (v1.0.1 read this run)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/examples.md",
+      "used_for": "Example 1, which since commit 5b206697a carries the Severity 1 24x7 calendar and the checker's exit-0 verification output alongside the two regional calendars every other element was copied from"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/gotchas.md",
+      "used_for": "#1 as rewritten by 5b206697a (the 24/7 shape is a mistake only on the default calendar), #2 holiday attachment, #4 the null Case.BusinessHoursId fallback, #5 milestones reading the process calendar, #6 the still-UNVERIFIED midnight-pair semantics, #8 the whole-calendar-set deploy"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/templates/business-hours-and-holidays-template.md",
+      "used_for": "the design-sheet shape the runbook's tables follow and the consumer map that named the downstream steps"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the package.xml wrapper and the retrieve-before-deploy ordering in the deploy-order note"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table and the status machine, section 5 on who runs the acceptance tests, section 8 on a gap being a signal rather than a licence to guess"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement, the citation schema and the confidence rubric Step 10 overrides"
+    },
+    {
+      "type": "probe",
+      "id": "check_business_hours_and_holidays",
+      "path": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py",
+      "used_for": "the declared acceptance checker, v1.0.1, re-run verbatim this run for exit 0 and the INFO line"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "per-step",
+  "run_id": "2026-09-12T07-12-28Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T07-12-28Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T07-12-28Z.json",
+  "summary": "Documented M4-S01 (Business Hours for EMEA/US and the 24/7 Severity 1 calendar, plus holidays) after it reached `tested`. Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json; appended 5 decisions.md entries covering the checker-policy block on `Severity 1 24x7` and its closure at the skill (D-M4S01-01, the flywheel record), the 14-holiday seed placeholder and Q90's role-not-person owner gap (D-M4S01-02), the calendar's presently-unconsumed status pending a Severity 1 entitlement process (O-M4S01-01), the UNVERIFIED midnight-pair semantics (O-M4S01-02), and a check_rtm.py skill-depth signal on its per-calendar key derivation inside a Settings component (O-M4S01-03); wrote 4 workbook rows (CWB-AUT-013..014 in Section 6, CWB-OTHER-025..026 in Other Configuration); added 2 traceability rows (REQ-038 the three business-hours calendars, REQ-039 the holiday-maintenance runbook) plus 2 Requirement-id-derivation entries; ran check_rtm.py from the build dir (39 rows, 0 coverage gaps, 0 errors, 3 orphans found and explained by O-M4S01-03, matching O-M3S02-05/O-M3S04-03; exit 0 at both build and step scope); set the step to `documented`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact produced a workbook row with a real source_req_id and a verification cell, and both new requirements have a traceability row (the HIGH conditions), but the check_rtm.py orphan WARN needed judgment rather than a mechanical read: the SETTINGS_ENTRIES per-calendar key derivation is a new checker behaviour this build had not seen before, and deciding it was a skill-depth signal rather than a row-naming error (recorded as O-M4S01-03) followed the same reasoning as two prior entries but required re-reading the checker's source to confirm the pattern actually matched.",
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The artefact under documentation is byte-for-byte identical between the blocked run and the built run — the checker-policy block was closed by scoping the rule at the skill, never by editing the settings file — so this documentation pass rests on one stable artefact rather than two versions to reconcile.",
+      "evidence": {"source": "repo_scan", "query": "envelopes/M4-S01/2026-09-12T06-31-35Z.md vs envelopes/M4-S01/2026-09-12T06-52-00Z.md, both section 3"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "step-tester independently re-ran the declared checker command verbatim, from the build directory, and observed the same exit 0 the builder's own re-run recorded — two independent runs, same result, so the tested-status green is not resting on one agent's own say-so.",
+      "evidence": {"source": "repo_scan", "query": "tests/M4-S01/checker-business-hours-and-holidays.stdout.txt; envelopes/M4-S01/2026-09-12T06-57-56Z.md section 6"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "deploy-order.md is undeclared in M4-S01's outputs[], extending the same undeclared-artefact pattern (decisions.md O-M3S02-03) from every M3 step into M4.",
+      "evidence": {"source": "input", "query": "plan.json steps[M4-S01].outputs[]"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Severity 1 24x7 is built and passes its checker, but no step in this build's current scope reads it by name — it is a metadata placeholder for a Severity 1 entitlement process that does not yet exist, and that gap is invisible to every exit code that touched this step.",
+      "evidence": {"source": "repo_scan", "query": "artefacts/M4-S01/deploy-order.md section 0 consumer table"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The 14-holiday set in the deployed file is a seeded placeholder computed by the builder, not a source-grounded answer to which holidays Acme actually observes, and Q90's owner row names a role and a cadence but not a person.",
+      "evidence": {"source": "input", "query": "artefacts/M4-S01/holiday-maintenance-runbook.md sections 1 and 3"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "check_rtm.py reports 3 orphans for this step's own component because its SETTINGS_ENTRIES derivation registers one key per businessHours calendar inside the file, alongside the container key the manifest and every other Settings row in this build actually names; 0 coverage gaps and 0 errors otherwise, at both build and step scope.",
+      "evidence": {"source": "repo_scan", "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo root>"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "milestone-verifier should run once every M4 step is documented, because the checker-policy history, the unconsumed Severity 1 24x7 calendar, and the seeded holiday list are all cross-step or gate-level items rather than something one step's own tests settle.",
+      "evidence": {"source": "input", "query": "decisions.md D-M4S01-01, D-M4S01-02, O-M4S01-01"},
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because the checker-policy history, the unconsumed calendar, and the seeded holiday list are all M4-gate items rather than settled by this step alone."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "business-hours-and-holidays-configurator is the cross-step consumer map this skill's own template asks for, once M4-S02/M4-S03/M4-S04 are all built and the calendar's actual consumers (or lack of one for Severity 1 24x7) can be confirmed end to end.",
+      "evidence": {"source": "input", "query": "artefacts/M4-S01/deploy-order.md section 0"},
+      "suggested_followup_agent": "business-hours-and-holidays-configurator",
+      "followup_reason": "because it owns the cross-step consumer-map audit this skill's template calls for, which this step's own scope cannot complete alone."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation, including the file-scope prohibition"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations schema, confidence rubric"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence and atomic-write rule"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum (not triggered this run)"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "section 2 (rendered-view/plan-state rules), section 4 (step-type to workbook-section map — sla maps to Section 6), section 6 (this agent's per-step job), section 8 (skill-gap-to-decisions.md rule)"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "fields read from and left alone in plan.json"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "ten canonical sections and row schema for the 4 new workbook rows"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "canonical column set, REQ-id convention, the setup-only: marker for a non-metadata deliverable, and the check_rtm.py checker run"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "decision-entry shape (date, alternative rejected, source grounded in) for the 4 new decisions.md entries"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how the step's one manual test is recorded as acceptance evidence in the traceability row rather than a plain pass/fail"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "mandatory read for a per-step pass; no UAT case pack compiled this run (that is M5-S04's compile-run job)"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "mandatory read for a per-step pass; no criteria document compiled this run (M5-S04's job)"}
+  ],
+  "extensions": {
+    "step_id": "M4-S01",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": ["CWB-AUT-013", "CWB-AUT-014", "CWB-OTHER-025", "CWB-OTHER-026"],
+    "traceability_rows": ["REQ-038", "REQ-039"],
+    "decisions_appended": ["D-M4S01-01", "D-M4S01-02", "O-M4S01-01", "O-M4S01-02", "O-M4S01-03"],
+    "rows_replaced": []
+  }
+}

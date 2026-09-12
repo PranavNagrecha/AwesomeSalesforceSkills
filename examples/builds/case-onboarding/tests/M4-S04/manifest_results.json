@@ -1,0 +1,31 @@
+{
+  "scope": "step",
+  "package_xml": "artefacts/M4-S04/package.xml",
+  "manifest_types": [
+    {
+      "name": "EscalationRules",
+      "members": [
+        "Case"
+      ],
+      "wildcard": false
+    }
+  ],
+  "file_to_manifest": [
+    {
+      "file": "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml",
+      "derived_type": "EscalationRules",
+      "derived_member": "Case",
+      "covered": true
+    }
+  ],
+  "manifest_to_file": [
+    {
+      "type": "EscalationRules",
+      "member": "Case",
+      "file_found": true
+    }
+  ],
+  "excluded_types": [],
+  "consistent": true,
+  "mismatches": []
+}

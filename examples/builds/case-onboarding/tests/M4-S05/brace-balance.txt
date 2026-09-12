@@ -1,0 +1,4 @@
+artefacts/M4-S05/classes/CaseMilestoneService.cls: balanced ({}=16/16, ()=36/36, []=3/3)
+artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls: balanced ({}=15/15, ()=77/77, []=8/8)
+artefacts/M4-S05/classes/TestDataFactory.cls: balanced ({}=17/17, ()=48/48, []=3/3)
+artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger: balanced ({}=1/1, ()=2/2, []=0/0)

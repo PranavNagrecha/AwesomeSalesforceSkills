@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Case Billing</label>
+    <description>Billing persona delta on Case Agent Core: Billing record type only, Severity__c read-only. Support record type withheld pending Q13 (assumption A1). See deploy-order.md for rationale.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <recordTypeVisibilities>
+        <recordType>Case.Billing</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+</PermissionSet>

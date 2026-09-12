@@ -1,0 +1,5 @@
+NOTE [artefacts/M4-S03/flow-governance-policy.yaml] fault_paths.require_fault_connectors is true. This checker does not judge fault paths; run flow/fault-handling scripts/check_flow_faults.py over the same --manifest-dir.
+WARN The manifest carries Active flows but no settings/Flow.settings. enableFlowDeployAsActiveEnabled defaults to false in production orgs, so those flows land Draft (api_meta.txt L116877-116886). Feature settings do not accept the package.xml wildcard (L117094), so this file has to be named explicitly.
+
+0 error(s), 2 advisory.
+Fault-path correctness is not checked here; run flow/fault-handling scripts/check_flow_faults.py.

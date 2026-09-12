@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PSG_Tier1_Prod</fullName>
+    <label>Support Tier 1 Prod</label>
+    <description>Persona bundle for the 12 Tier 1 agents. Owner: CRM admin lead (Q87). Assignment unit - Tier 1 membership changes monthly, so users are assigned to this group, never to the member sets directly.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <permissionSets>Case_Agent_Core</permissionSets>
+    <permissionSets>Case_Tier1</permissionSets>
+</PermissionSetGroup>

@@ -1,0 +1,15 @@
+{
+  "step_id": "M4-S03",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py",
+    "skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py",
+    "skills/flow/flow-governance/scripts/check_flow_governance.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given the flow claims to stamp three fields, when the flow XML is read, then it sets Case.EntitlementId, Case.BusinessHoursId and Case.Priority, each guarded so it writes only into a null value (assumption A2), and the no-matching-account path is the documented fallback rather than a fault. The entitlement-to-process cross-reference is NOT asserted here: check_entitlements_and_milestones.py is carried by M4-S02 at build scope. S3: the flow's <description> carries the 'Owner:' marker and at least 60 characters, its <interviewLabel> is present, its <apiVersion> is 59 or higher and its <runInMode> is DefaultMode — all four are policy requirements check_flow_governance.py enforces, and the reviewer confirms them here as well because the checker reports them by file rather than by field."
+  ]
+}

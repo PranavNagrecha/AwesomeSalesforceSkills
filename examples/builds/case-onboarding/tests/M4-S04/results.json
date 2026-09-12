@@ -1,0 +1,14 @@
+{
+  "step_id": "M4-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/escalation-rules/scripts/check_escalation_rules.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given the rule ships inactive (Q47), when the sandbox proof is signed off, then a named owner activates it inside an agreed comparison window and records the first hour's escalation count. The checker's W1 finding ('no rule in this file is active') is the expected state here, not a defect.",
+    "Given Q46 measures 8 business hours, when Case.escalationRules-meta.xml is read, then the Tier 2 entry's minutesToEscalation is 480 (8 x 60), not 8; its businessHoursSource is Case with no <businessHours> child; it reassigns to the queue developer name Tier_2_Engineering built in M2-S04; and the Severity 1 entry's businessHoursSource is None. check_business_hours_and_holidays.py is not declared on this step — at artefacts/M4-S04 it prints 'No BusinessHours settings file found' and exits 0 vacuously, because the calendars are M4-S01's artefacts; M4's milestone test runs it at --manifest-dir artefacts, which is where the 24/7 calendar assertion lives."
+  ]
+}

@@ -57,6 +57,16 @@ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py \
 | REQ-035 | Q66 | Web-to-Case intake is enabled for the website form (~60 cases a day) and stamps a Web Case Origin; the HTML form itself is authored and hosted outside this build | M3-S03 | `Settings:Case` | metadata-builder | — | TC-M3S03-02 | manual | In UAT | `artefacts/M3-S03/settings/Case.settings-meta.xml` \| `artefacts/M3-S03/web-to-case-form-contract.md` \| `artefacts/M3-S03/package.xml` | machine half **pass**, manual half **outstanding**. Machine: same declared checker run as `REQ-034` (one command scans the same file) exit 0, 0 findings; `xml` 2/2 parsed (shared); `manifest` (`Settings:Case` two-way, shared). `webToCase` carries exactly two of its three documented children — `enableWebToCase` `true` and `caseOrigin` `Web` — `defaultResponseTemplate` deliberately unset because the guide scopes it to Self-Service portal responses rather than to the customer acknowledgement, which is `M3-S04`'s `AutoResponseRules` element (`web-to-case-form-contract.md` § 1). Manual **TC-M3S03-02** (`tests/M3-S03/results.json` `skipped_manual[1]`), deferred to the M3 gate: confirms `web-to-case-form-contract.md` states whether the form posts directly or through middleware, the `Origin` value each path stamps, and that the HTML form itself is not metadata — all three are present in the file (§§ 1–2), but **Q66 itself is not settled**: the file specifies both posting paths (§ 2) and recommends Path A (direct post) without a confirmed answer from the website owner, so the manual test's own precondition ("given Q66's answer itself says to confirm...") remains open past this step, not merely past this test. **The fallback owner for unrouted web cases** — `defaultCaseOwner` `Tier_1_General` / `defaultCaseOwnerType` `Queue` — is the same `CaseSettings` field `REQ-034`'s row documents; see that row rather than a second citation here. `Case.Origin` value `Web` is a live entry in `artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml` (**Q19**, `REQ-005`). No record type is stamped on a web case — `WebToCaseSettings` has no record-type element (`web-to-case-form-contract.md` § 1) — so a web case lands on the object's default record type rather than `Case.Support`/`Case.Billing` the way an email case now does (**F-26**). **Status is `In UAT`, not `In Build`:** same dependency reasoning as `REQ-034` — `M3-S03` and its three `depends_on` are all `documented`; the manual half (**TC-M3S03-02**) and Q66's own open confirmation are both outstanding at the M3 gate. |
 | REQ-036 | Q25 | Within the first minute of a case being created it must have an owner — the assignment rule is the authoritative mechanism, routing support@ (`Email-Support`) to Tier 1 and billing@ (`Email-Billing`) to Finance, with an explicit fall-through, not the queue alone | M3-S04 | `AssignmentRules:Case` | metadata-builder | D3 | M3-S04-T2 | manual | In UAT | `artefacts/M3-S04/assignmentRules/Case.assignmentRules-meta.xml` \| `artefacts/M3-S04/owner-writer-map.md` | machine half **pass**, manual half **outstanding and not tickable as written**. Machine: declared build-scope `check_case_management_setup.py --manifest-dir artefacts` exit 0, `No case management setup issues found.` (`tests/M3-S04/checker_check_case_management_setup.stdout.txt`); `xml` 3/3 parsed; `manifest` (`AssignmentRules:Case` ↔ file, two-way, member named explicitly though the cited skill documents that all three rule types accept `*`). Undeclared, informational `check_assignment_rules.py --manifest-dir artefacts` exits 1 on `target 'Tier_1_General' appears in multiple rule entries` — deliberate by construction (Q18 routes support@ to Tier 1, Q26 sends every unmatched case to the same catch-all queue), reproducing `deploy-order.md` § 7's prediction word for word at both scopes (`tests/M3-S04/OBSERVATION-check_assignment_rules.*.stdout.txt`); its `AR-LOOP-01` mail-loop rule does **not** fire at build scope — positive evidence no `senderEmail` in this build matches a routing address. **Manual `M3-S04-T2` (`W02`):** given Q25 and Q26, the active rule's entries route on `Case.Origin` **and the Account support tier**; the built file routes on `Case.Origin` **only** — the order/catch-all half (most-specific-first, criteria-less catch-all last, assigned to `Tier_1_General`) matches the artefact; the tier clause does not, and the test cannot be ticked as written (`tests/M3-S04/summary.md` § "Ambiguity recorded verbatim"; `decisions.md` **D-M3S04-02** — two independent blockers: no answer names a `Premier` tier→queue mapping, and no skill grounds a related-object `criteriaItems/field` on a Case rule). Carried to the M3 gate: either an answer names the mapping and a live org confirms the notation, or the step's title and `W02` are corrected to Origin-only. `owner-writer-map.md` (this row's second artefact) records the three by-design `OwnerId` writers in fire order and the still-open Q24 layout-default gap (`decisions.md` **O-M3S04-01**) — without that default, ~20 hand-logged cases a day never reach this rule at all. **Status is `In UAT`, not `In Build`:** `M3-S04` is now `documented` and its three `depends_on` (`M2-S04`, `M3-S02`, `M3-S03`) are `documented` too, so the machine half is complete; the manual half is outstanding at the M3 gate, carrying the mismatch above rather than a plain sign-off. |
 | REQ-037 | Q28 | The customer must receive an acknowledgement with the case number within the first minute — fired by the auto-response rule only when the assignment rule fires, exactly once per case, on both intake channels | M3-S04 | `AutoResponseRules:Case` | metadata-builder | — | M3-S04-T3 | manual | In UAT | `artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml` | machine half **pass** (with one org-validation caveat below), manual half **outstanding, on-disk consistent, not ticked**. Machine: same declared build-scope `check_case_management_setup.py --manifest-dir artefacts` run as `REQ-036` (one command scans both rule files) exit 0; `xml` 3/3 parsed (shared); `manifest` (`AutoResponseRules:Case` ↔ file, two-way, member named explicitly). **`reports/MOCK-DEPLOY-M3.md` Run 6 (F-28):** a real `sf project deploy start --dry-run` against `sfskills-dev` rejected this exact component — `AutoResponseRule Case.Case_Acknowledgement: support-noreply@acme.example is an invalid From email address` — because the org carries no verified `OrgWideEmailAddress` for it. Not a metadata defect: the value is the operator's pre-gate resolution of `decisions.md` **D-M3S02-04** (`decisions.md` **D-M3S04-01**), and the address's absence is recorded as a **G3 deploy prerequisite** (`decisions.md` **D-M3S04-03**), not a rebuild — the sibling `AssignmentRules:Case` component validated cleanly in the same run. **Manual `M3-S04-T3`:** given Q28 and Q63, exactly one acknowledgement entry can match any case (structurally true — one `ruleEntry`) and its template names `M3-S02`'s folder-qualified Classic template (`case_intake/Case_Acknowledgement`), confirmed on disk; deferred to the M3 gate, on-disk evidence consistent, not a mismatch. **`replyToEmail` mirrors `senderEmail`:** a customer's *Reply* does not thread onto the case (`decisions.md` **D-M3S04-04**) — carried to the same gate item as `D-M3S02-04`. **See also `REQ-032`** — `M3-S02`'s `EmailTemplate:case_intake/Case_Acknowledgement` row is the template *content* this rule's `<template>` element names; this row is the delivery *mechanism*, a different artefact serving the same acknowledgement requirement. **Status is `In UAT`, not `In Build`:** same dependency reasoning as `REQ-036` — the machine half is complete; the manual half and F-28's org prerequisite are both outstanding at the M3 gate. |
+| REQ-038 | Q39 | SLA clocks must run on the right calendar: EMEA works London 08:00–18:00, the US works New York 08:00–20:00, clocks pause on weekends and regional holidays, and Severity 1 outages run on a 24/7 calendar that never pauses | M4-S01 | `Settings:BusinessHours` | metadata-builder | — | M4-S01-T4 | manual | In UAT | `artefacts/M4-S01/settings/BusinessHours.settings-meta.xml` | machine half **pass** (with one checker-policy history below), manual half **pass, deferred to the M4 gate**. Machine: declared `check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S01` — first run exit **1** on the `Severity 1 24x7` calendar's shipped-24/7 shape (`decisions.md` **D-M4S01-01**), re-run exit **0** against the byte-identical file after skill v1.0.1 scoped the rule (one INFO line, does not affect exit code); `xml` 2/2 parsed; `manifest` two-way (`Settings:BusinessHours` named explicitly, feature settings reject the wildcard). **Manual `M4-S01-T4`** (`tests/M4-S01/results.json` `skipped_manual[0]`): given the step claims to have built the calendars, when the settings file is read, then all three are present and named — EMEA Support (Europe/London 08:00–18:00 Mon–Fri), US Support (America/New_York 08:00–20:00 Mon–Fri, the org default) and Severity 1 24x7 — confirmed true on disk by `step-tester`, deferred to the milestone gate per the test's own wording. **Two items named, not asserted machine-checked:** the 14 holidays attached to `US Support`/`EMEA Support` are a seeded placeholder, not Acme's list (`decisions.md` **D-M4S01-02**); the midnight-to-midnight pair on `Severity 1 24x7` is UNVERIFIED without an org (`decisions.md` **O-M4S01-02**). **Status is `In UAT`, not `In Build`:** `M4-S01` is `documented` and has no `depends_on`, so the machine half is complete; the manual half above is outstanding at the M4 gate. `Severity 1 24x7` is presently read by no other step in this build (`decisions.md` **O-M4S01-01**) — a placeholder for a Severity 1 entitlement process that does not yet exist; `M4-S04`'s Severity 1 entry carries the same 24/7 promise operationally through `businessHoursSource = None`. |
+| REQ-039 | Q90 | Holidays expire; the calendars need a named owner and a yearly maintenance cadence so they do not silently stop pausing | M4-S01 | `setup-only: holiday-maintenance-runbook.md` | metadata-builder | — | M4-S01-T1 | checker | In UAT | `artefacts/M4-S01/holiday-maintenance-runbook.md` | **Presence only, not content.** The declared checker scans metadata, not `.md`, so `M4-S01-T1`'s exit 0 says only that `check-outputs` (`tests/M4-S01/check-outputs.json`, ok) confirmed this file on disk and non-empty before the checker ran, and the checker itself excludes it from its scan — no runner in this step asserts what the file says. The step's one manual test (`M4-S01-T4`, cited on `REQ-038`) covers the settings file's calendar names, not this runbook. **Two items named as open at the M4 gate, not ticked:** the accountable team and cadence are answered (Service Operations, yearly Q4 deploy), but the named individual is explicitly left OPEN in the runbook's own owner row; the 14-entry holiday table it documents is a seeded placeholder, not Acme's confirmed list (`decisions.md` **D-M4S01-02** covers both). **Status is `In UAT`, not `In Build`:** same dependency reasoning as `REQ-038` — the file is written and present; the two open items above are outstanding at the M4 gate rather than a step remaining. |
+| REQ-040 | Q38 | Premier accounts get a first response within 4 business hours | M4-S02 | `EntitlementProcess:First_Response_Premier` | metadata-builder | — | M4-S02-T4 | manual | In Build | `artefacts/M4-S02/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml` | machine half **pass**, manual half **pass, deferred to the M4 gate**. Machine: declared `check_entitlements_and_milestones.py --manifest-dir artefacts --strict` — first run exit **1** on this file's milestone override (2× W4, `decisions.md` **D-M4S02-01**), re-run exit **0** against the byte-identical file after skill v1.1.2 moved W4 to INFO (`0 error(s), 0 warning(s), 2 info note(s)`); checker rule E1 confirms `minutesToComplete` is present and numeric, not that 240 is the correct value; `xml` parsed; `manifest` two-way (`EntitlementProcess:First_Response_Premier` named explicitly, part of the 3 ↔ 3 build-scope check). **Manual `M4-S02-T4`** (`tests/M4-S02/results.json` `skipped_manual[0]`): given assumption A27, `artefacts/M4-S02/` holds exactly two `entitlementProcesses` files and one `milestoneTypes` file, the Premier process carries `minutesToComplete` 240, and both processes name a `businessHours` resolving against `M4-S01`'s settings file — confirmed true on disk, deferred to the milestone gate per the test's own wording. **Status is `In Build`, not `In UAT`:** `M4-S03` (`EntitlementId` stamp, `pending`) and `M4-S05` (`CompletionDate` writer, D10, `pending`) both serve this requirement's functional completion — until they land this process is tracking-only (`milestone-completion-decision.md` § 4). |
+| REQ-041 | Q38 | Standard accounts get a first response within 1 business day | M4-S02 | `EntitlementProcess:First_Response_Standard` | metadata-builder | — | M4-S02-T1 | checker | In Build | `artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml` | machine half **pass, but does not confirm the value**, no manual half touches this file. Machine: same declared checker run as `REQ-040`, same exit 1 → exit 0 history; `xml` parsed; `manifest` two-way. **`minutesToComplete` 720 is DERIVED, not answered** (`decisions.md` **D-M4S02-02**) — nothing in this build converts "1 business day" into minutes directly; 720 is the `US Support` calendar's 12-open-hour day. **No test, machine or manual, asserts 720 is correct**: the checker's E1 rule confirms the field is present and numeric only, and `M4-S02-T4`'s manual wording (cited on `REQ-040`) pins Premier's 240 but names no value for Standard. Carried to the M4 gate as an UNCONFIRMED placeholder, the same shape as `M4-S01`'s holiday seed. **Status is `In Build`, not `In UAT`:** same `M4-S03`/`M4-S05` dependency as `REQ-040`. |
+| REQ-042 | Q53 | One shared "First Response" milestone identity serves both SLA tiers; completion is driven by an after-update Apex trigger, not a workflow action | M4-S02 | `MilestoneType:First Response` | metadata-builder | D10 | M4-S02-T4 | manual | In Build | `artefacts/M4-S02/milestoneTypes/First Response.milestoneType-meta.xml` \| `artefacts/M4-S02/milestone-completion-decision.md` | machine half **pass**, manual half **pass, deferred to the M4 gate**. Machine: same declared checker run as `REQ-040`/`REQ-041` — the two surviving INFO `W4` notes on both processes ("no warning or completion action is configured … confirm that is the design") are this milestone type's action-less shape, and `milestone-completion-decision.md` is the on-disk confirmation the note asks for: **D10** routes `CompletionDate` to `M4-S05`'s after-update Apex trigger, not a workflow action, because no completion-criteria element is documented on the entitlement process and no clarification names a milestone notification; `xml` parsed; `manifest` two-way (`MilestoneType:First Response` named explicitly). **Manual `M4-S02-T4`** (cited on `REQ-040`): "exactly one `milestoneTypes` file (`First Response`)" — confirmed true on disk. **File name is mixed case against the guide's lowercase `NameNorm` derivation rule — UNVERIFIED against a real retrieve**, no org exists in this build to confirm (`deploy-order.md` § 4.1). **Status is `In Build`, not `In UAT`:** `M4-S05` (the `CompletionDate` writer this milestone type's whole design rests on, D10) is `pending` — until it lands, every First Response milestone opens and never closes (`milestone-completion-decision.md` § 4). |
+| REQ-043 | Q45 | Anything untouched for 8 business hours escalates to Tier 2, with a 24/7 exception for a Severity 1 outage; cut over deploy-inactive-then-activate to avoid a wave of instant escalations | M4-S04 | `EscalationRules:Case` | metadata-builder | D7 | M4-S04-T1 | checker | In UAT | `artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml` \| `artefacts/M4-S04/escalation-activation-runbook.md` \| `artefacts/M4-S04/escalation-monitoring-note.md` | machine half **pass across two builds**, manual half **outstanding, deferred to the M4 gate**. Machine: declared build-scope `check_escalation_rules.py --manifest-dir artefacts` — first build exit **0** (`W1` no-rule-active expected under Q47, 2× `I3` 480=8h) on `2026-09-12T07-22-10Z`'s file, then that file was **rejected by the org**: `reports/MOCK-DEPLOY-M4.md` run 1, `EscalationRules Case: notifyToTemplate is required` (**F-36**). Closed at the skill, not the artefact — commit `9ae71856d` (`admin/escalation-rules` v1.1.2) adds rule **E10**, which then failed the byte-identical file with 2× `ERROR E10`; the rebuild (`2026-09-12T07-58-40Z`) added one folder-qualified `<notifyToTemplate>` per action and the declared checker exited **0** again (`W1` + 2× `I3`, no `I4`) — confirmed independently by `step-tester`'s post-rebuild run (`2026-09-12T07-51-46Z`), `tests/M4-S04/results.json` `"passed": true`. `xml` 2/2 parsed both builds; `manifest` two-way, `EscalationRules:Case` named explicitly — the container form, which also resolves the per-rule `EscalationRule:Case.Case_SLA_Escalation` key `check_rtm.py` derives from inside the file (§ "Linter result — after M4-S04" below). **Two manual tests deferred to the M4 gate**, both Given/When/Then-shaped and usable, neither ticked: `M4-S04-T4` (activation sign-off inside an agreed comparison window) and `M4-S04-T5` (the 480-minute / `businessHoursSource` / queue-developer-name assertion — `check_business_hours_and_holidays.py` is not declared on this step and prints vacuously at step scope; M4's milestone test runs it at `--manifest-dir artefacts`, where the calendars are visible). **Full record of the rebuild:** `decisions.md` **D-M4S04-01** (F-36, the second flywheel record in M4, paralleling `D-M4S01-01`). **Three items carried to the M4 gate, none resolved by this row:** the Billing-queue mail-loop exposure is confirmed real, not latent (`decisions.md` **O-M4S04-01**, closing **O-M3S04-02**'s open check) — the rule ships `<active>false</active>` so nothing loops on deploy, but activation needs one of three named remedies; Severity 1's 480-minute threshold is a composed reading of `requirement.md`, not an answered value (`decisions.md` **D-M4S04-02**); the `CaseCreation` clock start is narrower than the requirement's own word "untouched" (`decisions.md` **D-M4S04-03**, Q42). **U6, recorded not fixed:** one escalation template (`case_intake/Case_Escalated_To_Tier2`) serves both `notifyToTemplate` and `assignedToTemplate`, where the cited skill's worked example uses two (`decisions.md` **D-M4S04-04**) — this build declares exactly one escalation template (`M3-S02`), and inventing a second was rejected as the same class of invention `D-M2S04-02` already refused. Five further UNVERIFIED items (U1–U5) in `deploy-order.md` § 3, none covered by a declared test. **Status is `In UAT`, not `In Build`:** `M4-S04` is now `documented` and all four `depends_on` steps (`M4-S01`, `M2-S04`, `M3-S02`, `M3-S04`) are `documented` too, so the machine half is complete; both manual tests are outstanding at the M4 gate. |
+| REQ-044 | Q50 | The First Response milestone is marked complete by an after-update Apex trigger on Case, per D10's mechanism; Q50's own answer named the first outbound EmailMessage as the completion signal, but this delivery implements a narrower Case-only proxy — the Case leaving Status New (`decisions.md` D-M4S05-02) | M4-S05 | `ApexTrigger:CaseMilestoneTrigger` | apex-builder | D10 | M4-S05-T1 | checker | In UAT | `artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger` \| `artefacts/M4-S05/classes/CaseMilestoneService.cls` \| `artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls` \| `artefacts/M4-S05/classes/TestDataFactory.cls` | machine half **pass across two builds**, manual half **outstanding, deferred to the M4 gate**. Machine: declared `check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05` — first build exit **0** on 3 Apex files (0 ERROR, 0 WARN, also 0 under `--strict`), then that build was **rejected by the org**: `reports/MOCK-DEPLOY-M4.md` run 2, `ApexClass CaseMilestoneServiceTest ×5 "Variable does not exist: TestDataFactory"` (**F-37**). Closed by shipping the template, not by a skill fix — `classes/TestDataFactory.cls` was added as a byte-identical copy of `templates/apex/tests/TestDataFactory.cls` (`decisions.md` **D-M4S05-01**); the rebuild's declared checker exited **0** again, now on 4 Apex files, and run 3 of the operator's dry-run validation confirmed all four classes and the trigger compile. `xml` 4/4 parsed (post-rebuild); `manifest` **skipped-not-applicable** — the Apex exception, `standards/build-orchestration.md` § 5 — `M5-S05` aggregates this step's `ApexClass`/`ApexTrigger` members into the build-level manifest rather than this step carrying its own `package.xml`. **One manual test deferred to the M4 gate**, Given/When/Then-shaped and usable, not ticked: every non-platform identifier is quoted from the cited skill or template, and `CaseMilestoneServiceTest` asserts `CompletionDate` non-null after the trigger runs. **Four items carried to the M4 gate, none resolved by this row:** the completion signal is a proxy, not Q50's literal answer (`decisions.md` **D-M4S05-02**); the two-file trigger shape ships with no recursion guard or `TriggerControl` kill switch (`decisions.md` **D-M4S05-03**); `CaseMilestoneServiceTest` is forced to `@IsTest(SeeAllData=true)` and needs an active `SlaProcess` with a `First Response` milestone before it proves anything (`decisions.md` **D-M4S05-04**); `TestDataFactory` ships as a step-local copy that a second Apex step would collide with rather than merge (`decisions.md` **D-M4S05-05**). Six further UNVERIFIED items in `deploy-order.md` § 5, none covered by a declared test. **Status is `In UAT`, not `In Build`:** `M4-S05` is now `documented` and its one `depends_on` step (`M4-S02`) is `documented` too, so the machine half is complete; the manual test above is outstanding at the M4 gate. **Note for the gate, not this row's to resolve:** `REQ-040`/`REQ-041`/`REQ-042` (`M4-S02`'s rows) still read `Status: In Build`, because their own note names *both* `M4-S03` and `M4-S05` as the steps their functional completion rests on — `M4-S05` has now landed, `M4-S03` is `tested` but not yet `documented` (a concurrent doc-keeper pass owns it), so those three rows stay exactly as `M4-S02`'s documentation pass left them until that second dependency clears too. |
+| REQ-045 | Q48 | Within the first minute, a Case's SLA clock and (where resolvable) its Entitlement are attached automatically before save, and Priority is derived where the intake channel supplies no structured value (`requirement.md` L9–11) | M4-S03 | `Flow:Case_BeforeSave_StampEntitlementAndCalendar` | metadata-builder | D2 | M4-S03-T6 | manual | In UAT | `artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml` \| `artefacts/M4-S03/no-account-fallback-note.md` | machine half **pass across three builds**, manual half **outstanding, deferred to the M4 gate**. Machine: declared `check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03` exit 0, "No issues found." — unchanged across all three builds; the rule-3 entry-criteria check now scopes to `RecordAfterSave` only, which is what clears the v2 blocker for this create-context flow. `check_flow_decision_element_patterns.py` (not a declared test, run anyway per `metadata-builder` Step 8) exit 0 with five WARNs, all design-not-defect (`artefacts/M4-S03/deploy-order.md` § 5). `xml` parsed; `manifest` two-way, `Flow` named explicitly. **Priority mechanism:** `Decision_Derive_Priority` overwrites the Email-to-Case intake default on `Email-Support`/`Email-Billing` per G3 gate decision (2); assumption A2's null guard holds everywhere else (`decisions.md` **D-M4S03-02**). **Priority VALUES** (Severity 1/Premier → `High`, else `Medium`) are derived, not answered — carried to the M4 gate (`decisions.md` **D-M4S03-03**). **Fault paths:** four `faultConnector`s route to the next `Decision` rather than to a `LogFault_<Parent>` target, because neither cited skill documents a before-save fault-path shape and a `RecordBeforeSave` flow may carry no `recordCreates` at all — a library gap, not a defect (`decisions.md` **O-M4S03-01**). **Manual test deferred to the M4 gate:** the three-field stamp, the no-match fallback, and the four `check_flow_governance.py` policy fields on the flow's own `<description>`/`<interviewLabel>`/`<apiVersion>`/`<runInMode>`. |
+| REQ-046 | Q48 | The `FlowTest` proving the before-save stamp supplies exactly the test-point parameters a `Create`-triggered flow accepts | M4-S03 | `FlowTest:Case_BeforeSave_StampEntitlementAndCalendar_Test` | metadata-builder | — | M4-S03-T5 | manifest | In UAT | `artefacts/M4-S03/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml` | machine half **pass, over two rebuilds and two org rejections**, no manual half touches this file directly. Machine: `manifest` two-way, `FlowTest` named explicitly; `xml` parsed; `check_flow_governance.py --manifest-dir artefacts/M4-S03` exit 0 confirms an `<status>Active</status>` flow has a `FlowTest` naming it in the manifest (a checker ERROR otherwise). **This is the one file that changed across all three builds** — build 1 shipped `InputTriggeringRecordUpdated` only and was org-rejected (*"missing … InputTriggeringRecordInitial"*); rebuild 1 added `Initial` alongside `Updated` and was rejected again, the mirror error (*"contains the incompatible parameter value … InputTriggeringRecordUpdated. Remove the parameter or change the record trigger type"*); rebuild 2 removed `Updated`, leaving `Initial` alone, and validated. Settled rule: `recordTriggerType Create` → `Initial` only; `Update`/`CreateAndUpdate` → both — proven live by the org, not by any skill file, which is still unedited (`decisions.md` **D-M4S03-01**, the fourth flywheel-adjacent record in this build and the first the skill fix has not yet closed). No declared checker inspects `FlowTest` parameters directly; the org's own two rejections are the only assertion this file has ever had. |
+| REQ-047 | Q40 | `Settings:Flow`'s `enableFlowDeployAsActiveEnabled` is the org-level switch that decides whether the before-save flow deploys `Active` or silently lands `Draft` | M4-S03 | `Settings:Flow` | metadata-builder | — | M4-S03-T3 | checker | In UAT | `artefacts/M4-S03/settings/Flow.settings-meta.xml` | machine half **pass with one documented advisory**, no manual half touches this file directly. Machine: declared `check_flow_governance.py --manifest-dir artefacts/M4-S03` exit 0, "0 error(s), 2 advisory" — one of the two advisories is this file's own naming gap: the checker globs the metadata-format name `Flow.settings`, this build uses DX `-meta.xml` naming throughout, so it reports the settings file missing even though it is present — a documented, expected outcome, not a defect (`artefacts/M4-S03/deploy-order.md` § 4). `xml` parsed; `manifest` two-way, `Settings:Flow` named explicitly (feature settings reject the `package.xml` wildcard). **Production-deploy risk, not resolved by this row:** `enableFlowDeployAsActiveEnabled true` means a production deploy of this step runs the org's Apex tests and can be rolled back for a reason unrelated to this flow if the required active-automation launch percentage is not met — this build's only Apex is `M4-S05`, sequenced separately (`decisions.md` **O-M4S03-02**). UNVERIFIED: whether this one-field file resets the org's other twelve `FlowSettings` values or leaves them untouched. |
 
 ---
 
@@ -107,6 +117,16 @@ key is auditable rather than invented. Ids are stable and are never reused.
 | REQ-035 | L6–L8 — "and from a form on our website (roughly 60 a day)" | Q66 (answered — the form is the only named external producer; posting path unconfirmed); Q15 (answered — volume, cited in prose) |
 | REQ-036 | L9–L11 — "Within the first minute of a case being created it must have an owner" (+ L6–L8 support@/billing@ split) | Q25 (answered — the routing fields); Q18, Q24, Q26, Q27 (all answered, cited in prose) |
 | REQ-037 | L9–L11 — "the customer must receive an acknowledgement with the case number" (+ L19 "Replies to customers go from support@ for general cases and from billing@ for finance cases") | Q28 (answered — the per-channel acknowledgement decision); Q63 (answered, cited in prose — one-event-one-email); Q22 (answered, cited in prose — sender identity, still open per D-M3S02-04) |
+| REQ-038 | L15–L18 — "SLA: Premier accounts get a first response within 4 business hours, standard accounts within 1 business day. … Clocks pause on weekends and regional holidays. EMEA works London 08:00–18:00, the US works New York 08:00–20:00. Severity 1 outages are 24/7 and never pause." | Q39 (answered — the calendar list); Q38 (answered, cited in prose — which SLA promise each calendar serves); Q40 (answered, cited in prose — region resolution, `M4-S03`'s flow) |
+| REQ-039 | — (no requirement line; Q90 is informational, not tied to a requirement bullet) | Q90 (answered — owner + cadence, individual left OPEN) |
+| REQ-040 | L15 — "Premier accounts get a first response within 4 business hours" | Q38 (answered) |
+| REQ-041 | L15 — "standard accounts within 1 business day" | Q38 (answered — no minute conversion; `decisions.md` D-M4S02-02) |
+| REQ-042 | — (no requirement line; the shared milestone identity and its completion mechanism are a plan-level decision, not a requirement bullet) | Q53 (answered — one shared type, timing per process); D10 (the completion mechanism) |
+| REQ-043 | L15–L16 — "Anything untouched for 8 business hours escalates to Tier 2"; L18 — "Severity 1 outages are 24/7 and never pause" (the escalation *rule* itself, distinct from `REQ-023`/`REQ-027`'s access half and `REQ-033`'s handover-notice half) | Q45 (answered — reassign and notify); Q42, Q43, Q46, Q47, Q91 (all answered, cited in prose); D7 (why a rule and not a Flow) |
+| REQ-044 | — (no requirement line naming Apex directly; the mechanism is a plan-level decision reached from L15–L16's SLA promise, the same shape `REQ-042` already carries for the milestone identity it completes) | Q50 (answered — the completion criteria question, honoured only in part: the answer names the first outbound EmailMessage, this delivery a Case-status proxy, `decisions.md` D-M4S05-02); Q16, Q53 (answered, cited in prose); D10 (the completion mechanism) |
+| REQ-045 | L9–L11 — "Within the first minute of a case being created … the SLA clock must be running on the right calendar, and priority must be set from what the form or email tells us" | Q48 (answered — per-channel entitlement automation + no-account fallback); Q16, Q40 (answered, cited in prose); Q14 (DEFERRED — assumption A2, the null-guard default); D1, D2 (the before-save Flow choice) |
+| REQ-046 | — (no requirement line naming test metadata directly; the `FlowTest` is a deploy-time consequence of `REQ-045`'s `<status>Active</status>` flow, not its own requirement bullet) | Q48 (answered, cited in prose — same source as `REQ-045`) |
+| REQ-047 | L15–L18 — "SLA: Premier accounts get a first response within 4 business hours … Severity 1 outages are 24/7 and never pause" (the org-level switch that lets `REQ-045`'s flow deploy `Active` rather than `Draft`, the same shape `REQ-039` already carries for a non-functional-requirement enabler) | Q40 (answered, cited in prose — same source as `REQ-045`) |
 
 ---
 
@@ -1166,3 +1186,411 @@ addition to the container-level key (`AssignmentRules:Case`, `AutoResponseRules:
 other row in this build uses — cannot also satisfy the derived sub-key. Recorded as a skill-depth
 signal, not fixed by renaming the row to the checker's finer-grained key: `decisions.md`
 **O-M3S04-03**.
+
+## What M4-S01 rests on — Q39 for the calendar list, Q90 for the maintenance runbook, both new requirements
+
+Two new rows, two new requirements, minted after re-reading this file immediately before writing:
+
+- **Q39, answered** — "two regional calendars plus a 24/7 exception … clocks pause on weekends and
+  regional holidays for both; Severity 1 is 24/7 and never pauses." This is the `source` cell for
+  `REQ-038` and the reason three `businessHours` entries exist in one file rather than one calendar
+  with conditional hours.
+- **Q38, answered, cited in prose on `REQ-038` only** — "Premier accounts get a first response
+  within 4 business hours; standard accounts within 1 business day … Severity 1 outages are 24/7
+  calendar time." This is *why* business time is needed at all, not which calendars exist — `M4-S02`
+  (entitlement processes, `pending`) is where the promise itself is configured; this step builds only
+  the clocks it reads.
+- **Q40, answered, cited in prose on `REQ-038` only** — "from the account's `Region__c`; unknown
+  accounts default to US." Grounds `<default>true</default>` on `US Support` and is the reason
+  `M4-S03`'s not-yet-built Flow can resolve a region to a calendar name at all.
+- **Q90, answered** — "a named owner in Service Operations, with a yearly holiday deploy booked …
+  each Q4." This is the `source` cell for `REQ-039`, a wholly separate deliverable
+  (`holiday-maintenance-runbook.md`) from `REQ-038`'s settings file, minted as its own requirement
+  because it is its own declared `outputs[]` path with no deployable metadata component behind it —
+  `setup-only:`, the same convention `REQ-025` already established for
+  `queue-retirement-runbook.md`.
+- **`M1-S01`, backward** — `REQ-007`/`REQ-008`/`REQ-009` (Q38/Q40, `Severity__c`, `Region__c`,
+  `Support_Tier__c`) are the fields this step's calendars and holidays are consumed against by
+  later steps; `REQ-038`/`REQ-039` do not reuse those ids because they name a different artefact
+  layer — the calendars themselves, not the fields that will select one.
+
+**`REQ-038`/`REQ-039` do not reuse `REQ-007`, `REQ-008` or `REQ-009`.** Those rows are the Case/Account
+*fields* the SLA promise depends on, minted at `M1-S01`; `REQ-038`/`REQ-039` are the *calendars and
+their maintenance process*, minted at the step that actually builds them — two different artefacts at
+two different layers of the same requirement, the same reasoning `M3-S01`'s note gives for not reusing
+`REQ-014`/`REQ-015`/`REQ-016`.
+
+## Coverage, as far as M4-S01
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M4-S01` — thirteen
+of twenty-two steps documented (`M1-S01`, `M1-S02`, `M2-S01`…`M2-S05`, `M3-S01`…`M3-S04`, `M4-S01`):
+
+- **Requirements with no step:** not yet computable, same reasoning as every prior "Coverage"
+  section — ids are minted when a step delivers them. Thirty-nine `REQ-XXX` ids exist and all
+  thirty-nine have a step.
+- **Steps with no requirement:** 0 of the documented set. `M4-S01`'s one `Settings` manifest member
+  is named by `REQ-038` above. `M4-S01`'s `package.xml` and `deploy-order.md` are workbook rows
+  (`CWB-OTHER-025`, `-026`), not traceability rows, the same convention every prior step's
+  manifest/deploy-order pair has established since `M2-S01`.
+- **Manual tests outstanding:** 11 — the 10 already outstanding after `M3-S04`
+  (`TC-M1S01-01`, `TC-M1S01-02`, `TC-M1S02-01`, `TC-M2S01-01`, plus the M2/M3 manual tests carried
+  forward in each step's own row) plus this step's one manual test, **already ticked** —
+  `M4-S01-T4` PASSED (`tests/M4-S01/results.json` `skipped_manual[0]`, confirmed true on disk by
+  `step-tester`), deferred to the milestone gate for sign-off rather than outstanding for content.
+  Counted here because the M4 gate has not yet run, not because the artefact is in doubt.
+- **Orphan artefacts, build scope:** 3, all new at this run and all belonging to `M4-S01` — the
+  `SETTINGS_ENTRIES` per-calendar key mismatch this run's linter pass surfaces (`decisions.md`
+  **O-M4S01-03**). The two pre-existing `M1-S01` `BusinessProcess` file-stem keys (`decisions.md`
+  D-M1S01-03) do not appear in this run's orphan report — a fact noted here rather than
+  investigated further, because closing or reopening that entry is not this run's row to touch.
+
+## Linter result — after M4-S01
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+WARN: orphan artefacts: 3 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 39 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 1 warning(s)
+```
+
+Zero errors, zero coverage gaps: `REQ-038` and `REQ-039` above both carry an artefact and a test, and
+every other row is unchanged. The 3 orphans are `BusinessHoursEntry:US Support`,
+`BusinessHoursEntry:EMEA Support` and `BusinessHoursEntry:Severity 1 24x7`, all evidenced by
+`artefacts/M4-S01/settings/BusinessHours.settings-meta.xml` — a **new** kind of key-derivation
+mismatch, the third of its shape in this build (`decisions.md` **O-M3S02-05**, **O-M3S04-03**): the
+`SETTINGS_ENTRIES` deriver reads a per-calendar key from inside the settings file, in addition to the
+container-level key (`Settings:BusinessHours`) that `package.xml` actually declares and that
+`REQ-038` names, matching `package.xml` and `workbook/06-automation.md` `CWB-AUT-013`. Recorded as a
+skill-depth signal, not fixed by renaming the row to the checker's finer-grained key: `decisions.md`
+**O-M4S01-03**.
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts/M4-S01 --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+WARN: orphan artefacts: 3 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 39 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 37 warning(s)
+```
+
+The step-scoped run's thirty-seven warnings are the thirty-seven rows belonging to every other step
+whose components are not under `artefacts/M4-S01/`, plus the same 3-orphan finding as the build-wide
+run (`SETTINGS_ENTRIES` does not depend on scope). Both of `M4-S01`'s own rows resolve at this scope:
+`REQ-038`'s `Settings:BusinessHours` and `REQ-039`'s `setup-only:` marker both draw no unresolved-artefact
+warning of their own.
+
+## What M4-S02 rests on — Q38 for the two SLA targets, Q53 for the shared milestone identity, D10 for completion — three new requirements
+
+Three new rows, three new requirements, minted after re-reading this file immediately before
+writing, one per manifest member the step's `package.xml` declares:
+
+- **Q38, answered, split across two rows** — "Premier accounts get a first response within 4
+  business hours, standard accounts within 1 business day." `REQ-040` (Premier,
+  `minutesToComplete` 240 — exact, `4 × 60`) and `REQ-041` (Standard, `minutesToComplete` 720 —
+  **derived**, not answered, `decisions.md` **D-M4S02-02**) are two rows rather than one for the
+  same reason `REQ-018`/`REQ-019`/`REQ-020` mint one id per `PermissionSet` member even though all
+  three trace to `Q13`: `check_rtm.py`'s `resolve_artefact()` matches one `EntitlementProcess`
+  member per row, and these are two separate manifest members.
+- **Q51, answered, cited in prose only** — "the Case's calendar is the authority … set the process
+  and milestone calendars to match it explicitly." Grounds `<businessHours>US Support</businessHours>`
+  on both `REQ-040`/`REQ-041`'s files and on `REQ-042`'s milestone override, and is also why it
+  cannot be fully honoured — `decisions.md` **O-M4S02-02** records the EMEA-calendar divergence
+  this creates against `M4-S04`'s escalation timer.
+- **Q53, answered** — one shared milestone type serves both tiers, timing lives on the two
+  processes. This is the `source` cell for `REQ-042`, the `MilestoneType:First Response` component
+  both `EntitlementProcess` files reference by `milestoneName` — its own manifest member and its
+  own artefact layer, not a duplicate of `REQ-040`/`REQ-041`.
+- **D10, cited on `REQ-042` only** — the plan decision that the First Response milestone is
+  completed by `M4-S05`'s after-update Apex trigger, not by entitlement-process completion
+  criteria (no such element exists in the cited skill's metadata reference) and not by a Flow (the
+  skill's Flow path wraps the same Apex). `milestone-completion-decision.md` is this row's second
+  artefact — the on-disk record of that decision, and the confirmation the checker's surviving INFO
+  `W4` note asks for.
+- **`M1-S01`, backward** — `REQ-007`/`REQ-008`/`REQ-009` (Q38/Q40, `Severity__c`, `Region__c`,
+  `Support_Tier__c`) are the Case/Account fields this step's processes are selected against;
+  `REQ-038` (`M4-S01`) is the calendar layer these processes read by name. None are reused here for
+  the same layering reason `M4-S01`'s own note gives against reusing `REQ-007`–`REQ-009`: each
+  layer is its own artefact, minted at the step that actually builds it.
+
+**A checker-policy block was closed at the skill, not the artefact, before this step reached
+`built`.** The declared checker rejected both entitlement processes on two `W4` findings (missing
+`<timeTriggers>`/`<successActions>`) that this step's own inputs could not clear without inventing
+a `WorkflowAlert` no clarification names. Commit `a18f9164d` (`admin/entitlements-and-milestones`
+v1.1.2) moved that finding from WARN to INFO on documented grounds, and the re-run — against the
+byte-identical file — exited 0. `decisions.md` **D-M4S02-01** is the flywheel record, the same
+shape as `D-M4S01-01`. Every field in the three rows above traces to the plan, the envelope, or the
+test results from that closed run — nothing here restates the narrative of the block itself.
+
+## Coverage, as far as M4-S02
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M4-S02` —
+fourteen of twenty-two steps documented (`M1-S01`, `M1-S02`, `M2-S01`…`M2-S05`, `M3-S01`…`M3-S04`,
+`M4-S01`, `M4-S02`):
+
+- **Requirements with no step:** not yet computable, same reasoning as every prior "Coverage"
+  section — ids are minted when a step delivers them. Forty-two `REQ-XXX` ids exist and all
+  forty-two have a step.
+- **Steps with no requirement:** 0 of the documented set. `M4-S02`'s three manifest members are
+  named by `REQ-040`/`REQ-041`/`REQ-042` above. `M4-S02`'s `package.xml` and `deploy-order.md` are
+  workbook rows (`CWB-OTHER-027`, `-028`), not traceability rows, the same convention every prior
+  step's manifest/deploy-order pair has established since `M2-S01`.
+- **Manual tests outstanding:** 12 — the 11 already outstanding after `M4-S01` plus this step's one
+  manual test, **already ticked** — `M4-S02-T4` PASSED (`tests/M4-S02/results.json`
+  `skipped_manual[0]`, confirmed true on disk by `step-tester`), deferred to the milestone gate for
+  sign-off rather than outstanding for content. Counted here because the M4 gate has not yet run,
+  not because the artefact is in doubt. Note the asymmetry `REQ-041`'s row names: `M4-S02-T4`'s
+  wording pins Premier's 240 but names no value for Standard, so the derived 720 is untested by
+  either half.
+- **Orphan artefacts, build scope:** 2, both belonging to `M4-S04` (`EscalationRule:Case.Case_SLA_
+  Escalation`, `EscalationRules:Case`) — down from 5 before this run, the other 3 being exactly
+  this step's own manifest members, now named by `REQ-040`/`REQ-041`/`REQ-042`. `M4-S04`'s two
+  orphans are outside this step's scope and are left exactly as found, for that step's own
+  documentation pass to close.
+
+## Linter result — after M4-S02
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+WARN: orphan artefacts: 2 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 42 row(s), build schema, 0 coverage gap(s), 2 orphan(s), 0 error(s), 1 warning(s)
+```
+
+Zero errors, zero coverage gaps: `REQ-040`, `REQ-041` and `REQ-042` above all carry an artefact and
+a test, and every other row is unchanged. The 2 remaining orphans are `EscalationRule:Case.Case_SLA_
+Escalation` and `EscalationRules:Case`, both evidenced by `M4-S04/`'s artefacts — pre-existing,
+outside this step's scope, and unchanged by this run; they belong to `M4-S04`'s own documentation
+pass, not this one.
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts/M4-S02 --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+traceability.md: 42 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 37 warning(s)
+```
+
+The step-scoped run's thirty-seven warnings are the thirty-seven rows belonging to every other step
+whose components are not under `artefacts/M4-S02/` (unresolved-at-this-scope, not a defect); 0
+orphans at this scope because `M4-S04`'s two components are simply absent from this narrower tree,
+not resolved. All three of `M4-S02`'s own rows resolve at this scope with no warning of their own.
+
+## Coverage, as far as M4-S04
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M4-S04` —
+fifteen of twenty-two steps documented (`M1-S01`, `M1-S02`, `M2-S01`…`M2-S05`, `M3-S01`…`M3-S04`,
+`M4-S01`, `M4-S02`, `M4-S04`):
+
+- **Requirements with no step:** not yet computable, same reasoning as every prior "Coverage"
+  section — ids are minted when a step delivers them. Forty-three `REQ-XXX` ids exist and all
+  forty-three have a step.
+- **Steps with no requirement:** 0 of the documented set. `M4-S04`'s one manifest member
+  (`EscalationRules:Case`) is named by `REQ-043` above. `M4-S04`'s `package.xml` and
+  `deploy-order.md` are workbook rows (`CWB-OTHER-029`, `-030`), not traceability rows, the same
+  convention every prior step's manifest/deploy-order pair has established since `M2-S01`.
+- **Manual tests outstanding:** 14 — the 12 already outstanding after `M4-S02` plus this step's two
+  manual tests, neither ticked: `M4-S04-T4` (activation sign-off) and `M4-S04-T5` (the
+  480-minute / `businessHoursSource` / queue-developer-name assertion), both deferred to the M4
+  gate. Unlike `M4-S02`'s `M4-S02-T4` (confirmed true on disk and only awaiting sign-off), these
+  two genuinely cannot be ticked before activation — the first names an event (the first hour's
+  escalation count) that has not happened, and the second's calendar half needs `M4-S01`'s
+  settings file in view, which only the milestone-scoped run provides.
+- **Orphan artefacts, build scope:** 0 — down from 2 before this run. `EscalationRules:Case` (this
+  step's row, above) and, via the same `RULE_CONTAINERS` coverage that already closed
+  `O-M3S04-03`/`O-M4S01-03`, the per-rule key `EscalationRule:Case.Case_SLA_Escalation` the checker
+  derives from inside the same file are both now referenced. No skill-depth signal to record for
+  this step — the container-coverage fix landed (commits `ef8e10141`, `cf9dde917`) before this
+  documentation pass, so naming the deployable container was sufficient on the first row, unlike
+  the two- and three-orphan cases `O-M3S04-03`/`O-M4S01-03` recorded before that fix existed.
+
+## Linter result — after M4-S04
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+traceability.md: 43 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 0 warning(s)
+```
+
+Zero errors, zero coverage gaps, **zero orphans and zero warnings** — the first fully clean build-
+scope run recorded in this file. `REQ-043` above carries an artefact and a test, and every other
+row is unchanged. The 2 orphans this run inherited from `M4-S02`'s documentation pass
+(`EscalationRule:Case.Case_SLA_Escalation`, `EscalationRules:Case`) are both resolved by the one
+row this step adds — naming the container form (`EscalationRules:Case`, matching `package.xml`
+and `workbook/06-automation.md` `CWB-AUT-019`) is sufficient under `check_rtm.py`'s
+`RULE_CONTAINERS` coverage, the same mechanism that already closed the `AssignmentRules`/
+`AutoResponseRules` case (`decisions.md` **O-M3S04-03**) and, generalised, the `Settings:
+BusinessHours` case (`decisions.md` **O-M4S01-03**). No new skill-depth signal is recorded here:
+the remedy those two entries asked for was already shipped (commit `ef8e10141` for rule
+containers, `cf9dde917` generalising it to settings entries), so this step is the first to benefit
+from the fix rather than the one that needed it written down.
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts/M4-S04 --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+traceability.md: 43 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 34 warning(s)
+```
+
+The step-scoped run's thirty-four warnings are the thirty-four rows belonging to every other step
+whose components are not under `artefacts/M4-S04/` (unresolved-at-this-scope, not a defect,
+identified individually in the command's own output — e.g. `REQ-001`'s `RecordType:Case.Support`,
+`REQ-038`'s `Settings:BusinessHours`); 0 orphans at this scope because there is nothing else under
+this narrower tree to be orphaned. `M4-S04`'s own row (`REQ-043`) resolves at this scope with no
+warning of its own, and its `EscalationRules:Case` container key satisfies the per-rule child key
+this same narrower run also derives.
+
+## What M4-S05 rests on — Q50 for the completion signal (honoured only in part), D10 for the mechanism, one new requirement
+
+One new row, minted after re-reading this file immediately before writing, covering all four of
+this step's `outputs[]` (the trigger, the service, the test class and the F-37 rebuild's
+`TestDataFactory` copy) as one requirement rather than four, per `agents/build-doc-
+keeper/AGENT.md` Step 7's "one row per requirement, never one per artefact":
+
+- **D10, the mechanism** — an after-update Apex trigger on `Case` stamps
+  `CaseMilestone.CompletionDate`; not entitlement-process completion criteria (no such element is
+  documented on the metadata type) and not a Flow (the cited skill's Flow path wraps the same
+  Apex). `REQ-042` (`M4-S02`) already cites `D10` for the milestone identity this mechanism
+  completes; `REQ-044` cites it again for the mechanism itself, the same shared-decision-two-rows
+  shape `REQ-040`/`REQ-041` already carry for `Q38`.
+- **Q50, answered, honoured only in part** — the recorded answer names the first outbound
+  `EmailMessage` as the completion signal. This step implements a narrower, Case-only proxy — the
+  Case leaving `Status = New` — because the literal signal is a different artefact (an
+  `EmailMessage` trigger) this step's `outputs[]` does not declare. `decisions.md` **D-M4S05-02**
+  is the full record; the `source` cell above cites `Q50` rather than `D10` because the gap between
+  what was asked and what was built belongs to the requirement, not the mechanism.
+- **Q16, cited in prose only** — the first-minute-of-a-case answer (owner, acknowledgement,
+  calendar, priority) is an **auto**-acknowledgement, not an agent's first response, and is what
+  rules out treating `M3-S04`'s auto-response rule as satisfying this requirement on its own.
+- **Q53, cited in prose only** — the shared milestone identity `REQ-042` already establishes;
+  `REQ-044` completes it rather than duplicating it.
+- **F-37, a rebuild, not a new requirement.** The org's rejection of the unshipped
+  `TestDataFactory` reference (`decisions.md` **D-M4S05-01**) changed this step's `outputs[]` from
+  six paths to eight; it did not change what requirement the step serves, so no new `REQ-XXX` id
+  was minted for the factory class — it is `REQ-044`'s fourth `artefact_paths` entry, the same
+  bundled-support-artefact treatment `REQ-044`'s own row gives the test class.
+- **Backward, not reused:** `REQ-007`/`REQ-009` (`Severity__c`, `Support_Tier__c`, both `M1-S01`)
+  and `REQ-040`–`REQ-042` (`M4-S02`) are the fields and the entitlement layer this step's test data
+  and completion logic read; none are reused here for the same layering reason every prior step's
+  "rests on" section gives — each layer is its own artefact, minted at the step that actually
+  builds it.
+
+**A real org caught what no local check could.** The first build passed all four declared
+acceptance tests and `check-outputs` cleanly, then failed `reports/MOCK-DEPLOY-M4.md` run 2 on a
+symbol no acceptance-test type in `standards/build-orchestration.md` § 5 resolves across files.
+`decisions.md` **D-M4S05-01** records the closure; `D-M4S05-03`–`D-M4S05-05` record three further
+items carried to the M4 gate rather than fixed here. Every field in `REQ-044`'s row traces to the
+plan, the two builder envelopes, the two step-tester envelopes, or `reports/MOCK-DEPLOY-M4.md` —
+nothing here restates the narrative of the rebuild itself.
+
+## Coverage, as far as M4-S05
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M4-S05` —
+sixteen of twenty-two steps documented (`M1-S01`, `M1-S02`, `M2-S01`…`M2-S05`, `M3-S01`…`M3-S04`,
+`M4-S01`, `M4-S02`, `M4-S04`, `M4-S05`; `M4-S03` is `tested`, not yet `documented`, under a
+concurrent doc-keeper pass this run does not touch):
+
+- **Requirements with no step:** not yet computable, same reasoning as every prior "Coverage"
+  section — ids are minted when a step delivers them. Forty-four `REQ-XXX` ids exist and all
+  forty-four have a step.
+- **Steps with no requirement:** 0 of the documented set. `M4-S05`'s four `outputs[]` paths are
+  named by `REQ-044` above. `M4-S05` declares no `package.xml` at all — the Apex exception,
+  `standards/build-orchestration.md` § 5 — so unlike every prior step there is no manifest workbook
+  row to pair with the deploy-order one; only `workbook/99-other-configuration.md`
+  `CWB-OTHER-031` (the deploy-order note) is not a traceability row, the same convention every
+  prior step's non-manifest artefacts have followed.
+- **Manual tests outstanding:** 15 — the 14 already outstanding after `M4-S04` plus this step's one
+  manual test, not ticked: given no offline Apex compiler exists in the `sf` CLI, when the step is
+  accepted, the reviewer confirms every non-platform identifier is quoted from the cited skill or
+  template and that `CaseMilestoneServiceTest` asserts `CompletionDate` non-null after the trigger
+  runs. Both halves are true on disk (`tests/M4-S05/results.json`
+  `skipped_manual[0]`; every identifier in `deploy-order.md` traces to the skill, the template, or
+  a plan-cited decision) but deferred to the M4 gate rather than ticked here, the same restraint
+  every manual test in this build has been given.
+- **Orphan artefacts, build scope:** 5, up from 0 after `M4-S04`'s clean run — 3 belong to this
+  step (`ApexClass:CaseMilestoneService`, `ApexClass:CaseMilestoneServiceTest`,
+  `ApexClass:TestDataFactory`), and 2 belong to `M4-S03` (`Flow:Case_BeforeSave_
+  StampEntitlementAndCalendar`, `FlowTest:Case_BeforeSave_StampEntitlementAndCalendar_Test`),
+  reported by `/tmp/rtm-report/rtm-orphan-report.md`'s disposition column as `REVIEW` on all five.
+  **This step's own three are not a gap — they are a known shape of `check_rtm.py`'s
+  `resolve_artefact()`, which matches one component per row's single-valued `artefact` cell.**
+  `REQ-044`'s `artefact` column names `ApexTrigger:CaseMilestoneTrigger` only, per Step 7's own
+  one-row-per-requirement rule; the other three components are present in `artefact_paths`
+  (multi-valued) and in `workbook/06-automation.md` (`CWB-AUT-023`–`025`, each an addressable row
+  of its own), but `artefact_paths` is not what the orphan check resolves against — the same
+  single-column-vs-multi-value gap `REQ-013`'s own note already names for a layout pair. Documented
+  as a dependency (the RTM skill's own third disposition option) rather than adopted (a fifth
+  `REQ-XXX` id per Apex file, which Step 7 forbids) or removed (the components are real and
+  deployed). `M4-S03`'s two orphans are outside this step's scope and are left exactly as found,
+  for that step's own concurrent documentation pass to close — the same "left exactly as found"
+  treatment `M4-S02`'s Coverage section gave `M4-S04`'s orphans before `M4-S04` was documented.
+
+## Linter result — after M4-S05
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+WARN: orphan artefacts: 5 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 44 row(s), build schema, 0 coverage gap(s), 5 orphan(s), 0 error(s), 1 warning(s)
+```
+
+Zero errors, zero coverage gaps: `REQ-044` above carries an artefact and a test, and every other
+row is unchanged. The 5 orphans are exactly the ones named in "Coverage, as far as M4-S05" above —
+3 this step's own (`ApexClass:CaseMilestoneService`, `ApexClass:CaseMilestoneServiceTest`,
+`ApexClass:TestDataFactory`, all `REVIEW`-dispositioned and documented as dependencies rather than
+adopted or removed) and 2 `M4-S03`'s (`Flow:Case_BeforeSave_StampEntitlementAndCalendar`,
+`FlowTest:Case_BeforeSave_StampEntitlementAndCalendar_Test`), pre-existing, outside this step's
+scope, and unchanged by this run — reported honestly rather than left for a reader to notice: an
+Apex file with no `package.xml` of its own (the Apex exception) is not automatically indexed by
+this checker's manifest walk in the same shape a metadata-type step's members are, and whether a
+future `check_rtm.py` revision resolves multi-valued `artefact_paths` the same way it resolves
+`artefact` is exactly the kind of skill-depth signal `decisions.md` **O-M3S01-02**/**O-M3S02-05**
+already record for other checker gaps, though no new decision entry is minted here for it.
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts/M4-S05 --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+traceability.md: 44 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 42 warning(s)
+```
+
+The step-scoped run's forty-one artefact warnings are the forty-one rows belonging to every other
+step whose components are not under `artefacts/M4-S05/` (unresolved-at-this-scope, not a defect,
+identified individually in the command's own output — e.g. `REQ-001`'s `RecordType:Case.Support`,
+`REQ-043`'s `EscalationRules:Case`), plus one orphan-summary warning, forty-two in total. The 3
+orphans at this scope are this step's own three unnamed-in-`artefact` components, the same three
+named at build scope above — nothing else under this narrower tree resolves or fails to resolve,
+because nothing else is present in it. `M4-S05`'s own row (`REQ-044`) resolves at this scope with
+no warning of its own.
+
+## Linter result — after M4-S03
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+WARN: orphan artefacts: 3 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 47 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 1 warning(s)
+```
+
+Zero errors, zero coverage gaps. This step's own three manifest members — `Flow:Case_
+BeforeSave_StampEntitlementAndCalendar`, `FlowTest:Case_BeforeSave_StampEntitlementAndCalendar_
+Test` and `Settings:Flow` — are named on `REQ-045`/`REQ-046`/`REQ-047` respectively, one row per
+member (the same `resolve_artefact()`-driven split `REQ-040`/`REQ-041`/`REQ-042` already use for
+`M4-S02`'s three components), and resolve cleanly. The **2** orphans `M4-S05`'s documentation pass
+inherited from this step (`Flow:Case_BeforeSave_StampEntitlementAndCalendar`, `FlowTest:Case_
+BeforeSave_StampEntitlementAndCalendar_Test` — see "Linter result — after M4-S05" above) are both
+now resolved by these rows, exactly as that entry anticipated ("pre-existing, outside this step's
+scope"). The **3** orphans that remain are all `M4-S05`'s own Apex classes (`ApexClass:
+CaseMilestoneService`, `ApexClass:CaseMilestoneServiceTest`, `ApexClass:TestDataFactory`,
+all `REVIEW`-dispositioned in `rtm-orphan-report.md`), unrelated to this step and unchanged by
+this run.
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts/M4-S03 --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+traceability.md: 47 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 42 warning(s)
+```
+
+The step-scoped run's forty-two warnings are the forty-two rows belonging to every other step whose
+components are not under `artefacts/M4-S03/` (unresolved-at-this-scope, not a defect, identified
+individually in the command's own output — e.g. `REQ-001`'s `RecordType:Case.Support`, `REQ-044`'s
+`ApexTrigger:CaseMilestoneTrigger`); 0 orphans at this scope because nothing else under this
+narrower tree is present to be orphaned. This step's own three rows (`REQ-045`, `REQ-046`,
+`REQ-047`) resolve at this scope with no warning of their own — `REQ-045`'s `decision_ref` was
+initially written as the multi-value `D1; D2` and the linter correctly rejected it (`decision_ref
+'D1; D2' is not the build-plan shape D<n>`); it now carries `D2` alone (the flow-pattern-selector
+branch this step actually implements), and `D1` (the Flow-over-Apex automation-selection branch) is
+carried in the coverage table's prose instead, where it is not schema-validated.

@@ -1,0 +1,290 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T08-52-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-52-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-52-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M4-S05",
+    "precondition_status": "tested (confirmed in plan.json before writing; the F-37 rebuild's post-rebuild step-tester run 2026-09-12T08-45-00Z is the evidence)",
+    "concurrency_note": "M4-S03 was 'tested', not 'documented', at both the start and end of this run — a concurrent doc-keeper pass owns it. decisions.md, traceability.md, workbook/06-automation.md and workbook/99-other-configuration.md were all re-read immediately before each append in this run and carried no M4-S03 content at either read, so no race was observed."
+  },
+  "summary": "Documented M4-S05 (After-update Apex trigger on Case completing the First Response milestone, plus its test class, rebuilt once for F-37). Five decisions appended to decisions.md (D-M4S05-01..05: the F-37 TestDataFactory rebuild and closure; the completion-signal proxy carried to the M4 gate; the two-file trigger shape's cost; the SeeAllData=true / active-SlaProcess prerequisite; the TestDataFactory step-local-copy collision risk for a future second Apex step). Four workbook rows added to workbook/06-automation.md (CWB-AUT-022..025: the trigger, the service, the test class, and the F-37-added TestDataFactory copy — the build's first Section 6 row at deploy position 8 of 10 (automation) rather than 9 (routing) or 10 (SLA)) and one to workbook/99-other-configuration.md (CWB-OTHER-031: the deploy-order note, the Apex exception meaning no accompanying package.xml row exists for this step). One new requirement minted in traceability.md, REQ-044, covering all four outputs as one row per Step 7's one-row-per-requirement rule; check_rtm.py at build scope reports 44 rows, 0 coverage gaps, 5 orphans (3 this step's own Apex classes, a known artefact-vs-artefact_paths shape rather than a defect; 2 M4-S03's, out of scope), 0 errors, 1 warning — reported honestly in both traceability.md's own Linter result section and this envelope rather than smoothed over. PLAN.md and CLARIFICATIONS.md re-rendered before and after the status transition. Step set to documented.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM row: REQ-044's source_req_id was minted by this pass rather than read off an existing requirement.md line — no line names Apex directly, and the row's 'source' cell (Q50) itself only partially matches what was built (D-M4S05-02 records the gap) — the same no-requirement-line shape REQ-042/REQ-025/REQ-006 already carry elsewhere in this file, not a defect specific to this run. Also MEDIUM-row: check_rtm.py's build-scope orphan count rose from 0 (after M4-S04) to 5; 3 are this step's own components that Step 7's one-row-per-requirement rule keeps out of the single-valued 'artefact' column by design, which is a known shape of the checker rather than an unresolved gap, but it is not the zero-orphan HIGH-row outcome either. Every other Step 11 HIGH-row condition holds: all four addressable artefacts (plus the undeclared deploy-order.md) got a workbook row, every row carries a real source_req_id and a named verification step, REQ-044 is the one requirement this step serves and it has a traceability row, and re-running check_rtm.py after every append produced no duplicate rows or changed row counts beyond the one intended addition.",
+  "dimensions_compared": [
+    "decisions log (decisions.md)",
+    "workbook rows (Section 6 — Automation)",
+    "workbook rows (Other configuration)",
+    "traceability rows (build-layer RTM, Matrix table and Requirement id derivation table)",
+    "rendered views (PLAN.md, CLARIFICATIONS.md)",
+    "check_rtm.py linter result, build scope and step scope"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "compile / org-side verification of the closed F-37 defect",
+      "state": "not-run",
+      "reason": "This agent does not run tests, does not deploy, and does not re-derive content from the metadata artefact files (AGENT.md 'What This Agent Does NOT Do'). F-37's closure is recorded exactly as reports/MOCK-DEPLOY-M4.md run 3 and the rebuild envelope state it — this pass collates that record, it does not re-confirm it against an org.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None needed for this agent; the operator's own dry-run history is already the evidence cited."
+    },
+    {
+      "dimension": "M4-S03's own documentation (workbook rows, traceability row, decisions)",
+      "state": "not-run",
+      "reason": "M4-S03 is 'tested', not 'documented', and this invocation processes exactly one step (M4-S05) per the Scope Guardrails and the one-step-per-invocation rule. Its two orphan artefacts are named in traceability.md's new Coverage section as out of scope, not silently absorbed.",
+      "confidence_impact": "NONE",
+      "retry_hint": "A separate build-doc-keeper invocation for M4-S03, once it is 'tested' and re-checked, closes those two orphans."
+    },
+    {
+      "dimension": "workbook sections 1-5 and Sharing Settings",
+      "state": "not-run",
+      "reason": "M4-S05's step type (automation) maps to Section 6 only, and its undeclared deploy-order.md maps to Other configuration; no artefact this step produced belongs in any other section.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None needed."
+    },
+    {
+      "dimension": "Wave 10 deliverable pair under docs/reports/build-doc-keeper/",
+      "state": "not-run",
+      "reason": "The task restricts this invocation to writes under the build directory; the report/envelope pair lives at envelopes/M4-S05/<run_id>.{md,json} only, the same scoping every prior build-doc-keeper pass on this build has recorded.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-run without the write restriction to also emit docs/reports/build-doc-keeper/<run_id>.{md,json}."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The loop caught F-37 with a real org where every local acceptance test (checker, xml, manifest, manual classification) and check-outputs had passed the first build cleanly — the rebuild, the amend-step record, and the re-test are now fully reflected in decisions.md (D-M4S05-01) and the row's own machine-half history, rather than the first build's now-superseded passing result being left as the only record.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M4.md",
+        "note": "run 2 (F-37, the rejection) and run 3 (the closure)"
+      },
+      "domain": "test-integrity"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every field written into REQ-044's row and the four new workbook rows traces to plan.json, the two apex-builder envelopes, the two step-tester envelopes, or reports/MOCK-DEPLOY-M4.md — none of it was narrated from reading the Apex source directly, consistent with this agent's own read-only-for-target_value scope rule.",
+      "evidence": {
+        "source": "input",
+        "path": "envelopes/M4-S05/2026-09-12T08-12-19Z.json, 2026-09-12T08-32-00Z.json, 2026-09-12T08-24-48Z.json, 2026-09-12T08-45-00Z.json"
+      },
+      "domain": "build-orchestration"
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_rtm.py's build-scope orphan count rose from 0 (the first fully clean run, recorded after M4-S04) to 5 the moment this step's four-component Apex bundle was added — three of the five are structural to the checker's single-valued artefact-column resolution rather than a real gap, but a reader of the bare orphan count alone would see a regression from the prior 'first fully clean build-scope run' rather than an expected shape of a multi-file Apex step.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "note": "section 'Linter result — after M4-S05', both the build-scope and step-scope check_rtm.py runs"
+      },
+      "domain": "test-coverage"
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "deploy-order.md is undeclared in outputs[] on M4-S05 as it has been on every step since M3-S01 (decisions.md O-M3S02-03) — now a seventh consecutive step — and this is also the first step where the file is the sole record of an org-detected rebuild (F-37), making its undeclared status carry more weight than the prior six instances.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S05/deploy-order.md"
+      },
+      "domain": "build-orchestration"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "REQ-040/REQ-041/REQ-042 (M4-S02's own rows) still read 'Status: In Build' because their notes name both M4-S03 and M4-S05 as the dependencies their functional completion rests on; M4-S05 has now landed but M4-S03 has not, so those three rows remain exactly as M4-S02's documentation pass left them rather than being updated by this run, which owns only M4-S05's own row. Whether M4-S02's documentation should be re-opened once M4-S03 lands, versus leaving the staleness for a reader to notice via REQ-044's own cross-reference note, is a call this agent does not make unilaterally.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "note": "REQ-040, REQ-041, REQ-042 rows, and REQ-044's own cross-reference note"
+      },
+      "domain": "requirements"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The completion-signal proxy (D-M4S05-02) and the two-file trigger shape's missing kill switch (D-M4S05-03) are both open items this documentation pass records but cannot adjudicate — they are business-process and platform-cost calls for the M4 gate, not documentation defects.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-12-19Z.json findings AB-M4S05-01, AB-M4S05-02"
+      },
+      "domain": "requirements"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M4-S05 is now documented; M4-S03 remains the last untested-for-documentation step before the M4 milestone can be verified.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Once M4-S03 is also documented, milestone-verifier is the agent that runs the M4 cross-step checks and produces the acceptance report — this run does not auto-chain to it."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Two concurrent automations now touch Case (M4-S03's before-save flow and M4-S05's after-update trigger) with no recorded combined governor-limit budget across a single save.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json steps[M4-S03], steps[M4-S05]"
+      },
+      "suggested_followup_agent": "automation-transaction-profiler",
+      "followup_reason": "It is the agent that budgets a whole Case save across flow and Apex together, the same open question step-tester's own envelope for this step already flagged."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S05",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-AUT-022",
+        "section": "6 — Automation",
+        "action": "added",
+        "target_value": "ApexTrigger:CaseMilestoneTrigger"
+      },
+      {
+        "row_id": "CWB-AUT-023",
+        "section": "6 — Automation",
+        "action": "added",
+        "target_value": "ApexClass:CaseMilestoneService"
+      },
+      {
+        "row_id": "CWB-AUT-024",
+        "section": "6 — Automation",
+        "action": "added",
+        "target_value": "ApexClass:CaseMilestoneServiceTest"
+      },
+      {
+        "row_id": "CWB-AUT-025",
+        "section": "6 — Automation",
+        "action": "added",
+        "target_value": "ApexClass:TestDataFactory (F-37 rebuild)"
+      },
+      {
+        "row_id": "CWB-OTHER-031",
+        "section": "Other configuration",
+        "action": "added",
+        "target_value": "artefacts/M4-S05/deploy-order.md"
+      }
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-044",
+        "action": "added",
+        "step_id": "M4-S05",
+        "status": "In UAT"
+      }
+    ],
+    "decisions_appended": [
+      "D-M4S05-01",
+      "D-M4S05-02",
+      "D-M4S05-03",
+      "D-M4S05-04",
+      "D-M4S05-05"
+    ],
+    "rows_replaced": [],
+    "rtm_linter": {
+      "build_scope": "44 row(s), build schema, 0 coverage gap(s), 5 orphan(s), 0 error(s), 1 warning(s)",
+      "step_scope": "44 row(s), build schema, 0 coverage gap(s), 3 orphan(s), 0 error(s), 42 warning(s)"
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and on writing outside supplied paths"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the confidence rubric this agent's Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and the write-scope restriction invoked here (build-dir-only writes, no docs/reports/ pair this run)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against all four refusal triggers; none fired — the step's status was tested, entering this run, per Step 1's precondition"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 the step-type-to-section map, the Apex exception, and adding-a-step-type touchpoints; § 5 the Apex exception's manifest-check carve-out and the checker-scope rules; § 6 this agent's per-step and compile-run jobs; § 8 a decision entry as the deepen-a-skill signal"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step fields read (type, agent, skills, inputs, outputs, depends_on, acceptance_tests, status, amendments) and the ones left alone (plan.json touched only via the single set-status transition)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the ten canonical sections plus the Other-configuration default, the row schema (row_id, target_value, owner, source_req_id, source_story_id, recommended_agent, recommended_skills[], status, notes), and the rule that recommended_agent is exactly one live roster agent"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the canonical column set, the REQ-XXX id convention, and the pipe-delimited multi-value convention applied to REQ-044's artefact_paths"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "what makes a decision entry reviewable months later — date, decision, alternative rejected, and the source it rests on — applied to all five D-M4S05 entries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a test result is recorded as acceptance evidence in REQ-044's test_result cell, naming what was verified rather than merely that something ran green"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "confirmed this is a per-step run, not the compile run — the UAT case pack is compiled at M5-S05, not written here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirmed the step's one manual acceptance test is already in Given/When/Then shape and needed no reformatting before being recorded as deferred"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Once M4-S03 also reaches documented, milestone-verifier is the agent that runs the M4 cross-step checks and produces the acceptance report."
+    },
+    {
+      "agent": "automation-transaction-profiler",
+      "because": "It is the agent that budgets a whole Case save across flow and Apex together, the open question two concurrent automations on Case (M4-S03's flow, M4-S05's trigger) raise."
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T08-23-49Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-23-49Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-23-49Z.json",
+  "summary": "M4-S03 (before-save record-triggered Flow stamping EntitlementId, BusinessHoursId and Priority on Case) passes every molecular test declared for it: both always-on checks (xml parse, manifest consistency) and all three declared checkers (record-triggered-flow-patterns, flow-element-naming-conventions, flow-governance) exit 0, check-outputs reports ok with nothing missing/empty/malformed, and the one declared manual test is a well-formed Given/When/Then naming observable outcomes, so it is deferred to the milestone gate rather than failed or flagged unusable. Status moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared acceptance test either ran to an observed exit code or was correctly classified as manual; both always-on checks completed; check-outputs was ok; no checker was missing and no command test needed the deny-list.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The manifest is a clean two-way match: three metadata members (Flow, FlowTest, Settings:Flow) each have exactly one file and each file derives exactly one member, with no wildcard members and no orphaned files.",
+      "domain": "metadata-hygiene",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/package.xml"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_flow_governance.py exited 0 with exactly the two advisories the step's own acceptance-test description predicted in advance (the Flow.settings DX-naming glob gap and the fault-path delegation NOTE), which means the builder anticipated the checker's known false-positive rather than being surprised by it.",
+      "domain": "automation-drift",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M4-S03/check_flow_governance.stdout"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "check_flow_element_naming_conventions.py reports four W-FAULT-TARGET warnings because every fault path on this before-save flow reconverges on a Decision element instead of a LogFault_<Parent> target; deploy-order.md § 5 U2 already records this as a library gap (no cited skill documents a fault-path shape for a RecordBeforeSave flow, which by rule may contain no recordCreates), not a defect in this artefact. Advisory only, exit 0.",
+      "domain": "automation-drift",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M4-S03/check_flow_element_naming_conventions.stdout"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's own deploy-order.md § 1 flags the CasePriority value mapping (Severity 1 -> High, Premier -> High, else Medium) as derived rather than answered by any clarification; step-tester does not adjudicate Salesforce design questions, so this UNVERIFIED item is carried forward to the milestone gate unchanged rather than resolved here.",
+      "domain": "requirements-traceability",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/deploy-order.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M4-S03 is now tested with zero failures and one manual test deferred to the milestone gate.",
+      "domain": "build-orchestration",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/tests/M4-S03/results.json"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "the step is tested and ready to be documented into the workbook, traceability matrix and deploy-order compilation."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "the run-time rulebook binding this invocation, including the org-write ban"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "the 8-section shape, Process Observations schema, and the confidence rubric step-tester overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence paths and the atomic-write rule for this envelope"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "confirming the canonical refusal enum before determining no refusal applied"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 4 metadata step types and the manifest fail-vs-skip rule; § 5 the five acceptance-test types, checker-scope rules, and the check-outputs precondition"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the shape of acceptance_tests[] and outputs[] read from plan.json"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "the package.xml grammar (one <types> block per type, <members>, <name>, wildcard semantics) the manifest check is judged against"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "deriving Flow/FlowTest/Settings member names from the source-format filenames under artefacts/M4-S03/"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "confirming none of this step's three non-metadata build artefacts (yaml/md notes) needed a coverage-gap exclusion, since they map to no metadata type at all"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "checking the step's manual test against the Given/When/Then shape and the named-observable-outcome requirement"},
+    {"type": "skill", "id": "flow/record-triggered-flow-patterns", "path": "skills/flow/record-triggered-flow-patterns/SKILL.md", "used_for": "ran its checker check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03, exit 0"},
+    {"type": "skill", "id": "flow/flow-element-naming-conventions", "path": "skills/flow/flow-element-naming-conventions/SKILL.md", "used_for": "ran its checker check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03, exit 0 with 4 WARNs"},
+    {"type": "skill", "id": "flow/flow-governance", "path": "skills/flow/flow-governance/SKILL.md", "used_for": "ran its checker check_flow_governance.py --manifest-dir artefacts/M4-S03, exit 0 with 2 advisories"}
+  ],
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the step is now tested and ready to be folded into the workbook, traceability matrix and deploy-order compilation"}
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M4-S03/results.json",
+    "tests_run": 5,
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "always-on ElementTree parse of every *.xml/*-meta.xml under artefacts/M4-S03/", "exit_code": null, "verdict": "pass - 4/4 files parsed"},
+      {"name": "manifest", "type": "manifest", "runner": "always-on two-way file<->package.xml consistency check", "exit_code": null, "verdict": "pass - consistent (3/3 members mapped both directions; 3 non-metadata build artefacts correctly excluded)"},
+      {"name": "skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py", "type": "checker", "runner": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03", "exit_code": 0, "verdict": "pass - No issues found."},
+      {"name": "skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py", "type": "checker", "runner": "python3 skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03", "exit_code": 0, "verdict": "pass - 0 error(s), 4 warning(s), 0 info"},
+      {"name": "skills/flow/flow-governance/scripts/check_flow_governance.py", "type": "checker", "runner": "python3 skills/flow/flow-governance/scripts/check_flow_governance.py --manifest-dir artefacts/M4-S03", "exit_code": 0, "verdict": "pass - 0 error(s), 2 advisory (matches the step's own declared expected outcome)"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given the flow claims to stamp three fields, when the flow XML is read, then it sets Case.EntitlementId, Case.BusinessHoursId and Case.Priority, each guarded so it writes only into a null value (assumption A2), and the no-matching-account path is the documented fallback rather than a fault. The entitlement-to-process cross-reference is NOT asserted here: check_entitlements_and_milestones.py is carried by M4-S02 at build scope. S3: the flow's <description> carries the 'Owner:' marker and at least 60 characters, its <interviewLabel> is present, its <apiVersion> is 59 or higher and its <runInMode> is DefaultMode - all four are policy requirements check_flow_governance.py enforces, and the reviewer confirms them here as well because the checker reports them by file rather than by field."
+    ],
+    "check_outputs": {"ok": true, "step": "M4-S03", "missing": [], "empty": [], "malformed": []}
+  }
+}

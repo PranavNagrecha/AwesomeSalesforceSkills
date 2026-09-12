@@ -1,0 +1,255 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T06-55-30Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-55-30Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-55-30Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S01",
+    "reason": "Step 2 carve-out: the operator resolved the checker-policy block at the source (commit 5b206697a) and re-claimed the step blocked -> running at 2026-09-12T06:50:00Z, so the step was already `running` when this run began and does not appear in `next`.",
+    "build_mode": "design-only",
+    "owning_agent": "metadata-builder",
+    "credentials_present": "none — nothing in steps[M4-S01].inputs{} or the answers it names matched a credential shape per skills/devops/pipeline-secrets-management"
+  },
+  "summary": "Finished M4-S01. The first run (2026-09-12T06-31-35Z) ended blocked with reason checker-policy because the checker this step declares rejected the plan-mandated always-open calendar; the operator closed that at the source with commit 5b206697a, which scopes the shipped-24/7-shape rule to the org default or a calendar named literally Default and adds this exact Severity 1 24x7 calendar to the skill's worked example. This run re-ran the declared checker verbatim from the build directory against unchanged metadata: exit 0, with an INFO line asking one confirmation, which deploy-order.md section 0 now answers. Only deploy-order.md changed — section 0 rewritten from the block notice, section 4's intro and two of its five grounding markers updated. check-outputs returned ok on all three declared outputs, and the step was set built. Both this run's envelopes validate, as do the blocked run's, which are kept rather than overwritten.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 rubric: the HIGH row otherwise holds — Step 2 carve-out satisfied, every required input resolved from the plan, both envelopes validate, check-outputs exited 0, nothing written outside artefacts/M4-S01/ — but one artefact (deploy-order.md) is undeclared in outputs[], which the table scores MEDIUM.",
+  "outcome": "completed",
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The step's four acceptance tests belong to agents/step-tester per standards/build-orchestration.md section 5. The declared checker was re-run as part of building and its exit 0 is quoted as evidence; the xml, manifest and manual tests were not run here.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run /test-build-step on M4-S01."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The blocked -> running -> built path worked exactly as the status machine documents: the operator re-claimed the step with a recorded reason, no plan field was hand-edited, and all four runs (running, blocked, running, built) are preserved in steps[M4-S01].runs[].",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S01].runs)",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "skill-quality",
+      "observation": "The block produced a skill improvement rather than a workaround: commit 5b206697a moved a rule from 'this shape is wrong' to 'this shape is wrong on the default calendar', updated gotcha #1 and the worked example to match, and left gotcha #6's UNVERIFIED marker standing where the evidence genuinely stops.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "No metadata changed between the blocked run and the built run, so the step's outcome turned entirely on a rule the build does not own — which is the shape a checker-policy block should have when it is real rather than an artefact defect.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/settings/BusinessHours.settings-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "The checker's INFO line asks whether anything expecting business-hour pauses is attached to the always-open calendar, and the answer at M4 is that nothing reads it at all — the 24/7 promise is carried operationally by M4-S04's businessHoursSource None entry, so the calendar is a placeholder for a Severity 1 entitlement process that does not yet exist.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S02..S04].inputs)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "deliverable-contract",
+      "observation": "Neither agent's Wave 10 report pair under docs/reports/ was written on either run, because the invocation constrained writes to the build directory; all four build-scoped envelope pairs were written and all validate.",
+      "evidence": {
+        "source": "input",
+        "path": "agents/build-step-runner/AGENT.md (Persistence (Wave 10 contract))"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "Two things the step is built on remain unsettled and are marked rather than resolved: the midnight-pair semantics, which gotcha #6 still calls UNVERIFIED because the api_meta line the operator supplied documents the value and not the pair, and Acme's holiday list, which no clarification question ever asked for.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/deploy-order.md (section 4)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The step is built and untested; its checker, XML, manifest and manual tests are all outstanding, and the manual one is the only assertion that all three calendars are present and named.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S01].acceptance_tests)"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the four declared acceptance tests are its to run, and this agent ran only the checker, the XML parse and check-outputs as part of building."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Once the step is tested, decisions.md has two new entries to absorb — the checker-policy block and its resolution, and the seeded-holiday assumption — neither of which any current decision record carries.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the block, its source-level fix and the unconfirmed holiday set are decisions the build's own documents should carry rather than leaving them in an envelope."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S01",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-52-00Z.json",
+    "prior_envelopes": {
+      "owning_agent_blocked_run": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-31-35Z.json",
+      "runner_blocked_run": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-44-10Z.json"
+    },
+    "terminal_status": "built",
+    "prior_terminal_status": "blocked (checker-policy), run 2026-09-12T06-44-10Z",
+    "block_resolution": {
+      "resolved_by": "the operator, at the source",
+      "commit": "5b206697a",
+      "what_changed": "admin/business-hours-and-holidays v1.0.1 — the midnight-to-midnight-every-day rule is an ERROR only on the org default (<default>true</default>) or a calendar named literally 'Default'; on any other deliberately named calendar it is an INFO line that never affects the exit code, including under --strict. gotcha #1 and references/examples.md were updated to match, the example now carrying this exact Severity 1 24x7 calendar and the checker's exit-0 output.",
+      "what_did_not_change": "gotcha #6 — the start-and-end-both-midnight = open-all-day reading is still UNVERIFIED, so deploy-order.md section 4 keeps the marker",
+      "artefact_delta": "none in the metadata; the file that exited 1 is byte-for-byte the file that exits 0"
+    },
+    "relocations": [],
+    "artefacts": [
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/holiday-maintenance-runbook.md",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/package.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/deploy-order.md",
+        "declared": false,
+        "changed_this_run": true
+      }
+    ],
+    "missing_outputs": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "declared_checker_rerun": {
+      "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S01",
+      "cwd": ".sfskills/builds/case-onboarding",
+      "exit_code": 0,
+      "output": "INFO: BusinessHours.settings-meta.xml / always-open calendar 'Severity 1 24x7': SLA clocks on it never pause - intended for 24/7 severity tiers; confirm it is not attached to entitlements that expect business-hour pauses.",
+      "note": "Run verbatim as steps[M4-S01].acceptance_tests[0] declares it, from the build directory, so the relative --manifest-dir resolves as the tester will resolve it. This is evidence for the built transition, not a test result: agents/step-tester owns the test pass."
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S01 built --run-agent metadata-builder --envelope envelopes/M4-S01/2026-09-12T06-52-00Z.json --result \"<one-line outcome>\" --started 2026-09-12T06:50:00Z"
+    ],
+    "step_gate": "steps[M4-S01].human_gate is false and gate milestone:M3 is approved; no gate was approved, requested or recorded by this agent, and milestone:M4 remains pending",
+    "persistence_deviation": "The Wave 10 report pair under docs/reports/build-step-runner/ and docs/reports/metadata-builder/ was not written on either run: the invocation constrained writes to the build directory. All four build-scoped envelope pairs were written and all validate."
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step record fields and the status machine including the blocked -> running re-claim and the built transition, section 5 on who owns the acceptance tests and the check-outputs precondition on built, section 8 on the plan CLI being the only writer of derived state"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and the confidence rubric Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields of steps[] this agent reads and the ones it must leave alone"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape that puts step_id, artefacts and check_outputs under extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming settings/BusinessHours.settings-meta.xml is the source-format location a later deploy and the tester's manifest check can read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming Settings is a Metadata API type, so the step's declared outputs are deployable metadata"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step's inputs were mapped from"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the question-id convention (Q38, Q39, Q40, Q90) echoed into the envelope for the doc keeper"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes checked for before echoing inputs into the build directory; none matched"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "carried through from the owning agent's citations — v1.0.1, the metadata shape every emitted element came from"
+    },
+    {
+      "type": "probe",
+      "id": "check_business_hours_and_holidays",
+      "path": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py",
+      "used_for": "the declared acceptance checker, v1.0.1, re-run verbatim this run for exit 0"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step is built and its four declared acceptance tests — checker, XML, manifest and the manual three-calendar assertion — are that agent's to run"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once tested, the checker-policy block, its source-level fix and the unconfirmed holiday set are decisions the build's own documents should carry"
+    }
+  ]
+}

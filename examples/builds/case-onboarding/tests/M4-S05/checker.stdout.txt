@@ -1,0 +1,1 @@
+scanned 4 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN

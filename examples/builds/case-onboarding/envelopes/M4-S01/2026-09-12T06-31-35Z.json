@@ -1,0 +1,368 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T06-31-35Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-31-35Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S01/2026-09-12T06-31-35Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S01",
+    "step_type": "sla",
+    "api_version": "67.0 — from the build's G3 decision 6, not from this agent's 62.0 default",
+    "build_mode": "design-only",
+    "calendars": {
+      "EMEA Support": "Europe/London 08:00-18:00 Mon-Fri",
+      "US Support": "America/New_York 08:00-20:00 Mon-Fri (default)",
+      "Severity 1 24x7": "24/7, never pauses"
+    },
+    "answers": [
+      "Q38",
+      "Q39",
+      "Q40",
+      "Q90",
+      "Q41 (DEFERRED — assumption A8)"
+    ],
+    "credentials_present": "none — no value in steps[M4-S01].inputs{} or in the answers it names matched a credential shape per skills/devops/pipeline-secrets-management, so nothing was redacted"
+  },
+  "summary": "Built the three Business Hours calendars and a 12-month holiday seed set as one Settings:BusinessHours file, plus the Q90 holiday-maintenance runbook, the package.xml fragment at version 67.0 and a deploy-order note. check-outputs returned ok on all three declared outputs. The step ends BLOCKED, not built: the cited skill's checker — the one this step's acceptance_tests[0] declares with expected exit 0 — rejects the 'Severity 1 24x7' calendar because all seven days are 00:00:00.000Z to 00:00:00.000Z, which is the shipped-24/7 shape its rule exists to catch. That shape is the only one the skill documents for an always-open calendar, and the requirement (L18, 'Severity 1 outages are 24/7 and never pause') is what asked for it, so the artefact is correct and the rule cannot tell a deliberate always-open calendar from a neglected default. Both available repairs were tested on scratch copies and both rejected on grounding: deleting the calendar overrules the plan's own inputs and manual test, and trimming it to Mon-Fri passes the checker while silently closing the never-pausing calendar at weekends. A third, inventing a 23:59:59-style end value, is the class of guess that forced the M3 rebuild. The decision is a human's: amend the plan to carry the 24/7 promise on M4-S04's businessHoursSource=None entry as its own note already specifies, or change the checker rule so a non-default always-open calendar is INFO rather than ISSUE.",
+  "confidence": "LOW",
+  "confidence_rationale": "Step 10 rubric, LOW row: the step ended blocked. Every emitted element traces to the Step 3 inventory and check-outputs returned ok, which would otherwise read HIGH, but one cited checker does not exit 0 and one Questions-to-Ask row (the holiday list) had no answer and no documented default.",
+  "outcome": "partial",
+  "dimensions_skipped": [
+    {
+      "dimension": "checker-pass",
+      "state": "partial",
+      "reason": "check_business_hours_and_holidays.py exits 1 on exactly one rule (windows == 7 and all_midnight) against the deliberately always-open 'Severity 1 24x7' calendar. Every other rule the checker carries passes: with only that calendar removed, the same checker over the same file prints 'No business hours issues found.' and exits 0.",
+      "confidence_impact": "LOW",
+      "retry_hint": "Amend steps[M4-S01].inputs.calendars and acceptance_tests[3] to drop the third calendar, or raise the checker rule to INFO for a non-default always-open calendar, then re-run this step."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "The skill's Questions-to-Ask row 'Which regions or teams work different hours or observe different holidays?' was answered for the calendars (Q39) but no source in the plan, CLARIFICATIONS.md or answers-key.md supplies Acme's actual holiday dates. A 12-month seed set was written with every weekday computed rather than recalled, and marked UNCONFIRMED in both the runbook and deploy-order.md.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "The Q90 Service Operations owner confirms or replaces the table in holiday-maintenance-runbook.md section 3 before deploy."
+    },
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Two element-shape facts the skill leaves unstated are marked UNVERIFIED in deploy-order.md section 4 rather than asserted: whether the 00:00:00.000Z/00:00:00.000Z pair means open-all-day or closed (gotchas #6 marks this UNVERIFIED against official docs and prescribes a Setup-build-and-retrieve comparison), and where saturday*/sunday* sit in the BusinessHoursSettings element sequence, which the skill's sample never shows because it omits weekends.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Resolve both in a sandbox: build one 24-hour day and one closed day in Setup, retrieve Settings:BusinessHours, and compare against this file."
+    },
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The step's four acceptance tests belong to agents/step-tester per standards/build-orchestration.md section 5. The declared checker was run here as part of building, not as the test pass, and its result is quoted rather than recorded as a test outcome.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run /test-build-step on M4-S01 once the checker-policy decision is made."
+    }
+  ],
+  "refusal": {
+    "code": "REFUSAL_NEEDS_HUMAN_REVIEW",
+    "message": "check_business_hours_and_holidays.py rejects the 'Severity 1 24x7' calendar with: \"every day is 00:00:00.000Z to 00:00:00.000Z - this is the shipped 24/7 shape; SLA clocks on this calendar never pause.\" The artefact is correct per the skill's own reference (gotchas #1: the shipped Default 24/7 calendar stores exactly this pair and 'the same pair of values means open the whole day'), and the calendar was required by steps[M4-S01].inputs.calendars and by acceptance_tests[3]. Passing the gate would require either deleting a plan-mandated calendar, closing a never-pausing calendar at weekends, or inventing an undocumented time value. Per agents/metadata-builder/AGENT.md, a checker that rejects an artefact this agent believes correct is REFUSAL_NEEDS_HUMAN_REVIEW, not a repair loop: three passes cannot fix what is not in the XML.",
+    "remediation_hint": "Pick one: (1) build_plan.py amend-step M4-S01 to drop 'Severity 1 24x7' from inputs.calendars and acceptance_tests[3], leaving the 24/7 promise to M4-S04's businessHoursSource=None entry, which steps[M4-S04].inputs.note already specifies and which skills/admin/business-hours-and-holidays SKILL.md Decision Guidance names as the mechanism; or (2) change the checker rule so an always-open calendar that is not the org default is INFO rather than ISSUE, the same shape as the M2 finding resolved in commit 214da9abd. Option 1 costs a future Severity 1 entitlement process, which has no None source and reads the process calendar (gotchas #5)."
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "metadata-grounding",
+      "observation": "Every element written is present in the skill's retrieved worked example: the businessHours child order, the HH:mm:ss.SSSZ day windows, the repeated <businessHours> attachment on a holiday, and the startTime/endTime pair for a partial-day close were all copied rather than recalled.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/references/examples.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The weekend days are absent from both regional calendars rather than written as midnight-to-midnight pairs, which is what the skill's example explicitly instructs and what keeps them out of the checker's all_midnight rule.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/references/examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-quality",
+      "observation": "This step's acceptance_tests[0] description enumerates three of the checker's rules ('exactly one default calendar, no calendar with an empty week, and no holiday already in the past') and does not mention the all-midnight rule that the step's own third calendar necessarily trips, so the conflict was invisible at plan-verification time.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S01].acceptance_tests[0].description)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "No step in M4 reads a 'Severity 1 24x7' calendar: M4-S02 builds Premier and Standard processes only, M4-S03 stamps Case.BusinessHoursId from Account.Region__c which yields EMEA or US, and M4-S04's Severity 1 entry is specified with businessHoursSource None, which reads no calendar at all.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S02..S04].inputs)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "Trimming the always-open calendar to Monday-Friday makes the checker exit 0 while leaving a calendar that claims to never pause and is closed every weekend; the gate cannot see the difference, which makes this the cheapest wrong fix available to a later run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "Acme's holiday list was never asked for: Q39 settled that each region has its own set and no question, answer key row or requirement line names a single date, so the 14 entries written are a seeded 12-month set marked UNCONFIRMED rather than a customer artefact.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/CLARIFICATIONS.md (Q39, Q90)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "metadata-grounding",
+      "observation": "The skill documents isRecurring, recurrenceStartDate and recurrenceEndDate but no element stating how often a holiday recurs, so every entry was written in the fully documented one-off form with an explicit activityDate instead of asserting a recurrence the file cannot express.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/SKILL.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "process-ownership",
+      "observation": "Q90 named the accountable team (Service Operations) and the cadence (a Q4 yearly deploy) but not the individual, so the runbook carries the owner row as OPEN for the M4 gate rather than inventing a name.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/CLARIFICATIONS.md (Q90)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "Once the checker-policy decision is made and this step is rebuilt, the step's four acceptance tests still have to be run by their owner rather than inferred from this run.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json (steps[M4-S01].acceptance_tests)"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the declared checker, the XML parse and the manifest check are its tests to run, and this agent only ran them as part of building."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The consumer map the skill asks for spans this step and three others, and no single step's artefact carries it end to end.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/templates/business-hours-and-holidays-template.md"
+      },
+      "suggested_followup_agent": "business-hours-and-holidays-configurator",
+      "followup_reason": "Because it produces the referenced-by inventory across escalation entries, entitlement processes and Apex that this one step cannot see."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S01",
+    "step_type": "sla",
+    "terminal_outcome": "blocked",
+    "blocked_reason": "checker-policy",
+    "status_path_taken": "Invoked by agents/build-step-runner, so this agent ran neither set-status nor check-outputs' terminal transition; the runner sets the status. check-outputs itself was run and is quoted below.",
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+        "type": "Settings:BusinessHours",
+        "declared": true,
+        "source": "skills/admin/business-hours-and-holidays/references/examples.md Example 1 (retrieved BusinessHoursSettings)"
+      },
+      {
+        "path": "artefacts/M4-S01/holiday-maintenance-runbook.md",
+        "type": "build artefact",
+        "declared": true,
+        "source": "Q90 + skills/admin/business-hours-and-holidays SKILL.md Questions-to-Ask and references/gotchas.md #8"
+      },
+      {
+        "path": "artefacts/M4-S01/package.xml",
+        "type": "manifest",
+        "declared": true,
+        "source": "skills/admin/business-hours-and-holidays/references/examples.md package.xml fragment; version 67.0 per G3 decision 6"
+      },
+      {
+        "path": "artefacts/M4-S01/deploy-order.md",
+        "type": "build artefact",
+        "declared": false,
+        "source": "agents/metadata-builder/AGENT.md Step 7 — written on every run; same undeclared pattern as decisions.md O-M3S02-03"
+      }
+    ],
+    "decision_record": [
+      {
+        "question": "Which SLA promise are we making, and to whom?",
+        "answer": "Premier 4 business hours, Standard 1 business day, both on business time; Severity 1 is 24/7 calendar time (Q38).",
+        "source": "clarification answer",
+        "determined": "that business-time calendars are needed at all, and that one calendar must be always-open"
+      },
+      {
+        "question": "Which regions or teams work different hours or observe different holidays?",
+        "answer": "EMEA Europe/London 08:00-18:00; US America/New_York 08:00-20:00; plus the 24/7 exception (Q39).",
+        "source": "step inputs",
+        "determined": "three businessHours entries, named US Support / EMEA Support / Severity 1 24x7 from steps[M4-S01].inputs.calendars rather than from the skill example's 'US Support Hours' form"
+      },
+      {
+        "question": "How do we know a Case's region at creation?",
+        "answer": "Account.Region__c; unknown accounts default to US, which is also the org default (Q40).",
+        "source": "clarification answer",
+        "determined": "<default>true</default> on US Support and false on the other two"
+      },
+      {
+        "question": "Is there any Case type that must be worked round the clock?",
+        "answer": "Severity 1 (requirement.md L18).",
+        "source": "requirement",
+        "determined": "the Severity 1 24x7 calendar written here, and the businessHoursSource=None entry M4-S04 carries"
+      },
+      {
+        "question": "Who maintains next year's holidays, and when?",
+        "answer": "A named owner in Service Operations, yearly Q4 deploy (Q90). The individual was not named.",
+        "source": "clarification answer",
+        "determined": "holiday-maintenance-runbook.md section 1, with the owner row left OPEN"
+      },
+      {
+        "question": "Do reports or code need elapsed working time?",
+        "answer": "DEFERRED (Q41, assumption A8).",
+        "source": "step inputs",
+        "determined": "no Apex helper is in scope for this step; nothing was written for it"
+      },
+      {
+        "question": "Which holidays does each region observe? (implied by the skill's calendar row; never asked)",
+        "answer": "No source. A 12-month seed set was written and marked UNCONFIRMED.",
+        "source": "none — documented gap",
+        "determined": "14 one-off holidays with computed weekdays; the Q90 owner confirms or replaces them"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M4-S01",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "output": "ISSUE: BusinessHours.settings-meta.xml / calendar 'Severity 1 24x7': every day is 00:00:00.000Z to 00:00:00.000Z - this is the shipped 24/7 shape; SLA clocks on this calendar never pause.",
+        "note": "No repair pass was spent. Each of the three candidate repairs was rejected on grounding before editing, and two of them were verified on scratch copies outside the build directory to establish what the checker would accept."
+      },
+      {
+        "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir <scratch>/variant-a  (Severity 1 24x7 calendar removed)",
+        "exit_code": 0,
+        "output": "No business hours issues found.",
+        "note": "Evidence that the finding is isolated to that one calendar: the 14 holidays, their attachments, the single active default, the absent weekends and the startTime/endTime pairing all pass. Scratch copy only; nothing was written into the build directory."
+      },
+      {
+        "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir <scratch>/variant-b  (Severity 1 24x7 trimmed to Mon-Fri)",
+        "exit_code": 0,
+        "output": "No business hours issues found.",
+        "note": "The dangerous pass: exit 0 with a never-pausing calendar that is closed at weekends. Recorded so a later run does not discover it as a fix."
+      },
+      {
+        "command": "python3 -c \"import xml.etree.ElementTree as ET ... rglob('*.xml')\" on artefacts/M4-S01",
+        "exit_code": 0,
+        "output": "2 files parsed OK"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "unverified_items": [
+      {
+        "claim": "00:00:00.000Z to 00:00:00.000Z on all seven days means the calendar is open 24/7",
+        "basis": "references/gotchas.md #1 states the shipped Default 24/7 calendar stores exactly this pair and that the pair means 'open the whole day'",
+        "why_unverified": "references/gotchas.md #6 of the same skill marks the point UNVERIFIED against official docs: from the documented shape alone you cannot tell 'open 24 hours' from 'closed'",
+        "marked_in": "artefacts/M4-S01/deploy-order.md section 4",
+        "resolution": "Build one 24-hour day and one closed day in Setup, retrieve Settings:BusinessHours, compare; then run the clock test in the runbook section 5. Not possible in a design-only build."
+      },
+      {
+        "claim": "saturdayStartTime/saturdayEndTime/sundayStartTime/sundayEndTime belong after fridayEndTime in the BusinessHoursSettings element sequence",
+        "basis": "continuation of the week order in the skill's retrieved sample",
+        "why_unverified": "the sample omits weekend days entirely, so it never shows their position; the skill documents no element-order rule",
+        "marked_in": "artefacts/M4-S01/deploy-order.md section 4",
+        "resolution": "A retrieve from any org with a weekend-open calendar settles it; a --dry-run deploy would reject it if wrong."
+      },
+      {
+        "claim": "a holidays entry may omit <description>",
+        "basis": "the skill's worked example carries no description on any entry",
+        "why_unverified": "SKILL.md lists description among the fields but its position in the sequence is unstated, so it was omitted rather than placed by guess",
+        "marked_in": "artefacts/M4-S01/deploy-order.md section 4",
+        "resolution": "Same retrieve settles it."
+      },
+      {
+        "claim": "the 14 holiday dates are the set Acme observes",
+        "basis": "none — no clarification, answer-key row or requirement line names a holiday",
+        "why_unverified": "business content, not metadata shape; seeded so the calendars pause on something and the shape is reviewable",
+        "marked_in": "artefacts/M4-S01/holiday-maintenance-runbook.md section 3 and deploy-order.md section 4",
+        "resolution": "The Q90 Service Operations owner confirms or replaces the table before deploy."
+      }
+    ]
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "the BusinessHoursSettings element set, the one-file Settings:BusinessHours deploy shape, and the Questions-to-Ask rows bound in the decision record"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/examples.md",
+      "used_for": "Example 1, the retrieved BusinessHoursSettings file whose element names, order and HH:mm:ss.SSSZ windows every emitted element was copied from, plus the package.xml fragment"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/gotchas.md",
+      "used_for": "#1 the shipped 24/7 shape, #2 holiday attachment, #4 the null Case.BusinessHoursId fallback, #6 the UNVERIFIED midnight-pair semantics, #8 the whole-calendar-set deploy that drives the runbook's retrieve-first step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/well-architected.md",
+      "used_for": "the official Metadata API and Object Reference sources behind the element set, and the anti-pattern framing of a 24/7 default"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/templates/business-hours-and-holidays-template.md",
+      "used_for": "the design-sheet shape the runbook's calendar and holiday tables follow, and the consumer map that named the downstream steps"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the package.xml wrapper and the deploy-order note's retrieve-before-deploy ordering"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table (sla owns BusinessHours), section 5 on who runs the acceptance tests, section 8 on a gap being a signal rather than a licence to guess"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement, the citation schema and the confidence rubric this agent's Step 10 overrides"
+    },
+    {
+      "type": "probe",
+      "id": "check_business_hours_and_holidays",
+      "path": "skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py",
+      "used_for": "the declared acceptance checker, run three times (artefact, and two scratch variants) to establish exactly which rule rejects which calendar"
+    }
+  ]
+}

@@ -1,0 +1,535 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T07-58-40Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T07-58-40Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S04/2026-09-12T07-58-40Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S04",
+    "api_version": "67.0 (from the M3 gate's decision 6 / finding F-31; matches M3-S01..M4-S01)",
+    "step_inputs.decisions": [
+      "D7"
+    ],
+    "step_inputs.answers": [
+      "Q42",
+      "Q43",
+      "Q44",
+      "Q45",
+      "Q46",
+      "Q47",
+      "Q91"
+    ],
+    "upstream_artefacts": [
+      "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+      "artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+      "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+      "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml",
+      "artefacts/M3-S04/owner-writer-map.md",
+      "artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml"
+    ],
+    "credentials_present": false,
+    "rebuild_reason": "F-36 - org rejected the 07-22-10Z build at dry-run validation. Step reset tested -> failed -> pending by the operator and re-claimed running; this agent ran no set-status.",
+    "skill_version_read": "admin/escalation-rules v1.1.2 (commit 9ae71856d), re-read in full before editing"
+  },
+  "summary": "Rebuild of M4-S04 after F-36: reports/MOCK-DEPLOY-M4.md run 1 (checkOnly, sfskills-dev, API 67.0) rejected the 07-22-10Z build with 'EscalationRules Case: notifyToTemplate is required' - both actions set notifyCaseOwner true with no notifyToTemplate. Commit 9ae71856d closed the gap at the skill (admin/escalation-rules v1.1.2: checker rule E10, I4, gotcha 13, anti-pattern 6, folder-qualified templates on every example), and the declared checker then failed the byte-identical file with two E10 lines. One <notifyToTemplate>case_intake/Case_Escalated_To_Tier2</notifyToTemplate> was added to each of the two actions and nothing else changed: same rule, same two entries in the same order, same criteria, same clocks, same 480 minutes, same assignedTo, still <active>false</active>, package.xml untouched. The template is the plan's - M3-S02 is titled 'Classic acknowledgement and escalation email templates' and declares exactly one escalation template, which is a depends_on output of this step. Declared build-scope checker now exits 0 with W1 and two I3 lines only; no I4, because both template references are folder-qualified. check-outputs ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM, for the same two composed values as the first build (entry 1's 480, and Case.Severity__c as a criteriaItems token) plus a third introduced here: one template serves both notifyToTemplate and assignedToTemplate because the build holds only one escalation template, where the skill's example uses two. Every emitted element traces to the v1.1.2 inventory and the checker passed on the first pass after the single edit.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Case.Severity__c inside an escalation criteriaItems is composed from two separately grounded shapes; no single cited file carries a custom field in that element.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Confirm the field token against the target org, or deepen admin/escalation-rules with a custom-field criteriaItems example."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Q45's notify half is carried by notifyCaseOwner and assignedToTemplate because no non-routing notification address exists on file; Q44's confirm-no-incumbent half and Q47's comparison-window length are instructions to a human, not elements.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer the Tier 2 mailbox question left open by D-M2S04-02, and name the activator and window length at the M4 gate."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "Case escalation rules, two entries, shipped inactive",
+      "target_path": "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml",
+      "content": "EscalationRules > escalationRule Case_SLA_Escalation (active false) > ruleEntry 1 (businessHoursSource None; criteriaItems Case.Severity__c equals 'Severity 1' AND Case.Status notEqual Closed, booleanFilter '1 AND 2'; escalationStartTime CaseCreation; disableEscalationWhenModified false; escalationAction 480 -> assignedTo Tier_2_Engineering, assignedToType Queue, assignedToTemplate case_intake/Case_Escalated_To_Tier2, notifyCaseOwner true) and ruleEntry 2 (businessHoursSource Case, no businessHours child; criteriaItems Case.Status notEqual Closed; same start/disable/action); both actions additionally carry <notifyToTemplate>case_intake/Case_Escalated_To_Tier2</notifyToTemplate>, added in the F-36 rebuild."
+    },
+    {
+      "kind": "xml",
+      "title": "package.xml fragment",
+      "target_path": "artefacts/M4-S04/package.xml",
+      "content": "EscalationRules / member Case / version 67.0."
+    },
+    {
+      "kind": "markdown",
+      "title": "Escalation activation runbook (declared output, answers Q47)",
+      "target_path": "artefacts/M4-S04/escalation-activation-runbook.md",
+      "content": "Open owner/window cells, five deploy prerequisites, the six-step deploy-inactive-then-activate cutover with the baseline query, and six named activation risks R1-R6."
+    },
+    {
+      "kind": "markdown",
+      "title": "Escalation monitoring note (declared output, answers Q91)",
+      "target_path": "artefacts/M4-S04/escalation-monitoring-note.md",
+      "content": "The weekly saved-report definition on escalated still-open Cases, the two equivalent SOQL queries, the five-signal review table, and the annual holiday item."
+    },
+    {
+      "kind": "markdown",
+      "title": "Deploy-order note (undeclared; written on every run per AGENT.md Step 7)",
+      "target_path": "artefacts/M4-S04/deploy-order.md",
+      "content": "Component inventory, the six-row prerequisite order, six UNVERIFIED items U1-U6, seven decisions worth reading before deploy, the sender-identity section, the validate-only command, and a new section 0 recording the F-36 rebuild."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every cross-step reference this rule needs was already on disk and resolved on the first attempt: the Tier_2_Engineering queue, the case_intake/Case_Escalated_To_Tier2 Classic template, and the Severity 1 picklist value.",
+      "domain": "build-coherence",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The M3-S02 email template's own description names this exact consumer - 'the assignedToTemplate on the 8-business-hour Case escalation action (M4-S04)' - so the template reference was read off an upstream artefact rather than assumed.",
+      "domain": "traceability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The plan's own step note predicted both checker constraints (E2 on a businessHours child under a Case source, E7 on a label-form assignedTo) and both were avoided by construction; the checker exited 0 on the first pass at both scopes with no repair.",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "notifyCaseOwner true resolves at run time to the queue that owns the case, and the Billing queue's notification address is billing@acme.example - a live Email-to-Case intake address - so an escalation notification on a Billing-owned case becomes a new case that escalates and notifies again.",
+      "domain": "mail-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Billing.queue-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Entry 2 reads Case.BusinessHoursId, and the step that populates it (M4-S03) is not built; no skill states what businessHoursSource Case does when that reference is null, so the weekend pause requirement.md L16 promises is unproven until M4-S03 ships.",
+      "domain": "sla-clock",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/deploy-order.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "As built under Q42 (CaseCreation, disableEscalationWhenModified false) a case an agent is actively working still escalates 480 minutes after creation, which is narrower than requirement.md L16's word 'untouched'.",
+      "domain": "requirement-fidelity",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "No source gives Severity 1 a threshold of its own: requirement.md L16 states one threshold and L18 says only that Severity 1 never pauses, so both entries carry 480 and differ only in clock source - a shorter Severity 1 value would have been an invented SLA.",
+      "domain": "sla-design",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/requirement.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "No file in the library shows a custom field inside an escalation-rule criteriaItems; Case.Severity__c composes the escalation skill's Case. prefix with the Object.Field__c form documented in six other admin skills, and is marked UNVERIFIED rather than treated as quoted.",
+      "domain": "element-grounding",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -rn --include=*.md '<field>[A-Za-z]*\\.[A-Za-z0-9_]*__c</field>' skills/",
+        "count": 20
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step's declared checker and its manifest and XML checks are the tester's to run, not this agent's.",
+      "domain": "process",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because the four declared acceptance tests, including the two manual ones that carry the 480-not-8 assertion, are executed and recorded by the tester rather than by the builder"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Three named decisions came out of this step and none of them is recorded in decisions.md yet.",
+      "domain": "process",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/deploy-order.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because the equal-480 decision, the R2 Billing mail-loop finding that closes O-M3S04-02's open check, and the Q42 narrowing all need decisions.md entries before the M4 gate"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The flywheel ran as designed for the second time in this milestone: the org's rejection became checker rule E10, a gotcha with the exact error text and an anti-pattern entry, so the constraint is now caught locally before a deploy rather than by a deploy.",
+      "domain": "skill-flywheel",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/escalation-rules/references/gotchas.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The first build was not refutable from the library: at v1.1.1 every worked example in the cited skill wrote notifyCaseOwner with no notifyToTemplate, and the Metadata API guide's EscalationAction table marks the element optional, so the shape the org rejects was the shape the skill taught.",
+      "domain": "skill-depth",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/escalation-rules/references/metadata-examples.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The launch instruction said Q45 names the escalation template; Q45 names no template, and the value was resolved from M3-S02's declared outputs instead - the same template, a different source, recorded rather than silently reconciled.",
+      "domain": "input-binding",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Adding notifyToTemplate did not narrow the R2 Billing mail-loop exposure - it made the mail R2 describes actually send, because notifyToTemplate addresses the same recipient notifyCaseOwner selects.",
+      "domain": "mail-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/escalation-activation-runbook.md"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/SKILL.md",
+      "used_for": "RuleEntry/EscalationAction element tables, the businessHoursSource and escalationStartTime semantics, and the one-entry-match rule that fixed entry order"
+    },
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/references/metadata-examples.md",
+      "used_for": "the EscalationRules file shape adapted for this step, the package.xml fragment, the deploy order, the cutover table and the monitoring queries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/references/gotchas.md",
+      "used_for": "#8 minutes-not-hours, #10 None observes no holidays, #11 IsEscalated is writable, #12 exclude closed cases explicitly, #6/#7 the two edit levers, #9 the OwnerId write"
+    },
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/references/examples.md",
+      "used_for": "the two worked escalation scenarios and the multiple-active-rules anti-pattern behind shipping one rule inactive"
+    },
+    {
+      "type": "template",
+      "id": "admin/escalation-rules/escalation-rules-template",
+      "path": "skills/admin/escalation-rules/templates/escalation-rules-template.md",
+      "used_for": "the per-entry design record (clock source, clock start, edit behaviour, hours-to-minutes column) that deploy-order.md section 4 is written from"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "the Questions-to-Ask row 'Is there any Case type that must be worked round the clock?', which is what makes entry 1's None source a documented exception"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/gotchas.md",
+      "used_for": "#5 (milestones read the process calendar, not the Case calendar) and #6 (the documented file shape cannot distinguish open-all-day from closed) behind UNVERIFIED item U2"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/references/metadata-examples.md",
+      "used_for": "queues are named by developer name and deploy first, which fixed assignedTo as Tier_2_Engineering and section 2 of deploy-order.md"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "the email / doesSendEmailToMembers question behind UNVERIFIED item U3 and runbook risk R3"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/references/metadata-examples.md",
+      "used_for": "the Object.Custom_Field__c form of a criteriaItems/field, the second half of the composed grounding for Case.Severity__c (U1)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the admin-release package.xml shape and component ordering the deploy-order note is written from"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 sla step type ownership in a design-only build, and section 5 for who runs the acceptance tests"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q15 - re-route or notify when an open Case ages past a threshold",
+      "used_for": "cited, not re-decided: plan decision D7 already routed this step to Escalation Rules through this branch"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the four declared acceptance tests on this step are the tester's to execute and record, not the builder's"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "three decisions and the confirmed O-M3S04-02 mail-loop check need decisions.md entries before the M4 gate"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S04",
+    "step_type": "sla",
+    "invocation": "inline under agents/build-step-runner (no standalone set-status was run by this agent)",
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml",
+        "type": "EscalationRules",
+        "declared": true,
+        "source_reference": "skills/admin/escalation-rules/references/metadata-examples.md"
+      },
+      {
+        "path": "artefacts/M4-S04/escalation-activation-runbook.md",
+        "type": "documentation",
+        "declared": true,
+        "source_reference": "skills/admin/escalation-rules/references/metadata-examples.md (Parallel run and cutover)"
+      },
+      {
+        "path": "artefacts/M4-S04/escalation-monitoring-note.md",
+        "type": "documentation",
+        "declared": true,
+        "source_reference": "skills/admin/escalation-rules/references/metadata-examples.md (Verification and monitoring)"
+      },
+      {
+        "path": "artefacts/M4-S04/package.xml",
+        "type": "Package",
+        "declared": true,
+        "source_reference": "skills/admin/escalation-rules/references/metadata-examples.md (package.xml)"
+      },
+      {
+        "path": "artefacts/M4-S04/deploy-order.md",
+        "type": "documentation",
+        "declared": false,
+        "source_reference": "agents/metadata-builder/AGENT.md Step 7"
+      }
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Does the clock start at case creation, or restart on edit?",
+        "answer": "CaseCreation; disableEscalationWhenModified false",
+        "source": "step inputs (Q42)",
+        "element": "escalationStartTime, disableEscalationWhenModified on both entries"
+      },
+      {
+        "question": "Which calendar does each tier follow, and is there a tier that must run 24/7?",
+        "answer": "Entry 1 None (Severity 1, 24/7); entry 2 Case",
+        "source": "step inputs (Q43)",
+        "element": "businessHoursSource; no businessHours child on either entry"
+      },
+      {
+        "question": "Which escalation rule is active in production today?",
+        "answer": "None - shared mailbox today; confirm in the target org before deploying",
+        "source": "step inputs (Q44)",
+        "element": "not an element - written as cutover step 2 of the runbook"
+      },
+      {
+        "question": "Notify, change the owner, or both?",
+        "answer": "Both",
+        "source": "step inputs (Q45)",
+        "element": "assignedTo + assignedToType + assignedToTemplate, and notifyCaseOwner true"
+      },
+      {
+        "question": "What is the SLA in minutes?",
+        "answer": "480 (8 x 60)",
+        "source": "step inputs (Q46)",
+        "element": "minutesToEscalation on entry 2's action"
+      },
+      {
+        "question": "What is the Severity 1 threshold in minutes?",
+        "answer": "480 - requirement.md states one threshold (L16) and says only that Severity 1 never pauses (L18); no source gives it a faster value",
+        "source": "requirement.md (the weakest of the four sources), recorded as a decision not a default",
+        "element": "minutesToEscalation on entry 1's action"
+      },
+      {
+        "question": "How do we cut over without a wave?",
+        "answer": "Deploy inactive, activate in a defined comparison window after sandbox sign-off",
+        "source": "step inputs (Q47)",
+        "element": "escalationRule/active false; the runbook carries the rest"
+      },
+      {
+        "question": "How will we know next month that the rule still fires?",
+        "answer": "Weekly saved report on escalated still-open Cases, owned by the Tier 2 lead",
+        "source": "step inputs (Q91)",
+        "element": "not an element - escalation-monitoring-note.md"
+      },
+      {
+        "question": "Which entry goes first?",
+        "answer": "Severity 1 first",
+        "source": "skills/admin/escalation-rules/SKILL.md (a case matches one entry; first match wins)",
+        "element": "ruleEntry document order"
+      },
+      {
+        "question": "Are closed cases excluded?",
+        "answer": "Yes, by explicit criterion on both entries",
+        "source": "skills/admin/escalation-rules/references/gotchas.md #12 (documented default posture)",
+        "element": "criteriaItems Case.Status notEqual Closed"
+      },
+      {
+        "question": "Which template does notifyToTemplate name?",
+        "answer": "case_intake/Case_Escalated_To_Tier2, folder-qualified",
+        "source": "upstream artefacts (M3-S02 outputs, a depends_on step) - NOT Q45, which names no template",
+        "element": "notifyToTemplate on both escalationAction blocks"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "findings": "BEFORE the edit, against the byte-identical file that passed at v1.1.1: 2 x ERROR E10 (notifyCaseOwner true, notifyToTemplate empty), entry 1 action 1 and entry 2 action 1. '2 error(s), 1 warning(s), 4 info note(s).'"
+      },
+      {
+        "command": "python3 skills/admin/escalation-rules/scripts/check_escalation_rules.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 1,
+        "findings": "AFTER the edit - the declared build-scope test, run verbatim: WARN W1 (no rule active, expected under Q47); INFO I2 x2; INFO I3 x2 (480 = 8h). No E10. No I4: both template references are folder-qualified. 'OK: no ERROR findings (1 warning(s), 4 info note(s)).'"
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path('artefacts/M4-S04').rglob('*.xml')]\"",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "findings": "Both XML files parse."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "EscalationRules member 'Case' <-> escalationRules/Case.escalationRules-meta.xml. One type, one member, one file, both directions.",
+    "ungrounded": [
+      {
+        "id": "U1",
+        "item": "Case.Severity__c inside an escalation-rule criteriaItems/field",
+        "state": "composed from two grounded shapes; marked UNVERIFIED in deploy-order.md section 3"
+      },
+      {
+        "id": "U2",
+        "item": "What businessHoursSource Case does when Case.BusinessHoursId is null",
+        "state": "UNVERIFIED - no skill states the fallback; carried as runbook risk R1"
+      },
+      {
+        "id": "U3",
+        "item": "Where an assignedToTemplate email is delivered when the target queue has no email and doesSendEmailToMembers is false",
+        "state": "UNVERIFIED; carried as runbook risk R3"
+      },
+      {
+        "id": "U4",
+        "item": "The escalation engine's batching interval",
+        "state": "UNVERIFIED in the skill itself (gotchas.md #1); Q46's headroom number is not on file"
+      },
+      {
+        "id": "U5",
+        "item": "The one-active-rule-per-org ceiling",
+        "state": "UNVERIFIED in the skill itself (SKILL.md Before Starting); does not bite on this deploy - one rule, inactive"
+      },
+      {
+        "id": "U6",
+        "item": "One template serves both notifyToTemplate and assignedToTemplate",
+        "state": "Recorded in deploy-order.md section 3 U6. The two elements address different recipients and the skill's example uses two distinct templates; this build declares one escalation template (M3-S02), so both elements name it. Inventing a second was rejected - it would not exist in the org."
+      }
+    ],
+    "api_version": "67.0",
+    "rebuild": {
+      "finding": "F-36",
+      "org_error": "EscalationRules Case: notifyToTemplate is required",
+      "source": "reports/MOCK-DEPLOY-M4.md run 1 (checkOnly, sfskills-dev, API 67.0)",
+      "prior_build": "2026-09-12T07-22-10Z",
+      "skill_fix": "commit 9ae71856d - admin/escalation-rules v1.1.2: E10 (ERROR), I4 (INFO), gotchas.md #13, llm-anti-patterns.md Anti-Pattern 6, folder-qualified notifyToTemplate on every worked example",
+      "checker_evidence_before_edit": "2 x ERROR E10 (entry 1 action 1, entry 2 action 1); '2 error(s), 1 warning(s), 4 info note(s).' EXIT=1",
+      "change": "One <notifyToTemplate>case_intake/Case_Escalated_To_Tier2</notifyToTemplate> plus an explanatory comment added to each of the two escalationAction blocks. No other element, value, comment or ordering changed. package.xml untouched.",
+      "files_touched": [
+        "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml",
+        "artefacts/M4-S04/deploy-order.md",
+        "artefacts/M4-S04/escalation-activation-runbook.md"
+      ],
+      "stale_records": "The step's earlier tested record (step-tester run 2026-09-12T07-35-25Z) and the 07-22-10Z build and runner envelopes are superseded by this run; M4 has no milestone verdict yet."
+    },
+    "template_source": {
+      "value": "case_intake/Case_Escalated_To_Tier2",
+      "resolved_from": "Step 4 source 3 - upstream artefacts: outputs[] of M3-S02, a depends_on step of M4-S04",
+      "evidence": [
+        "plan.json steps[M3-S02].title: 'Classic acknowledgement and escalation email templates plus the org-wide sender addresses'",
+        "plan.json steps[M3-S02].outputs[] declares exactly two templates: case_intake/Case_Acknowledgement and case_intake/Case_Escalated_To_Tier2",
+        "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml <description>: 'used as the assignedToTemplate on the 8-business-hour Case escalation action (M4-S04)'",
+        "plan.json clarification Q61 (an M3-S02 answer): 'the acknowledgement and escalation templates are rule-driven, so they must be Classic templates'",
+        "artefacts/M3-S02/package.xml member form 'case_intake/Case_Escalated_To_Tier2' supplies the folder-qualified spelling I4 asks for"
+      ],
+      "correction_to_invocation": "The launch instruction said Q45 names the escalation template. It does not: Q45's answer reads in full 'Both: reassign to the Tier 2 queue and notify - per requirement, \"anything untouched for 8 business hours escalates to Tier 2,\" which requires an OwnerId reassignment in addition to any notification. Record the automation blast radius of the OwnerId write.' No template is named in Q45, in any other answer on this step, or in the step's note. Per agents/build-step-runner/AGENT.md Step 5 an invocation is not a source, so the value was resolved from the plan instead - and the plan resolves it to the same template, through M3-S02's declared outputs rather than through Q45. Recorded rather than silently reconciled.",
+      "alternative_rejected": "Inventing a second template (e.g. case_intake/Case_Escalation_Warning) so notifyToTemplate and assignedToTemplate differ as they do in the skill's worked example. Rejected twice over: no step in this build produces it, so the deploy would fail on the reference; and naming a template nobody wrote is the invention D-M2S04-02 refused for the Tier 2 mailbox."
+    }
+  }
+}

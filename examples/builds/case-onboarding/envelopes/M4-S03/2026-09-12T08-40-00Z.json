@@ -1,0 +1,446 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T08-40-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-40-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S03/2026-09-12T08-40-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S03",
+    "api_version": "67.0",
+    "step_inputs_decisions": [
+      "D1",
+      "D2"
+    ],
+    "step_inputs_answers": [
+      "Q16",
+      "Q40",
+      "Q48",
+      "Q14 (DEFERRED)"
+    ],
+    "step_inputs_assumptions": [
+      "A2",
+      "A12"
+    ],
+    "upstream_artefacts": [
+      "artefacts/M4-S02/entitlementProcesses/",
+      "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+      "artefacts/M1-S01/objects/"
+    ],
+    "amendment_read": "steps[M4-S03].notes, 2026-09-12T04:50:22Z (F-27); reports/MOCK-DEPLOY-M4.md run 2 (F-38)",
+    "credentials_present": false,
+    "reason": "F-38 rebuild #2: reports/MOCK-DEPLOY-M4.md run 3 rejected the two-parameter FlowTest as incompatible on a Create-triggered flow"
+  },
+  "summary": "Third build of M4-S03, second rebuild for F-38, and the org corrected its own first answer between them. Run 2 rejected 'missing a parameter of type InputTriggeringRecordInitial'; the previous rebuild supplied both parameters; run 3 accepted 54 of 55 components and rejected only the FlowTest with the mirror message: 'The test point for elementApiName \"Start\" contains the incompatible parameter value \"$Record\" of type InputTriggeringRecordUpdated. Remove the parameter or change the record trigger type.' The settled rule, which the skill is being corrected to carry: recordTriggerType Create takes InputTriggeringRecordInitial ONLY; Update and CreateAndUpdate take both. This rebuild removed the InputTriggeringRecordUpdated block from the Start test point and left the Initial block untouched, so it is now the whole test input. The other five artefacts - the flow, Flow.settings, package.xml, flow-governance-policy.yaml and no-account-fallback-note.md - remain byte-identical to the very first build (SHA-256 confirmed at each of the three runs); the flow validated on first contact in run 2 and has never been reopened. deploy-order.md section 0 was rewritten as the consolidated three-run record. All five checkers exit 0 with zero repair passes; check-outputs ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "metadata-builder Step 10: MEDIUM, unchanged across all three runs and for the same single reason - the Priority VALUE mapping is derived rather than answered. The FlowTest direction is now proven live in both directions (a rejection for omitting Initial and a rejection for including Updated), which is stronger evidence than the guide offers.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Every Flow element name and enum value traces to a cited skill's reference, but the Priority VALUE MAPPING (which CasePriority value each derivation row produces) is derived from the requirement and Q38 rather than copied from any source; recorded as deploy-order.md U1. U4 is closed: the FlowTest parameter direction is settled by two org round-trips rather than by the guide, whose sample at L74351-74365 carries both parameters because its flow is update-triggered.",
+      "confidence_impact": "MEDIUM"
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Q14 is deferred (assumption A2) and Q51's 'match the Case's calendar' half is already recorded as unhonourable by O-M4S02-02; neither is this step's to close. F-38 is now closed in both directions by the org, but two halves stay unstated: nothing in api_meta.txt ties FlowTestParameterType to recordTriggerType, and the 'CreateAndUpdate takes both' half of the rule is inferred rather than observed - no flow in this build is CreateAndUpdate.",
+      "confidence_impact": "MEDIUM"
+    },
+    {
+      "dimension": "checker-pass",
+      "state": "not-run",
+      "reason": "flow/fault-handling scripts/check_flow_faults.py is named by the governance policy's delegate_to and by the checker's own closing line, but flow/fault-handling is not in this step's skills[] so its checker was not run; U2 records why a before-save flow would not satisfy it anyway.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "process",
+      "observation": "Across three runs the flow, settings, manifest, policy file and fallback note stayed byte-identical while only the FlowTest moved, so two org round-trips cost two small edits rather than a re-derivation of the step.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/deploy-order.md",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "automation",
+      "observation": "Every one of the four Get Records elements carries a faultConnector, so no failure in this flow can stop an interview silently.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The upstream steps left an unusually complete trail for this one: M4-S01 deploy-order section 3 already predicted the BusinessHours-by-Name lookup and named the drift risk, and M4-S04's runbook already recorded this flow as its activation prerequisite.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/deploy-order.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "skill-depth",
+      "observation": "Run 2's error ('missing a parameter of type InputTriggeringRecordInitial') is satisfied by both the two-parameter shape and the correct one-parameter shape, so it narrowed the space without closing it and cost a whole extra round-trip; the message is worth the skill carrying verbatim next to the rule.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M4.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-depth",
+      "observation": "The skill's worked FlowTest is the after-save Opportunity_AfterSave_ClosedWon transition test and says so in its own prose, but it is the only FlowTest example in the skill, so a create-triggered step copying it inherits a shape that cannot deploy.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/flow/record-triggered-flow-patterns/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "data-quality",
+      "observation": "Case.Severity__c carries exactly one value ('Severity 1') and is not required, and no step in this plan populates it on an Email-to-Case or Web-to-Case intake, so the Severity half of the Priority derivation will almost never fire on the automated channels it was added for.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-depth",
+      "observation": "No cited skill documents what a fault path in a RecordBeforeSave flow should look like: flow-element-naming-conventions Pattern 5 and templates/flow/FaultPath_Template.md both require a LogFault_<Parent> target that writes an Application_Log__c row, which rule 2 of check_record_triggered_flow_patterns forbids in that context.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/flow/FaultPath_Template.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "manifest",
+      "observation": "No CasePriority standard value set exists anywhere under artefacts/, so the literals High and Medium this flow writes cannot be asserted against the org's picklist by any checker in this build; M3-S03's web-to-case-form-contract.md section 7 recorded the same gap from the form side.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S03/web-to-case-form-contract.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "domain": "sla",
+      "observation": "The M3 gate approved deriving Priority from Severity__c and Support_Tier__c but no answer states which CasePriority value each combination produces; the Premier-to-High row in particular maps a contractual speed onto an urgency field and is the weakest of the three.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "Setting enableFlowDeployAsActiveEnabled true makes a production deploy of this step run Apex tests and roll back if coverage of active flows is short, and this build's only Apex step (M4-S05) is not built yet.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/settings/Flow.settings-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "automation",
+      "observation": "Get_Active_Entitlement takes the first matching row with no sort, so an account holding two active entitlements gets an arbitrary one; nothing in the clarifications says what should happen with two.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "process",
+      "observation": "The step is built and its three declared checkers exit 0; the molecular tests have not been run.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the six acceptance_tests on this step, including the manual reviewer line about the Owner marker and runInMode, are the tester's to execute, not this agent's."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "process",
+      "observation": "Three decisions in this run (the Priority mapping, the apiVersion divergence, the before-save fault-path gap) belong in decisions.md rather than only in deploy-order.md.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because D-M3S03-02 is only half-closed until this step's implementation of gate option 2 and its residual UNVERIFIED value mapping are recorded as a decision of their own."
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "automation",
+      "observation": "The 'CreateAndUpdate takes both parameters' half of the corrected rule is inferred from the guide's update-triggered sample and from run 3's error text, not observed - no flow in this build is CreateAndUpdate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S03/deploy-order.md"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "flow/record-triggered-flow-patterns",
+      "path": "skills/flow/record-triggered-flow-patterns/SKILL.md",
+      "used_for": "references/metadata-examples.md section 1 supplied the RecordBeforeSave element set, the <start> child ordering, the alphabetical top-level ordering, triggerOrder, and section 4 the FlowTest shape"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-decision-element-patterns",
+      "path": "skills/flow/flow-decision-element-patterns/SKILL.md",
+      "used_for": "outcome ordering most-specific-first, the IsNull-against-booleanValue null-guard shape, the named default, and the advanced conditionLogic form '(1 OR 2 OR 3) AND (4 OR 5)'"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-element-naming-conventions",
+      "path": "skills/flow/flow-element-naming-conventions/SKILL.md",
+      "used_for": "the Get_ / Decision_ / Assignment_ element verb prefixes and the non-default, non-duplicate label rules; its Pattern 5 LogFault_<Parent> target is the convention U2 records as unsatisfiable in a before-save flow"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-governance",
+      "path": "skills/flow/flow-governance/SKILL.md",
+      "used_for": "references/metadata-examples.md section 6 is the source of flow-governance-policy.yaml verbatim; section 1 the FlowSettings element set and enableFlowDeployAsActiveEnabled semantics; section 8 the settings-before-flows deploy order"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "gotcha 4 (Case.BusinessHoursId is empty unless something sets it, and empty means the org default) is what makes the explicit US fallback stamp a choice rather than a formality"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/SKILL.md",
+      "used_for": "gotcha 2 (no EntitlementId at creation = no milestone at all) and references/metadata-examples.md section 8 (WHERE Status = 'Active') grounded the Entitlement Get Records filter"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "references/metadata-examples.md section 1 CasePriority standard value set is the only grounded source in this build for the literals High and Medium"
+    },
+    {
+      "type": "template",
+      "id": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "path": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml",
+      "used_for": "the flow skeleton and its apiVersion 67.0, which is the value written rather than the cited skill's 66.0"
+    },
+    {
+      "type": "template",
+      "id": "templates/flow/FaultPath_Template.md",
+      "path": "templates/flow/FaultPath_Template.md",
+      "used_for": "read to confirm the canonical fault-path target writes an Application_Log__c record, which a before-save flow cannot do - the basis of U2"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2 - 'Yes' leaf: same-record field write in under ~10s",
+      "used_for": "D1 routed this step to a before-save flow rather than Apex; cited, not re-decided"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/flow-pattern-selector.md",
+      "path": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q3 - 'No' leaf: before-save flow, read-only cross-object lookup permitted",
+      "used_for": "D2 settled that the Account, Entitlement and BusinessHours Get Records are legal in a before-save flow"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table (automation, declarative half owned by metadata-builder) and the status machine"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement and the confidence rubric metadata-builder Step 10 overrides"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "step_type": "automation",
+    "terminal_outcome": "built",
+    "status_path_taken": "invoked by build-step-runner - this agent set no status itself (metadata-builder Step 9)",
+    "artefacts": [
+      "artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml",
+      "artefacts/M4-S03/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml",
+      "artefacts/M4-S03/no-account-fallback-note.md",
+      "artefacts/M4-S03/package.xml",
+      "artefacts/M4-S03/settings/Flow.settings-meta.xml",
+      "artefacts/M4-S03/flow-governance-policy.yaml",
+      "artefacts/M4-S03/deploy-order.md"
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M4-S03/deploy-order.md"
+    ],
+    "undeclared_artefact_note": "deploy-order.md is written on every run of metadata-builder (Step 7) whether or not the plan declares it. steps[M4-S03].outputs[] does not list it, unlike M4-S01's, M4-S02's and M4-S04's. Recorded so the plan gets the line added; it is not a scope widening.",
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "F-38, corrected: which InputTriggeringRecord* parameters does a Create-triggered FlowTest's Start test point take?",
+        "answer": "InputTriggeringRecordInitial ONLY. Updated is incompatible on a create. Update and CreateAndUpdate take both.",
+        "source": "reports/MOCK-DEPLOY-M4.md run 2 (rejected for omitting Initial) and run 3 (rejected for including Updated) - proven live in both directions; api_meta L74326-74327 and the update-triggered sample at L74351-74365 do not state it",
+        "determined": "the Start test point now carries one <parameters> block; the residual unstated halves are recorded as deploy-order.md section 0"
+      },
+      {
+        "question": "F-27 / D-M3S03-02: derive and overwrite Priority for Email-* origins, or accept Medium?",
+        "answer": "Derive and overwrite (option 2).",
+        "source": "plan.json human_gates milestone:M3 notes, decision (2), approved 2026-09-12T06:24:17Z",
+        "determined": "Decision_Derive_Priority conditions 1-3 and the two Assignment_Priority_* elements"
+      },
+      {
+        "question": "Which Priority value for each derivation row?",
+        "answer": "Severity 1 -> High; Premier -> High; everything else writable -> Medium. DERIVED, not answered.",
+        "source": "derived from requirement.md L18 + Q38 + M3-S03's established Medium; literals copied from admin/case-management-setup references/metadata-examples.md section 1",
+        "determined": "the two <stringValue> elements; carried to the M4 gate as deploy-order.md section 1"
+      },
+      {
+        "question": "How does a Case get its calendar, and what is the fallback? (Q40)",
+        "answer": "Account.Region__c EMEA -> EMEA Support; US -> US Support; blank or no account -> US Support, stamped explicitly.",
+        "source": "plan.json clarification Q40 (answered)",
+        "determined": "Decision_Case_Calendar's three rules and the two BusinessHours Get Records"
+      },
+      {
+        "question": "How does a Case get its entitlement, and what happens with no matching account? (Q48)",
+        "answer": "Get the account's active Entitlement and stamp it only into a null EntitlementId; no account or no active entitlement leaves it null and is documented rather than faulted.",
+        "source": "plan.json clarification Q48 (answered) + decisions.md D1 consequences",
+        "determined": "Get_Active_Entitlement, Decision_Stamp_Entitlement, and artefacts/M4-S03/no-account-fallback-note.md"
+      },
+      {
+        "question": "Which null guards survive the F-27 amendment? (A2 / Q14 deferred)",
+        "answer": "EntitlementId and BusinessHoursId keep the IsNull guard; Priority's guard is superseded on Email-Support and Email-Billing only.",
+        "source": "steps[M4-S03].inputs.note + steps[M4-S03].notes amendment 2026-09-12T04:50:22Z",
+        "determined": "the IsNull conditions on Decision_Stamp_Entitlement and Decision_Case_Calendar, and condition 3 on Decision_Derive_Priority"
+      },
+      {
+        "question": "What API version does the flow carry?",
+        "answer": "67.0, copied from the cited template rather than the cited skill's 66.0.",
+        "source": "templates/flow/RecordTriggered_Skeleton.flow-meta.xml (step templates[]) + milestone:M3 gate decision 6",
+        "determined": "<apiVersion>67.0</apiVersion>; divergence recorded in deploy-order.md section 3"
+      },
+      {
+        "question": "What goes in settings/Flow.settings-meta.xml?",
+        "answer": "enableFlowDeployAsActiveEnabled only. The skill's other twelve fields are org-wide governance decisions no clarification in this build asks about.",
+        "source": "flow/flow-governance references/metadata-examples.md section 1 (documented default: false in production)",
+        "determined": "the one-element FlowSettings file; consequences in deploy-order.md section 4"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03",
+        "exit": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": true,
+        "stdout": "No issues found."
+      },
+      {
+        "command": "python3 skills/flow/flow-element-naming-conventions/scripts/check_flow_element_naming_conventions.py --manifest-dir artefacts/M4-S03",
+        "exit": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": true,
+        "stdout": "0 error(s), 4 warning(s), 0 info. Four W-FAULT-TARGET WARNs, one per Get Records: Pattern 5 wants a LogFault_<Parent> target, which a before-save flow cannot carry (deploy-order.md U2)."
+      },
+      {
+        "command": "python3 skills/flow/flow-governance/scripts/check_flow_governance.py --manifest-dir artefacts/M4-S03",
+        "exit": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": true,
+        "stdout": "0 error(s), 2 advisory. NOTE fault_paths.require_fault_connectors delegates to flow/fault-handling; WARN the Flow.settings glob misses settings/Flow.settings-meta.xml (deploy-order.md U7). Exactly the outcome the step's acceptance test predicts."
+      },
+      {
+        "command": "python3 skills/flow/flow-decision-element-patterns/scripts/check_flow_decision_element_patterns.py --manifest-dir artefacts/M4-S03",
+        "exit": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": false,
+        "stdout": "0 ERROR, 5 WARN, 0 INFO - run because metadata-builder Step 8 runs every cited skill's checker. All five analysed in deploy-order.md section 5."
+      },
+      {
+        "command": "python3 skills/admin/business-hours-and-holidays/scripts/check_business_hours_and_holidays.py --manifest-dir artefacts/M4-S03",
+        "exit": 0,
+        "repair_passes": 0,
+        "declared_acceptance_test": false,
+        "stdout": "WARN: No BusinessHours settings file found under artefacts/M4-S03 - correct; the calendars are M4-S01's artefact and this step only reads their names."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "metadata_types_emitted": [
+      "Flow",
+      "FlowTest",
+      "Settings (Flow)"
+    ],
+    "org_connected": false,
+    "rebuild": {
+      "finding": "F-38 (corrected)",
+      "build_number": 3,
+      "previous_runs": [
+        "2026-09-12T08-11-40Z",
+        "2026-09-12T08-30-00Z"
+      ],
+      "org_error": "The test point for elementApiName \"Start\" contains the incompatible parameter value \"$Record\" of type InputTriggeringRecordUpdated. Remove the parameter or change the record trigger type.",
+      "evidence": "reports/MOCK-DEPLOY-M4.md run 3 (54/55 ok; F-37 closed; only this FlowTest outstanding)",
+      "settled_rule": "recordTriggerType Create -> InputTriggeringRecordInitial only; Update/CreateAndUpdate -> both",
+      "closes": "deploy-order.md U4, in both directions",
+      "files_changed": [
+        "artefacts/M4-S03/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml",
+        "artefacts/M4-S03/deploy-order.md"
+      ],
+      "files_byte_identical_since_first_build": {
+        "artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml": "9768bdfa5983e04423aedf0728d903470c9a0f47c5030834f375e32f70c3d5fc",
+        "artefacts/M4-S03/settings/Flow.settings-meta.xml": "247daa372c461ec07e3ecf2cb182bfb6f632b737cdc2ecf1a57b74155db1b10b",
+        "artefacts/M4-S03/package.xml": "510f34f9ff956ff61c94efc4fc0d229f33a892191ba2361f569667f1986a88f3",
+        "artefacts/M4-S03/flow-governance-policy.yaml": "da899b49f4bf2f24f9ab84455a253d3ebba7795fd63e122510060f4bd19272e1",
+        "artefacts/M4-S03/no-account-fallback-note.md": "26b1f18c61443306528cfe0c33ae7b533c6b6a31d4c8c0ea1c1793960fcfa6a1"
+      },
+      "flowtest_sha256_by_run": {
+        "2026-09-12T08-11-40Z (Updated only)": "fd8eade0ce63fc6c9f8fd46c73b3b6e62a35f408c86834735a9535190c69d8f4",
+        "2026-09-12T08-30-00Z (Initial + Updated)": "ecae8feda310494bc5f4c108da1a7654b772060378c96ffb4cb60fa197b4a1c4",
+        "2026-09-12T08-40-00Z (Initial only)": "c303552672ff4175c27cc8ec1fb21d1c8638b33cf9664bb77f3bad4a163f2988"
+      }
+    }
+  }
+}

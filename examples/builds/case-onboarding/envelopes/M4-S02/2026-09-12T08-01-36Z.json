@@ -1,0 +1,194 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "per-step",
+  "run_id": "2026-09-12T08-01-36Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T08-01-36Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T08-01-36Z.json",
+  "summary": "Documented M4-S02 (Entitlement processes for Premier/Standard plus the First Response milestone type) after it reached `tested`. Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json; appended 4 decisions.md entries covering the W4 checker-policy block on missing <timeTriggers>/<successActions> and its closure at the skill (D-M4S02-01, the flywheel record, D-M4S01-01 shape), the derived minutesToComplete 720 for Standard as an UNCONFIRMED placeholder (D-M4S02-02, the holiday-seed shape), the unowned settings/Entitlement.settings-meta.xml gate item (O-M4S02-01), and the Q51 half-honoured EMEA calendar divergence (O-M4S02-02); wrote 6 workbook rows (CWB-AUT-015..018 in Section 6, CWB-OTHER-027..028 in Other Configuration); minted 3 new requirements (REQ-040 Premier's 4-business-hour promise, REQ-041 Standard's derived 720-minute promise, REQ-042 the shared MilestoneType and its D10 completion binding) as traceability Matrix rows plus their Requirement-id-derivation entries; ran check_rtm.py from the build dir (42 rows, 0 coverage gaps, 0 errors, orphans dropped from 5 to 2 — the 2 remaining belong to M4-S04, outside this step's scope, exit 0 at both build and step scope); set the step to `documented`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact produced a workbook row with a real source_req_id and a verification cell, and all three new requirements have a traceability row (the HIGH conditions), but two things needed judgment rather than a mechanical read: the checker-policy block this step inherited was closed by a skill fix mid-build, so the decisions.md entry had to reconcile two envelopes (blocked and rebuilt) rather than transcribe one; and Standard's derived 720 has no test of any kind (machine or manual) confirming its correctness, which this pass records as an explicit gap in REQ-041's row rather than a passed assertion.",
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The artefacts under documentation are byte-for-byte identical between the blocked run and the built run (SHA-256 verified in the builder's own envelope) — the W4 block was closed by scoping the rule at the skill, never by editing the entitlement process or milestone type files — so this documentation pass rests on one stable set of artefacts rather than two versions to reconcile.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "envelopes/M4-S02/2026-09-12T07-20-25Z.md section 3 vs envelopes/M4-S02/2026-09-12T07-45-00Z.md section 3 (SHA-256 table)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "step-tester independently re-verified the coordinator's claim about commit a18f9164d by reading the checker's emission site itself (Finding(\"INFO\", \"W4\", ...)) rather than accepting the builder's account, and re-ran the declared command verbatim from the build directory before recording exit 0 — two independent confirmations of the same closure, not one agent's say-so.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "envelopes/M4-S02/2026-09-12T07-52-40Z.md section 3 (verification of the coordinator's claims)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "deploy-order.md is undeclared in M4-S02's outputs[], extending the same undeclared-artefact pattern (decisions.md O-M3S02-03) to a fifth consecutive step across M3 and M4.",
+      "evidence": {
+        "source": "input",
+        "query": "plan.json steps[M4-S02].outputs[]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Standard's minutesToComplete (720) is carried through this documentation pass as an UNCONFIRMED placeholder with no test of any kind (machine or manual) that asserts it is the correct minute count for \"1 business day\" — the manual test's own wording pins only Premier's 240.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "artefacts/M4-S02/deploy-order.md section 3; plan.json steps[M4-S02].acceptance_tests[3].description"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "An EMEA-region case's first-response milestone counts on US Support hours while its escalation timer counts on EMEA Support hours (Q51 half-honoured) — recorded as O-M4S02-02, not resolvable inside this step or this documentation pass.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "artefacts/M4-S02/deploy-order.md section 4.4"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "settings/Entitlement.settings-meta.xml (enableEntitlements) is owned by no step anywhere in this plan, so every file this step deploys is inert metadata until some step or a manual Setup action turns the feature on.",
+      "evidence": {
+        "source": "input",
+        "query": "artefacts/M4-S02/deploy-order.md section 5; plan.json steps[].outputs[] (searched, no match)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "milestone-verifier should run once every M4 step is documented, because the checker-policy history, the derived 720, the unowned Entitlement settings, and the Q51 divergence are all M4-gate items rather than something one step's own tests settle.",
+      "evidence": {
+        "source": "input",
+        "query": "decisions.md D-M4S02-01, D-M4S02-02, O-M4S02-01, O-M4S02-02"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because the block history, the derived value, the unowned settings gap, and the calendar divergence are all M4-gate items rather than settled by this step alone."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "entitlement-and-milestone-designer is the cross-step design authority for the one-calendar-per-process tension against Q51, once M4-S04's escalation rule is also documented and both SLA clocks on an EMEA case can be compared end to end.",
+      "evidence": {
+        "source": "input",
+        "query": "artefacts/M4-S02/deploy-order.md section 4.4"
+      },
+      "suggested_followup_agent": "entitlement-and-milestone-designer",
+      "followup_reason": "because it owns the design decision this build's builder agent was forbidden to make and the plan does not bind."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation, including the file-scope prohibition"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, confidence rubric"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum (not triggered this run)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (rendered-view/plan-state rules), section 4 (step-type to workbook-section map — sla maps to Section 6), section 6 (this agent's per-step job), section 8 (skill-gap-to-decisions.md rule, the closure this run documents)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "fields read from and left alone in plan.json"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "ten canonical sections and row schema for the 6 new workbook rows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "canonical column set, REQ-id convention, one-manifest-member-per-row minting shape, and the check_rtm.py checker run"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "decision-entry shape (date, alternative rejected, source grounded in) for the 4 new decisions.md entries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how the step's one manual test is recorded as acceptance evidence in the traceability rows rather than a plain pass/fail"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "mandatory read for a per-step pass; no UAT case pack compiled this run (that is M5-S04's compile-run job)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "mandatory read for a per-step pass; no criteria document compiled this run (M5-S04's job)"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": [
+      "CWB-AUT-015",
+      "CWB-AUT-016",
+      "CWB-AUT-017",
+      "CWB-AUT-018",
+      "CWB-OTHER-027",
+      "CWB-OTHER-028"
+    ],
+    "traceability_rows": [
+      "REQ-040",
+      "REQ-041",
+      "REQ-042"
+    ],
+    "decisions_appended": [
+      "D-M4S02-01",
+      "D-M4S02-02",
+      "O-M4S02-01",
+      "O-M4S02-02"
+    ],
+    "rows_replaced": []
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T08-38-10Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-38-10Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-38-10Z.json",
+  "summary": "Rebuild run of step M4-S05 for F-37, owning agent apex-builder, run inline. The step was already `running` when this invocation started \u2014 the operator had reset it tested \u2192 failed \u2192 pending, amended outputs[] from six paths to eight, and re-claimed it \u2014 so no fresh claim was made and no gate was touched. All eight declared outputs now exist and check-outputs exited 0; the undeclared deploy-order.md was updated with the rebuild record. No relocation was needed. Terminal status: built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM row, same two clauses as the first build: an undeclared artefact is present (artefacts/M4-S05/deploy-order.md) and the owning agent's optional target_org_alias had no value, which caps its own Gate D confidence. Additionally the remedy for F-37 is confirmable only by the operator's next dry run, not by any check this agent can execute \u2014 stated rather than scored as clean. Everything else is HIGH-row: every required input resolved from plan.json, both envelopes validate, check-outputs exited 0 over all eight outputs, and nothing was written outside artefacts/M4-S05/.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M4-S05",
+    "reason": "F-37 \u2014 reports/MOCK-DEPLOY-M4.md run 2 (checkOnly, sfskills-dev, API 67.0): ApexClass CaseMilestoneServiceTest x5 'Variable does not exist: TestDataFactory'. Recorded on the plan by the operator, whose mock-deploy run entry carries the same text.",
+    "step_status_on_arrival": "running \u2014 the operator reset the step (tested \u2192 failed \u2192 pending), amended it, and re-claimed it. build_plan.py set-status running was therefore NOT re-run by this agent; running \u2192 running would have appended a second claim for one piece of work.",
+    "amendment_honoured": "steps[M4-S05].amendments[0] (2026-09-12T08:27:30Z, dry-run operator): outputs[] 6 \u2192 8, adding classes/TestDataFactory.cls and classes/TestDataFactory.cls-meta.xml. The amended plan is the contract this run built against.",
+    "redactions": "none \u2014 no value in inputs{}, in the amendment, or in the mock-deploy run entry matched a credential shape"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The operator used the documented writers rather than a hand edit \u2014 set-status for the reset and amend-step for the outputs \u2014 so the step carries an amendments[] entry naming who, when, why and the prior value.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].amendments[0]"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The loop caught a defect that no gate in it could have caught: four acceptance tests and check-outputs all passed on the first build, and a real org was what surfaced the missing class.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M4.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "A step can declare every output, pass every declared checker and still be undeployable, because no acceptance-test type in \u00a7 5 resolves a symbol across files \u2014 the manifest type is the closest and it checks members against files, not references against definitions.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md \u00a7 5"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "deploy-order.md is still undeclared on this step while carrying the rebuild record for F-37, so the file a reviewer needs most at this gate is the one check-outputs does not confirm.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The completion-signal question is unchanged by this rebuild and still open: D10 settled the mechanism, Q50's answer named the first outbound EmailMessage, and the service completes when a Case leaves Status New.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json clarifications[Q50], decisions[D10]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's templates[] still names templates/apex/TriggerHandler.cls, which no step deploys; the same reasoning that made shipping TestDataFactory necessary would apply to it if the handler shape were ever adopted.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "plan.json steps[].outputs[] search for TriggerControl / Trigger_Setting__mdt",
+        "count": 0
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step's four acceptance tests must run again over a tree that now holds a fourth Apex file and eight declared outputs.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Its results.json from run 2026-09-12T08-24-48Z was written against the six-output tree and is stale."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "F-37, the rebuild, and the shared Apex-foundations recommendation for planner v6 are not yet in decisions.md.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M4.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "It is the agent that folds a finding, its remedy and the resulting plan recommendation into decisions.md once the step is tested."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 amend-step as the only writer of a pending step's outputs[] and the no-hand-edit rule, \u00a7 4 the failed \u2192 pending reset and the running \u2192 running re-claim, \u00a7 5 acceptance-test types, \u00a7 8 the CLI as the only writer of plan state"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES",
+      "path": "AGENT_RULES.md",
+      "used_for": "The run-time rules this invocation is bound by \u2014 no org write, no deploy, no mutation outside the supplied paths"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The 8-section shape, Process Observations, and \u00a7 Apex security idiom by API version \u2014 67.0 on the new meta file as on the other three"
+    },
+    {
+      "type": "standard",
+      "id": "DELIVERABLE_CONTRACT",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence, the atomic-write rule, and redaction of echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "REFUSAL_CODES",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The canonical enum \u2014 no refusal was raised on this rebuild"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The amendments[] and runs[] shapes read to confirm what the operator changed and what this agent may write"
+    },
+    {
+      "type": "standard",
+      "id": "templates-readme",
+      "path": "templates/README.md",
+      "used_for": "The rule behind F-37 \u2014 a template is copied into the consuming project, so a repo-relative citation is not a shipped dependency"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Confirming the added class belongs in classes/ beside the others, each .cls paired with its own -meta.xml"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "ApexClass is a Metadata API type, so the two amended outputs are deployable metadata; and the one-request resolution that makes the deploy order in \u00a7 1 advisory rather than mandatory"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The row schema behind the step's inputs{}, unchanged by the amendment"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The F-/Q-/D- id conventions echoed here so the doc keeper can join F-37 to this step and its rebuild run"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "The credential shapes checked for before echoing the amendment and the org error into a build-directory envelope \u2014 none matched; the org alias sfskills-dev is an alias, not a credential"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Its earlier results.json was written against the six-output tree and is stale now that the step declares eight."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "F-37, the rebuild record and the planner-v6 shared Apex-foundations recommendation are not yet in decisions.md."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S05",
+    "owning_agent": "apex-builder",
+    "owning_agent_build_aware": false,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/apex-builder/AGENT.md \u2192 0. Run inline; the build-path clause was stated as a request and honoured, so no Step 7 relocation was needed on this run either.",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T08-32-00Z.json",
+    "owning_envelope_validation": "OK \u2014 python3 scripts/validate_envelope.py exited 0",
+    "rebuild_of": "2026-09-12T08-12-19Z",
+    "rebuild_reason": "F-37 (HIGH) \u2014 reports/MOCK-DEPLOY-M4.md run 2: 'Variable does not exist: TestDataFactory' x5 on ApexClass CaseMilestoneServiceTest",
+    "claim": "NOT re-issued. The step was already `running` when this invocation began, claimed by the operator's own run entry (agent apex-builder, started 2026-09-12T08:32:00Z). A second set-status running would have appended a duplicate claim for one piece of work.",
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M4-S05/classes/TestDataFactory.cls",
+        "declared": true,
+        "changed": true
+      },
+      {
+        "path": "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml",
+        "declared": true,
+        "changed": true
+      },
+      {
+        "path": "artefacts/M4-S05/deploy-order.md",
+        "declared": false,
+        "changed": true,
+        "note": "Undeclared, updated not replaced. New \u00a7 0 carries the F-37 rebuild record: the org error verbatim, why no local check could catch it, the two files added, the Origin/Priority overrides the test already passes to satisfy M3-S01's rules, and the planner-v6 shared Apex-foundations recommendation. \u00a7\u00a7 1, 6, 7 and Sources updated for the fourth class."
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "checker_run": {
+      "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05",
+      "cwd": "the build directory",
+      "exit": 0,
+      "stdout": "scanned 4 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN",
+      "strict_exit": 0,
+      "note": "Run by the owning agent as its own Gate C evidence. It is NOT the acceptance-test run \u2014 that is step-tester's, and tests/M4-S05/results.json was not written or updated by this agent."
+    },
+    "template_integrity": "diff templates/apex/tests/TestDataFactory.cls artefacts/M4-S05/classes/TestDataFactory.cls \u2014 no output. git status --porcelain templates/ \u2014 no output. No skill, agent, standard, script or template file was edited.",
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S05 built --run-agent apex-builder --envelope envelopes/M4-S05/2026-09-12T08-32-00Z.json --result \"<one-line outcome>\" --started 2026-09-12T08:32:00Z",
+    "acceptance_evidence_still_open": "F-37's remedy is confirmed by the operator's dry run 3, which this agent does not run and must not: no sf command, no mock_deploy.py.",
+    "concurrency": "M4-S03 is being rebuilt concurrently for F-38. Nothing under artefacts/M4-S03/, tests/M4-S03/ or envelopes/M4-S03/ was read for content, written or touched; plan.json was changed only through build_plan.py set-status on M4-S05.",
+    "org_contact": "none \u2014 no sf command, no mock_deploy.py, no test execution, no gate approved"
+  }
+}

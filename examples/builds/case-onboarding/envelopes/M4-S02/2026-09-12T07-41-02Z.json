@@ -1,0 +1,280 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T07-41-02Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-41-02Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-41-02Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S02",
+    "reason": null,
+    "step_status_on_entry": "pending",
+    "build_mode": "design-only",
+    "credentials_present": false
+  },
+  "summary": "Ran M4-S02 (sla, owner metadata-builder) end to end. The step was in build_plan.py next --milestone M4, was claimed running, and the owning agent was executed inline per AGENT.md Step 6 (this host runs the builder inline, as every step of this build has). All five declared outputs were written under artefacts/M4-S02/ plus an undeclared deploy-order.md; check-outputs returned ok:true and 4/4 XML files parse. The owning agent returned an ambiguity it could not resolve without inventing metadata, so the step was set blocked with --blocked-reason ambiguity rather than built: the step's declared acceptance-test checker exits 1 under --strict on two W4 findings that cannot be cleared because no step in the plan builds a Workflow file and no clarification names a milestone notification. Nothing was deployed, no gate was approved, and no file was written outside the build directory.",
+  "confidence": "LOW",
+  "confidence_rationale": "build-step-runner Step 9: LOW because the step was set blocked. Every other HIGH condition held - the step was in next, all required inputs resolved from plan.json, check-outputs exited 0, both envelopes validate, and nothing landed outside artefacts/M4-S02/.",
+  "outcome": "partial",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "Every required input of the owning agent resolved from plan.json alone - no value was taken from the invocation brief, and the one place the brief and the plan could have diverged (the 67.0 package.xml version) was cross-checked against the build's own artefacts rather than accepted on the brief's word.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M4-S02].inputs"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "The blocked exit was reached with all five declared outputs on disk and check-outputs ok:true, so the human sees exactly what would ship rather than an empty directory - the same shape M4-S01's blocked run left behind.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02",
+        "count": 6
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "planning",
+      "observation": "The step's acceptance test adds --strict to promote W3 into an assertion and thereby also promotes W4, which no artefact this plan scopes can satisfy - a planning defect that only surfaces at build time, because the planner's fixture was built from the skill's own examples and those carry workflow actions.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M4-S02].acceptance_tests[0]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "orchestration",
+      "observation": "check-outputs returned ok:true on a step that cannot pass its own declared checker, so a green check-outputs is not evidence a step is buildable - it adjudicates presence and parseability of declared paths only.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "build_plan.py check-outputs M4-S02"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "deploy-order.md is written on every metadata-builder run by contract but is declared in no step's outputs[] anywhere in this build, so it is reported as an undeclared artefact on every single step - the fifth consecutive time, after M3-S01 through M3-S04 and M4-S01.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "query": "O-M3S02-03"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "orchestration",
+      "observation": "M4-S03 and M4-S04 both remain runnable and neither depends on M4-S02, so M4 can continue while this block is adjudicated - but the milestone gate cannot close until it is.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "build_plan.py next --milestone M4"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "Once a human picks one of the three ways forward, the step returns to pending and is re-run rather than tested.",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because it owns the declared acceptance tests and is the next stage the moment this step reaches built - but not before, since a blocked step has nothing to test.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M4-S02].acceptance_tests"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 build_mode and the no-hand-edit rule, section 3 the step gate, section 4 the status machine, section 5 test ownership, section 8 the plan CLI as sole writer"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, the atomic-write rule and redaction of echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical enum considered before deciding this was a blocked outcome rather than a refusal"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the repo-wide run-time rules, including the ban on org writes and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the steps[] / inputs{} / outputs[] / depends_on[] / runs[] fields this agent reads and writes"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape that puts every build-specific key under extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "judging that entitlementProcesses/ and milestoneTypes/ are the source-format directories these types take"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming EntitlementProcess and MilestoneType are Metadata API component types before the owning agent spent a run on them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "mapping the step's workbook-derived cells onto the owning agent's Inputs rather than paraphrasing the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "echoing the step's requirement linkage so build-doc-keeper can join step to requirement without re-deriving it"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "scanning the resolved input map for credential shapes before echoing it into a git-tracked build directory - none present"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/metadata-examples.md",
+      "used_for": "carried through from the owning agent's envelope - the element sets and the checker semantics behind the block"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/gotchas.md",
+      "used_for": "carried through from the owning agent's envelope - gotcha 5, why Q51 cannot be honoured literally"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "build_awareness_probe": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md -> 39 (non-zero: the owner declares outputs under artefacts/<step-id>/ and takes a build_dir, so no Step 7 relocation was needed)",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-20-25Z.json",
+    "terminal_status": "blocked",
+    "blocked_reason": "ambiguity",
+    "runnability": "M4-S02 appeared in `build_plan.py next .sfskills/builds/case-onboarding/plan.json --milestone M4` (exit 0) alongside M4-S04; no Step 2 carve-out was needed and human_gate is false.",
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S02/milestoneTypes/First Response.milestoneType-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S02/milestone-completion-decision.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S02/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M4-S02/deploy-order.md",
+        "declared": false
+      }
+    ],
+    "missing_outputs": [],
+    "undeclared_artefacts": [
+      "artefacts/M4-S02/deploy-order.md"
+    ],
+    "files_outside_step_dir": [],
+    "relocations": [],
+    "input_map": {
+      "build_dir": ".sfskills/builds/case-onboarding/",
+      "step_id": "M4-S02",
+      "api_version": "absent from plan.json; owner defaulted to 67.0 (the build's prevailing convention - M3-S03, M3-S04, M4-S01)",
+      "skills": [
+        "admin/entitlements-and-milestones",
+        "admin/business-hours-and-holidays"
+      ],
+      "templates": [],
+      "decision_trees": [],
+      "acceptance_tests_passed_as_context": 4,
+      "upstream_outputs_passed_as_paths": [
+        "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+        "artefacts/M4-S01/package.xml",
+        "artefacts/M4-S01/holiday-maintenance-runbook.md",
+        "artefacts/M1-S01/* (Case object, Account.Support_Tier__c)"
+      ],
+      "optional_inputs_absent": [
+        "api_version",
+        "reason"
+      ],
+      "redactions": 0
+    },
+    "invocation_note": "The owning agent was executed inline per build-step-runner AGENT.md Step 6 ('In any other host: read agents/<that-agent>/AGENT.md end to end ... and execute its Plan inline'), which is how every step of this build has run it. The three clauses were honoured: everything written under artefacts/M4-S02/, an envelope returned against the envelope schema, and no deploy, no sf command and no second agent invoked.",
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "declared_acceptance_test_status": {
+      "note": "Run informationally by the owning agent during its own Step 8 repair loop; step-tester owns these tests and this agent did not run them as tests.",
+      "command": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+      "exit_code": 1,
+      "stdout_tail": "0 error(s), 2 warning(s), 0 info note(s).\n--strict: failing on 2 warning(s)."
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S02 running --started 2026-09-12T07:20:25Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S02 blocked --blocked-reason \"ambiguity\" --run-agent metadata-builder --envelope envelopes/M4-S02/2026-09-12T07-20-25Z.json --result \"<the owning agent's own message>\" --started 2026-09-12T07:20:25Z"
+    ],
+    "next_command_for_the_human": "python3 scripts/build_plan.py amend-step .sfskills/builds/case-onboarding/plan.json M4-S02 ...   (route 1: drop --strict from acceptance_tests[0]), then set-status M4-S02 pending and re-run this step"
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns the declared acceptance tests and is the next stage once this step reaches built - not before, since a blocked step has nothing to test."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "The block, its two rejected repairs and the derived 720 are decisions.md material in the D-M4S01-01 shape, and only the doc keeper writes decisions.md."
+    }
+  ]
+}

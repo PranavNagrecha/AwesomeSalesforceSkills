@@ -1,0 +1,389 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T07-45-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-45-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-45-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S02",
+    "step_type": "sla",
+    "api_version": "67.0 (defaulted - plan.json carries no api_version key)",
+    "build_mode": "design-only",
+    "org": null,
+    "answers_bound": [
+      "Q38",
+      "Q50",
+      "Q51",
+      "Q53"
+    ],
+    "answers_deferred": [
+      "Q49",
+      "Q52",
+      "Q92"
+    ],
+    "assumptions": [
+      "A9",
+      "A10",
+      "A24",
+      "A27"
+    ],
+    "decisions": [
+      "D10"
+    ],
+    "upstream_artefacts_read": [
+      "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+      "artefacts/M4-S01/deploy-order.md"
+    ],
+    "credentials_present": false,
+    "re_run_reason": "The ambiguity block recorded at run 2026-09-12T07-20-25Z was closed at the skill by commit a18f9164d. No artefact input changed."
+  },
+  "summary": "Second run of M4-S02, after the ambiguity block was closed at the source. Commit a18f9164d (admin/entitlements-and-milestones v1.1.2) moves the 'neither timeTriggers nor successActions' finding from WARN to INFO - so --strict never promotes it - on the ground that api_meta.txt:59162-59169 lists both elements with no 'Required.' qualifier, making an action-less milestone a documented-legal shape. The same commit splits the stale-timeLength case out as its own code W7, still a strict-promoted WARN, so no real check was weakened. No artefact in this step changed: the four XML files are byte-identical to the blocked run (SHA-256 verified) and the declared acceptance test now exits 0 with 0 errors, 0 warnings and 2 INFO notes. Only deploy-order.md section 0 was rewritten, to record the closure and keep the rejected-repair record. Every UNVERIFIED and derived item is unchanged and still carried to the M4 gate.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "metadata-builder Step 10: MEDIUM, not HIGH. check-outputs is ok, every cited checker exits 0 with no repair pass spent, every declared output was written and nothing else - but two Questions-to-Ask rows were answered by a documented skill default rather than from the plan (recurrenceType none, entryStartDateField SlaStartDate), and Standard's minutesToComplete 720 is derived from an upstream artefact rather than answered anywhere.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The block was closed without touching the artefact: all four XML files are SHA-256 byte-identical to the blocked run, so the file that was rejected is the file that now passes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "tooling",
+      "observation": "The skill fix split a conflated code rather than relaxing a check - the stale-timeLength case that used to share W4 is now W7, still a strict-promoted WARN - so nothing that was a real failure stopped being one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py",
+        "query": "grep -n 'W7'"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The calendar cross-reference --strict exists for is green: at build scope all four step-scope W6 findings clear and no W3 replaces them, and the whole documented ERROR set E1-E4 is clean.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S01/settings/BusinessHours.settings-meta.xml",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "sla",
+      "observation": "The surviving INFO W4 asks the author to confirm the action-less design is intended; milestone-completion-decision.md already answers it, because D10 puts the CompletionDate writer in M4-S05's Apex and no clarification asks for a milestone notification.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/milestone-completion-decision.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "sla",
+      "observation": "Unchanged from the first run and not addressed by the skill fix: an EMEA-region case counts its first-response milestone on US Support hours while its escalation timer counts on EMEA Support hours via businessHoursSource=Case, so the two SLA clocks on one case pause on different holidays.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/business-hours-and-holidays/references/gotchas.md",
+        "query": "gotcha 5"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "No step in this plan owns settings/Entitlement.settings-meta.xml, so enableEntitlements - without which every file in this step is inert - and enableMilestoneStoppedTime remain unscoped.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[].outputs[] grep Entitlement.settings -> 0 hits",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "These processes are now built and will deploy active, but M4-S03 (the EntitlementId stamp) and M4-S05 (the CompletionDate writer) are both still pending, so until they land no case enters a process and any that did would never close its milestone.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M4-S03].status, steps[M4-S05].status"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "The build's manifests remain split across two API versions - nine at 62.0 and four including this one at 67.0 - with no api_version key in plan.json to settle it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts",
+        "count": 13
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "domain": "sla",
+      "observation": "Standard's minutesToComplete 720 is still DERIVED and not answered: nothing in this build converts '1 business day' into minutes, and 480 or a next-business-day promise are both defensible readings.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "clarifications[Q38].answer"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "metadata",
+      "observation": "The declared mixed-case process file names still cannot be what a retrieve returns, because the guide derives the name as the lowercase NameNorm of <name>.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/entitlements-and-milestones/references/gotchas.md",
+        "query": "gotcha 12"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "sla",
+      "observation": "The one-calendar-per-process tension against Q51's Case-calendar authority is untouched by the skill fix and still needs adjudicating.",
+      "suggested_followup_agent": "entitlement-and-milestone-designer",
+      "followup_reason": "Because choosing between accepting the EMEA divergence, splitting each tier per region, and re-pointing M4-S04 is an SLA design decision a builder is forbidden to make.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/deploy-order.md",
+        "query": "section 4.4"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/SKILL.md",
+      "used_for": "the SLA Questions-to-Ask rows and the skill's own checker"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/metadata-examples.md",
+      "used_for": "sections 1, 2, 6, 7 - element sets, the recurrenceType and entryStartDateField enums, manifest member forms, the NameNorm file-naming rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/gotchas.md",
+      "used_for": "gotcha 8 (nothing completes a milestone), 9 (exit criteria and reopens), 12 (versioning fields inert, derived file name)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py",
+      "used_for": "v1.1.2 - re-read after commit a18f9164d to verify W4 is now INFO and that W7 carries the stale-timeLength case as a strict-promoted WARN"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/references/gotchas.md",
+      "used_for": "gotcha 5 - milestones read the process calendar, not Case.BusinessHoursId"
+    },
+    {
+      "type": "skill",
+      "id": "admin/business-hours-and-holidays",
+      "path": "skills/admin/business-hours-and-holidays/SKILL.md",
+      "used_for": "the SLA-promise question behind Q38 and the calendar-consumer map"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the directory-per-type source-format layout"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the deploy-order note's component ordering and the validate-only command shape"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table, section 5 test ownership, section 8 the deepen-a-skill rule this closure is an instance of"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the steps[] fields read and the ones left alone"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "step_type": "sla",
+    "terminal_outcome": "built",
+    "blocked_reason": null,
+    "status_set_by": "build-step-runner (invoked under the runner, so this agent ran no set-status itself)",
+    "supersedes_run": "2026-09-12T07-20-25Z (blocked, ambiguity)",
+    "block_closure": {
+      "closed_at": "the skill, not the artefact",
+      "commit": "a18f9164d",
+      "skill_version": "admin/entitlements-and-milestones v1.1.2",
+      "what_changed": "W4 ('neither timeTriggers nor successActions') moved WARN -> INFO, so --strict never promotes it; the stale-timeLength case split out as its own code W7, still a strict-promoted WARN",
+      "grounding": "api_meta.txt:59162-59169 lists successActions and timeTriggers with no 'Required.' qualifier, unlike apiVersion at api_meta.txt:5481 - so an action-less milestone is a documented-legal shape",
+      "artefact_changed": false,
+      "artefact_evidence": "SHA-256 of all four XML files identical to the blocked run: Premier 7c8de000ce4a2d3cb51b82adc3c9959e04169bc826e9e4ddf33b885d12fcc823; Standard 87dd6bcfb67d0afab1bd031af8a869e3570d5d23bb98db88b4f61ea57907c7b6; MilestoneType 1d31e3cd18dc019b41aa26bdaec7b379a32830b3235cb8a43ce34703b650aca9; package.xml ce8b1bc69eaf4d3349beb06988b68975f62615568119e144e6b083f89e3f79b9",
+      "only_edit_this_run": "artefacts/M4-S02/deploy-order.md section 0, rewritten to record the closure and keep the rejected-repair record; sections 1-7 untouched",
+      "vindicates_the_block": "The two repairs rejected at the blocked run are still the wrong answers. The right answer was that neither was needed - a fact about the skill, not about the XML. Same shape as decisions.md D-M4S01-01."
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml",
+        "type": "EntitlementProcess",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml",
+        "type": "EntitlementProcess",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/milestoneTypes/First Response.milestoneType-meta.xml",
+        "type": "MilestoneType",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/milestone-completion-decision.md",
+        "type": "markdown",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/package.xml",
+        "type": "Package",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/deploy-order.md",
+        "type": "markdown",
+        "declared": false,
+        "changed_this_run": true
+      }
+    ],
+    "decision_record": [
+      {
+        "question": "Which SLA promise, and to whom? (Q38)",
+        "answer": "Premier 4 business hours; Standard 1 business day",
+        "source": "clarification answer",
+        "element": "minutesToComplete 240 (Premier); 720 (Standard) - the 720 DERIVED, still open"
+      },
+      {
+        "question": "Do the same milestones serve more than one tier? (Q53)",
+        "answer": "One shared First Response type; timing lives per process",
+        "source": "step inputs (A27)",
+        "element": "1 milestoneTypes file, 2 entitlementProcesses files"
+      },
+      {
+        "question": "Which calendar wins? (Q51)",
+        "answer": "The Case's calendar is the authority; set process and milestone calendars explicitly",
+        "source": "clarification answer",
+        "element": "<businessHours>US Support</businessHours> on each process AND each milestone override - the 'explicitly' half honoured, the 'Case's calendar' half not expressible (deploy-order 4.4)"
+      },
+      {
+        "question": "Who marks the milestone complete? (Q50)",
+        "answer": "D10 - after-update Apex trigger, built by M4-S05",
+        "source": "step inputs",
+        "element": "none written here; recorded in milestone-completion-decision.md. This is also the answer to the surviving INFO W4's 'confirm that is the design.'"
+      },
+      {
+        "question": "What ends the commitment? (Q49, deferred)",
+        "answer": "A9 - the process ends when the case is closed",
+        "source": "assumption",
+        "element": "exitCriteriaFilterItems Case.Status equals Closed"
+      },
+      {
+        "question": "Is the clock ever stopped? (Q52, deferred)",
+        "answer": "A10 - never in this phase",
+        "source": "assumption",
+        "element": "nothing written; enableMilestoneStoppedTime unowned"
+      },
+      {
+        "question": "Is versioning on? (Q92, deferred)",
+        "answer": "A24 - off",
+        "source": "assumption",
+        "element": "versionMaster/versionNumber/isVersionDefault/versionNotes OMITTED per gotcha 12"
+      },
+      {
+        "question": "Which recurrence? (unasked)",
+        "answer": "none",
+        "source": "skill default (metadata-examples section 1)",
+        "element": "<recurrenceType>none</recurrenceType>"
+      },
+      {
+        "question": "When does the process clock start? (unasked)",
+        "answer": "SlaStartDate",
+        "source": "skill default (metadata-examples section 2)",
+        "element": "<entryStartDateField>SlaStartDate</entryStartDateField> - Q42's CaseCreation is scoped to M4-S04"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+        "exit_code": 0,
+        "findings": "0 error(s), 0 warning(s), 2 info note(s) - both INFO W4. All four W6 cleared, no W3 replaced them.",
+        "repair_passes": 0,
+        "note": "THE DECLARED ACCEPTANCE TEST, re-run verbatim from the build directory"
+      },
+      {
+        "command": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts/M4-S02",
+        "exit_code": 0,
+        "findings": "0 error(s), 4 warning(s) (all W6, settings file out of step scope), 2 info note(s)",
+        "repair_passes": 0,
+        "note": "informational - the declared test runs at build scope"
+      }
+    ],
+    "unverified_items": [
+      "minutesToComplete 720 for Standard - DERIVED from the US Support calendar span, not answered anywhere (deploy-order section 3)",
+      "EntitlementProcess file names are mixed case; the guide derives them as lowercase NameNorm (deploy-order section 4.1)",
+      "package.xml EntitlementProcess member form with versioning off is undocumented (deploy-order section 4.2)",
+      "Q51 half-honoured: a process takes one <businessHours> name and has no businessHoursSource, so an EMEA case's milestone counts on US hours (deploy-order section 4.4)",
+      "settings/Entitlement.settings-meta.xml, carrying enableEntitlements, is owned by no step in this plan (deploy-order section 5)"
+    ],
+    "resolved_since_the_blocked_run": [
+      "whether <actions> is a required child of <timeTriggers> - settled by commit a18f9164d from api_meta.txt:59162-59169: it is not"
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "xml_parse": "4/4 files parsed with xml.etree.ElementTree"
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns the four declared acceptance tests and this step is now built, which is the stage at which they run."
+    },
+    {
+      "agent": "entitlement-and-milestone-designer",
+      "because": "The one-calendar-per-process tension against Q51 survives the skill fix and is a design decision a builder is forbidden to make."
+    }
+  ]
+}

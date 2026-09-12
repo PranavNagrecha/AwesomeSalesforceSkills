@@ -1,0 +1,296 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T07-52-40Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-52-40Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-52-40Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M4-S02",
+    "reason": "Ambiguity block closed at the skill by commit a18f9164d; step re-claimed running by the operator at 2026-09-12T07:45:00Z",
+    "step_status_on_entry": "running (re-claimed by the operator, not by this agent)",
+    "build_mode": "design-only",
+    "credentials_present": false
+  },
+  "summary": "Finished M4-S02 after its ambiguity block was closed at the source. The step was already at running - the operator re-claimed it - so this agent did not re-claim it and did not re-run build_plan.py next. Both coordinator claims were verified independently rather than taken on word: commit a18f9164d was read in the checker source (W4 is now emitted at INFO; the stale-timeLength case is split out as W7 and is still a strict-promoted WARN), and the declared acceptance test was re-run verbatim from the build directory, giving 0 error(s), 0 warning(s), 2 info note(s), exit 0. The artefacts are unchanged, SHA-256 verified against the blocked run; only deploy-order.md section 0 was rewritten. check-outputs ok:true, and the step was set built through the CLI. Nothing was deployed, no gate was approved, no skill or agent file was edited.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "build-step-runner Step 9: the HIGH row needs 'the step was in next (or was a Step 2 carve-out)'. It was neither - it arrived already at running, claimed by the operator - so gates and dependencies were not re-checked by this agent on this run, and MEDIUM is the honest score. Everything else is HIGH-grade: all required inputs resolved from plan.json, both envelopes validate, check-outputs exited 0, the declared checker exits 0, and nothing was written outside artefacts/M4-S02/.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "Both coordinator claims were verified from the repo before being relied on - the checker source was re-read to confirm W4 is emitted at INFO and W7 exists as a strict-promoted WARN, and the declared test was re-run locally rather than quoting the coordinator's result.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py",
+        "query": "grep -n 'W4|W7'"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "The loop closed a block without touching the artefact: the four XML files are SHA-256 identical across the blocked and built runs, so the fix is auditable as a skill change rather than a quiet repair.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "tooling",
+      "observation": "The skill fix narrowed a finding rather than deleting one - W4's stale-timeLength half became W7 and stayed strict-promoted - which is the same discipline the M4-S01 closure used and the reason the gate did not lose coverage.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py",
+        "query": "W7 emission site"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "orchestration",
+      "observation": "The step arrived at running rather than pending, so this agent's Step 2 runnability check - which is what re-verifies depends_on and the milestone gate - was skipped on the run that set the terminal status.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M4-S02].runs[2]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "orchestration",
+      "observation": "plan.json steps[M4-S02].runs[] now holds five entries, two of them placeholder 'running' records pointing at envelopes/M4-S02/running.json, a path that does not exist - the CLI's default envelope value for a status-only transition.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M4-S02].runs[].envelope_path",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "deploy-order.md remains undeclared in outputs[] for the fifth consecutive step, so the one file carrying every UNVERIFIED item on this step is the one file check-outputs does not adjudicate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "query": "O-M3S02-03"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "The step is built with five items still open at the M4 gate, the load-bearing one being that Standard's 720-minute target is derived rather than answered - built is not the same as settled here.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/deploy-order.md",
+        "query": "sections 3, 4.1, 4.2, 4.4, 5"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "The step is built, which is the stage at which its four declared acceptance tests run.",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because it owns the declared acceptance tests, including the two manual assertions this agent deliberately did not tick.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M4-S02].acceptance_tests"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 the status machine and the running -> built transition, section 5 the check-outputs precondition on built and who owns tests, section 8 the plan CLI as sole writer and the deepen-a-skill rule this closure is an instance of"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement and the confidence rubric this agent overrides in Step 9"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, the atomic-write rule and redaction of echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical enum - no refusal applies on this run"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules, including the ban on org writes and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the steps[] and runs[] fields this agent reads and writes"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape that puts every build-specific key under extensions"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py",
+      "used_for": "read at v1.1.2 to verify the coordinator's account of a18f9164d rather than accept it - W4 emitted at INFO, W7 a strict-promoted WARN"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "judging entitlementProcesses/ and milestoneTypes/ as the source-format directories these types take"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming EntitlementProcess and MilestoneType are Metadata API component types"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "mapping the step's workbook-derived cells onto the owning agent's Inputs"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "echoing the requirement linkage so build-doc-keeper can join step to requirement"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "scanning the resolved input map for credential shapes - none present, 0 redactions"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S02/2026-09-12T07-45-00Z.json",
+    "terminal_status": "built",
+    "blocked_reason": null,
+    "supersedes_run": "2026-09-12T07-41-02Z (runner run that set blocked)",
+    "runnability": "NOT re-derived on this run. The step was already at running, re-claimed by the operator at 2026-09-12T07:45:00Z, so build_plan.py next was not re-run and this agent did not re-claim the step. Recorded because it is the one Step 9 HIGH condition that did not hold.",
+    "coordinator_claims_verified": [
+      {
+        "claim": "commit a18f9164d makes the W4 finding INFO, never promoted by --strict",
+        "verified": true,
+        "how": "read the emission site in skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py - Finding('INFO','W4',...) - and the docstring grounding at api_meta.txt:59162-59169"
+      },
+      {
+        "claim": "no real check was weakened",
+        "verified": true,
+        "how": "the stale-timeLength case that previously shared the W4 code is now Finding('WARN','W7',...), still strict-promoted"
+      },
+      {
+        "claim": "--manifest-dir artefacts --strict now exits 0",
+        "verified": true,
+        "how": "re-run verbatim from the build directory: 0 error(s), 0 warning(s), 2 info note(s), EXIT=0"
+      },
+      {
+        "claim": "artefacts unchanged",
+        "verified": true,
+        "how": "SHA-256 of all four XML files identical to the blocked run"
+      }
+    ],
+    "artefacts": [
+      {
+        "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/milestoneTypes/First Response.milestoneType-meta.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/milestone-completion-decision.md",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/package.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M4-S02/deploy-order.md",
+        "declared": false,
+        "changed_this_run": true,
+        "what_changed": "section 0 only - the block closure, the commit, and the kept record of the two rejected repairs. Sections 1-7 untouched, so every UNVERIFIED and derived item stands as first recorded."
+      }
+    ],
+    "missing_outputs": [],
+    "undeclared_artefacts": [
+      "artefacts/M4-S02/deploy-order.md"
+    ],
+    "files_outside_step_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "declared_acceptance_test_status": {
+      "note": "Re-run informationally to record the new exit code, as the coordinator asked. step-tester owns these tests; this agent did not run them as tests and ticked neither manual assertion.",
+      "command": "python3 skills/admin/entitlements-and-milestones/scripts/check_entitlements_and_milestones.py --manifest-dir artefacts --strict",
+      "exit_code": 0,
+      "exit_code_previous_run": 1,
+      "stdout_tail": "0 error(s), 0 warning(s), 2 info note(s).\nOK: no ERROR findings."
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M4-S02 built --run-agent metadata-builder --envelope envelopes/M4-S02/2026-09-12T07-45-00Z.json --result \"<one-line outcome>\" --started 2026-09-12T07:45:00Z   # -> M4-S02: running -> built",
+    "still_open_at_the_m4_gate": [
+      "minutesToComplete 720 for Standard is DERIVED, not answered (deploy-order section 3)",
+      "process file names are mixed case against the guide's lowercase NameNorm rule (section 4.1)",
+      "package.xml EntitlementProcess member form with versioning off is undocumented (section 4.2)",
+      "Q51 half-honoured: an EMEA case's milestone counts on US hours while its escalation timer counts on EMEA hours (section 4.4)",
+      "settings/Entitlement.settings-meta.xml, carrying enableEntitlements, is owned by no step (section 5)"
+    ],
+    "next_command_for_the_human": "python3 scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json --milestone M4    # then /test-build-step on M4-S02"
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns the four declared acceptance tests and this step is now built, which is the stage at which they run."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "The block, its closure at the skill, the two rejected repairs and the five still-open gate items are decisions.md material in the D-M4S01-01 shape, and only the doc keeper writes decisions.md."
+    }
+  ]
+}
