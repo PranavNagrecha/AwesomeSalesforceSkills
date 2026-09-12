@@ -278,3 +278,35 @@ string comparison on standard text fields is generally case-insensitive, so the 
 more likely wrong than right. Treat exact-casing discipline as good hygiene — it costs
 nothing — but do not build a diagnosis on the assumption that a casing mismatch is what
 broke the query. Check the name against Setup directly.
+
+---
+
+## Gotcha 12: A Test Class Ships Without the Template It Calls — `Variable does not exist: TestDataFactory`
+
+**What happens:** `CaseMilestoneServiceTest.cls` (or any class built from this skill's
+examples) deploys and fails to compile with `Variable does not exist: TestDataFactory`.
+The class calls `TestDataFactory.createAccounts(...)` and `TestDataFactory.createCases(...)`,
+but `references/code-examples.md` names `templates/apex/tests/TestDataFactory.cls` "by
+relative path" rather than shipping it as one of the bundle's own four files, and
+`templates/README.md` is explicit that templates are copied into the consuming project,
+not deployed straight out of the shared `templates/` tree. A build step, or a manual
+extraction, that ships the test class without also shipping a copy of `TestDataFactory.cls`
+produces exactly this compile error — and the same failure mode applies to any other
+canonical template class (`TriggerHandler`, `TriggerControl`, `ApplicationLogger`, …) a
+generated class references without shipping.
+
+**When it occurs:** Any time this bundle's `CaseMilestoneServiceTest.cls` is deployed
+without `TestDataFactory.cls` present in the same deployable set — most visibly when a
+multi-step build plan ships the Apex automation step's test class in one step and assumes
+a template dependency "already exists" without any step that actually shipped it (F-37,
+case-onboarding M4-S05, org dry run 2026-09-12).
+
+**How to avoid:** Copy `templates/apex/tests/TestDataFactory.cls` and its `-meta.xml`
+alongside `CaseMilestoneServiceTest.cls` in every deploy — see **Deploy prerequisites** and
+the **Deploy order** table in `references/code-examples.md`. Run this skill's checker
+(`EAH009`) against the full deployable tree before deploying; it WARNs when a shipped
+`.cls` references `TestDataFactory` or another canonical template class with no matching
+`.cls` under the same `--manifest-dir`. In a multi-step build plan, ship shared template
+classes from one dedicated foundations step ahead of every Apex step that needs them
+(`agents/build-planner/AGENT.md` Step 6) rather than assuming a later or earlier step
+covered it.

@@ -17,6 +17,10 @@ in `references/gotchas.md`:
   * A `CaseMilestone` query with no `CompletionDate = NULL` filter re-stamps
     already-completed milestones when the trigger fires a second time.
   * `WITH SECURITY_ENFORCED` does not compile at `apiVersion` 67.0+.
+  * A class calling `TestDataFactory` (or another `templates/apex/**` class) with no copy
+    of that class shipped in the same manifest fails deploy with
+    `Variable does not exist: <Name>` (rule EAH009, WARN — see references/code-examples.md
+    § Deploy prerequisites).
 
 stdlib only — no pip dependencies.
 
@@ -482,6 +486,70 @@ _RULES = (
 
 
 # --------------------------------------------------------------------------
+# Template-class provenance (rule EAH009)
+# --------------------------------------------------------------------------
+
+# The canonical cross-skill building blocks under templates/apex/ (see
+# templates/README.md). A class in this manifest that calls one of these by name, with no
+# .cls of that name anywhere under the same --manifest-dir, is a class that will fail
+# deploy with "Variable does not exist: <Name>" unless some other step ships the template
+# (F-37, case-onboarding M4-S05, org dry run 2026-09-12).
+_TEMPLATE_CLASS_NAMES = (
+    "TriggerHandler",
+    "TriggerControl",
+    "ApplicationLogger",
+    "SecurityUtils",
+    "HttpClient",
+    "BaseDomain",
+    "BaseService",
+    "BaseSelector",
+    "TestDataFactory",
+    "TestRecordBuilder",
+    "MockHttpResponseGenerator",
+    "TestUserFactory",
+    "BulkTestPattern",
+)
+_TEMPLATE_CLASS_PATTERNS = {
+    name: re.compile(r"\b" + re.escape(name) + r"\b") for name in _TEMPLATE_CLASS_NAMES
+}
+
+
+def rule_missing_template_class(
+    path: Path, source: str, stripped: str, class_stems: set[str]
+) -> list[Finding]:
+    """EAH009 — a referenced template class has no .cls of that name in this manifest.
+
+    WARN, not ERROR: this checker sees one manifest directory at a time, not the whole
+    build plan, so it cannot know a template class ships from an earlier step. `--strict`
+    promotes it to a failing exit code, which is the CI posture recommended in
+    references/code-examples.md § Verification.
+    """
+    findings: list[Finding] = []
+    own_stem = path.stem
+    for name, pattern in _TEMPLATE_CLASS_PATTERNS.items():
+        if name == own_stem or name in class_stems:
+            continue
+        match = pattern.search(stripped)
+        if match is None:
+            continue
+        findings.append(
+            Finding(
+                WARN,
+                path,
+                line_of(source, match.start()),
+                "EAH009",
+                f"References `{name}` but no `{name}.cls` exists under this "
+                f"--manifest-dir. {name} ships from templates/apex/ (see "
+                "templates/README.md) and must be copied into the deployable set by this "
+                "step or an earlier one — otherwise this fails deploy with "
+                f"`Variable does not exist: {name}`. "
+                f"Line: {line_text(source, match.start())}",
+            )
+        )
+    return findings
+
+
+# --------------------------------------------------------------------------
 # Driver
 # --------------------------------------------------------------------------
 
@@ -496,6 +564,7 @@ def scan(manifest_dir: Path) -> tuple[list[Finding], int]:
     """Return (findings, apex_file_count)."""
     findings: list[Finding] = []
     apex_files = find_apex_files(manifest_dir)
+    class_stems = {p.stem for p in apex_files if p.suffix.lower() == ".cls"}
     for path in apex_files:
         try:
             source = path.read_text(encoding="utf-8", errors="replace")
@@ -505,6 +574,8 @@ def scan(manifest_dir: Path) -> tuple[list[Finding], int]:
         stripped = strip_noise(source)
         for rule in _RULES:
             findings.extend(rule(path, source, stripped))
+        if path.suffix.lower() == ".cls":
+            findings.extend(rule_missing_template_class(path, source, stripped, class_stems))
     return findings, len(apex_files)
 
 

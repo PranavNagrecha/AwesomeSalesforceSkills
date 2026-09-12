@@ -264,6 +264,8 @@ For async kinds, the test wraps async invocation in `Test.startTest` / `Test.sto
 
 Output the class list with target paths under `force-app/main/default/classes/` and `force-app/main/default/triggers/`. Deliver as a patch (set of new files), not a modification to existing files. If existing files must change to integrate (e.g. adding a handler method in an existing TriggerHandler), do NOT modify — call out the integration point and recommend `apex-refactorer` for the follow-up.
 
+**Template-class provenance check.** Before finalizing the package, walk every emitted class and test for a reference to a canonical `templates/apex/**` class (`TriggerHandler`, `TriggerControl`, `ApplicationLogger`, `TestDataFactory`, `TestRecordBuilder`, `MockHttpResponseGenerator`, `SecurityUtils`, `TestUserFactory`, `BulkTestPattern`, `BaseDomain`, `BaseService`, `BaseSelector`, `HttpClient`). Each one referenced must either be in this step's own output set as a verbatim copy of the template plus its `-meta.xml`, or already declared by an earlier step of the plan this run is part of. If neither holds, refuse with `REFUSAL_INPUT_AMBIGUOUS`, naming the unshipped class — this agent never emits a class or test that references a template the build does not ship (F-37: a shipped `TestDataFactory`-calling test with no `TestDataFactory.cls` in the set fails deploy with `Variable does not exist: TestDataFactory`).
+
 ### Step 7 — Gate C: verify the emitted package before returning it
 
 This agent hands the user deployable `.cls` and `.trigger` files, so `AGENT_CONTRACT.md` rule 11 applies. Run the three checks in [`AGENT_CONTRACT.md` § Gate C](../_shared/AGENT_CONTRACT.md#gate-c--self-verification-for-code-emitting-agents) and report each outcome — a check that did not run is reported as not run, never as passed. Under the harness these are [`GATES.md` § Gate C](./GATES.md#gate-c--build-and-self-test), driven by `scripts/run_builder.py --stage build`; driven from this markdown alone — direct read or MCP `get_agent`, two of the three declared invocation modes — nothing runs them for you, so run them by hand.
@@ -279,7 +281,7 @@ Then the check this agent's own shape demands: **a scaffold is graded against th
 ## Output Contract
 
 1. **Summary** — kind, feature, class count, api_version, confidence.
-2. **Class inventory** — type, name, target path, role (trigger / handler / service / selector / domain / test / dto), template cited.
+2. **Class inventory** — type, name, target path, role (trigger / handler / service / selector / domain / test / dto), template cited. When a template class is itself shipped as one of the package's files, the copy is byte-identical to the canonical template (`diff` empty) and its provenance is recorded in `deploy-order.md`.
 3. **Class bodies** — fenced Apex per class with target path label.
 4. **Meta XML bodies** — fenced XML per class.
 5. **Integration notes** — any changes the user must make to existing files, with the exact lines to add and why. Never an inline patch to existing code.
@@ -287,7 +289,7 @@ Then the check this agent's own shape demands: **a scaffold is graded against th
 7. **Test plan summary** — list of covered paths, expected coverage percentage, any deliberately-uncovered defensive branches.
 8. **Process Observations**:
    - **What was healthy** — base-class templates being reused, existing selectors for the same SObject that could be extended instead of forked.
-   - **What was concerning** — the feature straddles a boundary (e.g. nominally sync but naturally async), existing triggers on the target SObject that should be consolidated, SOQL paths that suggest the selector should be pulled into a shared module.
+   - **What was concerning** — the feature straddles a boundary (e.g. nominally sync but naturally async), existing triggers on the target SObject that should be consolidated, SOQL paths that suggest the selector should be pulled into a shared module, a referenced template class not shipped in this run or an earlier plan step (Step 6's provenance check).
    - **What was ambiguous** — whether `WITHOUT SHARING` is justified (never emitted without explicit note), whether the test data factory already exists for this SObject.
    - **Suggested follow-up agents** — `apex-refactorer` (if existing classes need to adopt the new handler pattern), `trigger-consolidator` (if a second trigger appears on the SObject), `test-class-generator` (if additional coverage is required for existing classes), `soql-optimizer` (if the emitted selector is complex), `security-scanner` (post-assembly FLS/CRUD check).
 9. **Citations**.
@@ -319,7 +321,7 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 | Code | Trigger |
 |---|---|
 | `REFUSAL_MISSING_INPUT` | `kind`, `feature_summary`, or `primary_sobject` (when required by kind) is missing. |
-| `REFUSAL_INPUT_AMBIGUOUS` | `feature_summary` under 10 words; `kind` cannot be unambiguously matched to a class type; `async_hint` contradicts the declared volume. |
+| `REFUSAL_INPUT_AMBIGUOUS` | `feature_summary` under 10 words; `kind` cannot be unambiguously matched to a class type; `async_hint` contradicts the declared volume; an emitted class or test references a `templates/apex/**` class that is neither shipped in this step's outputs nor declared by an earlier plan step (Step 6). |
 | `REFUSAL_OUT_OF_SCOPE` | Request to modify existing classes in place; request for >1 feature in one invocation; request to deploy or run tests. Recommend `apex-refactorer` / `test-class-generator` / `score-deployment`. |
 | `REFUSAL_POLICY_MISMATCH` | Chosen `kind` would exceed governor limits for the declared scenario (e.g. `queueable` chain expected to exceed 100 depth, `batch` declared but volume <2k records). Cite the contradicting branch in `standards/decision-trees/async-selection.md`. |
 | `REFUSAL_SECURITY_GUARD` | (a) `WITHOUT SHARING` on an object containing PII without a `// reason:` justification (cite `apex-with-without-sharing-decision`); (b) `kind=rest` with `/custom/admin/*` path and no auth header handling specified; (c) hardcoded secret in `feature_summary` or sample payload (cite `apex-secrets-and-protected-cmdt`); (d) hardcoded Profile/RecordType/Group ID requested in feature_summary (cite `apex-hardcoded-id-elimination`). |

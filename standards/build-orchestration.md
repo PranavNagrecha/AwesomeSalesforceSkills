@@ -345,6 +345,8 @@ third column instead.
 | `docs` | `config-workbook-author`, `story-drafter` | `build-doc-keeper` (workbook, traceability, deploy order, UAT pack, acceptance criteria), `story-drafter` (the story backlog), `metadata-builder` (the build-level `package.xml`) | workbook, traceability matrix, story backlog, `uat-test-cases.yaml`, the compiled acceptance criteria, `package.xml`, the deploy-order note | workbook linter; `check_uat_case.py` over the compiled pack; manifest consistency against the milestone's artefacts |
 | `custom` | any roster agent | any roster agent with `requires_org: false` | declared in the step | declared in the step's `acceptance_tests` |
 
+**Apex row note.** Every `templates/apex/**` class an Apex step's classes or tests reference ships as a verbatim copy (with its meta XML) in that same step's outputs, or in a dedicated "Apex foundations" step the plan runs first when more than one Apex step shares the dependency — see `agents/build-planner/AGENT.md` Step 6 and `agents/apex-builder/AGENT.md`'s provenance check.
+
 **Agent eligibility.** A step's `agent` is legal only when all three hold:
 `class: runtime`; `status` is a valid non-deprecated value of the
 `agent-frontmatter` schema enum (`stable` or `beta`); and either `build_mode`

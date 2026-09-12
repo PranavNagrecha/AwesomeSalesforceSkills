@@ -35,7 +35,7 @@ outputs:
   - "Scheduled Apex class that queries and processes violated milestones"
   - "Test class covering IsCompleted read-only constraint and bulk DML patterns"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
 updated: 2026-09-12
 ---

@@ -32,6 +32,8 @@ Referenced by relative path, not copied into this bundle:
 | `templates/apex/ApplicationLogger.cls` | `CaseMilestoneService` writes partial-success failures here. Carries its own dependencies — `Application_Log__c` and `Logger_Setting__mdt`. See the [optional-dependency note](#if-you-do-not-want-the-applicationlogger-dependency). |
 | `templates/apex/tests/TestDataFactory.cls` | `CaseMilestoneServiceTest` builds its 200 cases with `TestDataFactory.createCases(...)` rather than a hand-rolled loop. |
 
+See **Deploy prerequisites** below for what happens if one of these does not ship alongside the class that calls it.
+
 ---
 
 ## `CaseMilestoneService.cls`
@@ -632,6 +634,33 @@ manifest rather than making a second deploy:
 
 ---
 
+## Deploy prerequisites
+
+Every file in this bundle compiles only if the canonical template classes it references
+(see **Bundle contents** above) are present in the same deployable set as verbatim copies
+of the files at these paths — each with its own `-meta.xml` — before or alongside the
+bundle:
+
+| Template class | Canonical path | Consumed by |
+|---|---|---|
+| `TriggerHandler` | `templates/apex/TriggerHandler.cls` | `CaseMilestoneTriggerHandler extends TriggerHandler` |
+| `TriggerControl` | `templates/apex/TriggerControl.cls` | `TriggerHandler.run()` calls `TriggerControl.isActive(...)` on its first line |
+| `ApplicationLogger` | `templates/apex/ApplicationLogger.cls` | `CaseMilestoneService`'s partial-success failure logging |
+| `TestDataFactory` | `templates/apex/tests/TestDataFactory.cls` | `CaseMilestoneServiceTest.createAccounts(...)` / `.createCases(...)` |
+
+These four are referenced by relative path in the class bodies above, not copied into this
+bundle's own four files. Shipping the bundle without also shipping these — for example, a
+build step that ships `CaseMilestoneServiceTest.cls` without a step that ever shipped
+`TestDataFactory.cls` — compiles the trigger and the service and then fails deploy with
+`Variable does not exist: TestDataFactory` (F-37, case-onboarding M4-S05, org dry run
+2026-09-12: `templates/README.md` documents templates as copied into the consuming
+project, and "referenced by relative path" in this file is not the same thing as "shipped
+by an earlier step"). Rule `EAH009` in this skill's checker (see **Verification** below)
+WARNs when a `.cls` under the manifest directory references one of these names with no
+matching `.cls` of that name under the same directory.
+
+---
+
 ## Deploy order
 
 Metadata deploys resolve within a single request, so a one-shot deploy of the second
@@ -698,6 +727,7 @@ What the checker will catch in this domain:
 | `EAH006` | WARN | `CaseMilestone` query with no `CompletionDate = NULL` filter |
 | `EAH007` | WARN | Numeric comparison against `TimeRemainingInMins` / `TimeRemainingInHrs`, which are `text` |
 | `EAH008` | WARN | `CaseMilestone` trigger inspecting `IsViolated`; before-trigger touching `CaseMilestone` |
+| `EAH009` | WARN, `--strict` promotes | A `.cls` references a canonical template class name (`TriggerHandler`, `TriggerControl`, `ApplicationLogger`, `TestDataFactory`, `TestRecordBuilder`, `MockHttpResponseGenerator`, `SecurityUtils`, `TestUserFactory`, `BulkTestPattern`, `BaseDomain`, `BaseService`, `BaseSelector`, `HttpClient`) with no `.cls` of that name under the same `--manifest-dir`. WARN because the checker sees one manifest directory, not the whole build plan — it cannot know the class ships from an earlier step. |
 
 After deploy, the org-side verification is a debug log, not a field check. Set a debug log
 on the case owner with the **Workflow** category at **INFO** and push a Case through the
