@@ -128,7 +128,7 @@ The three Case-only entry fields: `team` (case team to add), `overrideExistingTe
 
 ## Case auto-response rule
 
-Auto-response entries carry the sender identity and template; there is no `assignedTo`. The rule is only evaluated when the assignment rule fires (`admin/case-management-setup`), and `senderEmail` must never be the Email-to-Case routing address or the reply loops (`admin/email-to-case-configuration`).
+Auto-response entries carry the sender identity and template; there is no `assignedTo`. The rule is only evaluated when the assignment rule fires (`admin/case-management-setup`), and `senderEmail` must be a verified **OrgWideEmailAddress that is not an Email-to-Case intake address** — a sender equal to a routing address's `emailAddress` creates the loop auto-response → customer reply → routing address → new case → auto-response (`admin/email-to-case-configuration`, `references/metadata-examples.md`, where `support@acme.example` is the routing `emailAddress` this example must not reuse). Provision a dedicated no-reply address for the sender, and confirm it is not, and does not forward into, any routing address.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -136,15 +136,19 @@ Auto-response entries carry the sender identity and template; there is no `assig
     <autoResponseRule>
         <fullName>Case_Acknowledgement</fullName>
         <active>true</active>
+        <!-- senderEmail is a distinct, verified OrgWideEmailAddress that is NOT an
+             Email-to-Case routing address (support@acme.example is the routing
+             emailAddress in admin/email-to-case-configuration — reusing it here
+             loops auto-response replies straight back into a new case). -->
         <ruleEntry>
             <criteriaItems>
                 <field>Case.Origin</field>
                 <operation>equals</operation>
                 <value>Web</value>
             </criteriaItems>
-            <senderEmail>support@acme.example</senderEmail>
+            <senderEmail>support-noreply@acme.example</senderEmail>
             <senderName>Acme Support</senderName>
-            <replyToEmail>support@acme.example</replyToEmail>
+            <replyToEmail>support-noreply@acme.example</replyToEmail>
             <template>unfiled$public/Case_Web_Acknowledgement</template>
         </ruleEntry>
         <ruleEntry>
@@ -153,16 +157,16 @@ Auto-response entries carry the sender identity and template; there is no `assig
                 <operation>equals</operation>
                 <value>Email</value>
             </criteriaItems>
-            <senderEmail>support@acme.example</senderEmail>
+            <senderEmail>support-noreply@acme.example</senderEmail>
             <senderName>Acme Support</senderName>
-            <replyToEmail>support@acme.example</replyToEmail>
+            <replyToEmail>support-noreply@acme.example</replyToEmail>
             <template>unfiled$public/Case_Email_Acknowledgement</template>
         </ruleEntry>
     </autoResponseRule>
 </AutoResponseRules>
 ```
 
-The Lead version is identical with `Lead.` fields and lives in `autoResponseRules/Lead.autoResponseRules-meta.xml`. `senderEmail` must be a verified org-wide email address in the target org.
+The Lead version is identical with `Lead.` fields and lives in `autoResponseRules/Lead.autoResponseRules-meta.xml`. `senderEmail` must be a verified org-wide email address in the target org, and it must not equal — or forward into — any Email-to-Case routing address; validate this with `scripts/check_assignment_rules.py` (rule `AR-LOOP-01`), which cross-references `senderEmail` against every `routingAddresses/emailAddress` it can find under `settings/Case.settings-meta.xml` in the tree.
 
 ## Case escalation rule: two-stage escalation inside business hours
 

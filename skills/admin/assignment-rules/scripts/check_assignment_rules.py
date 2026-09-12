@@ -44,6 +44,15 @@ def find_assignment_rule_files(root: Path) -> list[Path]:
     return results
 
 
+def find_auto_response_rule_files(root: Path) -> list[Path]:
+    """Return all .autoResponseRules-meta.xml files under root (source and mdapi layouts)."""
+    results = list(root.rglob("*.autoResponseRules-meta.xml"))
+    for candidate in root.rglob("*.autoResponseRules"):
+        if candidate.is_file():
+            results.append(candidate)
+    return results
+
+
 SF_NS = "http://soap.sforce.com/2006/04/metadata"
 
 
@@ -154,6 +163,67 @@ def check_rule_file(path: Path) -> list[str]:
     return issues
 
 
+def find_routing_addresses(root: Path) -> set[str]:
+    """Collect lowercased Email-to-Case routing emailAddress values found anywhere
+    under root (source layout `settings/Case.settings-meta.xml` or mdapi layout
+    `settings/Case.settings`; searched tree-wide, not just under settings/).
+
+    Shape is CaseSettings -> emailToCase -> routingAddresses -> emailAddress,
+    per admin/email-to-case-configuration references/metadata-examples.md. Uses
+    Element.iter() + a tag-suffix comparison (not a namespaced/bare findall pair)
+    so this does not need the `find(x) or find(y)` idiom banned above.
+    """
+    addresses: set[str] = set()
+    candidates = list(root.rglob("*.settings-meta.xml")) + list(root.rglob("*.settings"))
+    for path in candidates:
+        if not path.is_file():
+            continue
+        try:
+            file_root = ET.parse(path).getroot()
+        except ET.ParseError:
+            continue
+        for element in file_root.iter():
+            if element.tag.rsplit("}", 1)[-1] != "routingAddresses":
+                continue
+            email_el = _find(element, "emailAddress")
+            if email_el is not None and email_el.text:
+                addresses.add(email_el.text.strip().lower())
+    return addresses
+
+
+def check_auto_response_loop(path: Path, routing_emails: set[str]) -> list[str]:
+    """AR-LOOP-01: flag an autoResponseRules senderEmail that equals a known
+    Email-to-Case routing address — the auto-response -> reply -> new case ->
+    auto-response mail loop documented in references/gotchas.md #6."""
+    issues: list[str] = []
+    try:
+        tree = ET.parse(path)
+    except ET.ParseError as exc:
+        return [f"{path.name}: XML parse error — {exc}"]
+
+    root = tree.getroot()
+    rules = root.findall(_tag("autoResponseRule")) or root.findall("autoResponseRule")
+
+    for rule in rules:
+        name_el = _find(rule, "fullName")
+        rule_name = name_el.text if name_el is not None else "<unnamed>"
+        entries = rule.findall(_tag("ruleEntry")) or rule.findall("ruleEntry")
+        for index, entry in enumerate(entries, start=1):
+            sender_el = _find(entry, "senderEmail")
+            sender = sender_el.text.strip() if sender_el is not None and sender_el.text else ""
+            if sender and sender.lower() in routing_emails:
+                issues.append(
+                    f"AR-LOOP-01 ERROR: {path.name} / autoResponseRule '{rule_name}' entry "
+                    f"{index}: senderEmail '{sender}' matches an Email-to-Case routing "
+                    "address. This is a mail loop (auto-response -> customer reply -> "
+                    "routing address -> new case -> auto-response) — use a distinct "
+                    "OrgWideEmailAddress that is not, and does not forward into, any "
+                    "routing address (admin/email-to-case-configuration)."
+                )
+
+    return issues
+
+
 def check_assignment_rules(manifest_dir: Path) -> list[str]:
     """Run all checks and return a list of issue strings."""
     issues: list[str] = []
@@ -166,10 +236,22 @@ def check_assignment_rules(manifest_dir: Path) -> list[str]:
     if not rule_files:
         # Not an error — the project may not have assignment rules deployed
         print(f"INFO: No assignment rule metadata files found under {manifest_dir}.")
-        return []
+    else:
+        for rule_file in rule_files:
+            issues.extend(check_rule_file(rule_file))
 
-    for rule_file in rule_files:
-        issues.extend(check_rule_file(rule_file))
+    auto_response_files = find_auto_response_rule_files(manifest_dir)
+    if auto_response_files:
+        routing_emails = find_routing_addresses(manifest_dir)
+        if routing_emails:
+            for ar_file in auto_response_files:
+                issues.extend(check_auto_response_loop(ar_file, routing_emails))
+        else:
+            issues.append(
+                "AR-LOOP-02 WARN: no Email-to-Case routing-address inventory "
+                f"(settings/Case.settings-meta.xml or equivalent) found under {manifest_dir} "
+                "— cannot verify the sender is not an intake address at this scope."
+            )
 
     return issues
 
@@ -186,7 +268,11 @@ def main() -> int:
     for issue in issues:
         print(f"ISSUE: {issue}")
 
-    return 1
+    # AR-LOOP-02 is a WARN (no routing-address inventory to check against, not a
+    # detected loop) and must not fail the run on its own; every other issue,
+    # including AR-LOOP-01, keeps the pre-existing exit-1-on-any-issue policy.
+    has_error = any(not issue.startswith("AR-LOOP-02") for issue in issues)
+    return 1 if has_error else 0
 
 
 if __name__ == "__main__":

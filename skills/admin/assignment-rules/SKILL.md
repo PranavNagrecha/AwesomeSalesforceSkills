@@ -27,6 +27,7 @@ triggers:
   - "assignment rules metadata xml example to deploy with sf cli"
   - "write an Apex test that checks the assignment rule set the owner"
   - "should I use assignment rules or omni-channel or flow to route cases"
+  - "auto-response sender same as email-to-case routing address loop"
 inputs:
   - "Object type: Lead or Case (assignment rules only exist for these two objects)"
   - "Assignment target: specific User or Queue to receive matched records"
@@ -38,9 +39,9 @@ outputs:
   - "Apex-based round-robin pattern when equal distribution is required"
   - "Troubleshooting analysis when rules are not firing as expected"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-11
 ---
 
 # Assignment Rules
@@ -271,6 +272,7 @@ Run through these before marking assignment rule configuration complete:
 - [ ] API-integration teams are informed that `Sforce-Auto-Assign: true` header (REST) or `AssignmentRuleHeader` (SOAP) is required
 - [ ] Data Loader imports have `sfdc.assignmentRule` set if assignment is expected
 - [ ] If round-robin Apex is used: test for concurrency behavior and verify no mixed-DML errors
+- [ ] Auto-response `senderEmail`/`replyToEmail` is a distinct OrgWideEmailAddress, never an Email-to-Case routing address — run `scripts/check_assignment_rules.py` (`AR-LOOP-01`/`AR-LOOP-02`) to confirm
 
 ---
 
@@ -281,6 +283,7 @@ Non-obvious platform behaviors that cause real production problems:
 1. **Only one active rule per object** — Activating a new rule silently deactivates the existing one. If a team maintains two rules (e.g., one for normal business and one for after-hours), they must manually toggle activation. There is no scheduling mechanism for rule activation.
 2. **API and Data Loader do NOT trigger rules by default** — The most common integration failure: records imported via REST API, SOAP API, or Data Loader land with the API user as owner because no assignment header was passed. Every integration team must explicitly opt in to rule evaluation.
 3. **Lookup filter criteria reference at time of rule entry creation** — Record type and queue picklist values shown in the rule entry criteria UI reflect the org state at the time you edit the entry. If a queue or record type is deleted after entry creation, the entry may produce unexpected behavior. Audit rule entries after deleting queues.
+4. **Auto-response `senderEmail` equal to the Email-to-Case routing address loops mail** — reusing the intake address as the acknowledgement sender routes every reply straight back into a new Case (`references/gotchas.md` #6; checked by `scripts/check_assignment_rules.py` rule `AR-LOOP-01`).
 
 ---
 

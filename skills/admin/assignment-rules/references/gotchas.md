@@ -68,3 +68,17 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 - Prefer criteria on raw editable fields (text, picklist, number) rather than formula fields.
 - If formula-based routing is needed, use a record-triggered Flow (before-save) to compute and write the result to a plain field, then base the assignment rule criteria on that plain field.
 - Test rule entry criteria via API insert, not just UI creation, to catch formula evaluation order issues.
+
+---
+
+## Gotcha 6: Auto-Response `senderEmail` Equal to the Email-to-Case Routing Address Creates a Mail Loop
+
+**What happens:** An `autoResponseRules` rule entry's `senderEmail` (or `replyToEmail`) is set to the same address as an Email-to-Case routing address's `emailAddress`. The customer's mail client replies to the acknowledgement, the reply lands back on the routing address, Email-to-Case creates a new Case from it, the assignment rule fires, and the auto-response fires again — an unbounded loop that also multiplies Case counts and, on a metered mail gateway, cost.
+
+**When it occurs:** Most often when an admin reuses the public support address (e.g., `support@acme.example`) as both the Email-to-Case intake address and the auto-response sender because it "is the address customers already know." It also occurs when the sender is a distinct address that silently forwards into the routing address (a mail rule, a distribution list, or a shared mailbox alias), which the metadata cannot detect.
+
+**How to avoid:**
+- Give the auto-response rule a dedicated, verified OrgWideEmailAddress (e.g., `support-noreply@acme.example`) that is provisioned only as a sender, never as an Email-to-Case routing address.
+- Confirm the sender address has no mail-server forwarding rule that points at any routing address, and disable "keep a copy and auto-reply" on any forwarding mailbox in the chain (`admin/email-to-case-configuration`).
+- Run `scripts/check_assignment_rules.py` — rule `AR-LOOP-01` cross-references every `autoResponseRules` `senderEmail` against every `routingAddresses/emailAddress` it can find under `settings/Case.settings-meta.xml` in the tree and errors on a match; `AR-LOOP-02` warns when no routing-address inventory is in scope to check against.
+- After deploy, send one real email to each public address and confirm the Case count per address stops at one (`admin/email-to-case-configuration`, references/metadata-examples.md, "Loop test").
