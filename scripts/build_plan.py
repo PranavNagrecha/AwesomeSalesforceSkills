@@ -1805,9 +1805,25 @@ def cmd_next(args: argparse.Namespace) -> int:
         for milestone in milestones:
             mid = milestone.get("id")
             mine = [s for s in steps if s.get("milestone") == mid]
-            if any(s.get("status") != "documented" for s in mine):
-                target = mid
-                break
+            undocumented = [s for s in mine if s.get("status") != "documented"]
+            if not undocumented:
+                continue
+            # A milestone whose only undocumented steps are `blocked` — with
+            # its own gate already `approved` (a human has accepted that the
+            # blocked step(s) go no further right now) — is not "next"; it is
+            # done being actionable. Without this, `next` traps here forever
+            # even though a later milestone is runnable (contract § 3 doesn't
+            # require milestones to run in strict step-completion order, only
+            # gate order via `_gate_blocker`).
+            if all(s.get("status") == "blocked" for s in undocumented) \
+                    and gate_status(plan, f"milestone:{mid}") == "approved":
+                blocked_ids = ", ".join(s.get("id") for s in undocumented)
+                print(f"reason: milestone {mid} skipped — its gate is approved and its "
+                      f"only undocumented step(s) are blocked ({blocked_ids})",
+                      file=sys.stderr)
+                continue
+            target = mid
+            break
         if target is None:
             print("[]")
             print("reason: every milestone is fully documented — nothing left to run",
@@ -2539,13 +2555,44 @@ def cmd_set_clarifications(args: argparse.Namespace) -> int:
         # edit of plan.json, which section 2 forbids.
         plan["requirement"] = dict(plan.get("requirement") or {})
         plan["requirement"]["summary"] = summary
+
+    # § 3.1: at `scale: ask` the informational rows are never put to the human
+    # in a round — they "land pre-filled from their proposed_default with
+    # default_source set" (contract, § 3.1). This is the writer, so it is the
+    # one place that guarantee holds regardless of what the clarifier passed
+    # in. A blocking row is never touched here — it always waits for a human
+    # or an explicit `DEFER:`. Only `open` rows with nothing already answered
+    # are filled, so re-running set-clarifications never clobbers a human's
+    # (or a later ingest-answers') edit.
+    defaults_filled = 0
+    if plan.get("scale") == "ask":
+        for clar in doc:
+            if not isinstance(clar, dict):
+                continue
+            if clar.get("kind") != "informational":
+                continue
+            if clar.get("status") not in (None, "open"):
+                continue
+            if (clar.get("answer") or "").strip():
+                continue
+            default = (clar.get("proposed_default") or "").strip()
+            if not default:
+                continue
+            clar["answer"] = default
+            clar["status"] = "answered"
+            if not (clar.get("default_source") or "").strip():
+                clar["default_source"] = "proposed_default (scale: ask)"
+            defaults_filled += 1
+
     schema = load_schema(args.schema)
     rc = write_plan(plan_path, plan, Path(args.repo_root), schema)
     if rc:
         return rc
     blocking = sum(1 for c in doc if isinstance(c, dict) and c.get("kind") == "blocking")
     print(f"clarifications written: {len(doc)} question(s), {blocking} blocking; "
-          f"status -> clarifying" + ("; requirement.summary updated" if summary else ""))
+          f"status -> clarifying" + ("; requirement.summary updated" if summary else "")
+          + (f"; {defaults_filled} informational default(s) applied (scale: ask)"
+             if defaults_filled else ""))
     print("next: `build_plan.py render`, then the human answers CLARIFICATIONS.md.")
     return 0
 
@@ -2895,9 +2942,12 @@ def build_parser() -> argparse.ArgumentParser:
                                    "current milestone whose depends_on are all documented and "
                                    "whose own step:<id> gate is approved if they carry "
                                    "human_gate: true. The current milestone is the first one not "
-                                   "fully documented; it runs only if its predecessor gate is "
-                                   "approved. Prints [] on stdout and the reason on stderr when "
-                                   "blocked.")
+                                   "fully documented, skipping any milestone whose only "
+                                   "undocumented step(s) are 'blocked' once its own "
+                                   "milestone:<id> gate is approved (that milestone is done "
+                                   "being actionable, not next); it runs only if its "
+                                   "predecessor gate is approved. Prints [] on stdout and the "
+                                   "reason on stderr when blocked or skipped.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--milestone", default=None, help="force a milestone id, e.g. M2")
     p.set_defaults(func=cmd_next)
@@ -3051,7 +3101,13 @@ def build_parser() -> argparse.ArgumentParser:
                                    "'clarifications' array); it REPLACES clarifications[] and "
                                    "sets the build status to 'clarifying'. Use this instead of "
                                    "editing plan.json — the write is validated, atomic, and "
-                                   "leaves the file untouched if the result would be invalid.")
+                                   "leaves the file untouched if the result would be invalid. "
+                                   "At scale 'ask' (contract § 3.1), an 'open' informational "
+                                   "row with a proposed_default and no answer is written "
+                                   "answered from that default (default_source stamped "
+                                   "'proposed_default (scale: ask)' if not already set); "
+                                   "blocking rows and anything already answered are untouched, "
+                                   "and 'ingest-answers' can still overwrite a filled default.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--file", required=True, help="JSON array of clarification objects")
     p.add_argument("--summary", default=None,

@@ -949,6 +949,73 @@ def test_next_refuses_a_milestone_whose_predecessor_gate_is_open(tmp_path, fixtu
     assert [s["id"] for s in json.loads(capsys.readouterr().out)] == ["M2-S01"]
 
 
+def test_next_skips_a_blocked_only_milestone_once_its_gate_is_approved(
+        tmp_path, fixture_repo, capsys):
+    """A milestone whose only undocumented step is `blocked` (recorded, with a
+    reason) and whose own `milestone:<id>` gate a human already approved is
+    not "next" — it is done being actionable. `next` must move on to the
+    following milestone rather than reporting `[]` forever."""
+    plan = plan_dict([
+        step("M1-S01", "M1", status="blocked", blocked_reason="skill-gap"),
+        step("M2-S01", "M2"),
+    ])
+    plan["human_gates"] = [
+        {"name": "clarifications", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "plan", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "milestone:M1", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "milestone:M2", "status": "pending"},
+    ]
+    path = write_plan_file(tmp_path / "b", plan)
+
+    assert run("next", str(path), "--repo-root", str(fixture_repo)) == 0
+    captured = capsys.readouterr()
+    assert [s["id"] for s in json.loads(captured.out)] == ["M2-S01"]
+    assert ("reason: milestone M1 skipped — its gate is approved and its only "
+            "undocumented step(s) are blocked (M1-S01)") in captured.err
+
+
+def test_next_still_reports_no_pending_steps_when_the_blocked_milestones_gate_is_open(
+        tmp_path, fixture_repo, capsys):
+    """Same blocked-only shape, but the milestone gate is still pending — the
+    old, unhelpful-but-correct message stands: nothing is skipped."""
+    plan = plan_dict([step("M1-S01", "M1", status="blocked", blocked_reason="skill-gap")])
+    plan["human_gates"] = [
+        {"name": "clarifications", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "plan", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "milestone:M1", "status": "pending"},
+    ]
+    path = write_plan_file(tmp_path / "b", plan)
+
+    assert run("next", str(path), "--repo-root", str(fixture_repo)) == 0
+    captured = capsys.readouterr()
+    assert json.loads(captured.out) == []
+    assert "reason: no pending steps in M1" in captured.err
+    assert "skipped" not in captured.err
+
+
+def test_next_does_not_skip_a_milestone_with_a_genuinely_pending_step(
+        tmp_path, fixture_repo, capsys):
+    """A milestone still carrying an ordinary pending step is never skipped,
+    even if its gate happens to already be approved — only all-blocked
+    milestones are eligible to be passed over."""
+    plan = plan_dict([
+        step("M1-S01", "M1", status="pending"),
+        step("M2-S01", "M2"),
+    ])
+    plan["human_gates"] = [
+        {"name": "clarifications", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "plan", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "milestone:M1", "status": "approved", "by": "p", "at": "2026-09-05T09:00:00Z"},
+        {"name": "milestone:M2", "status": "pending"},
+    ]
+    path = write_plan_file(tmp_path / "b", plan)
+
+    assert run("next", str(path), "--repo-root", str(fixture_repo)) == 0
+    captured = capsys.readouterr()
+    assert [s["id"] for s in json.loads(captured.out)] == ["M1-S01"]
+    assert "skipped" not in captured.err
+
+
 def test_gate_flow_end_to_end(tmp_path, fixture_repo, capsys):
     plan = plan_dict([step("M1-S01", "M1")])
     path = write_plan_file(tmp_path / "b", plan)
@@ -1731,6 +1798,124 @@ def test_set_clarifications_summary_replaces_the_truncated_init_summary(
     assert run("set-clarifications", str(path), "--file", str(body),
                "--repo-root", str(fixture_repo)) == 0
     assert json.loads(path.read_text())["requirement"]["summary"] == paragraph
+
+
+# --------------------------------------------------------------------------
+# set-clarifications: informational defaults land pre-filled at scale 'ask'
+# (contract § 3.1)
+# --------------------------------------------------------------------------
+
+def test_set_clarifications_fills_open_informational_defaults_at_scale_ask(
+        tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")], scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    body = write_json(tmp_path / "questions.json", [
+        {"id": "Q1", "question": "Which queue owns unrouted email?", "kind": "blocking",
+         "status": "open", "proposed_default": "Tier 1 Support"},
+        {"id": "Q2", "question": "Should we log lead source?", "kind": "informational",
+         "status": "open", "proposed_default": "Yes, on the Lead Source field"},
+        {"id": "Q3", "question": "Already answered?", "kind": "informational",
+         "status": "answered", "answer": "Custom text", "proposed_default": "ignored"},
+        {"id": "Q4", "question": "Informational with no default?", "kind": "informational",
+         "status": "open"},
+    ])
+    capsys.readouterr()
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert "1 informational default(s) applied (scale: ask)" in out
+
+    by_id = {c["id"]: c for c in json.loads(path.read_text())["clarifications"]}
+    # Blocking rows are never auto-filled, regardless of scale.
+    assert by_id["Q1"]["status"] == "open"
+    assert not by_id["Q1"].get("answer")
+    # Open informational row with a default: filled and stamped.
+    assert by_id["Q2"]["status"] == "answered"
+    assert by_id["Q2"]["answer"] == "Yes, on the Lead Source field"
+    assert by_id["Q2"]["default_source"] == "proposed_default (scale: ask)"
+    # Already-answered informational row: left exactly alone.
+    assert by_id["Q3"]["answer"] == "Custom text"
+    assert by_id["Q3"]["status"] == "answered"
+    # No proposed_default to fill from: stays open.
+    assert by_id["Q4"]["status"] == "open"
+    assert not by_id["Q4"].get("answer")
+
+
+def test_set_clarifications_default_source_not_overwritten_if_already_set(
+        tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    body = write_json(tmp_path / "questions.json", [
+        {"id": "Q1", "question": "Nice to know?", "kind": "informational", "status": "open",
+         "proposed_default": "Sure", "default_source": "skill-guidance"},
+    ])
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    clar = json.loads(path.read_text())["clarifications"][0]
+    assert clar["answer"] == "Sure"
+    assert clar["status"] == "answered"
+    assert clar["default_source"] == "skill-guidance", "an existing default_source is preserved"
+
+
+def test_set_clarifications_does_not_fill_defaults_at_project_or_feature_scale(
+        tmp_path, fixture_repo):
+    def informational_question(name: str) -> Path:
+        return write_json(tmp_path / name, [
+            {"id": "Q1", "question": "Nice to know?", "kind": "informational", "status": "open",
+             "proposed_default": "Sure"},
+        ])
+
+    # Absent scale == 'project' by contract.
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("set-clarifications", str(path), "--file", str(informational_question("q1.json")),
+               "--repo-root", str(fixture_repo)) == 0
+    clar = json.loads(path.read_text())["clarifications"][0]
+    assert clar["status"] == "open" and not clar.get("answer")
+
+    plan = plan_dict([step("M1-S01", "M1")], scale="feature")
+    path = write_plan_file(tmp_path / "c", plan)
+    assert run("set-clarifications", str(path), "--file", str(informational_question("q2.json")),
+               "--repo-root", str(fixture_repo)) == 0
+    clar = json.loads(path.read_text())["clarifications"][0]
+    assert clar["status"] == "open" and not clar.get("answer")
+
+
+def test_set_clarifications_default_renders_and_can_be_overwritten_by_a_human(
+        tmp_path, fixture_repo):
+    """The filled default must show up in the rendered view (contract § 3.1:
+    'listed in CLARIFICATIONS.md as defaults applied'), and a human must still
+    be able to overwrite it through the normal render -> edit -> ingest loop."""
+    plan = plan_dict([step("M1-S01", "M1")], scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    body = write_json(tmp_path / "questions.json", [
+        {"id": "Q1", "question": "Should we log lead source?", "kind": "informational",
+         "status": "open", "proposed_default": "Yes, on the Lead Source field"},
+    ])
+    assert run("set-clarifications", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+
+    clar_md = (path.parent / "CLARIFICATIONS.md").read_text()
+    assert "#### Q1 — status: answered" in clar_md
+    assert "Answer: Yes, on the Lead Source field" in clar_md
+
+    run_md = (path.parent / "RUN.md").read_text()
+    assert "## Defaults applied" in run_md
+    assert "`Q1`" in run_md and "Yes, on the Lead Source field" in run_md
+    assert "proposed_default (scale: ask)" in run_md
+
+    # A human overwrites the pre-filled default...
+    set_answer(path.parent / "CLARIFICATIONS.md", "Q1", "No — out of scope for this build")
+    assert run("ingest-answers", str(path), "--repo-root", str(fixture_repo)) == 0
+    clar = json.loads(path.read_text())["clarifications"][0]
+    assert clar["answer"] == "No — out of scope for this build"
+    assert clar["status"] == "answered"
+
+    # ...and the overwrite is what renders back out.
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert "Answer: No — out of scope for this build" in \
+        (path.parent / "CLARIFICATIONS.md").read_text()
 
 
 # --------------------------------------------------------------------------
