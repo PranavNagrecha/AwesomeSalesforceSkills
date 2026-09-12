@@ -865,3 +865,344 @@ def test_main_api_version_recorded_in_plan_only_summary(tmp_path, monkeypatch):
 
     summary = (out_dir / "summary.md").read_text(encoding="utf-8")
     assert "- api version: `62.0` (highest of: M1-S01=61.0, M1-S02=62.0)" in summary
+
+
+# --------------------------------------------------------------------------
+# S2-F-06: Apex test execution (--test-level / --tests)
+# --------------------------------------------------------------------------
+
+def test_build_sf_command_no_test_run_leaves_command_unchanged():
+    # NoTestRun is the default and must add no flags at all — the built
+    # command is byte-for-byte what it was before --test-level existed, even
+    # if a stray `tests` list is passed in (it must be silently ignored).
+    baseline = mock_deploy.build_sf_command("source", "sfskills-dev")
+    with_no_test_run = mock_deploy.build_sf_command(
+        "source", "sfskills-dev", "package.xml",
+        test_level="NoTestRun", tests=["Whatever"],
+    )
+    assert baseline == with_no_test_run
+    assert "--test-level" not in baseline
+    assert "--tests" not in baseline
+
+
+def test_build_sf_command_run_specified_tests_adds_repeated_tests_flag():
+    cmd = mock_deploy.build_sf_command(
+        "source", "sfskills-dev", test_level="RunSpecifiedTests",
+        tests=["FooTest", "BarTest"],
+    )
+    assert cmd[cmd.index("--test-level") + 1] == "RunSpecifiedTests"
+    assert cmd.count("--tests") == 2
+    tests_passed = [cmd[i + 1] for i, v in enumerate(cmd) if v == "--tests"]
+    assert tests_passed == ["FooTest", "BarTest"]
+
+
+def test_build_sf_command_run_local_tests_has_no_tests_flag():
+    cmd = mock_deploy.build_sf_command("source", "sfskills-dev", test_level="RunLocalTests")
+    assert cmd[cmd.index("--test-level") + 1] == "RunLocalTests"
+    assert "--tests" not in cmd
+
+
+def test_find_test_classes_scans_at_istest_class_and_ignores_non_test(tmp_path):
+    root = tmp_path / "force-app"
+    _write(
+        root / "classes" / "CaseServiceTest.cls",
+        "@isTest\nprivate class CaseServiceTest {\n"
+        "    @isTest static void itWorks() {}\n"
+        "}\n",
+    )
+    _write(
+        root / "classes" / "AnotherTest.cls",
+        "@IsTest\npublic class AnotherTest {\n}\n",
+    )
+    _write(
+        root / "classes" / "CaseService.cls",
+        "public class CaseService {\n    public void doWork() {}\n}\n",
+    )
+    assert mock_deploy.find_test_classes(root) == ["AnotherTest", "CaseServiceTest"]
+
+
+def test_find_test_classes_missing_root_returns_empty(tmp_path):
+    assert mock_deploy.find_test_classes(tmp_path / "does-not-exist") == []
+
+
+def test_extract_test_summary_all_zero_when_no_test_data():
+    summary = mock_deploy.extract_test_summary({"result": {}}, "NoTestRun", None)
+    assert summary.level == "NoTestRun"
+    assert summary.run == 0
+    assert summary.passed == 0
+    assert summary.failed == 0
+    assert summary.coverage_pct is None
+    assert summary.failures == []
+
+
+def test_extract_test_summary_computes_coverage_and_failures():
+    parsed = {
+        "result": {
+            "numberTestsCompleted": 3,
+            "numberTestErrors": 1,
+            "details": {
+                "runTestResult": {
+                    "codeCoverage": [
+                        {"numLocations": 10, "numLocationsNotCovered": 5},
+                        {"numLocations": 10, "numLocationsNotCovered": 1},
+                    ],
+                    "failures": [
+                        {
+                            "name": "FooTest",
+                            "methodName": "itFails",
+                            "message": "boom",
+                            "stackTrace": "Class.FooTest.itFails: line 5, column 1\nmore",
+                        },
+                    ],
+                }
+            },
+        }
+    }
+    summary = mock_deploy.extract_test_summary(parsed, "RunSpecifiedTests", ["FooTest"])
+    assert summary.run == 3
+    assert summary.passed == 2
+    assert summary.failed == 1
+    assert summary.coverage_pct == 70.0  # (20 - 6) / 20 * 100
+    assert summary.failures == [
+        ("FooTest", "itFails", "boom", "Class.FooTest.itFails: line 5, column 1")
+    ]
+
+
+def test_render_summary_without_tests_omits_tests_line():
+    parsed = {
+        "result": {
+            "status": "Succeeded", "checkOnly": True,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    summary = mock_deploy.render_summary(parsed, "source", "sfskills-dev")
+    assert "- tests:" not in summary
+
+
+def test_render_summary_with_tests_shows_line_and_failures_table():
+    parsed = {
+        "result": {
+            "status": "Failed", "checkOnly": True,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    tests = mock_deploy.TestSummary(
+        level="RunSpecifiedTests",
+        requested_tests=["CaseServiceTest"],
+        run=2, passed=1, failed=1, coverage_pct=75.0,
+        failures=[
+            ("CaseServiceTest", "itFails", "System.AssertException: Assertion Failed",
+             "Class.CaseServiceTest.itFails: line 10, column 1"),
+        ],
+    )
+    summary = mock_deploy.render_summary(parsed, "source", "sfskills-dev", tests=tests)
+    assert (
+        "- tests: level RunSpecifiedTests · run 2 · passed 1 · failed 1 · coverage 75.0%"
+        in summary
+    )
+    assert "## Test failures" in summary
+    assert "CaseServiceTest" in summary
+    assert "itFails" in summary
+    assert "System.AssertException: Assertion Failed" in summary
+
+
+def test_main_default_no_test_run_shows_all_zero_tests_line(tmp_path, monkeypatch):
+    # The whole point of S2-F-06: NoTestRun's silence becomes visible, not
+    # hidden, once this line is always rendered.
+    build_dir = make_build(tmp_path)
+    payload = {"result": {"status": "Succeeded", "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+    out_dir = tmp_path / "no-test-run-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--out", str(out_dir)]
+    )
+    assert rc == 0
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "- tests: level NoTestRun · run 0 · passed 0 · failed 0 · coverage n/a" in summary
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["tests"]["level"] == "NoTestRun"
+    assert result_json["tests"]["run"] == 0
+    assert result_json["tests"]["coverage_pct"] is None
+
+
+def test_main_run_specified_tests_auto_discovers_and_reports(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "classes" / "CaseServiceTest.cls",
+        "@isTest\nprivate class CaseServiceTest {\n}\n",
+    )
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "classes" / "CaseService.cls",
+        "public class CaseService {\n}\n",
+    )
+
+    payload = {
+        "result": {
+            "status": "Succeeded",
+            "checkOnly": True,
+            "runTestsEnabled": True,
+            "numberTestsCompleted": 1,
+            "numberTestErrors": 0,
+            "details": {
+                "componentSuccesses": [],
+                "componentFailures": [],
+                "runTestResult": {
+                    "numTestsRun": 1,
+                    "numFailures": 0,
+                    "codeCoverage": [{"numLocations": 10, "numLocationsNotCovered": 2}],
+                    "failures": [],
+                },
+            },
+        }
+    }
+
+    captured_cmd = {}
+
+    def fake_run(cmd, cwd, capture_output, text):
+        captured_cmd["cmd"] = cmd
+        return _fake_completed_process(payload)
+
+    monkeypatch.setattr(mock_deploy.subprocess, "run", fake_run)
+
+    out_dir = tmp_path / "run-specified-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--test-level", "RunSpecifiedTests", "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    cmd = captured_cmd["cmd"]
+    assert "--tests" in cmd
+    idx = cmd.index("--tests")
+    assert cmd[idx + 1] == "CaseServiceTest"
+    assert cmd.count("--tests") == 1  # CaseService (non-test) is not auto-included
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert (
+        "- tests: level RunSpecifiedTests · run 1 · passed 1 · failed 0 · coverage 80.0%"
+        in summary
+    )
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["tests"]["level"] == "RunSpecifiedTests"
+    assert result_json["tests"]["requested_tests"] == ["CaseServiceTest"]
+    assert result_json["tests"]["passed"] == 1
+    assert result_json["tests"]["coverage_pct"] == 80.0
+
+
+def test_main_tests_override_wins_over_auto_scan(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "classes" / "CaseServiceTest.cls",
+        "@isTest\nprivate class CaseServiceTest {\n}\n",
+    )
+
+    payload = {"result": {"status": "Succeeded", "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    captured_cmd = {}
+
+    def fake_run(cmd, cwd, capture_output, text):
+        captured_cmd["cmd"] = cmd
+        return _fake_completed_process(payload)
+
+    monkeypatch.setattr(mock_deploy.subprocess, "run", fake_run)
+
+    out_dir = tmp_path / "tests-override-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--test-level", "RunSpecifiedTests", "--tests", "ExplicitTest,OtherTest",
+         "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    cmd = captured_cmd["cmd"]
+    tests_passed = [cmd[i + 1] for i, v in enumerate(cmd) if v == "--tests"]
+    assert tests_passed == ["ExplicitTest", "OtherTest"]
+    assert "CaseServiceTest" not in tests_passed  # override wins over auto-scan
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["tests"]["requested_tests"] == ["ExplicitTest", "OtherTest"]
+
+
+def test_main_run_specified_tests_errors_when_none_found(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)  # no .cls files anywhere in this fixture
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked")),
+    )
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--test-level", "RunSpecifiedTests"]
+    )
+    assert rc == 2
+
+
+def test_main_tests_ignored_with_warn_when_not_run_specified(tmp_path, monkeypatch, capsys):
+    build_dir = make_build(tmp_path)
+    payload = {"result": {"status": "Succeeded", "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+    out_dir = tmp_path / "tests-ignored-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--tests", "SomeTest", "--out", str(out_dir)]
+    )
+    assert rc == 0
+    captured = capsys.readouterr()
+    assert "WARN" in captured.err
+    assert "--tests" in captured.err
+
+
+def test_main_plan_only_shows_planned_tests_without_contacting_org(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "classes" / "CaseServiceTest.cls",
+        "@isTest\nprivate class CaseServiceTest {\n}\n",
+    )
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+    out_dir = tmp_path / "plan-only-tests-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--test-level", "RunSpecifiedTests", "--plan-only", "--out", str(out_dir)]
+    )
+    assert rc == 0
+    assert not (out_dir / "result.json").exists()
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "not run (--plan-only)" in summary
+    assert "level RunSpecifiedTests" in summary
+    assert "CaseServiceTest" in summary
+
+
+def test_main_plan_only_no_test_run_shows_not_run_line(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+    out_dir = tmp_path / "plan-only-no-test-run-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--plan-only", "--out", str(out_dir)]
+    )
+    assert rc == 0
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "- tests: level NoTestRun (not run — --plan-only)" in summary
+
+
+def test_cli_test_level_choices_exclude_run_all_tests_in_org():
+    parser = mock_deploy.build_arg_parser()
+    test_level_action = next(a for a in parser._actions if a.dest == "test_level")
+    assert set(test_level_action.choices) == {"NoTestRun", "RunSpecifiedTests", "RunLocalTests"}
+    assert test_level_action.default == "NoTestRun"

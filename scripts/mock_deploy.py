@@ -28,6 +28,27 @@ Design rules this file obeys:
   `tests/test_mock_deploy.py`, which mocks `subprocess.run` so no `sf` CLI is
   ever invoked by the test suite.
 
+Apex test execution (S2-F-06, 2026-09-12): every dry run of this script before
+this fix ran with `runTestsEnabled: false` / `testLevel: null` — 13 Apex
+classes in the tier2-webhook build were compiled by the validation but never
+executed, and the fact was invisible because nothing in `summary.md` said so.
+Confirmed against `sf project deploy start --help` (`@salesforce/cli/2.149.9`
+darwin-arm64): the TEST FLAGS group is `-l, --test-level=<option>` with
+options `NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg|RunRelevantTests`,
+and `-t, --tests=<value>...` ("Apex tests to run when --test-level is
+RunSpecifiedTests"); `--dry-run`'s own help text is "Validate deploy and run
+Apex tests but don't save to the org" — tests genuinely execute in the org as
+part of validation, nothing about that runs locally or is skipped by
+`--dry-run`. This script exposes `--test-level` restricted to
+`NoTestRun|RunSpecifiedTests|RunLocalTests` (default `NoTestRun`, i.e.
+unchanged behaviour); `RunAllTestsInOrg` is deliberately not offered — it is
+org-wide and far slower than validating one build's own artefacts, and
+`RunRelevantTests` is Salesforce-computed relevance the CLI itself calls
+best-effort, not deterministic like the other levels this script offers. For
+`RunSpecifiedTests` with no `--tests` override, every `.cls` under the
+selected steps' assembled artefacts whose class is annotated `@IsTest`/
+`@isTest` is used (see `find_test_classes`).
+
 Typical use — validate milestone M1 of a build against a scratch/dev org::
 
     python3 scripts/mock_deploy.py .sfskills/builds/case-onboarding/plan.json \\
@@ -51,6 +72,7 @@ from __future__ import annotations
 import argparse
 import datetime as _dt
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -62,6 +84,8 @@ from xml.sax.saxutils import escape
 METADATA_NS = "{http://soap.sforce.com/2006/04/metadata}"
 DEFAULT_API_VERSION = "62.0"
 DEFAULT_STATUSES = ("built", "tested", "documented")
+TEST_LEVELS = ("NoTestRun", "RunSpecifiedTests", "RunLocalTests")
+DEFAULT_TEST_LEVEL = "NoTestRun"
 
 
 # --------------------------------------------------------------------------
@@ -153,6 +177,52 @@ def copy_artefacts(
             shutil.copy2(src, dest)
             copied.append(rel)
     return CopyResult(copied=copied, skipped=skipped)
+
+
+TEST_CLASS_RE = re.compile(r"@isTest\b[^;{]*?\bclass\s+(\w+)", re.IGNORECASE | re.DOTALL)
+
+
+def find_test_classes(root: Path) -> list[str]:
+    """Every Apex class under `root` whose *class* (not a lone test method)
+    carries an `@IsTest`/`@isTest` annotation — the automatic `--tests` list
+    for `--test-level RunSpecifiedTests` (S2-F-06) when no `--tests` override
+    is given.
+
+    `TEST_CLASS_RE` matches `@isTest`, then only visibility/sharing modifiers
+    (no `;` or `{`), then `class <Name>`. A `@isTest` annotating a single test
+    *method* — `@isTest static void itWorks() { ... }` — does not match: the
+    method's parameter list and opening `{` are reached before any `class`
+    keyword, and the non-greedy `[^;{]*?` cannot cross that `{`. A class with
+    no `@isTest` anywhere (an ordinary, non-test `.cls`) never matches at all.
+
+    `root` is meant to be the already-assembled `force-app/main/default`
+    tree for the selected steps (built by `copy_artefacts`), so this scans
+    exactly "the selected steps' artefacts" the caller asked for. Returns
+    names sorted alphabetically and de-duplicated; an empty/missing `root`
+    or a `.cls` file that fails to decode as UTF-8 contributes nothing
+    rather than raising.
+
+    Known over-inclusion: a shared test *utility* — `TestDataFactory`,
+    `MockHttpResponseGenerator` — is idiomatically marked `@IsTest` even
+    though it declares no test methods of its own (so it can never be
+    invoked from production code and is excluded from Apex code-size
+    limits). Such a class matches this scan like any other `@IsTest` class
+    and is included in the auto `--tests` list; whether `sf` runs zero tests
+    for it harmlessly or errors on "no test methods" is an org/CLI-version
+    behaviour this script does not special-case. Pass `--tests` explicitly
+    to exclude it if that turns out to matter for a given org.
+    """
+    names: set[str] = set()
+    if not root.is_dir():
+        return []
+    for path in sorted(root.rglob("*.cls")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for match in TEST_CLASS_RE.finditer(text):
+            names.add(match.group(1))
+    return sorted(names)
 
 
 class ApiVersionResolution(NamedTuple):
@@ -430,9 +500,23 @@ def resolve_manifest_text(
 # sf CLI invocation + result handling
 # --------------------------------------------------------------------------
 
-def build_sf_command(mode: str, org_alias: str, manifest_name: str = "package.xml") -> list[str]:
+def build_sf_command(
+    mode: str,
+    org_alias: str,
+    manifest_name: str = "package.xml",
+    test_level: str = DEFAULT_TEST_LEVEL,
+    tests: list[str] | None = None,
+) -> list[str]:
     """The `sf` command line. --dry-run is always present — there is no
     parameter anywhere in this script that can remove it.
+
+    Test flags confirmed via `sf project deploy start --help`
+    (`@salesforce/cli/2.149.9`): `-l, --test-level=<option>` and
+    `-t, --tests=<value>...` (one `--tests <name>` pair per class; `sf`
+    accepts the flag repeated). `test_level="NoTestRun"` (the default) adds
+    neither flag, so the command is byte-for-byte what it was before this
+    parameter existed — `tests` is silently ignored in that case too, exactly
+    as `sf` itself ignores `--tests` outside `RunSpecifiedTests`.
     """
     cmd = ["sf", "project", "deploy", "start"]
     if mode == "manifest":
@@ -440,7 +524,91 @@ def build_sf_command(mode: str, org_alias: str, manifest_name: str = "package.xm
     else:
         cmd += ["--source-dir", "force-app"]
     cmd += ["--dry-run", "--target-org", org_alias, "--wait", "10", "--json"]
+    if test_level != "NoTestRun":
+        cmd += ["--test-level", test_level]
+        if test_level == "RunSpecifiedTests":
+            for name in tests or []:
+                cmd += ["--tests", name]
     return cmd
+
+
+class TestSummary(NamedTuple):
+    """Apex test results extracted from the `sf` CLI's deploy JSON (S2-F-06).
+
+    Populated for every `--test-level`, including `NoTestRun` — where `run`,
+    `passed` and `failed` are legitimately 0 and `coverage_pct` is `None`.
+    Rendering that all-zero case explicitly (instead of omitting the line)
+    is the point: every dry run before this fix silently carried
+    `runTestsEnabled: false` and nothing in `summary.md` said so.
+
+    * requested_tests — the explicit `--tests` override or the auto-scanned
+      `@IsTest` class list, only when `level == "RunSpecifiedTests"`; `None`
+      for `RunLocalTests`/`NoTestRun`.
+    * coverage_pct — aggregate percentage across every entry in
+      `result.details.runTestResult.codeCoverage`:
+      `100 * (sum(numLocations) - sum(numLocationsNotCovered)) / sum(numLocations)`,
+      rounded to 1 decimal; `None` when there are no coverage entries at all
+      (`NoTestRun`, or a CLI/org response that omits the field).
+    * failures — `(class, method, message, stack_first_line)` tuples from
+      `result.details.runTestResult.failures`, sorted by `(class, method)`.
+    """
+
+    level: str
+    requested_tests: list[str] | None
+    run: int
+    passed: int
+    failed: int
+    coverage_pct: float | None
+    failures: list[tuple[str, str, str, str]]
+
+
+def extract_test_summary(
+    parsed: dict | None, level: str, requested_tests: list[str] | None
+) -> TestSummary:
+    """Read `numberTestsCompleted`, `numberTestErrors` and the code-coverage
+    figures out of `sf project deploy start --json`'s `result` object.
+    Tolerant of every shape seen so far — a `NoTestRun` response with no
+    `details.runTestResult` at all, and one with an all-zeros
+    `runTestResult` — both parse to the same all-zero `TestSummary` rather
+    than raising.
+    """
+    result = parsed.get("result") if isinstance(parsed, dict) else None
+    result = result if isinstance(result, dict) else {}
+
+    run = result.get("numberTestsCompleted") or 0
+    failed = result.get("numberTestErrors") or 0
+    passed = max(run - failed, 0)
+
+    details = result.get("details")
+    details = details if isinstance(details, dict) else {}
+    run_test_result = details.get("runTestResult")
+    run_test_result = run_test_result if isinstance(run_test_result, dict) else {}
+
+    coverage_pct: float | None = None
+    code_coverage = run_test_result.get("codeCoverage") or []
+    total_locations = sum(int(c.get("numLocations") or 0) for c in code_coverage)
+    if total_locations > 0:
+        not_covered = sum(int(c.get("numLocationsNotCovered") or 0) for c in code_coverage)
+        coverage_pct = round(100.0 * (total_locations - not_covered) / total_locations, 1)
+
+    failures: list[tuple[str, str, str, str]] = []
+    for f in run_test_result.get("failures") or []:
+        stack = f.get("stackTrace") or ""
+        stack_first = stack.splitlines()[0] if stack else ""
+        failures.append(
+            (f.get("name", ""), f.get("methodName", ""), f.get("message", ""), stack_first)
+        )
+    failures.sort(key=lambda t: (t[0], t[1]))
+
+    return TestSummary(
+        level=level,
+        requested_tests=requested_tests,
+        run=run,
+        passed=passed,
+        failed=failed,
+        coverage_pct=coverage_pct,
+        failures=failures,
+    )
 
 
 def strip_json_prefix(text: str) -> str:
@@ -472,6 +640,9 @@ def render_summary(
     copy_result: CopyResult | None = None,
     api_version: str | None = None,
     api_version_source: str | None = None,
+    tests: TestSummary | None = None,
+    planned_test_level: str | None = None,
+    planned_tests: list[str] | None = None,
 ) -> str:
     lines = ["# Mock deploy result", "", f"- org: `{org_alias}`", f"- mode: `{mode}`"]
 
@@ -486,6 +657,16 @@ def render_summary(
 
     if plan_only:
         lines.append("- status: **not run (--plan-only)**")
+        if planned_test_level is not None:
+            if planned_test_level == "NoTestRun":
+                lines.append(f"- tests: level {planned_test_level} (not run — --plan-only)")
+            else:
+                names = ", ".join(planned_tests) if planned_tests else "(none)"
+                count = len(planned_tests) if planned_tests else 0
+                lines.append(
+                    f"- tests: level {planned_test_level} · planned {count} test(s): "
+                    f"{names} (not run — --plan-only)"
+                )
     else:
         result = parsed.get("result") if isinstance(parsed, dict) else None
         result = result if isinstance(result, dict) else {}
@@ -516,6 +697,24 @@ def render_summary(
         ]
         for component_type, name, outcome in rows:
             lines.append(f"| {component_type} | {name} | {outcome} |")
+
+        if tests is not None:
+            coverage_str = f"{tests.coverage_pct}%" if tests.coverage_pct is not None else "n/a"
+            lines.append("")
+            lines.append(
+                f"- tests: level {tests.level} · run {tests.run} · passed {tests.passed} "
+                f"· failed {tests.failed} · coverage {coverage_str}"
+            )
+            if tests.failures:
+                lines += [
+                    "",
+                    "## Test failures",
+                    "",
+                    "| Class | Method | Message | Stack (first line) |",
+                    "|---|---|---|---|",
+                ]
+                for cls, method, message, stack_first in tests.failures:
+                    lines.append(f"| {cls} | {method} | {message} | {stack_first} |")
 
     if manifest_resolution is not None and manifest_resolution.drift_note:
         lines += ["", "## Manifest drift", "", manifest_resolution.drift_note.rstrip("\n")]
@@ -581,6 +780,28 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--out", default=None,
         help="Output directory. Default: <build_dir>/reports/mock-deploy/<UTC "
              "timestamp>/. Nothing is ever written outside this directory.",
+    )
+    parser.add_argument(
+        "--test-level", choices=TEST_LEVELS, default=DEFAULT_TEST_LEVEL, metavar="LEVEL",
+        help="Apex test level for the `sf` dry run (choices: "
+             f"{'|'.join(TEST_LEVELS)}). Default: NoTestRun — today's "
+             "behaviour, unchanged; every dry run before this flag existed "
+             "compiled Apex without ever executing it (S2-F-06). "
+             "RunSpecifiedTests runs every @IsTest class found under the "
+             "selected steps' assembled artefacts unless --tests overrides "
+             "that list. RunLocalTests runs every test not in a managed "
+             "package. RunAllTestsInOrg is deliberately not offered here "
+             "(org-wide and far slower than validating one build). Tests "
+             "run IN THE ORG as part of `--dry-run` validation and nothing "
+             "still ever deploys or saves — `--dry-run` stays hard-coded "
+             "regardless of --test-level.",
+    )
+    parser.add_argument(
+        "--tests", default=None, metavar="A,B",
+        help="Comma-separated Apex test class names to run. Only used with "
+             "--test-level RunSpecifiedTests, where it overrides the "
+             "automatic @IsTest scan of the selected steps' artefacts; "
+             "ignored (with a WARN on stderr) for any other --test-level.",
     )
     parser.add_argument(
         "--plan-only", action="store_true",
@@ -650,13 +871,39 @@ def main(argv: list[str] | None = None) -> int:
         if manifest_resolution.warning:
             print(manifest_resolution.warning, file=sys.stderr)
 
-    cmd = build_sf_command(args.mode, args.org_alias, manifest_name)
+    test_level = args.test_level
+    tests_override = (
+        [t.strip() for t in args.tests.split(",") if t.strip()] if args.tests else None
+    )
+    resolved_tests: list[str] | None = None
+    if test_level == "RunSpecifiedTests":
+        resolved_tests = tests_override if tests_override else find_test_classes(force_app_dir)
+        if not resolved_tests:
+            print(
+                "error: --test-level RunSpecifiedTests requires at least one Apex "
+                "test class — none found under the selected steps' artefacts (no "
+                "@IsTest class) and no --tests override given",
+                file=sys.stderr,
+            )
+            return 2
+    elif tests_override:
+        print(
+            f"WARN: --tests given but --test-level is {test_level}; ignoring --tests "
+            "(only used with --test-level RunSpecifiedTests)",
+            file=sys.stderr,
+        )
+
+    cmd = build_sf_command(
+        args.mode, args.org_alias, manifest_name, test_level=test_level, tests=resolved_tests
+    )
     assert "--dry-run" in cmd  # hard invariant: this script never deploys
 
     if args.plan_only:
         summary = render_summary(
             None, args.mode, args.org_alias, manifest_resolution, plan_only=True,
             copy_result=copy_result, api_version=api_version, api_version_source=api_version_source,
+            planned_test_level=test_level,
+            planned_tests=resolved_tests if test_level == "RunSpecifiedTests" else None,
         )
         (out_dir / "summary.md").write_text(summary, encoding="utf-8")
         print(summary)
@@ -694,12 +941,27 @@ def main(argv: list[str] | None = None) -> int:
             print(raw_stderr, file=sys.stderr)
         return 2
 
+    test_summary = extract_test_summary(parsed, test_level, resolved_tests)
+    tests_record = {
+        "level": test_summary.level,
+        "requested_tests": test_summary.requested_tests,
+        "run": test_summary.run,
+        "passed": test_summary.passed,
+        "failed": test_summary.failed,
+        "coverage_pct": test_summary.coverage_pct,
+        "failures": [
+            {"class": c, "method": m, "message": msg, "stack_first_line": s}
+            for c, m, msg, s in test_summary.failures
+        ],
+    }
+
     if isinstance(parsed, dict):
         # `parsed` is this run's own in-memory copy of the sf CLI's JSON — safe
-        # to extend before we serialize it. "api_version" is not a key `sf`
-        # itself ever emits, so this cannot collide with or shadow one of its
-        # existing keys (status, result, warnings, ...).
+        # to extend before we serialize it. "api_version"/"tests" are not keys
+        # `sf` itself ever emits, so neither can collide with or shadow one of
+        # its existing keys (status, result, warnings, ...).
         parsed["api_version"] = api_version_record
+        parsed["tests"] = tests_record
 
     (out_dir / "result.json").write_text(json.dumps(parsed, indent=2) + "\n", encoding="utf-8")
 
@@ -708,7 +970,7 @@ def main(argv: list[str] | None = None) -> int:
 
     summary = render_summary(
         parsed, args.mode, args.org_alias, manifest_resolution, copy_result=copy_result,
-        api_version=api_version, api_version_source=api_version_source,
+        api_version=api_version, api_version_source=api_version_source, tests=test_summary,
     )
     (out_dir / "summary.md").write_text(summary, encoding="utf-8")
     print(summary)

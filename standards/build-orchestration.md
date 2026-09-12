@@ -603,7 +603,13 @@ types.
    The case-onboarding example shows why it matters: three milestones' worth
    of green checkers let five platform rules through that only the org caught
    (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`), and M3's
-   case settings added three more (`MOCK-DEPLOY-M3.md`).
+   case settings added three more (`MOCK-DEPLOY-M3.md`). `--test-level
+   {NoTestRun,RunSpecifiedTests,RunLocalTests}` (default `NoTestRun`, i.e.
+   unchanged behaviour) lets Apex actually execute during that same `--dry-run`
+   validation rather than only compile (S2-F-06: every prior tier2-webhook run
+   carried `runTestsEnabled: false`), so a milestone report resting on a
+   `mock_deploy.py` run should cite the test-level `summary.md` recorded for
+   that run, not assume tests ran.
 2. **Checker shape.** A `checker` test's `command` must match
    `^python3 skills/[a-z]+/[a-z0-9-]+/scripts/check_[a-z0-9_]+\.py\b`, and the
    file must exist on disk. A checker that does not exist is an ERROR at plan
