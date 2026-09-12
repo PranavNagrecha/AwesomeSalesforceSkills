@@ -1,0 +1,420 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T07-15-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-15-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-15-00Z.json",
+  "outcome": "completed",
+  "summary": "Built step M1-S01 (type `validation`, scale `ask`) of build `opp-amount-lock` into four declared source-format artefacts plus the always-written deploy-order note: the Opportunity ValidationRule `Amount_Locked_After_Closed_Won`, the CustomPermission `Bypass_Opp_Amount_Lock` it reads through `$Permission`, the PermissionSet `Opp_Amount_Lock_Bypass` that grants it, and a package.xml at API 67.0 naming all three. Both cited checkers exited 0 on the first pass with zero repair passes; every XML file parses; `check-outputs` is ok. One material divergence from the plan: the emitted `errorConditionFormula` omits the `NOT(ISBLANK(StageName))` clause that `plan.json.steps[].inputs.errorConditionFormula` carries, per the invoking instruction and verification warning W4, which costs one extra advisory REVIEW finding in the validation-rule checker.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: `deploy-order.md` is written on every run but is not in the step's `outputs[]` (an undeclared artefact, exactly verification warning W8), and the `<label>` value on both the CustomPermission and the PermissionSet was derived from the API name rather than answered from any of the four Step 4 sources. Not HIGH. Not LOW: `check-outputs` is ok, every declared output was written, nothing landed outside `artefacts/M1-S01/`, both checkers exited 0 first pass, and the step is not blocked.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/opp-amount-lock/",
+    "step_id": "M1-S01",
+    "api_version": "67.0 (supplied by the invocation; plan.json carries no api_version key, and the agent's documented fallback would have been 62.0)",
+    "object": "Opportunity",
+    "field": "Amount",
+    "rule_api_name": "Amount_Locked_After_Closed_Won",
+    "active": true,
+    "errorConditionFormula_as_planned": "AND(\n  NOT($Permission.Bypass_Opp_Amount_Lock),\n  NOT(ISNEW()),\n  NOT(ISBLANK(StageName)),\n  ISPICKVAL(StageName, \"Closed Won\"),\n  Amount < PRIORVALUE(Amount)\n)",
+    "errorConditionFormula_as_built": "AND(\n  NOT($Permission.Bypass_Opp_Amount_Lock),\n  NOT(ISNEW()),\n  ISPICKVAL(StageName, \"Closed Won\"),\n  Amount < PRIORVALUE(Amount)\n)",
+    "errorDisplayField": "Amount",
+    "errorMessage": "Amount cannot be decreased once this Opportunity is Closed Won. Amount is locked after close to protect the recorded deal value. Contact your manager to reopen the Opportunity before changing Amount.",
+    "bypass_custom_permission": "Bypass_Opp_Amount_Lock",
+    "bypass_permission_set": "Opp_Amount_Lock_Bypass",
+    "credentials_present": "none \u2014 no input matched a credential shape per skills/devops/pipeline-secrets-management; nothing redacted"
+  },
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Every row of admin/validation-rules' Questions-to-Ask table was answered from Q1-Q7 in steps[].inputs.answers, but neither cited skill has a question row covering the human-readable <label> on a CustomPermission or a PermissionSet, and no Step 4 source supplied one; both labels were derived mechanically from the API name.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Add the two label strings to steps[].inputs via `build_plan.py amend-step`, or add a label row to admin/custom-permissions' Questions-to-Ask table."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "ValidationRule Amount_Locked_After_Closed_Won",
+      "target_path": "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ValidationRule xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <fullName>Amount_Locked_After_Closed_Won</fullName>\n    <active>true</active>\n    <description>Locks Opportunity Amount once Closed Won so the recorded deal value cannot be lowered after close. Owner: Sales Ops. Bypass: Bypass_Opp_Amount_Lock (Sales Ops only).</description>\n    <errorConditionFormula>AND(\n  NOT($Permission.Bypass_Opp_Amount_Lock),\n  NOT(ISNEW()),\n  ISPICKVAL(StageName, \"Closed Won\"),\n  Amount &lt; PRIORVALUE(Amount)\n)</errorConditionFormula>\n    <errorDisplayField>Amount</errorDisplayField>\n    <errorMessage>Amount cannot be decreased once this Opportunity is Closed Won. Amount is locked after close to protect the recorded deal value. Contact your manager to reopen the Opportunity before changing Amount.</errorMessage>\n</ValidationRule>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "CustomPermission Bypass_Opp_Amount_Lock",
+      "target_path": "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CustomPermission xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <description>Grants the Sales Ops team an exception to the Opportunity Amount-lock validation rule so they can correct Amount on a Closed Won Opportunity. Consumer: Opportunity.Amount_Locked_After_Closed_Won.</description>\n    <label>Bypass Opportunity Amount Lock</label>\n</CustomPermission>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "PermissionSet Opp_Amount_Lock_Bypass",
+      "target_path": "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PermissionSet xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>Opportunity Amount Lock Bypass</label>\n    <description>Grants the Sales Ops-only bypass for the Opportunity Amount-lock validation rule. Assigned to the two Sales Ops users who may correct Amount after Closed Won; reviewed each release.</description>\n    <hasActivationRequired>false</hasActivationRequired>\n    <customPermissions>\n        <enabled>true</enabled>\n        <name>Bypass_Opp_Amount_Lock</name>\n    </customPermissions>\n</PermissionSet>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "package.xml (API 67.0)",
+      "target_path": "artefacts/M1-S01/package.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <types>\n        <members>Bypass_Opp_Amount_Lock</members>\n        <name>CustomPermission</name>\n    </types>\n    <types>\n        <members>Opportunity.Amount_Locked_After_Closed_Won</members>\n        <name>ValidationRule</name>\n    </types>\n    <types>\n        <members>Opp_Amount_Lock_Bypass</members>\n        <name>PermissionSet</name>\n    </types>\n    <version>67.0</version>\n</Package>\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "deploy-order.md",
+      "target_path": "artefacts/M1-S01/deploy-order.md",
+      "content": "# Deploy order \u2014 M1-S01 (Amount_Locked_After_Closed_Won)\n\nBuild: `opp-amount-lock` \u00b7 Step: `M1-S01` \u00b7 Manifest: `package.xml` (`<version>67.0</version>`)\n\n## The three components\n\n| # | Type | Member | File |\n|---|---|---|---|\n| 1 | `CustomPermission` | `Bypass_Opp_Amount_Lock` | `customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml` |\n| 2 | `PermissionSet` | `Opp_Amount_Lock_Bypass` | `permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml` |\n| 3 | `ValidationRule` | `Opportunity.Amount_Locked_After_Closed_Won` | `objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml` |\n\n## Ordering constraints\n\n1. **`CustomPermission` before `PermissionSet`.** The permission set carries a *grant*, not the\n   definition: `PermissionSet` and `Profile` \"do not carry the permission's definition \u2014 only a grant\n   of a permission that must already exist\", and \"A `PermissionSet` naming a custom permission that\n   does not yet exist fails the deploy\"\n   (`skills/admin/custom-permissions/references/metadata-examples.md`, \"Where the files live\" and\n   \"Retrieve and deploy\").\n\n2. **`CustomPermission` before `ValidationRule`.** The rule's formula reads\n   `$Permission.Bypass_Opp_Amount_Lock`. The same reference section states the rule: deploy\n   definitions \"before any consumer that references them\". The consumer here is the validation rule's\n   `errorConditionFormula`.\n\n3. **`PermissionSet` and `ValidationRule` are siblings** \u2014 neither references the other, so their\n   relative order does not matter once (1) and (2) hold.\n\n4. **One request is the safe shape.** All three members are in this step's `package.xml`, so a single\n   `sf project deploy` request resolves 1\u20133 internally. Splitting the deploy is only necessary if the\n   org already holds part of the set. `skills/devops/metadata-api-retrieve-deploy/references/gotchas.md`\n   (L124) names `PermissionSet` \u2194 `CustomPermission` \u2194 custom-field cycles as a known\n   \"validation passes / deploy fails\" hazard when cross-type references are split across requests \u2014\n   another reason to keep these three together.\n\n5. **Dependency-driven sequence, if this step is folded into a larger release.**\n   `skills/admin/change-management-and-deployment/references/llm-anti-patterns.md` (Anti-Pattern 4)\n   orders a release: data model \u2192 code \u2192 flows \u2192 layouts/record types \u2192 **permission sets and\n   profiles** \u2192 sharing rules \u2192 reports. This step contributes only to the \"permission sets\" band plus\n   the object-embedded validation rule, so it deploys after any field or record-type change in the same\n   release and before nothing.\n\n## Dependencies on components outside this step\n\n**None.** Both fields the formula touches \u2014 `Amount` (Currency) and `StageName` (Picklist) \u2014 are\nstandard Opportunity fields already present in every target org; no step in this build creates them.\nThe rule is not scoped to a record type, so no `RecordType` is a prerequisite. `depends_on` for\n`M1-S01` is empty in `plan.json`, and this note confirms that is correct rather than an omission.\n\n## Post-deploy, not part of the deploy\n\n- Assign `Opp_Amount_Lock_Bypass` to the **two named Sales Ops users** (clarification Q3). The\n  permission set deploys empty of assignees; an unassigned bypass is a bypass nobody holds.\n- Assumption **A1** (`PLAN.md`): `Amount` is on the Opportunity page layout(s) in scope. If it is not,\n  `errorDisplayField` \"changes automatically to Top of Page\"\n  (`skills/admin/validation-rules/references/metadata-examples.md`, element table) and the error\n  silently relocates. Confirm on the layout after deploy.\n- Decision **D2** (`PLAN.md`): the rule deploys `active=true` against data that already contains a\n  handful of lowered Closed Won Amounts. The delta check (`Amount < PRIORVALUE(Amount)`) means those\n  records are not re-blocked on unrelated edits, but they stay non-conforming by design.\n\n## Validate-only command \u2014 the human runs this, no agent does\n\n```bash\nsf project deploy validate \\\n  --manifest .sfskills/builds/opp-amount-lock/artefacts/M1-S01/package.xml \\\n  --source-dir .sfskills/builds/opp-amount-lock/artefacts/M1-S01 \\\n  --target-org <alias>\n```\n\n`sf project deploy validate` is documented for a **production** target and requires Apex tests; against\na sandbox use `sf project deploy start --dry-run` instead\n(`agents/_shared/AGENT_CONTRACT.md`, Gate C). A validate-only deploy proves the XML parses and the\nformula compiles. It does **not** prove the bypass works \u2014 that needs the two Apex tests in\n`skills/admin/validation-rules/references/metadata-examples.md` (\"Apex tests\", Test 1 and Test 2), or\nthe manual acceptance line on milestone `M1`.\n\nNothing in this build deploys. This file is text for a human to copy.\n"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "step_type": "validation",
+    "build_id": "opp-amount-lock",
+    "build_mode": "design-only",
+    "scale": "ask",
+    "invoked_by": "build-step-runner (inline execution; the runner sets the terminal status, so this agent ran neither set-status command in its Step 9)",
+    "api_version": "67.0",
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+        "type": "ValidationRule",
+        "declared": true,
+        "element_source": "skills/admin/validation-rules/references/metadata-examples.md \u2014 'The type in one table' element table + Example 2 (DX source format, root <ValidationRule>)"
+      },
+      {
+        "path": "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+        "type": "CustomPermission",
+        "declared": true,
+        "element_source": "skills/admin/custom-permissions/references/metadata-examples.md \u00a7 2 'Bypass custom permission (description names the consumer)'"
+      },
+      {
+        "path": "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+        "type": "PermissionSet",
+        "declared": true,
+        "element_source": "skills/admin/custom-permissions/references/metadata-examples.md \u00a7 5 'The permission set that grants it'"
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "type": "Package",
+        "declared": true,
+        "element_source": "skills/admin/validation-rules/references/metadata-examples.md \u00a7 package.xml (object-qualified ValidationRule members, no wildcard) + skills/admin/custom-permissions/references/metadata-examples.md \u00a7 package.xml"
+      },
+      {
+        "path": "artefacts/M1-S01/deploy-order.md",
+        "type": "(note)",
+        "declared": false,
+        "element_source": "agents/metadata-builder/AGENT.md Step 7 \u2014 written on every run; W8 predicted it would be undeclared"
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M1-S01/deploy-order.md"
+    ],
+    "decision_record": [
+      {
+        "question": "Which field does the user actually edit to cause this \u2014 the one on the record, or a child record?",
+        "answer": "Amount is typed directly on the Opportunity; no Opportunity Products / Line Items are in use, so nothing rolls up into Amount.",
+        "source": "step inputs (answers.Q1)",
+        "determined": "The rule lives on Opportunity rather than on a child object; no record-triggered flow on OpportunityLineItem is needed."
+      },
+      {
+        "question": "Is any workflow field update or automation writing this field after save?",
+        "answer": "No Workflow Rule field update or Process Builder writes Amount; the one record-triggered Flow on Opportunity writes NextStep only.",
+        "source": "step inputs (answers.Q2)",
+        "determined": "The rule is a real database invariant for Amount \u2014 no post-save writer can reintroduce a lowered value after validation runs."
+      },
+      {
+        "question": "Which users and integrations must be able to save a record the rule would reject?",
+        "answer": "Only the Sales Ops team (2 people), via a named Custom Permission on a dedicated Permission Set \u2014 not a profile exemption. No integration user writes Amount.",
+        "source": "step inputs (answers.Q3) + decision D1",
+        "determined": "NOT($Permission.Bypass_Opp_Amount_Lock) as the first clause; CustomPermission Bypass_Opp_Amount_Lock; PermissionSet Opp_Amount_Lock_Bypass with a customPermissions grant and no object or field permissions."
+      },
+      {
+        "question": "Is the field the error should attach to on every layout for every record type in scope?",
+        "answer": "Assumed yes (assumption A1 from Q8).",
+        "source": "step inputs (assumptions A1) \u2014 a plan assumption, not a confirmed layout",
+        "determined": "errorDisplayField = Amount. If A1 is wrong the error silently relocates to Top of Page; carried into deploy-order.md as a post-deploy check."
+      },
+      {
+        "question": "Does the message fit in 255 characters and name both the problem and the fix?",
+        "answer": "Error message fixed to the proposed default text, verbatim.",
+        "source": "step inputs (answers.Q4 / inputs.errorMessage)",
+        "determined": "errorMessage written verbatim, 199 characters, under the documented 255 ceiling."
+      },
+      {
+        "question": "Does the data already violate this rule today?",
+        "answer": "A handful of Closed Won Opportunities already have a lowered Amount; no data clean-up is in scope.",
+        "source": "step inputs (answers.Q5) + decision D2",
+        "determined": "active=true with a delta check (Amount < PRIORVALUE(Amount)) rather than active=false \u2014 the skill's documented alternative \u2014 so already-violating records are not re-blocked on unrelated edits."
+      },
+      {
+        "question": "Does the formula touch an address, a person name, or a dependent picklist?",
+        "answer": "No \u2014 only Amount (Currency) and StageName (Picklist).",
+        "source": "step inputs (assumptions A2, from Q9)",
+        "determined": "No compound-field rewrite needed; the checker's COMPOUND_FIELDS scan is silent, as expected."
+      },
+      {
+        "question": "What human-readable label do the CustomPermission and the PermissionSet carry?",
+        "answer": "DERIVED DEFAULT \u2014 'Bypass Opportunity Amount Lock' and 'Opportunity Amount Lock Bypass', de-underscored from the API names.",
+        "source": "none of the four Step 4 sources; derived by the same transform the skill's own examples use (Bypass_Validation_Rules -> 'Bypass Validation Rules')",
+        "determined": "<label> on both files. Neither cited skill documents a default for this, so it is recorded as a derived value, not a skill default."
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/opp-amount-lock (skills symlink present)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stderr": "WARN: 2 finding(s) detected (0 blocking)",
+        "findings": [
+          {
+            "severity": "REVIEW",
+            "message": "picklist logic has no explicit blank guard"
+          },
+          {
+            "severity": "INFO",
+            "location": "field references",
+            "message": "1 validation rule(s) on 1 object(s) (Opportunity) have no field inventory in this scope"
+          }
+        ],
+        "note": "The plan's acceptance-test description records 'WARN: 1 finding(s) detected (0 blocking)'. The second finding is the REVIEW raised by the formula divergence below. `expected: exit 0` still holds; the description no longer matches byte-for-byte."
+      },
+      {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/opp-amount-lock (skills symlink present)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 1; Bypass_Opp_Amount_Lock granted by permission set 'Opp_Amount_Lock_Bypass'; Summary: 0 error(s), 0 warning(s), 0 info.",
+        "note": "Reproduces the plan's acceptance-test description verbatim."
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" .sfskills/builds/opp-amount-lock/artefacts/M1-S01",
+        "cwd": "repo root",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "note": "All four XML files parse. The `<` in the formula is emitted as `&lt;` per verification warning W7 and the skill's 'Note `&lt;`' line."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "formula_divergence": {
+      "planned": "AND(\n  NOT($Permission.Bypass_Opp_Amount_Lock),\n  NOT(ISNEW()),\n  NOT(ISBLANK(StageName)),\n  ISPICKVAL(StageName, \"Closed Won\"),\n  Amount < PRIORVALUE(Amount)\n)",
+      "built": "AND(\n  NOT($Permission.Bypass_Opp_Amount_Lock),\n  NOT(ISNEW()),\n  ISPICKVAL(StageName, \"Closed Won\"),\n  Amount < PRIORVALUE(Amount)\n)",
+      "what_changed": "The NOT(ISBLANK(StageName)) blank guard was dropped. Clause order and every other clause are unchanged.",
+      "why": "The invoking instruction specified this four-clause, bypass-first formula. It also resolves verification warning W4, which records that admin/validation-rules contradicts itself on ISBLANK over a picklist and offers NOT(ISBLANK(TEXT(StageName))) as the reconciliation if the platform rejects a raw picklist argument.",
+      "syntax_note": "The invoking instruction wrote the clauses joined with `&&` and the literal as 'Closed Won' in single quotes. Both were rendered instead as AND(...) with double quotes: AND(...) is the canonical shape in templates/admin/validation-rule-patterns.md ('The canonical VR shape') and in every example in admin/validation-rules; single-quoted literals appear in this skill only inside references/llm-anti-patterns.md as an LLM anti-pattern, and Salesforce formula text literals take double quotes. The clause set and their order are exactly as instructed.",
+      "cost": "check_validation_rules.py line 418 raises a REVIEW finding when a formula contains ISPICKVAL( and no ISBLANK(. REVIEW carries severity weight 0 and is not in BLOCKING_SEVERITIES, so the checker still exits 0 and the acceptance test's `expected: exit 0` still holds.",
+      "contradicted_guidance": "skills/admin/validation-rules/SKILL.md '## Formula Best Practices' opens with 'Always guard picklist checks against blank' and gives the exact counter-example AND(NOT(ISBLANK(StageName)), ISPICKVAL(StageName, \"Closed Won\")). Its '## Proactive Triggers' table repeats it. This artefact does not carry that guard.",
+      "why_it_is_nonetheless_safe_here": "ISPICKVAL(StageName, \"Closed Won\") returns FALSE when StageName is blank, so the positive form cannot misfire on a blank picklist; the skill's warning is aimed at the NOT(ISPICKVAL(...)) form. StageName is a required standard picklist on Opportunity and cannot be blank on a saved record in any case.",
+      "remedies_for_the_human": [
+        "Accept as built.",
+        "Restore the guard in the W4-reconciled form NOT(ISBLANK(TEXT(StageName))) \u2014 valid on a picklist, silences the REVIEW finding, and restores the plan's clause count.",
+        "Restore the plan's literal NOT(ISBLANK(StageName)) \u2014 matches plan.json exactly but is the form W4 flags as possibly not compilable against a raw picklist."
+      ],
+      "plan_is_now_out_of_sync": "plan.json.steps[].inputs.errorConditionFormula still carries the five-clause form. Reconciling it is `build_plan.py amend-step`, which neither this agent nor build-step-runner is authorised to run."
+    }
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "metadata-grounding",
+      "observation": "Both cited skills carry deployable XML in references/metadata-examples.md, so the Step 3 gap rule never came close to firing and every emitted element name was copied rather than recalled.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -l '^```xml' skills/admin/{validation-rules,custom-permissions}/references/*.md skills/.../SKILL.md skills/.../templates/*",
+        "count": 3,
+        "path": "skills/admin/validation-rules/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-quality",
+      "observation": "check_custom_permissions.py reproduced the plan's acceptance-test description byte for byte, including the coverage table row naming the granting permission set, which means the planner actually ran it rather than predicting its output.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/artefacts/M1-S01",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-consistency",
+      "observation": "admin/validation-rules instructs 'Always guard picklist checks against blank' with ISBLANK applied to a raw picklist field, while its own checker only tests for the substring ISBLANK( \u2014 so the skill would pass a formula the Salesforce formula compiler is likely to reject for a picklist argument, and fail a correct TEXT()-wrapped one no differently.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/SKILL.md",
+        "query": "lines 115-126 (Formula Best Practices) vs scripts/check_validation_rules.py line 418"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-completeness",
+      "observation": "Neither cited skill has a Questions-to-Ask row for the human-readable <label> on a CustomPermission or a PermissionSet, so a required element of both files had to be derived from the API name rather than answered.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-permissions/SKILL.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-completeness",
+      "observation": "deploy-order.md is written on every run of this agent by its own Step 7 but is absent from the step's outputs[], so check-outputs never adjudicates it \u2014 exactly what verification warning W8 predicted.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].outputs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "domain": "formula-correctness",
+      "observation": "Three sources bind the formula differently \u2014 plan.json.inputs carries NOT(ISBLANK(StageName)), verification warning W4 recommends NOT(ISBLANK(TEXT(StageName))), and the invoking instruction drops the guard entirely \u2014 and no org is available in a design-only build to settle which compiles.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/envelopes/verification/2026-09-12T07-00-00Z.md",
+        "query": "warning W4"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "api-version",
+      "observation": "plan.json carries no api_version key, so the 67.0 stamped into package.xml came from the invocation; the agent's own documented fallback is 62.0 and both cited skills' package.xml examples print 62.0, so nothing in the build directory would have produced 67.0 on its own.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "top-level api_version"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The molecular tests for this step have not been run by this agent; the tester owns them.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the four declared acceptance tests gate the step's move from built to tested, and this agent is forbidden from running them."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "RUN.md is the scale-ask documentation view and has not been refreshed with this step's artefacts or checker exit codes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/RUN.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because at scale ask RUN.md is one of the three files the human reads before the accept gate, and it currently predates this build step."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Runs the four declared acceptance tests for M1-S01 and writes tests/M1-S01/results.json, which gates the move to tested."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Refreshes RUN.md with this step's artefacts, checker exit codes and the formula divergence once the step is tested."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "Formula Best Practices (bypass-pattern ranking, picklist blank-guard guidance), Salesforce-Specific Gotchas (PRIORVALUE null on insert), and the Questions to Ask Before Configuring table bound in the decision record"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/metadata-examples.md",
+      "used_for": "The ValidationRule element table (fullName/active/description/errorConditionFormula/errorDisplayField/errorMessage, 255-char ceiling, errorDisplayField Top-of-Page fallback), Example 2's DX source-format root element, the `&lt;` escaping rule, and the object-qualified no-wildcard package.xml members"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/gotchas.md",
+      "used_for": "'PRIORVALUE Does Not Work on Insert' \u2014 the GOOD form putting NOT(ISNEW()) ahead of the PRIORVALUE clause, which is the shape this rule uses"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 2 \u2014 the single-quoted, &&-joined form the invoking instruction used is the shape this file records as what an LLM generates wrong; the corrected AND(...) form is what was emitted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "\u00a7 2 the bypass CustomPermission shape (description + label, no fullName in DX source format), \u00a7 5 the PermissionSet customPermissions{enabled,name} grant shape, \u00a7 7 the CP-DESC-01/02 description thresholds, and the CustomPermission/PermissionSet package.xml members"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4's dependency-driven deployment sequence, which orders the deploy-order note's band for permission sets"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/references/gotchas.md",
+      "used_for": "The PermissionSet <-> CustomPermission cross-type 'validation passes / deploy fails' hazard cited in deploy-order.md constraint 4"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format <metadataType>/ directory tree (objects/, permissionsets/) the artefacts are laid out in"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "'The canonical VR shape' \u2014 bypass first, relevance gate second, business rule last \u2014 and the IsChanged/IsNew section's PRIORVALUE line ('the value at the start of the save context; use for cannot-regress rules')"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 3.1 (scale ask: one step, human_gate false, RUN.md), \u00a7 4 (the validation step type and metadata-builder as its design-only owner), \u00a7 5 (checkers run verbatim from the build directory), \u00a7 8 (a knowledge gap is a signal to deepen a skill, never to freestyle)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement, the Citations schema, and Gate C's validate-vs-dry-run distinction quoted in deploy-order.md"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope + report pairing, the dimensions_skipped three-way state rule, and the redaction requirement applied to inputs_received"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The steps[] / inputs{} / outputs[] fields read, and the fields this agent must leave alone"
+    }
+  ]
+}

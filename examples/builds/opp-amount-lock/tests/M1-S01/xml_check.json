@@ -1,0 +1,22 @@
+[
+  {
+    "path": "artefacts/M1-S01/package.xml",
+    "parsed": true,
+    "message": null
+  },
+  {
+    "path": "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+    "parsed": true,
+    "message": null
+  },
+  {
+    "path": "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+    "parsed": true,
+    "message": null
+  },
+  {
+    "path": "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+    "parsed": true,
+    "message": null
+  }
+]

@@ -1,0 +1,600 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T08-20-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/M1/2026-09-12T08-20-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1/2026-09-12T08-20-00Z.json",
+  "summary": "Milestone M1 (scale: ask, one step, M1-S01 documented) verified across steps: the $Permission -> CustomPermission -> PermissionSet three-way name check resolves identically, package.xml is two-way consistent with the four artefact files, the manifest carries a single <version>67.0</version>, the deployment order carries no backwards dependency, and no step is blocked. The milestone's one declared acceptance test is manual and went to the human checklist; no automated milestone-level test exists (W2). Verdict ready-with-findings: 11 findings, none of them an unresolved reference, an ordering contradiction, a failing test or a blocked step. The acceptance report is one page and is the accept gate's evidence. No sf command, no deploy, no gate written.",
+  "outcome": "completed",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 rubric: HIGH requires that every declared acceptance test ran. M1's only declared acceptance test is manual, so no milestone-level test could run at all and the gate rests on a human tick (F-04, verifier W2). Two of the four validation-rule field references (Amount, StageName) are standard Opportunity fields that resolve against the platform rather than any artefact in the build, which is a stated boundary rather than a resolution. Against that: every step was documented, no reference was unclassifiable, the merged manifest built with no conflict, and no LOW trigger fired (no missing checker, no empty artefact directory, no blocked step, no earlier-milestone inventory to fail to build).",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/opp-amount-lock/",
+    "milestone_id": "M1",
+    "approver_name": null,
+    "scale": "ask"
+  },
+  "dimensions_compared": [
+    "reference-resolution",
+    "deploy-order",
+    "merged-manifest",
+    "manual-checklist"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "milestone-acceptance-tests",
+      "state": "not-run",
+      "reason": "M1 declares exactly one acceptance test and its type is manual, which AGENT.md Step 6 routes to the Step 7 checklist rather than to a runner. There is no executable milestone-level test to dispatch, so no exit code stands for the milestone as a whole."
+    },
+    {
+      "dimension": "requirement-closure",
+      "state": "partial",
+      "reason": "traceability.md is the init stub, which is correct at scale ask where standards/build-orchestration.md section 3.1 freezes it. Closure is stated from plan.json's single fit_gap[] row instead of from the traceability file the report would normally quote, so the row's test_id / decision_ref columns were not available to cross-check."
+    },
+    {
+      "dimension": "reference-resolution",
+      "state": "partial",
+      "reason": "Four of the six reference classes in the Step 3 table (assignment-rule criteria, Flow references, entitlement milestones, layout and path assignments) have no artefact in this milestone to read, so they were not exercised. Amount and StageName resolve as standard platform fields rather than against a build artefact."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-01",
+      "severity": "P2",
+      "title": "deploy-order.md is undeclared in outputs[] and reaches no <types> block",
+      "detail": "metadata-builder writes artefacts/M1-S01/deploy-order.md on every run; the step's outputs[] names only the four metadata files, so check-outputs never adjudicates it, and Step 5's manifest sweep finds it is the one file under the milestone's artefacts that reaches no <types> block. Verifier warning W8, open across both builder runs — the one amendment this step received touched inputs and acceptance_tests, never outputs.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/deploy-order.md",
+          "artefacts/M1-S01/package.xml"
+        ],
+        "verifier_warning": "W8"
+      },
+      "recommendation": "Add artefacts/M1-S01/deploy-order.md to the step's outputs[] at the next plan write. No deploy impact; it is a governance gap."
+    },
+    {
+      "id": "F-02",
+      "severity": "P1",
+      "title": "The permission set deploys with no assignees, so the bypass half of the acceptance test is untickable as written",
+      "detail": "PermissionSet Opp_Amount_Lock_Bypass carries a customPermissions grant and nothing else; assignment is a post-deploy action. M1's only acceptance test asserts 'when a Sales Ops user holding the Opp_Amount_Lock_Bypass permission set makes the identical edit, then the save succeeds', but no plan step owns the assignment and the test carries no precondition line for it. deploy-order.md records it under 'Post-deploy, not part of the deploy'; the acceptance test does not.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+          "artefacts/M1-S01/deploy-order.md"
+        ],
+        "skill": "admin/uat-and-acceptance-criteria"
+      },
+      "recommendation": "Assign the permission set to the two named Sales Ops users before UAT; carried as checklist item 2 in the acceptance report."
+    },
+    {
+      "id": "F-03",
+      "severity": "P2",
+      "title": "The manual test names no environment, no named tester and no build date",
+      "detail": "admin/uat-and-acceptance-criteria requires a persona table with real usernames, a sandbox with a refresh date and a stated build, because an admin bypasses FLS and most sharing in the UI and an admin pass therefore proves nothing about the persona. M1's manual line names the two personas by the permission they hold, which is the discriminating fact, but nothing else.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "plan.json#/milestones/0/acceptance_tests/0"
+        ],
+        "skill": "admin/uat-and-acceptance-criteria"
+      },
+      "recommendation": "Record sandbox name, refresh date and the two named test users on the checklist before the tick counts as evidence."
+    },
+    {
+      "id": "F-04",
+      "severity": "P2",
+      "title": "M1 has no automated milestone-level acceptance test",
+      "detail": "The milestone's sole acceptance test is type manual, so section 5's 'every milestone has at least one acceptance test' is satisfied while no exit code in this build stands for the milestone as a whole. Every green result in tests/M1-S01/results.json is step-scoped. plan-verifier predicted this as W2 and it was accepted at the go gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "plan.json#/milestones/0/acceptance_tests",
+          "tests/M1-S01/results.json"
+        ],
+        "verifier_warning": "W2"
+      },
+      "recommendation": "No action required; stated so the gate is not read as automated evidence it is not."
+    },
+    {
+      "id": "F-05",
+      "severity": "P1",
+      "title": "The printed validate-only command cannot run as written — no sfdx-project.json",
+      "detail": "skills/devops/salesforce-dx-project-structure states sfdx-project.json 'lives at the repository root and is required for all sf CLI operations'. There is none in the build directory and none at the repo root (checked this run), so the human's one validation command fails on the project check before it reaches the org.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/deploy-order.md"
+        ],
+        "check": "ls sfdx-project.json at repo root and in the build dir -> absent",
+        "skill": "devops/salesforce-dx-project-structure"
+      },
+      "recommendation": "Copy artefacts/M1-S01/ into an SFDX project (or sf project generate) before running the validate-only command."
+    },
+    {
+      "id": "F-06",
+      "severity": "P2",
+      "title": "deploy-order.md leads with the production validate form for an org-free build",
+      "detail": "Its headline command is sf project deploy validate, which Salesforce documents as production-only and which requires Apex tests; the sandbox --dry-run form appears in the following paragraph. build_mode is design-only with no org on file, so a sandbox or scratch org is the likelier target and offering the production form first sends the human into an error unrelated to their build. The same command combines --manifest and --source-dir; the corpus writes them as alternatives in five places and combines them in one (skills/devops/rollback-and-hotfix-strategy), so this run could not settle offline whether the combination is accepted, and it is reported unresolved rather than as a defect.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/deploy-order.md",
+          "skills/devops/rollback-and-hotfix-strategy/SKILL.md"
+        ]
+      },
+      "recommendation": "The acceptance report prints the sandbox --dry-run form first and names the production form as the production-only alternative."
+    },
+    {
+      "id": "F-07",
+      "severity": "P2",
+      "title": "Verifier warning W3 is not closed — check_custom_permissions.py still cannot tell an empty tree from a clean one",
+      "detail": "W3 records that check_custom_permissions.py exits 0 on an empty directory. Commit 8225051d9 changed a different checker: check_validation_rules.py, whose empty-dir case became a REVIEW at exit 0 (it previously exited 1). Re-run this milestone against an empty temporary directory, check_custom_permissions.py prints '(no *.customPermission-meta.xml files found)' and 'Summary: 0 error(s), 0 warning(s), 0 info.' at exit 0, with no finding at any severity; a missing directory still exits 2. So W3 stands as written for the custom-permissions checker.",
+      "evidence": {
+        "source": "repo_scan",
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir <empty tmpdir> -> exit 0, zero findings",
+        "verifier_warning": "W3"
+      },
+      "recommendation": "No impact on this milestone: check-outputs returned ok with all four declared outputs present, which is the build-loop guard against an empty tree. Skill-library follow-up on the checker."
+    },
+    {
+      "id": "F-08",
+      "severity": "P1",
+      "title": "PermissionSet deploys are a full replace, and this one was constructed from scratch",
+      "detail": "skills/devops/permission-set-deployment-ordering: since API 40.0 deploying a PermissionSet completely overwrites the target record, and any permission not in the deployed XML is silently removed with no warning or error. Opp_Amount_Lock_Bypass was authored from scratch, which is correct only if no permission set of that name exists in the target org. This is a design-only build with no org, so it cannot be settled here — which is exactly why it belongs on the human's pre-deploy list rather than in a checker.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml"
+        ],
+        "skill": "devops/permission-set-deployment-ordering"
+      },
+      "recommendation": "Confirm no Opp_Amount_Lock_Bypass exists in the target org before deploying; if one does, retrieve it first and merge."
+    },
+    {
+      "id": "F-09",
+      "severity": "P2",
+      "title": "The scale sizing count disagrees with what the milestone actually shipped",
+      "detail": "The clarifier printed 'scale: ask (D=1 metadata type, S=1 skill with question table, O=1 object, integration=no; no override)'. M1 ships three metadata types — ValidationRule, CustomPermission, PermissionSet — and D=3 is feature on section 3.1's table, where the tier is the highest any single signal reaches. The count was honest when taken: requirement.md implies one type, and the two access artefacts exist because of the answer to Q3. The sizing rule reads the requirement before the clarifications that create the metadata, so a bypass mechanism can raise D after the tier is fixed. S is also arguable: the log records S=1 while two skills with question tables were harvested (admin/validation-rules, admin/requirements-gathering-for-sf) and the plan cites two skills.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "reports/drivers-log.md",
+          "requirement.md",
+          "artefacts/M1-S01/package.xml"
+        ],
+        "standard": "standards/build-orchestration.md section 3.1"
+      },
+      "recommendation": "Section 3.1 follow-up: either re-check D after the clarification round, or state explicitly that D is counted from requirement.md alone and that a clarification-created artefact does not re-tier."
+    },
+    {
+      "id": "F-10",
+      "severity": "P2",
+      "title": "The driver's log records a section 3.1 rule change that the repo does not carry",
+      "detail": "reports/drivers-log.md friction (18) states 'rule changed the same day: decisions.md is appended at every scale, only workbook + traceability are skipped at ask'. standards/build-orchestration.md still says at ask that 'decisions.md and traceability.md keep their init stubs' (tier table) and 'leave the decisions.md / traceability.md stubs alone' (build-doc-keeper delta), and agents/build-doc-keeper/AGENT.md Step 4 says the same. decisions.md in this build is still the 3-line init stub, and the four decisions the doc keeper identified live only in its envelope's extensions.would_be_decisions[].",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "reports/drivers-log.md",
+          "standards/build-orchestration.md",
+          "agents/build-doc-keeper/AGENT.md",
+          "decisions.md"
+        ]
+      },
+      "recommendation": "Land the section 3.1 change or drop the log entry. Today the log and the standard disagree, and the doc keeper correctly followed the standard."
+    },
+    {
+      "id": "F-11",
+      "severity": "INFO",
+      "title": "set-milestone's next-command hint is not scale-aware",
+      "detail": "After recording the verdict, set-milestone printed 'next: the human decides — build_plan.py gate ... milestone:M1 approve --by <who>', while section 3.1 and RUN.md promise the accept alias at scale ask. Both spellings write the identical gate record, so this is wording rather than behaviour — but it puts a second spelling of the gate in front of a human who was promised one.",
+      "evidence": {
+        "source": "repo_scan",
+        "command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/opp-amount-lock/plan.json M1 --status verified --report-path reports/MILESTONE-M1-REPORT.md"
+      },
+      "recommendation": "Branch the hint on scale, or note in section 3.1 that the canonical spelling is still what the CLI prints."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "Milestone M1 acceptance report (one page — the accept gate's evidence)",
+      "target_path": ".sfskills/builds/opp-amount-lock/reports/MILESTONE-M1-REPORT.md",
+      "content": "Written this run. Verdict ready-with-findings; contains the step and its artefacts, the reference-resolution table, the deployment-order verdict, the merged manifest and its (absent) conflicts, the acceptance-test position, the six-item accept-gate checklist, the eleven findings, requirement closure, the optional human-run validate-only command, and the gate line."
+    },
+    {
+      "kind": "xml",
+      "title": "Merged milestone manifest",
+      "target_path": ".sfskills/builds/opp-amount-lock/reports/MILESTONE-M1-package.xml",
+      "content": "3 types (CustomPermission, PermissionSet, ValidationRule), 1 member each, types alphabetical, members sorted, single <version>67.0</version>. One step in the milestone, so no union conflict and no duplicate member."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability",
+      "observation": "The one fact this milestone turns on — that $Permission.Bypass_Opp_Amount_Lock, the CustomPermission filename stem and the PermissionSet grant name are the same string — is provable from the artefacts alone, with no org and no inference.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+          "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+          "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml"
+        ]
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "metadata-grammar",
+      "observation": "All three artefacts match the shapes in admin/custom-permissions/references/metadata-examples.md element for element, including the two omissions that are easy to get wrong: no <fullName> on the CustomPermission (the CLI derives it from the stem in DX source format) and no <isLicensed> (the guide marks it Required, Read-only, and the platform sets it).",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "skills/admin/custom-permissions/references/metadata-examples.md",
+          "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml"
+        ]
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "process",
+      "observation": "The step was reset and rebuilt rather than accepted with a known divergence, and amendments[0] preserved the before-values, so this run could quote the delta from the plan record instead of reconstructing it from an envelope narrative.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "plan.json#/steps/0/amendments/0",
+          "envelopes/M1-S01/2026-09-12T07-45-00Z.md"
+        ]
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "scale-sizing",
+      "observation": "plan.json's scale (ask) disagrees with the metadata-type count the milestone actually shipped: the clarifier's sizing line printed D=1 and M1 contains three metadata types, which is D=3 and therefore feature on the section 3.1 table, because the two access artefacts were created by a clarification answer taken after the tier was fixed.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "reports/drivers-log.md",
+          "requirement.md",
+          "reports/MILESTONE-M1-package.xml"
+        ],
+        "finding": "F-09"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "uat",
+      "observation": "The only evidence this gate rests on is a manual test whose bypass half cannot pass until someone assigns a permission set that the deploy leaves empty, and no step in the plan owns that assignment.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "plan.json#/milestones/0/acceptance_tests/0",
+          "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml"
+        ],
+        "finding": "F-02"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "tooling",
+      "observation": "A warning recorded as closed was not: W3 names check_custom_permissions.py, and the commit that is cited as closing it changed check_validation_rules.py instead — re-running the custom-permissions checker against an empty directory this run still returned exit 0 with zero findings.",
+      "evidence": {
+        "source": "repo_scan",
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir <empty tmpdir>",
+        "finding": "F-07"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "documentation-drift",
+      "observation": "The driver's log records a section 3.1 rule change (decisions.md appended at every scale) that neither standards/build-orchestration.md nor agents/build-doc-keeper/AGENT.md carries, and decisions.md in this build is still the init stub.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "reports/drivers-log.md",
+          "standards/build-orchestration.md",
+          "decisions.md"
+        ],
+        "finding": "F-10"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deploy-command",
+      "observation": "Whether sf project deploy start accepts --manifest and --source-dir together, as deploy-order.md's printed command does, could not be settled from the library: five places write them as alternatives and one (skills/devops/rollback-and-hotfix-strategy) combines them, and this run is forbidden from running sf.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/deploy-order.md",
+          "skills/devops/rollback-and-hotfix-strategy/SKILL.md"
+        ],
+        "finding": "F-06"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deploy-order",
+      "observation": "deploy-order.md lists the object-embedded ValidationRule after the PermissionSet, which differs from the canonical objects-before-access band order, while its own constraint 3 states the two are siblings with no reference between them — both readings are defensible and neither changes the outcome, because all three members ship in one request.",
+      "evidence": {
+        "source": "repo_scan",
+        "paths": [
+          "artefacts/M1-S01/deploy-order.md"
+        ]
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "deploy-risk",
+      "observation": "deployment-risk-scorer would score the merged manifest against a real org once the human has one, which is where the full-replace question in F-08 is actually settled.",
+      "evidence": {
+        "source": "heuristic",
+        "paths": [
+          "reports/MILESTONE-M1-package.xml"
+        ]
+      },
+      "suggested_followup_agent": "deployment-risk-scorer",
+      "followup_reason": "It scores the merged milestone manifest against a real org, which is where F-08 (PermissionSet full-replace) is actually settled."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "release",
+      "observation": "release-readiness-reviewer fits because M1 is the last milestone in this build, so accepting it is also the release decision.",
+      "evidence": {
+        "source": "heuristic",
+        "paths": [
+          "plan.json#/milestones"
+        ]
+      },
+      "suggested_followup_agent": "release-readiness-reviewer",
+      "followup_reason": "M1 is the last milestone in this build, so accepting it is also the release decision."
+    }
+  ],
+  "extensions": {
+    "milestone": "M1",
+    "report_path": "reports/MILESTONE-M1-REPORT.md",
+    "passed": false,
+    "verdict": "ready-with-findings",
+    "scale": "ask",
+    "steps": [
+      {
+        "id": "M1-S01",
+        "status": "documented",
+        "agent": "metadata-builder",
+        "type": "validation"
+      }
+    ],
+    "blocked_steps": [],
+    "reference_resolution": [
+      {
+        "class": "validation-rule custom-permission reference",
+        "symbol": "$Permission.Bypass_Opp_Amount_Lock",
+        "outcome": "resolved-in-this-milestone",
+        "target": "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml"
+      },
+      {
+        "class": "permission-set grant",
+        "symbol": "customPermissions/name = Bypass_Opp_Amount_Lock",
+        "outcome": "resolved-in-this-milestone",
+        "target": "same CustomPermission file; enabled true"
+      },
+      {
+        "class": "validation-rule field references",
+        "symbol": "Opportunity.Amount, Opportunity.StageName, errorDisplayField Amount",
+        "outcome": "resolved-against-platform",
+        "target": "standard Opportunity fields; no step defines them and none needs to"
+      },
+      {
+        "class": "assignment-rule criteria",
+        "symbol": null,
+        "outcome": "not-run",
+        "target": "no such artefact in M1"
+      },
+      {
+        "class": "flow field references",
+        "symbol": null,
+        "outcome": "not-run",
+        "target": "no such artefact in M1"
+      },
+      {
+        "class": "entitlement process milestones",
+        "symbol": null,
+        "outcome": "not-run",
+        "target": "no such artefact in M1"
+      },
+      {
+        "class": "layout and path assignments",
+        "symbol": null,
+        "outcome": "not-run",
+        "target": "no such artefact in M1"
+      }
+    ],
+    "unresolved_references": [],
+    "unclassifiable_references": [],
+    "deploy_order": [
+      "CustomPermission:Bypass_Opp_Amount_Lock",
+      "PermissionSet:Opp_Amount_Lock_Bypass",
+      "ValidationRule:Opportunity.Amount_Locked_After_Closed_Won"
+    ],
+    "deploy_order_contradictions": [],
+    "deploy_order_note": "CustomPermission precedes both consumers. PermissionSet and ValidationRule are siblings — neither references the other. The permission set carries no fieldPermissions and no objectPermissions, so the grant-before-field failure that permission-set-deployment-ordering exists to catch cannot arise. All three ship in one manifest, which is the shape that avoids the documented PermissionSet/CustomPermission split-request hazard.",
+    "merged_manifest_path": "reports/MILESTONE-M1-package.xml",
+    "merged_manifest": {
+      "types": 3,
+      "members": 3,
+      "api_version": "67.0",
+      "version_conflicts": [],
+      "duplicate_members": [],
+      "files_reaching_no_types_block": [
+        "artefacts/M1-S01/deploy-order.md"
+      ]
+    },
+    "milestone_acceptance_tests": [
+      {
+        "type": "manual",
+        "dispatch": "checklist",
+        "ran": false
+      }
+    ],
+    "step_test_results_read": {
+      "path": "tests/M1-S01/results.json",
+      "passed": true,
+      "ran": 4,
+      "failed": 0,
+      "skipped_manual": 0,
+      "check_outputs_ok": true,
+      "re_run_by_this_agent": false
+    },
+    "manual_checklist": [
+      "M1 — As a Sales user WITHOUT Bypass_Opp_Amount_Lock, lower Amount on a Closed Won Opportunity and save: the save is blocked and the error reads verbatim 'Amount cannot be decreased once this Opportunity is Closed Won. Amount is locked after close to protect the recorded deal value. Contact your manager to reopen the Opportunity before changing Amount.'",
+      "M1 — As a Sales Ops user HOLDING the Opp_Amount_Lock_Bypass permission set, make the identical edit: the save succeeds. Precondition, not part of the deploy: the permission set deploys with no assignees, so assign it to the two named Sales Ops users first (F-02).",
+      "M1 — Record the environment and the people: sandbox name and refresh date, and the two named test users, so the tick is evidence rather than an opinion (F-03).",
+      "M1 — Confirm Amount is on the Opportunity page layout(s) in scope (assumption A1); if it is not, errorDisplayField relocates to Top of Page and the first line's observable outcome changes.",
+      "M1 — Confirm no permission set named Opp_Amount_Lock_Bypass already exists in the target org: a PermissionSet deploy is a full replace from API 40.0 and silently drops anything not in this XML (F-08).",
+      "M1 — Accept knowingly, as recorded at the go gate: active=true over historical lowered Amounts (D2), the per-rule bypass name (W5), and the access grant sitting behind no step gate (W1, forced by section 3.1 at ask)."
+    ],
+    "requirements_closed": [
+      {
+        "requirement": "Lock Opportunity.Amount against a decrease once Closed Won, with a Sales-Ops-only bypass",
+        "verdict": "fit",
+        "step": "M1-S01",
+        "state": "built and step-tested; not proven until the two UAT lines are ticked",
+        "source": "plan.json fit_gap[0] — traceability.md is the init stub, frozen at scale ask"
+      }
+    ],
+    "requirements_open": [],
+    "operator_dry_run_cited_not_run": "The operator dry-ran the rule's formula on a scratch copy at API 67.0: NOT(ISBLANK(StageName)) does not compile ('Field StageName is a picklist field. Picklist fields are only supported in certain functions.'); NOT(ISBLANK(TEXT(StageName))) validates 3/3. Recorded in artefacts/M1-S01/deploy-order.md ('Why this step was rebuilt'), plan.json.steps[0].amendments[0] and reports/drivers-log.md (Build phase). This agent ran no sf command and no mock_deploy.py.",
+    "validate_only_command_printed_not_run": "sf project deploy start --manifest .sfskills/builds/opp-amount-lock/reports/MILESTONE-M1-package.xml --dry-run --target-org <alias>   # sandbox/scratch. Production target uses sf project deploy validate with the same manifest. Requires an SFDX project (F-05).",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/opp-amount-lock/plan.json accept approve --by \"<name>\" --notes \"<what you ticked>\"",
+    "gate_command_canonical_spelling": "python3 scripts/build_plan.py gate .sfskills/builds/opp-amount-lock/plan.json milestone:M1 approve --by \"<name>\"",
+    "gate_conditions": "Section 3 refuses milestone:M1 approve unless the plan gate is approved and every step in M1 is documented, or blocked with a recorded reason. Both hold: plan approved 2026-09-12T06:39:12Z; M1-S01 documented; no blocked step. M1 is the first milestone, so there is no predecessor gate to check.",
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/opp-amount-lock/plan.json M1 --status verified --report-path reports/MILESTONE-M1-REPORT.md",
+    "set_milestone_result": "milestone M1: status -> verified, report -> reports/MILESTONE-M1-REPORT.md",
+    "section_3_1_support_gaps": [
+      "F-09 — the sizing rule takes D from requirement.md before the clarification round that created two of this milestone's three metadata types; nothing re-checks the tier afterwards.",
+      "F-10 — the driver's log records a section 3.1 change (decisions.md appended at every scale) that the standard and build-doc-keeper's AGENT.md do not carry.",
+      "F-11 — set-milestone's next-command hint prints milestone:M1 rather than the ask-scale accept alias.",
+      "milestone-verifier's own AGENT.md Step 6 assumes a milestone acceptance test can be dispatched to a runner; at scale ask with a single manual test there is nothing to dispatch, and Step 10's HIGH condition ('every declared acceptance test ran') is then unreachable by construction rather than by any defect in the build.",
+      "AGENT.md Step 9's ask branch names the accept alias for the gate line but Step 11's envelope example still hard-codes envelopes/M2/; the segment rule is stated correctly in prose, so this is an example that has to be read past rather than followed."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules for this invocation: no org write, no auto-chain, no mutation outside the supplied build dir"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Eight-section shape, the Process Observations requirement, the confidence rubric this agent overrides, and Gate C's dry-run-is-not-a-deploy boundary"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence, the atomic-write rule and the three-state dimensions_skipped classification"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Checked that no refusal condition applied: the single step is documented, no predecessor gate exists, no step manifests disagree on API version"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (the report is written not rendered, and set-milestone records its path), section 3 (the gate's approval preconditions), section 3.1 (the ask tier, the one-page report, the accept alias, the driver's log), section 5 (acceptance-test types and the milestone-level build scope), section 7 (this agent runs after the milestone's steps and returns for the human)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The milestone, gate, step-status and amendment fields read this run"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "The shape this envelope is validated against, including the top-level report_path that means this agent's own markdown"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar, explicit members over wildcards, the version element the merged manifest carries, and (references/gotchas.md) the PermissionSet/CustomPermission cross-type split-request hazard"
+    },
+    {
+      "type": "skill",
+      "id": "devops/permission-set-deployment-ordering",
+      "path": "skills/devops/permission-set-deployment-ordering/SKILL.md",
+      "used_for": "Referenced components must exist before the permission set that grants them, and the API 40.0 full-replace behaviour behind F-08"
+    },
+    {
+      "type": "skill",
+      "id": "devops/flow-deployment-activation-ordering",
+      "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md",
+      "used_for": "Read to place automation in the order; M1 ships no Flow, so the class is recorded not-run rather than silently passed"
+    },
+    {
+      "type": "skill",
+      "id": "devops/deployment-error-diagnosis",
+      "path": "skills/devops/deployment-error-diagnosis/SKILL.md",
+      "used_for": "The deploy-time error an unresolved reference would produce — INVALID_CROSS_REFERENCE_KEY for a permission set naming metadata absent from the target; none applied, because every reference resolved"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pre-deployment-checklist",
+      "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+      "used_for": "The go/no-go items the accept checklist must cover: dependency completeness, post-deploy manual steps (the permission-set assignment), and the documented pre-release state check"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "The form a manual test must take to be tickable by someone outside the build loop — named persona, environment with a date, stated precondition — which is what F-02 and F-03 measure the milestone test against"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "How the report states closure using the build layer's own columns, and why stating it from plan.json is the honest fallback when traceability.md is frozen at ask"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "Verifying the three artefacts' element sets — no fullName in DX source format, no isLicensed, PermissionSetCustomPermissions requiring exactly enabled and name"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "sfdx-project.json is required for all sf CLI operations — the grounding for F-05"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "deployment-risk-scorer",
+      "because": "It scores the merged milestone manifest against a real org, which is where F-08's full-replace question is actually settled. Recommendation only; this agent did not invoke it."
+    },
+    {
+      "agent": "release-readiness-reviewer",
+      "because": "M1 is the last milestone in this build, so accepting it is also the release decision. Recommendation only; this agent did not invoke it."
+    }
+  ]
+}

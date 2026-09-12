@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Grants the Sales Ops team an exception to the Opportunity Amount-lock validation rule so they can correct Amount on a Closed Won Opportunity. Consumer: Opportunity.Amount_Locked_After_Closed_Won.</description>
+    <label>Bypass Opportunity Amount Lock</label>
+</CustomPermission>

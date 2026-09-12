@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Bypass_Opp_Amount_Lock</members>
+        <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>Opportunity.Amount_Locked_After_Closed_Won</members>
+        <name>ValidationRule</name>
+    </types>
+    <types>
+        <members>Opp_Amount_Lock_Bypass</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>67.0</version>
+</Package>

@@ -1,0 +1,290 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T07-20-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-20-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-20-00Z.json",
+  "outcome": "completed",
+  "summary": "Ran step M1-S01 of build `opp-amount-lock`. `build_plan.py next` returned the step, it was claimed `running`, its owning agent `metadata-builder` was executed inline under the artefact-path constraint, its envelope was stored verbatim, `check-outputs` returned ok, and the step was set `built`. Five files now sit under `artefacts/M1-S01/`: four declared outputs plus the undeclared `deploy-order.md` the owning agent writes on every run. Nothing was written outside the step's artefact directory except the two envelope pairs under `envelopes/M1-S01/`. No org was touched and no gate was approved.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM: an undeclared artefact appeared \u2014 `artefacts/M1-S01/deploy-order.md`, which the owning agent's own Step 7 writes unconditionally but the step's `outputs[]` does not name (verification warning W8). Not HIGH for that reason alone; not LOW because `check-outputs` exited 0, both envelopes validate, every declared output exists, and no file landed outside `artefacts/M1-S01/`.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/opp-amount-lock/",
+    "step_id": "M1-S01",
+    "reason": "(not supplied \u2014 the step was `pending` and appeared in `next`, so no Step 2 carve-out applied)",
+    "credentials_present": "none \u2014 no value in steps[].inputs matched a credential shape per skills/devops/pipeline-secrets-management; nothing redacted"
+  },
+  "extensions": {
+    "step_id": "M1-S01",
+    "build_id": "opp-amount-lock",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "build_awareness_probe": {
+      "command": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md",
+      "result": 39,
+      "interpretation": "Non-zero \u2014 the owner declares outputs under artefacts/<step-id>/ and takes a build_dir, so no Step 7 relocation applies."
+    },
+    "owning_envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-15-00Z.json",
+    "owning_envelope_validated": "OK",
+    "invocation_mode": "inline \u2014 agents/metadata-builder/AGENT.md was read end to end, including its own Mandatory Reads, and its Plan executed in this session per Step 6's non-Claude-Code branch as the invocation directed",
+    "next_command_output": "M1-S01 returned by `build_plan.py next` on stdout, exit 0 \u2014 no carve-out needed",
+    "input_map": {
+      "build_dir": {
+        "value": ".sfskills/builds/opp-amount-lock/",
+        "source": "caller"
+      },
+      "step_id": {
+        "value": "M1-S01",
+        "source": "caller"
+      },
+      "api_version": {
+        "value": "67.0",
+        "source": "caller (optional input; plan.json carries no api_version key, and the owner's documented fallback chain is plan api_version -> 62.0)",
+        "note": "An optional input the plan did not supply. Recorded here because the owner would otherwise have defaulted it to 62.0."
+      }
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/deploy-order.md",
+        "declared": false
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M1-S01/deploy-order.md"
+    ],
+    "missing_outputs": [],
+    "files_outside_step_artefact_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/opp-amount-lock/plan.json M1-S01 running --started 2026-09-12T07:15:00Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/opp-amount-lock/plan.json M1-S01 built --run-agent metadata-builder --envelope envelopes/M1-S01/2026-09-12T07-15-00Z.json --result \"Built 4 declared artefacts + deploy-order.md; both cited checkers exit 0 first pass (VR: 2 non-blocking findings, CP: clean); check-outputs ok. Formula omits NOT(ISBLANK(StageName)) vs plan inputs \u2014 see envelope extensions.formula_divergence.\" --started 2026-09-12T07:15:00Z"
+    ],
+    "terminal_status": "built",
+    "carried_forward_from_owning_envelope": {
+      "confidence": "MEDIUM",
+      "formula_divergence": "The emitted errorConditionFormula omits the NOT(ISBLANK(StageName)) clause that plan.json.steps[].inputs.errorConditionFormula carries. The owning agent recorded the full reasoning, the three remedies, and the note that plan.json is now out of sync with the artefact. This runner does not adjudicate it and did not run amend-step.",
+      "checker_description_drift": "The step's first acceptance test records 'WARN: 1 finding(s) detected (0 blocking)' in its description; the run printed 2 findings (0 blocking). expected: exit 0 still holds."
+    },
+    "persistence_deviation": {
+      "contract": "agents/build-step-runner/AGENT.md and agents/metadata-builder/AGENT.md both require a Wave 10 report pair under docs/reports/<agent-id>/<run_id>.{md,json}.",
+      "what_happened": "Not written. The invocation constrained this run to 'Write only under the build dir', and docs/reports/ is outside it.",
+      "effect": "The build-scoped envelope pairs under envelopes/M1-S01/ are complete and validated; the agent-own deliverable pair is absent for both agents."
+    }
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "build_plan.py refused nothing this run: next returned the step, running and built both applied cleanly, and check-outputs gated built exactly as \u00a7 5 describes rather than trusting the agent's own word.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "The owning agent is build-aware (39 hits on the Step 4 probe), so no Step 7 relocation was needed and every artefact landed on the path the plan declared without the runner moving anything.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 39
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-completeness",
+      "observation": "deploy-order.md is written unconditionally by the owning agent's Step 7 and is absent from the step's outputs[], so it reaches the human as an undeclared artefact and check-outputs never adjudicates it \u2014 the W8 remedy is a one-line plan edit the runner may not make.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].outputs"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "traceability",
+      "observation": "The step's first acceptance test carries a description asserting a specific checker output ('WARN: 1 finding(s) detected') as well as an expected exit code; the artefact as built produces 2 findings and still exits 0, so the test passes while its description is now wrong \u2014 a shape where a passing test carries a false statement.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].acceptance_tests[0].description"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "domain": "plan-sync",
+      "observation": "The artefact's formula and plan.json.steps[].inputs.errorConditionFormula now disagree, and the only CLI writer that could reconcile them \u2014 amend-step \u2014 is outside this agent's mandate, so the divergence survives into the tester and the doc keeper unless a human acts on it.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-15-00Z.json",
+        "query": "extensions.formula_divergence"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deliverable-contract",
+      "observation": "The invocation's 'write only under the build dir' constraint and the Wave 10 persistence clause in both AGENT.md files point opposite ways on docs/reports/<agent-id>/; the constraint was honoured and the report pair was not written for either agent.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-step-runner/AGENT.md",
+        "query": "### Persistence (Wave 10 contract)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The step is built and its four acceptance tests have not run.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].status"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because tests/M1-S01/results.json with passed:true is the precondition for the tested transition, and this agent never runs a step's tests."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "RUN.md still predates this build step and is one of the three files the human reads at scale ask.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/RUN.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because it renders RUN.md from plan.json once the step is tested, and the formula divergence needs to reach the human there as well as in this envelope."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Runs the four declared acceptance tests for M1-S01 and writes tests/M1-S01/results.json, the precondition for tested."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Renders RUN.md with this step's artefacts, checker exit codes and the formula divergence once the step is tested."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "The repo-wide run-time rules this invocation is bound by, including the prohibition on org writes and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The 8-section shape, the Process Observations requirement, the Citations schema, and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence, the envelope/report pairing, and the redaction requirement on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The canonical refusal enum checked against this run \u2014 no code applied, so no refusal block is set"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 (design-only build mode; no agent hand-edits plan.json), \u00a7 3.1 (scale ask: build-step-runner takes no branch), \u00a7 4 (step record fields, the validation step type and metadata-builder as its design-only owner, the status machine), \u00a7 5 (checkers run verbatim from the build directory; check-outputs gates built), \u00a7 8 (build_plan.py is the only writer of plan state)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The field-level shape of steps[], inputs{}, outputs[], depends_on[] and runs[], so this agent read and wrote only the fields it owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "The closed envelope shape both stored envelopes were written to and validated against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Confirming the artefacts obey the source-format <metadataType>/ tree (objects/Opportunity/validationRules/, customPermissions/, permissionsets/) a later deploy and the tester's manifest check can read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/references/gotchas.md",
+      "used_for": "Confirming ValidationRule, CustomPermission and PermissionSet are Metadata-API-carried types, so the step's declared outputs[] are deployable metadata rather than notes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The workbook row schema (target_value, recommended_agent, recommended_skills[], source_req_id) the planned step derives from, so the owning agent received the plan's own cells rather than a paraphrase of the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The REQ/US id conventions echoed into the envelope; this build's clarifications are recorded as Q1-Q13 and assumptions as A1-A6 rather than REQ-XXX, which is what the doc keeper will join on"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "The credential shapes checked for in steps[].inputs before echoing them into an envelope that lands in the build directory \u2014 none matched, so nothing was redacted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "Read in full as part of executing the owning agent inline \u2014 see the owning agent's envelope for the element-level citations"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "Read in full as part of executing the owning agent inline \u2014 \u00a7 5 supplied the permission-set grant shape"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "The step's declared templates[] entry; supplied the canonical bypass-first VR shape the emitted formula follows"
+    }
+  ]
+}

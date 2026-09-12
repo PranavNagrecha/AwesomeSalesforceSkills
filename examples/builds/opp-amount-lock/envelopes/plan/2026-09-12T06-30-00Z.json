@@ -1,0 +1,136 @@
+{
+  "agent": "build-planner",
+  "mode": "single",
+  "run_id": "2026-09-12T06-30-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/plan/2026-09-12T06-30-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/plan/2026-09-12T06-30-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/opp-amount-lock"
+  },
+  "summary": "Planned the answered 'Lock Opportunity Amount after Closed Won' requirement at scale ask into exactly one milestone (M1) and one step (M1-S01, type validation, agent metadata-builder, human_gate false), per standards/build-orchestration.md Section 3.1. The step builds a ValidationRule on Opportunity (bypass -> relevance-gate -> business-rule formula order, PRIORVALUE delta check guarded by NOT(ISNEW())) plus the Sales-Ops-only bypass mechanism (a CustomPermission read via $Permission and a PermissionSet granting it), all four artefacts under artefacts/M1-S01/ so the validation-rules checker's VR-REF-02 $Permission resolution and the custom-permissions checker both run cleanly at step scope. Recorded one fit_gap row (Low-Code, effort M, fit), two decisions (bypass mechanism; deploy active despite historical violations), both resolved via source_reference with adr_required true because no decision tree covers either choice, and six assumptions (A1-A6) for the six informational clarifications (Q8-Q13) that carry a scale:ask pre-filled default rather than a recorded answer. Wrote the plan body via set-plan, validated (0 warnings), ran ensure-gates (3 gates present, nothing to add), and rendered PLAN.md/CLARIFICATIONS.md/RUN.md. Status is now planned; gate 'plan' is pending.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every step field resolves on disk (metadata-builder is class: runtime, status: beta, requires_org: false; both skills, both checkers and the one template all exist; validate exits 0 with 0 steps blocked), which would otherwise clear the HIGH bar, but neither of the two decisions this plan had to make (D1: bypass mechanism; D2: deploy active vs inactive) is settled by a decision-tree branch — both rest on source_reference to admin/validation-rules/SKILL.md and carry adr_required: true, which is the agent's own documented MEDIUM condition.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every blocking clarification (Q1-Q7) arrived with a substantive, org-specific answer rather than a default, so the plan needed no invented fact for volume, bypass ownership, post-save writers, or historical data state — the four things that usually force a step to blocked or an assumption to carry high risk.",
+      "domain": "requirements-quality",
+      "evidence": {"source": "input", "path": ".sfskills/builds/opp-amount-lock/plan.json"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "A fixture holding exactly M1-S01's four declared outputs ran clean through both cited checkers: check_validation_rules.py exited 0 with one advisory INFO (no field inventory in scope, harmless because Amount and StageName are standard fields), and check_custom_permissions.py exited 0 with zero errors/warnings, confirming VR-REF-02's $Permission resolution works at step scope because the CustomPermission file is co-located with the rule.",
+      "domain": "checker-verification",
+      "evidence": {"source": "heuristic", "query": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir <fixture>; python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir <fixture>"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "M1-S01 grants a CustomPermission and a PermissionSet, which is exactly the access-changing shape the general Step 6 human_gate rule in agents/build-planner/AGENT.md says should be human_gate: true, but the scale:ask override in that same Step 6 forces human_gate: false and folds the decision into the single up-front 'go' gate instead of a per-step approval; the tension is real and this plan follows the more specific, later-stated override.",
+      "domain": "orchestration-contract",
+      "evidence": {"source": "heuristic", "path": "agents/build-planner/AGENT.md"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "plan.json still shows Q8-Q13 at status 'open' with no answer field even though scale:ask's contract says informational rows 'land pre-filled from their proposed_default'; CLARIFICATIONS.md renders the same six questions with a blank Answer: line. The pre-fill was applied here at the plan layer as assumptions[] (A1-A6) rather than at the clarifications layer, which is a workable but not obviously the intended place for that state to live.",
+      "domain": "documentation-drift",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/opp-amount-lock/CLARIFICATIONS.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether D1 (custom-permission bypass) and D2 (deploy active despite dirty data) are genuinely 'technology choices the plan makes' or simply an implementation of what Q3 and Q5 already answered verbatim is a judgment call; a plan-verifier or human could reasonably read them as scope items instead of decisions, since the requester's own answer already named the mechanism.",
+      "domain": "plan-authoring-judgment",
+      "evidence": {"source": "heuristic"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Step 4 rule 2 of agents/build-planner/AGENT.md says 'Set adr_required: true' unconditionally whenever a decision is resolved via source_reference instead of a tree branch, but skills/architect/architecture-decision-records/SKILL.md's own ADR-candidacy bar (multi-quarter impact, reversal of an earlier recorded choice, the 6-month test, and the 'fits in a PR description' exclusion) would not promote either D1 or D2 to a real ADR — both are task-level, feature-internal tradeoffs. Followed the build-planner's literal, mechanical rule rather than the more nuanced ADR bar, since the former is the instruction this run was told to follow exactly.",
+      "domain": "adr-candidacy-tension",
+      "evidence": {"source": "repo_scan", "path": "skills/architect/architecture-decision-records/SKILL.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "At feature/project scale this single step would normally split into a validation step (the rule) and a separate access step (the CustomPermission + PermissionSet), each with its own type per standards/build-orchestration.md Section 4's step-type table; scale:ask's exactly-one-step rule forces them into one step typed validation, which is correct per Section 3.1 but means the step's type no longer names everything it produces.",
+      "domain": "step-typing",
+      "evidence": {"source": "heuristic", "path": "standards/build-orchestration.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The plan is written, validated (0 warnings) and rendered; the next stage in the loop is the adversarial three-lens verification before the human plan gate.",
+      "domain": "build-loop",
+      "evidence": {"source": "input"},
+      "suggested_followup_agent": "plan-verifier",
+      "followup_reason": "standards/build-orchestration.md Section 3 always routes a planned build to plan-verifier next, before the plan gate can be approved."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Both decisions in this plan carry adr_required: true even though neither clears the architecture-decision-records candidacy bar; a Well-Architected pass could confirm that reading or surface a reason this build genuinely does warrant an ADR that this run did not see.",
+      "domain": "adr-candidacy-tension",
+      "evidence": {"source": "input"},
+      "suggested_followup_agent": "waf-assessor",
+      "followup_reason": "Well-Architected review is the agent's own documented follow-up whenever a decision is recorded with adr_required: true."
+    }
+  ],
+  "citations": [
+    {"type": "skill", "id": "admin/validation-rules", "path": "skills/admin/validation-rules/SKILL.md", "used_for": "ValidationRule element table, bypass-pattern ranking, formula best practices, error-message standard, and the checker command for M1-S01"},
+    {"type": "skill", "id": "admin/custom-permissions", "path": "skills/admin/custom-permissions/SKILL.md", "used_for": "CustomPermission + PermissionSet deployable shapes, the Admin-Only Bypass pattern, and the checker command for M1-S01"},
+    {"type": "skill", "id": "admin/fit-gap-analysis-against-org", "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md", "used_for": "five-tier rubric and effort formula (base(Low-Code)=M) behind the single scope.fit_gap[] row"},
+    {"type": "skill", "id": "admin/requirements-gathering-for-sf", "path": "skills/admin/requirements-gathering-for-sf/SKILL.md", "used_for": "confirmed the five Salesforce facts (object, automation tier, sharing layer, volume, licence) that Q1-Q13 already carry, and that scope.out correctly excludes sharing/FLS and reporting per its NFR table"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "checked the ten-section model for an uncovered decision area; none found beyond the validation + access artefacts already in M1-S01, and confirmed workbook ceremony is optional at scale:ask"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "confirmed fit_gap[].steps[] is the traceability link this run must populate, and that traceability.md itself is build-doc-keeper's to write, not this agent's"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "Given/When/Then shape used for the milestone goal and the milestone's manual UAT acceptance test"},
+    {"type": "skill", "id": "architect/architecture-decision-records", "path": "skills/architect/architecture-decision-records/SKILL.md", "used_for": "ADR-candidacy bar checked against D1/D2 and flagged as a tension with Step 4 rule 2's literal adr_required: true instruction"},
+    {"type": "template", "id": "templates/admin/validation-rule-patterns.md", "path": "templates/admin/validation-rule-patterns.md", "used_for": "canonical bypass -> relevance-gate -> business-rule formula order and the NOT(ISNEW())/PRIORVALUE 'cannot regress' pattern applied to the rule's errorConditionFormula"},
+    {"type": "template", "id": "templates/admin/permission-set-patterns.md", "path": "templates/admin/permission-set-patterns.md", "used_for": "checked its persona/PSG/muting composition model and set it aside as not applicable to a flat, 2-person bypass grant; the PermissionSet is authored from admin/custom-permissions' own shape and the requirement's given names instead"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "Section 2 layout, Section 3/3.1 lifecycle and scale:ask ceremony rules (exactly 1 milestone, 1 step, human_gate false), Section 4 step-type table and agent eligibility, Section 5 acceptance-test types and checker-scope rules, Section 8 CLI writers"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section AGENT.md shape and the Process Observations schema/requirement applied to this envelope"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "envelope + report persistence contract and atomic-write rule"},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked the two refusal preconditions (gate state, competing artefact) before proceeding past Step 1"},
+    {"type": "standard", "id": "agent-rules", "path": "AGENT_RULES.md", "used_for": "repo-wide template/decision-tree citation conventions checked before writing D1/D2"},
+    {"type": "standard", "id": "agent-frontmatter-schema", "path": "agents/_shared/schemas/agent-frontmatter.schema.json", "used_for": "verified metadata-builder's class/status/requires_org fields make it an eligible step owner in a design-only build"},
+    {"type": "standard", "id": "runtime-vs-build", "path": "agents/_shared/RUNTIME_VS_BUILD.md", "used_for": "confirmed metadata-builder is the active Tier-4 design-only default owner for declarative step types"},
+    {"type": "standard", "id": "skill-map", "path": "agents/_shared/SKILL_MAP.md", "used_for": "confirmed metadata-builder already reads admin/validation-rules per its source-skill mapping, so the step's skills[] matches its owning agent's own reading list"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "plan-body shape, milestone/step required fields, and the acceptance-test $defs used to write every test entry"}
+  ],
+  "followups": [
+    {"agent": "plan-verifier", "because": "the next stage in the loop is the adversarial three-lens check before the human plan gate"},
+    {"agent": "waf-assessor", "because": "both decisions carry adr_required: true and a Well-Architected pass is the agent's own documented follow-up for that condition"}
+  ],
+  "extensions": {
+    "plan_path": ".sfskills/builds/opp-amount-lock/plan.json",
+    "plan_version": 1,
+    "scope": {
+      "in_count": 4,
+      "out_count": 5,
+      "fit_gap_count": 1
+    },
+    "fit_gap": [
+      {"requirement": "Lock Opportunity.Amount against a decrease once Closed Won, with a Sales-Ops-only bypass", "verdict": "fit", "tier": "Low-Code", "effort": "M", "risk_tag": [], "steps": ["M1-S01"]}
+    ],
+    "decisions": [
+      {"id": "D1", "decision": "Grant the Sales Ops bypass as a Custom Permission carried by a dedicated Permission Set, not a Profile exemption or RecordType scoping.", "source_reference": "skills/admin/validation-rules/SKILL.md", "adr_required": true},
+      {"id": "D2", "decision": "Deploy the validation rule active=true, relying on a PRIORVALUE delta check so historical violations are not retroactively re-blocked.", "source_reference": "skills/admin/validation-rules/SKILL.md", "adr_required": true}
+    ],
+    "milestones": [
+      {"id": "M1", "title": "Lock Opportunity Amount after Closed Won", "steps": ["M1-S01"], "status": "pending"}
+    ],
+    "steps": [
+      {"id": "M1-S01", "milestone": "M1", "type": "validation", "agent": "metadata-builder", "status": "pending", "human_gate": false, "outputs_count": 4, "acceptance_tests_count": 4}
+    ],
+    "blocked_steps": [],
+    "validate_result": {
+      "exit_code": 0,
+      "milestones": 1,
+      "steps": 1,
+      "warnings": 0
+    }
+  }
+}

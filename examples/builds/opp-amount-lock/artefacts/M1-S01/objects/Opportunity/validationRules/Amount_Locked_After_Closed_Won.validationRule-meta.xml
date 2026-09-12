@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amount_Locked_After_Closed_Won</fullName>
+    <active>true</active>
+    <description>Locks Opportunity Amount once Closed Won so the recorded deal value cannot be lowered after close. Owner: Sales Ops. Bypass: Bypass_Opp_Amount_Lock (Sales Ops only).</description>
+    <errorConditionFormula>AND(
+  NOT($Permission.Bypass_Opp_Amount_Lock),
+  NOT(ISNEW()),
+  NOT(ISBLANK(TEXT(StageName))),
+  ISPICKVAL(StageName, "Closed Won"),
+  Amount &lt; PRIORVALUE(Amount)
+)</errorConditionFormula>
+    <errorDisplayField>Amount</errorDisplayField>
+    <errorMessage>Amount cannot be decreased once this Opportunity is Closed Won. Amount is locked after close to protect the recorded deal value. Contact your manager to reopen the Opportunity before changing Amount.</errorMessage>
+</ValidationRule>

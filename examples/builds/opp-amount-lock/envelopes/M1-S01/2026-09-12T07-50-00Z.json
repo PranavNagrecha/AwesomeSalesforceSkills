@@ -1,0 +1,340 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T07-50-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-50-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-50-00Z.json",
+  "outcome": "completed",
+  "summary": "Re-ran step M1-S01 of build `opp-amount-lock` after the operator reset it (built -> failed -> pending) and amended `inputs.errorConditionFormula`. `build_plan.py next` returned the step at `pending`, so the ordinary path applied and no Step 2 carve-out was needed. The step was claimed `running`, its owning agent `metadata-builder` was executed inline, its envelope stored verbatim, `check-outputs` returned ok, and the step was set `built`. The rule was regenerated from the amended plan input; the CustomPermission, PermissionSet and package.xml were left byte-identical. Both checkers exit 0 and the divergence the previous run reported is closed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM on one ground: an undeclared artefact is present \u2014 `artefacts/M1-S01/deploy-order.md`, which the owning agent's Step 7 writes unconditionally but the step's `outputs[]` does not name (W8). The previous run's second MEDIUM driver, the formula divergence, is closed: the artefact now round-trips to `plan.json.steps[].inputs.errorConditionFormula` byte for byte. Not LOW: `check-outputs` exited 0, both envelopes validate, every declared output exists, nothing landed outside `artefacts/M1-S01/`.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/opp-amount-lock/",
+    "step_id": "M1-S01",
+    "reason": "(not supplied, and not required \u2014 the operator's reset put the step at `pending`, so it reached `next` on the ordinary path rather than through a `blocked`/`failed`/`documented` carve-out)",
+    "credentials_present": "none \u2014 no value in steps[].inputs matched a credential shape per skills/devops/pipeline-secrets-management; nothing redacted"
+  },
+  "extensions": {
+    "step_id": "M1-S01",
+    "build_id": "opp-amount-lock",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T07-45-00Z.json",
+    "owning_envelope_validated": "OK",
+    "run_kind": "rebuild",
+    "supersedes_runner_run": "2026-09-12T07-20-00Z",
+    "invocation_mode": "inline \u2014 agents/metadata-builder/AGENT.md read end to end including its own Mandatory Reads, Plan executed in this session per Step 6's non-Claude-Code branch",
+    "reset_and_amend_trail": [
+      {
+        "transition": "built -> failed",
+        "by": "dry-run operator",
+        "recorded_in": "steps[].runs[2]",
+        "result": "Artefact formula (4 clauses, from the operator's brief) diverges from plan inputs.errorConditionFormula (5 clauses incl. the blank guard); the plan input is the authority \u2014 reset for a rebuild after the guard form is settled by a dry-run probe"
+      },
+      {
+        "transition": "failed -> pending",
+        "by": "dry-run operator",
+        "note": "The documented reset. It is the reason this run needed no carve-out: a step that goes back through `next` is a step whose gates and dependencies were re-checked."
+      },
+      {
+        "transition": "amend-step",
+        "at": "2026-09-12T06:52:45Z",
+        "fields": [
+          "acceptance_tests",
+          "inputs"
+        ],
+        "note": "amendments[0].before preserves the pre-amendment inputs and acceptance_tests, so the rebuild can state the delta from the record rather than from memory."
+      },
+      {
+        "transition": "pending -> running -> built",
+        "by": "build-step-runner (this run)"
+      }
+    ],
+    "next_command_output": "M1-S01 returned by `build_plan.py next` on stdout at status `pending`, exit 0",
+    "input_map": {
+      "build_dir": {
+        "value": ".sfskills/builds/opp-amount-lock/",
+        "source": "caller"
+      },
+      "step_id": {
+        "value": "M1-S01",
+        "source": "caller"
+      },
+      "api_version": {
+        "value": "67.0",
+        "source": "caller (optional; plan.json carries no api_version key, owner fallback would be 62.0)"
+      }
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+        "declared": true,
+        "changed_this_run": true
+      },
+      {
+        "path": "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "declared": true,
+        "changed_this_run": false
+      },
+      {
+        "path": "artefacts/M1-S01/deploy-order.md",
+        "declared": false,
+        "changed_this_run": true
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M1-S01/deploy-order.md"
+    ],
+    "missing_outputs": [],
+    "files_outside_step_artefact_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/opp-amount-lock/plan.json M1-S01 running --started 2026-09-12T07:40:00Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/opp-amount-lock/plan.json M1-S01 built --run-agent metadata-builder --envelope envelopes/M1-S01/2026-09-12T07-45-00Z.json --result \"Rebuild after amendment: ValidationRule generated verbatim from plan inputs (five clauses, guard NOT(ISBLANK(TEXT(StageName))); ElementTree round-trip byte-equal). CustomPermission/PermissionSet/package.xml unchanged. VR checker 1 advisory INFO exit 0, CP checker clean exit 0, check-outputs ok. No divergence from the plan remains.\" --started 2026-09-12T07:40:00Z"
+    ],
+    "terminal_status": "built",
+    "divergence_status": "closed \u2014 the previous run's extensions.formula_divergence no longer applies. The emitted errorConditionFormula round-trips to plan.json.steps[].inputs.errorConditionFormula byte for byte; the owning agent's envelope records the check.",
+    "superseded_runs": {
+      "builder": "envelopes/M1-S01/2026-09-12T07-15-00Z.{json,md}",
+      "runner": "envelopes/M1-S01/2026-09-12T07-20-00Z.{json,md}",
+      "note": "Kept, not overwritten \u2014 runs[] appends and history is never rewritten. Any downstream reader must take the latest run, not the first; the four envelopes in this directory now describe two different artefacts."
+    },
+    "persistence_deviation": {
+      "contract": "agents/build-step-runner/AGENT.md and agents/metadata-builder/AGENT.md both require a Wave 10 report pair under docs/reports/<agent-id>/<run_id>.{md,json}.",
+      "what_happened": "Not written. The invocation constrained this run to the build directory, and docs/reports/ is outside it.",
+      "effect": "The build-scoped envelope pairs under envelopes/M1-S01/ are complete and validated; the agent-own deliverable pair is absent for both agents, on both runs."
+    }
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "The reset path did the work the carve-outs exist to avoid: because the operator moved the step failed -> pending rather than re-claiming it, `next` re-checked gates and dependencies and this run needed no `reason` and no exception to Step 2.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].status before this run"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability",
+      "observation": "amendments[] carrying full before-values meant the rebuild could quote the delta from the plan record instead of reconstructing it from the previous envelope, which is the difference between an auditable rebuild and a plausible one.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].amendments[0].before"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-quality",
+      "observation": "The amended acceptance test 0 asserts what must not fire (VR-REF-01/02, VR-PICK-01) instead of a finding count, so it survives an advisory-severity change in the checker without going stale \u2014 the failure mode the previous run reported is designed out rather than patched.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].acceptance_tests[0].description"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "skill-consistency",
+      "observation": "An org probe, not the library, caught that the skill's headline GOOD example does not compile; the compiling form sat in the same skill's llm-anti-patterns.md the whole time, so the corpus contained both answers and promoted the wrong one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/SKILL.md",
+        "query": "Formula Best Practices GOOD block vs references/llm-anti-patterns.md Anti-Pattern 6"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "provenance",
+      "observation": "The previous run followed the invoking brief over plan.json on an input the plan already bound; the brief is not one of the four Step 4 sources and nothing in the runner's Step 5 table or its refusal codes covers an operator restating a plan input, so the conflict was resolved by judgment rather than by contract.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-step-runner/AGENT.md",
+        "query": "Step 5 source table"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-completeness",
+      "observation": "deploy-order.md is still written unconditionally and still absent from outputs[]; the amendment touched inputs and acceptance_tests but not outputs, so W8 is open across both runs.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].outputs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "history-reading",
+      "observation": "envelopes/M1-S01/ now holds four envelopes describing two different artefacts, and nothing in the directory marks which pair is current beyond the run id ordering and the superseded_run field inside each envelope.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01",
+        "count": 4
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deliverable-contract",
+      "observation": "The invocation's build-dir-only constraint and the Wave 10 persistence clause still point opposite ways on docs/reports/<agent-id>/; the constraint was honoured again and the report pair was written for neither agent on either run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-step-runner/AGENT.md",
+        "query": "### Persistence (Wave 10 contract)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The rebuilt step is built and its four acceptance tests have not run.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "steps[0].status"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because tests/M1-S01/results.json with passed:true is the precondition for tested, and this agent never runs a step's tests."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "RUN.md predates both runs and must render the rebuild rather than the superseded artefact.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/RUN.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because RUN.md is one of the three files the human reads before the accept gate, and a superseded run in it would misstate what is on disk."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Runs the four declared acceptance tests for the rebuilt M1-S01 and writes tests/M1-S01/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Renders RUN.md against the rebuild once the step is tested, including the amendment and the probe evidence."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "The repo-wide run-time rules this invocation is bound by, including the prohibition on org writes and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The 8-section shape, the Process Observations requirement, the Citations schema, and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence, the envelope/report pairing, and the redaction requirement on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The canonical refusal enum checked against this run \u2014 no code applied, so no refusal block is set"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 (plan.json is the only shared state and no agent hand-edits it), \u00a7 3.1 (scale ask: build-step-runner takes no branch), \u00a7 4 (step record fields and the status machine, including the failed -> pending reset this rebuild came through), \u00a7 5 (checkers run verbatim from the build directory; check-outputs gates built), \u00a7 8 (build_plan.py is the only writer of plan state; runs[] appends and never overwrites)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The field-level shape of steps[], inputs{}, outputs[], amendments[] and runs[], so this agent read and wrote only the fields it owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "The closed envelope shape both stored envelopes were written to and validated against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Confirming the artefacts still obey the source-format <metadataType>/ tree a later deploy and the tester's manifest check can read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/references/gotchas.md",
+      "used_for": "Confirming ValidationRule, CustomPermission and PermissionSet are Metadata-API-carried types, so the declared outputs[] are deployable metadata"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The workbook row schema the planned step derives from, so the owning agent received the plan's own cells rather than a paraphrase \u2014 the rule this rebuild exists to restore"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The id conventions echoed into the envelope; this build records clarifications as Q1-Q13 and assumptions as A1-A6, which is what the doc keeper joins on"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "The credential shapes checked for in steps[].inputs before echoing them into an envelope in the build directory \u2014 none matched, so nothing was redacted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/llm-anti-patterns.md",
+      "used_for": "Read while executing the owning agent inline \u2014 Anti-Pattern 6 is the in-corpus grounding for the amended TEXT()-wrapped blank guard"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "Read while executing the owning agent inline \u2014 \u00a7 5 supplied the permission-set grant shape, unchanged this run"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "The step's declared templates[] entry; the canonical bypass-first VR shape the emitted formula follows"
+    }
+  ]
+}

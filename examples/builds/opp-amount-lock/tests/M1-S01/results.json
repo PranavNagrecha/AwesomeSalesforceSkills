@@ -1,0 +1,63 @@
+{
+  "step_id": "M1-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/validation-rules/scripts/check_validation_rules.py",
+    "skills/admin/custom-permissions/scripts/check_custom_permissions.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [],
+  "results": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "ElementTree parse of every *.xml/*-meta.xml under artefacts/M1-S01/",
+      "exit_code": null,
+      "files_checked": 4,
+      "verdict": "pass"
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "two-way consistency check: artefacts/M1-S01/package.xml vs files under artefacts/M1-S01/",
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "3 types (CustomPermission, ValidationRule, PermissionSet), each with exactly one member and one covering file; no wildcards; no coverage-gap exclusions applicable"
+    },
+    {
+      "name": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+      "type": "checker",
+      "runner": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M1-S01",
+      "exit_code": 0,
+      "check_outputs_ok": true,
+      "verdict": "pass",
+      "detail": "score 100; 1 advisory INFO ('field references' — no field inventory in scope, expected per test description); 0 blocking. VR-PICK-01 did not fire (guard uses TEXT(StageName)); VR-REF-01/02 did not fire ($Permission.Bypass_Opp_Amount_Lock resolves against the co-located CustomPermission file)."
+    },
+    {
+      "name": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+      "type": "checker",
+      "runner": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M1-S01",
+      "exit_code": 0,
+      "check_outputs_ok": true,
+      "verdict": "pass",
+      "detail": "Custom permissions defined: 1 / Permission sets or profiles parsed: 1 / Distinct permissions referenced: 1; Bypass_Opp_Amount_Lock granted by exactly 'Opp_Amount_Lock_Bypass'; Summary: 0 error(s), 0 warning(s), 0 info — matches declared expected output verbatim."
+    }
+  ],
+  "check_outputs": {
+    "ok": true,
+    "step": "M1-S01",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "out_of_scope_manual_test_observed": {
+    "level": "milestone",
+    "milestone": "M1",
+    "text": "Given a Closed Won Opportunity, when a user without the Bypass_Opp_Amount_Lock permission lowers Amount and saves, then the save is blocked and the error reads 'Amount cannot be decreased once this Opportunity is Closed Won. Amount is locked after close to protect the recorded deal value. Contact your manager to reopen the Opportunity before changing Amount.'; when a Sales Ops user holding the Opp_Amount_Lock_Bypass permission set makes the identical edit, then the save succeeds.",
+    "classification": "manual",
+    "given_when_then_shape": "well-formed — names the persona (with/without the bypass permission), the record precondition (Closed Won), the action (lower Amount and save), and two observable Then outcomes (blocked with exact error text; succeeds for the bypass holder)",
+    "note": "This is the milestone M1 acceptance test, not a declared acceptance test of step M1-S01. step-tester tests one step; a milestone-level manual line is milestone-verifier's to collect and is not counted in this step's failed[] or skipped_manual[]. Recorded here for continuity into the milestone gate."
+  }
+}

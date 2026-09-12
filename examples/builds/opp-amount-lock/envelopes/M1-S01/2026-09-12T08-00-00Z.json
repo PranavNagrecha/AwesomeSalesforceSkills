@@ -1,0 +1,156 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T08-00-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T08-00-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T08-00-00Z.json",
+  "outcome": "completed",
+  "summary": "Ran the molecular tests for M1-S01 (Amount_Locked_After_Closed_Won validation rule + Bypass_Opp_Amount_Lock custom permission + Opp_Amount_Lock_Bypass permission set) after its rebuild. All four declared/always-on tests passed: xml (4/4 files parse), manifest (3 types, 3 members, 3 files, fully consistent, no wildcards), check_validation_rules.py --manifest-dir artefacts/M1-S01 (exit 0, score 100, one advisory INFO, VR-PICK-01 and VR-REF-01/02 did not fire), and check_custom_permissions.py --manifest-dir artefacts/M1-S01 (exit 0, output matches the plan's declared expected text verbatim). check-outputs reported ok with nothing missing, empty or malformed. Status set built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (no missing checker, no refused command); both always-on checks completed; every result came from an exit code this agent observed directly (checkers, check-outputs); no command test was refused, no manifest exclusion was needed, and check-outputs reported ok with no missing/empty/malformed paths. Per Step 7 of agents/step-tester/AGENT.md this meets the HIGH bar exactly.",
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "checker:check_validation_rules.py",
+    "checker:check_custom_permissions.py",
+    "check-outputs"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "step-level-manual-acceptance-test",
+      "state": "not-run",
+      "reason": "M1-S01 declares no `manual` acceptance test of its own. The build's only manual test lives on milestone M1's acceptance_tests[], which is out of this step-scoped run's dispatch per agents/step-tester/AGENT.md Plan Step 4 (manual is ticked by a human at the milestone gate, and a milestone-wide test pass is milestone-verifier's job, not step-tester's, per the REFUSAL_OUT_OF_SCOPE row).",
+      "confidence_impact": "NONE",
+      "retry_hint": "milestone-verifier collects the M1 manual line at the milestone gate; no retry needed from step-tester."
+    }
+  ],
+  "findings": [],
+  "deliverables": [
+    {
+      "kind": "json",
+      "title": "Molecular test results for M1-S01",
+      "target_path": "tests/M1-S01/results.json",
+      "content": "See tests/M1-S01/results.json on disk: step_id M1-S01, passed true, ran [xml, manifest, check_validation_rules.py, check_custom_permissions.py], failed [], skipped_manual []."
+    },
+    {
+      "kind": "markdown",
+      "title": "Test summary for M1-S01",
+      "target_path": "tests/M1-S01/summary.md",
+      "content": "See tests/M1-S01/summary.md on disk: one table (test/type/result/first line), notes on the milestone M1 manual UAT line and the VR-PICK-01 mid-edit checker."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuilt artefact's formula round-trips byte-identical to plan.json's inputs.errorConditionFormula, and the checker that previously would have flagged the raw-picklist ISBLANK guard now finds nothing to flag.",
+      "domain": "automation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The two co-located access artefacts (CustomPermission and PermissionSet) and the validation rule they gate are internally consistent: the checker confirms exactly one custom permission granted by exactly one permission set, matching the plan's bypass_holders answer.",
+      "domain": "access-model",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S01/check_custom_permissions.stdout.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The declared checker script skills/admin/validation-rules/scripts/check_validation_rules.py was flagged as possibly mid-edit by another agent adding rule VR-PICK-01; this run found VR-PICK-01 already present (5 occurrences) and the script ran cleanly with no import or syntax error on the first attempt, so no retry was needed and no version ambiguity remains for this run.",
+      "domain": "tooling-concurrency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "count": 5
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The milestone M1 manual UAT line (block-then-bypass scenario) is Given/When/Then well-formed and ready to be ticked at the gate, but it and the step's own remaining pending item (documented) are milestone-verifier's to collect once this step reaches documented.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because M1-S01 is now tested and needs PLAN.md, the workbook and traceability.md updated before milestone-verifier can run its cross-step checks."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 5 acceptance-test types/runners/pass-conditions, the checker-scope rule, the always-on xml/manifest rules, and the Apex-exception carve-out (not applicable to this validation-type step)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, and the confidence rubric this agent overrides per its own Step 7"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and atomic-write rule for the envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming REFUSAL_OUT_OF_SCOPE governs a milestone-wide manual test, which this run correctly did not attempt"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (one <types> block per type, <members>, <name>) the manifest check judged artefacts/M1-S01/package.xml against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "filename-to-metadata-type mapping used to derive ValidationRule/CustomPermission/PermissionSet members from the artefact files"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "checked whether any of the three component types has no standalone file or manifest member; none applied, so no exclusion was needed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the UAT test-script/testable-criterion bar used to sanity-check the milestone M1 manual line before classifying it manual"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then shape check applied to the milestone M1 manual acceptance test before recording it as usable rather than unusable"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "results_path": "tests/M1-S01/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "ElementTree parse of every *.xml/*-meta.xml under artefacts/M1-S01/", "exit_code": null, "verdict": "pass"},
+      {"name": "manifest", "type": "manifest", "runner": "two-way consistency check against artefacts/M1-S01/package.xml", "exit_code": null, "verdict": "pass"},
+      {"name": "skills/admin/validation-rules/scripts/check_validation_rules.py", "type": "checker", "runner": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M1-S01", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/admin/custom-permissions/scripts/check_custom_permissions.py", "type": "checker", "runner": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M1-S01", "exit_code": 0, "verdict": "pass"}
+    ],
+    "failed": [],
+    "skipped_manual": [],
+    "tests_run": 4
+  }
+}

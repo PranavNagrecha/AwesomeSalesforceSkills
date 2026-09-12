@@ -1,0 +1,591 @@
+{
+  "agent": "plan-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T07-00-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/verification/2026-09-12T07-00-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/verification/2026-09-12T07-00-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/opp-amount-lock",
+    "step_id": null,
+    "lens": null,
+    "scale": "ask"
+  },
+  "summary": "Verified plan v1 of build opp-amount-lock (scale: ask, build_mode: design-only) \u2014 one milestone, one step, three lenses, one round, refutation-only. `build_plan.py validate` exited 0 with 0 warnings before and after the write. No CRITICAL refutation as standards/build-orchestration.md \u00a7 3.1 defines it at this tier: metadata-builder resolves and is the \u00a7 4 design-only owner for type `validation`; both cited skills and the one template resolve; both declared checkers are on disk, accept --manifest-dir, reproduce the plan's own test descriptions verbatim against a fixture of the four declared outputs, and fail on a mismatched $Permission name; neither decision cites a tree and both carry a source_reference that resolves. Outcome: verified, with 10 warnings, two of them notable \u2014 an access-granting step carrying human_gate: false (which \u00a7 3.1 itself forces at ask scale) and a milestone manual test only a deployed org could settle. No amend-step was applied: the CLI refuses it while the build status is planned or verified, and it cannot reach a milestone's acceptance tests at all.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "The rubric's HIGH row is met mechanically \u2014 all three lenses ran on the one step, every verdict carries an evidence line naming a file read or a command run with its output, and no verdict rests on a missing file. Downgraded to MEDIUM because the outcome turns on one adjudication no file settles: plan-verifier's own testability table refutes an access-granting step with human_gate: false and REFUSAL_SECURITY_GUARD says such a plan is rejected rather than warned, while \u00a7 3.1 forces human_gate: false at ask scale, bounds CRITICAL to the executability and grounding lenses, and has ensure-gates write no step: record. A human reading the other side of that contradiction would get plan-rejected from the same evidence.",
+  "outcome": "completed",
+  "deliverables": [
+    {
+      "kind": "json",
+      "title": "Verification block written into plan.json",
+      "target_path": ".sfskills/builds/opp-amount-lock/inputs/verification/verification.json",
+      "content": "{\n  \"status\": \"verified\",\n  \"verified_at\": \"2026-09-12T07:00:00Z\",\n  \"by\": \"plan-verifier 1.0.0\",\n  \"plan_version\": 1,\n  \"scale\": \"ask\",\n  \"rounds\": 1,\n  \"lenses\": [\n    {\n      \"lens\": \"executability\",\n      \"verdict\": \"pass\",\n      \"notes\": \"1/1 steps. metadata-builder resolves (class: runtime, status: beta, requires_org: false), is the standards/build-orchestration.md Section 4 design-only owner for type `validation`, accepts the step's inputs (its Inputs table takes build_dir/step_id/api_version and reads everything else from the step record), and can produce all four declared outputs: Step 3 builds its element inventory from the step's own skills[], and `grep -l '^```xml'` returns references/metadata-examples.md for admin/custom-permissions, which carries both the CustomPermission and the PermissionSet-with-<customPermissions> shapes. 3 warnings.\"\n    },\n    {\n      \"lens\": \"grounding\",\n      \"verdict\": \"pass\",\n      \"notes\": \"1/1 steps. Both skills and the one template resolve. PRIORVALUE + NOT(ISNEW()) grounded verbatim (SKILL.md:205, references/gotchas.md:20-38, templates/admin/validation-rule-patterns.md:78); ISPICKVAL and the bypass-first formula order grounded (references/metadata-examples.md Example 1, template lines 38-57); Custom Permission ranked 'Preferred' over Profile (SKILL.md:143-145). decision_trees[] is empty and both decisions carry a source_reference that resolves, so the treeless-decision rule is satisfied and validate raises no WARN. fit_gap re-tiered independently: Low-Code (rubric example is literally 'validation rule blocking save when picklist combo is invalid'), effort base(Low-Code)=M with no scope or risk multiplier -> M; matches. All six deferred informational rows (Q8-Q13) reach an assumptions[] row naming them, and every row's steps[] names M1-S01, which exists. 4 warnings.\"\n    },\n    {\n      \"lens\": \"testability\",\n      \"verdict\": \"pass\",\n      \"notes\": \"1/1 steps. Both checkers exist on disk and accept --manifest-dir (verified with --help). Ran both against a fixture holding exactly the four declared outputs: check_validation_rules.py exited 0 with one INFO on field references, and check_custom_permissions.py exited 0 with 0 errors/warnings/info showing Bypass_Opp_Amount_Lock granted by exactly Opp_Amount_Lock_Bypass -- reproducing the plan's own test descriptions verbatim. Tests can fail: renaming the CustomPermission file fired VR-REF-02 HIGH and exit 1, and the custom-permissions checker exit 1 with an ERROR on the same tree. Metadata coverage, scope/command agreement and objective pass conditions all hold. 3 warnings, two of them notable (see W1 and W2).\"\n    }\n  ],\n  \"steps\": [\n    {\n      \"step_id\": \"M1-S01\",\n      \"verdict\": \"pass\",\n      \"lenses\": [\n        {\n          \"step_id\": \"M1-S01\",\n          \"lens\": \"executability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"W9: the step emits ValidationRule + CustomPermission + PermissionSet while typed `validation`. metadata-builder's own Step 2 table maps `validation` to ValidationRule only and PermissionSet to `access`; CustomPermission appears in no row of that table and in none of the eight entries of its 'metadata this agent is trusted to write' list. The step is still buildable -- Step 1's three refusal checks are all on the step TYPE, and Step 3 builds the element inventory from the step's skills[], where admin/custom-permissions carries both shapes -- so this is a contract gap, not a step defect.\",\n              \"fix\": \"Add a scale: ask note to metadata-builder Step 2 covering a collapsed step, and add admin/custom-permissions to its trusted-metadata list.\"\n            },\n            {\n              \"problem\": \"W7: inputs.errorConditionFormula carries a raw `<` in `Amount < PRIORVALUE(Amount)`. skills/admin/validation-rules/references/metadata-examples.md states '`<` and `&` must be escaped in formula text (&lt;, &amp;)'. If the builder emits it unescaped the file is not well-formed XML.\",\n              \"fix\": \"No plan edit needed -- the always-on `xml` acceptance test (ElementTree parse) fails on an unescaped `<`. Flagged so the builder escapes it deliberately rather than by luck.\"\n            },\n            {\n              \"problem\": \"W8: metadata-builder Step 7 writes artefacts/<step_id>/deploy-order.md on every run; the step does not declare it in outputs[], so check-outputs never confirms it and no reader of plan.json knows it exists.\",\n              \"fix\": \"Add `artefacts/M1-S01/deploy-order.md` to outputs[] at the next plan write.\"\n            }\n          ],\n          \"evidence\": [\n            \"sed -n '1,10p' agents/metadata-builder/AGENT.md -> 'class: runtime', 'status: beta', 'requires_org: false'\",\n            \"grep -n 'metadata-builder' agents/_shared/RUNTIME_VS_BUILD.md -> L122 '| `metadata-builder` | Admin / Metadata | Deploy-ready source-format metadata XML + `package.xml` fragment + deploy-order note for one declarative step ... | `/build-metadata` |'\",\n            \"standards/build-orchestration.md Section 4 table, row `validation` -> design-only owner column reads `metadata-builder`\",\n            \"agents/metadata-builder/AGENT.md '## Inputs' -> build_dir, step_id, api_version only; 'Everything else the build needs comes from the step record itself.'\",\n            \"agents/metadata-builder/AGENT.md Step 6 -> writes artefacts/<step_id>/package.xml on every run; Step 7 -> writes artefacts/<step_id>/deploy-order.md\",\n            \"grep -l '^```xml' skills/admin/custom-permissions/references/*.md skills/admin/custom-permissions/SKILL.md -> references/metadata-examples.md, SKILL.md (so metadata-builder Step 3's gap rule does not fire)\",\n            \"plan.json steps[0].depends_on = [] ; only one step in the plan, so no ordering cycle and no output-path collision\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S01\",\n          \"lens\": \"grounding\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"W4: the one skill the formula depends on contradicts itself on ISBLANK over a picklist. skills/admin/validation-rules/SKILL.md:119 gives `NOT(ISBLANK(StageName))` as the GOOD example -- which is exactly what the step copied -- while references/llm-anti-patterns.md:169 gives `NOT(ISBLANK(TEXT(Status)))` for the same job. Not a refutation: the step's form is grounded in the more canonical of the two locations. But only one of the two compiles reliably against a raw picklist.\",\n              \"fix\": \"If the platform rejects ISBLANK on a picklist, the fix is NOT(ISBLANK(TEXT(StageName))). Reconcile the two passages in admin/validation-rules. Note the guard is behaviourally redundant here -- ISPICKVAL already returns false on a blank picklist -- and is present to satisfy check_validation_rules.py:418.\"\n            },\n            {\n              \"problem\": \"W5: bypass naming. skills/admin/custom-permissions/references/metadata-examples.md section 2 points at the per-domain form `Bypass_Validation_<Domain>` (templates/admin/validation-rule-patterns.md L41) 'for anything larger than a single-team org'; the plan uses the per-rule name `Bypass_Opp_Amount_Lock`. Defensible as the single-gate shape, but the next Opportunity rule needs a second permission and a second permission set.\",\n              \"fix\": \"Confirm at the go gate that a per-rule bypass is intended, or rename to Bypass_Validation_Opportunity before the builder runs.\"\n            },\n            {\n              \"problem\": \"W6: D2 departs from the cited skill's documented remedy. admin/validation-rules '## Questions to Ask Before Configuring' row 6 says a good answer to 'does the data already violate this rule' is 'A decision to deploy with active=false and a named cleanup owner, or a count proving the data is clean'. D2 deploys active=true with neither. The delta-check reasoning IS grounded (templates/admin/validation-rule-patterns.md:78 'PRIORVALUE(Field) -- the value at the start of the save context. Use for cannot-regress rules') and alternatives_rejected records the road not taken, so this is a reasoned departure rather than an ungrounded one.\",\n              \"fix\": \"None required. Surface at the go gate: the handful of historical violations stay permanently non-conforming by design, with no named cleanup owner.\"\n            },\n            {\n              \"problem\": \"W10: Q8-Q13 carry default_source (skill-guidance / requirement-text) but are still status: open with no answer field, which is half of what Section 3.1 specifies ('informational rows land pre-filled from their proposed_default with default_source set'). RUN.md then renders 'Deferred questions: _None recorded._' while listing all thirteen under '## Defaults applied' -- including Q1-Q7, which are human answers labelled '(source: none)'. A reader of RUN.md cannot tell which six were never put to a human.\",\n              \"fix\": \"Clarifier/CLI: write the proposed_default into answer and set status when default_source is set. The planner's A1-A6 already carry the traceability correctly; the defect is in the clarifier's write and the renderer's headings.\"\n            }\n          ],\n          \"evidence\": [\n            \"ls skills/admin/validation-rules/SKILL.md skills/admin/custom-permissions/SKILL.md templates/admin/validation-rule-patterns.md -> all three exist\",\n            \"skills/admin/validation-rules/SKILL.md:205 -> '| PRIORVALUE does not work on insert | `PRIORVALUE(Field__c)` returns null on insert. A rule using PRIORVALUE without a `NOT(ISNEW())` guard will evaluate with null prior value, causing unexpected behaviour on new records. |'\",\n            \"skills/admin/validation-rules/references/gotchas.md:20 -> '## PRIORVALUE Does Not Work on Insert'; :38 shows the guarded GOOD form `ISPICKVAL(PRIORVALUE(StageName), \\\"Closed Won\\\")` under NOT(ISNEW())\",\n            \"templates/admin/validation-rule-patterns.md:78 -> '`PRIORVALUE(Field)` -- the value at the start of the save context. Use for \\\"cannot regress\\\" rules (Stage can only move forward).'\",\n            \"templates/admin/validation-rule-patterns.md:38-57 -> the canonical formula order: bypass first (`NOT($Permission.Bypass_Validation_<Domain>)`), relevance gate second (`NOT(ISNEW())`), business rule last -- which is the order the step's formula uses\",\n            \"skills/admin/validation-rules/SKILL.md:143 -> '| Custom Permission | Preferred -- granular, auditable | `NOT($Permission.Bypass_Validation_Rules)` |'; :145 marks the Profile check 'not recommended' -- grounds D1\",\n            \"skills/admin/validation-rules/references/metadata-examples.md, ValidationRule element table -> 'errorMessage | string | yes | Must be 255 characters or less'; measured len(errorMessage) = 199\",\n            \"skills/admin/custom-permissions/references/metadata-examples.md section 5 -> the PermissionSet grant shape `<customPermissions><enabled>true</enabled><name>Bypass_Validation_Rules</name></customPermissions>`; section 7 -> CP-DESC-01 ERROR at 255+ chars, measured len(bypass_custom_permission_description) = 195\",\n            \"$Permission token `Bypass_Opp_Amount_Lock` in errorConditionFormula == inputs.bypass_custom_permission == the planned output filename customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml -- all three identical\",\n            \"skills/admin/fit-gap-analysis-against-org/SKILL.md:77 Low-Code example -> 'validation rule blocking save when picklist combo is invalid'; :91 base(Low-Code) = M; :94-95 no scope multiplier (1 sObject, 1 persona class) and no risk multiplier (risk_tag []) -> effort M confirmed\",\n            \"plan.json assumptions[] A1..A6 -> because = Q8..Q13 respectively, steps = ['M1-S01'] on every row; clarifications Q8-Q13 all kind: informational\",\n            \"plan.json steps[0].decision_trees = [] ; decisions D1 and D2 both carry source_reference 'skills/admin/validation-rules/SKILL.md', which resolves -- validate reports 0 warnings, so no treeless-decision WARN\",\n            \"No step input, output or acceptance test names an org, an alias, sf/sfdx, or a network call\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S01\",\n          \"lens\": \"testability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"W1 (notable): the step grants a CustomPermission and a PermissionSet -- an access change -- with human_gate: false. The testability table's 'Human gate present' row fires on a literal reading. It is recorded as a warning and not as a blocker for three reasons, each checked: (a) standards/build-orchestration.md Section 3.1 forces human_gate: false at scale: ask and states that ensure-gates deliberately adds no step: record there, so setting it true would contradict the contract the plan is built to; (b) Section 3.1's CRITICAL list at ask is exhaustive and names only executability/grounding refutations, so this cannot earn a re-plan; (c) agents/_shared/REFUSAL_CODES.md scopes REFUSAL_SECURITY_GUARD to a permission in the Modify All Data class, and a named bypass custom permission for two users is the artefact admin/validation-rules ranks 'Preferred'. The mitigation was verified rather than assumed: RUN.md names both the custom permission and the permission set in M1-S01's outputs and in the manual acceptance line, so the grant is in front of the human at the single go gate.\",\n              \"fix\": \"None available at this stage: human_gate is not in amend-step's amendable field list, and amend-step is refused while the build status is planned/verified. The human weighs the grant at go.\"\n            },\n            {\n              \"problem\": \"W2 (notable): the M1 manual acceptance test can only be observed in a deployed org -- 'a user without the permission lowers Amount and saves, then the save is blocked'. This is a design-only build; Section 3.1 says nothing deploys and that mock_deploy.py --dry-run's summary.md is the evidence the gate rests on. Every milestone manual test in examples/builds/case-onboarding is artefact-readable by contrast ('when record-type-decision.md is read, then it states...'). As worded, the accept gate asks the human to tick an observation the build never produces.\",\n              \"fix\": \"Reword the M1 manual test to an artefact-readable assertion -- e.g. given artefacts/M1-S01, the rule's first AND clause is NOT($Permission.Bypass_Opp_Amount_Lock), errorMessage matches the Q4 text verbatim, and permissionsets/Opp_Amount_Lock_Bypass grants exactly that permission -- and carry the in-org behaviour forward as a post-deploy UAT line. Not applicable here: amend-step reaches step fields only and is refused at status planned.\"\n            },\n            {\n              \"problem\": \"W3: check_custom_permissions.py --manifest-dir <empty dir> exits 0 (measured), so that one acceptance test alone would pass against an empty artefacts/M1-S01. The step's test set as a whole still discriminates -- check_validation_rules.py exits 1 on the same empty dir -- and Section 5 pairs every checker test with check-outputs, which would fail on four missing files.\",\n              \"fix\": \"Skill-library follow-up: have check_custom_permissions.py report a finding when the scanned tree carries no customPermission files, as check_validation_rules.py does.\"\n            }\n          ],\n          \"evidence\": [\n            \"python3 skills/admin/validation-rules/scripts/check_validation_rules.py --help -> accepts [--manifest-dir DIR] [--strict] [paths ...]\",\n            \"python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --help -> accepts [--manifest-dir MANIFEST_DIR] [--strict]\",\n            \"both checker commands match ^python3 skills/<domain>/<slug>/scripts/check_<name>.py and both scripts are on disk (ls skills/admin/validation-rules/scripts/, skills/admin/custom-permissions/scripts/)\",\n            \"check_validation_rules.py --manifest-dir /nonexistent -> exit 1, HIGH 'path does not exist'; --manifest-dir <empty> -> exit 1, HIGH 'no validation rule metadata files found'\",\n            \"check_custom_permissions.py --manifest-dir /nonexistent -> exit 2 'Manifest directory not found'; --manifest-dir <empty> -> exit 0, 'Summary: 0 error(s), 0 warning(s), 0 info.'\",\n            \"Fixture holding exactly the four declared outputs: check_validation_rules.py -> exit 0, one INFO 'field references ... no field inventory in this scope'; check_custom_permissions.py -> exit 0, 'Bypass_Opp_Amount_Lock  1  permission set Opp_Amount_Lock_Bypass', 'Summary: 0 error(s), 0 warning(s), 0 info.' -- matching both test descriptions verbatim\",\n            \"Negative fixture (CustomPermission file renamed): check_validation_rules.py -> exit 1, 'HIGH ... VR-REF-02 formula references $Permission.Bypass_Opp_Amount_Lock, which has no matching customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml in the scanned tree'; check_custom_permissions.py -> exit 1, ERROR 'permission set Opp_Amount_Lock_Bypass grants Bypass_Opp_Amount_Lock, which is not defined ... The deploy will fail.' -- both tests can fail\",\n            \"Both checker tests declare scope: step and carry --manifest-dir artefacts/M1-S01 -- intent and command agree (Section 5 Checker scope)\",\n            \"Step type `validation` is a metadata type: an `xml` test and a `manifest` test are both present, and artefacts/M1-S01/package.xml is declared in outputs[]\",\n            \"Pass conditions are exit 0 / all parse / consistent -- all objective; no `command`-type test, so no deny-list exposure\",\n            \"Milestone M1 carries one acceptance test of its own; its expected is 'ticked at the M1 milestone gate', its own gate, not a later one\"\n          ]\n        }\n      ]\n    }\n  ],\n  \"blockers\": [],\n  \"warnings\": [\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"testability\",\n      \"id\": \"W1\",\n      \"severity\": \"P1\",\n      \"problem\": \"Access-granting step with human_gate: false; downgraded from a literal 'Human gate present' refutation by Section 3.1's ask branch, its exhaustive CRITICAL list, and REFUSAL_CODES.md's scoping of REFUSAL_SECURITY_GUARD. RUN.md puts the grant in front of the human at the go gate.\"\n    },\n    {\n      \"step\": \"M1\",\n      \"lens\": \"testability\",\n      \"id\": \"W2\",\n      \"severity\": \"P1\",\n      \"problem\": \"The M1 manual acceptance test is observable only in a deployed org, which a design-only build never reaches; every milestone manual test in the committed case-onboarding example is artefact-readable instead.\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"testability\",\n      \"id\": \"W3\",\n      \"severity\": \"P2\",\n      \"problem\": \"check_custom_permissions.py exits 0 on an empty directory, so that test alone does not discriminate; the validation-rules checker and check-outputs cover the gap.\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"grounding\",\n      \"id\": \"W4\",\n      \"severity\": \"P1\",\n      \"problem\": \"admin/validation-rules contradicts itself on ISBLANK over a picklist (SKILL.md:119 raw vs llm-anti-patterns.md:169 TEXT-wrapped); the step copied the SKILL.md form.\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"grounding\",\n      \"id\": \"W5\",\n      \"severity\": \"P2\",\n      \"problem\": \"Per-rule bypass name Bypass_Opp_Amount_Lock instead of the per-domain Bypass_Validation_<Domain> the custom-permissions skill points at.\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"grounding\",\n      \"id\": \"W6\",\n      \"severity\": \"P2\",\n      \"problem\": \"D2 deploys active=true on known-dirty data with no named cleanup owner, departing from the cited skill's Questions row 6; the delta-check reasoning is grounded and the alternative is recorded.\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"executability\",\n      \"id\": \"W7\",\n      \"severity\": \"P2\",\n      \"problem\": \"errorConditionFormula carries a raw `<` that must be emitted as `&lt;`; the xml acceptance test catches a failure to escape it.\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"executability\",\n      \"id\": \"W8\",\n      \"severity\": \"P2\",\n      \"problem\": \"metadata-builder writes deploy-order.md on every run; the step does not declare it in outputs[].\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"executability\",\n      \"id\": \"W9\",\n      \"severity\": \"P2\",\n      \"problem\": \"A `validation`-typed step emitting CustomPermission and PermissionSet is outside metadata-builder's Step 2 type table and its trusted-metadata list; buildable via the step's own skills[], but the agent contract has no scale: ask branch for it.\"\n    },\n    {\n      \"step\": \"M1-S01\",\n      \"lens\": \"grounding\",\n      \"id\": \"W10\",\n      \"severity\": \"P2\",\n      \"problem\": \"Q8-Q13 carry default_source but remain status: open with no answer, and RUN.md reports 'Deferred questions: _None recorded._' while listing human answers Q1-Q7 under '## Defaults applied'.\"\n    }\n  ],\n  \"cross_step_results\": [\n    {\n      \"check\": \"Every scope.fit_gap[] requirement reaches a step, and each of those steps carries at least one acceptance test\",\n      \"result\": \"pass\",\n      \"detail\": \"The single fit_gap row steps[] = ['M1-S01']; M1-S01 carries 4 acceptance tests.\"\n    },\n    {\n      \"check\": \"No two steps write the same output path\",\n      \"result\": \"pass\",\n      \"detail\": \"One step; its 4 output paths are distinct.\"\n    },\n    {\n      \"check\": \"depends_on graph is acyclic and every id in it exists\",\n      \"result\": \"pass\",\n      \"detail\": \"M1-S01.depends_on = [].\"\n    },\n    {\n      \"check\": \"Every milestone has >= 1 acceptance test, >= 1 step, and steps[] lists exactly the steps whose milestone is that id\",\n      \"result\": \"pass\",\n      \"detail\": \"M1: 1 manual acceptance test, steps ['M1-S01']; M1-S01.milestone = 'M1'.\"\n    },\n    {\n      \"check\": \"Every scope-out item names why it is out\",\n      \"result\": \"pass\",\n      \"detail\": \"All five scope.out entries cite the clarification or assumption that put them out (Q5, Q1, Q7, Q11/A4, Q13/A6).\"\n    }\n  ],\n  \"notes\": \"scale: ask -- one verification round, refutation-only, over one step. No CRITICAL refutation as standards/build-orchestration.md Section 3.1 defines it at this tier (no ineligible agent, no unresolvable skill or template, no missing checker, no decision lacking a tree branch where one applies), so the outcome is verified with 10 warnings for the human to weigh at the single go gate. Two of the ten are notable and neither is fixable at this stage: W1 (access grant with human_gate: false, forced by Section 3.1 itself) and W2 (a milestone manual test that only a deployed org can settle). amend-step, which Section 3.1 names as the in-place remedy for a testability refutation, is refused by the CLI while the build status is planned or verified and cannot reach a milestone's acceptance tests at all.\"\n}"
+    },
+    {
+      "kind": "markdown",
+      "title": "Plan verification report \u2014 opp-amount-lock v1",
+      "target_path": ".sfskills/builds/opp-amount-lock/envelopes/verification/2026-09-12T07-00-00Z.md",
+      "content": "See the markdown twin at the same stem: verdict matrix, ten warnings with evidence and remedies, five cross-step results, and the G2 gate line."
+    }
+  ],
+  "findings": [
+    {
+      "id": "W1",
+      "severity": "P1",
+      "title": "Access-granting step carries human_gate: false",
+      "detail": "Testability lens. M1-S01 emits a CustomPermission and a PermissionSet with human_gate: false. The testability table's 'Human gate present' row fires on a literal reading, and REFUSAL_SECURITY_GUARD would reject the plan. Recorded as a warning instead because \u00a7 3.1 forces human_gate: false at scale: ask and has ensure-gates add no step: record there; because \u00a7 3.1's CRITICAL list at ask is exhaustive and names only executability/grounding refutations; and because REFUSAL_CODES.md scopes REFUSAL_SECURITY_GUARD to a Modify-All-Data-class permission, not to the bypass custom permission admin/validation-rules ranks 'Preferred'. Mitigation verified rather than assumed: RUN.md names both artefacts in M1-S01's outputs and in the manual acceptance line, so the grant is in front of the human at the single go gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/RUN.md",
+        "detail": "Outputs list carries customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml and permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml; standards/build-orchestration.md \u00a7 3.1 'ensure-gates reads scale: at ask it adds milestone:M1 and no step: record, because the single step is written human_gate: false'"
+      }
+    },
+    {
+      "id": "W2",
+      "severity": "P1",
+      "title": "M1 manual acceptance test is observable only in a deployed org",
+      "detail": "Testability lens. The M1 manual test asks a human to tick that a user's save was blocked and a Sales Ops user's save succeeded. This is a design-only build; \u00a7 3.1 says nothing deploys and that mock_deploy.py --dry-run's summary.md is the evidence the gate rests on. Every milestone manual test in examples/builds/case-onboarding is artefact-readable by contrast. Remedy: reword to an artefact-readable assertion over artefacts/M1-S01 and carry the in-org behaviour forward as a post-deploy UAT line. Not applicable at this stage \u2014 amend-step reaches step fields only and is refused at status planned/verified.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "examples/builds/case-onboarding/plan.json",
+        "detail": "M1 manual: 'when record-type-decision.md is read, then it states...'; M2 manual: 'the support manager and the admin lead jointly confirm that no named user is hard-coded in any queue or group' \u2014 both readable from artefacts, neither needing an org"
+      }
+    },
+    {
+      "id": "W3",
+      "severity": "P2",
+      "title": "check_custom_permissions.py exits 0 against an empty directory",
+      "detail": "Testability lens. That acceptance test alone would pass against an empty artefacts/M1-S01. The step's test set still discriminates because check_validation_rules.py exits 1 on the same empty tree, and \u00a7 5 pairs every checker test with check-outputs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+        "detail": "--manifest-dir <empty dir> printed 'Summary: 0 error(s), 0 warning(s), 0 info.' and exited 0; check_validation_rules.py on the same dir printed HIGH 'no validation rule metadata files found' and exited 1"
+      }
+    },
+    {
+      "id": "W4",
+      "severity": "P1",
+      "title": "admin/validation-rules contradicts itself on ISBLANK over a picklist",
+      "detail": "Grounding lens. SKILL.md:119 gives NOT(ISBLANK(StageName)) as the GOOD example \u2014 the form the step copied \u2014 while references/llm-anti-patterns.md:169 gives NOT(ISBLANK(TEXT(Status))) for the same job. Not a refutation: the step's form is grounded in the more canonical location. If the platform rejects ISBLANK on a raw picklist the fix is TEXT(StageName). The guard is behaviourally redundant (ISPICKVAL already returns false on a blank picklist) and is present to satisfy check_validation_rules.py:418.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/SKILL.md",
+        "detail": "L119 'NOT(ISBLANK(StageName)),' inside the '// GOOD' block vs references/llm-anti-patterns.md L169 'NOT(ISBLANK(TEXT(Status))),'"
+      }
+    },
+    {
+      "id": "W5",
+      "severity": "P2",
+      "title": "Per-rule bypass name instead of the per-domain form the skill points at",
+      "detail": "Grounding lens. The plan names the custom permission Bypass_Opp_Amount_Lock; admin/custom-permissions points at Bypass_Validation_<Domain> for anything larger than a single-team org. Defensible as the single-gate shape, but the next Opportunity rule needs a second permission and a second permission set.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+        "detail": "'Naming: templates/admin/validation-rule-patterns.md L41 uses the per-domain form Bypass_Validation_<Domain> so one integration can be exempted from Account rules without also being exempted from Case rules.'"
+      }
+    },
+    {
+      "id": "W6",
+      "severity": "P2",
+      "title": "D2 deploys active=true on known-dirty data with no named cleanup owner",
+      "detail": "Grounding lens. admin/validation-rules Questions row 6 says a good answer is 'A decision to deploy with active=false and a named cleanup owner, or a count proving the data is clean'. D2 has neither, but its delta-check reasoning is grounded in templates/admin/validation-rule-patterns.md:78 and alternatives_rejected records the road not taken \u2014 a reasoned departure, not an ungrounded one. Surface at the go gate: the historical violations stay permanently non-conforming by design.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/SKILL.md",
+        "detail": "L62 '| \"Does the data already violate this rule today?\" | ... | A decision to deploy with active=false and a named cleanup owner, or a count proving the data is clean |'"
+      }
+    },
+    {
+      "id": "W7",
+      "severity": "P2",
+      "title": "errorConditionFormula carries a raw < that must be XML-escaped",
+      "detail": "Executability lens. inputs.errorConditionFormula holds 'Amount < PRIORVALUE(Amount)'. No plan edit needed \u2014 the always-on xml acceptance test (ElementTree parse) fails on an unescaped <. Flagged so the builder escapes it deliberately.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/references/metadata-examples.md",
+        "detail": "'**`<` and `&` must be escaped** in formula text (`&lt;`, `&amp;`).'"
+      }
+    },
+    {
+      "id": "W8",
+      "severity": "P2",
+      "title": "deploy-order.md is written on every run but undeclared in outputs[]",
+      "detail": "Executability lens. metadata-builder Step 7 writes artefacts/<step_id>/deploy-order.md unconditionally; M1-S01's outputs[] lists four paths and not this one, so check-outputs never confirms it and no reader of plan.json knows it exists.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "detail": "Step 7 \u2014 'Write `<build_dir>/artefacts/<step_id>/deploy-order.md`'; plan.json steps[0].outputs[] has 4 entries, none of them deploy-order.md"
+      }
+    },
+    {
+      "id": "W9",
+      "severity": "P2",
+      "title": "A validation-typed step emitting access metadata is outside metadata-builder's Step 2 table",
+      "detail": "Executability lens. Step 2 maps `validation` to ValidationRule only and PermissionSet to `access`; CustomPermission appears in no row and in none of the eight trusted-metadata entries. Still buildable \u2014 Step 1's three refusal checks are all on the step type, and Step 3 builds the element inventory from the step's own skills[], where admin/custom-permissions carries both fenced shapes. A contract gap created by \u00a7 3.1's one-step collapse, not a step defect.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "detail": "Step 2 row '| `validation` | `ValidationRule` \u2014 standalone or embedded per the skill's documented layout |'; grep -l '^```xml' over skills/admin/custom-permissions returned references/metadata-examples.md and SKILL.md, so the Step 3 gap rule does not fire"
+      }
+    },
+    {
+      "id": "W10",
+      "severity": "P2",
+      "title": "Q8\u2013Q13 pre-fill is half-applied and RUN.md reports no deferred questions",
+      "detail": "Grounding lens. The six informational rows carry default_source (skill-guidance / requirement-text) but remain status: open with no answer field. RUN.md then renders 'Deferred questions: _None recorded._' while listing all thirteen under '## Defaults applied', including Q1\u2013Q7, which are human answers labelled '(source: none)'. A reader of RUN.md cannot tell which six were never put to a human. The planner's A1\u2013A6 carry the traceability correctly; the defect is in the clarifier's write and the renderer's headings.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "detail": "clarifications Q8 = {kind: informational, status: open, proposed_default: '...', default_source: 'skill-guidance'} with no answer key; RUN.md '## Deferred questions' section body is '_None recorded._'"
+      }
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The planner's two checker-test descriptions reproduce byte-for-byte what the checkers actually print against a fixture of the four declared outputs, including the single advisory INFO and its reason.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "detail": "Fixture run printed exactly 'WARN: 1 finding(s) detected (0 blocking)' with the field-references INFO and exit 0; check_custom_permissions.py printed 'Bypass_Opp_Amount_Lock  1  permission set Opp_Amount_Lock_Bypass' and 'Summary: 0 error(s), 0 warning(s), 0 info.' \u2014 both matching the plan's prose"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The step's acceptance tests can genuinely fail: renaming the CustomPermission file fired VR-REF-02 as a HIGH blocking finding and both checkers exited 1.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "detail": "Negative fixture printed 'VR-REF-02 formula references $Permission.Bypass_Opp_Amount_Lock, which has no matching customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml in the scanned tree', exit 1"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "build-orchestration",
+      "observation": "Section 3.1 names amend-step as the in-place remedy for a testability refutation at ask scale, but the CLI refuses amend-step unless the build status is building or approved, and it takes a step-id so it cannot reach a milestone's acceptance tests at all.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py",
+        "detail": "amend-step --help: 'Refused unless the build status is building or approved (a planned/verified plan is corrected with set-plan...)' \u2014 set-plan is the planner's writer, and plan-verifier's own contract says it never fixes the plan"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "build-orchestration",
+      "observation": "plan-verifier's testability table and REFUSAL_SECURITY_GUARD would reject any access-granting step with human_gate: false, while Section 3.1 forces exactly that shape at ask scale; neither document branches on the other.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/plan-verifier/AGENT.md",
+        "detail": "Step 4 row 'Human gate present | The step changes access or deletes something and human_gate is not true' and REFUSAL_SECURITY_GUARD 'reported as a blocker and the plan is rejected, never verified with a warning' vs standards/build-orchestration.md \u00a7 3.1 'build-planner \u2014 Step 6 (ask: one step, human_gate: false)'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "build-orchestration",
+      "observation": "RUN.md lists every clarification under the heading Defaults applied, including the seven the human answered, which are printed with source: none, and reports no deferred questions although six informational rows are still status: open.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/RUN.md",
+        "detail": "'## Defaults applied' lists Q1\u2013Q13; Q1 reads '... (source: none)' though it carries a human answer; '## Deferred questions' body is '_None recorded._'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-library",
+      "observation": "One skill gives two different ISBLANK forms for a picklist field in two of its own files, and its checker only tests that the substring ISBLANK( is present, so it cannot tell the two apart.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "detail": "L418 'if \"ISPICKVAL(\" in upper_formula and \"ISBLANK(\" not in upper_formula:' \u2014 a substring test, against SKILL.md:119 NOT(ISBLANK(StageName)) and llm-anti-patterns.md:169 NOT(ISBLANK(TEXT(Status)))"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "build-orchestration",
+      "observation": "Whether W1 is a warning or a blocker decides the whole outcome of this run, and the two governing documents point opposite ways with no source-hierarchy rule between an agent contract and the orchestration standard.",
+      "evidence": {
+        "source": "heuristic",
+        "path": "standards/build-orchestration.md",
+        "detail": "\u00a7 3.1 was written later and is explicitly the more specific rule for this tier, which is why it was followed; a reviewer weighting the agent's own refusal table instead would get plan-rejected from identical evidence"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-orchestration",
+      "observation": "metadata-builder's Step 2 type table has no row covering a step that Section 3.1 collapsed, so the same artefact set is buildable but undescribed by the agent's own contract.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "detail": "Step 2 '| `access` | `PermissionSet`, `PermissionSetGroup`, sharing metadata |' and '| `validation` | `ValidationRule` ... |' \u2014 the step is typed validation and emits both sets"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-orchestration",
+      "observation": "The two decisions both carry adr_required: true against a bar the planner itself doubted, which an architecture pass could confirm or drop before either reaches a workbook.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/envelopes/plan/2026-09-12T06-30-00Z.md",
+        "detail": "Planner's own Ambiguous block: 'architecture-decision-records own candidacy bar ... would not promote either D1 or D2 to a real ADR. Followed the build-planner's literal rule.'"
+      },
+      "suggested_followup_agent": "waf-assessor",
+      "followup_reason": "Both decisions carry adr_required: true against a candidacy bar the planner recorded as doubtful; a Well-Architected pass settles whether either is a real ADR before the workbook inherits the flag."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 3 gate rules, \u00a7 3.1 the ask tier (plan shape, one verification round, the exhaustive CRITICAL list, ensure-gates and human_gate at ask, the CLI deltas), \u00a7 4 step-type table and agent eligibility, \u00a7 5 acceptance-test types, checker scope and the Apex exception"
+    },
+    {
+      "type": "standard",
+      "id": "agents/plan-verifier/AGENT.md",
+      "path": "agents/plan-verifier/AGENT.md",
+      "used_for": "the three lens tables, the cross-step checks, the set-verification write sequence and the envelope shape"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "eight-section shape, Process Observations requirement, confidence rubric, citation schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical scope of REFUSAL_SECURITY_GUARD, which decided W1's severity"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/RUNTIME_VS_BUILD.md",
+      "path": "agents/_shared/RUNTIME_VS_BUILD.md",
+      "used_for": "confirming metadata-builder is on the active runtime roster (L122)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/metadata-builder/AGENT.md",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "executability lens: frontmatter eligibility, Inputs table, Step 1 refusal checks, Step 2 type table, Step 3 skill-gap rule, Steps 6/7 package.xml and deploy-order.md, Output Contract"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the verification block shape \u2014 lenses[] as objects with pass/fail, blockers[] requiring step and problem"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "envelope required keys, closed top level, report_path/envelope_path build-layer pattern"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "grounding the PRIORVALUE/NOT(ISNEW()) pattern, the bypass-preference ranking behind D1, the 255-character errorMessage ceiling, the Questions-to-Ask rows behind Q1\u2013Q5/Q8/Q9, and the ISBLANK-on-picklist contradiction (W4)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/SKILL.md",
+      "used_for": "confirming the CustomPermission and PermissionSet-with-<customPermissions> deployable shapes exist, the 255-character description cap, and the per-domain bypass naming guidance (W5)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "independently re-tiering the fit_gap row: Low-Code by the tier table's own validation-rule example, effort M by base(Low-Code) with no scope or risk multiplier"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the cross-step check that every fit_gap requirement reaches a step and that step carries a test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the bar the M1 manual test was judged against \u2014 a stated precondition and one observable outcome (W2)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the rest of that bar, and the remedy shape for carrying the in-org behaviour forward as a post-deploy UAT line"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "confirming the template resolves and grounds the bypass-first formula order (L38\u201357), the PRIORVALUE cannot-regress idiom (L78) and the NOT(ISNEW()) update-only guard (L76)"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-planner",
+      "because": "Ten warnings, four of which are cheapest to fix as plan edits (declare deploy-order.md, reword the M1 manual test, reconsider the bypass name, record a cleanup owner for D2) if the human sends it back at the go gate rather than accepting them."
+    },
+    {
+      "agent": "waf-assessor",
+      "because": "Both decisions carry adr_required: true against a candidacy bar the planner itself recorded as doubtful; an architecture pass settles it before the workbook inherits the flag."
+    }
+  ],
+  "extensions": {
+    "plan_path": ".sfskills/builds/opp-amount-lock/plan.json",
+    "plan_version": 1,
+    "resulting_status": "verified",
+    "verification": {
+      "status": "verified",
+      "verified_at": "2026-09-12T07:00:00Z",
+      "by": "plan-verifier 1.0.0",
+      "plan_version": 1,
+      "scale": "ask",
+      "rounds": 1,
+      "lenses": [
+        {
+          "lens": "executability",
+          "verdict": "pass",
+          "notes": "1/1 steps. metadata-builder resolves (class: runtime, status: beta, requires_org: false), is the standards/build-orchestration.md Section 4 design-only owner for type `validation`, accepts the step's inputs (its Inputs table takes build_dir/step_id/api_version and reads everything else from the step record), and can produce all four declared outputs: Step 3 builds its element inventory from the step's own skills[], and `grep -l '^```xml'` returns references/metadata-examples.md for admin/custom-permissions, which carries both the CustomPermission and the PermissionSet-with-<customPermissions> shapes. 3 warnings."
+        },
+        {
+          "lens": "grounding",
+          "verdict": "pass",
+          "notes": "1/1 steps. Both skills and the one template resolve. PRIORVALUE + NOT(ISNEW()) grounded verbatim (SKILL.md:205, references/gotchas.md:20-38, templates/admin/validation-rule-patterns.md:78); ISPICKVAL and the bypass-first formula order grounded (references/metadata-examples.md Example 1, template lines 38-57); Custom Permission ranked 'Preferred' over Profile (SKILL.md:143-145). decision_trees[] is empty and both decisions carry a source_reference that resolves, so the treeless-decision rule is satisfied and validate raises no WARN. fit_gap re-tiered independently: Low-Code (rubric example is literally 'validation rule blocking save when picklist combo is invalid'), effort base(Low-Code)=M with no scope or risk multiplier -> M; matches. All six deferred informational rows (Q8-Q13) reach an assumptions[] row naming them, and every row's steps[] names M1-S01, which exists. 4 warnings."
+        },
+        {
+          "lens": "testability",
+          "verdict": "pass",
+          "notes": "1/1 steps. Both checkers exist on disk and accept --manifest-dir (verified with --help). Ran both against a fixture holding exactly the four declared outputs: check_validation_rules.py exited 0 with one INFO on field references, and check_custom_permissions.py exited 0 with 0 errors/warnings/info showing Bypass_Opp_Amount_Lock granted by exactly Opp_Amount_Lock_Bypass -- reproducing the plan's own test descriptions verbatim. Tests can fail: renaming the CustomPermission file fired VR-REF-02 HIGH and exit 1, and the custom-permissions checker exit 1 with an ERROR on the same tree. Metadata coverage, scope/command agreement and objective pass conditions all hold. 3 warnings, two of them notable (see W1 and W2)."
+        }
+      ],
+      "steps": [
+        {
+          "step_id": "M1-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "W9: the step emits ValidationRule + CustomPermission + PermissionSet while typed `validation`. metadata-builder's own Step 2 table maps `validation` to ValidationRule only and PermissionSet to `access`; CustomPermission appears in no row of that table and in none of the eight entries of its 'metadata this agent is trusted to write' list. The step is still buildable -- Step 1's three refusal checks are all on the step TYPE, and Step 3 builds the element inventory from the step's skills[], where admin/custom-permissions carries both shapes -- so this is a contract gap, not a step defect.",
+                  "fix": "Add a scale: ask note to metadata-builder Step 2 covering a collapsed step, and add admin/custom-permissions to its trusted-metadata list."
+                },
+                {
+                  "problem": "W7: inputs.errorConditionFormula carries a raw `<` in `Amount < PRIORVALUE(Amount)`. skills/admin/validation-rules/references/metadata-examples.md states '`<` and `&` must be escaped in formula text (&lt;, &amp;)'. If the builder emits it unescaped the file is not well-formed XML.",
+                  "fix": "No plan edit needed -- the always-on `xml` acceptance test (ElementTree parse) fails on an unescaped `<`. Flagged so the builder escapes it deliberately rather than by luck."
+                },
+                {
+                  "problem": "W8: metadata-builder Step 7 writes artefacts/<step_id>/deploy-order.md on every run; the step does not declare it in outputs[], so check-outputs never confirms it and no reader of plan.json knows it exists.",
+                  "fix": "Add `artefacts/M1-S01/deploy-order.md` to outputs[] at the next plan write."
+                }
+              ],
+              "evidence": [
+                "sed -n '1,10p' agents/metadata-builder/AGENT.md -> 'class: runtime', 'status: beta', 'requires_org: false'",
+                "grep -n 'metadata-builder' agents/_shared/RUNTIME_VS_BUILD.md -> L122 '| `metadata-builder` | Admin / Metadata | Deploy-ready source-format metadata XML + `package.xml` fragment + deploy-order note for one declarative step ... | `/build-metadata` |'",
+                "standards/build-orchestration.md Section 4 table, row `validation` -> design-only owner column reads `metadata-builder`",
+                "agents/metadata-builder/AGENT.md '## Inputs' -> build_dir, step_id, api_version only; 'Everything else the build needs comes from the step record itself.'",
+                "agents/metadata-builder/AGENT.md Step 6 -> writes artefacts/<step_id>/package.xml on every run; Step 7 -> writes artefacts/<step_id>/deploy-order.md",
+                "grep -l '^```xml' skills/admin/custom-permissions/references/*.md skills/admin/custom-permissions/SKILL.md -> references/metadata-examples.md, SKILL.md (so metadata-builder Step 3's gap rule does not fire)",
+                "plan.json steps[0].depends_on = [] ; only one step in the plan, so no ordering cycle and no output-path collision"
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "W4: the one skill the formula depends on contradicts itself on ISBLANK over a picklist. skills/admin/validation-rules/SKILL.md:119 gives `NOT(ISBLANK(StageName))` as the GOOD example -- which is exactly what the step copied -- while references/llm-anti-patterns.md:169 gives `NOT(ISBLANK(TEXT(Status)))` for the same job. Not a refutation: the step's form is grounded in the more canonical of the two locations. But only one of the two compiles reliably against a raw picklist.",
+                  "fix": "If the platform rejects ISBLANK on a picklist, the fix is NOT(ISBLANK(TEXT(StageName))). Reconcile the two passages in admin/validation-rules. Note the guard is behaviourally redundant here -- ISPICKVAL already returns false on a blank picklist -- and is present to satisfy check_validation_rules.py:418."
+                },
+                {
+                  "problem": "W5: bypass naming. skills/admin/custom-permissions/references/metadata-examples.md section 2 points at the per-domain form `Bypass_Validation_<Domain>` (templates/admin/validation-rule-patterns.md L41) 'for anything larger than a single-team org'; the plan uses the per-rule name `Bypass_Opp_Amount_Lock`. Defensible as the single-gate shape, but the next Opportunity rule needs a second permission and a second permission set.",
+                  "fix": "Confirm at the go gate that a per-rule bypass is intended, or rename to Bypass_Validation_Opportunity before the builder runs."
+                },
+                {
+                  "problem": "W6: D2 departs from the cited skill's documented remedy. admin/validation-rules '## Questions to Ask Before Configuring' row 6 says a good answer to 'does the data already violate this rule' is 'A decision to deploy with active=false and a named cleanup owner, or a count proving the data is clean'. D2 deploys active=true with neither. The delta-check reasoning IS grounded (templates/admin/validation-rule-patterns.md:78 'PRIORVALUE(Field) -- the value at the start of the save context. Use for cannot-regress rules') and alternatives_rejected records the road not taken, so this is a reasoned departure rather than an ungrounded one.",
+                  "fix": "None required. Surface at the go gate: the handful of historical violations stay permanently non-conforming by design, with no named cleanup owner."
+                },
+                {
+                  "problem": "W10: Q8-Q13 carry default_source (skill-guidance / requirement-text) but are still status: open with no answer field, which is half of what Section 3.1 specifies ('informational rows land pre-filled from their proposed_default with default_source set'). RUN.md then renders 'Deferred questions: _None recorded._' while listing all thirteen under '## Defaults applied' -- including Q1-Q7, which are human answers labelled '(source: none)'. A reader of RUN.md cannot tell which six were never put to a human.",
+                  "fix": "Clarifier/CLI: write the proposed_default into answer and set status when default_source is set. The planner's A1-A6 already carry the traceability correctly; the defect is in the clarifier's write and the renderer's headings."
+                }
+              ],
+              "evidence": [
+                "ls skills/admin/validation-rules/SKILL.md skills/admin/custom-permissions/SKILL.md templates/admin/validation-rule-patterns.md -> all three exist",
+                "skills/admin/validation-rules/SKILL.md:205 -> '| PRIORVALUE does not work on insert | `PRIORVALUE(Field__c)` returns null on insert. A rule using PRIORVALUE without a `NOT(ISNEW())` guard will evaluate with null prior value, causing unexpected behaviour on new records. |'",
+                "skills/admin/validation-rules/references/gotchas.md:20 -> '## PRIORVALUE Does Not Work on Insert'; :38 shows the guarded GOOD form `ISPICKVAL(PRIORVALUE(StageName), \"Closed Won\")` under NOT(ISNEW())",
+                "templates/admin/validation-rule-patterns.md:78 -> '`PRIORVALUE(Field)` -- the value at the start of the save context. Use for \"cannot regress\" rules (Stage can only move forward).'",
+                "templates/admin/validation-rule-patterns.md:38-57 -> the canonical formula order: bypass first (`NOT($Permission.Bypass_Validation_<Domain>)`), relevance gate second (`NOT(ISNEW())`), business rule last -- which is the order the step's formula uses",
+                "skills/admin/validation-rules/SKILL.md:143 -> '| Custom Permission | Preferred -- granular, auditable | `NOT($Permission.Bypass_Validation_Rules)` |'; :145 marks the Profile check 'not recommended' -- grounds D1",
+                "skills/admin/validation-rules/references/metadata-examples.md, ValidationRule element table -> 'errorMessage | string | yes | Must be 255 characters or less'; measured len(errorMessage) = 199",
+                "skills/admin/custom-permissions/references/metadata-examples.md section 5 -> the PermissionSet grant shape `<customPermissions><enabled>true</enabled><name>Bypass_Validation_Rules</name></customPermissions>`; section 7 -> CP-DESC-01 ERROR at 255+ chars, measured len(bypass_custom_permission_description) = 195",
+                "$Permission token `Bypass_Opp_Amount_Lock` in errorConditionFormula == inputs.bypass_custom_permission == the planned output filename customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml -- all three identical",
+                "skills/admin/fit-gap-analysis-against-org/SKILL.md:77 Low-Code example -> 'validation rule blocking save when picklist combo is invalid'; :91 base(Low-Code) = M; :94-95 no scope multiplier (1 sObject, 1 persona class) and no risk multiplier (risk_tag []) -> effort M confirmed",
+                "plan.json assumptions[] A1..A6 -> because = Q8..Q13 respectively, steps = ['M1-S01'] on every row; clarifications Q8-Q13 all kind: informational",
+                "plan.json steps[0].decision_trees = [] ; decisions D1 and D2 both carry source_reference 'skills/admin/validation-rules/SKILL.md', which resolves -- validate reports 0 warnings, so no treeless-decision WARN",
+                "No step input, output or acceptance test names an org, an alias, sf/sfdx, or a network call"
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "W1 (notable): the step grants a CustomPermission and a PermissionSet -- an access change -- with human_gate: false. The testability table's 'Human gate present' row fires on a literal reading. It is recorded as a warning and not as a blocker for three reasons, each checked: (a) standards/build-orchestration.md Section 3.1 forces human_gate: false at scale: ask and states that ensure-gates deliberately adds no step: record there, so setting it true would contradict the contract the plan is built to; (b) Section 3.1's CRITICAL list at ask is exhaustive and names only executability/grounding refutations, so this cannot earn a re-plan; (c) agents/_shared/REFUSAL_CODES.md scopes REFUSAL_SECURITY_GUARD to a permission in the Modify All Data class, and a named bypass custom permission for two users is the artefact admin/validation-rules ranks 'Preferred'. The mitigation was verified rather than assumed: RUN.md names both the custom permission and the permission set in M1-S01's outputs and in the manual acceptance line, so the grant is in front of the human at the single go gate.",
+                  "fix": "None available at this stage: human_gate is not in amend-step's amendable field list, and amend-step is refused while the build status is planned/verified. The human weighs the grant at go."
+                },
+                {
+                  "problem": "W2 (notable): the M1 manual acceptance test can only be observed in a deployed org -- 'a user without the permission lowers Amount and saves, then the save is blocked'. This is a design-only build; Section 3.1 says nothing deploys and that mock_deploy.py --dry-run's summary.md is the evidence the gate rests on. Every milestone manual test in examples/builds/case-onboarding is artefact-readable by contrast ('when record-type-decision.md is read, then it states...'). As worded, the accept gate asks the human to tick an observation the build never produces.",
+                  "fix": "Reword the M1 manual test to an artefact-readable assertion -- e.g. given artefacts/M1-S01, the rule's first AND clause is NOT($Permission.Bypass_Opp_Amount_Lock), errorMessage matches the Q4 text verbatim, and permissionsets/Opp_Amount_Lock_Bypass grants exactly that permission -- and carry the in-org behaviour forward as a post-deploy UAT line. Not applicable here: amend-step reaches step fields only and is refused at status planned."
+                },
+                {
+                  "problem": "W3: check_custom_permissions.py --manifest-dir <empty dir> exits 0 (measured), so that one acceptance test alone would pass against an empty artefacts/M1-S01. The step's test set as a whole still discriminates -- check_validation_rules.py exits 1 on the same empty dir -- and Section 5 pairs every checker test with check-outputs, which would fail on four missing files.",
+                  "fix": "Skill-library follow-up: have check_custom_permissions.py report a finding when the scanned tree carries no customPermission files, as check_validation_rules.py does."
+                }
+              ],
+              "evidence": [
+                "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --help -> accepts [--manifest-dir DIR] [--strict] [paths ...]",
+                "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --help -> accepts [--manifest-dir MANIFEST_DIR] [--strict]",
+                "both checker commands match ^python3 skills/<domain>/<slug>/scripts/check_<name>.py and both scripts are on disk (ls skills/admin/validation-rules/scripts/, skills/admin/custom-permissions/scripts/)",
+                "check_validation_rules.py --manifest-dir /nonexistent -> exit 1, HIGH 'path does not exist'; --manifest-dir <empty> -> exit 1, HIGH 'no validation rule metadata files found'",
+                "check_custom_permissions.py --manifest-dir /nonexistent -> exit 2 'Manifest directory not found'; --manifest-dir <empty> -> exit 0, 'Summary: 0 error(s), 0 warning(s), 0 info.'",
+                "Fixture holding exactly the four declared outputs: check_validation_rules.py -> exit 0, one INFO 'field references ... no field inventory in this scope'; check_custom_permissions.py -> exit 0, 'Bypass_Opp_Amount_Lock  1  permission set Opp_Amount_Lock_Bypass', 'Summary: 0 error(s), 0 warning(s), 0 info.' -- matching both test descriptions verbatim",
+                "Negative fixture (CustomPermission file renamed): check_validation_rules.py -> exit 1, 'HIGH ... VR-REF-02 formula references $Permission.Bypass_Opp_Amount_Lock, which has no matching customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml in the scanned tree'; check_custom_permissions.py -> exit 1, ERROR 'permission set Opp_Amount_Lock_Bypass grants Bypass_Opp_Amount_Lock, which is not defined ... The deploy will fail.' -- both tests can fail",
+                "Both checker tests declare scope: step and carry --manifest-dir artefacts/M1-S01 -- intent and command agree (Section 5 Checker scope)",
+                "Step type `validation` is a metadata type: an `xml` test and a `manifest` test are both present, and artefacts/M1-S01/package.xml is declared in outputs[]",
+                "Pass conditions are exit 0 / all parse / consistent -- all objective; no `command`-type test, so no deny-list exposure",
+                "Milestone M1 carries one acceptance test of its own; its expected is 'ticked at the M1 milestone gate', its own gate, not a later one"
+              ]
+            }
+          ]
+        }
+      ],
+      "blockers": [],
+      "warnings": [
+        {
+          "step": "M1-S01",
+          "lens": "testability",
+          "id": "W1",
+          "severity": "P1",
+          "problem": "Access-granting step with human_gate: false; downgraded from a literal 'Human gate present' refutation by Section 3.1's ask branch, its exhaustive CRITICAL list, and REFUSAL_CODES.md's scoping of REFUSAL_SECURITY_GUARD. RUN.md puts the grant in front of the human at the go gate."
+        },
+        {
+          "step": "M1",
+          "lens": "testability",
+          "id": "W2",
+          "severity": "P1",
+          "problem": "The M1 manual acceptance test is observable only in a deployed org, which a design-only build never reaches; every milestone manual test in the committed case-onboarding example is artefact-readable instead."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "testability",
+          "id": "W3",
+          "severity": "P2",
+          "problem": "check_custom_permissions.py exits 0 on an empty directory, so that test alone does not discriminate; the validation-rules checker and check-outputs cover the gap."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "grounding",
+          "id": "W4",
+          "severity": "P1",
+          "problem": "admin/validation-rules contradicts itself on ISBLANK over a picklist (SKILL.md:119 raw vs llm-anti-patterns.md:169 TEXT-wrapped); the step copied the SKILL.md form."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "grounding",
+          "id": "W5",
+          "severity": "P2",
+          "problem": "Per-rule bypass name Bypass_Opp_Amount_Lock instead of the per-domain Bypass_Validation_<Domain> the custom-permissions skill points at."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "grounding",
+          "id": "W6",
+          "severity": "P2",
+          "problem": "D2 deploys active=true on known-dirty data with no named cleanup owner, departing from the cited skill's Questions row 6; the delta-check reasoning is grounded and the alternative is recorded."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "executability",
+          "id": "W7",
+          "severity": "P2",
+          "problem": "errorConditionFormula carries a raw `<` that must be emitted as `&lt;`; the xml acceptance test catches a failure to escape it."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "executability",
+          "id": "W8",
+          "severity": "P2",
+          "problem": "metadata-builder writes deploy-order.md on every run; the step does not declare it in outputs[]."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "executability",
+          "id": "W9",
+          "severity": "P2",
+          "problem": "A `validation`-typed step emitting CustomPermission and PermissionSet is outside metadata-builder's Step 2 type table and its trusted-metadata list; buildable via the step's own skills[], but the agent contract has no scale: ask branch for it."
+        },
+        {
+          "step": "M1-S01",
+          "lens": "grounding",
+          "id": "W10",
+          "severity": "P2",
+          "problem": "Q8-Q13 carry default_source but remain status: open with no answer, and RUN.md reports 'Deferred questions: _None recorded._' while listing human answers Q1-Q7 under '## Defaults applied'."
+        }
+      ],
+      "cross_step_results": [
+        {
+          "check": "Every scope.fit_gap[] requirement reaches a step, and each of those steps carries at least one acceptance test",
+          "result": "pass",
+          "detail": "The single fit_gap row steps[] = ['M1-S01']; M1-S01 carries 4 acceptance tests."
+        },
+        {
+          "check": "No two steps write the same output path",
+          "result": "pass",
+          "detail": "One step; its 4 output paths are distinct."
+        },
+        {
+          "check": "depends_on graph is acyclic and every id in it exists",
+          "result": "pass",
+          "detail": "M1-S01.depends_on = []."
+        },
+        {
+          "check": "Every milestone has >= 1 acceptance test, >= 1 step, and steps[] lists exactly the steps whose milestone is that id",
+          "result": "pass",
+          "detail": "M1: 1 manual acceptance test, steps ['M1-S01']; M1-S01.milestone = 'M1'."
+        },
+        {
+          "check": "Every scope-out item names why it is out",
+          "result": "pass",
+          "detail": "All five scope.out entries cite the clarification or assumption that put them out (Q5, Q1, Q7, Q11/A4, Q13/A6)."
+        }
+      ],
+      "notes": "scale: ask -- one verification round, refutation-only, over one step. No CRITICAL refutation as standards/build-orchestration.md Section 3.1 defines it at this tier (no ineligible agent, no unresolvable skill or template, no missing checker, no decision lacking a tree branch where one applies), so the outcome is verified with 10 warnings for the human to weigh at the single go gate. Two of the ten are notable and neither is fixable at this stage: W1 (access grant with human_gate: false, forced by Section 3.1 itself) and W2 (a milestone manual test that only a deployed org can settle). amend-step, which Section 3.1 names as the in-place remedy for a testability refutation, is refused by the CLI while the build status is planned or verified and cannot reach a milestone's acceptance tests at all."
+    },
+    "validate_baseline": "OK .sfskills/builds/opp-amount-lock/plan.json: 1 milestone(s), 1 step(s), 0 warning(s). (exit 0)",
+    "validate_after_write": "OK .sfskills/builds/opp-amount-lock/plan.json: 1 milestone(s), 1 step(s), 0 warning(s). (exit 0)",
+    "validate_diff": "identical \u2014 no WARN or ERROR line appears in one run and not the other; the treeless-decision WARN the AGENT.md warns about did not fire, because both decisions carry a source_reference that resolves"
+  }
+}

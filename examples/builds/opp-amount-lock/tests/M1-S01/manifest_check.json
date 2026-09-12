@@ -1,0 +1,60 @@
+{
+  "manifest_path": "artefacts/M1-S01/package.xml",
+  "types_in_manifest": [
+    {
+      "name": "CustomPermission",
+      "members": [
+        "Bypass_Opp_Amount_Lock"
+      ]
+    },
+    {
+      "name": "ValidationRule",
+      "members": [
+        "Opportunity.Amount_Locked_After_Closed_Won"
+      ]
+    },
+    {
+      "name": "PermissionSet",
+      "members": [
+        "Opp_Amount_Lock_Bypass"
+      ]
+    }
+  ],
+  "files_to_manifest": [
+    {
+      "file": "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+      "derived_member": "ValidationRule:Opportunity.Amount_Locked_After_Closed_Won",
+      "covered": true
+    },
+    {
+      "file": "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+      "derived_member": "CustomPermission:Bypass_Opp_Amount_Lock",
+      "covered": true
+    },
+    {
+      "file": "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+      "derived_member": "PermissionSet:Opp_Amount_Lock_Bypass",
+      "covered": true
+    }
+  ],
+  "manifest_to_files": [
+    {
+      "type": "CustomPermission",
+      "member": "Bypass_Opp_Amount_Lock",
+      "has_file": true
+    },
+    {
+      "type": "ValidationRule",
+      "member": "Opportunity.Amount_Locked_After_Closed_Won",
+      "has_file": true
+    },
+    {
+      "type": "PermissionSet",
+      "member": "Opp_Amount_Lock_Bypass",
+      "has_file": true
+    }
+  ],
+  "wildcards_used": [],
+  "coverage_gap_exclusions": [],
+  "consistent": true
+}

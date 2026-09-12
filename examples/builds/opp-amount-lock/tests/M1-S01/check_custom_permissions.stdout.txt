@@ -1,0 +1,12 @@
+Scanning: /Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/opp-amount-lock/artefacts/M1-S01
+
+Custom permissions defined:        1
+Permission sets / profiles parsed: 1
+Distinct permissions referenced:   1
+
+Coverage (custom permission -> consumers, granting containers):
+  Custom Permission       Consumers  Granted by
+  ----------------------------------------------------
+  Bypass_Opp_Amount_Lock          1  permission set 'Opp_Amount_Lock_Bypass'
+
+Summary: 0 error(s), 0 warning(s), 0 info.

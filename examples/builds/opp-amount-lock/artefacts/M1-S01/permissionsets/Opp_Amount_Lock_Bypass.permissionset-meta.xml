@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Opportunity Amount Lock Bypass</label>
+    <description>Grants the Sales Ops-only bypass for the Opportunity Amount-lock validation rule. Assigned to the two Sales Ops users who may correct Amount after Closed Won; reviewed each release.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>Bypass_Opp_Amount_Lock</name>
+    </customPermissions>
+</PermissionSet>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Merged milestone manifest — M1 (opp-amount-lock). Written by milestone-verifier from the
+     step manifests in this milestone (artefacts/M1-S01/package.xml). Types are listed
+     alphabetically; members are sorted within each <types> block. Do not hand-edit. -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Bypass_Opp_Amount_Lock</members>
+        <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>Opp_Amount_Lock_Bypass</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>Opportunity.Amount_Locked_After_Closed_Won</members>
+        <name>ValidationRule</name>
+    </types>
+    <version>67.0</version>
+</Package>

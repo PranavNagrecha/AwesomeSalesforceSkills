@@ -1,0 +1,267 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T08-05-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T08-05-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/2026-09-12T08-05-00Z.json",
+  "outcome": "completed",
+  "summary": "Brought build `opp-amount-lock`'s documentation up to date for step M1-S01 (Amount_Locked_After_Closed_Won validation rule + Bypass_Opp_Amount_Lock custom permission + Opp_Amount_Lock_Bypass permission set) after its rebuild passed all four molecular tests. Re-rendered PLAN.md, CLARIFICATIONS.md and RUN.md from plan.json via `build_plan.py render`; all three now show the step `tested` with `Latest test run (tests/M1-S01/results.json): passed=true`. Per `standards/build-orchestration.md` § 3.1 and this agent's own Step 4 ask-scale override, `decisions.md` and `traceability.md` were left exactly as `init` stubbed them — no row appended to either — and no `workbook/` directory exists at this scale, so Steps 3, 5, 6, 7 and 8 of the ordinary Plan do not apply. The four items this run would otherwise have written into `decisions.md` are instead recorded only in this envelope's `extensions.would_be_decisions[]`: the four-clause/five-clause formula provenance and its source-skill fix, the two derived `<label>` values, and `deploy-order.md`'s absence from `outputs[]`. Step set to `documented` via `build_plan.py set-status`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 11 MEDIUM (ask-scale table not offered by the playbook; applying the Step 11 project-scale rubric by analogy): every artefact this step declares has a verification path (two checkers + xml + manifest, all passed) and the step's one requirement-bearing acceptance test (the M1 manual line) is unaffected by this run, so this does not read as LOW. It is not HIGH because four items a reviewer needs — the formula-provenance lesson, the two derived labels, and the undeclared deploy-order.md artefact — have no CLI-supported home at scale ask (decisions.md is explicitly frozen by Step 4's own override) and survive only inside this envelope and the driver's log, which is a judgment call substituting for the row schema's default `source_req_id` + verification-step guarantee, not a case the Step 11 table anticipates.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/opp-amount-lock/",
+    "step_id": "M1-S01",
+    "step_status_at_start": "tested",
+    "scale": "ask",
+    "credentials_present": "none — no value in plan.json, the envelopes read, or the test results matched a credential shape per skills/devops/pipeline-secrets-management; nothing redacted"
+  },
+  "dimensions_compared": [
+    "plan-rerender",
+    "decisions-log (ask override: left untouched)",
+    "traceability (ask override: left untouched)",
+    "workbook (ask override: does not exist at this scale)",
+    "status-transition"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "workbook-rows",
+      "state": "not-run",
+      "reason": "standards/build-orchestration.md § 3.1 and this agent's own Step 4 ask-scale branch: 'there is no ten-section workbook to place a row in at this scale.' The step's configuration is instead readable directly in RUN.md's Outputs/Acceptance-tests block, which build_plan.py render already produces.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Not applicable at scale ask. If this build is ever re-tiered to feature/project, a subsequent doc-keeper run on this same step would need to backfill workbook rows from the artefacts and this envelope."
+    },
+    {
+      "dimension": "traceability-row",
+      "state": "not-run",
+      "reason": "This agent's own Step 4 text: 'decisions.md and traceability.md are left exactly as init stubbed them — no row is appended to either.' Both files were read (Step 1 inputs) and confirmed still at their init-stub content after this run.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Not applicable at scale ask."
+    },
+    {
+      "dimension": "decisions-log-entry",
+      "state": "not-run",
+      "reason": "Same Step 4 override. Four items qualified under the ordinary Step 3 table (a deviation: the operator's brief diverging from plan.json inputs; a skill gap: SKILL.md's Formula Best Practices GOOD block does not compile; two design-completeness gaps: no Questions-to-Ask row for a CustomPermission/PermissionSet label, and deploy-order.md undeclared in outputs[]) but decisions.md is frozen by contract at this scale, so none were appended. Recorded instead in extensions.would_be_decisions[] below and in the report's Process Observations.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "If a human wants these four items in a durable, append-only record before milestone:M1 is accepted, the available paths are: (a) accept them as read from this envelope and reports/drivers-log.md, both of which already carry them; (b) re-tier the build to `feature` or `project` via `set-scale` before milestone acceptance, which would make Step 3's ordinary decisions.md path apply on the next doc-keeper run. Neither is this agent's call to make."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "markdown",
+      "title": "PLAN.md (re-rendered)",
+      "target_path": ".sfskills/builds/opp-amount-lock/PLAN.md",
+      "content": "Re-rendered via `python3 scripts/build_plan.py render .sfskills/builds/opp-amount-lock/plan.json`. Step M1-S01 row now shows Status `tested`."
+    },
+    {
+      "kind": "markdown",
+      "title": "CLARIFICATIONS.md (re-rendered)",
+      "target_path": ".sfskills/builds/opp-amount-lock/CLARIFICATIONS.md",
+      "content": "Re-rendered by the same command. Content unchanged from the prior render (no new clarification activity this run); rewritten deterministically from plan.json."
+    },
+    {
+      "kind": "markdown",
+      "title": "RUN.md (re-rendered)",
+      "target_path": ".sfskills/builds/opp-amount-lock/RUN.md",
+      "content": "Re-rendered by the same command. Step M1-S01 section now reads 'Status: `tested`' and adds the line 'Latest test run (tests/M1-S01/results.json): passed=true'. Gates, defaults-applied, answers-given, open-questions, manual-acceptance and the printed mock_deploy.py command are unchanged from the prior render."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "mode": "per-step",
+    "scale": "ask",
+    "files_updated": [
+      ".sfskills/builds/opp-amount-lock/PLAN.md",
+      ".sfskills/builds/opp-amount-lock/CLARIFICATIONS.md",
+      ".sfskills/builds/opp-amount-lock/RUN.md"
+    ],
+    "workbook_rows": [],
+    "traceability_rows": [],
+    "decisions_appended": [],
+    "rows_replaced": [],
+    "status_transition": {
+      "from": "tested",
+      "to": "documented",
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/opp-amount-lock/plan.json M1-S01 documented --run-agent build-doc-keeper --envelope envelopes/M1-S01/2026-09-12T08-05-00Z.json --result \"...\" --started 2026-09-12T08:05:00Z",
+      "exit_code": 0
+    },
+    "would_be_decisions": [
+      {
+        "kind": "deviation",
+        "would_cite": "decisions.md, per Step 3's 'Deviation' row — not written, per Step 4's ask override",
+        "date": "2026-09-12",
+        "step": "M1-S01",
+        "agent": "metadata-builder (first build, run 2026-09-12T07-15-00Z) then dry-run operator (reset)",
+        "text": "The first build run (07:15) emitted a four-clause errorConditionFormula omitting the blank guard, because the invoking brief restated plan.json's five-clause inputs.errorConditionFormula in shortened form and the agent followed the brief over the plan. plan.json is the single authority for a step's inputs (standards/build-orchestration.md § 2); the brief is not one of Step 1's four sources. The operator reset the step (built → failed → pending) rather than accept the divergence.",
+        "source": "envelopes/M1-S01/2026-09-12T07-15-00Z.json extensions.formula_divergence; plan.json steps[0].runs[2] (dry-run-operator, result field); envelopes/M1-S01/2026-09-12T07-20-00Z.json process_observations (ambiguous, plan-sync)"
+      },
+      {
+        "kind": "skill_gap",
+        "would_cite": "decisions.md, per Step 3's 'Skill gap' row — not written, per Step 4's ask override",
+        "date": "2026-09-12",
+        "step": "M1-S01",
+        "agent": "dry-run operator, via an org dry-run probe at API 67.0",
+        "text": "skills/admin/validation-rules/SKILL.md § Formula Best Practices gave NOT(ISBLANK(StageName)) as the GOOD example for guarding a picklist blank check — the exact form plan.json's inputs.errorConditionFormula carried. An org dry-run probe rejected it: 'Field StageName is a picklist field. Picklist fields are only supported in certain functions.' NOT(ISBLANK(TEXT(StageName))) validated 3/3; the same skill's references/llm-anti-patterns.md Anti-Pattern 6 already carried the compiling form ('Use TEXT() to convert picklist to text') for a different field. plan.json.steps[0].amendments[0] corrected the formula to the five-clause TEXT()-wrapped form the same day; the operator's driver's-log entry records the skill fix and a new checker rule, VR-PICK-01, landing in parallel. This is the signal standards/build-orchestration.md § 8 names to deepen a skill, not to freestyle — and here it was an org probe rather than this build's own agents that caught it, because no offline compiler exists for a validation-rule formula.",
+        "source": "plan.json steps[0].amendments[0]; envelopes/M1-S01/2026-09-12T07-45-00Z.json extensions.rebuild_reason and extensions.formula_provenance.clause_grounding; reports/drivers-log.md § 'Build (06:42–07:00)'"
+      },
+      {
+        "kind": "design_completeness_gap",
+        "would_cite": "decisions.md, closest to Step 3's 'Design trade-off' row (a gap the cited skills leave unanswered, not a choice between named alternatives) — not written, per Step 4's ask override",
+        "date": "2026-09-12",
+        "step": "M1-S01",
+        "agent": "metadata-builder (both builds)",
+        "text": "The `<label>` element is required on both the CustomPermission and the PermissionSet, but neither `admin/validation-rules` nor `admin/custom-permissions` carries a Questions-to-Ask row covering it, and no Step 1 source (plan.json inputs, clarification answers, requirement.md) supplied one. Both artefacts carry a derived value — 'Bypass Opportunity Amount Lock' and 'Opportunity Amount Lock Bypass' — produced by de-underscoring the API name, the same transform admin/custom-permissions' own examples use. The label is display text only and nothing references it (the API name, which is load-bearing, is unchanged), so this is a documentation gap rather than a build defect, but it repeats identically on both builder runs and would recur on every future validation-rule-with-bypass step.",
+        "source": "envelopes/M1-S01/2026-09-12T07-15-00Z.json dimensions_skipped[0] and extensions.decision_record[7]; envelopes/M1-S01/2026-09-12T07-45-00Z.json extensions.derived_values[]; artefacts/M1-S01/deploy-order.md § 'Values not supplied by the plan'"
+      },
+      {
+        "kind": "design_completeness_gap",
+        "would_cite": "decisions.md, closest to Step 3's 'Deviation' row (undeclared output vs. what outputs[] promises) — not written, per Step 4's ask override",
+        "date": "2026-09-12",
+        "step": "M1-S01",
+        "agent": "metadata-builder (both builds), flagged first by plan-verifier as warning W8",
+        "text": "metadata-builder's own Step 7 writes artefacts/M1-S01/deploy-order.md on every run, but the step's outputs[] in plan.json names only the four metadata files, not this note. check-outputs therefore never adjudicates deploy-order.md's presence or well-formedness, and a reader of plan.json alone would not know the file exists. plan-verifier flagged this as warning W8 at verification time (2026-09-12T07:00:00Z) and it remained open, unchanged, across both the first build and the rebuild — amend-step touched only inputs and acceptance_tests, never outputs, on the one amendment this step received.",
+        "source": "plan.json.verification.warnings (W8); envelopes/M1-S01/2026-09-12T07-15-00Z.json extensions.undeclared_artefacts; envelopes/M1-S01/2026-09-12T07-45-00Z.json extensions.undeclared_artefacts; envelopes/M1-S01/2026-09-12T07-50-00Z.json process_observations (concerning, plan-completeness)"
+      }
+    ],
+    "checker_exit_codes_at_render_time": {
+      "note": "build_plan.py render's RUN.md output states only 'Latest test run (tests/M1-S01/results.json): passed=true' — it does not print the per-checker command/exit-code table that standards/build-orchestration.md § 3.1 describes for RUN.md ('the checker commands with their exit codes'). The exit codes exist and are correct (tests/M1-S01/results.json and this step's own envelopes both show exit 0 on both checkers), but a reader of RUN.md alone sees only the aggregate passed=true, not the per-command breakdown § 3.1 promises. Flagged in Process Observations and the report as a place where the render CLI under-delivers relative to the standard's text, not as a defect in this run's documentation.",
+      "source_of_truth": "tests/M1-S01/results.json"
+    }
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "The ask-scale documentation contract held exactly as written: decisions.md and traceability.md are still byte-identical to their init-stub content (2 and 3 lines respectively, header + one sentence), and RUN.md is the single rendered view that changed, picking up the tested status and the test-result summary line with no hand edit.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/decisions.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability",
+      "observation": "Four separate envelopes across two builder runs, one runner re-run and one tester run all independently name the same three open items (formula provenance, the derived labels, deploy-order.md's undeclared status), so this run's would_be_decisions[] is a convergence of prior evidence rather than a fresh claim.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/envelopes/M1-S01/",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "documentation-contract-gap",
+      "observation": "standards/build-orchestration.md § 3.1 describes RUN.md at scale ask as carrying 'the checker commands with their exit codes'; the render this run produced carries only an aggregate 'passed=true' line for the step's latest test run, not a per-checker exit-code table. This is a gap between the standard's text and build_plan.py render's actual output, not something this agent's Plan gives it a writer to fix — render is the only writer of RUN.md and this agent does not hand-edit rendered views.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/opp-amount-lock/RUN.md",
+        "query": "line 29, 'Latest test run (tests/M1-S01/results.json): passed=true' vs the four per-checker exit codes in tests/M1-S01/results.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "agent-contract-gap",
+      "observation": "This agent's Step 4 ask-scale override freezes decisions.md, but the four items this run would have appended under the ordinary Step 3 table (a deviation, a skill gap, and two design-completeness gaps) have no other CLI-writable home at scale ask — they exist only inside envelopes and reports/drivers-log.md, neither of which is an append-only decisions record a later reader would think to open the way they would open decisions.md. § 3.1 does not name a substitute sink for this case.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-doc-keeper/AGENT.md",
+        "query": "Step 4, the 'scale: ask' paragraph"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "confidence-rubric",
+      "observation": "Step 11 of this agent's own Plan gives a HIGH/MEDIUM/LOW table written for the ordinary (workbook-writing) run; it does not name a case where the ask-scale override removes the workbook and traceability targets entirely. This run's MEDIUM score is an analogy to the ordinary table's MEDIUM row ('an artefact could not be placed in a section without judgment'), applied to 'a decision could not be placed in decisions.md without judgment' — a human should confirm this reading is the intended one before it is treated as precedent for other scale:ask doc-keeper runs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-doc-keeper/AGENT.md",
+        "query": "Step 11 table"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Step M1-S01 is now `documented`, the only step in milestone M1, and its one milestone-level manual acceptance test (the block-then-bypass scenario) is unticked.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/opp-amount-lock/plan.json",
+        "query": "milestones[0].status"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because every step in M1 is now documented, which is milestone-verifier's precondition to run its cross-step checks and produce the one-page acceptance report that is the `accept` gate's evidence at scale ask."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1-S01 is the only step in milestone M1 and is now documented; milestone-verifier's one-page report is the evidence the `accept` gate rests on at scale ask."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "The repo-wide run-time rules this invocation is bound by, including the prohibition on mutating files outside the paths this agent owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement, the Citations schema, and the default confidence rubric this agent's own Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence, the envelope/report atomic-write pairing, and the dimensions_skipped three-state rule applied to workbook-rows/traceability-row/decisions-log-entry above"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Confirming no refusal condition applied: the step's status was `tested` at Step 1, so REFUSAL_OUT_OF_SCOPE did not fire"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 (plan.json is the only shared state; PLAN.md/RUN.md/CLARIFICATIONS.md are rendered, never hand-edited), § 3.1 (the ask-scale ceremony table: documentation = 'envelopes + one RUN.md'; decisions.md and traceability.md keep their init stubs; the build-doc-keeper agent delta naming this exact Step 4 branch), § 4 (the status machine's tested → documented transition), § 8 (build_plan.py is the only writer of plan state; a skill gap is the signal to deepen a skill)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The steps[]/runs[]/verification.warnings fields read, and confirming this agent touched only the single status-transition field it owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "The closed envelope shape this document is validated against"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Confirming there is no ten-section workbook row schema to apply at scale ask, per this agent's own Step 4 override, rather than assuming one and improvising a shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "Confirming traceability.md's canonical column set is what the file would carry if the ask-scale override did not freeze it, so the still-stub file was read and recognised as an intentional no-op rather than an oversight"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "The bar for a reviewable decision entry (date, decision, alternative rejected, source) applied when drafting extensions.would_be_decisions[] as the closest available substitute for a decisions.md row this agent's contract does not let it write at this scale"
+    }
+  ]
+}

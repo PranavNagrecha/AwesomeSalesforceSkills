@@ -1,0 +1,117 @@
+{
+  "agent": "requirements-clarifier",
+  "mode": "single",
+  "run_id": "2026-09-12T06-10-00Z",
+  "report_path": ".sfskills/builds/opp-amount-lock/envelopes/clarifications/2026-09-12T06-10-00Z.md",
+  "envelope_path": ".sfskills/builds/opp-amount-lock/envelopes/clarifications/2026-09-12T06-10-00Z.json",
+  "inputs_received": {
+    "requirement_path": ".sfskills/builds/opp-amount-lock/requirement.md",
+    "build_dir": ".sfskills/builds/opp-amount-lock",
+    "title": "Lock Opportunity Amount after Closed Won",
+    "scale": "ask"
+  },
+  "summary": "Clarified the one-line requirement 'add a validation rule so Opportunity Amount can't go down after Closed Won' at scale ask (D=1 metadata type, S=1 skill with a question table, O=1 object, integration=no). Harvested all 7 rows of admin/validation-rules plus all 7 rows of the generic admin/requirements-gathering-for-sf set, deduped one pair, for 13 clarifications: 7 blocking, 6 informational pre-filled from proposed defaults. Two adjacent Opportunity skills (opportunity-management, sales-process-mapping) surfaced in search and were read but excluded as out of scope. Wrote clarifications[] via set-clarifications, validated, rendered CLARIFICATIONS.md and RUN.md; build is at status clarifying, gate clarifications pending.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every capability phrase returned index hits and every clarification traces to a harvested row or the generic set (HIGH criteria), but 6 of 7 blocking questions carry default_source: none because no honest default exists for org-specific facts on a bare one-line ask with no org connected — more than a quarter of the 13 questions, which is the agent's own MEDIUM threshold.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The one-line requirement already states object, field, trigger condition and direction explicitly, so admin/validation-rules' full question table applied without inventing scope, and a directly-on-point worked example (US-OPP-014) already exists in the corpus confirming the pattern is well-trodden.",
+      "domain": "requirements-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/user-story-writing-for-salesforce/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "standards/build-orchestration.md § 3.1's own worked example for this exact requirement cites admin/formula-fields-and-rollups, a skill id that does not resolve on disk; the real skill is admin/formula-fields, which never surfaced as a search result this run.",
+      "domain": "documentation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "query": "ls skills/admin | grep -i formula"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "admin/opportunity-management and admin/sales-process-mapping both carry Questions-to-Ask tables and both surfaced as top-3 search results, but their tables address stage-ladder, forecast-category, team and split design rather than a single field-lock rule; excluded via the citation-quality bar rather than the more literal reading of Step 3, which is a defensible alternative the AGENT.md text does not resolve.",
+      "domain": "clarifier-spec-gap",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/opportunity-management/SKILL.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "build_plan.py init --force raises shutil.SameFileError when --requirement points at the build directory's own requirement.md, which is exactly the case for recording scale on an already-initialised build; worked around by copying the file to a scratch path outside the build directory first.",
+      "domain": "cli-ergonomics",
+      "evidence": {
+        "source": "heuristic",
+        "query": "python3 scripts/build_plan.py init --build-dir .sfskills/builds/opp-amount-lock --requirement .sfskills/builds/opp-amount-lock/requirement.md --force --scale ask"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Once gate clarifications+plan is approved via the scale:ask go alias, build-planner should turn the seven blocking answers into the single M1-S01 validation step per the § 3.1 worked example.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "Converts the answered clarifications into the single validation step this ask-tier build needs, per /plan-build."
+    }
+  ],
+  "citations": [
+    {"type": "skill", "id": "admin/validation-rules", "path": "skills/admin/validation-rules/SKILL.md", "used_for": "sole topic skill cited; harvested all 7 Questions-to-Ask rows"},
+    {"type": "skill", "id": "admin/requirements-gathering-for-sf", "path": "skills/admin/requirements-gathering-for-sf/SKILL.md", "used_for": "mandatory generic set added regardless of search; harvested all 7 rows"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "ten-section checklist used to check for an uncovered decision area; none found beyond harvested rows"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "Given/When/Then shape used for every answer_shape field"},
+    {"type": "skill", "id": "admin/stakeholder-raci-for-sf-projects", "path": "skills/admin/stakeholder-raci-for-sf-projects/SKILL.md", "used_for": "canonical stakeholder roster used for every owner_role"},
+    {"type": "skill", "id": "admin/opportunity-management", "path": "skills/admin/opportunity-management/SKILL.md", "used_for": "considered via search, table read in full, excluded as out of scope"},
+    {"type": "skill", "id": "admin/sales-process-mapping", "path": "skills/admin/sales-process-mapping/SKILL.md", "used_for": "considered via search, table read in full, excluded as out of scope"},
+    {"type": "skill", "id": "admin/user-story-writing-for-salesforce", "path": "skills/admin/user-story-writing-for-salesforce/SKILL.md", "used_for": "surfaced worked example US-OPP-014 confirming the pattern; no question table"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "sizing rule, ceremony tiers, worked example, step-type vocabulary, set-clarifications contract"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "citation-quality bar applied to exclude two adjacent skills; Process Observations shape"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "envelope and markdown persistence, atomic-write rule"}
+  ],
+  "followups": [
+    {"agent": "build-planner", "because": "turns the answered clarifications into the single M1-S01 validation step this ask-tier build needs"}
+  ],
+  "extensions": {
+    "build_dir": ".sfskills/builds/opp-amount-lock",
+    "capability_coverage": [
+      {"phrase": "validation rule", "skills_returned": ["admin/validation-rules", "data/data-quality-and-governance"], "kept": ["admin/validation-rules"], "state": "covered", "rows_harvested": 7},
+      {"phrase": "opportunity amount field", "skills_returned": ["admin/workflow-field-update-patterns", "data/opportunity-pipeline-migration"], "kept": [], "state": "covered-elsewhere", "reason": "top hits address Workflow field updates and pipeline migration, not a validation rule; the requirement's own mechanism (validation rule) is covered by admin/validation-rules instead", "rows_harvested": 0},
+      {"phrase": "opportunity closed won stage lock", "skills_returned": ["admin/validation-rules", "admin/opportunity-management", "admin/sales-process-mapping"], "kept": ["admin/validation-rules"], "state": "partial", "reason": "opportunity-management and sales-process-mapping carry tables but address stage-ladder/forecast/team/split design out of scope for this single field-lock rule", "rows_harvested": 0},
+      {"phrase": "formula field prior value comparison validation rule", "skills_returned": ["flow/flow-formula-and-expression-patterns", "admin/validation-rules", "flow/flow-screen-input-validation-patterns"], "kept": [], "state": "covered-elsewhere", "reason": "confirmed PRIORVALUE/ISCHANGED is a validation-rule-only mechanism (Flow formulas don't support it), reinforcing admin/validation-rules as the right skill; the flow skill's own table is for the alternate, unchosen mechanism", "rows_harvested": 0},
+      {"phrase": "prevent field value decrease after record locked", "skills_returned": ["architect/industries-integration-architecture"], "kept": [], "state": "not-covered", "reason": "top result is an unrelated Communications/Energy Cloud CIS-sync skill; noise from an imprecise search phrase, not real coverage", "rows_harvested": 0},
+      {"phrase": "lock record editing after status closed", "skills_returned": ["admin/flow-for-admins", "admin/approval-processes"], "kept": [], "state": "covered-elsewhere", "reason": "both are different locking mechanisms (record-triggered flow, approval-submission lock) than the validation rule the requirement names", "rows_harvested": 0},
+      {"phrase": "opportunity amount cannot decrease validation", "skills_returned": ["admin/validation-rules", "data/opportunity-pipeline-migration", "admin/user-story-writing-for-salesforce"], "kept": ["admin/validation-rules"], "state": "covered", "reason": "surfaced worked example US-OPP-014 confirming the pattern; user-story-writing-for-salesforce has no question table", "rows_harvested": 0}
+    ],
+    "skills_without_question_table": ["data/opportunity-pipeline-migration", "flow/flow-screen-input-validation-patterns", "architect/industries-integration-architecture", "admin/user-story-writing-for-salesforce"],
+    "deduped_pairs": [
+      {"kept_as": "Q3", "kept_source": "admin/validation-rules", "merged_from": "admin/requirements-gathering-for-sf", "rationale": "'which users/integrations must bypass' (validation-rules row 3) and 'who fixes it when automation is wrong' (requirements-gathering row 7) both resolve to the same field — the named bypass mechanism and its accountable owner — so kept as one question under the clearer, more specific wording"}
+    ],
+    "clarifications": [
+      {"id": "Q1", "group": "validation", "kind": "blocking", "source_skill": "admin/validation-rules", "default_source": "none", "owner_hint": "metadata-builder"},
+      {"id": "Q2", "group": "validation", "kind": "blocking", "source_skill": "admin/validation-rules", "default_source": "none", "owner_hint": "metadata-builder"},
+      {"id": "Q3", "group": "validation", "kind": "blocking", "source_skill": "admin/validation-rules", "also_asked_by": ["admin/requirements-gathering-for-sf"], "default_source": "none", "owner_hint": "metadata-builder"},
+      {"id": "Q4", "group": "validation", "kind": "blocking", "source_skill": "admin/validation-rules", "default_source": "skill-guidance", "owner_hint": "metadata-builder"},
+      {"id": "Q5", "group": "validation", "kind": "blocking", "source_skill": "admin/validation-rules", "default_source": "none", "owner_hint": "metadata-builder"},
+      {"id": "Q6", "group": "validation", "kind": "blocking", "source_skill": "admin/requirements-gathering-for-sf", "default_source": "none", "owner_hint": "metadata-builder"},
+      {"id": "Q7", "group": "validation", "kind": "blocking", "source_skill": "admin/requirements-gathering-for-sf", "default_source": "none", "owner_hint": "metadata-builder"},
+      {"id": "Q8", "group": "validation", "kind": "informational", "source_skill": "admin/validation-rules", "default_source": "skill-guidance", "owner_hint": "metadata-builder"},
+      {"id": "Q9", "group": "validation", "kind": "informational", "source_skill": "admin/validation-rules", "default_source": "requirement-text", "owner_hint": "metadata-builder"},
+      {"id": "Q10", "group": "validation", "kind": "informational", "source_skill": "admin/requirements-gathering-for-sf", "default_source": "requirement-text", "owner_hint": "metadata-builder"},
+      {"id": "Q11", "group": "access", "kind": "informational", "source_skill": "admin/requirements-gathering-for-sf", "default_source": "requirement-text", "owner_hint": "metadata-builder"},
+      {"id": "Q12", "group": "validation", "kind": "informational", "source_skill": "admin/requirements-gathering-for-sf", "default_source": "requirement-text", "owner_hint": "metadata-builder"},
+      {"id": "Q13", "group": "ui", "kind": "informational", "source_skill": "admin/requirements-gathering-for-sf", "default_source": "requirement-text", "owner_hint": "metadata-builder"}
+    ]
+  }
+}

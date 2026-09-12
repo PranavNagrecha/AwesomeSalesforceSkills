@@ -1,0 +1,183 @@
+{
+  "scope": {
+    "in": [
+      "Block any Opportunity save that lowers Amount once StageName = Closed Won; Amount is typed directly on the Opportunity, no Opportunity Products / Line Items roll up into it (Q1).",
+      "Sales-Ops-only correction path via a named Custom Permission carried by a dedicated Permission Set, not a Profile exemption (Q3).",
+      "Deploy the rule active=true using a delta check (Amount < PRIORVALUE(Amount)) so it fires only on a further decrease and does not retroactively re-block the handful of historical violations, which are left as-is (Q5).",
+      "Error message fixed to the Q4 default text, attached to the Amount field, which is on the standard layout(s) in scope (Q4, Q8 default)."
+    ],
+    "out": [
+      "Cleaning up the historical Closed Won Opportunities whose Amount was already lowered — Q5 explicitly declines any data clean-up; carried as assumption via the delta-check design instead.",
+      "A record-triggered flow or Apex path for Amount — Amount is edited directly and no Opportunity Product / Line Item rollup exists (Q1), so the platform-native validation rule is sufficient.",
+      "Any bypass or contract change for an external system — no ERP, CPQ or billing system writes Amount; only Sales Cloud UI users and the Q6 quarterly Data Loader job, which does not touch Amount (Q7).",
+      "Any change to the Opportunity sharing or field-level-security model — the existing model applies unchanged (Q11 default, assumption A4).",
+      "A new report or dashboard counting blocked saves — save-time control only (Q13 default, assumption A6)."
+    ],
+    "fit_gap": [
+      {
+        "requirement": "Lock Opportunity.Amount against a decrease once Closed Won, with a Sales-Ops-only bypass",
+        "verdict": "fit",
+        "steps": ["M1-S01"],
+        "note": "Native ValidationRule with a PRIORVALUE delta check enforces the invariant; the bypass is a native CustomPermission read via $Permission and granted through a PermissionSet. No Apex, no Flow, no callout. Mechanism and bypass-pattern ranking (Custom Permission preferred over Profile/RecordType) per admin/validation-rules (Bypass patterns table, Formula Best Practices) and admin/custom-permissions (Pattern: Admin-Only Bypass in Validation Rules).",
+        "tier": "Low-Code",
+        "effort": "M",
+        "risk_tag": [],
+        "skills": ["admin/validation-rules", "admin/custom-permissions"]
+      }
+    ]
+  },
+  "assumptions": [
+    {
+      "id": "A1",
+      "text": "Amount is visible on the standard Opportunity page layout(s) in the rule's scope, so errorDisplayField=Amount renders next to the field rather than relocating to Top of Page.",
+      "because": "Q8",
+      "risk": "low",
+      "steps": ["M1-S01"]
+    },
+    {
+      "id": "A2",
+      "text": "The rule's formula references only Amount (Currency) and StageName (Picklist) — no compound fields (address, person name, dependent picklist), which validation rules cannot use as of API 20.0.",
+      "because": "Q9",
+      "risk": "low",
+      "steps": ["M1-S01"]
+    },
+    {
+      "id": "A3",
+      "text": "No current workaround (report or manual review) catches an Amount decrease after Closed Won today; this rule is a net-new control, not a replacement for an existing safeguard.",
+      "because": "Q10",
+      "risk": "low",
+      "steps": ["M1-S01"]
+    },
+    {
+      "id": "A4",
+      "text": "No new record-access or field-level-security restriction is in scope; the existing Opportunity sharing and FLS model applies unchanged.",
+      "because": "Q11",
+      "risk": "low",
+      "steps": ["M1-S01"]
+    },
+    {
+      "id": "A5",
+      "text": "Only internal Sales Cloud (employee) users edit Opportunity Amount; no customer, partner, or contractor portal persona touches this field.",
+      "because": "Q12",
+      "risk": "low",
+      "steps": ["M1-S01"]
+    },
+    {
+      "id": "A6",
+      "text": "No new report or dashboard is requested alongside the rule; this is a save-time control only.",
+      "because": "Q13",
+      "risk": "low",
+      "steps": ["M1-S01"]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "decision": "Grant the Sales Ops bypass as a Custom Permission (Bypass_Opp_Amount_Lock) carried by a dedicated Permission Set (Opp_Amount_Lock_Bypass), rather than a Profile exemption or a RecordType-scoped exclusion.",
+      "source_reference": "skills/admin/validation-rules/SKILL.md",
+      "rationale": "standards/decision-trees/automation-selection.md and standards/decision-trees/sharing-selection.md were both checked against README.md's routing table; neither tree routes a validation-rule bypass mechanism (that is a bypass-pattern choice, not an automation or sharing-layer choice). admin/validation-rules' Bypass Patterns table ranks Custom Permission first ('Preferred — granular, auditable') ahead of RecordType scope and marks Profile check 'not recommended'; admin/custom-permissions' Pattern: Admin-Only Bypass in Validation Rules gives the identical two-artefact shape. Q3's answer independently rules out a profile exemption by name, so the requester's instruction and the skill's documented default agree.",
+      "alternatives_rejected": ["Profile-based exemption ($Profile.Name check)", "RecordType-scoped exclusion"],
+      "consequences": "The bypass is auditable via a SetupEntityAccess query and revocable per user without touching a profile, at the cost of two artefacts (CustomPermission + PermissionSet) instead of one; the validation-rule checker's VR-REF-02 $Permission resolution depends on the CustomPermission file being present in the same scan tree as the rule.",
+      "adr_required": true
+    },
+    {
+      "id": "D2",
+      "decision": "Deploy the validation rule active=true despite existing historical Closed Won Opportunities whose Amount was already lowered, relying on a delta check (Amount < PRIORVALUE(Amount)) rather than an absolute check, so already-violating records are not retroactively re-blocked on unrelated edits.",
+      "source_reference": "skills/admin/validation-rules/SKILL.md",
+      "rationale": "No decision tree covers 'deploy a validation rule active vs inactive against known-dirty data.' The skill's own Questions-to-Ask row 6 and the PRIORVALUE gotcha establish that a delta-based formula fires only on a further decrease, so a record that is already a historical violation (a fact already true today) does not retrigger the rule on a save that leaves Amount unchanged or raises it; Q5's answer explicitly declines any data clean-up, which an active=false deploy would otherwise force.",
+      "alternatives_rejected": ["Deploy active=false pending a data-cleanup project", "An absolute check disallowing any Amount below its value at the moment of Closed Won, regardless of edit direction"],
+      "consequences": "The handful of already-violating records remain permanently non-conforming by design; any future edit to Amount on those records that decreases it further is still blocked exactly like any other Closed Won record.",
+      "adr_required": true
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "Lock Opportunity Amount after Closed Won",
+      "goal": "Given a Closed Won Opportunity, when a user without the Bypass_Opp_Amount_Lock custom permission attempts to save a lower Amount, then the save is blocked with the Q4 error message; when a Sales Ops user holding the Opp_Amount_Lock_Bypass permission set makes the same edit, then the save succeeds.",
+      "steps": ["M1-S01"],
+      "acceptance_tests": [
+        {
+          "type": "manual",
+          "description": "Given a Closed Won Opportunity, when a user without the Bypass_Opp_Amount_Lock permission lowers Amount and saves, then the save is blocked and the error reads 'Amount cannot be decreased once this Opportunity is Closed Won. Amount is locked after close to protect the recorded deal value. Contact your manager to reopen the Opportunity before changing Amount.'; when a Sales Ops user holding the Opp_Amount_Lock_Bypass permission set makes the identical edit, then the save succeeds.",
+          "expected": "ticked at the M1 milestone gate"
+        }
+      ],
+      "status": "pending"
+    }
+  ],
+  "steps": [
+    {
+      "id": "M1-S01",
+      "milestone": "M1",
+      "type": "validation",
+      "title": "Amount_Locked_After_Closed_Won validation rule, with a Sales Ops bypass",
+      "agent": "metadata-builder",
+      "skills": ["admin/validation-rules", "admin/custom-permissions"],
+      "templates": ["templates/admin/validation-rule-patterns.md"],
+      "decision_trees": [],
+      "inputs": {
+        "object": "Opportunity",
+        "field": "Amount",
+        "rule_api_name": "Amount_Locked_After_Closed_Won",
+        "active": true,
+        "errorConditionFormula": "AND(\n  NOT($Permission.Bypass_Opp_Amount_Lock),\n  NOT(ISNEW()),\n  NOT(ISBLANK(StageName)),\n  ISPICKVAL(StageName, \"Closed Won\"),\n  Amount < PRIORVALUE(Amount)\n)",
+        "errorDisplayField": "Amount",
+        "errorMessage": "Amount cannot be decreased once this Opportunity is Closed Won. Amount is locked after close to protect the recorded deal value. Contact your manager to reopen the Opportunity before changing Amount.",
+        "description_validation_rule": "Locks Opportunity Amount once Closed Won so the recorded deal value cannot be lowered after close. Owner: Sales Ops. Bypass: Bypass_Opp_Amount_Lock (Sales Ops only).",
+        "bypass_custom_permission": "Bypass_Opp_Amount_Lock",
+        "bypass_custom_permission_description": "Grants the Sales Ops team an exception to the Opportunity Amount-lock validation rule so they can correct Amount on a Closed Won Opportunity. Consumer: Opportunity.Amount_Locked_After_Closed_Won.",
+        "bypass_permission_set": "Opp_Amount_Lock_Bypass",
+        "bypass_permission_set_description": "Grants the Sales Ops-only bypass for the Opportunity Amount-lock validation rule. Assigned to the two Sales Ops users who may correct Amount after Closed Won; reviewed each release.",
+        "bypass_holders": "Sales Ops team, 2 named users; no integration user (Q3, Q7)",
+        "answers": {
+          "Q1": "Amount is typed directly on the Opportunity by the rep; no Opportunity Products / Line Items are in use, so nothing rolls up into Amount.",
+          "Q2": "No Workflow Rule field update or Process Builder writes Amount; the one record-triggered Flow on Opportunity writes NextStep only.",
+          "Q3": "Only the Sales Ops team (2 people) may correct a Closed Won Amount, via the named Custom Permission bypass on a dedicated Permission Set — not a profile exemption. No integration user writes Amount.",
+          "Q4": "Error message fixed to the proposed default text, verbatim.",
+          "Q5": "A handful of Closed Won Opportunities already have a lowered Amount; no data clean-up is in scope. The rule deploys active and only blocks further decreases (see decision D2).",
+          "Q6": "~30 Opportunities move to Closed Won per day; the largest batch write is a quarterly Data Loader update of ~5,000 Opportunities changing StageName/CloseDate, which never touches Amount.",
+          "Q7": "No ERP, CPQ or billing system writes Opportunity Amount; only Sales Cloud UI users and the Q6 Data Loader job, which does not touch Amount."
+        },
+        "assumptions": ["A1", "A2", "A3", "A4", "A5", "A6"]
+      },
+      "outputs": [
+        "artefacts/M1-S01/objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml",
+        "artefacts/M1-S01/customPermissions/Bypass_Opp_Amount_Lock.customPermission-meta.xml",
+        "artefacts/M1-S01/permissionsets/Opp_Amount_Lock_Bypass.permissionset-meta.xml",
+        "artefacts/M1-S01/package.xml"
+      ],
+      "depends_on": [],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M1-S01",
+          "scope": "step",
+          "description": "Run against a fixture holding exactly this step's declared outputs (the validation rule plus the co-located CustomPermission and PermissionSet), it printed 'WARN: 1 finding(s) detected (0 blocking)' — a single INFO on 'field references' because no objects/Opportunity/fields/ inventory is present at this scope — and exited 0. VR-REF-02 resolved $Permission.Bypass_Opp_Amount_Lock cleanly against the co-located CustomPermission file; Amount and StageName are both standard fields, which the checker never flags either way, so the INFO is advisory only and does not affect the exit code.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M1-S01",
+          "scope": "step",
+          "description": "Run against the same fixture, it printed 'Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 1', showed Bypass_Opp_Amount_Lock granted by exactly the permission set 'Opp_Amount_Lock_Bypass', and closed with 'Summary: 0 error(s), 0 warning(s), 0 info.', exit 0.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "Every *.xml / *-meta.xml under artefacts/M1-S01/ parses with ElementTree.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "Every type/member produced by M1-S01 (ValidationRule, CustomPermission, PermissionSet) appears in package.xml, object-qualified where required, and every member has a file.",
+          "expected": "consistent"
+        }
+      ],
+      "status": "pending",
+      "runs": [],
+      "human_gate": false,
+      "notes": "scale: ask — single step carries both the validation-rule artefact and its access-changing bypass mechanism (CustomPermission + PermissionSet) that would split into separate `validation` and `access` steps at feature/project scale (standards/build-orchestration.md Section 3.1 forces exactly one step here). The general Step 6 rule in agents/build-planner/AGENT.md would flag an access-granting step human_gate: true; the scale: ask override in that same Step 6 forces human_gate: false and folds the decision into the single up-front `go` gate instead — recorded as a driver's-log tension, not resolved in this step. templates/admin/permission-set-patterns.md was read and set aside: its persona/PSG/muting composition model doesn't fit a flat, 2-person bypass grant, so the PermissionSet is authored directly from admin/custom-permissions' own metadata-examples.md shape and the exact names given by the requirement. admin/formula-fields was not cited: PRIORVALUE and ISPICKVAL are both grounded directly in admin/validation-rules (Formula Best Practices, Salesforce-Specific Gotchas, and templates/admin/validation-rule-patterns.md's IsChanged/IsNew section), and the rule touches no compound field or dependent picklist that would need admin/formula-fields' own scope."
+    }
+  ]
+}
