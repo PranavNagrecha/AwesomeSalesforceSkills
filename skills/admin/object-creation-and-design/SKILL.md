@@ -20,6 +20,7 @@ triggers:
   - "records loaded through the API show a record ID instead of a name"
   - "set up a custom object tab and its profile visibility"
   - "write a deployable object-meta.xml for a new custom object"
+  - "how long can a custom object or custom field description be"
 tags:
   - custom-objects
   - object-design
@@ -39,9 +40,9 @@ outputs:
   - "Tab creation steps"
   - "Review checklist before deploying the object to production"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-11
 ---
 
 # Object Creation and Design
@@ -265,6 +266,7 @@ Before deploying the object to production:
 - [ ] `enableSearch` set explicitly if users must find records by name; search is off by default on new custom objects.
 - [ ] `enableBulkApi`, `enableSharing` and `enableStreamingApi` set as a set, or all left alone.
 - [ ] `externalSharingModel` set deliberately if the org has Experience Cloud enabled.
+- [ ] Object `description` is under 1000 characters (`OCD-DESC-01` ISSUE) and field `description`s are kept terse (`OCD-DESC-02` WARN past 200) — the two fields do not share one length limit; see `references/metadata-examples.md`.
 - [ ] `scripts/check_object_creation_and_design.py --manifest-dir <source>` run clean against the metadata being deployed.
 
 ---
@@ -280,6 +282,8 @@ Before deploying the object to production:
 4. **A detail object has no Owner, so nothing can route to it** — put a custom object on the detail side of a master-detail relationship and it can never have a queue, a sharing rule, or a manual share. This is the single most expensive object-design mistake to reverse.
 
 5. **Two defaults bite silently** — new custom objects are not searchable, and an Auto Number `startingNumber` cannot be retrieved, so a routine retrieve-edit-redeploy drops it.
+
+6. **`CustomObject` and `CustomField` descriptions do not share one length limit** — an object's `description` is documented up to 1000 characters (api_meta.txt L42007), not 255; a field's `description` states no limit at all in the guide. Do not import the 255-character figure from the permission-set/profile skills into object or field design.
 
 Deeper treatment, with the guide lines each behaviour rests on, in `references/gotchas.md`.
 

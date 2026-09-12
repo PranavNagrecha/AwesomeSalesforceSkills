@@ -28,8 +28,30 @@ Checks performed on each ``*.object-meta.xml`` whose file name ends in ``__c``:
     full sharing recalculation.
 9.  WARN   — many custom objects in one source tree, relative to common
     edition allocations.
+10. OCD-DESC-01 (ISSUE) — a ``CustomObject`` ``<description>`` over 1000
+    characters. Grounded directly: "A description of the object. Maximum of
+    1000 characters." (Metadata API Developer Guide, CustomObject field table
+    — api_meta.txt L42007). This is a different field, on a different type,
+    from the 255-character ceiling documented for CustomPermission,
+    PermissionSet, Profile and RecordType descriptions — do not reuse that
+    number here.
+11. OCD-DESC-02 (WARN, advisory — does not affect exit code) — any
+    ``CustomObject`` or ``CustomField`` ``<description>`` over 200 characters.
+    For ``CustomField`` there is no documented ceiling at all: the guide
+    states only "Description of the field." with no ``Limit:`` clause
+    anywhere in the CustomField field table (api_meta.txt L43360; section
+    header confirmed at L43379). UNVERIFIED (2026-09-11): whether the
+    255-character ceiling that applies to CustomPermission / PermissionSet /
+    Profile / RecordType descriptions also applies to CustomField — until
+    that is confirmed against a live org, this checker raises no ISSUE for a
+    long CustomField description, only the WARN headroom hint.
 
-Stdlib only. Exit code 1 if any ISSUE or WARN was printed, 0 otherwise.
+Stdlib only. Exit code 1 if any of checks 1-6, 10 fired, or if any WARN from
+checks 7-9 fired — that combined ISSUE-or-WARN policy is unchanged from
+before this file added description-length checking. OCD-DESC-02 (check 11) is
+the one exception: it is a headroom hint, not a deploy-breaking condition, so
+it is printed but never contributes to the exit code, even alone in an
+otherwise-clean tree.
 
 Usage:
     python3 check_object_creation_and_design.py
@@ -56,6 +78,29 @@ MAX_TRACKED_FIELDS = 20
 # and enableStreamingApi each require the other two to be enabled.
 ENTERPRISE_APP_TRIO = ("enableBulkApi", "enableSharing", "enableStreamingApi")
 
+# OCD-DESC-01: CustomObject.description is grounded directly in the Metadata
+# API Developer Guide's CustomObject field table: "A description of the
+# object. Maximum of 1000 characters." (api_meta.txt L42007). This is a
+# different field, on a different type, from the 255-character ceiling
+# documented for CustomPermission, PermissionSet, Profile and RecordType
+# descriptions elsewhere in the same guide — do not reuse that number here.
+OBJECT_DESC_MAX_LEN = 1000
+
+# OCD-DESC-02 candidate ceiling for CustomField: the guide states only
+# "Description of the field." with no `Limit:` clause anywhere in the
+# CustomField field table (api_meta.txt L43360; CustomField section header
+# confirmed at L43379). UNVERIFIED (2026-09-11): whether the 255-character
+# ceiling used elsewhere in the guide also applies to CustomField. Carried
+# here only as a documentation reference for the WARN message below — it is
+# never enforced as an ERROR/ISSUE threshold.
+FIELD_DESC_UNVERIFIED_CANDIDATE_LEN = 255  # UNVERIFIED (2026-09-11)
+
+# OCD-DESC-02 headroom warning, shared by CustomObject and CustomField alike.
+# Not tied to either type's own ceiling — just a "this is getting long, keep
+# it terse" signal, consistent with keeping <description> a one-line label
+# (rationale belongs in deploy-order.md or the configuration workbook).
+DESC_WARN_LEN = 200
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -72,6 +117,17 @@ def parse_args() -> argparse.Namespace:
 def find_object_files(manifest_dir: Path) -> list[Path]:
     """Locate .object-meta.xml files in the manifest directory tree."""
     return list(manifest_dir.rglob("*.object-meta.xml"))
+
+
+def find_field_files(manifest_dir: Path) -> list[Path]:
+    """Locate .field-meta.xml files anywhere in the manifest directory tree.
+
+    Independent of find_object_files: a custom field's parent object file
+    (e.g. a standard object like Account) may not itself be present in a
+    partial manifest, but the field's own <description> length is still
+    checkable (OCD-DESC-02).
+    """
+    return list(manifest_dir.rglob("*.field-meta.xml"))
 
 
 def _tag(local_name: str) -> str:
@@ -128,15 +184,21 @@ def collect_tracked_fields(root: ET.Element, obj_path: Path) -> list[str]:
     return tracked
 
 
-def check_object_file(obj_path: Path) -> list[str]:
-    """Return a list of issue strings for a single custom object metadata file."""
+def check_object_file(obj_path: Path) -> tuple[list[str], list[str]]:
+    """Return (issues, advisory) for a single custom object metadata file.
+
+    `issues` feeds the checker's existing exit policy (any entry -> exit 1),
+    unchanged from before this file had description-length checks. `advisory`
+    holds OCD-DESC-02 only: printed, but never contributes to the exit code.
+    """
     issues: list[str] = []
+    advisory: list[str] = []
 
     try:
         tree = ET.parse(obj_path)
     except ET.ParseError as exc:
         issues.append(f"ISSUE: {obj_path.name}: XML parse error — {exc}")
-        return issues
+        return issues, advisory
 
     root = tree.getroot()
 
@@ -145,7 +207,7 @@ def check_object_file(obj_path: Path) -> list[str]:
 
     # Only check custom objects (ending in __c), skip standard objects
     if not file_stem.endswith("__c"):
-        return issues
+        return issues, advisory
 
     local_name = file_stem[: -len("__c")]
 
@@ -157,14 +219,32 @@ def check_object_file(obj_path: Path) -> list[str]:
             f"reduce readability. The API name cannot be changed after save."
         )
 
-    # 2. Check for a description element
-    if not child_text(root, "description"):
+    # 2. Check for a description element, and its length (OCD-DESC-01 / OCD-DESC-02).
+    description = child_text(root, "description")
+    if not description:
         issues.append(
             f"ISSUE: {file_stem}: Missing or empty <description>. "
             "Add a description recording the object's purpose, the reason each "
             "irreversible feature is enabled, and the Auto Number starting number "
             "(which cannot be retrieved through Metadata API)."
         )
+    else:
+        desc_len = len(description)
+        if desc_len > OBJECT_DESC_MAX_LEN:
+            issues.append(
+                f"ISSUE: {file_stem}: OCD-DESC-01 <description> is {desc_len} characters, "
+                f"over the {OBJECT_DESC_MAX_LEN}-character limit documented for CustomObject "
+                "(Metadata API Developer Guide, CustomObject.description — api_meta.txt "
+                "L42007). The deploy will be rejected."
+            )
+        elif desc_len > DESC_WARN_LEN:
+            advisory.append(
+                f"WARN: {file_stem}: OCD-DESC-02 <description> is {desc_len} characters, "
+                f"approaching the {OBJECT_DESC_MAX_LEN}-character CustomObject limit "
+                "(api_meta.txt L42007). Keep it terse — move rationale for irreversible "
+                "feature choices to the build's deploy-order.md or the configuration "
+                "workbook."
+            )
 
     # 3/4. History tracking: enabled but capturing nothing, or over the ceiling.
     if is_true(root, "enableHistory"):
@@ -250,7 +330,41 @@ def check_object_file(obj_path: Path) -> list[str]:
             "search or SOSL. Set it explicitly either way."
         )
 
-    return issues
+    return issues, advisory
+
+
+def check_field_file(field_path: Path) -> list[str]:
+    """Return advisory (WARN-only) findings for a single custom field file.
+
+    OCD-DESC-02 only. Unlike CustomObject, CustomField.description carries no
+    documented character limit (see FIELD_DESC_UNVERIFIED_CANDIDATE_LEN
+    above), so this never raises an ISSUE — only the headroom WARN, which
+    does not affect the exit code.
+    """
+    advisory: list[str] = []
+
+    file_stem = field_path.name.replace(".field-meta.xml", "")
+    if not file_stem.endswith("__c"):
+        return advisory
+
+    try:
+        root = ET.parse(field_path).getroot()
+    except ET.ParseError:
+        # A malformed field file is not this check's job to report.
+        return advisory
+
+    description = child_text(root, "description")
+    if description and len(description) > DESC_WARN_LEN:
+        advisory.append(
+            f"WARN: {file_stem}: OCD-DESC-02 <description> is {len(description)} "
+            "characters. The Metadata API Developer Guide states no length limit for "
+            "CustomField.description (api_meta.txt L43360) — UNVERIFIED (2026-09-11) "
+            f"whether the {FIELD_DESC_UNVERIFIED_CANDIDATE_LEN}-character ceiling used "
+            "elsewhere in the guide (CustomPermission, PermissionSet, Profile) also "
+            "applies here. Keep it terse regardless — move rationale to the build's "
+            "deploy-order.md or the configuration workbook."
+        )
+    return advisory
 
 
 def check_object_count(object_files: list[Path]) -> list[str]:
@@ -289,29 +403,41 @@ def main() -> int:
         return 1
 
     object_files = find_object_files(manifest_dir)
+    field_files = find_field_files(manifest_dir)
 
-    if not object_files:
+    if not object_files and not field_files:
         print(
-            "No .object-meta.xml files found. "
+            "No .object-meta.xml or .field-meta.xml files found. "
             "Provide a directory containing Salesforce object metadata."
         )
         return 0
 
     all_issues: list[str] = []
+    all_advisory: list[str] = []
 
     for obj_path in sorted(object_files):
-        all_issues.extend(check_object_file(obj_path))
+        issues, advisory = check_object_file(obj_path)
+        all_issues.extend(issues)
+        all_advisory.extend(advisory)
+
+    for field_path in sorted(field_files):
+        all_advisory.extend(check_field_file(field_path))
 
     all_issues.extend(check_object_count(object_files))
 
-    if not all_issues:
-        print(f"No issues found across {len(object_files)} object file(s).")
+    if not all_issues and not all_advisory:
+        print(
+            f"No issues found across {len(object_files)} object file(s) and "
+            f"{len(field_files)} field file(s)."
+        )
         return 0
 
     for issue in all_issues:
         print(issue)
+    for note in all_advisory:
+        print(note)
 
-    return 1
+    return 1 if all_issues else 0
 
 
 if __name__ == "__main__":

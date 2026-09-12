@@ -99,3 +99,13 @@ This extra step is required because Flow evaluates `$Permission` only inside for
 **When it occurs:** When names are generated from labels by a script, or when someone mimics the `__c` custom-field convention and produces a double underscore.
 
 **How to avoid:** Generate names with a single underscore between words, never a trailing one, and never the `__` sequence — which is reserved as the namespace separator (`NamespacePrefix__componentName`, `object_reference.txt` L88510-88520). `label` and `connectedApp` are capped at 80 characters and `description` at 255 (`api_meta.txt` L46647-46652, L46660-46663), so a description that names every consumer has to stay terse. The checker script flags an empty description for exactly this reason: the description is the only place the consumer list can live.
+
+---
+
+## Gotcha 10: A `description` Over 255 Characters Fails The Deploy
+
+**What happens:** A custom permission's `description` grows to hold both the consumer list (Gotcha 9's reason it exists at all) and a sentence of rationale — who owns the bypass, when it was granted, why. The deploy is rejected with `Description: data value too large … (max length=255)`. Nothing about the failure names the field by number; it just fails.
+
+**When it occurs:** Any custom permission whose description reads like a design note instead of a consumer list. The Metadata API Developer Guide states the limit directly in the `CustomPermission` field table: "The custom permission description. Limit: 255 characters" (`api_meta.txt` L46651-46652). It is a headroom problem more than an edge case — `Bypass_Case_Intake_Validation` in `examples/builds/case-onboarding/artefacts/M2-S01` sits at 250 characters today, six characters from the limit, with only a consumer list and an owner name in it.
+
+**How to avoid:** Keep `description` to the consumer list and nothing else; if the list itself does not fit, the permission is doing too much and should split (the "if the sentence needs an 'and'" test in `## Questions to Ask Before Configuring`). Put rationale — approval history, retirement date, who to ask — in the build's `deploy-order.md` or the configuration workbook. `scripts/check_custom_permissions.py` flags this before deploy: `CP-DESC-01` (ERROR) at 255+ characters, `CP-DESC-02` (WARN) at 200+.

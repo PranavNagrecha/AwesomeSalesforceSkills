@@ -10,9 +10,14 @@ Scans a Salesforce DX metadata tree and reports, by severity:
   WARN   A `requiredPermission` names a custom permission that is not in the
          tree. The dependency target must ship in the same package as its
          parent (Metadata API Developer Guide, CustomPermissionDependencyRequired).
+  ERROR  CP-DESC-01 -- a custom permission's `description` is over 255
+         characters. Metadata API Developer Guide, CustomPermission field
+         table: "The custom permission description. Limit: 255 characters."
+         (api_meta.txt L46651-46652). The deploy will be rejected.
+  WARN   CP-DESC-02 -- a custom permission's `description` is over 200
+         characters, approaching the 255-character limit above.
   WARN   A custom permission has an empty or missing `description`. The
-         description is the only place the consumer list can live, and the
-         field is capped at 255 characters.
+         description is the only place the consumer list can live.
   WARN   A consumer references a custom permission that is not defined in the
          tree -- `$Permission.X` in a validation rule / formula / Flow /
          FlexiPage, `FeatureManagement.checkPermission('X')` in Apex, or
@@ -53,6 +58,15 @@ _SF_NS = "http://soap.sforce.com/2006/04/metadata"
 def _tag(local: str) -> str:
     """Return a Clark-notation tag for the Salesforce metadata namespace."""
     return f"{{{_SF_NS}}}{local}"
+
+
+# CP-DESC-01 / CP-DESC-02 thresholds. 255 is the Metadata API Developer
+# Guide's documented ceiling for CustomPermission.description: "The custom
+# permission description. Limit: 255 characters." (api_meta.txt
+# L46651-46652). 200 is headroom to catch a description before it grows past
+# the limit.
+CP_DESC_MAX_LEN = 255
+CP_DESC_WARN_LEN = 200
 
 
 def child_text(parent, local: str) -> str | None:
@@ -272,7 +286,7 @@ def analyse(
                     f"target required."
                 )
 
-    # WARN -- empty description.
+    # ERROR/WARN -- empty description, or description length (CP-DESC-01 / CP-DESC-02).
     for name, record in sorted(defined.items()):
         description = record["description"]
         if description is None or not description.strip():
@@ -280,10 +294,17 @@ def analyse(
                 f"'{name}' has no description ({record['file']}). Name the "
                 f"consumers there -- it is the only place that list survives."
             )
-        elif len(description) > 255:
+        elif len(description) > CP_DESC_MAX_LEN:
+            errors.append(
+                f"CP-DESC-01 '{name}' has a {len(description)}-character description "
+                f"({record['file']}); the Metadata API field limit is "
+                f"{CP_DESC_MAX_LEN} characters (CustomPermission.description, "
+                "api_meta.txt L46651-46652) and the deploy will be rejected."
+            )
+        elif len(description) > CP_DESC_WARN_LEN:
             warnings.append(
-                f"'{name}' has a {len(description)}-character description; the "
-                f"field limit is 255 characters and the deploy will truncate or fail."
+                f"CP-DESC-02 '{name}' has a {len(description)}-character description "
+                f"({record['file']}); approaching the {CP_DESC_MAX_LEN}-character limit."
             )
 
     # WARN -- a consumer references a permission that is not defined here.

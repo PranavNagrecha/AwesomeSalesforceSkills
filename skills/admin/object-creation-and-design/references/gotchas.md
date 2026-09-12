@@ -136,3 +136,13 @@ The clean-up assumption fails too. Per the Object Reference, "turning off tracki
 **When it occurs:** When history volume becomes a performance or storage problem years after tracking was switched on, and someone looks for a retention setting to fix it.
 
 **How to avoid:** Decide field-by-field what actually needs an audit trail before enabling tracking, and keep the tracked set well under the twenty-field ceiling (object_reference.txt L110674). If a compliance requirement genuinely needs long retention, confirm the org has Field Audit Trail — that is a licensing question to answer during design, not a metadata element to add later. Record the audit reason for each tracked field in the object's `description` so a future admin can tell a compliance requirement from a habit.
+
+---
+
+## Gotcha 12: `CustomObject` and `CustomField` Descriptions Do Not Share One Length Limit
+
+**What happens:** A description gets written assuming "255 characters" is the universal Salesforce description limit — it is the number that governs `CustomPermission`, `PermissionSet`, `Profile` and `RecordType` — and the assumption is applied uniformly to custom objects and fields too. It is wrong in one direction and unconfirmed in the other. `CustomObject.description` actually allows up to 1000 characters: the guide states it directly, "A description of the object. Maximum of 1000 characters" (api_meta.txt L42007). `CustomField.description` states no limit at all — the field table gives only "Description of the field." with no `Limit:` clause (api_meta.txt L43360).
+
+**When it occurs:** Whenever a description is trimmed to 255 characters "to be safe" on an object (losing useful audit or rationale content the 1000-character ceiling would have allowed), or, in the other direction, whenever a long `CustomField.description` is assumed safe because "there's no rule" — `Account.Region__c` in `examples/builds/case-onboarding/artefacts/M1-S01` runs 249 characters today, and nothing in the guide says whether a longer one would deploy.
+
+**How to avoid:** Do not import the 255-character figure from the access-control skills (`admin/permission-set-architecture`, `admin/permission-sets-vs-profiles`) into object or field design. Use `scripts/check_object_creation_and_design.py`, which enforces the two fields' documented realities separately: `OCD-DESC-01` (ISSUE) fires only past 1000 characters on a `CustomObject`, grounded at api_meta.txt L42007; `OCD-DESC-02` (WARN, advisory) fires past 200 characters on either type purely as a "keep it terse" hint, not a claimed limit — `CustomField` gets no ISSUE-level check until the 255-character candidate is confirmed against a live org (UNVERIFIED, 2026-09-11).

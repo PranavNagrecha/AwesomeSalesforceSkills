@@ -25,7 +25,7 @@ The file has no `<fullName>` element in DX source format: `CustomPermission` ext
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Grants access to the pilot Advanced Refund Workflow on Case. Consumers: RefundController.processRefund (Apex guard), c-refund-panel (LWC lwc:if), Case_Refund_Panel FlexiPage component visibility. Retire after GA of Winter '27.</description>
+    <description>Grants access to the pilot Advanced Refund Workflow on Case. Consumers: RefundController.processRefund (Apex), c-refund-panel (LWC), Case_Refund_Panel visibility. Retire after Winter '27 GA.</description>
     <label>Advanced Refund Workflow</label>
 </CustomPermission>
 ```
@@ -35,7 +35,7 @@ The file has no `<fullName>` element in DX source format: `CustomPermission` ext
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Suppresses the Account and Case data-quality validation rules for holders. Consumers: Account.Require_Industry_On_Customer, Case.Require_Resolution_On_Close. Held by the MuleSoft integration user and by time-limited data-fix permission sets only.</description>
+    <description>Suppresses Account/Case data-quality validation rules for holders. Consumers: Account.Require_Industry_On_Customer, Case.Require_Resolution_On_Close. Held by MuleSoft integration and data-fix sets.</description>
     <label>Bypass Validation Rules</label>
 </CustomPermission>
 ```
@@ -150,6 +150,14 @@ FlexiPage / Dynamic Forms component visibility and In-App Guidance — note the 
     <rightValue>TRUE</rightValue>
 </criteria>
 ```
+
+## 7. Description length
+
+`CustomPermission.description` is capped at 255 characters — the Metadata API Developer Guide states it directly in the `CustomPermission` field table: "The custom permission description. Limit: 255 characters" (`api_meta.txt` L46651-46652).
+
+**Where rationale goes instead.** The description is the only place the consumer list survives (Gotcha 9), so it fills up fast — `Bypass_Case_Intake_Validation` in `examples/builds/case-onboarding/artefacts/M2-S01` sits at 250 characters, six from the limit. Once the consumer list itself does not fit, split the permission (Gotcha with the "if the sentence needs an 'and'" test in `## Questions to Ask Before Configuring`) rather than compressing the list into unreadable abbreviations, and keep any narrative rationale — why the bypass exists, who approved it — in the build's `deploy-order.md` or the configuration workbook next to the component it explains.
+
+`scripts/check_custom_permissions.py` enforces this: `CP-DESC-01` (ERROR) at 255+ characters on any `CustomPermission` file; `CP-DESC-02` (WARN) at 200+ characters as headroom.
 
 ## package.xml
 

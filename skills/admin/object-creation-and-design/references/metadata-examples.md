@@ -177,6 +177,18 @@ How to read it:
 - Only one of `auraComponent`, `customObject`, `flexiPage`, `lwcComponent`, `page`, `scontrol`, `url` may be set (api_meta.txt L47276–47285).
 - Tab **visibility** per profile is not in this file. It lives in `Profile` / `PermissionSet` metadata, and the guide warns that "retrieving a component of this metadata type in a project makes the component appear in any Profile and PermissionSet components that are retrieved in the same package" (api_meta.txt L47260–47261). Deploying only the tab leaves every non-admin profile on the org default.
 
+## Description length
+
+`CustomObject.description` and `CustomField.description` are not the same field with the same limit, and it is worth being precise about which is which.
+
+`CustomObject.description` is grounded directly in the Metadata API Developer Guide's `CustomObject` field table: "A description of the object. Maximum of 1000 characters" (`api_meta.txt` L42007). That is a much higher ceiling than the 255-character limit documented elsewhere in the same guide for `CustomPermission`, `PermissionSet`, `Profile` and `RecordType` descriptions — do not carry that 255 figure over to a custom object's own description.
+
+`CustomField.description` carries no stated limit at all. The `CustomField` field table gives only "Description of the field." with no `Limit:` clause (`api_meta.txt` L43360; the `CustomField` section header is confirmed immediately above at L43379). **UNVERIFIED (2026-09-11):** whether the 255-character ceiling used for `CustomPermission`/`PermissionSet`/`Profile` also applies to `CustomField` — `Account.Region__c` in `examples/builds/case-onboarding/artefacts/M1-S01` sits at 249 characters today, which would be six characters from that candidate limit if it applied, but nothing in the guide confirms it does. Until a dry-run rejection or an updated guide confirms a number, treat 255 as a candidate only, not a fact.
+
+**Where rationale goes instead.** Neither field is the place for the reason each irreversible feature (Gotcha 2) was enabled, or the tracked-field audit reasons (Gotcha 11) — put those in the object's own `description` only as a short pointer, and the full rationale in the build's `deploy-order.md` or the configuration workbook.
+
+`scripts/check_object_creation_and_design.py` enforces this: `OCD-DESC-01` (ISSUE) at 1000+ characters on `CustomObject` files only, grounded at the object's own documented limit; `OCD-DESC-02` (WARN, advisory — does not affect the exit code) at 200+ characters on either `CustomObject` or `CustomField` files, as a headroom hint rather than a claimed limit.
+
 ## package.xml
 
 ```xml

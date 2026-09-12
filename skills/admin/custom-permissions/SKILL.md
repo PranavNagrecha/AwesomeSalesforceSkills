@@ -17,6 +17,7 @@ triggers:
   - "hide a Lightning page component unless the user has a custom permission"
   - "let the integration user bypass a validation rule without deactivating it"
   - "who has this custom permission assigned, query it"
+  - "custom permission description too long, deploy rejected with max length 255"
 tags:
   - custom-permissions
   - access-control
@@ -35,9 +36,9 @@ outputs:
   - "SetupEntityAccess verification query proving who holds the permission today"
   - "component visibility filter using {!$Permission.CustomPermission.X}"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-11
 ---
 
 # Custom Permissions
@@ -271,6 +272,7 @@ AND(
 - [ ] The custom permission metadata file and updated permission set XML are committed to source control.
 - [ ] `check_custom_permissions.py` has been run on the metadata directory and reports no ERROR.
 - [ ] Every custom permission has a non-empty `description` naming its consumers.
+- [ ] `description` is under 255 characters (`CP-DESC-01` ERROR) and ideally under 200 (`CP-DESC-02` WARN) — if the consumer list alone does not fit, split the permission rather than compressing it.
 - [ ] `isLicensed` does not appear in any authored `.customPermission-meta.xml` (it is read-only).
 - [ ] Component visibility filters use `{!$Permission.CustomPermission.X}`, not the formula spelling.
 - [ ] Any `requiredPermission` target ships in the same deployment package as its parent.
@@ -287,6 +289,8 @@ AND(
 3. **`$Permission` in Flow is only available inside formula resources** — it cannot be typed directly into a Decision element condition row. Create a formula resource (type: Boolean) with value `$Permission.My_Permission`, then reference that resource in the Decision element.
 
 4. **API name changes break all references without warning** — renaming a custom permission does not cascade to validation rules, formula fields, or Apex code. Formulas referencing the old name silently evaluate to `false`; Apex code fails at deploy time if the reference is in a compile-time string but may silently fail at runtime in dynamic contexts. Treat the API name as immutable once the permission is in production.
+
+5. **A `description` over 255 characters fails the deploy** — the consumer list (the only place it survives, Gotcha 9) plus any rationale text overflows the Metadata API's 255-character `CustomPermission.description` limit fast; `scripts/check_custom_permissions.py` flags it (`CP-DESC-01` ERROR at 255+, `CP-DESC-02` WARN at 200+) before the deploy does.
 
 ---
 
