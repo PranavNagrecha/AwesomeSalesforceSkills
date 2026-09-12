@@ -87,28 +87,64 @@ def select_steps(plan: dict, milestone_ids: list[str], step_ids: list[str]) -> l
 # Artefact assembly (mode: source)
 # --------------------------------------------------------------------------
 
+class CopyResult(NamedTuple):
+    """Result of `copy_artefacts`.
+
+    * copied — paths copied, relative to dest_root, in the order copied.
+    * skipped — count of files under the selected steps' artefact directories
+      that were deliberately excluded (package.xml, `*.md` build notes,
+      dotfiles). Directories are never counted either way.
+    """
+
+    copied: list[Path]
+    skipped: int
+
+
 def copy_artefacts(
     build_dir: Path, artefacts_root: str, step_ids: list[str], dest_root: Path
-) -> list[Path]:
-    """Copy every *.xml under artefacts/<step>/ (except package.xml) into
-    dest_root, preserving the sub-path each file already has (objects/Case/
-    fields/..., layouts/..., etc). Returns the list of paths copied, relative
-    to dest_root, for callers/tests that want to assert on the tree shape.
+) -> CopyResult:
+    """Copy EVERY file under artefacts/<step>/ into dest_root, preserving each
+    file's sub-path (objects/Case/fields/..., layouts/..., email/case_intake/...,
+    lwc/foo/..., etc) and the directory structure around it — EXCEPT:
+
+    * `package.xml` — merged separately (see `merge_package_xml` / --mode manifest);
+    * `*.md` files — build notes (deploy-order.md, decision notes, runbooks),
+      never deployable metadata;
+    * dotfiles — editor/OS artefacts, never Salesforce source.
+
+    A source-format component is frequently more than one file next to its
+    `-meta.xml` sidecar: an EmailTemplate's `.email` body, an Apex class's
+    `.cls`, a static resource's `.resource`, an LWC/Aura bundle's `.js`/
+    `.html`/`.css`. Copying only `*.xml` (the previous behaviour) silently
+    dropped every one of those bodies, and `sf project deploy start` then
+    fails with `ExpectedSourceFilesError: ... Expected source files for
+    type '<Type>'` — a defect found live against
+    `.sfskills/builds/case-onboarding` (an EmailTemplate's `.email` body never
+    reached the assembled tree). Copying everything except the three
+    exclusions above fixes every source-format type at once, not just email.
+
+    Returns a `CopyResult` — the paths copied (relative to dest_root) and a
+    count of files skipped by the exclusion rules — for callers/tests that
+    want to assert on the tree shape or report on it (see `render_summary`).
     """
     copied: list[Path] = []
+    skipped = 0
     for step_id in step_ids:
         step_dir = build_dir / artefacts_root / step_id
         if not step_dir.is_dir():
             continue
-        for src in sorted(step_dir.rglob("*.xml")):
-            if src.name == "package.xml":
+        for src in sorted(step_dir.rglob("*")):
+            if not src.is_file():
+                continue
+            if src.name == "package.xml" or src.suffix.lower() == ".md" or src.name.startswith("."):
+                skipped += 1
                 continue
             rel = src.relative_to(step_dir)
             dest = dest_root / rel
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dest)
             copied.append(rel)
-    return copied
+    return CopyResult(copied=copied, skipped=skipped)
 
 
 def pick_api_version(
@@ -379,8 +415,15 @@ def render_summary(
     org_alias: str,
     manifest_resolution: ManifestResolution | None = None,
     plan_only: bool = False,
+    copy_result: CopyResult | None = None,
 ) -> str:
     lines = ["# Mock deploy result", "", f"- org: `{org_alias}`", f"- mode: `{mode}`"]
+
+    if copy_result is not None:
+        lines.append(
+            f"- files: {len(copy_result.copied)} file(s) copied, {copy_result.skipped} "
+            "skipped (package.xml/notes)"
+        )
 
     if plan_only:
         lines.append("- status: **not run (--plan-only)**")
@@ -518,7 +561,7 @@ def main(argv: list[str] | None = None) -> int:
 
     force_app_dir = out_dir / "force-app" / "main" / "default"
     force_app_dir.mkdir(parents=True, exist_ok=True)
-    copy_artefacts(build_dir, artefacts_root, step_ids, force_app_dir)
+    copy_result = copy_artefacts(build_dir, artefacts_root, step_ids, force_app_dir)
 
     api_version = pick_api_version(build_dir, artefacts_root, step_ids)
     write_sfdx_project(out_dir, api_version)
@@ -539,7 +582,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.plan_only:
         summary = render_summary(
-            None, args.mode, args.org_alias, manifest_resolution, plan_only=True
+            None, args.mode, args.org_alias, manifest_resolution, plan_only=True,
+            copy_result=copy_result,
         )
         (out_dir / "summary.md").write_text(summary, encoding="utf-8")
         print(summary)
@@ -575,7 +619,9 @@ def main(argv: list[str] | None = None) -> int:
     result = parsed.get("result") if isinstance(parsed, dict) else None
     status = result.get("status") if isinstance(result, dict) else None
 
-    summary = render_summary(parsed, args.mode, args.org_alias, manifest_resolution)
+    summary = render_summary(
+        parsed, args.mode, args.org_alias, manifest_resolution, copy_result=copy_result
+    )
     (out_dir / "summary.md").write_text(summary, encoding="utf-8")
     print(summary)
     print(f"output: {out_dir}")

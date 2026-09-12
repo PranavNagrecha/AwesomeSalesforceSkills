@@ -115,7 +115,8 @@ def test_select_steps_by_step_id(tmp_path):
 def test_copy_artefacts_preserves_paths_and_excludes_package_xml(tmp_path):
     build_dir = make_build(tmp_path)
     dest = tmp_path / "force-app" / "main" / "default"
-    copied = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M1-S01", "M1-S02"], dest)
+    result = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M1-S01", "M1-S02"], dest)
+    copied = result.copied
 
     copied_str = {str(p) for p in copied}
     assert copied_str == {
@@ -125,6 +126,8 @@ def test_copy_artefacts_preserves_paths_and_excludes_package_xml(tmp_path):
     # package.xml must never be copied into the source tree.
     assert not any(p.name == "package.xml" for p in copied)
     assert not (dest / "package.xml").exists()
+    # M1-S01 and M1-S02 each contribute exactly one skipped package.xml.
+    assert result.skipped == 2
 
     # Subfolders are preserved exactly.
     assert (dest / "objects" / "Case" / "fields" / "Severity__c.field-meta.xml").is_file()
@@ -135,8 +138,80 @@ def test_copy_artefacts_skips_missing_step_dir(tmp_path):
     build_dir = make_build(tmp_path)
     dest = tmp_path / "out"
     # M2-S01 has no artefacts directory on disk; must not raise.
-    copied = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M2-S01"], dest)
-    assert copied == []
+    result = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M2-S01"], dest)
+    assert result.copied == []
+    assert result.skipped == 0
+
+
+def test_copy_artefacts_copies_non_xml_body_beside_meta_xml(tmp_path):
+    build_dir = make_build(tmp_path)
+    dest = tmp_path / "out"
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "email" / "case_intake" / "Case_Acknowledgement.email",
+        "<messaging/plain_text>Hi</messaging/plain_text>",
+    )
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "email" / "case_intake" / "Case_Acknowledgement.email-meta.xml",
+        "<EmailTemplate><fullName>Case_Acknowledgement</fullName></EmailTemplate>",
+    )
+    result = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M1-S01"], dest)
+
+    copied_str = {str(p) for p in result.copied}
+    assert str(Path("email/case_intake/Case_Acknowledgement.email")) in copied_str
+    assert str(Path("email/case_intake/Case_Acknowledgement.email-meta.xml")) in copied_str
+    assert (dest / "email" / "case_intake" / "Case_Acknowledgement.email").is_file()
+
+
+def test_copy_artefacts_copies_cls_and_its_meta_xml(tmp_path):
+    build_dir = make_build(tmp_path)
+    dest = tmp_path / "out"
+    _write(build_dir / "artefacts" / "M1-S01" / "classes" / "CaseService.cls", "public class CaseService {}")
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "classes" / "CaseService.cls-meta.xml",
+        "<ApexClass><apiVersion>62.0</apiVersion></ApexClass>",
+    )
+    result = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M1-S01"], dest)
+
+    copied_str = {str(p) for p in result.copied}
+    assert str(Path("classes/CaseService.cls")) in copied_str
+    assert str(Path("classes/CaseService.cls-meta.xml")) in copied_str
+
+
+def test_copy_artefacts_excludes_markdown_build_notes(tmp_path):
+    build_dir = make_build(tmp_path)
+    dest = tmp_path / "out"
+    _write(build_dir / "artefacts" / "M1-S01" / "deploy-order.md", "# Deploy order\n")
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "queue-retirement-runbook.md",
+        "# Queue retirement runbook\n",
+    )
+    result = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M1-S01"], dest)
+
+    copied_names = {p.name for p in result.copied}
+    assert "deploy-order.md" not in copied_names
+    assert "queue-retirement-runbook.md" not in copied_names
+    assert not (dest / "deploy-order.md").exists()
+    assert not (dest / "queue-retirement-runbook.md").exists()
+
+
+def test_copy_artefacts_copies_nested_lwc_bundle_whole(tmp_path):
+    build_dir = make_build(tmp_path)
+    dest = tmp_path / "out"
+    _write(build_dir / "artefacts" / "M1-S01" / "lwc" / "foo" / "foo.js", "export default class {}")
+    _write(build_dir / "artefacts" / "M1-S01" / "lwc" / "foo" / "foo.html", "<template></template>")
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "lwc" / "foo" / "foo.js-meta.xml",
+        "<LightningComponentBundle/>",
+    )
+    result = mock_deploy.copy_artefacts(build_dir, "artefacts", ["M1-S01"], dest)
+
+    copied_str = {str(p) for p in result.copied}
+    assert str(Path("lwc/foo/foo.js")) in copied_str
+    assert str(Path("lwc/foo/foo.html")) in copied_str
+    assert str(Path("lwc/foo/foo.js-meta.xml")) in copied_str
+    assert (dest / "lwc" / "foo" / "foo.js").is_file()
+    assert (dest / "lwc" / "foo" / "foo.html").is_file()
+    assert (dest / "lwc" / "foo" / "foo.js-meta.xml").is_file()
 
 
 # --------------------------------------------------------------------------
