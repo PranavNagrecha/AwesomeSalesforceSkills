@@ -1507,7 +1507,16 @@ def cmd_init(args: argparse.Namespace) -> int:
     for sub in ("workbook", "artefacts", "tests", "envelopes", "reports"):
         (build_dir / sub).mkdir(parents=True, exist_ok=True)
     _ensure_skills_link(build_dir, Path(args.repo_root))
-    shutil.copyfile(requirement_src, build_dir / "requirement.md")
+    requirement_dst = build_dir / "requirement.md"
+    # `init --force` re-initialising a build in place may be pointed at the
+    # build's OWN requirement.md (the human re-runs init against the file
+    # init itself wrote last time) — src and dst are then the same file on
+    # disk, and shutil.copyfile() raises SameFileError trying to open it for
+    # both reading and writing at once. There is nothing to copy in that
+    # case: the destination already holds the requirement text.
+    same_file = requirement_dst.exists() and requirement_src.resolve() == requirement_dst.resolve()
+    if not same_file:
+        shutil.copyfile(requirement_src, requirement_dst)
 
     text = (build_dir / "requirement.md").read_text(encoding="utf-8", errors="replace")
     summary = next((line.strip() for line in text.splitlines()
@@ -1978,29 +1987,54 @@ def _approval_refusal(plan: dict, name: str) -> tuple[str | None, list[str]]:
     return None, notes
 
 
+def _gate_precondition(plan: dict, gate_name: str, decision: str) -> tuple[str | None, list[str]]:
+    """Whether `decision` may be recorded for `gate_name` against `plan` right now.
+
+    Returns `(refusal_message_or_None, informational_notes)`. `refusal_message`
+    is already the full text a caller can hand straight to `_die()` — either
+    "no gate ..." (the name does not exist in this plan's human_gates[]) or
+    the `_approval_refusal()` claim wrapped for an 'approve' decision. A
+    'reject' decision has no precondition (contract section 3: a human's
+    rejection of an invalid plan must always be recordable).
+
+    Factored out of `_gate_once` so `cmd_gate`'s `go`/`accept` aliases (§ 3.1)
+    can check every member's precondition against ONE plan snapshot before
+    writing any of them — the atomicity rule: an alias is all-or-nothing, so
+    a later member's refusal must never be discovered only after an earlier
+    member has already been written to disk.
+    """
+    gate = next((g for g in plan.get("human_gates") or [] if g.get("name") == gate_name), None)
+    if gate is None:
+        return (f"no gate {gate_name!r} in this plan — required gates are "
+                f"{', '.join(required_gate_names(plan))}; run `ensure-gates` to add the missing ones",
+                [])
+    if decision == "approve":
+        refusal, notes = _approval_refusal(plan, gate_name)
+        if refusal:
+            return f"gate {gate_name} cannot be approved: {refusal}", notes
+        return None, notes
+    return None, []
+
+
 def _gate_once(plan_path: Path, schema: dict, repo_root: Path, gate_name: str,
               decision: str, by: str, notes: str | None, at: str) -> int:
     """Record one human gate decision. The body `cmd_gate` used to inline.
 
     Factored out so § 3.1's `go`/`accept` aliases can apply more than one real
     gate name, under the same --by/--at/--notes, in a single CLI invocation:
-    each alias member is applied with this exact function, in order, and the
-    first one that refuses stops the whole invocation before anything later
-    in the alias is attempted (`cmd_gate` reads a fresh copy of the plan for
-    each call, so a refusal here leaves the file exactly as the previous call
-    left it).
+    each alias member is applied with this exact function, in order. By the
+    time this runs, `cmd_gate` has already verified every member's
+    precondition against one shared snapshot (see `_gate_precondition` and
+    the atomicity pass in `cmd_gate`), so the refusal check below is a
+    same-answer re-check against a fresh read, not the first time it runs.
     """
     plan = read_plan_on_schema(plan_path, schema)
-    gate = next((g for g in plan.get("human_gates") or [] if g.get("name") == gate_name), None)
-    if gate is None:
-        _die(f"no gate {gate_name!r} in this plan — required gates are "
-             f"{', '.join(required_gate_names(plan))}; run `ensure-gates` to add the missing ones")
-    if decision == "approve":
-        refusal, refusal_notes = _approval_refusal(plan, gate_name)
-        for line in refusal_notes:
-            print(line)
-        if refusal:
-            _die(f"gate {gate_name} cannot be approved: {refusal}")
+    refusal, refusal_notes = _gate_precondition(plan, gate_name, decision)
+    for line in refusal_notes:
+        print(line)
+    if refusal:
+        _die(refusal)
+    gate = next(g for g in plan.get("human_gates") or [] if g.get("name") == gate_name)
     approving = decision == "approve"
     snapshot = copy.deepcopy(plan)
     snapshot.pop("history", None)
@@ -2076,19 +2110,31 @@ def cmd_gate(args: argparse.Namespace) -> int:
 
     if alias in GATE_ALIASES:
         # § 3.1: 'go' and 'accept' are shorthand for more than one real gate
-        # name, legal only at scale 'ask'. A fresh read (not the alias's own
-        # cached copy) so `_gate_once` sees whatever the previous member in
-        # the alias just wrote.
+        # name, legal only at scale 'ask'. One schema-checked read up front:
+        # every member's precondition is checked against this SAME snapshot
+        # before any of them is written. This is what makes the alias
+        # atomic — without it, an early member (e.g. 'clarifications') could
+        # be written to disk and only then would a later member (e.g.
+        # 'plan', which requires build status 'verified') refuse, leaving a
+        # half-applied alias on disk with no way to tell from the CLI's exit
+        # code that only part of 'go' landed.
         # Absent `scale` is 'project' by contract (§ 3.1), so the message
         # names the plan's real effective tier rather than Python's `None`.
-        scale = read_plan(plan_path).get("scale") or "project"
+        plan = read_plan_on_schema(plan_path, schema)
+        scale = plan.get("scale") or "project"
         if scale != "ask":
             _die(f"gate '{alias}' is legal only when scale is 'ask' (this plan's scale is "
                  f"{scale!r}) — § 3.1's go/accept aliases exist for a single-step ask build; "
                  f"use the real gate name(s) instead: "
                  f"{', '.join(GATE_ALIASES[alias])}")
+        real_names = GATE_ALIASES[alias]
+        for real_name in real_names:
+            refusal, _notes = _gate_precondition(plan, real_name, args.decision)
+            if refusal:
+                _die(f"gate '{alias}' refused atomically — {refusal} — nothing was written "
+                     f"(every member of '{alias}' is checked before any of them is written)")
         at = _now(args.at)  # one timestamp, shared by every record 'go'/'accept' writes
-        for real_name in GATE_ALIASES[alias]:
+        for real_name in real_names:
             rc = _gate_once(plan_path, schema, repo_root, real_name, args.decision,
                             args.by, args.notes, at)
             if rc:
@@ -2178,6 +2224,29 @@ def cmd_set_plan(args: argparse.Namespace) -> int:
         _die(f"refusing to replace the plan while the build status is '{status}' — re-planning "
              f"is allowed from intake/clarifying/planned/plan-rejected only (reject the plan "
              f"gate first if the human wants a new plan)")
+    # § 3.1's worked example for scale 'ask' is answer -> planner -> verifier
+    # -> `gate go` -> build: the planner runs while status is still
+    # 'clarifying' and gate 'clarifications' is still 'pending' — 'go' signs
+    # both G1 and G2 together only after the verifier passes the plan, so
+    # there is no earlier point at which G1 gets approved on its own. That is
+    # fine PROVIDED every blocking clarification already has an answer (or an
+    # accepted DEFER) — the planner must never plan around a blocking
+    # question nobody has answered yet just because the formal 'clarifications'
+    # gate hasn't been signed. This check exists only at scale 'ask', where
+    # planning-before-G1 is the documented flow; at 'feature'/'project' scale
+    # today's rule stands unchanged (PLAN_FROZEN_STATUSES above is the only
+    # gate `set-plan` applies there — planning ahead of gate 'clarifications'
+    # being signed is a workflow matter for those scales, not one this script
+    # enforces).
+    if (plan.get("scale") or "project") == "ask" and status == "clarifying":
+        still_open = [c.get("id") for c in plan.get("clarifications") or []
+                      if c.get("kind") == "blocking" and c.get("status") == "open"]
+        if still_open:
+            _die(f"refusing to plan at scale 'ask' — blocking clarification(s) "
+                 f"{', '.join(str(q) for q in still_open)} are still open — answer them (or "
+                 f"defer with 'DEFER: <reason>' and `ingest-answers --allow-deferred`) before "
+                 f"planning; § 3.1's ask flow lets the planner run before gate 'clarifications' "
+                 f"is formally approved, but not before every blocking question has an answer")
     if "fit_gap" in doc:
         scope = dict(doc.get("scope") or plan.get("scope") or {"in": [], "out": [], "fit_gap": []})
         scope["fit_gap"] = doc.pop("fit_gap")
@@ -2761,7 +2830,11 @@ def build_parser() -> argparse.ArgumentParser:
                                    "(status: intake, version: 1, build_mode: design-only).")
     p.add_argument("--build-dir", required=True, help="e.g. .sfskills/builds/case-onboarding")
     p.add_argument("--title", required=True, help="one-line human title for the build")
-    p.add_argument("--requirement", required=True, help="path to the human's requirement markdown")
+    p.add_argument("--requirement", required=True,
+                   help="path to the human's requirement markdown. `--force` re-initialising a "
+                        "build in place may point this at the build's own requirement.md "
+                        "(the file a prior `init` already wrote there) — that is a no-op, not "
+                        "an error.")
     p.add_argument("--build-id", default=None, help="kebab-case id (default: build dir name)")
     p.add_argument("--org-alias", default=None,
                    help="sf CLI alias of the org this build may read. Sets build_mode to "
@@ -2872,8 +2945,15 @@ def build_parser() -> argparse.ArgumentParser:
                                    "'go' and 'accept' are aliases legal only when the plan's "
                                    "scale is 'ask' — 'go' writes the 'clarifications' and 'plan' "
                                    "records in this one invocation, under the same --by/--at/"
-                                   "--notes, honouring each record's own precondition in order "
-                                   "(clarifications first, then plan); 'accept' writes "
+                                   "--notes. Atomic: every member's precondition (clarifications "
+                                   "first, then plan) is checked against one snapshot before any "
+                                   "of them is written — if either would refuse, NOTHING is "
+                                   "written and the error names the failing record; 'plan' is "
+                                   "legal only once the build status is 'verified', which at "
+                                   "scale 'ask' the planner reaches without a prior G1 approval "
+                                   "(the human's answers to the blocking clarifications ARE G1 "
+                                   "in substance — 'go' signs the paperwork for both once the "
+                                   "verifier has passed the plan). 'accept' writes "
                                    "'milestone:M1'. The stored gate names are unchanged; using "
                                    "either alias on a non-'ask' plan is an error naming the "
                                    "plan's actual scale.")
@@ -2990,7 +3070,14 @@ def build_parser() -> argparse.ArgumentParser:
                                    "missing human gates. Refused once the plan is verified, "
                                    "approved, building or done — re-planning starts from a "
                                    "rejected plan gate. Re-planning (status 'plan-rejected') "
-                                   "increments `version`; this is the only command that does.")
+                                   "increments `version`; this is the only command that does. "
+                                   "§ 3.1: at scale 'ask', also allowed while status is "
+                                   "'clarifying' (gate 'clarifications' still pending) PROVIDED "
+                                   "no blocking clarification is open — the ask flow is answer -> "
+                                   "planner -> verifier -> `gate go`, with G1 signed together "
+                                   "with G2 at the end; refused if a blocking question is still "
+                                   "unanswered. At 'feature'/'project' scale this adds nothing — "
+                                   "the frozen-status rule above is the only check.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--file", required=True, help="JSON object of planner-owned fields")
     p.add_argument("--summary", default=None,

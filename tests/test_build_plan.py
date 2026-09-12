@@ -2782,6 +2782,30 @@ def test_gate_go_respects_preconditions_in_order_clarifications_then_plan(tmp_pa
     assert after["status"] == "verified"
 
 
+def test_gate_go_refuses_atomically_when_plan_is_not_verified(tmp_path, fixture_repo):
+    """A half-applied 'go' is a bug: either both records land, or neither does.
+
+    'clarifications' has nothing stopping its own approval here (no blocking
+    clarification at all), but 'plan' requires build status 'verified' and
+    this plan is still 'clarifying'. The old, non-atomic implementation wrote
+    'clarifications' -> approved BEFORE discovering that 'plan' would refuse,
+    leaving the alias half-applied on disk. The fix checks every member's
+    precondition against one snapshot before writing any of them.
+    """
+    steps = [step("M1-S01", "M1", human_gate=False)]
+    plan = plan_dict(steps, scale="ask", status="clarifying")  # clarifications: []
+    path = write_plan_file(tmp_path / "b", plan)
+    before = path.read_bytes()
+    rc = run("gate", str(path), "go", "approve", "--by", "pranav", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before, "nothing may be written when any alias member refuses"
+    after = json.loads(path.read_text())
+    gates = {g["name"]: g for g in after["human_gates"]}
+    assert gates["clarifications"]["status"] == "pending"
+    assert gates["plan"]["status"] == "pending"
+    assert after["status"] == "clarifying"
+
+
 def test_gate_go_and_accept_refuse_outside_ask_scale(tmp_path, fixture_repo, capsys):
     steps = [step("M1-S01", "M1")]
     for scale_kwargs in ({}, {"scale": "project"}, {"scale": "feature"}):
@@ -2854,6 +2878,92 @@ def test_status_prints_project_as_the_effective_default_scale(tmp_path, fixture_
     out = capsys.readouterr().out
     line = next(l for l in out.splitlines() if l.startswith("build mode:"))
     assert "scale: project" in line
+
+
+def test_set_plan_allowed_at_ask_scale_while_clarifying_with_blocking_answered(
+        tmp_path, fixture_repo):
+    """§ 3.1's worked example: answer -> planner -> verifier -> `gate go`.
+
+    The planner runs while status is still 'clarifying' and gate
+    'clarifications' is still 'pending' — there is no earlier point at which
+    G1 gets approved on its own at scale 'ask'. That is fine as long as every
+    blocking question already has an answer; an open *informational*
+    question must not stand in the way.
+    """
+    steps = [step("M1-S01", "M1", human_gate=False)]
+    plan = plan_dict(steps, status="clarifying", scale="ask", clarifications=[
+        {"id": "Q1", "question": "Retroactive to existing records?", "kind": "blocking",
+         "status": "answered", "answer": "No, new records only."},
+        {"id": "Q2", "question": "Any nice-to-have reporting?", "kind": "informational",
+         "status": "open"},
+    ])
+    path = write_plan_file(tmp_path / "b", plan)
+    body = write_json(tmp_path / "plan-body.json", {"decisions": []})
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    assert after["status"] == "planned"
+    gates = {g["name"]: g for g in after["human_gates"]}
+    assert gates["clarifications"]["status"] == "pending", "G1 is still signed later, by `gate go`"
+
+
+def test_set_plan_refused_at_ask_scale_with_an_open_blocking_clarification(
+        tmp_path, fixture_repo, capsys):
+    steps = [step("M1-S01", "M1", human_gate=False)]
+    plan = plan_dict(steps, status="clarifying", scale="ask", clarifications=[
+        {"id": "Q1", "question": "Retroactive to existing records?", "kind": "blocking",
+         "status": "open"},
+    ])
+    path = write_plan_file(tmp_path / "b", plan)
+    body = write_json(tmp_path / "plan-body.json", {"decisions": []})
+    before = path.read_bytes()
+    capsys.readouterr()
+    rc = run("set-plan", str(path), "--file", str(body), "--repo-root", str(fixture_repo))
+    err = capsys.readouterr().err
+    assert rc == 1
+    assert path.read_bytes() == before
+    assert "Q1" in err
+
+
+def test_set_plan_at_project_scale_keeps_todays_rule_ignoring_open_blocking_clarification(
+        tmp_path, fixture_repo):
+    """Control: the new ask-only guard must not leak into 'feature'/'project'.
+
+    Today's rule for those scales is the frozen-status check alone
+    (PLAN_FROZEN_STATUSES) — an open blocking clarification has never
+    stopped `set-plan` there, and this fix must not start stopping it now.
+    """
+    for scale_kwargs in ({}, {"scale": "feature"}):
+        label = scale_kwargs.get("scale", "absent")
+        steps = [step("M1-S01", "M1")]
+        plan = plan_dict(steps, status="clarifying", clarifications=[
+            {"id": "Q1", "question": "Retroactive to existing records?", "kind": "blocking",
+             "status": "open"},
+        ], **scale_kwargs)
+        path = write_plan_file(tmp_path / f"b-{label}", plan)
+        body = write_json(tmp_path / f"plan-body-{label}.json", {"decisions": []})
+        assert run("set-plan", str(path), "--file", str(body),
+                   "--repo-root", str(fixture_repo)) == 0, f"scale={label} must be unaffected"
+
+
+def test_init_force_with_requirement_pointed_at_its_own_file_does_not_crash(
+        tmp_path, fixture_repo, requirement, capsys):
+    """`init --force` re-run with --requirement == the build's own requirement.md.
+
+    shutil.copyfile(src, dst) raises SameFileError when src and dst resolve to
+    the same file on disk — a real shape when a human (or an agent) re-runs
+    init against the file init itself wrote on a previous pass.
+    """
+    build_dir = tmp_path / "b"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Test Build",
+               "--requirement", str(requirement), "--repo-root", str(fixture_repo),
+               "--now", "2026-09-05T09:00:00Z") == 0
+    capsys.readouterr()
+    rc = run("init", "--build-dir", str(build_dir), "--title", "Test Build",
+             "--requirement", str(build_dir / "requirement.md"), "--force",
+             "--repo-root", str(fixture_repo), "--now", "2026-09-05T09:05:00Z")
+    assert rc == 0
+    assert (build_dir / "requirement.md").read_text() == requirement.read_text()
 
 
 def test_render_writes_run_md_only_at_ask_scale(tmp_path, fixture_repo):
