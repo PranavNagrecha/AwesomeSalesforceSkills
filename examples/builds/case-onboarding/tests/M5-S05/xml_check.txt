@@ -1,1 +1,9 @@
-PARSED /Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/artefacts/M5-S05/package.xml
+XML parse check — artefacts/M5-S05/ (own directory only, per step-tester AGENT.md Step 2)
+Files matched (*.xml, *-meta.xml), recursive:
+  artefacts/M5-S05/package.xml
+
+Result:
+  OK artefacts/M5-S05/package.xml (parsed with xml.etree.ElementTree)
+
+1/1 parsed. 0 failed.
+(deploy-order.md is markdown, not matched by *.xml / *-meta.xml, and is not counted.)

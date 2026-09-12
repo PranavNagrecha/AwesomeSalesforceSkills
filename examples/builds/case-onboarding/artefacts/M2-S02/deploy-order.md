@@ -223,3 +223,94 @@ built on them predate this rebuild and predate F-15. They reflected files that m
 run 1 then rejected at the org boundary; the milestone verdict is stale until M2-S02 (this
 step), M2-S03 (profiles, rebuilding concurrently in `artefacts/M2-S03/` under a different
 runner) and a second mock-deploy run all reconfirm.
+
+## Rebuild #3 — F-60 standard-field permissions on `Case_Agent_Core`
+
+Triggered by `reports/MOCK-DEPLOY-M5.md` run 5 (2026-09-12T17:25Z), finding **F-60 (HIGH,
+design — "the most consequential finding of this build")**: a `TestUserFactory` user holding
+`Case_Agent_Core` + `Case_Tier1`, inserting a Case under `System.runAs(agent)`, failed with
+`Operation failed due to fields being inaccessible on Sobject Case ...
+fieldNames: Subject,Origin,AccountId,Priority,EntitlementId`. `Case_Agent_Core` granted
+`allowCreate`/`allowEdit` on Case with `fieldPermissions` on exactly one field
+(`Case.Severity__c`, custom); `Case_Tier1` added none; the shipped `Acme Support Tier 1`
+profile carries zero object/field permissions by design ("all access comes from the group").
+No checker or milestone verification had asserted that an object Create/Edit grant is
+accompanied by field grants on that object's standard fields, and no Apex test had run as the
+persona until this probe. `skills/admin/permission-sets-vs-profiles` v1.3.0 now carries
+**PSVP-FLS-01** (WARN) for exactly this shape, and its `references/gotchas.md` documents the
+finding as "An Object Grant Without Field Grants Is A Persona That Cannot Fill In A Form".
+
+**What was enumerated, and from where** — the persona's writable standard Case fields, per
+the gotcha's own method (edit-mode page layout, compact layout, intake process), not from
+memory:
+
+| Field | Source |
+|---|---|
+| `Subject` | `artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml` and `…Billing Layout…`, `behavior=Edit`; F-60 fixture `DmlException` field list |
+| `Origin` | same two layouts, `behavior=Edit`; F-60 fixture field list; read by `M3-S01` validation rule `Origin_Must_Be_Known` |
+| `Priority` | same two layouts, `behavior=Edit`; F-60 fixture field list; read by `M3-S01` validation rule `Priority_Required_On_Agent_Save` |
+| `ContactId` | same two layouts, `behavior=Edit`; `MILESTONE-M1-REPORT-v2.md` **F-09** ("Case layouts must carry `ContactId`" — now `RL-REQ-01`) |
+| `Description` | same two layouts, `behavior=Edit`; **F-10** (`Description` Required — `RL-REQ-01`/`RL-REQ-02`) |
+| `SuppliedEmail` | same two layouts, `behavior=Edit`; **F-10** (`SuppliedEmail` Required) |
+| `AccountId` | not on either layout — grounded instead in the F-60 fixture itself: `CaseMilestoneServiceTest.caseInsideProcess` builds the Case via `TestDataFactory.createCases(1, entitlement.AccountId, …)` and inserts it inside `System.runAs(agent)`, i.e. the persona's own Case-creation DML populates `AccountId`; it is also the field named third in the fixture's own `DmlException` list |
+
+**Type / Reason** — neither field appears on either layout
+(`artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml`,
+`…Case Billing Layout…`), so neither is granted. Nothing in this repair invents a field the
+build has not already named.
+
+**`EntitlementId` is deliberately excluded**, per F-60's own fix note and
+`references/gotchas.md`: it is stamped by `M4-S03`'s before-save Flow
+(`Case_BeforeSave_StampEntitlementAndCalendar`), not by the persona, and the M4-S05 fixture
+now seeds it in `AccessLevel.SYSTEM_MODE` rather than justify handing the persona a field it
+does not use. Granting it here would contradict the plan's own entitlement design.
+
+**`Case_Tier1` / `Case_Tier2` / `Case_Billing` — unchanged.** F-60 states plainly that
+"`Case_Tier1` adds none": the failing fields all trace to `Case_Agent_Core`, the one set
+common to every Case-working persona and the one every PSG composes. No source names a
+standard Case field that Tier 1, Tier 2 or Billing writes differently from the Tier 1/Tier 2/
+Billing personas already covered by `Case_Agent_Core` plus their existing `Case.Severity__c`
+delta, so none of the three delta sets is touched — changing only what F-60 requires.
+
+**`EmailMessage` — WARN left standing, explained rather than guessed.** The checker also
+flags `PSVP-FLS-01` on `Case_Agent_Core`'s `EmailMessage` grant (`allowCreate=true`, no
+`fieldPermissions`). The persona does reply to emails — the set's own `<description>` says
+"create/read EmailMessage" and `decisions.md` **D-M2S02-01** grounds the create+read CRUD
+level in "replies to customers go from support@ … and billing@" — but no layout, workbook row
+or decision in this build enumerates which standard `EmailMessage` fields a reply populates
+(no Case Feed / email-compose layout step exists in this plan; `M3-S02` and `M3-S03` cover
+templates and routing addresses, not the compose UI). Per the Step 5 rule that every field
+name comes from the inventory this build has actually built, not from platform memory,
+granting `Subject`/`TextBody`/`ToAddress`/etc. here would be exactly the kind of guess F-60
+itself is a case study against. This WARN is recorded as a **named ambiguity** for the human
+gate rather than closed by invention: the fix needs either a compose-UI step naming the
+fields, or a clarification answer, neither of which exists on file today.
+
+**Verification (this rebuild).**
+
+Pre-edit (`check_access_model.py --manifest-dir artefacts/M2-S02`):
+
+```text
+WARN: 2 finding(s) detected (0 blocking)
+{"score": 94, "findings": [
+  {"severity": "WARN", "location": ".../Case_Agent_Core.permissionset-meta.xml",
+   "message": "PSVP-FLS-01 permission set grants Create/Edit on `Case` with no field permissions on any of its standard fields ..."},
+  {"severity": "WARN", "location": ".../Case_Agent_Core.permissionset-meta.xml",
+   "message": "PSVP-FLS-01 permission set grants Create/Edit on `EmailMessage` with no field permissions on any of its standard fields ..."}
+], "summary": "Scanned 7 access-model metadata file(s); 2 finding(s) detected.", "blocking": 0}
+EXIT=0
+```
+
+Post-edit: the `Case` PSVP-FLS-01 WARN is gone; the `EmailMessage` PSVP-FLS-01 WARN remains,
+as a residual explained above rather than silently cleared.
+
+**What changed.** `Case_Agent_Core.permissionset-meta.xml` only: seven `fieldPermissions`
+blocks added (`Case.AccountId`, `Case.ContactId`, `Case.Description`, `Case.Origin`,
+`Case.Priority`, `Case.Subject`, `Case.SuppliedEmail`, all `readable=true`/`editable=true`),
+and `<description>` reworded (193 chars — under both the 255-character PSA-DESC-01/PSVP-DESC-01
+ceiling this build hit once already at F-15, and the 200-character PSA-DESC-02/PSVP-DESC-02
+headroom advisory) to state the field-grant addition and the `EntitlementId` exclusion.
+`Case.Severity__c`'s existing grant, every `objectPermissions`
+block, `applicationVisibilities` and `tabSettings` are byte-identical to rebuild #2.
+`Case_Tier1`, `Case_Tier2`, `Case_Billing` and the three `PermissionSetGroup` files are
+untouched.

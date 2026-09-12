@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportFolder xmlns="http://soap.sforce.com/2006/04/metadata">
+    <accessType>Shared</accessType>
+    <name>Support Operations</name>
+    <folderShares>
+        <accessLevel>View</accessLevel>
+        <sharedTo>Support_Tier_2</sharedTo>
+        <sharedToType>Group</sharedToType>
+    </folderShares>
+</ReportFolder>

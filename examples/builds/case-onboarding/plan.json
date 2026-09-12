@@ -3082,6 +3082,24 @@
           "started": "2026-09-12T01:35:00Z",
           "envelope_path": "envelopes/M2-S02/2026-09-12T01-40-00Z.json",
           "result": "UPDATE pass after rebuild #2 (F-15): amended CWB-PERM-003..006 target_value+notes (description trimmed, rebuild cited), amended REQ-017..020 test_result (re-tested 2026-09-12T01-26-00Z, all checkers exit 0 with new DESC rules), appended D-M2S02-07 and O-M2S02-04, F-15 closed at the skills"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T18:00:00Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T18-00-00Z.json",
+          "result": "F-60 repair: 7 fieldPermissions added to Case_Agent_Core (Case standard fields the persona writes); EntitlementId/Type/Reason excluded; Case PSVP-FLS-01 cleared; EmailMessage PSVP-FLS-01 left as explained residual. All 3 checkers exit 0; check-outputs ok."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T17:46:35Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T17-46-35Z.json",
+          "result": "ran 5 (3 checkers + xml + manifest), failed 0, manual 0 -- rebuild #3 retest (F-60 fieldPermissions repair); check_access_model.py 1 WARN (PSVP-FLS-01 EmailMessage, non-blocking, named ambiguity for the gate)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T18:15:00Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T18-30-00Z.json",
+          "result": "UPDATE pass after rebuild #3 (F-60): amended CWB-PERM-003 target_value+notes, amended REQ-017 test_result, appended D-M2S02-08, O-M2S02-02, O-M2S02-03"
         }
       ],
       "human_gate": true,
@@ -4895,6 +4913,42 @@
           "started": "2026-09-12T08:52:00Z",
           "envelope_path": "envelopes/M4-S05/2026-09-12T08-52-00Z.json",
           "result": "workbook rows 5; traceability rows 1; decisions appended 5"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T17:08:17Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T17-06-24Z.json",
+          "result": "F-59 test-only repair: CaseMilestoneServiceTest wraps every method's action and assertions in System.runAs of a TestUserFactory user holding Case_Agent_Core + Case_Tier1 (PSG_Tier1_Prod's member list) on Profile 'Acme Support Tier 1'; TestUserFactory.cls added and TestDataFactory.cls replaced, both verbatim from templates; check_entitlement_apex_hooks --strict exit 0 (5 files); check_test_class_standards --strict exit 0, user-mode-test-without-runas 0, score 100; check-outputs ok on all 8 outputs; M5-S05 package.xml owes a 5th ApexClass member (TestUserFactory), recorded as an obligation in deploy-order.md, not edited here"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T17:46:31Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T17-52-00Z.json",
+          "result": "F-60 second test-only repair: fixture inserts (Account, Entitlement, Case rows) moved to TestDataFactory.insertAsSystem outside System.runAs(agent); only the action under test stays inside runAs(agent); TestDataFactory.cls refreshed to commit be09a7bff (insertAsSystem); check_entitlement_apex_hooks --strict exit 0 (5 files); check_test_class_standards --strict exit 0, score 100; check-outputs ok on all 8 outputs; M5-S05 package.xml obligation unchanged from section 8"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T17:56:05Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T18-05-00Z.json",
+          "result": "F-61 third test-only repair: requireActiveProcess() now filters Name IN ('First_Response_Standard', 'First Response Standard') and asserts exactly one match, naming the process on failure; LIMIT 1 dropped. check_entitlement_apex_hooks --strict exit 0 (5 files); check_test_class_standards --strict exit 0, score 100; check-outputs ok on all 8 outputs; no other method or shipped class changed"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T18:08:39Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T18-20-00Z.json",
+          "result": "F-62 fourth repair, first to touch shipped code: CaseMilestoneService's CaseMilestone SELECT now WITH SYSTEM_MODE and Database.update now carries AccessLevel.SYSTEM_MODE (no permission set in this build grants CaseMilestone access; system mode chosen over widening the persona, per apex-security-patterns and Gotcha 15). Test gained three failures-empty assertions after completeMilestones calls. check_entitlement_apex_hooks --strict exit 0 (5 files); check_test_class_standards exit 0 (default and --strict), score 100; check-outputs ok on all 8 outputs"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T18-12-57Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T18-12-57Z.json",
+          "result": "ran 3 (checker, xml, manifest), failed 0, manifest skipped-not-applicable (Apex exception, M5-S05 carries members incl. TestUserFactory obligation), manual 1 deferred to gate; undeclared check_test_class_standards.py exit 0 (informational, not counted)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T18:30:00Z",
+          "envelope_path": "envelopes/M4-S05/2026-09-12T18-30-00Z.json",
+          "result": "workbook rows 6 (5 updated, 1 new); traceability rows 1 updated; decisions appended 4 + 1 open item"
         }
       ],
       "human_gate": false,
@@ -5314,6 +5368,24 @@
           "started": "2026-09-12T12:38:43Z",
           "envelope_path": "envelopes/M5-S05/2026-09-12T12-38-43Z.json",
           "result": "workbook rows 2; traceability rows 0 (coverage note added); decisions appended 5"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T18:29:36Z",
+          "envelope_path": "envelopes/M5-S05/2026-09-12T18-29-36Z.json",
+          "result": "build-level package.xml rebuilt for F-59/F-60: 29 types, 57 members (was 56, +TestUserFactory), version 67.0; deploy-order.md gains section 0 rebuild record + F-59..F-62 evidence from MOCK-DEPLOY-M5.md runs 4-8 (4/4 tests passed, 84.4% coverage, F-28 sole remaining error); checker exit 0 (score 95, SharingRules WARN as documented); check-outputs ok"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T18:36:34Z",
+          "envelope_path": "envelopes/M5-S05/2026-09-12T18-36-34Z.json",
+          "result": "ran 3, failed 0, manual 3 (whole-tree manifest check across artefacts/: 119 files, 57 deployable, 57 members, 0 missing either direction; re-test after +TestUserFactory rebuild)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T18:47:01Z",
+          "envelope_path": "envelopes/M5-S05/2026-09-12T18-47-01Z.json",
+          "result": "workbook rows 2 replaced; traceability rows 0 (coverage note amended); decisions appended 2"
         }
       ],
       "human_gate": false
@@ -5400,16 +5472,16 @@
     {
       "name": "milestone:M4",
       "status": "approved",
-      "by": "dry-run operator (Fable; design-only, nothing deploys)",
-      "at": "2026-09-12T09:23:14Z",
-      "notes": "G4 (milestone:M4) approved by the dry-run operator (Fable; design-only, nothing deploys) on reports/MILESTONE-M4-REPORT.md (verdict ready-with-findings, F-39..F-48; verifier envelope envelopes/M4/2026-09-12T09-08-11Z). Org evidence: reports/MOCK-DEPLOY-M4.md run 4 — 55/55 components validate except F-28 (auto-response sender, org prerequisite). Decisions: (1) O-M4S04-01 / R2 Billing mail loop + F-44 (Tier 2 queue has no email, so the escalation notification reaches nobody there): ONE decision — both queues get non-routing mailboxes (billing-queue@acme.example, tier2-queue@acme.example) BEFORE the escalation rule is activated; the rule ships inactive (Q47) so activation is the gate; M2-S04's queue email is rebuilt at the next M2 touch or corrected in Setup — recorded as an activation prerequisite. (2) F-39 / O-M4S02-01 enableEntitlements (and the second switch the report names) owned by no step — three of five M4 steps depend on it: planner v6 adds it to M5's settings step, or the operator enables it in Setup — deploy prerequisite. (3) F-40 (HIGH) / O-M4S02-02: the M4 goal promises a Premier EMEA clock on the EMEA calendar and both processes pin US Support — accepted for this phase AND the M4 milestone goal is to be amended at planner v6 to say so (no step reads milestones[].goal — contract gap filed) — the first-response milestone counts on US Support hours for all cases while escalation counts on the regional calendar; revisit when Premier volume in EMEA justifies a second process. (4) D-M4S02-02 Standard 720 minutes and D-M4S04-02 Severity 1 480 minutes: accepted as placeholders; Sales/Support Ops to confirm the SLA numbers before the sandbox UAT. (5) D-M4S01-02 the 14 seeded holidays and the Q90 owner: UNCONFIRMED, Service Operations to confirm before go-live. (6) M4-S03 Priority mapping (Severity 1 → High, Premier → High, else Medium): accepted as the derived default; the G3 option-2 overwrite is honoured. (7) RAISED ABOVE THE OTHERS — M4-S05 completion signal (leaving Status New) is a PROXY for Q50's first outbound EmailMessage: accepted for this phase with the proxy named in the UAT script; an EmailMessage-triggered completion is a backlog item. (8) M4-S05 two-file trigger shape (no TriggerControl kill switch / recursion guard) accepted because the plan ships no TriggerControl; planner v6 adds an Apex-foundations step (TriggerControl, ApplicationLogger, TestDataFactory shared). (9) M4-S05 SeeAllData=true test + org prerequisites (active SlaProcess with a First Response milestone) recorded for the deploy runbook. (10) Flywheel: F-36 (escalation E10), F-37 (ship template classes), F-38 (Create-triggered FlowTest → Initial only), plus the business-hours 24/7 and entitlements W4 checker scopings — all closed at the source. Also accepted: deploy-order.md undeclared on every M4 step (planner v6 declares it).\n F-43: no manifest in the build carries the Apex until M5-S05 is built — manifest-mode validation of M4 must wait for M5-S05; source-mode run 4 is the evidence today. F-42: Priority values High/Medium are platform CasePriority values this build does not declare — accepted. Verifier process note adopted: record the checker version beside every recorded checker result (tooling backlog)."
+      "by": "requester (Pranav, on the standing 'choose the path' instruction) via dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T18:50:26Z",
+      "notes": "Re-signed (reject → approve) by the requester (Pranav, on the standing 'choose the path' instruction) via dry-run operator (Fable; design-only, nothing deploys). The 09:23Z approval rested on compile-only Apex evidence. Evidence now: reports/MOCK-DEPLOY-M5.md runs 4–8 — the first tests-executing runs; run 8 probe (whole build minus the F-28 sender rule, source mode, --tests CaseMilestoneServiceTest): Succeeded, 60/60, 4/4 tests, 84.4% coverage. Four findings closed: F-59 tests never ran as a permissioned user (M4-S05: TestUserFactory + runAs of a Tier 1 user holding Case_Agent_Core + Case_Tier1); F-60 the shipped Tier 1 persona could not create a Case — Case_Agent_Core granted the object and one custom field only (M2-S02: seven standard Case fields, each grounded in a layout or finding; library rule PSVP-FLS-01 fires on the pre-repair set; EmailMessage field grants left open — O-M2S02-02); F-61 the test selected any active entitlement process under SeeAllData and got the org's own (named-process query); F-62 the milestone stamp was refused in the persona's user context and swallowed by a partial-success DML (CaseMilestoneService: explicit SYSTEM_MODE boundary on that query and update — a shipped-code deviation, § 11; the test asserts no swallowed errors). Accepted knowingly: F-28 remains the one component the org rejects as shipped (verified sender address, named prerequisite); the milestone verifier is not re-run (budget) — the M4 report predates these repairs and this note carries the delta."
     },
     {
       "name": "milestone:M5",
       "status": "approved",
       "by": "requester (Pranav, on the standing 'choose the path' instruction) via dry-run operator (Fable; design-only, nothing deploys)",
-      "at": "2026-09-12T16:19:33Z",
-      "notes": "G5 (milestone:M5, the last) approved by the dry-run operator (Fable; design-only, nothing deploys) on reports/MILESTONE-M5-REPORT.md. Org evidence: reports/MOCK-DEPLOY-M5.md run 3 — MANIFEST mode over the whole build (M1-S01 … M5-S05): 60/60 components validate at API 67.0 except F-28 (the auto-response sender must exist as a verified org-wide address in the target org — a named deploy prerequisite). Accepted knowingly: (1) M5-S02 (sandbox strategy) stays blocked on four inputs the requester never supplied (team_size, concurrent_workstreams, release_cadence, data_sensitivity) and M3-S05 (Omni-Channel) on Q32–Q35 — both recorded as phase-2 items with owners; (2) F-28 due date: before the production window, owner the admin lead (the M3-S02 sender-identity note still says support@ — F-30 open until the note is corrected in phase 2); (3) F-51: the escalation report ships without its Escalated filter — a post-deploy runbook step (add the filter in the report builder or harvest the column code from a retrieved Case report); (4) REQ-055..058 remain Draft (waived by status, the M5 gate names them); (5) the seven self-referential compile rows (F-57) are present in the live workbook slices and re-compiled in the M5-S04 re-run (planner v6: compile last); F-54 (assumptions register) was NOT accepted — M5-S04 was re-run against F-52/53/54/56/57 before this gate, so the register, the member→row traceability and the UAT pack's independence from the blocked steps are in the artefacts; what remains open from F-54 is that assumptions[] carries no owner field — the release owner assigns owners as an obligation of this gate; (6) deploy-order divergence: M5-S05's order is the release order (rules at slot 10 before Settings:Case at slot 11, the verifier's four grounds); neither order is a deploy error and the real margin is the human step after slot 11 (mail forwarding); F-55: the M1 per-milestone manifest still carries the bare Case_Intake CompactLayout the org rejected (F-13) — a split release must cut from the build manifest, never from the per-milestone ones; (7) four release-owner decisions, decided at this gate on the verifier's recommendation: rollbackOnError explicitly true; the RunLocalTests window measured in a sandbox before the production window; validation inside the ten-day quick-deploy clock; the backout assigned to the admin lead, noting a post-traffic backout needs a data decision, not just metadata; (8) org prerequisites list from M5-S05 deploy-order.md § 6 (verified sender, enableEntitlements, queue mailboxes, the SlaProcess/First Response milestone for the Apex test, the 140-record reassignment is scenario 3's — n/a here). Build status after this gate: done. Design-only; nothing deploys. Verifier confidence LOW by its one-trigger rule (the blocked step); every other trigger clear. Manual lines 9, 11, 12 recorded outstanding with their written fallbacks; F-56 reconciled in the re-compile; F-58 is a wording fix for planner v6. Gate signed after M5-S04 was re-compiled, re-tested (4/4 checkers) and re-documented (D-M5S04-05..08) against the verifier's F-52/53/54/56/57; the verifier report predates that re-compile and was not re-run (design-only, budget) — the gate notes carry what changed."
+      "at": "2026-09-12T18:50:26Z",
+      "notes": "Re-signed (reject → approve) by the requester (Pranav, on the standing 'choose the path' instruction) via dry-run operator (Fable; design-only, nothing deploys), after milestone:M4 was re-signed on the tests-executing evidence (runs 4–8, F-59..F-62). M5-S05 rebuilt to carry TestUserFactory (57 members); reports/MILESTONE-M5-package.xml (56) is stale by that one member and not re-verified (budget). Everything in the 16:19:33Z G5 note stands (M5-S02 and M3-S05 blocked by design as phase 2; F-51, REQ-055..058 Draft waivers, F-55 split-release hazard, deploy-order M5-S05 governs, release-owner decisions recorded, org prerequisites incl. F-28 and enableEntitlements — the target org here has Entitlement Management on and its own 'Standard Case' process, which is why the test names the deployed process). Build status after this gate: done."
     }
   ],
   "artefacts_root": "artefacts",

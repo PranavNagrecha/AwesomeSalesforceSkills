@@ -1,0 +1,157 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T18-30-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T18-30-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T18-30-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S02",
+    "task": "UPDATE pass after REBUILD #3 (mock-deploy finding F-60, seven fieldPermissions added to Case_Agent_Core for the standard Case fields the agent persona writes) -- amend the access-model workbook row and its traceability row, append the field-grounding decision, the EmailMessage residual as an open obligation for the gate, and the run 6 org evidence, then re-set the step documented"
+  },
+  "summary": "UPDATE pass on M2-S02 after rebuild #3 (F-60). Amended CWB-PERM-003 (workbook/03-profiles-permission-sets-and-psgs.md) to record the seven fieldPermissions added to Case_Agent_Core (Case.AccountId/ContactId/Description/Origin/Priority/Subject/SuppliedEmail, each grounded in a layout, a milestone finding, or the F-60 fixture itself; EntitlementId/Type/Reason deliberately excluded) and the rebuild #3 <description> rewording; CWB-PERM-004..012 and CWB-OTHER-008/009 were left untouched because rebuild #3 edited only Case_Agent_Core. Amended REQ-017's test_result cell in traceability.md with the rebuild #3 retest evidence (step-tester run 2026-09-12T17-46-35Z: check_access_model.py exit 0, score 97, 1 non-blocking PSVP-FLS-01 WARN on EmailMessage, down from 2 pre-edit; check_permission_set_architecture.py and check_permission_set_group_composition.py unchanged; manifest/xml unchanged). REQ-018/019/020 were left untouched -- Case_Tier1/Tier2/Billing and all three PSGs needed no edit per F-60's own finding. Appended D-M2S02-08 (the seven-field grant decision, each field's grounding traced individually) to decisions.md, plus O-M2S02-02 (the EmailMessage standard-field grant left as a named ambiguity, carried to the human gate rather than closed by invention) and O-M2S02-03 (org evidence: reports/MOCK-DEPLOY-M5.md run 6 shows the persona can now create and update a Case, F-59/F-60 closed by the org). Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json, ran check_workbook.py on the amended Section 3 file, then set the step tested -> documented.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "MEDIUM per Step 11: the Case half of this pass is grounded end to end -- CWB-PERM-003's seven added fields each trace to a layout, a milestone finding (F-09/F-10) or the F-60 fixture itself, REQ-017's traceability row carries a real source_req_id and a verification step (check_access_model.py exit 0), and re-running this amendment on unchanged sources would replace the same text rather than duplicate it. Held at MEDIUM rather than HIGH because the EmailMessage PSVP-FLS-01 WARN is a documented gap this pass records rather than resolves: no layout, workbook row or decision in the build names which standard EmailMessage fields a reply populates, so the requirement REQ-017 partially serves (the EmailMessage grant on Case_Agent_Core) is left with an open verification cell -- named explicitly (O-M2S02-02) rather than fabricated.",
+  "dimensions_compared": [
+    "workbook-rows-amended",
+    "traceability-rows-amended",
+    "decisions-appended"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-test-compilation",
+      "state": "not-run",
+      "reason": "M2-S02 declares no `type: manual` acceptance test; this UPDATE pass touches only the one row rebuild #3 changed and adds no new manual test.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Not applicable. TC-M1S01-01, TC-M1S01-02, TC-M1S02-01 and TC-M2S01-01 remain the build's outstanding manual tests, unchanged by this run."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "repair-scope-discipline",
+      "observation": "Rebuild #3 stayed inside the one file F-60 named -- Case_Agent_Core's fieldPermissions and description -- and this documentation pass mirrors that scope exactly: only CWB-PERM-003 and REQ-017 were amended. CWB-PERM-004..012, CWB-OTHER-008/009 and REQ-018..020 are untouched, matching deploy-order.md's own statement that Case_Tier1/Tier2/Billing and all three PermissionSetGroup files needed no edit.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S02/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "field-grounding-discipline",
+      "observation": "Every one of the seven fieldPermissions this pass documents traces to a named source (an M1-S02 layout, an M1 milestone finding, or the F-60 Apex fixture's own field list) rather than to platform memory -- the same discipline check_access_model.py's PSVP-FLS-01 rule exists to enforce, applied one field at a time in D-M2S02-08.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 7
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "residual-access-gap",
+      "observation": "check_access_model.py still reports one non-blocking PSVP-FLS-01 WARN on Case_Agent_Core's EmailMessage grant after this rebuild. It is real residual risk carried into the M2 gate, not a false positive, and no source on file names the fields needed to close it -- recorded as O-M2S02-02 rather than left implicit in a passing exit code.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S02/summary.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "verification-coverage-gap",
+      "observation": "F-60 reached the build at mock-deploy run 5, after five milestone verifications and two prior org dry runs on M2-S02, because nothing exercised the permission sets as the persona until an Apex test ran runAs(agent). The same unverified-persona-DML risk still stands on M2-S01's integration permission set and M2-S03's base profiles, per deploy-order.md's own Process Observations for this rebuild.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S02/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "gate-audience-for-open-item",
+      "observation": "O-M2S02-02 is filed under decisions.md's 'Open items for the planner' heading alongside every other O-/D- entry in this file, but its actual audience is the milestone human gate (a compose-UI step or a clarification answer would close it), not build_plan.py's plan-text authority the way the API-version-drift open items are. Filed there anyway for consistency with this build's own established convention; a human reading the gate should not read the heading as meaning only the planner needs to see it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"},
+    {"type": "standard", "id": "agents/build-doc-keeper/AGENT.md", "path": "agents/build-doc-keeper/AGENT.md", "used_for": "this run's own playbook -- Steps 1-9 (ordinary per-step run, precondition tested), Step 11 confidence override"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations requirement, confidence rubric this agent's Step 11 overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "atomic-write rule and envelope persistence shape"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked against the four refusal triggers; none fired -- the step was `tested` on entry"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "fields read from the M2-S02 step record (status, runs[], outputs[], acceptance_tests[])"},
+    {"type": "standard", "id": "agents/_shared/schemas/output-envelope.schema.json", "path": "agents/_shared/schemas/output-envelope.schema.json", "used_for": "fixed top-level field set; this run's payload rides in extensions"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 the access step type and the rebuild carve-out this pass documents; § 6 this agent's per-step job; § 8 a skill gap recorded in decisions.md is the signal to deepen a skill"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "row schema for the CWB-PERM-003 amendment; Section 3 default-agent reasoning already recorded in this file's header"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "build-layer RTM column set for the REQ-017 test_result amendment"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "read per Mandatory Reads; decision-entry shape (date, decision, alternative rejected, source) applied to D-M2S02-08"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "read per Mandatory Reads; not applicable this run, no manual test declared or compiled"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "read per Mandatory Reads; not applicable this run, same reason"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "read per Mandatory Reads; not applicable this run, same reason"},
+    {"type": "probe", "id": "check_workbook.py", "path": "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py", "used_for": "re-linted the amended Section 3 file per-file with --allow-empty-section; 9 Missing-canonical-section issues, zero per-row findings, the same shape every prior per-file run in this build has produced"}
+  ],
+  "followups": [
+    {"agent": "milestone-verifier", "because": "M2's earlier verdict predates this rebuild and F-60; the milestone has not been re-verified against the post-rebuild state now that M2-S02 is documented again."},
+    {"agent": "path-designer", "because": "a Case Feed / email-compose layout step would name the specific standard EmailMessage fields needed to close the O-M2S02-02 residual WARN with grounded fields instead of leaving it open at the gate."}
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "mode": "per-step",
+    "run_kind": "update-pass",
+    "trigger": "REBUILD #3 (mock-deploy finding F-60) retested at 2026-09-12T17-46-35Z; this pass brings the workbook and traceability rows in line with the retest",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows_amended": [
+      {"row_id": "CWB-PERM-003", "field": "target_value+notes", "change": "target_value now lists ten fieldPermissions (three original + seven added in rebuild #3) and the reworded <description>; notes append the rebuild #3 per-field grounding summary, the residual EmailMessage WARN, and the run 6 org evidence, citing D-M2S02-08, O-M2S02-02, O-M2S02-03"}
+    ],
+    "workbook_rows_unchanged": [
+      "CWB-PERM-004", "CWB-PERM-005", "CWB-PERM-006", "CWB-PERM-007", "CWB-PERM-008", "CWB-PERM-009",
+      "CWB-PERM-010", "CWB-PERM-011", "CWB-PERM-012", "CWB-OTHER-008", "CWB-OTHER-009"
+    ],
+    "traceability_rows_amended": [
+      {"req_id": "REQ-017", "field": "test_result", "change": "appended rebuild #3 retest evidence (seven fieldPermissions added, score 94->97, EmailMessage WARN left standing, run 6 org evidence)"}
+    ],
+    "traceability_rows_unchanged": ["REQ-018", "REQ-019", "REQ-020"],
+    "decisions_appended": [
+      {
+        "id": "D-M2S02-08",
+        "date": "2026-09-12",
+        "kind": "deviation (rebuild triggered by an org/persona-boundary finding)",
+        "decision": "Added seven fieldPermissions blocks to Case_Agent_Core (Case.AccountId/ContactId/Description/Origin/Priority/Subject/SuppliedEmail), each grounded in an M1-S02 layout, an M1 milestone finding (F-09/F-10), or the F-60 fixture's own field list; EntitlementId/Type/Reason deliberately excluded",
+        "alternative_rejected": "granting a broader platform-typical field set from memory, or granting EntitlementId to close the WARN faster; both rejected as guesses the build's own field inventory does not support",
+        "grounded_in": "admin/permission-sets-vs-profiles v1.3.0 PSVP-FLS-01 and its gotcha; artefacts/M1-S02 layouts; MILESTONE-M1-REPORT-v2.md F-09/F-10; reports/MOCK-DEPLOY-M5.md runs 5-6"
+      },
+      {
+        "id": "O-M2S02-02",
+        "date": "2026-09-12",
+        "summary": "EmailMessage standard-field grant left as a named ambiguity for the human gate -- no layout, workbook row or decision names which fields a reply populates, so none was added"
+      },
+      {
+        "id": "O-M2S02-03",
+        "date": "2026-09-12",
+        "summary": "Org evidence that the F-60 repair works: reports/MOCK-DEPLOY-M5.md run 6 shows the persona can now create and update a Case (F-59/F-60 closed by the org)"
+      }
+    ],
+    "rows_replaced": ["CWB-PERM-003", "REQ-017"],
+    "checker_results": [
+      {"command": "python3 scripts/build_plan.py render .sfskills/builds/case-onboarding/plan.json", "exit": 0, "result": "wrote PLAN.md, CLARIFICATIONS.md"},
+      {"command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/03-profiles-permission-sets-and-psgs.md --repo-root ../../.. --allow-empty-section", "exit": 1, "result": "9 issue(s), every one 'Missing canonical section' -- zero per-row findings, the same shape every prior per-file run in this build has produced (per-step slice, not the compiled ten-section workbook M5-S04 already produced)"}
+    ]
+  }
+}

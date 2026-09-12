@@ -1,0 +1,330 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T18-29-36Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T18-29-36Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T18-29-36Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S05",
+    "api_version": "67.0 - not a plan field. Derived from human_gates[milestone:M3] decision 6 ('build API version = 67.0 accepted') and carried by the milestone:M4 note. Unchanged from the prior run of this step.",
+    "step_inputs.answers": ["Q47", "Q58", "Q68", "Q74"],
+    "step_inputs.note": "carried verbatim from plan.json steps[M5-S05].inputs.note; unchanged since the prior run",
+    "rebuild_trigger": "operator moved the step documented -> running because two upstream artefacts changed after G5 was signed: M4-S05 (depends_on) shipped a fifth Apex file, classes/TestUserFactory.cls (F-59); M2-S02 changed the content, not the member name, of permissionsets/Case_Agent_Core.permissionset-meta.xml (F-60). Neither step is depends_on-blocked from this one; M4-S05 already appears in depends_on.",
+    "upstream_artefacts": [
+      "artefacts/M5-S04/deploy-order.md",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+      "artefacts/M4-S05/classes/TestDataFactory.cls",
+      "artefacts/M4-S05/classes/TestUserFactory.cls",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M4-S05/deploy-order.md (sections 8-11, F-59..F-62)",
+      "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml (content changed, F-60; not a manifest-member change)",
+      "artefacts/M1-S01/package.xml",
+      "artefacts/M1-S02/package.xml",
+      "artefacts/M2-S01/package.xml",
+      "artefacts/M2-S02/package.xml",
+      "artefacts/M2-S03/package.xml",
+      "artefacts/M2-S04/package.xml",
+      "artefacts/M2-S05/package.xml",
+      "artefacts/M3-S01/package.xml",
+      "artefacts/M3-S02/package.xml",
+      "artefacts/M3-S03/package.xml",
+      "artefacts/M3-S04/package.xml",
+      "artefacts/M4-S01/package.xml",
+      "artefacts/M4-S02/package.xml",
+      "artefacts/M4-S03/package.xml",
+      "artefacts/M4-S04/package.xml",
+      "artefacts/M5-S01/package.xml",
+      "reports/MOCK-DEPLOY-M5.md (runs 4-8, read in full for the F-59..F-62 evidence)"
+    ],
+    "credentials_present": false
+  },
+  "summary": "M5-S05 (type docs) rebuilt: the build-level package.xml now aggregates 57 members across 29 types (was 56) at <version>67.0</version>, adding one ApexClass member, TestUserFactory, that M4-S05 shipped for its F-59 test-only repair. M2-S02's Case_Agent_Core (F-60) changed content only and was already a member; no member diff from it. deploy-order.md gained a section 0 rebuild record with the member diff, updated its member-count table and slot-15 order row, and its section 5.1 evidence now cites reports/MOCK-DEPLOY-M5.md runs 4-8: the build's Apex went from compile-only evidence to actually executing and passing 4/4 tests at 84.4% coverage, closing F-59/F-60/F-61/F-62, with F-28 (the unverified sender address) as the only remaining component error. Both directions of the manifest/file check pass over the whole tree: all 57 members resolve to a file and all 64 deployable files are covered by a member. M3-S05 and M5-S02 remain blocked and ship nothing, named with their blocked reasons verbatim in both files, unchanged by this rebuild. The declared checker exits 0 with the one documented SharingRules WARN, package.xml parses, and check-outputs is ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM, unchanged reasoning from the prior run and for the same cause: the new element (ApexClass member TestUserFactory) is copied from a file that exists on disk under a step this one depends_on (M4-S05), the checker exited 0 on the first pass, check-outputs is ok, and the two declared outputs (and nothing else) were written -- but the same four of seven admin/change-management-and-deployment Questions-to-Ask rows (rollbackOnError, testLevel, validation timing, backout path) remain release-owner decisions rather than plan-bound, which is the documented MEDIUM row. Not LOW: nothing is missing, malformed, or outside artefacts/M5-S05/, and the member diff this run introduces is a single addition traced to a file on disk, not a guess.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Unchanged from the prior run: three of the seven Questions-to-Ask rows are bound by the plan (Q47/Q58, Q68, Q74); rollbackOnError, testLevel, validation timing and the backout path are not, and none of the four changes a package.xml element, so none blocks. Recorded as release-owner decisions in deploy-order.md section 6.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer the four release-option questions at the M5 gate, or record them on the deploy runbook with an owner."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "Build-level package.xml (29 types, 57 members, version 67.0)",
+      "target_path": "artefacts/M5-S05/package.xml",
+      "content": "Union of the 16 step manifests plus M4-S05's five ApexClass/ApexTrigger members (TestUserFactory added this run). No wildcards; Settings named explicitly as Case, BusinessHours and Flow; CompactLayout, ValidationRule, RecordType, BusinessProcess, CustomField and ListView object-qualified; EmailTemplate and Report folder-qualified. Header comment gained a REBUILT note naming the F-59/F-60 trigger and the net diff. Types and members stay sorted alphabetically to match scripts/mock_deploy.py merge_package_xml."
+    },
+    {
+      "kind": "markdown",
+      "title": "deploy-order.md - the build-wide deploy-order note (rebuilt)",
+      "target_path": "artefacts/M5-S05/deploy-order.md",
+      "content": "Gained a new section 0 (rebuild record: trigger, member diff table, MOCK-DEPLOY-M5.md runs 4-8 evidence, confirmation that M3-S05/M5-S02 are unaffected). Section 1's counts (57 members) and its ApexClass member row (TestUserFactory added) updated. Section 3.1 slot 15 updated to ApexClass x4 and names TestUserFactory. Section 3.2's member count updated. Section 5.1 rewritten with the run 3-8 evidence chain and the updated 57-member/64-file two-way check. Section 5.2 item 1 (F-28) annotated as confirmed-by-run-8 the sole remaining component error. No other section changed; no deploy command added anywhere."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both directions of the manifest/file consistency check still pass over the whole build tree after the rebuild: 57 members all resolve to files and all 64 deployable files under artefacts/ are covered by a member, counting the seven -meta.xml siblings that travel with their bodies.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts",
+        "count": 64
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The evidence behind this manifest's Apex members moved from compile-only to actually executing and passing between the prior build of this file and this rebuild: reports/MOCK-DEPLOY-M5.md run 8 shows 4/4 CaseMilestoneServiceTest methods passing at 84.4% coverage, with F-59, F-60, F-61 and F-62 all closed by the org.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M5.md",
+        "count": 8
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "reports/MILESTONE-M5-package.xml is a snapshot written by agents/milestone-verifier before this rebuild and states in its own header that it is 'identical to artefacts/M5-S05/package.xml - 29 types, 56 members'. That claim is now false: this file carries 57 members. The snapshot is stale, not this agent's to edit (milestone-verifier owns it), and the drift is a milestone-level re-verification trigger.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MILESTONE-M5-package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "F-60's fix (fieldPermissions added to Case_Agent_Core) is a content-only change to a file this manifest already names as a member. A manifest diff alone would never have surfaced F-60 or F-61 or F-62 -- all three were found by the org actually running the test, not by any checker or manifest check in this build. The manifest/file consistency check this agent runs is necessary but was never going to be sufficient for this class of defect.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "M4-S05's own outputs[] in plan.json still lists 8 paths (through TestDataFactory) and has not been amended to add TestUserFactory.cls / .cls-meta.xml, even though both files exist on disk and this manifest now cites TestUserFactory as a member. This agent reads M4-S05's artefacts directory directly (per its own Mandatory Reads and Step 4's upstream-artefacts source), not its outputs[] declaration, so the member is grounded either way -- but a human reading plan.json alone would not see the file listed as a declared output of the step that produced it.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].outputs"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the Questions-to-Ask rows recorded as release options in deploy-order.md section 6, unchanged this run"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "the package.xml element shape and the ApexClass member-naming convention the new TestUserFactory member follows (a plain class name, same form as the three ApexClass members already in the block)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/gotchas.md",
+      "used_for": "rollbackOnError/SucceededPartial and the test-level defaults referenced unchanged in deploy-order.md section 6"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "the deploy-order rows behind slot 15's ApexClass position, read as requirements guidance per the step's standing note; this skill supplies no shape this manifest copies"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4's docs-row split and section 5's Apex exception, which is why TestUserFactory's member is added here rather than in a package.xml M4-S05 would declare"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement and the citation schema"
+    },
+    {
+      "type": "probe",
+      "id": "check_deployment_manifest",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "the step's declared checker, run verbatim from the build directory, re-run against the rebuilt manifest"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M5-S05's declared acceptance tests (checker, xml, manifest, and the three manual tests) need re-running against the rebuilt artefacts before this step can reach tested again."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "reports/MILESTONE-M5-package.xml is now stale (29 types / 56 members, this file is 29 types / 57 members) and the M5 milestone verdict rested on the pre-rebuild manifest and on compile-only Apex evidence; both need re-signing against this rebuild and against MOCK-DEPLOY-M5.md run 8."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the F-59..F-62 outcome and the member diff need carrying into decisions.md and the workbook once this step is tested again."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S05",
+    "step_type": "docs",
+    "invocation": "direct read of agents/metadata-builder/AGENT.md for build_dir=.sfskills/builds/case-onboarding/ step_id=M5-S05, per the operator's documented -> running move; Step 9's set-status commands therefore apply (this is a standalone invocation, not one claimed by build-step-runner)",
+    "api_version": "67.0",
+    "artefacts": [
+      {
+        "path": "artefacts/M5-S05/package.xml",
+        "declared": true,
+        "type": "Package manifest"
+      },
+      {
+        "path": "artefacts/M5-S05/deploy-order.md",
+        "declared": true,
+        "type": "deploy-order note"
+      }
+    ],
+    "blocked_reason": null,
+    "member_diff": {
+      "added": [
+        {"type": "ApexClass", "member": "TestUserFactory", "from": "artefacts/M4-S05/classes/TestUserFactory.cls (+ -meta.xml)", "reason": "F-59 test-only repair on M4-S05"}
+      ],
+      "removed": [],
+      "renamed": [],
+      "content_only_changes_not_reflected_as_member_diff": [
+        {"type": "PermissionSet", "member": "Case_Agent_Core", "from": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml", "reason": "F-60 fieldPermissions added; member name and file path unchanged"}
+      ]
+    },
+    "member_counts": {
+      "ApexClass": 4,
+      "ApexTrigger": 1,
+      "AssignmentRules": 1,
+      "AutoResponseRules": 1,
+      "BusinessProcess": 2,
+      "CompactLayout": 1,
+      "CustomField": 3,
+      "CustomObject": 1,
+      "CustomPermission": 1,
+      "EmailFolder": 1,
+      "EmailTemplate": 2,
+      "EntitlementProcess": 2,
+      "EscalationRules": 1,
+      "Flow": 1,
+      "FlowTest": 1,
+      "Group": 3,
+      "Layout": 2,
+      "ListView": 3,
+      "MilestoneType": 1,
+      "PermissionSet": 5,
+      "PermissionSetGroup": 3,
+      "Profile": 3,
+      "Queue": 3,
+      "RecordType": 2,
+      "Report": 2,
+      "Settings": 3,
+      "SharingRules": 1,
+      "StandardValueSet": 1,
+      "ValidationRule": 2
+    },
+    "member_total": 57,
+    "type_total": 29,
+    "member_total_previous": 56,
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "score": 95,
+        "findings": [
+          {
+            "severity": "WARN",
+            "location": "artefacts/M5-S05/package.xml",
+            "message": "manifest includes SharingRules; require explicit review and smoke tests"
+          }
+        ],
+        "note": "The documented expected outcome per the step's own acceptance_tests[0] (B12), unchanged by this rebuild. --strict is deliberately not passed."
+      },
+      {
+        "command": "python3 -c ElementTree parse over artefacts/M5-S05/**/*.xml",
+        "exit_code": 0,
+        "files": 1,
+        "note": "package.xml parses, header comment included"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": {
+      "members_total": 57,
+      "members_with_a_file": 57,
+      "members_without_a_file": [],
+      "deployable_files_total": 64,
+      "files_covered_by_a_member": 64,
+      "files_without_a_member": [],
+      "note": "Whole-tree two-way check re-run after the rebuild: every member's leaf name resolves to a plausible file under artefacts/, and every deployable file (excluding *.md notes, package.xml itself, and the two non-metadata *.yaml notes under M4-S03 and M5-S04) is covered by a member. M3-S05 and M5-S02 contribute neither files nor members, as before."
+    },
+    "excluded_steps": [
+      {
+        "step": "M3-S05",
+        "status": "blocked",
+        "blocked_reason": "deferred: Q32, Q33, Q34, Q35",
+        "members_contributed": 0,
+        "note": "Unaffected by this rebuild. No Omni-Channel component appears in the manifest or on disk."
+      },
+      {
+        "step": "M5-S02",
+        "status": "blocked",
+        "blocked_reason": "borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity",
+        "members_contributed": 0,
+        "note": "Unaffected by this rebuild. Its declared output was a markdown plan, never metadata."
+      }
+    ],
+    "version_split": {
+      "62.0": ["M1-S01", "M1-S02", "M2-S01", "M2-S02", "M2-S03", "M2-S04", "M2-S05", "M3-S01", "M3-S02"],
+      "67.0": ["M3-S03", "M3-S04", "M4-S01", "M4-S02", "M4-S03", "M4-S04", "M5-S01"],
+      "written": "67.0",
+      "authority": "human_gates[milestone:M3] decision 6 and the milestone:M4 note; unchanged by this rebuild"
+    },
+    "org_prerequisites": [
+      "F-28: support-noreply@acme.example provisioned and verified as an OrgWideEmailAddress before AutoResponseRules:Case deploys -- confirmed by MOCK-DEPLOY-M5.md run 8 as the only remaining component error",
+      "F-39: enableEntitlements (and enableMilestoneStoppedTime) in settings/Entitlement.settings-meta.xml, which no step declares",
+      "F-44: non-routing mailboxes on the Billing and Tier_2_Engineering queues before the escalation rule is activated",
+      "F-41: an Entitlement record per Account pointing at the right process",
+      "F-51: the report's Escalated = True criterion added in the report builder after deploy",
+      "G4 decision 9: an active SlaProcess with a First Response milestone for M4-S05's SeeAllData test"
+    ],
+    "apex_test_evidence": {
+      "source": "reports/MOCK-DEPLOY-M5.md runs 4-8",
+      "run_4": "manifest mode, RunSpecifiedTests CaseMilestoneServiceTest; 0 passed, 3 failed (F-59, FLS as the deploying user)",
+      "run_5": "probe, source mode, after M4-S05 test-only repair; 0 passed, 4 failed (F-60, Case_Agent_Core missing field permissions)",
+      "run_6": "probe, source mode, after M2-S02 field-permission repair; 2 passed, 2 failed (F-61, SeeAllData picked the org's own entitlement process)",
+      "run_7": "probe, source mode, after F-61 named-process fix; 2 passed, 2 failed (F-62, milestone-completion needed an explicit system-mode boundary)",
+      "run_8": "probe, source mode, after F-62 system-mode boundary; 4 passed, 0 failed, coverage 84.4%. F-59, F-60, F-61, F-62 all closed by the org. F-28 is the only remaining component error.",
+      "not_yet_run": "Manifest mode has not been re-run against this rebuilt 57-member package.xml with tests executing; run 3 (manifest mode, pre-rebuild, compile/deploy only) and run 8 (source mode, tests executing) are the two closest runs, neither of which is both at once. Section 7's validate-only command is what closes that gap, and it is the human's to run."
+    },
+    "ungrounded": []
+  }
+}

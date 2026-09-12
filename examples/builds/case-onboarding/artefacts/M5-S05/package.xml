@@ -12,6 +12,15 @@
      Omni-Channel member; M5-S02 (blocked - "borrowed agent requires team_size,
      concurrent_workstreams, release_cadence, data_sensitivity") contributes no member at all.
      No wildcards. Settings members are named explicitly (feature settings take no '*').
+     REBUILT this run (documented -> running) for F-59/F-60: M4-S05 shipped a fifth Apex file,
+     classes/TestUserFactory.cls (+ meta, apiVersion 67.0), the permissioned test-running user
+     F-59's repair introduced (artefacts/M4-S05/deploy-order.md § 8) - added below as a fourth
+     ApexClass member. M2-S02's Case_Agent_Core (F-60) changed content only (fieldPermissions
+     added); it was already a member here and is not re-added. Net diff: +1 member, 0 removed,
+     0 renamed - 29 types, 57 members (was 56). See deploy-order.md § 0 and § 5.1 for the
+     evidence (reports/MOCK-DEPLOY-M5.md runs 4-8: the build's Apex now validates 4/4 tests
+     passed at 84.4% coverage, F-28's unverified sender address the only remaining component
+     error).
      See deploy-order.md beside this file for the sequence, the components that ship inactive,
      and the org prerequisites no manifest can carry. Nothing here deploys. -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -19,6 +28,7 @@
         <members>CaseMilestoneService</members>
         <members>CaseMilestoneServiceTest</members>
         <members>TestDataFactory</members>
+        <members>TestUserFactory</members>
         <name>ApexClass</name>
     </types>
     <types>

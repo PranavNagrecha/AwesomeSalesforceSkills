@@ -1,0 +1,207 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T18-36-34Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T18-36-34Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T18-36-34Z.json",
+  "summary": "Re-tested M5-S05 (build-level package.xml + deploy-order note) after its documented -> running -> built rebuild added the TestUserFactory ApexClass member. All 3 declared acceptance tests plus both always-on checks (xml, manifest) passed; check-outputs is ok. The manifest check was run whole-tree across artefacts/ (119 files, 57 deployable, 57 members, 0 missing either direction) rather than scoped to M5-S05's own directory, per the reading standards/build-orchestration.md establishes for a build-level manifest step and the same reading the step's earlier test run applied. Step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed over the full re-derived file set, and every result (checker exit 0, xml 1/1 parse, manifest 0 missing either direction, check-outputs ok) came from an exit code or JSON payload this run observed directly. No checker was refused, no manifest coverage-gap exclusion was needed, and no declared checker was missing.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The build-level manifest rebuild was fully self-consistent: the only member diff across all 119 artefact files was the single +TestUserFactory ApexClass member the deploy-order.md § 0 rebuild record predicted, and the whole-tree two-way check found zero missing members in either direction.",
+      "domain": "manifest-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S05/package.xml",
+        "count": 57
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "M3-S05 and M5-S02, both blocked, own no directory at all under artefacts/, so they contribute zero files and zero members to the whole-tree check by construction rather than by a special-cased exclusion rule the checker has to remember.",
+      "domain": "blocked-step-handling",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The declared checker command (check_deployment_manifest.py) exits 0 on this manifest only because SharingRules findings were downgraded from HIGH to WARN in a prior rebuild (fa3cad053); a reviewer relying on exit code alone would not see that a sharing rule is shipping without that being a hard gate.",
+      "domain": "checker-severity-policy",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S05/checker_stdout.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "agents/step-tester/AGENT.md Step 3 states the manifest rule as 'for every artefact file [under the step's artefact directory]', with no explicit carve-out for a build-level docs step whose own directory holds no component files; this run followed the same whole-tree reading the step's prior test run applied (justified by deploy-order.md § 5.1's own explicit 'whole artefacts/ tree' language), but the playbook itself does not yet state the exception.",
+      "domain": "playbook-gap",
+      "evidence": {
+        "source": "input",
+        "path": "agents/step-tester/AGENT.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Now that M5-S05 is tested, the three W12 manual tests and the checker's SharingRules WARN are ready for the M5 milestone gate read.",
+      "domain": "workflow",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because M5 is the build's final milestone and milestone-verifier owns the cross-step and milestone-scoped acceptance read this step's manual tests defer to."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S05 is now tested but not yet re-documented after this rebuild; build-doc-keeper last ran on the pre-rebuild (56-member) state.",
+      "domain": "workflow",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because the workbook, traceability rows and decisions.md entries it wrote at 2026-09-12T12:38:43Z predate the +TestUserFactory member and should be refreshed against the current package.xml."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, and the confidence rubric this agent overrides in its own Step 7"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and the atomic-write rule for the markdown report and JSON envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was built, inputs unambiguous, checker existed)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 5 acceptance-test types/runners/pass conditions and the always-on manifest rule; § 4 step types and the Apex exception that puts M4-S05's ApexClass/ApexTrigger members in this build-level manifest"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json for this step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (types/members/name blocks, wildcard semantics) the manifest check is judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "source-format filename-to-metadata-type mapping used to derive (type, member) pairs from the 119 files under artefacts/"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "checking whether any component type in this manifest has no standalone source file or no manifest member by convention; none applied beyond the already-documented meta-xml siblings"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate rather than re-interpreted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then shape check applied to the three W12 manual tests before listing them as tickable"
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S05",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M5-S05/results.json",
+    "results": [
+      {
+        "name": "check_deployment_manifest.py --manifest-dir artefacts/M5-S05",
+        "type": "checker",
+        "runner": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "always-on ElementTree parse of artefacts/M5-S05/*.xml, *-meta.xml",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "always-on whole-artefacts/-tree two-way check (build-level manifest step)",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M5-S05",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "W12 (1 of 3)",
+        "type": "manual",
+        "runner": "not runnable here",
+        "exit_code": null,
+        "verdict": "deferred"
+      },
+      {
+        "name": "W12 (2 of 3)",
+        "type": "manual",
+        "runner": "not runnable here",
+        "exit_code": null,
+        "verdict": "deferred"
+      },
+      {
+        "name": "W12 (3 of 3)",
+        "type": "manual",
+        "runner": "not runnable here",
+        "exit_code": null,
+        "verdict": "deferred"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "W12 (1 of 3): a release owner confirms the deploy-order note contains no deploy command, only a validate-only command they may choose to run themselves.",
+      "W12 (2 of 3): given two steps ship nothing in this phase, when deploy-order.md and package.xml are read, then M3-S05 and M5-S02 are listed as excluded with their blocked reasons verbatim rather than silently absent, and no Omni-Channel or sandbox component appears as a manifest member.",
+      "W12 (3 of 3): given the build-level manifest aggregates every step's members, when package.xml is read, then the order in deploy-order.md follows admin/case-management-setup/references/metadata-examples.md § 5 — StandardValueSet before the business processes and record types, queues and groups before the assignment and escalation rules that name them, Settings named explicitly as Case and Flow because feature settings do not accept the wildcard — and ApexClass and ApexTrigger members from M4-S05 are present here, because that step declares no manifest of its own (B09)."
+    ],
+    "tests_run": 4
+  }
+}

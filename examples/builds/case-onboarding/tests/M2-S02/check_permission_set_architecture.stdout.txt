@@ -1,1 +1,1 @@
-WARN: PSA-DESC-02 artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml: PermissionSet description is 244 characters, approaching the 255-character limit.
+INFO: PSA-DESC-02 artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml: PermissionSet description is 244 characters, approaching the 255-character limit.

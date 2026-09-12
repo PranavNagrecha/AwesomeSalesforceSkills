@@ -1,5 +1,12 @@
 {
-  "score": 100,
-  "findings": [],
-  "summary": "Scanned 7 access-model metadata file(s); 0 finding(s) detected."
+  "score": 97,
+  "findings": [
+    {
+      "severity": "WARN",
+      "location": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml",
+      "message": "PSVP-FLS-01 permission set grants Create/Edit on `EmailMessage` with no field permissions on any of its standard fields \u2014 standard fields have FLS too; list the fields this persona writes"
+    }
+  ],
+  "summary": "Scanned 7 access-model metadata file(s); 1 finding(s) detected.",
+  "blocking": 0
 }

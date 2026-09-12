@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntitlementProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <description>Premier tier first response: 240 business minutes (4 business hours) on the US Support calendar.</description>
+    <SObjectType>Case</SObjectType>
+    <businessHours>US Support</businessHours>
+    <entryStartDateField>SlaStartDate</entryStartDateField>
+    <exitCriteriaFilterItems>
+        <field>Case.Status</field>
+        <operation>equals</operation>
+        <value>Closed</value>
+    </exitCriteriaFilterItems>
+    <name>First_Response_Premier</name>
+    <milestones>
+        <milestoneName>First Response</milestoneName>
+        <minutesToComplete>240</minutesToComplete>
+        <businessHours>US Support</businessHours>
+        <useCriteriaStartTime>false</useCriteriaStartTime>
+    </milestones>
+</EntitlementProcess>

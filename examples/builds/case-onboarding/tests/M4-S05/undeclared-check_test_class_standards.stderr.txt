@@ -1,0 +1,1 @@
+Scanned 4 Apex class file(s); audited 3 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0

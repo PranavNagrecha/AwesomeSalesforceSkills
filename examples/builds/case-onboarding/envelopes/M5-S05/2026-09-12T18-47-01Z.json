@@ -1,0 +1,204 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T18-47-01Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T18-47-01Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T18-47-01Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S05"
+  },
+  "summary": "Re-documented M5-S05 (docs, owner metadata-builder; this agent is not the step owner, so Steps 1-9 apply, not the Step 10 compile run) after the operator's F-59/F-60 rebuild moved it documented -> running -> built -> tested again, adding one ApexClass member (TestUserFactory, 29 types / 57 members, was 56) to the build-level package.xml and a new section 0 rebuild record plus a rewritten section 5.1/5.2 to deploy-order.md. Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json. Amended the two existing workbook rows in place (workbook/99-other-configuration.md CWB-OTHER-042, CWB-OTHER-043) to the new member/file counts and the run 8/9 evidence, per Step 8 row-keyed replacement -- no row added or removed. Amended the traceability.md 'Coverage note -- M5-S05 mints no requirement' section and its Linter-result block to the new counts (57 members, 64 files); re-ran check_rtm.py, unchanged at 58 rows / 0 orphans / 0 errors / 4 warnings. Appended two decisions.md entries: D-M5S05-06 (the TestUserFactory member addition, which discharges the outstanding O-M4S05-01 obligation) and O-M5S05-01 (reports/MILESTONE-M5-package.xml is now stale by one member, and G4/G5 have been re-signed by the operator across runs 4-9 rather than by a fresh milestone-verifier pass -- a budget observation for the human gate, not a defect). Set M5-S05 to documented via build_plan.py set-status.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 11 MEDIUM: both amended rows carry the current member/file counts sourced from the metadata-builder envelope's extensions and step-tester's re-test, and the traceability coverage note and its re-run linter output were both verified against a fresh check_rtm.py run rather than copied forward. Held at MEDIUM, not HIGH, for the same standing reason the first per-step pass on this step recorded (D-M5S05 rows carried in workbook/99-other-configuration.md): a build-level manifest step serves no single requirement of its own, so source_req_id stays the aggregate REQ-001-REQ-058 by analogy to M5-S04's compile rows rather than by an explicit AGENT.md branch for this shape -- unchanged by this rebuild. Not LOW: nothing is missing or unreadable, no source_req_id or verification cell is empty, and the member diff (a single +1 ApexClass addition) is traced to a file on disk under a depends_on step, not inferred.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "workbook-rows",
+    "traceability-coverage-note",
+    "decisions-log",
+    "idempotence"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-integrity",
+      "observation": "The rebuild's own whole-tree two-way manifest check, re-run independently by step-tester, found exactly the one member diff the metadata-builder envelope predicted (+1 ApexClass, TestUserFactory) and zero inconsistencies otherwise: 57/57 members resolve to a file, 64/64 non-sibling deployable files resolve to exactly one member.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M5-S05/manifest_check_wholetree.txt", "count": 57}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-coverage",
+      "observation": "The org-side evidence behind this manifest's Apex members strengthened across the rebuild rather than merely changing shape: reports/MOCK-DEPLOY-M5.md run 8 shows the same tests that once failed on FLS (F-59) now passing 4/4 at 84.4% coverage, and run 9 confirms the rebuilt 57-member manifest itself deploys to the component stage with only the pre-existing F-28 error.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md", "count": 9}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-shape",
+      "observation": "reports/MILESTONE-M5-package.xml, a snapshot milestone-verifier wrote before this rebuild, states in its own header that it is identical to artefacts/M5-S05/package.xml at 29 types / 56 members -- that claim is now false (57 members) and the snapshot is not this agent's file to correct. Recorded as O-M5S05-01 rather than edited.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-package.xml"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "release-readiness",
+      "observation": "G4 and G5 were both signed on evidence that has since moved twice (compile-only Apex, then F-59's discovery, then F-59/F-60/F-61/F-62 all closed); across runs 4-9 the party re-signing that evidence forward has been the dry-run operator narrating outcomes into reports/MOCK-DEPLOY-M5.md and this build's own decisions.md, not a fresh milestone-verifier pass re-reading the gate criteria against the current artefacts. Recorded as O-M5S05-01 as a budget decision for the human gate to weigh, not a defect this run can fix.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/plan.json"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S05 is tested and now re-documented; the M5 milestone's own acceptance report and the reports/MILESTONE-M5-package.xml snapshot both predate this rebuild.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because re-signing G4/G5 against the current 57-member manifest and the run 8/9 evidence, and refreshing the stale package.xml snapshot, is milestone-verifier's job, not this agent's.",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/plan.json"}
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time-agent prohibition on writing to an org or mutating files outside the paths the user supplied -- honored: only PLAN.md/CLARIFICATIONS.md, decisions.md, traceability.md, one workbook file, plan.json's status transition, and this envelope pair were touched"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and structure, and the confidence rubric this envelope overrides per build-doc-keeper's own Step 11 table"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the run_id convention (ISO-8601, colons replaced with dashes) and the md+json pair requirement this envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against before proceeding -- the step's status was tested (not built/failed/blocked), so no REFUSAL_OUT_OF_SCOPE condition applied; no other refusal condition matched"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 (plan.json as sole shared state; rendered views never hand-edited), § 4 (the docs step-type row's owner split naming metadata-builder for the build-level package.xml and its deploy-order note, and the section-mapping default), § 5 (the Apex exception governing why TestUserFactory's member lands here rather than in a package.xml M4-S05 would declare), § 6 (this agent's per-step job in the Tier-4 table), § 8 (a skill/playbook gap is the signal to deepen the source -- applied to O-M5S05-01's budget observation about re-signing gates on operator narration rather than a fresh verifier pass)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step type enum (docs) and the depends_on/outputs fields read directly from plan.json for this step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the ten canonical sections (neither artefact covers one, hence Other configuration remains correct) and the row schema CWB-OTHER-042/043 continue to follow on this amendment"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the rule that a build-level aggregation step mints no requirement of its own, applied unchanged to the amended coverage note, and the check_rtm.py invocation/coverage-gap reading for the re-run"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, decision, alternative rejected, grounding) applied to D-M5S05-06 and O-M5S05-01"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a test result is recorded as acceptance evidence -- applied when reading the step's re-run of the three declared manual tests (W12 1-3, unchanged and still deferred to the M5 gate) and the four molecular tests (checker, xml, manifest, check-outputs) as already-recorded, not this run's to re-tick"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the per-persona UAT case record shape; read as a Mandatory Reads entry though this per-step run does not itself compile the pack (that is M5-S04's job, unaffected by this rebuild)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape used to confirm the step's three declared manual tests still name an observable outcome after the rebuild, unchanged from the first pass"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the step's own declared skill -- read to judge the rebuilt package.xml/deploy-order.md content (member forms, the release-owner Questions-to-Ask table unchanged from D-M5S05-04) while amending the two workbook rows and appending D-M5S05-06"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "reports/MILESTONE-M5-package.xml is stale (29 types / 56 members, the current file is 29 types / 57 members) and G4/G5 rested on evidence that has since moved twice; both need re-signing against this rebuild and against reports/MOCK-DEPLOY-M5.md runs 8-9, per O-M5S05-01."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S05",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/plan.json"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-OTHER-042",
+        "section": "Other configuration",
+        "file": "workbook/99-other-configuration.md",
+        "target_value": "artefacts/M5-S05/package.xml",
+        "source_req_id": "REQ-001-REQ-058",
+        "recommended_agent": "metadata-builder",
+        "change": "56 -> 57 members; run 8/9 evidence and D-M5S05-06 citation added"
+      },
+      {
+        "row_id": "CWB-OTHER-043",
+        "section": "Other configuration",
+        "file": "workbook/99-other-configuration.md",
+        "target_value": "artefacts/M5-S05/deploy-order.md",
+        "source_req_id": "REQ-001-REQ-058",
+        "recommended_agent": "metadata-builder",
+        "change": "section 0 rebuild record and the section 5.1/5.2 rewrite named; D-M5S05-06 citation added"
+      }
+    ],
+    "traceability_rows": [],
+    "traceability_narrative": "No new req_id row -- unchanged from the first pass, the manifest mints no requirement. Amended the existing 'Coverage note' section in place: member count 56 -> 57, deployable-file count 62 -> 64, and the run 8/9 evidence and D-M5S05-06/O-M4S05-01 citations added. Amended the 'Linter result -- after M5-S05' block to record the re-run (unchanged: 58 rows, 0 orphans, 4 warnings).",
+    "decisions_appended": [
+      "D-M5S05-06",
+      "O-M5S05-01"
+    ],
+    "rows_replaced": [
+      "CWB-OTHER-042",
+      "CWB-OTHER-043"
+    ],
+    "workbook_lint": {
+      "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook <staged concatenation of workbook/01-*.md..06-*.md + Sections 7-10 copied from artefacts/M5-S04/configuration-workbook.md + 99-other-configuration.md> --repo-root \"/Users/pranavnagrecha/VS Code/Personal/SfSkills\"",
+      "run_from": "session scratchpad, disposable, never committed",
+      "result": "OK: workbook ... passes all checks (8 pre-existing INFO-level automation-choice notes only, unchanged)"
+    },
+    "rtm_lint": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root \"/Users/pranavnagrecha/VS Code/Personal/SfSkills\"",
+      "run_from": ".sfskills/builds/case-onboarding",
+      "result": "58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)",
+      "unchanged_from": "Linter result -- after M5-S03 / after M5-S05 (first pass)"
+    },
+    "set_status": {
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S05 documented --run-agent build-doc-keeper --envelope envelopes/M5-S05/2026-09-12T18-47-01Z.json --result \"workbook rows 2 replaced; traceability rows 0 (coverage note amended); decisions appended 2\" --started 2026-09-12T18:47:01Z",
+      "result": "M5-S05: tested -> documented (run appended: build-doc-keeper)"
+    }
+  }
+}

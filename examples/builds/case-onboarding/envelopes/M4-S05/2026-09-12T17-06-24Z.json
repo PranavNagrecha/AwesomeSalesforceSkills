@@ -1,0 +1,377 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T17-06-24Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T17-06-24Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T17-06-24Z.json",
+  "summary": "Section 4 test-only repair of documented step M4-S05 for F-59 (reports/MOCK-DEPLOY-M5.md run 4): every method of CaseMilestoneServiceTest now runs its action and assertions inside System.runAs of a user minted by TestUserFactory.createUser holding Case_Agent_Core + Case_Tier1 (the exact member list of PSG_Tier1_Prod, artefacts/M2-S02/permissionsetgroups) on Profile 'Acme Support Tier 1' -- the closest persona in this build to 'a Tier 1 agent working a case'. TestUserFactory.cls (+ meta) was added, copied verbatim from templates/apex/tests/TestUserFactory.cls. TestDataFactory.cls was replaced with a verbatim copy of the corrected template (commit 5edcb3281, the null-lookup guard). caseInsideProcess gained a User agent parameter and wraps only its Case insert in System.runAs(agent); the Account/Entitlement inserts in entitlementFor stay ambient because Case_Agent_Core grants only Read on both. No assertion, message string, or Test.startTest/stopTest boundary was added, removed or changed. CaseMilestoneService.cls and CaseMilestoneTrigger.trigger are unchanged byte for byte. This step has no package.xml (the Apex exception, standards/build-orchestration.md section 5); M5-S05's build-level manifest needs a fifth ApexClass member (TestUserFactory) that this step records as an obligation rather than writing itself.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Both declared and requested checkers exit 0 (check_entitlement_apex_hooks.py: 5 files, 0 ERROR/0 WARN under --strict; check_test_class_standards.py: user-mode-test-without-runas 0, score 100). check-outputs is ok on all 8 declared paths, and both copied template classes diff empty against their canonical sources. Confidence is capped at MEDIUM, not HIGH, because: (1) no offline Apex compiler exists (agents/apex-builder/GATES.md Gate D) so this repair is confirmed only by the next dry run (run 5), not executed by this agent; (2) the specific field(s) that failed FLS in run 4's probe were never isolated by name -- no e.getDmlFieldNames(0) probe was captured, so the fix follows the established Gotcha 13/14 pattern rather than a field-level diagnosis of this build's own failure; and (3) whether Case_Agent_Core + Case_Tier1 actually grant enough FLS for every field caseOverrides sets (Origin, Priority, EntitlementId) and for CaseMilestone.CompletionDate is a claim this design-only build cannot verify without an org.",
+  "inputs_received": {
+    "kind": "test_only",
+    "primary_sobject": "Case",
+    "feature_summary": "Section 4 test-only repair of CaseMilestoneServiceTest for F-59: run every method inside System.runAs of a TestUserFactory user holding this build's Tier 1 agent permission sets, and refresh the shared TestDataFactory copy.",
+    "api_version": "67.0 (unchanged)",
+    "rebuild_reason": "F-59 -- reports/MOCK-DEPLOY-M5.md run 4: 3 of 3 org-executed test methods failed at their Case insert with 'fields being inaccessible on Sobject Case'; no test ran inside a permissioned System.runAs and the shipped TestDataFactory predated commit 5edcb3281",
+    "operator_transition": "documented -> running (standards/build-orchestration.md section 4, test-only repair of a documented step in a build whose gates are all approved)",
+    "scope": "CaseMilestoneServiceTest.cls, plus adding TestUserFactory.cls and replacing TestDataFactory.cls. CaseMilestoneService.cls and CaseMilestoneTrigger.trigger explicitly unchanged.",
+    "permission_set_source": "artefacts/M2-S02/permissionsets (Case_Agent_Core, Case_Tier1, Case_Tier2, Case_Billing) and artefacts/M2-S01/permissionsets/Case_Intake_Integration, per the task instruction -- not artefacts/M2-S02/permissionsetgroups directly, though the chosen pair matches PSG_Tier1_Prod's declared members",
+    "target_org_alias": "(absent -- build_mode design-only)"
+  },
+  "dimensions_compared": [
+    "security-posture",
+    "bulk-safety",
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "Scope is test-only; CaseMilestoneService.cls and CaseMilestoneTrigger.trigger are unchanged, so no decomposition question was reopened.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "count-only",
+      "reason": "staysAtOneQueryAndOneDmlFor200Cases' Limits.getQueries()/getDmlStatements() assertions are unchanged and now execute inside System.runAs(agent), which does not reset or share the governor counters differently than the ambient context did for this delta measurement.",
+      "confidence_impact": "LOW",
+      "retry_hint": "Confirm at run 5 that the delta assertions still pass under the agent context."
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "Unchanged from prior runs -- ApplicationLogger is still not wired (deploy-order.md section 6); this repair does not touch CaseMilestoneService.cls.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No hardcoded Ids introduced; TestUserFactory generates unique usernames per its own template logic, unchanged.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "not-run",
+      "reason": "No secrets in scope for a test-only permission repair.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-M4S05-09",
+      "severity": "P1",
+      "title": "F-59 addressed: every test method now runs inside System.runAs of a Tier 1 agent",
+      "detail": "The org rejected all three org-executed methods at their Case insert because no runAs block existed for a permissioned user and the shipped TestDataFactory predated the null-lookup guard. mintAgent() mints a user via TestUserFactory.createUser(AGENT_PROFILE, AGENT_PERMISSION_SETS) inside a mixed-DML fence (System.runAs(new User(Id = UserInfo.getUserId()))), and every one of the four @IsTest methods now wraps its Case DML, its CaseMilestoneService call, and its assertions in System.runAs(agent).",
+      "evidence": {
+        "org_error": "System.DmlException: Operation failed due to fields being inaccessible on Sobject Case",
+        "report": "reports/MOCK-DEPLOY-M5.md run 4",
+        "checker_exit": 0,
+        "checker_command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict"
+      },
+      "recommendation": "Confirm at the operator's run 5 (--test-level RunSpecifiedTests --tests CaseMilestoneServiceTest), once M5-S05's manifest carries TestUserFactory."
+    },
+    {
+      "id": "AB-M4S05-10",
+      "severity": "P1",
+      "title": "Permission-set choice: Case_Agent_Core + Case_Tier1, matching PSG_Tier1_Prod",
+      "detail": "Case_Tier1 is a delta permission set with no object permissions of its own (record-type visibility and Case.Severity__c edit only) -- it composes with Case_Agent_Core for base Case CRU. Together they are exactly the member list PSG_Tier1_Prod declares for 'the 12 Tier 1 agents' (artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml), paired with Profile 'Acme Support Tier 1' whose own description says all its object/field/tab access comes from that group. Case_Tier2 was rejected as an identical-but-differently-named footprint (artefacts/M2-S02/deploy-order.md: Tier1/Tier2 'carry identical grants'); Case_Billing was rejected because it withholds the Support record type and this test is not record-type-scoped; Case_Intake_Integration was rejected as the intake-side persona, not the agent-working-a-case persona this trigger serves.",
+      "evidence": {
+        "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml",
+        "path2": "artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
+        "path3": "artefacts/M2-S02/deploy-order.md"
+      },
+      "recommendation": "None -- recorded as the grounding for a choice the task required, not a defect."
+    },
+    {
+      "id": "AB-M4S05-11",
+      "severity": "P2",
+      "title": "Account and Entitlement fixture creation deliberately stays outside System.runAs(agent)",
+      "detail": "Case_Agent_Core grants Read only, never Create, on Account and Entitlement. caseInsideProcess (via entitlementFor) creates both; a real Tier 1 agent could not, so this repair does not wrap that half of the fixture in the agent's context. Only the Case insert the permission set actually grants Create on, and everything downstream of it, runs as the agent. caseInsideProcess gained a User agent parameter for this reason.",
+      "evidence": {
+        "path": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml",
+        "note": "objectPermissions: Account allowCreate=false, Entitlement allowCreate=false, Case allowCreate=true"
+      },
+      "recommendation": "If a future persona needs to prove it can also create the Entitlement fixture, that is a separate test against a different permission-set combination, not a change to this one."
+    },
+    {
+      "id": "AB-M4S05-12",
+      "severity": "P1",
+      "title": "TestDataFactory.cls replaced with the corrected template; not proven to be the field that failed",
+      "detail": "The step's factory copy predated commit 5edcb3281 (the null-lookup guard: a lookup argument is assigned to the record only when non-null). Every createCases call in this test class already passes a real, non-null Account Id, so this specific defect was not necessarily the field named in run 4's undiagnosed 'fields being inaccessible on Sobject Case' error -- no e.getDmlFieldNames(0) probe isolated the field by name. The replacement is made anyway, verbatim and diff-empty, both because the task required it and because it is hygiene against the same class of defect recurring in a factory this build will keep reusing.",
+      "evidence": {
+        "diff": "diff templates/apex/tests/TestDataFactory.cls artefacts/M4-S05/classes/TestDataFactory.cls -- empty",
+        "commit": "5edcb3281"
+      },
+      "recommendation": "If run 5 still fails on a Case field, capture the Gotcha 14 probe (skills/apex/test-class-standards/references/gotchas.md) to name the exact field before a third repair attempt."
+    },
+    {
+      "id": "AB-M4S05-13",
+      "severity": "P2",
+      "title": "Obligation recorded, not discharged: M5-S05's package.xml needs a fifth ApexClass member",
+      "detail": "This step declares no manifest (the Apex exception, standards/build-orchestration.md section 5). M5-S05 currently aggregates four Apex members from this step (CaseMilestoneService, CaseMilestoneServiceTest, TestDataFactory, and the ApexTrigger member CaseMilestoneTrigger). TestUserFactory is a new ApexClass member M5-S05 must add before its manifest is accurate -- the identical obligation TestUserFactory created for M1-S05 in the tier2-webhook build. Per section 4 borrowed-agent condition 2 and this step's own Output Contract (no manifest), this step does not edit M5-S05's files.",
+      "evidence": {
+        "path": "artefacts/M5-S05/deploy-order.md section 1",
+        "path2": "artefacts/M5-S05/package.xml"
+      },
+      "recommendation": "metadata-builder (or whichever agent next runs M5-S05) adds the ApexClass member TestUserFactory before the next manifest-mode dry run."
+    },
+    {
+      "id": "AB-M4S05-14",
+      "severity": "INFO",
+      "title": "A checker-parsing hazard in check_test_class_standards.py was found and worked around",
+      "detail": "strip_literals in the checker blanks single-quoted spans but does not exclude comments (its own docstring says so). Three pre-existing possessive apostrophes in this class's comments (unrelated to this repair) shifted the checker's left-to-right quote pairing enough to make every System.runAs(agent) call in the class invisible to has_permissioned_runas on the first two verification attempts, even after the fix was correctly written in code. Rephrasing those three comments (and avoiding new apostrophes in comments this repair added) resolved it; no Apex behaviour changed.",
+      "evidence": {
+        "path": "skills/apex/test-class-standards/scripts/check_test_class_standards.py",
+        "function": "strip_literals, has_permissioned_runas"
+      },
+      "recommendation": "Flagged for build-doc-keeper to carry forward as a skill-tooling defect: strip_literals should exclude // and /* */ spans before pairing quotes, or the rule should operate on method bodies only."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both the declared checker and the requested check_test_class_standards.py run clean under --strict, and check-outputs confirms all 8 declared paths are still present -- the repair is auditable as a small, targeted diff rather than a rewrite.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The tier2-webhook build's earlier repair of the identical defect (S2-F-11/S2-F-12, artefacts/M1-S03/deploy-order.md section 0b/0c) gave this repair an accepted shape to follow rather than inventing one -- the mixed-DML fence and the System.runAs placement are copied from that precedent, not designed fresh.",
+      "domain": "cross-build-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "Four separate dry runs of this build (M4 and the first three M5 runs) carried runTestsEnabled: false and were treated as sufficient evidence for the M4 gate. A validation that compiles but never executes a test is not evidence the test passes, and this is the second build in this session (after tier2-webhook) where that gap produced a HIGH finding only once --test-level was finally passed.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M5.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "A stdlib text-scanning checker that does not exclude comments from its quote-pairing logic is a landmine for any future author whose prose comments near permissioned code contain an odd number of apostrophes -- it fails silently (reports the old, wrong finding) rather than erroring out on unparseable input.",
+      "domain": "skill-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/test-class-standards/scripts/check_test_class_standards.py"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Whether Case_Agent_Core + Case_Tier1 actually grant sufficient FLS for CaseMilestone.CompletionDate and for the Case fields caseOverrides sets (Origin, Priority, EntitlementId) is unverified in a design-only build. The permission sets grant no explicit CaseMilestone object permissions at all in this build, consistent with CaseMilestone access typically following the parent Case's Edit permission rather than carrying its own CRUD grant, but that inference is not confirmed against an org.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S02/permissionsets/"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "M5-S05's package.xml needs a fifth ApexClass member (TestUserFactory) before the next manifest-mode dry run will see a complete deploy.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M5-S05/deploy-order.md section 1"
+      },
+      "suggested_followup_agent": "metadata-builder",
+      "followup_reason": "It owns M5-S05 and the build-level package.xml; this step's Output Contract names no manifest."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step's declared and requested checkers must run again over a tree that now holds a fifth Apex file, and results.json is stale.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Its results.json was written against a four-Apex-file tree and is stale now that a fifth (TestUserFactory) ships."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4's documented -> running rebuild path and borrowed-agent condition 2 (declare only outputs the agent's own contract names); Section 5 The Apex exception (no local package.xml, M5-S05 aggregates)"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Apex security idiom by API version (67.0, user mode by default) and Gate C self-verification checks"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "Step 6 template-class provenance check and Step 7 Gate C, applied to the verbatim TestUserFactory/TestDataFactory copies"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/gotchas.md",
+      "branch": "Gotcha 13 (user-mode test without runAs) and Gotcha 14 (null-assigned lookup counted as populated)",
+      "used_for": "The two defects F-59 names and the shape of the fix for each"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/examples.md",
+      "branch": "Example 5 -- User-Mode Code, the whole class runs as a permissioned user",
+      "used_for": "The exact structure copied: mintAgent's mixed-DML fence, System.runAs placement, and the two distinct runAs jobs (fence vs permission)"
+    },
+    {
+      "type": "skill",
+      "id": "apex/mixed-dml-and-setup-objects",
+      "path": "skills/apex/mixed-dml-and-setup-objects/SKILL.md",
+      "used_for": "Why TestUserFactory's User + PermissionSetAssignment inserts must be fenced away from Account/Entitlement/Case DML"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestUserFactory.cls",
+      "path": "templates/apex/tests/TestUserFactory.cls",
+      "used_for": "Copied verbatim into artefacts/M4-S05/classes/TestUserFactory.cls; diff empty"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "Copied verbatim (corrected, commit 5edcb3281) to replace artefacts/M4-S05/classes/TestDataFactory.cls; diff empty"
+    },
+    {
+      "type": "probe",
+      "id": "tier2-webhook-M1-S03",
+      "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md",
+      "branch": "section 0b (S2-F-11 repair) and section 0c (S2-F-12 repair)",
+      "used_for": "The accepted shape this repair follows for both defects"
+    },
+    {
+      "type": "probe",
+      "id": "M2-S02-permissionsets",
+      "path": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml",
+      "used_for": "Object/field permission grounding for the permission-set choice (Case CRU; Account/Contact/Entitlement read-only)"
+    },
+    {
+      "type": "probe",
+      "id": "M2-S02-permissionsets-tier1",
+      "path": "artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml",
+      "used_for": "Confirms Case_Tier1 is a delta set (record-type visibility, Severity__c edit) composing with Case_Agent_Core"
+    },
+    {
+      "type": "probe",
+      "id": "M2-S02-permissionsetgroups",
+      "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml",
+      "used_for": "The exact member list (Case_Agent_Core, Case_Tier1) this repair mints the running user with"
+    },
+    {
+      "type": "probe",
+      "id": "M2-S03-profile",
+      "path": "artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
+      "used_for": "The Profile paired with the permission-set choice; its own description names PSG_Tier1_Prod as the source of all object/field/tab access"
+    },
+    {
+      "type": "probe",
+      "id": "M2-S01-permissionsets",
+      "path": "artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml",
+      "used_for": "Considered and rejected -- the intake-side persona, not the agent persona"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-m5-run4",
+      "path": "reports/MOCK-DEPLOY-M5.md",
+      "branch": "Run 4",
+      "used_for": "F-59, the failing test-execution evidence this repair responds to"
+    },
+    {
+      "type": "probe",
+      "id": "M5-S05-manifest",
+      "path": "artefacts/M5-S05/deploy-order.md",
+      "used_for": "The obligation this repair records but does not discharge -- TestUserFactory as a fifth ApexClass member"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "results.json is stale against a tree that now ships a fifth Apex file and the two checkers must be re-run and recorded."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "F-59, the repair, the permission-set decision, the checker-parsing hazard, and the M5-S05 obligation are not yet in decisions.md."
+    },
+    {
+      "agent": "metadata-builder",
+      "because": "It owns M5-S05 and must add the ApexClass member TestUserFactory before the manifest is accurate again."
+    }
+  ],
+  "extensions": {
+    "rebuild_of": "2026-09-12T08-32-00Z",
+    "operator_transition": "documented -> running, section 4 test-only repair",
+    "files_added": [
+      "artefacts/M4-S05/classes/TestUserFactory.cls",
+      "artefacts/M4-S05/classes/TestUserFactory.cls-meta.xml"
+    ],
+    "files_replaced": [
+      "artefacts/M4-S05/classes/TestDataFactory.cls (verbatim copy of the template as corrected at commit 5edcb3281; diff against the template is empty)"
+    ],
+    "files_edited": [
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls (AGENT_PROFILE, AGENT_PERMISSION_SETS, mintAgent() added; caseInsideProcess gained a User agent parameter and wraps its Case insert in System.runAs(agent); all four @IsTest methods wrap their action and assertions in System.runAs(agent); no assertion, message, or Test.startTest/stopTest boundary changed)",
+      "artefacts/M4-S05/deploy-order.md (section 8 repair record added; Sources updated)"
+    ],
+    "files_unchanged_byte_for_byte": [
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+      "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml"
+    ],
+    "template_integrity": "diff templates/apex/tests/TestUserFactory.cls artefacts/M4-S05/classes/TestUserFactory.cls -- no output; diff templates/apex/tests/TestDataFactory.cls artefacts/M4-S05/classes/TestDataFactory.cls -- no output",
+    "checker_results": {
+      "declared_checker": {
+        "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05 --strict",
+        "exit": 0,
+        "stdout": "scanned 5 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN"
+      },
+      "requested_checker": {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict",
+        "exit": 0,
+        "stdout": "Scanned 4 Apex class file(s); audited 3 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0",
+        "score": 100,
+        "user_mode_test_without_runas_count": 0
+      },
+      "check_outputs": {
+        "ok": true,
+        "missing": [],
+        "empty": [],
+        "malformed": []
+      }
+    },
+    "package_xml_obligation": {
+      "owning_step": "M5-S05",
+      "new_member_needed": "ApexClass TestUserFactory",
+      "recorded_at": "artefacts/M4-S05/deploy-order.md section 8",
+      "edited_by_this_run": false
+    },
+    "no_deploy_no_gate": "No sf command was run, no org was contacted, no gate was touched. Only files under .sfskills/builds/case-onboarding/artefacts/M4-S05/ and its own envelopes/ directory were written."
+  }
+}

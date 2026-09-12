@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>STATUS</field>
+    </columns>
+    <columns>
+        <field>CREATED_DATE</field>
+    </columns>
+    <description>Escalated, still-open Cases for the Tier 2 lead's weekly review (Q91). INCOMPLETE: the Escalated=True filter is absent, its column code unresolved (F-51) - add it in the report builder after deploy. See deploy-order.md.</description>
+    <!-- F-51. The Escalated criterion (IsEscalated = true) is deliberately ABSENT. Five candidate
+         column codes were rejected by the org on 2026-09-12 (reports/MOCK-DEPLOY-M5.md, operator
+         probe table), and no cited skill documents one, so it is not guessed here. Until it is
+         added this report returns OPEN Cases from the last 30 days, not ESCALATED open Cases.
+         It becomes a post-deploy runbook step: deploy-order.md sections 0 and 2 (U1). -->
+    <filter>
+        <booleanFilter>1 AND 2</booleanFilter>
+        <criteriaItems>
+            <column>STATUS</column>
+            <operator>notEqual</operator>
+            <value>Closed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>CREATED_DATE</column>
+            <operator>equals</operator>
+            <value>LAST_N_DAYS:30</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <field>OWNER</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <field>PRIORITY</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Escalated Open Cases</name>
+    <reportType>CaseList</reportType>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+</Report>

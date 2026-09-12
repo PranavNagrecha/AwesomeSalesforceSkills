@@ -1,0 +1,353 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T18-20-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-20-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-20-00Z.json",
+  "summary": "Fourth repair of documented step M4-S05, for F-62 (reports/MOCK-DEPLOY-M5.md run 7): after the section 10 fix the deployed process is found and the Case enters it, but the two milestone methods fail on behaviour. Confirmed diagnosis: CaseMilestoneService's CaseMilestone query and Database.update ran WITH USER_MODE / default user mode (apiVersion 67.0), and no permission set in this build (artefacts/M2-S02/) grants any objectPermissions on CaseMilestone at all, so the update was refused for the Tier 1 persona under allOrNone=false and the refusal landed silently in result.failures, which the test never asserted. Unlike the three prior repairs (sections 8-10, test-only), this repair changes shipped code: CaseMilestoneService.cls's CaseMilestone SELECT now carries WITH SYSTEM_MODE and its Database.update carries AccessLevel.SYSTEM_MODE, each with a reason comment, per skills/apex/apex-security-patterns' access-mode table for platform-utility code (chosen over granting the persona Edit on CaseMilestone, which was rejected as the same anti-pattern skills/apex/test-class-standards Gotcha 15 already named). CaseMilestoneServiceTest.cls gained three new Assert.areEqual(0, result.failures.size(), ...) assertions after the three completeMilestones call sites that previously had none, so a refused write now fails loudly.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "The declared checker, the requested check_test_class_standards.py (both without and with --strict), and check-outputs all exit 0 / ok. Confidence stays at MEDIUM, not HIGH, because: (1) no offline Apex compiler exists (agents/apex-builder/GATES.md Gate D) and this build has no target_org_alias, so this repair -- especially the AccessLevel.SYSTEM_MODE argument to Database.update, a syntax this class had not used before -- is confirmed only by the operator's next dry run (run 8); (2) this is the first repair in this step's history to change shipped code, so the M4/M5 gate evidence built against the unchanged CaseMilestoneService.cls no longer describes the deployed class; and (3) a cross-skill tension (skills/apex/apex-stripinaccessible-and-fls-enforcement's trigger-body line vs. skills/apex/apex-security-patterns' docs-grounded rule) had to be resolved by source-hierarchy judgment rather than by an unambiguous single citation.",
+  "inputs_received": {
+    "kind": "test_only",
+    "primary_sobject": "Case",
+    "feature_summary": "Fourth repair of CaseMilestoneServiceTest and, for the first time, CaseMilestoneService for F-62: run the CaseMilestone query and update in explicit system mode rather than the 67.0 user-mode default, since no permission set in this build grants the Tier 1 persona any CaseMilestone access, and add assertions so a refused write fails loudly.",
+    "api_version": "67.0 (unchanged)",
+    "rebuild_reason": "F-62 -- reports/MOCK-DEPLOY-M5.md run 7: CaseMilestoneService's CaseMilestone query and Database.update ran in the Tier 1 persona's default user-mode context; no permission set grants CaseMilestone access, so the update was silently refused and the stamp never landed, surfacing as two milestone-assertion failures",
+    "operator_transition": "built -> failed -> pending -> running (standards/build-orchestration.md section 4, a fourth repair of a documented step in a build whose gates are all approved)",
+    "scope": "CaseMilestoneService.cls (CaseMilestone SELECT and Database.update only, plus class doc comment) and CaseMilestoneServiceTest.cls (three new failures-empty assertions plus class doc comment). CaseMilestoneTrigger.trigger, TestDataFactory.cls and TestUserFactory.cls explicitly unchanged.",
+    "shipped_code_change": "This is the first repair in this step's history (sections 8-10 were test-only) to change CaseMilestoneService.cls. Recorded as a deviation in deploy-order.md section 11 per the task instruction.",
+    "diagnosis_confirmation": "Confirmed from CaseMilestoneService.cls lines 100-160 (pre-repair) and from artefacts/M2-S02/permissionsets/ (Case_Agent_Core, Case_Tier1, Case_Tier2, Case_Billing) -- none declares an objectPermissions block for CaseMilestone. The coordinator's reading matched the code and the grants exactly; no revision was needed.",
+    "access_mode_choice": "System mode for the CaseMilestone query and DML, not a persona grant. Grounded in skills/apex/apex-security-patterns' access-mode table (platform-utility code on a 67.0+ class -> explicit WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE) and skills/apex/apex-stripinaccessible-and-fls-enforcement's internal-trusted-context framing. Granting the persona Edit on CaseMilestone was considered and rejected per skills/apex/test-class-standards Gotcha 15's do-not-widen-the-persona discipline.",
+    "cross_skill_tension_note": "skills/apex/apex-stripinaccessible-and-fls-enforcement's Before Starting line (trigger body runs in system mode at every API version) is imprecise for a class a trigger calls rather than the literal trigger block; skills/apex/apex-security-patterns' docs-grounded rule (quoting the Apex Developer Guide) governs per standards/source-hierarchy.md. Flagged as a skill-quality signal, not corrected in this run.",
+    "target_org_alias": "(absent -- build_mode design-only)"
+  },
+  "dimensions_compared": [
+    "security-posture",
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "Scope is one query/one DML line-level change plus doc comments; CaseMilestoneTrigger.trigger is unchanged, so no decomposition question was reopened.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "count-only",
+      "reason": "The query and DML remain one SOQL and one DML statement each; staysAtOneQueryAndOneDmlFor200Cases' existing assertions are unchanged and still pass under the manual balance check, but no org executed them this run to confirm the AccessLevel.SYSTEM_MODE argument does not add a second implicit operation.",
+      "confidence_impact": "LOW",
+      "retry_hint": "Confirm at run 8 that queriesUsed still equals 1 and dmlUsed still equals at most 1."
+    },
+    {
+      "dimension": "bulk-safety",
+      "state": "not-run",
+      "reason": "The bulk shape (one query, one DML regardless of batch size) is unchanged; only the access-mode arguments were added.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "ApplicationLogger is still not wired (deploy-order.md section 6); this repair does not change the class's logging approach, only the access mode of its query and DML.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No hardcoded Ids introduced or affected by this repair.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "not-run",
+      "reason": "No secrets in scope for an access-mode repair.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-M4S05-24",
+      "severity": "P0",
+      "title": "F-62 diagnosis confirmed exactly: no permission set in this build grants CaseMilestone access",
+      "detail": "grep -rn CaseMilestone across artefacts/M2-S02/ (re-run this session) returns no objectPermissions hit. Reading Case_Agent_Core.permissionset-meta.xml directly, its five objectPermissions blocks name Case, Account, Contact, EmailMessage, Entitlement -- CaseMilestone is absent, not read-only. At apiVersion 67.0 default user mode, both the CaseMilestone query and the Database.update in CaseMilestoneService.completeMilestones therefore ran as the Tier 1 persona with zero grants on the object, and allOrNone=false meant the refusal landed in result.failures rather than throwing -- exactly the coordinator's reading, confirmed rather than revised.",
+      "evidence": {
+        "path": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml",
+        "grep_result": "no CaseMilestone objectPermissions block in any of Case_Agent_Core, Case_Tier1, Case_Tier2, Case_Billing",
+        "report": "reports/MOCK-DEPLOY-M5.md run 7"
+      },
+      "recommendation": "Confirm at the operator's run 8 (--test-level RunSpecifiedTests --tests CaseMilestoneServiceTest) that all four methods pass with the milestone stamp landing."
+    },
+    {
+      "id": "AB-M4S05-25",
+      "severity": "P0",
+      "title": "F-62 addressed: CaseMilestone query and DML now run in explicit system mode",
+      "detail": "The SELECT gained WITH SYSTEM_MODE in place of WITH USER_MODE. Database.update(openMilestones, false) gained a third argument, AccessLevel.SYSTEM_MODE. Both carry a reason comment naming F-62, the absence of any CaseMilestone grant, and the rejected alternative (widening the persona). This is the first change to CaseMilestoneService.cls across this step's four repairs.",
+      "evidence": {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+        "checker_exit": 0,
+        "checker_command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05 --strict"
+      },
+      "recommendation": "None -- the fix itself; confirmed at run 8."
+    },
+    {
+      "id": "AB-M4S05-26",
+      "severity": "P1",
+      "title": "System mode chosen over granting the persona Edit on CaseMilestone, per Gotcha 15's discipline applied one object over",
+      "detail": "skills/apex/apex-security-patterns' access-mode table names platform-utility code on a 67.0+ class as the WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE case, distinct from WITH USER_MODE code both queries and updates data on behalf of a user. Completing a milestone is the former -- the entitlement engines completion signal, not a field the agent deliberately edits. Granting Edit on CaseMilestone was rejected because it repeats the exact widen-the-persona anti-pattern skills/apex/test-class-standards Gotcha 15 already named in this build's own fixtures.",
+      "evidence": {
+        "path": "skills/apex/apex-security-patterns/SKILL.md",
+        "path2": "skills/apex/test-class-standards/references/gotchas.md"
+      },
+      "recommendation": "None -- recorded as the grounding for the choice the task required."
+    },
+    {
+      "id": "AB-M4S05-27",
+      "severity": "P2",
+      "title": "Cross-skill tension: apex-stripinaccessible-and-fls-enforcement's trigger-body line is imprecise at 67.0+ for a class a trigger calls",
+      "detail": "That skill states a trigger body runs in system mode at every API version and that the 67.0 default-user-mode change does not reach it. Read literally and applied to this class, that would predict F-62 could not happen. It does not resolve the tension: CaseMilestoneService.completeMilestones is a method on a separate class, not code inside the literal trigger block, and skills/apex/apex-security-patterns (quoting the Apex Developer Guide) states the finer rule that trigger-body database operations run in user mode at 67.0+ unless system mode is explicitly named -- a default that reaches called classes too. skills/apex/entitlement-apex-hooks' own reference example predicts this exact failure by name. Per standards/source-hierarchy.md, the docs-grounded skill governs.",
+      "evidence": {
+        "path": "skills/apex/apex-stripinaccessible-and-fls-enforcement/SKILL.md",
+        "path2": "skills/apex/apex-security-patterns/references/well-architected.md",
+        "path3": "skills/apex/entitlement-apex-hooks/references/code-examples.md"
+      },
+      "recommendation": "Flagged for build-doc-keeper to carry forward as a skill-authoring follow-up: apex-stripinaccessible-and-fls-enforcement's Before Starting line should distinguish the literal trigger block from classes a trigger calls, or cite the version-gated exception apex-security-patterns already documents."
+    },
+    {
+      "id": "AB-M4S05-28",
+      "severity": "P1",
+      "title": "Test's silent gap closed: three new failures-empty assertions after completeMilestones calls",
+      "detail": "skipsAMilestoneThatIsAlreadyCompleted's first pass, staysAtOneQueryAndOneDmlFor200Cases, and ignoresCasesWhoseStatusDidNotChange each gained Assert.areEqual(0, result.failures.size(), String.join(result.failures, ' | ')) immediately after their completeMilestones call. skipsAMilestoneThatIsAlreadyCompleted's second-pass failures assertion already existed (section 8) and is unchanged. triggerWritesCompletionDateOnAnOpenMilestone gained no new assertion -- it never holds a CompletionResult, and its existing reloaded.CompletionDate != null check is the correct proof for its real-update shape.",
+      "evidence": {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+        "checker_command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict",
+        "checker_exit": 0
+      },
+      "recommendation": "None -- the fix itself."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The diagnosis handed down was independently confirmed against both the code and the org-facing permission-set source before any line was changed -- the grep for CaseMilestone across artefacts/M2-S02/ and the direct read of Case_Agent_Core's objectPermissions block both corroborate it exactly, with nothing to revise.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S02/permissionsets/"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Four org-executed runs (F-59 through F-62) were needed to fully validate one test class, each exposing a defect the previous repair's fix uncovered rather than caused: persona context, then fixture-seeding scope, then process lookup, then object-level access. This is evidence of a genuinely layered set of independent defects converging, not any one repair being wrong, but it is also four rounds of compiles-and-appears-correct that a design-only build cannot itself catch.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M5.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "skills/apex/apex-stripinaccessible-and-fls-enforcement's trigger-body-runs-in-system-mode-at-every-API-version line is imprecise for 67.0+ trigger-called classes. Recorded as a skill-authoring signal, not resolved in this repair.",
+      "domain": "skill-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-stripinaccessible-and-fls-enforcement/SKILL.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "tests/M4-S05/results.json is stale against a tree whose service class changed for the first time and whose test class gained three new assertions.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "results.json needs to be re-written against a tree where CaseMilestoneService.cls itself changed for the first time."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "F-62, this repair (the first shipped-code change in this step), the system-mode-vs-wider-grant decision, and the apex-stripinaccessible-and-fls-enforcement skill-quality signal are not yet in decisions.md.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "decisions.md is the append-only record of build decisions and does not yet carry this repair or the skill-quality signal."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "A post-assembly FLS/CRUD check of the now-system-mode CaseMilestone write would confirm the access-mode boundary is narrowed to exactly this one object and DML, not wider.",
+      "domain": "security-posture",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/classes/CaseMilestoneService.cls"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "Independent verification that the system-mode boundary is scoped correctly and not a wider elevation than this one write."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4's built -> failed -> pending -> running reset for a fourth repair of a step whose gates are all approved"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Apex security idiom by API version (67.0, user mode by default unless system mode is named) and Gate C self-verification checks"
+    },
+    {
+      "type": "standard",
+      "id": "source-hierarchy",
+      "path": "standards/source-hierarchy.md",
+      "used_for": "Resolving the cross-skill tension between apex-stripinaccessible-and-fls-enforcement and apex-security-patterns in favour of the docs-grounded skill"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-security-patterns",
+      "path": "skills/apex/apex-security-patterns/SKILL.md",
+      "used_for": "The access-mode decision table grounding WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE for platform-utility code on a 67.0+ class, and the WITH USER_MODE on-behalf-of-a-user contrast"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-security-patterns",
+      "path": "skills/apex/apex-security-patterns/references/well-architected.md",
+      "used_for": "The Apex Developer Guide quotation on trigger-body database operations, resolving the cross-skill tension in favour of the finer-grained, docs-grounded rule"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-stripinaccessible-and-fls-enforcement",
+      "path": "skills/apex/apex-stripinaccessible-and-fls-enforcement/SKILL.md",
+      "used_for": "The internal-trusted-context-data framing supporting the system-mode boundary, and the imprecise trigger-body-at-every-API-version line flagged as a skill-quality signal"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/code-examples.md",
+      "branch": "What apiVersion 67.0 changes",
+      "used_for": "Predicts this exact failure mode by name -- a service-agent user who cannot see a CaseMilestone row will not complete it through this trigger"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/gotchas.md",
+      "branch": "Gotcha 15",
+      "used_for": "Grounds why granting the persona Edit on CaseMilestone was rejected -- the same do-not-widen-the-persona discipline applied one object over"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-m5-run7",
+      "path": "reports/MOCK-DEPLOY-M5.md",
+      "branch": "Run 7",
+      "used_for": "F-62, the failing milestone-behaviour evidence this repair responds to"
+    },
+    {
+      "type": "probe",
+      "id": "M2-S02-permissionsets-caseagentcore",
+      "path": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml",
+      "used_for": "Re-confirmed directly this run: no CaseMilestone objectPermissions block"
+    },
+    {
+      "type": "probe",
+      "id": "M2-S02-permissionsets-tier1",
+      "path": "artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml",
+      "used_for": "Re-confirmed: no CaseMilestone objectPermissions block"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S05-deploy-order-sections-8-10",
+      "path": "artefacts/M4-S05/deploy-order.md",
+      "branch": "Sections 8-10",
+      "used_for": "The three prior repairs this run builds on and does not reopen"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S05-deploy-order-section-11",
+      "path": "artefacts/M4-S05/deploy-order.md",
+      "branch": "Section 11",
+      "used_for": "This repair's own record, including the full diagnosis and skill-quality signal"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "results.json is stale against a tree where the service class changed for the first time and the test class gained three new assertions."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "F-62, this repair, the access-mode decision, and the skill-quality signal are not yet in decisions.md."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "Independent confirmation that the system-mode boundary is scoped to exactly this one object and DML, not wider."
+    }
+  ],
+  "extensions": {
+    "rebuild_of": "2026-09-12T18-05-00Z",
+    "operator_transition": "built -> failed -> pending -> running, fourth repair, first to touch shipped code",
+    "files_added": [],
+    "files_replaced": [],
+    "files_edited": [
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls (CaseMilestone SELECT: WITH USER_MODE -> WITH SYSTEM_MODE with a reason comment; Database.update gained AccessLevel.SYSTEM_MODE with a reason comment; class doc comment gained a fourth paragraph. SHIPPED CODE CHANGE -- first in this step's repair history.)",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls (three new Assert.areEqual(0, result.failures.size(), ...) assertions after the three completeMilestones call sites that previously had none; class doc comment gained a fourth paragraph)",
+      "artefacts/M4-S05/deploy-order.md (section 11 repair record added, including the confirmed diagnosis and the cross-skill-tension analysis; Sources updated)"
+    ],
+    "files_unchanged_byte_for_byte": [
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+      "artefacts/M4-S05/classes/TestDataFactory.cls",
+      "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml",
+      "artefacts/M4-S05/classes/TestUserFactory.cls",
+      "artefacts/M4-S05/classes/TestUserFactory.cls-meta.xml"
+    ],
+    "checker_results": {
+      "declared_checker": {
+        "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05 --strict",
+        "exit": 0,
+        "stdout": "scanned 5 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN"
+      },
+      "requested_checker_default": {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes",
+        "exit": 0,
+        "stdout": "Scanned 4 Apex class file(s); audited 3 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0",
+        "score": 100
+      },
+      "requested_checker_strict": {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict",
+        "exit": 0,
+        "stdout": "Scanned 4 Apex class file(s); audited 3 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0",
+        "score": 100
+      },
+      "check_outputs": {
+        "ok": true,
+        "missing": [],
+        "empty": [],
+        "malformed": []
+      }
+    },
+    "package_xml_obligation": {
+      "owning_step": "M5-S05",
+      "new_member_needed": "ApexClass TestUserFactory",
+      "recorded_at": "artefacts/M4-S05/deploy-order.md section 8 (unchanged by this run)",
+      "edited_by_this_run": false
+    },
+    "no_deploy_no_gate": "No sf command was run, no org was contacted, no gate was touched. Only files under .sfskills/builds/case-onboarding/artefacts/M4-S05/ and its own envelopes/ directory were written."
+  }
+}

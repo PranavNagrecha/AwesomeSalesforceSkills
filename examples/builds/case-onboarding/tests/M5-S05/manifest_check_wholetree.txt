@@ -1,5 +1,5 @@
 === Manifest types/members ===
-  ApexClass: ['CaseMilestoneService', 'CaseMilestoneServiceTest', 'TestDataFactory']
+  ApexClass: ['CaseMilestoneService', 'CaseMilestoneServiceTest', 'TestDataFactory', 'TestUserFactory']
   ApexTrigger: ['CaseMilestoneTrigger']
   AssignmentRules: ['Case']
   AutoResponseRules: ['Case']
@@ -28,14 +28,14 @@
   SharingRules: ['Case']
   StandardValueSet: ['CaseOrigin']
   ValidationRule: ['Case.Origin_Must_Be_Known', 'Case.Priority_Required_On_Agent_Save']
-types: 29 members: 56
+types: 29 members: 57
 
-total files: 117, excluded: 55, deployable: 62
+total files: 119, excluded: 55, sibling-meta: 7, classified-derived-files: 57, unclassified: 0
 
 === Unclassified files (need manual rule) ===
 
 === File-derived types/members ===
-  ApexClass: ['CaseMilestoneService', 'CaseMilestoneServiceTest', 'TestDataFactory']
+  ApexClass: ['CaseMilestoneService', 'CaseMilestoneServiceTest', 'TestDataFactory', 'TestUserFactory']
   ApexTrigger: ['CaseMilestoneTrigger']
   AssignmentRules: ['Case']
   AutoResponseRules: ['Case']
@@ -64,6 +64,7 @@ total files: 117, excluded: 55, deployable: 62
   SharingRules: ['Case']
   StandardValueSet: ['CaseOrigin']
   ValidationRule: ['Case.Origin_Must_Be_Known', 'Case.Priority_Required_On_Agent_Save']
+types: 29 members: 57
 
 === File -> Manifest direction (every derived member must appear in manifest) ===
   OK: every derived member appears in the manifest
@@ -72,50 +73,70 @@ total files: 117, excluded: 55, deployable: 62
   OK: every named manifest member has a backing file
 
 === Excluded files (not deployable / notes) ===
-  M1-S01/record-type-decision.md -- note/doc, not deployable
-  M1-S01/deploy-order.md -- note/doc, not deployable
-  M3-S01/deploy-order.md -- note/doc, not deployable
-  M3-S01/validation-bypass-note.md -- note/doc, not deployable
-  M2-S01/deploy-order.md -- note/doc, not deployable
-  M5-S01/deploy-order.md -- note/doc, not deployable
-  M4-S01/deploy-order.md -- note/doc, not deployable
-  M4-S01/holiday-maintenance-runbook.md -- note/doc, not deployable
-  M1-S02/deploy-order.md -- note/doc, not deployable
-  M2-S03/deploy-order.md -- note/doc, not deployable
-  M2-S04/queue-retirement-runbook.md -- note/doc, not deployable
-  M2-S04/deploy-order.md -- note/doc, not deployable
-  M3-S04/owner-writer-map.md -- note/doc, not deployable
-  M3-S04/deploy-order.md -- note/doc, not deployable
-  M3-S03/web-to-case-form-contract.md -- note/doc, not deployable
-  M3-S03/deploy-order.md -- note/doc, not deployable
-  M3-S03/email-to-case-routing-addresses.md -- note/doc, not deployable
-  M2-S05/deploy-order.md -- note/doc, not deployable
-  M2-S05/case-visibility-model.md -- note/doc, not deployable
-  M2-S02/deploy-order.md -- note/doc, not deployable
-  M3-S02/sender-identity-note.md -- note/doc, not deployable
-  M3-S02/deploy-order.md -- note/doc, not deployable
-  M4-S03/deploy-order.md -- note/doc, not deployable
-  M4-S03/no-account-fallback-note.md -- note/doc, not deployable
-  M4-S03/flow-governance-policy.yaml -- note/doc, not deployable
-  M4-S04/escalation-monitoring-note.md -- note/doc, not deployable
-  M4-S04/deploy-order.md -- note/doc, not deployable
-  M4-S04/escalation-activation-runbook.md -- note/doc, not deployable
-  M5-S04/configuration-workbook.md -- note/doc, not deployable
-  M5-S04/uat-test-cases.yaml -- note/doc, not deployable
-  M5-S04/acceptance-criteria.md -- note/doc, not deployable
-  M5-S04/traceability.md -- note/doc, not deployable
-  M5-S04/deploy-order.md -- note/doc, not deployable
-  M5-S03/story-backlog.md -- note/doc, not deployable
-  M4-S05/deploy-order.md -- note/doc, not deployable
-  M4-S02/milestone-completion-decision.md -- note/doc, not deployable
-  M4-S02/deploy-order.md -- note/doc, not deployable
-  M5-S05/deploy-order.md -- note/doc, not deployable
+  artefacts/M1-S01/deploy-order.md -- note/doc, not deployable
+  artefacts/M1-S01/package.xml -- step manifest, not deployable
+  artefacts/M1-S01/record-type-decision.md -- note/doc, not deployable
+  artefacts/M1-S02/deploy-order.md -- note/doc, not deployable
+  artefacts/M1-S02/package.xml -- step manifest, not deployable
+  artefacts/M2-S01/deploy-order.md -- note/doc, not deployable
+  artefacts/M2-S01/package.xml -- step manifest, not deployable
+  artefacts/M2-S02/deploy-order.md -- note/doc, not deployable
+  artefacts/M2-S02/package.xml -- step manifest, not deployable
+  artefacts/M2-S03/deploy-order.md -- note/doc, not deployable
+  artefacts/M2-S03/package.xml -- step manifest, not deployable
+  artefacts/M2-S04/deploy-order.md -- note/doc, not deployable
+  artefacts/M2-S04/package.xml -- step manifest, not deployable
+  artefacts/M2-S04/queue-retirement-runbook.md -- note/doc, not deployable
+  artefacts/M2-S05/case-visibility-model.md -- note/doc, not deployable
+  artefacts/M2-S05/deploy-order.md -- note/doc, not deployable
+  artefacts/M2-S05/package.xml -- step manifest, not deployable
+  artefacts/M3-S01/deploy-order.md -- note/doc, not deployable
+  artefacts/M3-S01/package.xml -- step manifest, not deployable
+  artefacts/M3-S01/validation-bypass-note.md -- note/doc, not deployable
+  artefacts/M3-S02/deploy-order.md -- note/doc, not deployable
+  artefacts/M3-S02/package.xml -- step manifest, not deployable
+  artefacts/M3-S02/sender-identity-note.md -- note/doc, not deployable
+  artefacts/M3-S03/deploy-order.md -- note/doc, not deployable
+  artefacts/M3-S03/email-to-case-routing-addresses.md -- note/doc, not deployable
+  artefacts/M3-S03/package.xml -- step manifest, not deployable
+  artefacts/M3-S03/web-to-case-form-contract.md -- note/doc, not deployable
+  artefacts/M3-S04/deploy-order.md -- note/doc, not deployable
+  artefacts/M3-S04/owner-writer-map.md -- note/doc, not deployable
+  artefacts/M3-S04/package.xml -- step manifest, not deployable
+  artefacts/M4-S01/deploy-order.md -- note/doc, not deployable
+  artefacts/M4-S01/holiday-maintenance-runbook.md -- note/doc, not deployable
+  artefacts/M4-S01/package.xml -- step manifest, not deployable
+  artefacts/M4-S02/deploy-order.md -- note/doc, not deployable
+  artefacts/M4-S02/milestone-completion-decision.md -- note/doc, not deployable
+  artefacts/M4-S02/package.xml -- step manifest, not deployable
+  artefacts/M4-S03/deploy-order.md -- note/doc, not deployable
+  artefacts/M4-S03/flow-governance-policy.yaml -- note/doc, not deployable
+  artefacts/M4-S03/no-account-fallback-note.md -- note/doc, not deployable
+  artefacts/M4-S03/package.xml -- step manifest, not deployable
+  artefacts/M4-S04/deploy-order.md -- note/doc, not deployable
+  artefacts/M4-S04/escalation-activation-runbook.md -- note/doc, not deployable
+  artefacts/M4-S04/escalation-monitoring-note.md -- note/doc, not deployable
+  artefacts/M4-S04/package.xml -- step manifest, not deployable
+  artefacts/M4-S05/deploy-order.md -- note/doc, not deployable
+  artefacts/M5-S01/deploy-order.md -- note/doc, not deployable
+  artefacts/M5-S01/package.xml -- step manifest, not deployable
+  artefacts/M5-S03/story-backlog.md -- note/doc, not deployable
+  artefacts/M5-S04/acceptance-criteria.md -- note/doc, not deployable
+  artefacts/M5-S04/configuration-workbook.md -- note/doc, not deployable
+  artefacts/M5-S04/deploy-order.md -- note/doc, not deployable
+  artefacts/M5-S04/traceability.md -- note/doc, not deployable
+  artefacts/M5-S04/uat-test-cases.yaml -- note/doc, not deployable
+  artefacts/M5-S05/deploy-order.md -- note/doc, not deployable
+  artefacts/M5-S05/package.xml -- step manifest, not deployable
 
 === Sibling meta-xml files travelling with their bodies ===
-  M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml
-  M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml
-  M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml
-  M4-S05/classes/TestDataFactory.cls-meta.xml
-  M4-S05/classes/CaseMilestoneService.cls-meta.xml
-  M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml
-count: 6
+  artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml
+  artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml
+  artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml
+  artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml
+  artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml
+  artefacts/M4-S05/classes/TestUserFactory.cls-meta.xml
+  artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml
+count: 7
+
+RESULT: PASS

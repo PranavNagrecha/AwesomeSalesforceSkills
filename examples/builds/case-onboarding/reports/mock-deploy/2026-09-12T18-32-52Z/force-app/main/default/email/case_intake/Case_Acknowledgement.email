@@ -1,0 +1,11 @@
+Hello,
+
+We received your request "{!Case.Subject}" and created case {!Case.CaseNumber}.
+A support specialist will respond within the first-response time agreed for your
+account.
+
+Reply to this email to add information to your case. Please leave the reference
+at the end of the subject line in place, so that your reply is added to this case
+rather than opening a new one.
+
+Acme Support

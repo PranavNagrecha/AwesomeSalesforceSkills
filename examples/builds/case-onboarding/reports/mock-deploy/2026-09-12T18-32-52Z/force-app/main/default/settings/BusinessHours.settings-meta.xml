@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BusinessHoursSettings xmlns="http://soap.sforce.com/2006/04/metadata">
+    <businessHours>
+        <active>true</active>
+        <default>true</default>
+        <name>US Support</name>
+        <timeZoneId>America/New_York</timeZoneId>
+        <mondayStartTime>08:00:00.000Z</mondayStartTime>
+        <mondayEndTime>20:00:00.000Z</mondayEndTime>
+        <tuesdayStartTime>08:00:00.000Z</tuesdayStartTime>
+        <tuesdayEndTime>20:00:00.000Z</tuesdayEndTime>
+        <wednesdayStartTime>08:00:00.000Z</wednesdayStartTime>
+        <wednesdayEndTime>20:00:00.000Z</wednesdayEndTime>
+        <thursdayStartTime>08:00:00.000Z</thursdayStartTime>
+        <thursdayEndTime>20:00:00.000Z</thursdayEndTime>
+        <fridayStartTime>08:00:00.000Z</fridayStartTime>
+        <fridayEndTime>20:00:00.000Z</fridayEndTime>
+    </businessHours>
+    <businessHours>
+        <active>true</active>
+        <default>false</default>
+        <name>EMEA Support</name>
+        <timeZoneId>Europe/London</timeZoneId>
+        <mondayStartTime>08:00:00.000Z</mondayStartTime>
+        <mondayEndTime>18:00:00.000Z</mondayEndTime>
+        <tuesdayStartTime>08:00:00.000Z</tuesdayStartTime>
+        <tuesdayEndTime>18:00:00.000Z</tuesdayEndTime>
+        <wednesdayStartTime>08:00:00.000Z</wednesdayStartTime>
+        <wednesdayEndTime>18:00:00.000Z</wednesdayEndTime>
+        <thursdayStartTime>08:00:00.000Z</thursdayStartTime>
+        <thursdayEndTime>18:00:00.000Z</thursdayEndTime>
+        <fridayStartTime>08:00:00.000Z</fridayStartTime>
+        <fridayEndTime>18:00:00.000Z</fridayEndTime>
+    </businessHours>
+    <businessHours>
+        <active>true</active>
+        <default>false</default>
+        <name>Severity 1 24x7</name>
+        <timeZoneId>America/New_York</timeZoneId>
+        <mondayStartTime>00:00:00.000Z</mondayStartTime>
+        <mondayEndTime>00:00:00.000Z</mondayEndTime>
+        <tuesdayStartTime>00:00:00.000Z</tuesdayStartTime>
+        <tuesdayEndTime>00:00:00.000Z</tuesdayEndTime>
+        <wednesdayStartTime>00:00:00.000Z</wednesdayStartTime>
+        <wednesdayEndTime>00:00:00.000Z</wednesdayEndTime>
+        <thursdayStartTime>00:00:00.000Z</thursdayStartTime>
+        <thursdayEndTime>00:00:00.000Z</thursdayEndTime>
+        <fridayStartTime>00:00:00.000Z</fridayStartTime>
+        <fridayEndTime>00:00:00.000Z</fridayEndTime>
+        <saturdayStartTime>00:00:00.000Z</saturdayStartTime>
+        <saturdayEndTime>00:00:00.000Z</saturdayEndTime>
+        <sundayStartTime>00:00:00.000Z</sundayStartTime>
+        <sundayEndTime>00:00:00.000Z</sundayEndTime>
+    </businessHours>
+    <holidays>
+        <name>Thanksgiving 2026</name>
+        <businessHours>US Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2026-11-26</activityDate>
+    </holidays>
+    <holidays>
+        <name>Day after Thanksgiving 2026</name>
+        <businessHours>US Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2026-11-27</activityDate>
+    </holidays>
+    <holidays>
+        <name>Christmas Eve 2026 early close</name>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2026-12-24</activityDate>
+        <startTime>13:00:00.000Z</startTime>
+        <endTime>18:00:00.000Z</endTime>
+    </holidays>
+    <holidays>
+        <name>Christmas Day 2026</name>
+        <businessHours>US Support</businessHours>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2026-12-25</activityDate>
+    </holidays>
+    <holidays>
+        <name>Boxing Day 2026 (substitute day)</name>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2026-12-28</activityDate>
+    </holidays>
+    <holidays>
+        <name>New Year's Day 2027</name>
+        <businessHours>US Support</businessHours>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-01-01</activityDate>
+    </holidays>
+    <holidays>
+        <name>Good Friday 2027</name>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-03-26</activityDate>
+    </holidays>
+    <holidays>
+        <name>Easter Monday 2027</name>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-03-29</activityDate>
+    </holidays>
+    <holidays>
+        <name>Early May bank holiday 2027</name>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-05-03</activityDate>
+    </holidays>
+    <holidays>
+        <name>Spring bank holiday 2027</name>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-05-31</activityDate>
+    </holidays>
+    <holidays>
+        <name>Memorial Day 2027</name>
+        <businessHours>US Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-05-31</activityDate>
+    </holidays>
+    <holidays>
+        <name>Independence Day 2027 (observed)</name>
+        <businessHours>US Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-07-05</activityDate>
+    </holidays>
+    <holidays>
+        <name>Summer bank holiday 2027</name>
+        <businessHours>EMEA Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-08-30</activityDate>
+    </holidays>
+    <holidays>
+        <name>Labor Day 2027</name>
+        <businessHours>US Support</businessHours>
+        <isRecurring>false</isRecurring>
+        <activityDate>2027-09-06</activityDate>
+    </holidays>
+</BusinessHoursSettings>

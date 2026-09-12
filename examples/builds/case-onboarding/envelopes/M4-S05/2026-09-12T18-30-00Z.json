@@ -1,0 +1,290 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T18-30-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-30-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-30-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M4-S05",
+    "precondition_status": "tested (confirmed in plan.json before writing; step-tester's run 2026-09-12T18-12-57Z, the re-test after F-59–F-62, is the evidence)",
+    "rebuild_context": "This step was documented once already (run 2026-09-12T08-52-00Z, D-M4S05-01..05). Since then it was rebuilt four times on the same day — F-59, F-60, F-61 and F-62 — per standards/build-orchestration.md § 4's documented → running rebuild path, and returned to tested. This run re-documents it against the current tree."
+  },
+  "summary": "Re-documented M4-S05 (After-update Apex trigger on Case completing the First Response milestone, plus its test class) after four same-day repairs — F-59 (runAs harness: TestUserFactory added, every test method's action wrapped in System.runAs of a Tier 1 agent), F-60 (fixture seeding moved to TestDataFactory.insertAsSystem, outside the persona context), F-61 (requireActiveProcess() now filters by name instead of an unfiltered LIMIT 1), and F-62 — the first repair to touch shipped code: CaseMilestoneService's CaseMilestone query and DML now run WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE, with three new failures-empty assertions closing the silent gap. Four decisions appended to decisions.md (D-M4S05-06..09, one per finding, each a deviation citing its rejected alternative and its skill grounding) plus one open item (O-M4S05-01: TestUserFactory ships from this step undeclared in outputs[], and M5-S05's package.xml owes it a fifth ApexClass member). Four existing workbook rows updated in workbook/06-automation.md (CWB-AUT-022–025) to reflect what changed — 023 and 024 substantially (the system-mode boundary and the four-repair test history), 022 and 025 with a shorter confirmation note — and one new row added (CWB-AUT-031, TestUserFactory, the fifth Apex file this step ships). workbook/99-other-configuration.md's CWB-OTHER-031 (the deploy-order.md doc row) updated to name deploy-order.md's new §§ 8–11. traceability.md's REQ-044 row rewritten: artefact_paths now include TestUserFactory.cls, and test_result narrates all four repairs plus the org-side acceptance evidence (reports/MOCK-DEPLOY-M5.md run 8: Succeeded, 4/4 tests, 84.4% coverage). PLAN.md and CLARIFICATIONS.md re-rendered. Step set to documented.",
+  "confidence": "HIGH",
+  "outcome": "completed",
+  "confidence_rationale": "Every Step 11 HIGH-row condition holds: every artefact this step ships — including the previously-undeclared TestUserFactory.cls — now has a workbook row; every row carries its existing real source_req_id (REQ-044) and a named verification step; the one requirement this step serves (REQ-044) has an up-to-date traceability row; and no duplicate row was created — the four pre-existing row_ids (CWB-AUT-022–025, CWB-OTHER-031) were updated in place, keyed by their existing row_id, and the one new row (CWB-AUT-031) is a genuinely new artefact, not a re-numbering. check_workbook.py was run on both touched slices (workbook/06-automation.md, workbook/99-other-configuration.md) per the task's own instruction; both exit 1, but every ERROR is 'Missing canonical section' — structural, and inherent to checking a per-step slice in isolation rather than the compiled ten-section document (this file's own header: 'Per-step slice ... not the finished document'; the checker has only ever been run in this build against the M5-S04 compile artefact, never a slice, per plan.json's own run history). No ERROR or new INFO finding landed on any row this run touched or added; the pre-existing INFO notes on CWB-AUT-001–006/013–014 are unrelated and unchanged. This distinction is recorded rather than smoothed over — see Process Observations.",
+  "dimensions_compared": [
+    "decisions log (decisions.md)",
+    "workbook rows (Section 6 — Automation)",
+    "workbook rows (Other configuration)",
+    "traceability rows (REQ-044)",
+    "rendered views (PLAN.md, CLARIFICATIONS.md)",
+    "check_workbook.py result on both touched slices"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "check_rtm.py re-run over traceability.md",
+      "state": "not-run",
+      "reason": "The prior documentation pass (run 2026-09-12T08-52-00Z) ran check_rtm.py at both build and step scope; this pass's own task did not name it, and re-running it was not necessary to update one existing row's content in place — the row's key (REQ-044) and its join to M4-S05 are unchanged, only the cell content is.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md to re-confirm the linter result after this pass's edit, if a fresh count is wanted before the M5 gate."
+    },
+    {
+      "dimension": "compile / org-side re-verification of F-59–F-62",
+      "state": "not-run",
+      "reason": "This agent does not run tests, does not deploy, and does not re-derive content from the metadata artefact files (AGENT.md 'What This Agent Does NOT Do'). The four repairs' closure is recorded exactly as reports/MOCK-DEPLOY-M5.md runs 4–8 and the four apex-builder envelopes state; this pass collates that record, it does not re-confirm it against an org.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None needed for this agent; the operator's own dry-run history (run 8, Succeeded, 4/4, 84.4%) is already the evidence cited."
+    },
+    {
+      "dimension": "M5-S05's own package.xml / deploy-order.md (the TestUserFactory obligation)",
+      "state": "not-run",
+      "reason": "This invocation processes exactly one step (M4-S05) per the Scope Guardrails and the one-step-per-invocation rule. The TestUserFactory manifest gap is M5-S05's to close, not this step's — recorded as an open item (O-M4S05-01) rather than worked around by editing M5-S05's files.",
+      "confidence_impact": "NONE",
+      "retry_hint": "A future build-doc-keeper or metadata-builder pass on M5-S05, once it is rebuilt to add the TestUserFactory member, closes this obligation."
+    },
+    {
+      "dimension": "Wave 10 deliverable pair under docs/reports/build-doc-keeper/",
+      "state": "not-run",
+      "reason": "The task restricts this invocation to writes under the build directory; the report/envelope pair lives at envelopes/M4-S05/<run_id>.{md,json} only, the same scoping every prior build-doc-keeper pass on this build has recorded.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-run without the write restriction to also emit docs/reports/build-doc-keeper/<run_id>.{md,json}."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every field written into the four updated workbook rows, the new CWB-AUT-031 row, and REQ-044's rewritten test_result cell traces to plan.json, the four apex-builder repair envelopes, the step-tester re-test envelope, or artefacts/M4-S05/deploy-order.md §§ 8–11 (read read-only for target_value, per this agent's own scope rule) — none of it was narrated from reading the Apex source directly.",
+      "evidence": {
+        "source": "input",
+        "path": "envelopes/M4-S05/2026-09-12T17-06-24Z.json, 2026-09-12T17-52-00Z.json, 2026-09-12T18-05-00Z.json, 2026-09-12T18-20-00Z.json, 2026-09-12T18-12-57Z.json"
+      },
+      "domain": "build-orchestration"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_workbook.py's row-level checks (row_id uniqueness, recommended_agent resolution, recommended_skills resolution, decision-tree citation for Section 6) found nothing wrong with any row this run touched or added — the only findings are the structural missing-section errors a per-step slice always produces when checked in isolation, and INFO notes on six pre-existing, unedited rows.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/06-automation.md, workbook/99-other-configuration.md"
+      },
+      "domain": "test-integrity"
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "check_workbook.py has no way to lint a per-step slice on its own terms — it always checks for all ten canonical sections, so running it against workbook/06-automation.md or workbook/99-other-configuration.md in isolation always exits 1 on structural grounds regardless of row quality. Every prior use of this checker in this build's history (plan.json's own run log) has been against the compiled artefacts/M5-S04/configuration-workbook.md, never a slice. A reviewer reading only the exit code of this run's check_workbook.py calls, without this note, could mistake the nine/ten structural errors for a content defect.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/06-automation.md"
+      },
+      "domain": "skill-quality"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "F-62's cross-skill tension — skills/apex/apex-stripinaccessible-and-fls-enforcement's 'Before Starting' line reading imprecisely for a class a trigger calls, versus skills/apex/apex-security-patterns' finer docs-grounded rule — was recorded in D-M4S05-09 exactly as apex-builder's own envelope framed it (findings AB-M4S05-27, process_observations 'ambiguous'). This agent does not adjudicate skill content; it carries the signal forward for whichever agent next revises that skill.",
+      "evidence": {
+        "source": "input",
+        "path": "envelopes/M4-S05/2026-09-12T18-20-00Z.json finding AB-M4S05-27"
+      },
+      "domain": "skill-quality"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "M4-S05 is documented again; the TestUserFactory manifest gap (O-M4S05-01) means M5-S05's own package.xml and workbook row (CWB-OTHER-042) are now stale against this step's true Apex member count.",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M5-S05/deploy-order.md § 1, artefacts/M5-S05/package.xml"
+      },
+      "suggested_followup_agent": "metadata-builder",
+      "followup_reason": "metadata-builder owns the M5-S05 step and its package.xml; adding the TestUserFactory ApexClass member is the only remaining action closing O-M4S05-01."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "F-62 changed shipped code (CaseMilestoneService's access mode) for the first time in this step's history, and apex-builder's own envelope already names a post-assembly FLS/CRUD check as unconfirmed.",
+      "evidence": {
+        "source": "input",
+        "path": "envelopes/M4-S05/2026-09-12T18-20-00Z.json finding AB-M4S05-25, followups[]"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "Independent verification that the new WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE boundary is scoped to exactly this one object and DML, not wider — the same follow-up apex-builder's own envelope already recommends."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S05",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-AUT-022",
+        "section": "6 — Automation",
+        "action": "updated",
+        "target_value": "ApexTrigger:CaseMilestoneTrigger"
+      },
+      {
+        "row_id": "CWB-AUT-023",
+        "section": "6 — Automation",
+        "action": "updated",
+        "target_value": "ApexClass:CaseMilestoneService (F-62 system-mode boundary)"
+      },
+      {
+        "row_id": "CWB-AUT-024",
+        "section": "6 — Automation",
+        "action": "updated",
+        "target_value": "ApexClass:CaseMilestoneServiceTest (F-59–F-62)"
+      },
+      {
+        "row_id": "CWB-AUT-025",
+        "section": "6 — Automation",
+        "action": "updated",
+        "target_value": "ApexClass:TestDataFactory (F-60 refresh, insertAsSystem)"
+      },
+      {
+        "row_id": "CWB-AUT-031",
+        "section": "6 — Automation",
+        "action": "added",
+        "target_value": "ApexClass:TestUserFactory (F-59)"
+      },
+      {
+        "row_id": "CWB-OTHER-031",
+        "section": "Other configuration",
+        "action": "updated",
+        "target_value": "artefacts/M4-S05/deploy-order.md (§§ 8–11 named)"
+      }
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-044",
+        "action": "updated",
+        "step_id": "M4-S05",
+        "status": "In UAT"
+      }
+    ],
+    "decisions_appended": [
+      "D-M4S05-06",
+      "D-M4S05-07",
+      "D-M4S05-08",
+      "D-M4S05-09",
+      "O-M4S05-01"
+    ],
+    "rows_replaced": [
+      "CWB-AUT-022",
+      "CWB-AUT-023",
+      "CWB-AUT-024",
+      "CWB-AUT-025",
+      "CWB-OTHER-031",
+      "REQ-044"
+    ],
+    "check_workbook_result": {
+      "workbook/06-automation.md": "exit 1 — 9 ERROR (all 'Missing canonical section', structural, expected for a per-step slice), 8 pre-existing INFO on unrelated, unedited rows (CWB-AUT-001–006, 013–014)",
+      "workbook/99-other-configuration.md": "exit 1 — 10 ERROR (all 'Missing canonical section', same structural cause), 0 INFO"
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and on writing outside the build directory"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the confidence rubric this agent's Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and the write-scope restriction invoked here (build-dir-only writes, no docs/reports/ pair this run)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against all four refusal triggers; none fired — the step's status was tested entering this run, per Step 1's precondition"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 the documented→running rebuild path and the step-type-to-section map; § 6 this agent's per-step job; § 8 a decision entry as the deepen-a-skill signal, applied to F-62's skill-quality flag"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step fields read (status, runs[], outputs[], amendments[]) and the ones left alone — plan.json touched only via the single set-status transition"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the row schema and the rule that a re-run replaces a row's content in place, keyed by row_id, rather than appending a duplicate"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the pipe-delimited multi-value convention applied to REQ-044's rewritten artefact_paths (adding TestUserFactory.cls)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "what makes a decision entry reviewable months later — date, decision, alternative rejected, and the source it rests on — applied to all four D-M4S05-06..09 entries and O-M4S05-01"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirmed the one manual acceptance test's deferred status is unchanged by this pass — not applicable beyond that; this is a per-step run, not the M5-S05 compile that produces the UAT pack"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "confirmed this is a per-step run, not the compile run — the UAT case pack is compiled at M5-S05, not written here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirmed the step's one manual acceptance test remains in Given/When/Then shape and needed no reformatting"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-m5-runs-4-8",
+      "path": "reports/MOCK-DEPLOY-M5.md",
+      "used_for": "the org-executed evidence for F-59 (run 4), F-60 (run 5), F-61 (run 6), F-62 (run 7), and its closure (run 8: Succeeded, 4/4 tests, 84.4% coverage)"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "metadata-builder",
+      "because": "M5-S05's package.xml and workbook row are stale by one ApexClass member (TestUserFactory) until that step is rebuilt to add it."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "Independent confirmation that F-62's new WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE boundary on CaseMilestoneService is scoped to exactly this one object and DML, not wider."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M4-S05 is documented again after this rebuild; milestone:M4 was already accepted on evidence that predates F-59–F-62, so a re-run confirms the milestone's acceptance still holds against the repaired tree."
+    }
+  ]
+}

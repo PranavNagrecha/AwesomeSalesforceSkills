@@ -1,0 +1,330 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T18-05-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-05-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-05-00Z.json",
+  "summary": "Third section 4 test-only repair of documented step M4-S05, on top of the first two (F-59 section 8, F-60 section 9), for F-61 (reports/MOCK-DEPLOY-M5.md run 6): after the section 9 seeding fix the persona could create and update the Case (2 of 4 methods pass), but the two milestone-dependent methods still failed because requireActiveProcess() selected WHERE IsActive = true LIMIT 1 with no name filter and a pre-existing active SlaProcess already in the target org (no First Response milestone) won the LIMIT 1 instead of the deployed First_Response_Standard. requireActiveProcess() now filters Name IN ('First_Response_Standard', 'First Response Standard') -- Standard per decisions.md D-M1S01-04 (Support_Tier__c carries no field default, so a synthetic fixture Account is not entitled to assert a Premier contract) and both spellings because neither skills/apex/entitlement-apex-hooks nor skills/admin/entitlements-and-milestones states whether SlaProcess.Name preserves the metadata name attribute literally or stores a space-separated label form -- and asserts exactly one match, naming the process and the count found on failure. LIMIT 1 was dropped. No other method, and no shipped class (CaseMilestoneService.cls, CaseMilestoneTrigger.trigger), changed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Both declared and requested checkers exit 0 (check_entitlement_apex_hooks.py --strict: 5 files, 0 ERROR/0 WARN; check_test_class_standards.py --strict: score 100, 0 findings). check-outputs is ok on all 8 declared paths. Confidence stays at MEDIUM, not HIGH, because: (1) no offline Apex compiler exists (agents/apex-builder/GATES.md Gate D) and this build has no target_org_alias, so this repair is confirmed only by the operator's next dry run (run 7); (2) which of the two queried Name spellings the target org actually stores is unresolved by this repair -- the IN clause sidesteps rather than answers the question, and neither cited skill settles it; and (3) this is the third repair to this step in one session, each a different defect class than the last, which is evidence of convergence but not proof no fourth defect remains once run 7 executes past this one.",
+  "inputs_received": {
+    "kind": "test_only",
+    "primary_sobject": "Case",
+    "feature_summary": "Third section 4 test-only repair of CaseMilestoneServiceTest for F-61: select the deployed First_Response_Standard entitlement process by name instead of any active SlaProcess, assert exactly one match, and name the process in the failure message.",
+    "api_version": "67.0 (unchanged)",
+    "rebuild_reason": "F-61 -- reports/MOCK-DEPLOY-M5.md run 6: requireActiveProcess()'s WHERE IsActive = true LIMIT 1 (no name filter) returned a pre-existing active SlaProcess in the target org (no First Response milestone) instead of the deployed First_Response_Standard, so both milestone-dependent methods failed on a missing milestone",
+    "operator_transition": "built -> failed -> pending -> running (standards/build-orchestration.md section 4, a third test-only repair of a documented step in a build whose gates are all approved)",
+    "scope": "CaseMilestoneServiceTest.cls, requireActiveProcess() only (plus a new STANDARD_PROCESS_NAMES constant and the class-level doc comment). CaseMilestoneService.cls, CaseMilestoneTrigger.trigger, TestDataFactory.cls and TestUserFactory.cls explicitly unchanged.",
+    "process_name_choice": "Standard, not Premier -- decisions.md D-M1S01-04 (Account.Support_Tier__c carries no field default because the contracted tier is a contractual fact; this fixture's synthetic Account has no such fact, so naming Standard explicitly is the only reading that does not assert a tier the fixture does not have). artefacts/M4-S02/entitlementProcesses/ ships both First_Response_Premier and First_Response_Standard.",
+    "name_spelling_uncertainty": "Neither skills/apex/entitlement-apex-hooks nor skills/admin/entitlements-and-milestones states whether SlaProcess.Name preserves the metadata <name> attribute literally (First_Response_Standard, per artefacts/M4-S02/deploy-order.md section 4.1) or stores a space-separated label form (First Response Standard). UNVERIFIED -- both spellings are queried via an IN clause rather than guessed, per the task instruction.",
+    "prior_repairs": "envelopes/M4-S05/2026-09-12T17-06-24Z.json (section 8, F-59) and envelopes/M4-S05/2026-09-12T17-52-00Z.json (section 9, F-60) -- this run builds on both and reopens neither",
+    "target_org_alias": "(absent -- build_mode design-only)"
+  },
+  "dimensions_compared": [
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "Scope is test-only; CaseMilestoneService.cls and CaseMilestoneTrigger.trigger are unchanged, so no decomposition question was reopened.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "not-run",
+      "reason": "requireActiveProcess()'s query shape changed (added a Name filter, dropped LIMIT 1) but it is not inside any measured governor-limit window in this class; no assertion in this class depends on its query cost.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "security-posture",
+      "state": "not-run",
+      "reason": "This repair touches only a SOQL SELECT's WHERE clause and an assertion; no DML, FLS, or sharing behaviour changed. Sections 8 and 9 already addressed this class's security-posture dimension.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "bulk-safety",
+      "state": "not-run",
+      "reason": "requireActiveProcess() is called once per test method, not in a loop, and this repair does not change its bulk shape.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "Unchanged from prior runs -- ApplicationLogger is still not wired (deploy-order.md section 6); this repair does not touch CaseMilestoneService.cls.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No hardcoded Ids introduced; STANDARD_PROCESS_NAMES holds two literal Name-field strings, not Ids.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "not-run",
+      "reason": "No secrets in scope for a query-scoping repair.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-M4S05-20",
+      "severity": "P1",
+      "title": "F-61 addressed: requireActiveProcess() now selects the deployed process by name",
+      "detail": "The query adds AND Name IN :STANDARD_PROCESS_NAMES and drops LIMIT 1. The old if (processes.isEmpty()) / Assert.isTrue(false, ...) pair is replaced with Assert.areEqual(1, processes.size(), ...), which fails loudly both when the named process is missing/inactive and when more than one row matches -- a duplicate-match case LIMIT 1 could never surface because it silently kept only the first row.",
+      "evidence": {
+        "org_error": "milestone assertion failures in triggerWritesCompletionDateOnAnOpenMilestone and skipsAMilestoneThatIsAlreadyCompleted, traced to requireActiveProcess() returning a process with no First Response milestone",
+        "report": "reports/MOCK-DEPLOY-M5.md run 6",
+        "checker_exit": 0,
+        "checker_command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict"
+      },
+      "recommendation": "Confirm at the operator's run 7 (--test-level RunSpecifiedTests --tests CaseMilestoneServiceTest) that all four methods pass."
+    },
+    {
+      "id": "AB-M4S05-21",
+      "severity": "P2",
+      "title": "Process name choice: Standard, not Premier, grounded in D-M1S01-04",
+      "detail": "artefacts/M4-S02/entitlementProcesses/ ships both First_Response_Premier and First_Response_Standard. decisions.md D-M1S01-04 records that Account.Support_Tier__c carries no field default because the contracted tier is a contractual fact about the account; this test's Account fixture is synthetic and has no such fact behind it, so asserting Premier (the higher, opt-in tier) would be the same category of error D-M1S01-04 already rejected for the field itself. Standard is the only choice that does not silently assert a fact the fixture does not have.",
+      "evidence": {
+        "path": "decisions.md",
+        "note": "D-M1S01-04: also rejected -- defaulting Support_Tier__c to Standard; the contracted tier is a contractual fact about the account; a default would silently assert one"
+      },
+      "recommendation": "None -- recorded as the grounding for a choice the task required, not a defect."
+    },
+    {
+      "id": "AB-M4S05-22",
+      "severity": "P2",
+      "title": "SlaProcess.Name spelling is UNVERIFIED; both candidates queried rather than guessed",
+      "detail": "artefacts/M4-S02/deploy-order.md section 4.1 establishes that this build's <name> metadata attribute is First_Response_Standard (matching the declared file base name) and that only the separate, derived SlaProcess.NameNorm field is documented as being lower-cased by the platform. Neither skills/apex/entitlement-apex-hooks nor skills/admin/entitlements-and-milestones states whether the Name field itself preserves the underscore form or displays a space-separated label. The fix queries both spellings via an IN clause and asserts exactly one match, which settles the question empirically at run 7 without the test needing to guess it now.",
+      "evidence": {
+        "path": "artefacts/M4-S02/deploy-order.md",
+        "note": "section 4.1: the process file names are not the names a retrieve will produce -- UNVERIFIED"
+      },
+      "recommendation": "Once run 7 shows which spelling matched, a follow-up could narrow STANDARD_PROCESS_NAMES to the confirmed one -- not required, since the IN-clause form is stable either way."
+    },
+    {
+      "id": "AB-M4S05-23",
+      "severity": "INFO",
+      "title": "This step's own section 4 open item, closed on the third repair",
+      "detail": "artefacts/M4-S05/deploy-order.md section 4 named this exact gap before any org ever ran this test: 'requireActiveProcess() takes LIMIT 1 over any active process, not necessarily First_Response_Premier or First_Response_Standard... a sharper filter the skill does not document and this step did not invent one.' It took two org-executed repairs addressing other defects (F-59, F-60) before a run reached far enough to exercise this one.",
+      "evidence": {
+        "path": "artefacts/M4-S05/deploy-order.md",
+        "note": "section 4, pre-existing open item"
+      },
+      "recommendation": "None -- recorded so the sequencing (documented gap, then three org-driven repairs before it surfaced) is visible to a reader of the full record."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The section 9 seeding fix held under real org execution -- 2 of 4 methods passed outright, and the 2 that failed did so on a milestone-lookup assertion, not on any FLS or DML error. Each of the three repairs (F-59, F-60, F-61) has addressed a strictly different defect class than the one before it, which is evidence the repair loop is converging rather than oscillating between the same two defects.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M5.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "artefacts/M4-S05/deploy-order.md section 4 documented this exact LIMIT 1 gap as an open item at the step's very first build, before any org ever executed this test. It took three org-executed runs to reach the one open item that was known from the start, because earlier runs failed on other defects before ever exercising requireActiveProcess() far enough to expose it. A documented-but-unenforced open item is easy to lose track of across repairs aimed at other defects nearby in the same method.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Which of the two queried Name spellings the target org actually stores for SlaProcess is unresolved by this repair -- the IN clause sidesteps rather than answers the question, and neither this build's cited skills nor its corpus states which one applies.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/entitlement-apex-hooks/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "tests/M4-S05/results.json is stale against a tree whose test class changed again since the last recorded test run.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Its results.json needs to be re-written against a tree that now selects the entitlement process by name."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "F-61, this repair, and the Standard-vs-Premier / Name-spelling grounding are not yet recorded in decisions.md.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "decisions.md is the append-only record of build decisions and does not yet carry this repair."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4's built -> failed -> pending -> running reset and the third documented-shape running rebuild for a step whose gates are all approved"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Gate C self-verification checks"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-agent",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "Step 6 template-class provenance check (no template class touched this run) and Step 7 Gate C"
+    },
+    {
+      "type": "skill",
+      "id": "apex/entitlement-apex-hooks",
+      "path": "skills/apex/entitlement-apex-hooks/references/metadata-examples.md",
+      "used_for": "Searched for, and found silent on, whether SlaProcess.Name preserves the metadata name attribute literally"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/metadata-examples.md",
+      "used_for": "The <name> vs. NameNorm distinction (file-naming section) that establishes what IS documented about process naming, and by omission what is not"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/gotchas.md",
+      "branch": "Gotcha 12 (file name derived from NameNorm, not the display name)",
+      "used_for": "Confirming NameNorm is a separate, lower-cased, derived field from Name, so its documented reshaping does not settle what Name itself stores"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-m5-run6",
+      "path": "reports/MOCK-DEPLOY-M5.md",
+      "branch": "Run 6",
+      "used_for": "F-61, the failing milestone-lookup evidence this repair responds to"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S02-entitlement-processes",
+      "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml",
+      "used_for": "Confirms the deployed process file and its <name> attribute, First_Response_Standard"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S02-entitlement-processes-premier",
+      "path": "artefacts/M4-S02/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml",
+      "used_for": "Confirms Premier exists as the rejected alternative, not queried by this fixture"
+    },
+    {
+      "type": "probe",
+      "id": "decisions-D-M1S01-04",
+      "path": ".sfskills/builds/case-onboarding/decisions.md",
+      "branch": "D-M1S01-04",
+      "used_for": "Grounds why the fixture names Standard explicitly rather than defaulting or guessing the tier"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S02-deploy-order-4.1",
+      "path": "artefacts/M4-S02/deploy-order.md",
+      "branch": "Section 4.1",
+      "used_for": "The <name> vs. NameNorm distinction underlying the UNVERIFIED spelling question"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S05-deploy-order-section4",
+      "path": "artefacts/M4-S05/deploy-order.md",
+      "branch": "Section 4",
+      "used_for": "The original open item this finding closes -- documented before this step's first org run"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S05-envelope-run4",
+      "path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T17-06-24Z.json",
+      "used_for": "The first section 4 test-only repair (F-59) this run builds on and does not reopen"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S05-envelope-run5",
+      "path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T17-52-00Z.json",
+      "used_for": "The second section 4 test-only repair (F-60) this run builds on and does not reopen"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "results.json is stale against a tree whose test class changed again since the last recorded test run."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "F-61, this repair, and the Standard-vs-Premier / spelling grounding are not yet in decisions.md."
+    }
+  ],
+  "extensions": {
+    "rebuild_of": "2026-09-12T17-52-00Z",
+    "operator_transition": "built -> failed -> pending -> running, third section 4 test-only repair",
+    "files_added": [],
+    "files_replaced": [],
+    "files_edited": [
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls (requireActiveProcess() rewritten to filter Name IN STANDARD_PROCESS_NAMES and assert exactly one match; new STANDARD_PROCESS_NAMES constant added; class-level doc comment gained a third repair paragraph; every other method byte-for-byte unchanged from section 9)",
+      "artefacts/M4-S05/deploy-order.md (section 10 repair record added; Sources updated)"
+    ],
+    "files_unchanged_byte_for_byte": [
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+      "artefacts/M4-S05/classes/TestDataFactory.cls",
+      "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml",
+      "artefacts/M4-S05/classes/TestUserFactory.cls",
+      "artefacts/M4-S05/classes/TestUserFactory.cls-meta.xml"
+    ],
+    "checker_results": {
+      "declared_checker": {
+        "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05 --strict",
+        "exit": 0,
+        "stdout": "scanned 5 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN"
+      },
+      "requested_checker": {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict",
+        "exit": 0,
+        "stdout": "Scanned 4 Apex class file(s); audited 3 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0",
+        "score": 100,
+        "user_mode_test_without_runas_count": 0
+      },
+      "check_outputs": {
+        "ok": true,
+        "missing": [],
+        "empty": [],
+        "malformed": []
+      }
+    },
+    "package_xml_obligation": {
+      "owning_step": "M5-S05",
+      "new_member_needed": "ApexClass TestUserFactory",
+      "recorded_at": "artefacts/M4-S05/deploy-order.md section 8 (unchanged by this run)",
+      "edited_by_this_run": false
+    },
+    "no_deploy_no_gate": "No sf command was run, no org was contacted, no gate was touched. Only files under .sfskills/builds/case-onboarding/artefacts/M4-S05/ and its own envelopes/ directory were written."
+  }
+}

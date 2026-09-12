@@ -1,0 +1,11 @@
+Case {!Case.CaseNumber} has been escalated to Tier 2.
+
+Subject:  {!Case.Subject}
+Priority: {!Case.Priority}
+Origin:   {!Case.Origin}
+
+The case reached the 8-business-hour escalation threshold without a first
+response and has been reassigned to the Tier 2 Engineering queue. Open it from
+the queue list view to take ownership.
+
+Acme Support operations

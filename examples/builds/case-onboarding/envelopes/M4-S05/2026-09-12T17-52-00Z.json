@@ -1,0 +1,314 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T17-52-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T17-52-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T17-52-00Z.json",
+  "summary": "Second section 4 test-only repair of documented step M4-S05, on top of the first (F-59, envelope 2026-09-12T17-06-24Z.json, deploy-order.md section 8), for F-60 (reports/MOCK-DEPLOY-M5.md run 5): wrapping the fixture inserts themselves in System.runAs(agent) failed FLS on Subject, Origin, AccountId, Priority and EntitlementId, none of which Case_Agent_Core/Case_Tier1 grant Edit on -- only Severity__c. Per skills/apex/test-class-standards/references/gotchas.md Gotcha 15, every fixture insert in CaseMilestoneServiceTest (Account, Entitlement, every Case row) now runs through TestDataFactory.insertAsSystem(...) outside System.runAs(agent); only the action under test (the Status change that fires CaseMilestoneTrigger, and the CaseMilestoneService.completeMilestones calls that stand in for it in the other three methods) still runs inside System.runAs(agent). TestDataFactory.cls was refreshed to a verbatim copy of the current template (commit be09a7bff, which added insertAsSystem since the section 8 copy at commit 5edcb3281). No assertion, message string, or Test.startTest/stopTest boundary was added, removed or changed. CaseMilestoneService.cls, CaseMilestoneTrigger.trigger and TestUserFactory.cls are unchanged byte for byte since section 8.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Both declared and requested checkers exit 0 (check_entitlement_apex_hooks.py --strict: 5 files, 0 ERROR/0 WARN; check_test_class_standards.py --strict: score 100, 0 findings). check-outputs is ok on all 8 declared paths, and both copied template classes diff empty against their canonical sources. Confidence stays at MEDIUM, not HIGH, because: (1) no offline Apex compiler exists (agents/apex-builder/GATES.md Gate D) and this build has no target_org_alias, so this repair is confirmed only by the operator's next dry run (run 6), not executed by this agent; (2) whether the persona's own FLS is sufficient for the action under test (the trigger's write to CaseMilestone.CompletionDate) remains unverified without an org, unaffected by this repair either way; and (3) this is the second repair to the same defect class (F-59 then F-60) in one session, which is itself evidence the first repair's diagnosis was incomplete rather than proof this one is exhaustive.",
+  "inputs_received": {
+    "kind": "test_only",
+    "primary_sobject": "Case",
+    "feature_summary": "Second section 4 test-only repair of CaseMilestoneServiceTest for F-60: move every fixture insert (Account, Entitlement, Case) to system mode via TestDataFactory.insertAsSystem, keeping only the action under test inside System.runAs(agent), and refresh TestDataFactory.cls to the current template.",
+    "api_version": "67.0 (unchanged)",
+    "rebuild_reason": "F-60 -- reports/MOCK-DEPLOY-M5.md run 5: the Tier 1 persona can create a Case but Case_Agent_Core/Case_Tier1 grant field permissions on only Severity__c, so the section 8 repair's fixture Case insert (Subject, Origin, AccountId, Priority, EntitlementId) failed FLS while running as the agent",
+    "operator_transition": "built -> failed -> pending -> running (standards/build-orchestration.md section 4, a second test-only repair of a documented step in a build whose gates are all approved)",
+    "scope": "CaseMilestoneServiceTest.cls (fixture inserts moved to TestDataFactory.insertAsSystem, caseInsideProcess loses its agent parameter) and TestDataFactory.cls (refreshed verbatim to the current template). CaseMilestoneService.cls, CaseMilestoneTrigger.trigger and TestUserFactory.cls explicitly unchanged.",
+    "prior_repair": "envelopes/M4-S05/2026-09-12T17-06-24Z.json and deploy-order.md section 8 (F-59) -- this run builds on it and does not reopen the permission-set choice or the mixed-DML fence in mintAgent()",
+    "parallel_repair_not_depended_on": "A separate repair to M2-S02's permission sets (standard-field permissions on the Tier 1 sets) is out of scope for this step and this run does not depend on or wait for it, per the task instruction",
+    "target_org_alias": "(absent -- build_mode design-only)"
+  },
+  "dimensions_compared": [
+    "security-posture",
+    "bulk-safety",
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "Scope is test-only; CaseMilestoneService.cls and CaseMilestoneTrigger.trigger are unchanged, so no decomposition question was reopened.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "count-only",
+      "reason": "staysAtOneQueryAndOneDmlFor200Cases' Limits.getQueries()/getDmlStatements() assertions are unchanged; moving the 200-Case insert to before Test.startTest() via insertAsSystem does not change what the measured delta covers, since the insert already ran before the window in every prior version of this method.",
+      "confidence_impact": "LOW",
+      "retry_hint": "Confirm at run 6 that the delta assertions still pass with the fixture seeded in system mode."
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "Unchanged from prior runs -- ApplicationLogger is still not wired (deploy-order.md section 6); this repair does not touch CaseMilestoneService.cls.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No hardcoded Ids introduced; insertAsSystem takes the same in-memory record lists the prior ambient inserts took.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "not-run",
+      "reason": "No secrets in scope for a test-only fixture-seeding repair.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-M4S05-15",
+      "severity": "P1",
+      "title": "F-60 addressed: fixture inserts now seed in system mode, outside System.runAs(agent)",
+      "detail": "Case_Agent_Core grants Create on Case but field permissions on only Severity__c; Case_Tier1 adds none. The section 8 repair's fixture Case insert -- Subject, Origin, AccountId, Priority, EntitlementId all populated -- therefore failed FLS while running as the agent, the same error class section 8 was written to fix, now on the fixture. entitlementFor's Account/Entitlement inserts and caseInsideProcess's, staysAtOneQueryAndOneDmlFor200Cases', and ignoresCasesWhoseStatusDidNotChange's Case inserts all now go through TestDataFactory.insertAsSystem(...), called outside any System.runAs(agent) block.",
+      "evidence": {
+        "org_error": "System.DmlException: Operation failed due to fields being inaccessible on Sobject Case, check errors on Exception or Result! fieldNames: EntitlementId (Gotcha 15's worked example; run 5's probe named Subject, Origin, AccountId, Priority, EntitlementId)",
+        "report": "reports/MOCK-DEPLOY-M5.md run 5",
+        "checker_exit": 0,
+        "checker_command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict"
+      },
+      "recommendation": "Confirm at the operator's run 6 (--test-level RunSpecifiedTests --tests CaseMilestoneServiceTest)."
+    },
+    {
+      "id": "AB-M4S05-16",
+      "severity": "P1",
+      "title": "The action under test stays inside System.runAs(agent); only fixture setup moved",
+      "detail": "Every Assert.* call, every Test.startTest/Test.stopTest boundary, the CaseMilestone queries and the real update responded; in triggerWritesCompletionDateOnAnOpenMilestone, and every CaseMilestoneService.completeMilestones(...) call in the other three methods, are unchanged and still run inside System.runAs(agent). These are the only DML or query a real Tier 1 agent performs in this domain, and are the reason System.runAs(agent) exists in this class at all (F-59).",
+      "evidence": {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls"
+      },
+      "recommendation": "None -- this is the boundary Gotcha 15 draws; recorded as the shape of the fix, not a defect."
+    },
+    {
+      "id": "AB-M4S05-17",
+      "severity": "P2",
+      "title": "caseInsideProcess's User agent parameter removed; both callers updated",
+      "detail": "caseInsideProcess no longer performs any persona-context DML, so its User agent parameter was dropped rather than left unused. triggerWritesCompletionDateOnAnOpenMilestone and skipsAMilestoneThatIsAlreadyCompleted both still call mintAgent() and use the returned agent for the action that follows caseInsideProcess -- only the call to caseInsideProcess itself lost the argument.",
+      "evidence": {
+        "path": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls"
+      },
+      "recommendation": "None -- a signature change internal to this test class, not a public contract."
+    },
+    {
+      "id": "AB-M4S05-18",
+      "severity": "P2",
+      "title": "TestDataFactory.cls refreshed to a newer template commit than section 8 shipped",
+      "detail": "The template gained insertAsSystem(List<SObject>) at commit be09a7bff, after section 8 copied it at commit 5edcb3281. The refreshed copy is diff-empty against the current template. This is a superset addition (a new static method) with no change to any method section 8's copy already used, so no caller in this class needed updating beyond the new insertAsSystem call sites this repair adds.",
+      "evidence": {
+        "diff": "diff templates/apex/tests/TestDataFactory.cls artefacts/M4-S05/classes/TestDataFactory.cls -- empty",
+        "commit": "be09a7bff"
+      },
+      "recommendation": "None -- verbatim refresh, required by the task and by Step 6's provenance check."
+    },
+    {
+      "id": "AB-M4S05-19",
+      "severity": "INFO",
+      "title": "No recurrence of the section 8 checker-parsing hazard",
+      "detail": "Section 8 (AB-M4S05-14) recorded that a stray apostrophe in a comment defeats check_test_class_standards.py's strip_literals quote-pairing, hiding every System.runAs(agent) call from has_permissioned_runas. Every comment this repair added or edited was written apostrophe-free and re-checked before the checker ran; both checkers passed clean on the first attempt this time.",
+      "evidence": {
+        "path": "skills/apex/test-class-standards/scripts/check_test_class_standards.py",
+        "function": "strip_literals, has_permissioned_runas"
+      },
+      "recommendation": "None -- confirms the section 8 workaround generalizes; the underlying checker defect (flagged for build-doc-keeper in section 8) is still open."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both the declared checker and the requested check_test_class_standards.py run clean under --strict on the first attempt this time, and check-outputs confirms all 8 declared paths are still present -- the repair is auditable as a small, targeted diff rather than a rewrite.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S05/"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This is the second time in one session that a repair aimed at running the test as the permissioned persona (section 8, F-59) itself needed a second repair (section 9, F-60) because the first pass conflated fields the persona's own code path writes with fields a fixture needs populated to be meaningful. Gotcha 15 was authored from this exact finding, per its own 'Where this came from' note, which suggests the distinction is genuinely non-obvious rather than a one-off oversight in this step.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/test-class-standards/references/gotchas.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Five milestone verifications, every checker, and two org dry runs passed the section 8 repair before run 5 caught F-60, because nothing in the library asserted that an object grant (Case Create) is accompanied by field grants on the standard fields a persona's layouts and processes actually populate. That gap is named in run 5's own finding as a library gap, not only a this-build gap.",
+      "domain": "skill-quality",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M5.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Whether Case_Agent_Core plus Case_Tier1 grant sufficient FLS for the action under test -- the trigger's indirect write to CaseMilestone.CompletionDate -- is unverified in a design-only build and is unaffected by this repair either way, since system mode only changes how the fixture is seeded, not what the persona can do afterward.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S02/permissionsets/"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "tests/M4-S05/results.json is stale against a tree whose test class and TestDataFactory.cls both changed again since the last recorded test run.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M4-S05].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Its results.json needs to be re-written against a tree that now seeds fixtures in system mode."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "F-60, this repair, and Gotcha 15's origin are not yet recorded in decisions.md.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "decisions.md is the append-only record of build decisions and does not yet carry this repair."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4's built -> failed -> pending -> running reset and the documented-shape running rebuild path for a second test-only repair of a step whose gates are all approved; Section 5 The Apex exception"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Apex security idiom by API version (67.0, user mode by default) and Gate C self-verification checks"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-agent",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "Step 6 template-class provenance check and Step 7 Gate C, applied to the refreshed TestDataFactory copy and the unchanged TestUserFactory copy"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/gotchas.md",
+      "branch": "Gotcha 15 (seed in system mode, act as the persona)",
+      "used_for": "The defect F-60 names and the exact shape of the fix -- what moves to insertAsSystem and what stays inside System.runAs(agent)"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/gotchas.md",
+      "branch": "Gotchas 13 and 14 (the section 8 defects, not reopened here)",
+      "used_for": "Confirming this repair does not undo the section 8 fixes -- every method still runs its action under test inside a permissioned System.runAs, and the factory still guards null lookups"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "Copied verbatim (commit be09a7bff, adds insertAsSystem) to refresh artefacts/M4-S05/classes/TestDataFactory.cls; diff empty"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestUserFactory.cls",
+      "path": "templates/apex/tests/TestUserFactory.cls",
+      "used_for": "Re-verified unchanged since section 8; diff empty"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-m5-run5",
+      "path": "reports/MOCK-DEPLOY-M5.md",
+      "branch": "Run 5",
+      "used_for": "F-60, the failing fixture-insert evidence this repair responds to"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S05-envelope-run4",
+      "path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T17-06-24Z.json",
+      "used_for": "The first section 4 test-only repair (F-59) this run builds on and does not reopen"
+    },
+    {
+      "type": "probe",
+      "id": "M4-S05-deploy-order-section8",
+      "path": "artefacts/M4-S05/deploy-order.md",
+      "branch": "Section 8",
+      "used_for": "The permission-set choice, the mixed-DML fence in mintAgent(), and the checker-parsing hazard (AB-M4S05-14) this run confirms did not recur"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "results.json is stale against a tree whose test class and TestDataFactory.cls both changed again since the last recorded test run."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "F-60, this repair, and Gotcha 15's origin are not yet in decisions.md."
+    }
+  ],
+  "extensions": {
+    "rebuild_of": "2026-09-12T17-06-24Z",
+    "operator_transition": "built -> failed -> pending -> running, second section 4 test-only repair",
+    "files_added": [],
+    "files_replaced": [
+      "artefacts/M4-S05/classes/TestDataFactory.cls (verbatim copy of the template as corrected at commit be09a7bff; diff against the template is empty)"
+    ],
+    "files_edited": [
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls (entitlementFor's Account/Entitlement inserts and caseInsideProcess's, staysAtOneQueryAndOneDmlFor200Cases', and ignoresCasesWhoseStatusDidNotChange's Case inserts moved to TestDataFactory.insertAsSystem(...) outside System.runAs(agent); caseInsideProcess lost its User agent parameter; both callers updated; class-level doc comment gained a second repair paragraph; no assertion, message, or Test.startTest/stopTest boundary changed)",
+      "artefacts/M4-S05/deploy-order.md (section 9 repair record added; Sources updated)"
+    ],
+    "files_unchanged_byte_for_byte": [
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls-meta.xml",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml",
+      "artefacts/M4-S05/classes/TestDataFactory.cls-meta.xml",
+      "artefacts/M4-S05/classes/TestUserFactory.cls",
+      "artefacts/M4-S05/classes/TestUserFactory.cls-meta.xml"
+    ],
+    "template_integrity": "diff templates/apex/tests/TestDataFactory.cls artefacts/M4-S05/classes/TestDataFactory.cls -- no output; diff templates/apex/tests/TestUserFactory.cls artefacts/M4-S05/classes/TestUserFactory.cls -- no output",
+    "checker_results": {
+      "declared_checker": {
+        "command": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05 --strict",
+        "exit": 0,
+        "stdout": "scanned 5 Apex file(s) under artefacts/M4-S05: 0 ERROR, 0 WARN"
+      },
+      "requested_checker": {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes --strict",
+        "exit": 0,
+        "stdout": "Scanned 4 Apex class file(s); audited 3 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0",
+        "score": 100,
+        "user_mode_test_without_runas_count": 0
+      },
+      "check_outputs": {
+        "ok": true,
+        "missing": [],
+        "empty": [],
+        "malformed": []
+      }
+    },
+    "package_xml_obligation": {
+      "owning_step": "M5-S05",
+      "new_member_needed": "ApexClass TestUserFactory",
+      "recorded_at": "artefacts/M4-S05/deploy-order.md section 8 (unchanged by this run)",
+      "edited_by_this_run": false
+    },
+    "prior_run_gap_noted": "envelopes/M4-S05/2026-09-12T17-06-24Z.md (the section 8 repair's markdown report) does not exist on disk -- only its .json envelope was found. This run writes both files per DELIVERABLE_CONTRACT.md's atomic-write rule; the missing prior .md is reported here as a process observation on the playbook, not corrected retroactively (this agent does not rewrite a prior run's envelope).",
+    "no_deploy_no_gate": "No sf command was run, no org was contacted, no gate was touched. Only files under .sfskills/builds/case-onboarding/artefacts/M4-S05/ and its own envelopes/ directory were written."
+  }
+}

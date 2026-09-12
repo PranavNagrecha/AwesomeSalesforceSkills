@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PSG_Billing_Prod</fullName>
+    <label>Billing Prod</label>
+    <description>Persona bundle for the 2 Finance staff who work billing@ cases. Owner: CRM admin lead (Q87). No muting permission set is composed here - Billing is granted less, not muted down from more.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <permissionSets>Case_Agent_Core</permissionSets>
+    <permissionSets>Case_Billing</permissionSets>
+</PermissionSetGroup>

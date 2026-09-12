@@ -1,0 +1,170 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "summary": "Rebuild #3 of M2-S02 (access step: permission sets and permission set groups for Tier 1, Tier 2 and Billing), a §4 repair of a documented step whose step gate is approved, triggered by reports/MOCK-DEPLOY-M5.md run 5 finding F-60: a TestUserFactory user holding Case_Agent_Core + Case_Tier1, inserting a Case under System.runAs(agent), failed with 'Operation failed due to fields being inaccessible on Sobject Case ... fieldNames: Subject,Origin,AccountId,Priority,EntitlementId'. Added seven fieldPermissions blocks to Case_Agent_Core.permissionset-meta.xml (Case.AccountId, Case.ContactId, Case.Description, Case.Origin, Case.Priority, Case.Subject, Case.SuppliedEmail; readable=true/editable=true), grounded in the M1-S02 Case Support/Billing layouts' Edit-behavior fields, milestone F-09/F-10/F-11 (ContactId/Description/SuppliedEmail required on layout), and the F-60 fixture itself for AccountId (TestDataFactory.createCases sets AccountId on the Case the agent inserts). Deliberately excluded Case.EntitlementId (stamped by M4-S03's before-save Flow, per the plan's entitlement design and F-60's own fix note) and Case.Type/Case.Reason (neither field appears on either Case layout). Case_Tier1, Case_Tier2 and Case_Billing were not touched: F-60 states plainly that 'Case_Tier1 adds none', and no source names a standard Case field any of the three delta personas write differently. Reworded Case_Agent_Core's <description> (193 chars, under both the 255-char ERROR and 200-char INFO thresholds) to state the addition and the EntitlementId exclusion. The checker's second PSVP-FLS-01 WARN, on Case_Agent_Core's EmailMessage grant, is left standing and explained rather than guessed: the persona does reply to emails (the set's own description and decisions.md D-M2S02-01 both say so) but no layout, workbook row or decision in this build enumerates which standard EmailMessage fields a reply populates, and inventing them would repeat the exact failure mode F-60 is a case study of. All three cited checkers exit 0 (Case PSVP-FLS-01 cleared; EmailMessage PSVP-FLS-01 remains as a named, explained residual); check-outputs is ok; all 8 XML files parse; the manifest is unchanged and still consistent (no new component, only field grants inside an existing file).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "The Case half of this repair is HIGH by the Step 10 table: every added element (Case.AccountId, Case.ContactId, Case.Description, Case.Origin, Case.Priority, Case.Subject, Case.SuppliedEmail) traces to the M1-S02 layouts, F-09/F-10/F-11, or the F-60 fixture itself; all three cited checkers exited 0 on the first repair pass; check-outputs is ok; nothing was written outside artefacts/M2-S02/. Held to MEDIUM overall because one row could not be answered from any source on file: which standard EmailMessage fields the persona populates when replying has no layout, workbook row or decision naming them, so that PSVP-FLS-01 WARN is left as a recorded ambiguity rather than resolved by invented field names -- exactly the kind of guess F-60 is a case study against.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The repair stayed inside the one file the finding named. Case_Tier1, Case_Tier2, Case_Billing and the three PermissionSetGroup files needed no edit: F-60 itself says 'Case_Tier1 adds none', and re-running the group-composition checker after the edit still shows Case_Agent_Core referenced by all three PSGs with no naming or membership drift.",
+      "evidence": { "source": "repo_scan", "path": "reports/MOCK-DEPLOY-M5.md; artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml; artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml; artefacts/M2-S02/permissionsets/Case_Billing.permissionset-meta.xml" }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "skills/admin/permission-sets-vs-profiles shipped PSVP-FLS-01 (WARN) between the last M2-S02 rebuild and this one, so this repair had a mechanical check to build against rather than relying only on the prose gotcha -- the same checker also caught the EmailMessage gap this report leaves as a named residual, which is exactly the kind of second-order catch a library fix is supposed to produce.",
+      "evidence": { "source": "repo_scan", "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py; skills/admin/permission-sets-vs-profiles/references/gotchas.md" }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "F-60 reached the build at M5, five milestone verifications and two org dry runs after M2-S02 was first marked tested and documented -- the gap survived every declarative-only check because nothing exercised the permission sets as the persona until an Apex test ran runAs(agent). Any other access-model step in this build (M2-S01's integration permission set, M2-S03's base profiles) that has not had an as-persona DML test run against it carries the same unverified risk this one just proved out.",
+      "evidence": { "source": "input", "path": "reports/MOCK-DEPLOY-M5.md" }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "No artefact in this build (layout, workbook row, or decision) names which standard EmailMessage fields a Tier 1/2/Billing reply populates, even though Case_Agent_Core's own description and decisions.md D-M2S02-01 both say the persona drafts EmailMessage records. The PSVP-FLS-01 WARN on EmailMessage is left standing rather than closed by a guessed field list.",
+      "evidence": { "source": "repo_scan", "path": ".sfskills/builds/case-onboarding/decisions.md (D-M2S02-01); artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml" }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "This step is back at built; its tested and documented run records (and the M2 milestone verdict) again predate the current file contents and need to be re-run before they are trustworthy.",
+      "evidence": { "source": "input", "path": ".sfskills/builds/case-onboarding/plan.json" },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Re-run the step's declared checkers and molecular tests against the rebuilt Case_Agent_Core before its tested status is trusted again."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The workbook row CWB-PERM-003 and decisions.md quote Case_Agent_Core's pre-repair field-permission set and description; they need refreshing once this rebuild is tested.",
+      "evidence": { "source": "input", "path": ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md" },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Refresh CWB-PERM-003's field-permission list and description text, and append a decision row for this rebuild, once M2-S02 is re-tested."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "A compose-reply UI step (Case Feed quick-action or EmailMessage layout) does not exist anywhere in this plan, which is the reason the EmailMessage field list above cannot be grounded from a layout the way the Case fields were.",
+      "evidence": { "source": "input", "path": ".sfskills/builds/case-onboarding/plan.json" },
+      "suggested_followup_agent": "path-designer",
+      "followup_reason": "A Case Feed / email-compose layout or Path step would name the specific EmailMessage fields the persona populates on reply, closing the residual PSVP-FLS-01 WARN with grounded fields rather than leaving it open."
+    }
+  ],
+  "citations": [
+    { "type": "skill", "id": "admin/permission-sets-vs-profiles", "path": "skills/admin/permission-sets-vs-profiles/SKILL.md", "used_for": "PSVP-FLS-01/02 rules and the access-model checker this repair runs before and after" },
+    { "type": "skill", "id": "admin/permission-set-architecture", "path": "skills/admin/permission-set-architecture/SKILL.md", "used_for": "PermissionSet fieldPermissions element set; build-scope description-length check re-run in this repair" },
+    { "type": "skill", "id": "admin/permission-set-group-composition", "path": "skills/admin/permission-set-group-composition/SKILL.md", "used_for": "confirming the three PSGs still compose Case_Agent_Core correctly after the edit" },
+    { "type": "standard", "id": "build-orchestration-3", "path": "standards/build-orchestration.md", "used_for": "§3 documented -> running repair path (rebuild appends a run, drops back to built, leaves the milestone stale)" },
+    { "type": "standard", "id": "build-orchestration-4", "path": "standards/build-orchestration.md", "used_for": "§4 access step type: PermissionSet/PermissionSetGroup artefacts and the permission-set + sharing checkers the tester runs" },
+    { "type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "Process Observations shape and the Citations schema" },
+    { "type": "probe", "id": "check-outputs", "path": "scripts/build_plan.py", "used_for": "adjudicating the 8 declared outputs before and after the edit" }
+  ],
+  "run_id": "2026-09-12T18-00-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T18-00-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T18-00-00Z.json",
+  "extensions": {
+    "step_id": "M2-S02",
+    "rebuild_number": 3,
+    "rebuild_reason": "reports/MOCK-DEPLOY-M5.md run 5, F-60: Case_Agent_Core + Case_Tier1 as the persona could not insert a Case -- 5 standard Case fields inaccessible (Subject, Origin, AccountId, Priority, EntitlementId)",
+    "artefacts": [
+      "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml",
+      "artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml",
+      "artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml",
+      "artefacts/M2-S02/permissionsets/Case_Billing.permissionset-meta.xml",
+      "artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml",
+      "artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml",
+      "artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml",
+      "artefacts/M2-S02/package.xml"
+    ],
+    "decision_record": [
+      {
+        "question": "Which standard Case fields does the Tier 1/Tier 2/Billing persona write, requiring a fieldPermissions grant on Case_Agent_Core?",
+        "answer": "Subject, Origin, Priority, ContactId, Description, SuppliedEmail",
+        "source": "artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml and Case-Case Billing Layout.layout-meta.xml (behavior=Edit); MILESTONE-M1-REPORT-v2.md F-09 (ContactId, RL-REQ-01) and F-10 (Description/SuppliedEmail Required, RL-REQ-01/02)",
+        "element": "PermissionSet.fieldPermissions (readable=true, editable=true) x6 on Case_Agent_Core"
+      },
+      {
+        "question": "Does Case.AccountId need a fieldPermissions grant, even though it is not on either Case layout?",
+        "answer": "Yes",
+        "source": "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls (caseInsideProcess builds the Case via TestDataFactory.createCases(1, entitlement.AccountId, ...) and inserts it inside System.runAs(agent)); reports/MOCK-DEPLOY-M5.md run 5 (AccountId third in the DmlException field list)",
+        "element": "PermissionSet.fieldPermissions (readable=true, editable=true) on Case_Agent_Core"
+      },
+      {
+        "question": "Does Case.EntitlementId need a fieldPermissions grant?",
+        "answer": "No",
+        "source": "reports/MOCK-DEPLOY-M5.md F-60 fix note; skills/admin/permission-sets-vs-profiles/references/gotchas.md ('An Object Grant Without Field Grants...'); artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml stamps EntitlementId, not the persona",
+        "element": "excluded from Case_Agent_Core.fieldPermissions"
+      },
+      {
+        "question": "Do Case.Type / Case.Reason need fieldPermissions grants?",
+        "answer": "No",
+        "source": "artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml and Case-Case Billing Layout.layout-meta.xml -- neither field appears on either layout",
+        "element": "excluded from Case_Agent_Core.fieldPermissions"
+      },
+      {
+        "question": "Do Case_Tier1, Case_Tier2 or Case_Billing need their own standard-field grants beyond Case_Agent_Core's baseline?",
+        "answer": "No",
+        "source": "reports/MOCK-DEPLOY-M5.md F-60 ('Case_Tier1 adds none'); no source in this build names a standard Case field one of the three delta personas writes differently from the others",
+        "element": "Case_Tier1.permissionset-meta.xml, Case_Tier2.permissionset-meta.xml, Case_Billing.permissionset-meta.xml left unchanged"
+      },
+      {
+        "question": "Does EmailMessage need standard-field fieldPermissions grants on Case_Agent_Core?",
+        "answer": "Ambiguous -- not resolved in this repair",
+        "source": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py (PSVP-FLS-01 fires on the existing allowCreate=true EmailMessage grant); decisions.md D-M2S02-01 confirms the persona drafts EmailMessage records, but no layout, workbook row or decision in this build enumerates which standard EmailMessage fields a reply populates",
+        "element": "no fieldPermissions added for EmailMessage; PSVP-FLS-01 WARN left standing and explained in artefacts/M2-S02/deploy-order.md 'Rebuild #3'"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+        "pre_edit_exit": 0,
+        "pre_edit_summary": "WARN: 2 finding(s) detected (0 blocking); score 94; PSVP-FLS-01 on Case_Agent_Core for both Case and EmailMessage; scanned 7 access-model metadata file(s)",
+        "post_edit_exit": 0,
+        "post_edit_summary": "WARN: 1 finding(s) detected (0 blocking); score 97; PSVP-FLS-01 on Case_Agent_Core for EmailMessage only (residual, explained); Case PSVP-FLS-01 cleared",
+        "repair_passes": 1
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "pre_edit_exit": 0,
+        "pre_edit_summary": "no PSA-DESC finding on any M2-S02 file (last rebuild's descriptions were still under 255/200)",
+        "post_edit_exit": 0,
+        "post_edit_summary": "no PSA-DESC finding on any M2-S02 file; only the pre-existing M2-S01 WARN (244 chars, out of scope) remains",
+        "repair_passes": 1
+      },
+      {
+        "command": "python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02",
+        "pre_edit_exit": 0,
+        "pre_edit_summary": "1 good (reuse), 0 error, 0 warn, 0 info, scanned 3 PSG file(s)",
+        "post_edit_exit": 0,
+        "post_edit_summary": "1 good (reuse), 0 error, 0 warn, 0 info, scanned 3 PSG file(s) -- unchanged, confirming the PSG files needed no edit",
+        "repair_passes": 1
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "xml_parse": "all 8 files under artefacts/M2-S02/ parse with xml.etree.ElementTree",
+    "sha256_case_agent_core": {
+      "before": "15322d2442e21e3d93c24ea3594f665e5e383b811a5b1f74d5331726dae1eba0",
+      "after": "e4083cab02ce1d395110525ffc7c37af82351d3738a8ca279755ac19d638509e"
+    },
+    "sha256_unchanged_files": {
+      "Case_Tier1.permissionset-meta.xml": "da412a3a42968c163616b6a4392969d6fbb61bde6e7c672ca899968167f6fc47",
+      "Case_Tier2.permissionset-meta.xml": "db6f526459b136208953054d13c2d1714fcbb562e2c71ed4007c4a908ec53217",
+      "Case_Billing.permissionset-meta.xml": "fcf41185c527d9f3ee79a9d7e565283d69b673a65fee119f7db617a7f243aebd",
+      "PSG_Billing_Prod.permissionsetgroup-meta.xml": "a4e8c0a85338043b1e0dcc4488b5e32dce597df2f1af7f640b040fa67e3f444c",
+      "PSG_Tier1_Prod.permissionsetgroup-meta.xml": "7b144cf51b4da4a55b5e3a4c853e6a15091a506540c25d6aaeff8b1131ad27d1",
+      "PSG_Tier2_Prod.permissionsetgroup-meta.xml": "b5324cfb378ff5f78c88e6436f1c9d292fbac28c653a904d77ee354fb832ae91"
+    },
+    "manifest": "artefacts/M2-S02/package.xml unchanged: Case_Agent_Core already listed under PermissionSet, no new member introduced by this repair",
+    "set_status_path": "documented -> running (F-60, by operator) -> built (this run)"
+  }
+}

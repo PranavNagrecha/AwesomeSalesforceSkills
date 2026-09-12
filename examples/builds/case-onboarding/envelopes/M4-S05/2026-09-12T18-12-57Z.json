@@ -1,0 +1,211 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T18-12-57Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-12-57Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-12T18-12-57Z.json",
+  "summary": "Re-ran the molecular tests for M4-S05 (After-update Apex trigger on Case completing the First Response milestone, plus its test class) after four repairs since the last test run (F-59 TestUserFactory/System.runAs, F-60 fixture-seeding scope, F-61 process-name filter, and F-62 -- the first repair to touch shipped code: CaseMilestoneService's CaseMilestone SELECT and Database.update now run WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE). check-outputs confirmed all 8 declared outputs present, non-empty and parseable. The always-on xml check parsed all 5 *-meta.xml files under artefacts/M4-S05/ (TestUserFactory.cls-meta.xml now included alongside the four from the prior run). The always-on manifest check recorded skipped-not-applicable per the Apex exception (standards/build-orchestration.md section 5), naming M5-S05 as the step that aggregates the ApexClass/ApexTrigger members. The declared checker (skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05) exited 0 over 5 Apex files (0 ERROR, 0 WARN). The one manual acceptance test was checked against the Given/When/Then shape, found usable (one Given, one When, one Then naming two observable outcomes), and deferred to skipped_manual[] for the milestone gate. At the caller's request, the undeclared skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes was also run informationally (exit 0, score 100) and is recorded in tests/M4-S05/summary.md only -- it is not a plan-declared acceptance test and does not appear in results.json ran[]/failed[]. All plan-declared tests passed; status set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (checker exit 0, check-outputs ok, ElementTree parse success on all 5 meta files). No command test was refused, no manifest exclusion was needed beyond the already-settled Apex exception, and check-outputs reported no missing/empty/malformed output. Per step-tester's Step 7 override of the default rubric.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M4-S05",
+    "precondition_status": "built (confirmed via plan.json before running)"
+  },
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "declared-checker",
+    "manual-test-classification"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "compile-and-org-test-execution",
+      "state": "not-run",
+      "reason": "Design-only build, no org on file. No offline Apex compiler exists in the sf CLI (per agents/_shared/AGENT_CONTRACT.md Gate C row 3), so no compile check or Apex test run was possible at this step; org-level validation already ran separately (reports/MOCK-DEPLOY-M5.md run 8: Apex 4/4, 84.4% coverage) and is out of this agent's own scope regardless of that result.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Further org-side verification of the F-62 shipped-code change is the human's to schedule; not something this agent can run."
+    }
+  ],
+  "findings": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The prior results.json (run 2026-09-12T08-45-00Z) was overwritten rather than trusted: it recorded 4 Apex files and predated F-59 through F-62, which added TestUserFactory.cls, restructured the test's runAs boundary, tightened the process-name filter, and moved CaseMilestoneService onto an explicit system-mode boundary. Re-running from a fresh check-outputs call and a fresh checker invocation is what surfaced the correct file count of 5 and confirmed the checker still clears every rule after the system-mode change.",
+      "domain": "test-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M4-S05/results.json"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_entitlement_apex_hooks.py's EAH005 rule (no WITH SECURITY_ENFORCED) and EAH006 rule (CompletionDate = NULL filtering) both still clear after F-62 introduced WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE -- a different clause the checker does not flag one way or the other, so the 0 ERROR / 0 WARN result is not silently masking a rule that stopped applying.",
+      "domain": "apex-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M4-S05/checker.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "classes/TestUserFactory.cls (added in F-59) is on disk and covered by the xml check and by the checker's 5-file scan, but it is not in this step's declared outputs[] and is therefore invisible to check-outputs and to the manifest the build-level step M5-S05 will assemble. Per the caller's brief this is M5-S05's obligation to pick up, not a defect of this step or this test run -- named here so it is not lost between the two steps.",
+      "domain": "build-orchestration-coverage-gap",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S05/classes/TestUserFactory.cls"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "F-62 is the first repair in this step's history to change shipped code rather than test-only code (CaseMilestoneService's query and DML). None of this agent's declared test types (checker, xml, manifest) independently re-derive whether WITH SYSTEM_MODE is the narrowest correct boundary for that write -- the checker has no rule for access-mode choice, only for the absence of WITH SECURITY_ENFORCED. The apex-builder envelope for this run already flags a security-scanner follow-up for the same reason; this agent's own test types have no way to confirm or refute that judgment.",
+      "domain": "manual-test-scope",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S05/deploy-order.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M4-S05 is now tested; decisions.md and traceability.md were last updated before F-59 through F-62.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because decisions.md does not yet record F-59, F-60, F-61 or F-62 (the shipped-code repair), and traceability.md still points at the pre-repair test shape."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "F-62 narrowed CaseMilestoneService's Apex access mode from the default to an explicit system-mode boundary on one query and one DML statement.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S05/classes/CaseMilestoneService.cls"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "because a post-assembly FLS/CRUD check of the now-system-mode CaseMilestone write would confirm the boundary is narrowed to exactly this one object and DML, not wider, and this agent's own test types cannot make that judgment."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules binding this invocation, including the ban on org writes."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, Process Observations format, and the confidence rubric this agent's own Step 7 overrides."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence paths and the atomic-write rule for the envelope."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Canonical refusal enum (not triggered this run)."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 5 acceptance-test types/runners/pass-conditions, the check-outputs precondition, the Apex-exception manifest rule, and section 4's metadata step-type table."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "Shape of acceptance_tests[] and outputs[] read from plan.json for this step."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar the manifest check would be judged against, had one existed for this step."
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Source-format filename-to-metadata-type mapping used to reason about the manifest check's file/member correspondence."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Component types with no standalone file/manifest member, relevant to not over-failing the manifest check."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "What a manual test line must contain to be tickable by a human at the milestone gate."
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then shape check applied to the step's manual acceptance test before deferring it."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S05",
+    "results_path": "tests/M4-S05/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c ... xml.etree.ElementTree",
+        "exit_code": null,
+        "verdict": "pass -- all 5 *-meta.xml files parse"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "n/a -- structural check, no subprocess",
+        "exit_code": null,
+        "verdict": "skipped-not-applicable (Apex exception; M5-S05 carries the members)"
+      },
+      {
+        "name": "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py",
+        "type": "checker",
+        "runner": "python3 skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py --manifest-dir artefacts/M4-S05",
+        "exit_code": 0,
+        "verdict": "pass -- 5 Apex files, 0 ERROR, 0 WARN; check-outputs ok on all 8 declared outputs"
+      },
+      {
+        "name": "manual: reviewer identifier-provenance + CompletionDate assertion",
+        "type": "manual",
+        "runner": "n/a -- not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to milestone gate"
+      },
+      {
+        "name": "skills/apex/test-class-standards/scripts/check_test_class_standards.py (undeclared)",
+        "type": "command",
+        "runner": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M4-S05/classes",
+        "exit_code": 0,
+        "verdict": "informational only -- not a plan-declared acceptance test; recorded in tests/M4-S05/summary.md, excluded from ran[]/failed[] and from tests_run below"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given no offline Apex compiler exists in the sf CLI, when the step is accepted, then the reviewer confirms every non-platform identifier in the emitted code is quoted from skills/apex/entitlement-apex-hooks/references/examples.md or from the cited template, and that CaseMilestoneServiceTest asserts CompletionDate is non-null after the trigger runs."
+    ],
+    "tests_run": 3
+  }
+}

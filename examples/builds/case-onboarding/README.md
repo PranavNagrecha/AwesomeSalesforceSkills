@@ -34,3 +34,15 @@ name the report it rests on and the findings it accepts knowingly. In a real bui
 ## Regenerate
 
 `python3 scripts/build_plan.py export .sfskills/builds/case-onboarding/plan.json examples/builds/case-onboarding --force`
+
+## Reopened and re-signed the same day (tests executing)
+
+G4 and G5 were first signed on compile-only Apex evidence. The first dry runs with tests executing
+(`reports/MOCK-DEPLOY-M5.md` runs 4–9) found four defects no checker or verifier could see: the tests
+never ran as a permissioned user; the shipped Tier 1 persona could not create a Case (an object grant
+with one custom field and no standard-field permissions — now checker rule `PSVP-FLS-01`); the test
+selected any active entitlement process and got the org's own; and the milestone stamp was refused in
+the persona's user context and swallowed. After the repairs (`artefacts/M2-S02`, `artefacts/M4-S05`
+§§ 8–11, `artefacts/M5-S05` § 0) the build's Apex validates in the org as the persona — 4/4 tests,
+84.4% coverage — behind the one named org prerequisite (F-28, the verified sender address). Both gates
+were re-signed on that evidence; `reports/drivers-log.md` carries the addendum.

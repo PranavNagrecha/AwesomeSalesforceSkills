@@ -1,0 +1,66 @@
+# Copied from skills/flow/flow-governance/references/metadata-examples.md section 6.
+# Build artefact, NOT deployable metadata: it is deliberately not a package.xml member.
+# Only `owner` and `reviewed` are substituted; every other key and value is the skill's.
+flow_governance_policy:
+  version: "1.0"
+  owner: "Service Operations"
+  reviewed: "2026-09-12"
+
+  # Section 3: pick ONE. flow_status = drive <status> on the Flow, flowDefinitions/ empty.
+  # flow_definition = a .flowDefinition per governed flow; <status> is documentation only.
+  activation_control: flow_status
+
+  naming:
+    # <Object>_<TriggerType>_<PurposeVerbPhrase>
+    pattern: "^[A-Z][A-Za-z0-9]*_(BeforeSave|AfterSave|BeforeDelete|Scheduled|Autolaunched|Screen|Orchestration|PlatformEvent)_[A-Z][A-Za-z0-9]*$"
+    forbidden_substrings:
+      - "New Flow"
+      - "Copy"
+      - "Test"
+      - "Temp"
+      - "Backup"
+      - "Untitled"
+      - "Final"
+
+  versions:
+    min_api_version: 59
+    allowed_run_in_mode:
+      - DefaultMode
+      - SystemModeWithSharing
+    allowed_status:
+      - Draft
+      - Active
+
+  record_triggered:
+    # More than one Active flow on the same object + triggerType must declare triggerOrder.
+    require_trigger_order_when_co_resident: true
+    # triggerOrder is an int 1..2000 (api_meta.txt L68438).
+    trigger_order_min: 1
+    trigger_order_max: 2000
+    require_entry_criteria_for_after_save: true
+
+  documentation:
+    require_description: true
+    min_description_chars: 60
+    require_interview_label: true
+    require_owner_in_description: true
+    owner_marker: "Owner:"
+
+  testing:
+    require_flow_test_for_active: true
+    # FlowTest supports record-triggered, autolaunched and Data Cloud-triggered flows
+    # (api_meta.txt L73953-73955).
+    testable_process_types:
+      - AutoLaunchedFlow
+
+  fault_paths:
+    require_fault_connectors: true
+    # This policy states the requirement; it does not judge the fault path.
+    delegate_to: "flow/fault-handling scripts/check_flow_faults.py"
+
+  review_gates:
+    - "Named owner present in the flow description"
+    - "Change reference recorded in the release ticket (admin/change-management-and-deployment)"
+    - "FlowTest present and passing for every flow deployed Active"
+    - "Rollback version identified, or activation_control documented as flow_definition"
+    - "Retirement review run within the last 90 days (see references/metadata-examples.md section 5c)"

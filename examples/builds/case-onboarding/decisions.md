@@ -4502,3 +4502,363 @@ blocks the step — `M3-S01` passed every executable test it declares.
   **O-M3S03-01** first named as a `build-planner` v6 backlog item.
 - **Evidence:** `artefacts/M5-S05/deploy-order.md` § 1.2; `envelopes/M5-S05/2026-09-12T12-16-22Z.json`
   → `extensions.version_split`; `plan.json.human_gates[milestone:M3].notes` (decision 6).
+
+## D-M2S02-08 — Rebuild #3: seven `fieldPermissions` added to `Case_Agent_Core` for the standard Case fields the persona writes, cause F-60
+
+- **Date:** 2026-09-12
+- **Step:** `M2-S02` (`access`), rebuild #3 (`documented → running → built → tested`)
+- **Agent:** `metadata-builder` (run `2026-09-12T18-00-00Z`), retested by `step-tester` (run
+  `2026-09-12T17-46-35Z`)
+- **Kind:** deviation — a rebuild triggered by an org/persona-boundary finding, not a plan change;
+  the same shape as `D-M2S02-07`, here surfaced by a persona-run Apex test rather than a
+  description-length rejection
+- **What was recorded:** `reports/MOCK-DEPLOY-M5.md` run 5, finding **F-60 (HIGH, design)**: a
+  `TestUserFactory` user holding `Case_Agent_Core` + `Case_Tier1`, inserting a Case under
+  `System.runAs(agent)`, failed with `Operation failed due to fields being inaccessible on Sobject
+  Case ... fieldNames: Subject,Origin,AccountId,Priority,EntitlementId`. `Case_Agent_Core` granted
+  Create/Edit on Case with a field grant on exactly one field (`Case.Severity__c`); no checker or
+  milestone verification had asserted that an object grant is accompanied by field grants on that
+  object's standard fields, and no Apex test had run as the persona until this probe.
+  `admin/permission-sets-vs-profiles` v1.3.0 now carries **PSVP-FLS-01** (WARN) for exactly this
+  shape. Seven `fieldPermissions` blocks were added to `Case_Agent_Core.permissionset-meta.xml`
+  (`readable=true`/`editable=true`), each grounded rather than guessed, per the method
+  `references/gotchas.md` names (edit-mode page layout, compact layout, intake process) and the
+  fixture's own field list — never from platform memory:
+  - `Subject`, `Origin`, `Priority` — `artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml`
+    and `…Billing Layout…`, `behavior=Edit`; the F-60 fixture's own `DmlException` field list;
+    `Origin`/`Priority` are also read by `M3-S01`'s two validation rules.
+  - `ContactId`, `Description`, `SuppliedEmail` — the same two layouts, `behavior=Edit`; milestone
+    findings **F-09**/**F-10** (`RL-REQ-01`/`RL-REQ-02`, Required on both layouts).
+  - `AccountId` — not on either layout; grounded instead in the F-60 fixture itself:
+    `CaseMilestoneServiceTest.caseInsideProcess` builds the Case via
+    `TestDataFactory.createCases(1, entitlement.AccountId, …)` and inserts it inside
+    `System.runAs(agent)` — the persona's own Case-creation DML populates it, and it is the field
+    named third in the fixture's own `DmlException` list.
+  `EntitlementId` was deliberately excluded: `M4-S03`'s before-save flow
+  (`Case_BeforeSave_StampEntitlementAndCalendar`) stamps it, not the persona, and the M4-S05 fixture
+  seeds it in `AccessLevel.SYSTEM_MODE` rather than justify handing the persona a field it does not
+  use. `Type`/`Reason` were excluded because neither field is on either layout.
+  `Case_Tier1`/`Case_Tier2`/`Case_Billing` and all three `PermissionSetGroup` files needed no edit —
+  F-60 states plainly that "`Case_Tier1` adds none": the failing fields all trace to
+  `Case_Agent_Core`, the one set every Case-working persona shares and every PSG composes.
+  `<description>` was reworded (193 chars) to state the field-grant addition and the
+  `EntitlementId` exclusion; every other element — `Case.Severity__c`'s existing grant, every
+  `objectPermissions` block, `applicationVisibilities`, `tabSettings` — is byte-identical to
+  rebuild #2.
+- **Alternative rejected:** granting a broader, platform-typical field set from memory (e.g. every
+  standard field on Case) — rejected because Step 5's own discipline is that a field name comes
+  from the inventory this build has actually built, not from what a Case usually carries, and F-60
+  is itself a case study against exactly that shortcut. Granting `EntitlementId` to close the
+  checker's WARN faster — rejected because it would contradict the plan's own entitlement design
+  (the flow stamps it, the persona does not set it).
+- **Grounded in:** `admin/permission-sets-vs-profiles` v1.3.0 (PSVP-FLS-01 and its
+  `references/gotchas.md` "An Object Grant Without Field Grants Is A Persona That Cannot Fill In A
+  Form"); `artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml` and `…Case Billing
+  Layout…`; `MILESTONE-M1-REPORT-v2.md` F-09/F-10; `reports/MOCK-DEPLOY-M5.md` run 5 (F-60) and run
+  6 (post-repair persona test); `skills/apex/test-class-standards` Gotcha 15 (seed in system mode,
+  act as the persona), cited by F-60's own fix note for the companion M4-S05 change.
+- **Evidence:** `envelopes/M2-S02/2026-09-12T18-00-00Z.md` (metadata-builder repair envelope, full
+  per-field grounding table); `envelopes/M2-S02/2026-09-12T17-46-35Z.md` (step-tester retest, all
+  three checkers + xml + manifest pass, `tested`); `artefacts/M2-S02/deploy-order.md` §
+  "Rebuild #3 — F-60 standard-field permissions on `Case_Agent_Core`"; `reports/MOCK-DEPLOY-M5.md`
+  runs 5–6.
+
+---
+
+# Open items for the planner — raised by the M2-S02 rebuild #3 (F-60) documentation run
+
+Same standing as the sections above and for the same reason: these are plan-file text and
+plan-file declarations, and `standards/build-orchestration.md` § 2 gives `build_plan.py` sole
+authority over them. Neither item below blocks the step — `M2-S02` passed every executable test it
+declares (`check_access_model.py` exits 0; the residual finding is WARN-severity and
+non-blocking), and it declares no `manual` test.
+
+## O-M2S02-02 — `EmailMessage` standard-field grant left as a named ambiguity, carried to the human gate rather than closed by invention
+
+`check_access_model.py --manifest-dir artefacts/M2-S02` (run `2026-09-12T17-46-35Z`) still reports
+one non-blocking `PSVP-FLS-01` WARN — `Case_Agent_Core` grants Create/Edit on `EmailMessage` with
+no `fieldPermissions` on any of its standard fields. The persona does reply to emails: the set's
+own `<description>` says "create/read EmailMessage" and `decisions.md` **D-M2S02-01** grounds the
+create+read CRUD level in "replies to customers go from support@ … and billing@". But no layout,
+workbook row or decision in this build enumerates which standard `EmailMessage` fields a reply
+populates — no Case Feed / email-compose layout step exists in this plan; `M3-S02` and `M3-S03`
+cover templates and routing addresses, not the compose UI. Granting `Subject`/`TextBody`/
+`ToAddress`/etc. here would be exactly the kind of guess **D-M2S02-08**'s Case-field repair is a
+case study against, so none was added. Carried to the human gate as an open obligation, not a
+defect: the fix needs either a compose-UI step naming the fields, or a clarification answer,
+neither of which exists on file today. `artefacts/M2-S02/deploy-order.md` § "Rebuild #3" names the
+same gap in the same terms; `agents/build-doc-keeper/AGENT.md`'s owning agent for closing it, if a
+compose-UI step is later planned, would be `path-designer` or a Section 2 layout step, not another
+`M2-S02` rebuild.
+
+## O-M2S02-03 — Org evidence that the F-60 repair works: `reports/MOCK-DEPLOY-M5.md` run 6 shows the persona can now create and update a Case
+
+`reports/MOCK-DEPLOY-M5.md` run 6 (2026-09-12T17:47Z, SOURCE mode, whole build minus the F-28
+rule, after the M2-S02 access repair (F-60) and the M4-S05 system-mode seeding, `--tests
+CaseMilestoneServiceTest`): 60/60 components ok; tests run 4, passed 2, failed 2 — "the persona can
+now create and update the Case (F-59 and F-60 closed by the org)". The two remaining failures are
+milestone assertions ("No open 'First Response' milestone was generated for the test Case"), which
+are `M4-S03`'s concern, not `M2-S02`'s — the field-permissions repair this step owns is confirmed
+working by an independent org-level probe, not merely by the checker's own exit code. Recorded here
+so the milestone verifier does not have to re-derive this fact from the mock-deploy report alone.
+
+---
+
+# M4-S05 rebuild documentation — four same-day repairs (F-59 through F-62), closing with the first shipped-code change in this step's history
+
+The step was `documented` after the F-37 rebuild (`D-M4S05-01`–`05` above); the operator's own
+`--test-level RunSpecifiedTests` dry runs (`reports/MOCK-DEPLOY-M5.md` runs 4–8) then found four
+further defects in sequence, each surfaced only once the previous one was fixed — a genuinely
+layered set of independent defects, not one repair being wrong. Each repair reset the step
+`documented → running`, then `built`; `step-tester`'s run `2026-09-12T18-12-57Z` returned it to
+`tested`, which this documentation pass records. Full narrative for all four: `artefacts/M4-S05/
+deploy-order.md` §§ 8–11.
+
+## D-M4S05-06 — F-59: no test method ran as a permissioned user; `TestUserFactory` added and a `System.runAs` boundary drawn around each action
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`), repair 1 of 4 (`documented → running →
+  built → tested`) · **Agent:** `apex-builder` (run `2026-09-12T17-06-24Z`), retested by
+  `step-tester`
+- **Kind:** deviation — a rebuild triggered by an org-executed test finding, not a plan change
+- **What was recorded:** `reports/MOCK-DEPLOY-M5.md` run 4 (the first run in this build with Apex
+  actually executing, not only compiling) found **F-59 (HIGH)**: every method of
+  `CaseMilestoneServiceTest` ran as the deploying user, whose profile carries no field permissions
+  for anything this build ships; all three methods that insert a Case failed with
+  `System.DmlException: Operation failed due to fields being inaccessible on Sobject Case`.
+  `templates/apex/tests/TestUserFactory.cls` was added verbatim (`diff` empty), and
+  `CaseMilestoneServiceTest.cls` gained `AGENT_PROFILE`/`AGENT_PERMISSION_SETS` constants and
+  `mintAgent()`, minting a user holding `Case_Agent_Core` + `Case_Tier1` — the exact member list
+  `PSG_Tier1_Prod.permissionsetgroup-meta.xml` declares — on Profile `Acme Support Tier 1`. Only the
+  fixture Case insert, the Status change that fires the trigger, and every
+  `CaseMilestoneService` call and its assertions now run inside `System.runAs(agent)`; the
+  `Account`/`Entitlement` inserts stay outside it because `Case_Agent_Core` grants Read only on
+  those two objects. `CaseMilestoneService.cls` and `CaseMilestoneTrigger.trigger` are unchanged,
+  byte for byte.
+- **Alternative rejected:** `Case_Tier2` (an identical grant footprint to `Case_Tier1` by design, so
+  no narrower reading), `Case_Billing` (excludes the `Support` record type this test's Cases use),
+  `Case_Intake_Integration` (the integration persona that creates Cases on inbound intake, not the
+  agent persona that works them afterward) — all three considered and rejected as the wrong stand-in
+  for "a Tier 1 agent working a case."
+- **Grounded in:** `skills/apex/test-class-standards/references/gotchas.md` Gotchas 13 and 14,
+  `references/examples.md` Example 5; `templates/apex/tests/TestUserFactory.cls`;
+  `artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml`;
+  `artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml`.
+- **Evidence:** `reports/MOCK-DEPLOY-M5.md` run 4; `envelopes/M4-S05/2026-09-12T17-06-24Z.json`;
+  `artefacts/M4-S05/deploy-order.md` § 8; `check_entitlement_apex_hooks.py --strict` and
+  `check_test_class_standards.py --strict`, both exit 0 on the repaired tree.
+
+## D-M4S05-07 — F-60: the fixture insert itself failed FLS as the persona; seeded in system mode instead, per the new Gotcha 15
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`), repair 2 of 4 · **Agent:** `apex-builder`
+  (run `2026-09-12T17-52-00Z`)
+- **Kind:** deviation, second same-day rebuild
+- **What was recorded:** `reports/MOCK-DEPLOY-M5.md` run 5, **F-60 (HIGH, design — the most
+  consequential finding of this build)**: wrapping the fixture `Case` insert itself in
+  `System.runAs(agent)` (the F-59 fix) still failed FLS — `Case_Agent_Core` grants Create on `Case`
+  with field permissions on exactly one field (`Severity__c`), `Case_Tier1` adds none. Neither
+  `skills/apex/test-class-standards` nor `admin/permission-sets-vs-profiles` had distinguished
+  "fields the persona's own code path writes" from "fields a fixture needs populated for the test to
+  be meaningful" before this finding. `skills/apex/test-class-standards/references/gotchas.md`
+  **Gotcha 15** ("Seed In System Mode, Act As The Persona") now names the fix taken here:
+  `TestDataFactory.cls` was refreshed to the template's `insertAsSystem(List<SObject>)` wrapper
+  (commit `be09a7bff`, a thin call over `Database.insert(records, AccessLevel.SYSTEM_MODE)`), and
+  every fixture insert in `CaseMilestoneServiceTest` (`Account`, `Entitlement`, every `Case` row) now
+  goes through it, seeded outside any persona context. What stayed inside `System.runAs(agent)`,
+  unchanged: every `Assert.*` call, every `Test.startTest`/`Test.stopTest` boundary, the real
+  `update` that fires the trigger, and every `CaseMilestoneService.completeMilestones(...)` call —
+  the action under test and the only DML or query a real Tier 1 agent performs.
+- **Alternative rejected:** a parallel repair on the same day (`decisions.md` **D-M2S02-08**) took the
+  companion path — widening `Case_Agent_Core`'s field grants — but only for fields the persona's own
+  layouts and processes actually write; this step's fixture-only fields (used only to seed a test
+  record) were deliberately **not** added to any permission set, because the fixture, not the
+  persona's job, needs them populated, and widening the grant for a fixture's convenience is exactly
+  the anti-pattern Gotcha 15 exists to head off.
+- **Grounded in:** `skills/apex/test-class-standards/references/gotchas.md` Gotcha 15;
+  `templates/apex/tests/TestDataFactory.cls` (commit `be09a7bff`).
+- **Evidence:** `reports/MOCK-DEPLOY-M5.md` run 5; `envelopes/M4-S05/2026-09-12T17-52-00Z.json`;
+  `artefacts/M4-S05/deploy-order.md` § 9.
+
+## D-M4S05-08 — F-61: the milestone process was found by luck, not by name; `requireActiveProcess()` now filters on name
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`), repair 3 of 4 · **Agent:** `apex-builder`
+  (run `2026-09-12T18-05-00Z`)
+- **Kind:** deviation, third same-day rebuild — a lookup-precision fix, not a design trade-off
+- **What was recorded:** `reports/MOCK-DEPLOY-M5.md` run 6: after the F-60 fix the persona could
+  create and update the Case (2 of 4 methods passed), but the two milestone-dependent methods still
+  failed because `requireActiveProcess()`'s query (`WHERE IsActive = true LIMIT 1`, no name filter)
+  returned a pre-existing, unrelated active `SlaProcess` already in the target org instead of this
+  build's `First_Response_Standard` — `deploy-order.md` § 4 had already flagged this exact gap as an
+  open item before any org run ("a sharper filter the skill does not document and this step did not
+  invent one"). The query now adds `AND Name IN :STANDARD_PROCESS_NAMES` (both spellings,
+  `First_Response_Standard` and `First Response Standard` — which one the platform stores is
+  UNVERIFIED, per `artefacts/M4-S02/deploy-order.md` § 4.1's `<name>`-vs-`NameNorm` gap, so both are
+  queried rather than guessed) and asserts the result count is exactly one, replacing the old
+  `isEmpty()`/`Assert.isTrue(false, …)` pair so the method also fails loudly on more than one match,
+  a case the old `LIMIT 1` could never surface.
+- **Alternative rejected:** none — Standard, not Premier, was never in question: `decisions.md`
+  **D-M1S01-04** records that `Account.Support_Tier__c` carries no field default, so a synthetic
+  fixture `Account` has no contractual claim to the Premier process, and Premier is not queried at
+  all.
+- **Grounded in:** `artefacts/M4-S02/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml`;
+  `artefacts/M4-S02/deploy-order.md` § 4.1; `decisions.md` **D-M1S01-04**.
+- **Evidence:** `reports/MOCK-DEPLOY-M5.md` run 6; `envelopes/M4-S05/2026-09-12T18-05-00Z.json`;
+  `artefacts/M4-S05/deploy-order.md` § 10 (full diff of `requireActiveProcess()`).
+
+## D-M4S05-09 — F-62: the first repair to touch shipped code — `CaseMilestoneService`'s `CaseMilestone` query and DML now run in explicit system mode, not a wider grant
+
+- **Date:** 2026-09-12 · **Step:** `M4-S05` (`automation`), repair 4 of 4 · **Agent:** `apex-builder`
+  (run `2026-09-12T18-20-00Z`), retested by `step-tester` (run `2026-09-12T18-12-57Z`)
+- **Kind:** deviation — the first change to `CaseMilestoneService.cls` across this step's four
+  repairs; §§ 8–10 (`D-M4S05-06`–`08`) were all test-only
+- **What was recorded:** `reports/MOCK-DEPLOY-M5.md` run 7: with the process now found by name, the
+  Case entered it, but the two milestone-dependent test methods still failed on **behaviour**, not
+  lookup. Reading `CaseMilestoneService.cls` against the two failures and `artefacts/M2-S02/`
+  directly confirmed the diagnosis exactly, with nothing to revise: the `CaseMilestone` `SELECT` and
+  the `Database.update` both ran `WITH USER_MODE` / the apiVersion-67.0 default, and none of
+  `Case_Agent_Core`, `Case_Tier1`, `Case_Tier2` or `Case_Billing` declares an `objectPermissions`
+  block for `CaseMilestone` at all — no Create, no Read, no Edit. `allOrNone = false` meant the
+  refusal did not throw; it landed in `result.failures`, and neither test method asserted on that
+  list. **Fixed:** the `CaseMilestone` `SELECT` now carries `WITH SYSTEM_MODE` (was `WITH
+  USER_MODE`), and `Database.update(openMilestones, false)` gained a third argument,
+  `AccessLevel.SYSTEM_MODE` — each with a `// reason:` comment naming F-62, the absence of any
+  `CaseMilestone` grant, and the rejected alternative below. `CaseMilestoneServiceTest.cls` gained
+  three new `Assert.areEqual(0, result.failures.size(), String.join(result.failures, ' | '))`
+  assertions after the three `completeMilestones` call sites that previously asserted nothing on the
+  failure list, so a refused write now fails loudly.
+- **Alternative rejected:** granting the Tier 1 persona Edit on `CaseMilestone`. Rejected because it
+  repeats, one object over, the exact widen-the-persona anti-pattern `skills/apex/test-class-standards`
+  Gotcha 15 already named for this build's own test fixtures (`D-M4S05-07` above) — a Tier 1 support
+  agent's job is to work Cases, not to administer SLA infrastructure, and `plan.json`
+  `steps[M4-S05].skills[]` cites `admin/entitlements-and-milestones`, whose own framing (the platform
+  computes and administers milestone state; Apex's one supported write is `CompletionDate`) does not
+  name the case-working agent as the intended writer either.
+- **Grounded in:** `skills/apex/apex-security-patterns` (`SKILL.md` access-mode decision table:
+  "integration, batch, or platform-utility code on a 67.0+ class must see all rows and fields →
+  explicit `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE`", distinct from "code that queries and
+  updates data on behalf of a user" — `WITH USER_MODE`); `skills/apex/apex-stripinaccessible-and-fls-enforcement`'s
+  internal-trusted-context-data framing (`CaseMilestone` is platform-owned, not user-supplied input
+  needing a strip pass). **Cross-skill tension, resolved per `standards/source-hierarchy.md`:**
+  `apex-stripinaccessible-and-fls-enforcement`'s own "Before Starting" line states a trigger body runs
+  in system mode "at every API version," which read literally would predict F-62 could not happen —
+  imprecise for a class a trigger *calls* (a regular method on a separate class, governed by its own
+  `apiVersion`) rather than code literally inside the trigger block. `skills/apex/apex-security-patterns`
+  (quoting the Apex Developer Guide in its `references/well-architected.md`) and
+  `skills/apex/entitlement-apex-hooks/references/code-examples.md`'s own "What `apiVersion` 67.0
+  changes" note both state the finer, docs-grounded rule that governs instead and predict this exact
+  failure by name. Flagged as a skill-authoring follow-up for `apex-stripinaccessible-and-fls-enforcement`
+  — distinguish the literal trigger block from classes a trigger calls — not corrected in this run.
+- **Evidence:** `reports/MOCK-DEPLOY-M5.md` run 7; `envelopes/M4-S05/2026-09-12T18-20-00Z.json`
+  findings `AB-M4S05-24`–`28`; `artefacts/M4-S05/deploy-order.md` § 11 (full diff, both files);
+  **`reports/MOCK-DEPLOY-M5.md` run 8 — Succeeded, `--test-level RunSpecifiedTests --tests
+  CaseMilestoneServiceTest`, 4/4 tests, 84.4% coverage** — the post-fix probe confirming all four
+  methods now pass; `envelopes/M4-S05/2026-09-12T18-12-57Z.json` (step-tester's re-test, `"passed":
+  true`).
+
+---
+
+# Open items for the planner — raised by the M4-S05 rebuild documentation run (F-59–F-62)
+
+## O-M4S05-01 — `TestUserFactory` ships from this step but is undeclared; `M5-S05`'s `package.xml` owes it a fifth `ApexClass` member
+
+`D-M4S05-06`'s repair (F-59) added `classes/TestUserFactory.cls` (+ meta) to
+`artefacts/M4-S05/classes/`, but `plan.json` `steps[M4-S05].outputs[]` was not amended to declare it
+— unlike the F-37 rebuild, which did amend `outputs[]` to add `TestDataFactory` (`decisions.md`
+**D-M4S05-01**). `check-outputs` therefore does not confirm it, and `M5-S05` (`type: docs`,
+`metadata-builder`, `depends_on` `M4-S05`), which aggregates this step's `ApexClass`/`ApexTrigger`
+members into the build-level manifest, still names only four Apex members as of its own
+`artefacts/M5-S05/package.xml` and `deploy-order.md` § 1 (`CaseMilestoneService`,
+`CaseMilestoneServiceTest`, `TestDataFactory`, and the `ApexTrigger` member `CaseMilestoneTrigger`).
+`TestUserFactory` is a fifth `ApexClass` member `M5-S05` must add before its manifest is accurate
+again; `artefacts/M4-S05/deploy-order.md` §§ 8–11 record the obligation at each of the four repairs
+without discharging it, per `standards/build-orchestration.md` § 4 borrowed-agent condition 2 (this
+step declares no manifest of its own to amend) and § 5 *The Apex exception*. Not a defect of this
+step: `apex-builder`'s own envelopes (F-59 through F-62) and `step-tester`'s re-test
+(`2026-09-12T18-12-57Z`) all name the gap explicitly and defer it to `M5-S05` rather than editing
+another step's files to work around it. Carried to whichever human or agent next rebuilds `M5-S05`,
+or reopens this note if `M5-S05` is not rebuilt before the M5 gate.
+
+**Evidence:** `artefacts/M4-S05/classes/TestUserFactory.cls`; `plan.json` `steps[M4-S05].outputs[]`
+(8 paths, unchanged since the F-37 amendment); `artefacts/M4-S05/deploy-order.md` §§ 8–11;
+`artefacts/M5-S05/deploy-order.md` § 1; `artefacts/M5-S05/package.xml`;
+`envelopes/M4-S05/2026-09-12T18-12-57Z.json` (step-tester process observation, category
+"concerning," domain `build-orchestration-coverage-gap`); `workbook/06-automation.md` **CWB-AUT-031**
+(this documentation pass's new row for the same artefact).
+
+## D-M5S05-06 — F-59/F-60 rebuild: `TestUserFactory` joins the build-level manifest as a fifth `ApexClass` member; `Case_Agent_Core`'s content-only change needs no member diff — discharges O-M4S05-01
+
+- **Date:** 2026-09-12 · **Step:** `M5-S05` (`docs`), rebuild #1 · **Agent:** `metadata-builder`
+  (run `2026-09-12T18-29-36Z`), retested by `step-tester` (`2026-09-12T18-36-34Z`); recorded here by
+  `build-doc-keeper`
+- **Kind:** deviation — the manifest's member set changed from what `M5-S05`'s first build
+  (`2026-09-12T12-16-22Z`, documented at `2026-09-12T12-38-43Z`) shipped, because two of its
+  upstream inputs changed after G5 was signed on the first build
+- **What was recorded:** the operator moved `M5-S05` `documented → running` because (1) `M4-S05`
+  shipped a fifth Apex file, `classes/TestUserFactory.cls` (+ `-meta.xml`), as part of its F-59
+  test-only repair (`decisions.md` **D-M4S05-06**), and (2) `M2-S02`'s `Case_Agent_Core` permission
+  set gained `fieldPermissions` for F-60 (`decisions.md` **D-M2S02-08**) — a content-only change to
+  a file already named as a member. `metadata-builder`'s rebuild found, via the whole-tree two-way
+  check it re-ran (`artefacts/M5-S05/deploy-order.md` § 0), exactly one member diff: `+1 ApexClass`
+  member, `TestUserFactory`, alphabetically last in the block. `Case_Agent_Core` contributed **zero**
+  member changes — its member name and file path are unchanged, only its content — so the rebuild is
+  **29 types (unchanged), 57 members (was 56)**. `step-tester`'s re-test confirmed the same single
+  diff independently: 119 artefact files, 57 deployable, 57 members, 0 missing either direction
+  (`tests/M5-S05/manifest_check_wholetree.txt`). This closes `decisions.md` **O-M4S05-01**
+  (`TestUserFactory` ships from `M4-S05` but is undeclared; `M5-S05`'s `package.xml` owes it a fifth
+  `ApexClass` member) — the obligation that entry named is now discharged by this rebuild, and no
+  further action is owed against it.
+- **Alternative rejected:** leaving `package.xml` at 56 members and recording `TestUserFactory` only
+  as a note in `decisions.md`, on the reasoning that a test-only class does not gate a real deploy —
+  rejected because `standards/build-orchestration.md` § 5 ("The Apex exception") puts every
+  `ApexClass`/`ApexTrigger` member `M4-S05` ships into this build-level manifest with no carve-out
+  for test-support classes, and `reports/MOCK-DEPLOY-M5.md` run 9 (manifest mode, this rebuilt
+  57-member manifest as shipped) confirms the org accepts `TestUserFactory` as a component
+  (61/61 ok apart from the unrelated F-28) rather than rejecting it as unneeded.
+- **Grounded in:** `standards/build-orchestration.md` § 4 (Step 4's input sources include upstream
+  artefact changes discovered after a step was last built) and § 5 ("The Apex exception"); this
+  agent's own AGENT.md Step 8 (row-keyed replacement on re-run, not renumbering).
+- **Evidence:** `envelopes/M5-S05/2026-09-12T18-29-36Z.json` → `extensions.member_diff`,
+  `extensions.member_counts`, `extensions.member_total` (57, was 56); `envelopes/M5-S05/2026-09-12T18-36-34Z.json`;
+  `artefacts/M5-S05/deploy-order.md` § 0; `tests/M5-S05/manifest_check_wholetree.txt`;
+  `reports/MOCK-DEPLOY-M5.md` runs 4–9 (run 8: Succeeded, 4/4 tests, 84.4% coverage; run 9: 61/61
+  components ok, F-28 the sole remaining error); `decisions.md` **O-M4S05-01** (discharged by this
+  entry).
+
+# Open items for the planner — raised by the M5-S05 rebuild documentation run
+
+## O-M5S05-01 — `reports/MILESTONE-M5-package.xml` is now stale by one member, and G4/G5 are being re-signed by the operator against runs 4–9 rather than by a fresh `milestone-verifier` pass
+
+`agents/metadata-builder`'s own rebuild envelope (`2026-09-12T18-29-36Z.json` →
+`process_observations`, category `concerning`) already flagged this: `reports/MILESTONE-M5-package.xml`
+is a snapshot `agents/milestone-verifier` wrote before this rebuild, and its own header states it is
+*"identical to `artefacts/M5-S05/package.xml` — 29 types, 56 members."* That claim is false as of
+this documentation pass — the live file now carries 57 members — and the snapshot is not this
+agent's to edit; only `milestone-verifier` owns it. This documentation pass updates the build's own
+record of the rebuild (`workbook/99-other-configuration.md` **CWB-OTHER-042**, `traceability.md`'s
+coverage note, and this entry's sibling **D-M5S05-06**) but does **not** re-run `milestone-verifier`
+or touch the stale snapshot, per this agent's own scope guardrails (no gate approval, no milestone
+acceptance decision, and `reports/` is not a path this agent writes to).
+
+The wider pattern, not just the one stale file: G4 (the `M4` milestone gate) and G5 (the `M5`
+milestone gate) were both signed on evidence that has since moved twice — first from compile-only
+Apex evidence to F-59's discovery (run 4), and now from F-59/F-60/F-61/F-62 all closed to a clean
+manifest-mode component check (run 9, F-28 the sole remainder). Across runs 4–9, the party re-signing
+that evidence forward has been the dry-run **operator**, narrating each run's outcome directly into
+`reports/MOCK-DEPLOY-M5.md` and this build's `decisions.md`/`deploy-order.md` — not a fresh
+`milestone-verifier` invocation re-reading the gate criteria against the current artefacts. Every
+individual step in that chain is documented and cited (this build's own `decisions.md` entries name
+each run), so nothing here is hidden; what is missing is a **verifier-level** re-confirmation that
+G4's and G5's original conditions still hold now that the manifest and the evidence behind it have
+both changed twice since either gate was signed. Recorded as a budget decision, not a defect: a
+`milestone-verifier` re-pass over `M4` and `M5` was in scope for every one of these six runs and was
+not run, most plausibly because each individual fix looked small enough on its own to re-verify by
+inspection rather than by a fresh formal pass. Whether that judgment holds is the human gate's call,
+not this agent's — surfaced here so the next reader chooses deliberately rather than assuming G4/G5
+already reflect run 9.
+
+**Evidence:** `envelopes/M5-S05/2026-09-12T18-29-36Z.json` → `process_observations` (category
+`concerning`, domain `plan-shape`); `reports/MILESTONE-M5-package.xml` (header: "29 types, 56
+members"); `artefacts/M5-S05/package.xml` (29 types, 57 members, current); `reports/MOCK-DEPLOY-M5.md`
+runs 4–9; `plan.json.human_gates[milestone:M4]`, `[milestone:M5]` (no re-sign entry citing runs 5–9
+individually beyond the milestone note); suggested follow-up: `milestone-verifier`, because
+re-signing G4/G5 against the current manifest and the run 8/9 evidence — rather than against the
+pre-rebuild snapshot — is exactly its job, not this agent's.

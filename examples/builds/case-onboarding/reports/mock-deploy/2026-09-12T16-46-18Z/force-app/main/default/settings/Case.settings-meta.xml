@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CaseSettings xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultCaseOwner>Tier_1_General</defaultCaseOwner>
+    <defaultCaseOwnerType>Queue</defaultCaseOwnerType>
+    <notifyDefaultCaseOwner>true</notifyDefaultCaseOwner>
+    <useSystemUserAsDefaultCaseUser>true</useSystemUserAsDefaultCaseUser>
+    <systemUserEmail>support-noreply@acme.example</systemUserEmail>
+    <emailToCase>
+        <enableEmailToCase>true</enableEmailToCase>
+        <enableOnDemandEmailToCase>true</enableOnDemandEmailToCase>
+        <enableE2CAttachmentAsFile>true</enableE2CAttachmentAsFile>
+        <enableE2CDeduplicateAttachments>true</enableE2CDeduplicateAttachments>
+        <enableThreadTokenInBody>true</enableThreadTokenInBody>
+        <enableThreadTokenInSubject>true</enableThreadTokenInSubject>
+        <useEmailHeadersForThreading>true</useEmailHeadersForThreading>
+        <notifyOwnerOnNewCaseEmail>false</notifyOwnerOnNewCaseEmail>
+        <overEmailLimitAction>Requeue</overEmailLimitAction>
+        <unauthorizedSenderAction>Bounce</unauthorizedSenderAction>
+        <routingAddresses>
+            <addressType>EmailToCase</addressType>
+            <routingName>ACME General Support</routingName>
+            <emailAddress>support@acme.example</emailAddress>
+            <caseOrigin>Email-Support</caseOrigin>
+            <newEntityRecordType>Case.Support</newEntityRecordType>
+            <casePriority>Medium</casePriority>
+            <createTask>false</createTask>
+            <saveEmailHeaders>true</saveEmailHeaders>
+        </routingAddresses>
+        <routingAddresses>
+            <addressType>EmailToCase</addressType>
+            <routingName>ACME Billing</routingName>
+            <emailAddress>billing@acme.example</emailAddress>
+            <caseOrigin>Email-Billing</caseOrigin>
+            <newEntityRecordType>Case.Billing</newEntityRecordType>
+            <casePriority>Medium</casePriority>
+            <createTask>false</createTask>
+            <saveEmailHeaders>true</saveEmailHeaders>
+        </routingAddresses>
+    </emailToCase>
+    <closeCaseThroughStatusChange>true</closeCaseThroughStatusChange>
+    <keepRecordTypeOnAssignmentRule>true</keepRecordTypeOnAssignmentRule>
+    <enableSuggestedSolutions>false</enableSuggestedSolutions>
+    <enableSuggestedArticlesApplication>false</enableSuggestedArticlesApplication>
+    <webToCase>
+        <enableWebToCase>true</enableWebToCase>
+        <caseOrigin>Web</caseOrigin>
+    </webToCase>
+</CaseSettings>

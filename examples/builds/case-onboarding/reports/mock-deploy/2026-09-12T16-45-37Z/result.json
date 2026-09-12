@@ -1,0 +1,238 @@
+{
+  "status": 1,
+  "result": {
+    "checkOnly": true,
+    "completedDate": "2026-09-12T16:45:44.000Z",
+    "createdBy": "005dL00001j3fsD",
+    "createdByName": "Pranav Nagrecha",
+    "createdDate": "2026-09-12T16:45:39.000Z",
+    "details": {
+      "componentFailures": [
+        {
+          "changed": false,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:42.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "BusinessHours",
+          "problem": "The object 'BusinessHours' of type Settings was included in the manifest file package.xml but the associated settings metadata is missing from the 'settings' folder",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:42.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "Case",
+          "problem": "The object 'Case' of type Settings was included in the manifest file package.xml but the associated settings metadata is missing from the 'settings' folder",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:42.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "Flow",
+          "problem": "The object 'Flow' of type Settings was included in the manifest file package.xml but the associated settings metadata is missing from the 'settings' folder",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "columnNumber": 16,
+          "componentType": "ListView",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:43.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Billing_Queue",
+          "lineNumber": 3,
+          "problem": "In field: queue - no Queue named Billing found",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "columnNumber": 16,
+          "componentType": "ListView",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:43.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Tier_1_General_Queue",
+          "lineNumber": 23,
+          "problem": "In field: queue - no Queue named Tier_1_General found",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "columnNumber": 16,
+          "componentType": "ListView",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:43.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Tier_2_Queue",
+          "lineNumber": 43,
+          "problem": "In field: queue - no Queue named Tier_2_Engineering found",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "componentType": "ReportFolder",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:44.000Z",
+          "deleted": false,
+          "fileName": "reports/Support_Operations-meta.xml",
+          "fullName": "Support_Operations",
+          "problem": "In field: sharedTo - no Group named Support_Tier_2 found",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "componentType": "Report",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:44.000Z",
+          "deleted": false,
+          "fileName": "reports/Support_Operations/Escalated_Open_Cases.report",
+          "fullName": "Support_Operations/Escalated_Open_Cases",
+          "problem": "Cannot find folder:Support_Operations",
+          "problemType": "Error",
+          "success": false
+        }
+      ],
+      "componentSuccesses": [
+        {
+          "changed": true,
+          "componentType": "CustomObject",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:44.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-12T16:45:44.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "package.xml",
+          "success": true
+        }
+      ],
+      "runTestResult": {
+        "numFailures": 0,
+        "numTestsRun": 0,
+        "totalTime": 0,
+        "codeCoverage": [],
+        "codeCoverageWarnings": [],
+        "failures": [],
+        "flowCoverage": [],
+        "flowCoverageWarnings": [],
+        "successes": []
+      }
+    },
+    "done": true,
+    "id": "0AfdL00000gJT1KSAW",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2026-09-12T16:45:44.000Z",
+    "numberComponentErrors": 8,
+    "numberComponentsDeployed": 1,
+    "numberComponentsTotal": 9,
+    "numberFiles": "7",
+    "numberTestErrors": 0,
+    "numberTestsCompleted": 0,
+    "numberTestsTotal": 0,
+    "rollbackOnError": true,
+    "runTestsEnabled": true,
+    "startDate": "2026-09-12T16:45:42.000Z",
+    "status": "Failed",
+    "success": false,
+    "zipSize": 3260,
+    "files": [
+      {
+        "fullName": "Case.Billing_Queue",
+        "type": "ListView",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T16-45-37Z/force-app/main/default/objects/Case/listViews/Billing_Queue.listView-meta.xml",
+        "lineNumber": 3,
+        "columnNumber": 16,
+        "error": "In field: queue - no Queue named Billing found (3:16)"
+      },
+      {
+        "fullName": "Case.Tier_1_General_Queue",
+        "type": "ListView",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T16-45-37Z/force-app/main/default/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml",
+        "lineNumber": 23,
+        "columnNumber": 16,
+        "error": "In field: queue - no Queue named Tier_1_General found (23:16)"
+      },
+      {
+        "fullName": "Case.Tier_2_Queue",
+        "type": "ListView",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T16-45-37Z/force-app/main/default/objects/Case/listViews/Tier_2_Queue.listView-meta.xml",
+        "lineNumber": 43,
+        "columnNumber": 16,
+        "error": "In field: queue - no Queue named Tier_2_Engineering found (43:16)"
+      },
+      {
+        "fullName": "Support_Operations/Escalated_Open_Cases",
+        "type": "Report",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T16-45-37Z/force-app/main/default/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml",
+        "error": "Cannot find folder:Support_Operations"
+      },
+      {
+        "fullName": "Support_Operations",
+        "type": "ReportFolder",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T16-45-37Z/force-app/main/default/reports/Support_Operations-meta.xml",
+        "error": "In field: sharedTo - no Group named Support_Tier_2 found"
+      }
+    ],
+    "zipFileCount": 4,
+    "deployUrl": "https://orgfarm-76c95d6f7f-dev-ed.develop.my.salesforce.com/lightning/setup/DeployStatus/page?address=%2Fchangemgmt%2FmonitorDeploymentsDetails.apexp%3FasyncId%3D0AfdL00000gJT1KSAW%26retURL%3D%252Fchangemgmt%252FmonitorDeployment.apexp"
+  },
+  "warnings": [
+    ", BusinessHours, returned from org, but not found in the local project",
+    ", Case, returned from org, but not found in the local project",
+    ", Flow, returned from org, but not found in the local project",
+    "CustomObject, Case, returned from org, but not found in the local project"
+  ],
+  "api_version": {
+    "value": "67.0",
+    "source": "highest of: M5-S01=67.0, M5-S05=67.0"
+  },
+  "tests": {
+    "level": "RunSpecifiedTests",
+    "requested_tests": [
+      "CaseMilestoneServiceTest",
+      "TestDataFactory"
+    ],
+    "run": 0,
+    "passed": 0,
+    "failed": 0,
+    "coverage_pct": null,
+    "failures": []
+  }
+}
