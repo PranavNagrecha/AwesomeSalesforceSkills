@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "path": "artefacts/M2-S05/package.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
+      "parsed": true
+    }
+  ],
+  "all_parsed": true,
+  "count": 2
+}

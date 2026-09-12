@@ -1,0 +1,305 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T00-54-31Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-54-31Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-54-31Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S03",
+    "reason": "absent - not a carve-out re-run; the step was pending and in the `next` output",
+    "credentials_received": "none - nothing in the step's inputs{} matched a credential shape per skills/devops/pipeline-secrets-management; no [REDACTED] substitution was needed",
+    "concurrency": "M2-S04 is being built concurrently by another runner in artefacts/M2-S04/; nothing in this run read or wrote that directory, and the only plan.json writes were two build_plan.py set-status calls"
+  },
+  "summary": "Executed step M2-S03 of the case-onboarding build. The step was in the `next` output with its step:M2-S03 human gate already approved, so no carve-out applied; it was claimed `running`, its owning agent metadata-builder was invoked by reading agents/metadata-builder/AGENT.md end to end and executing its Plan inline (the Step 6 'any other host' branch), and the returned envelope was stored verbatim. Five files landed under artefacts/M2-S03/ - three Profile files, a single-type package.xml at API 62.0, and deploy-order.md - matching all five declared outputs with nothing undeclared and nothing outside the step's artefact directory. check-outputs exited 0, the envelope validated, and the step was set `built`. The step closes M1 finding F-01: the build-scope record-type/layout checker resolves layout assignments for the first time in this build.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 9 rubric. Every HIGH condition is met: the step was in `next`, both required inputs of the owning agent resolved from the plan (build_dir and step_id) with the optional api_version defaulted, the owning agent's envelope validates against the envelope schema, check-outputs exited 0, and no file was written outside artefacts/M2-S03/ - no relocation was needed because metadata-builder is build-aware (39 hits on the Step 4 grep). MEDIUM rather than HIGH on exactly one clause of the same table: the optional input api_version had no value in plan.json and the owning agent applied its documented 62.0 default. The owning agent's own confidence is MEDIUM for reasons inside its domain (two unanswered Questions-to-Ask rows and three ungrounded platform behaviours), which this agent carries through rather than re-scoring.",
+  "dimensions_compared": [
+    "step-runnability",
+    "input-mapping",
+    "artefact-declaration",
+    "envelope-validation",
+    "status-transition"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "input-mapping",
+      "state": "partial",
+      "reason": "The owning agent's optional `api_version` input resolved from none of the three Step 5 sources - plan.json carries no api_version key at all - so it was left unset and metadata-builder applied its documented 62.0 default, which matches every manifest already in the build. Recorded as absent per Step 5 rather than invented. Not a query failure.",
+      "confidence_impact": "MEDIUM"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "The amend-step of 2026-09-12T00:38:44Z added deploy-order.md to this step's outputs[], so for the first time in this build check-outputs actually confirms the note metadata-builder writes on every run - M1-S01 through M2-S02 all produced it undeclared.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "metadata-builder is build-aware (39 matches on the Step 4 grep for artefact/build_dir/step_id/.sfskills), so it wrote straight to artefacts/M2-S03/ and the Step 7 relocation table stayed empty - no path this agent invented sits between the plan's declared outputs and the files on disk.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 39
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "testing",
+      "observation": "The owning agent ran a negative fixture on a scratchpad copy rather than asserting that its green checker run meant something; the build-scope layout checker exits 1 on a Case-Ghost Layout reference and 0 on the real tree, which is the difference between an assertion and a vacuous pass.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "This step's acceptance-test description for the build-scope checker predicts 'Scanned 14 metadata file(s)' over the whole tree, but the pre-M2-S03 tree scans 12 and the post-M2-S03 tree scans 15; the finding counts and exit codes the description predicts are all correct, so the number is stale bookkeeping rather than a wrong claim about behaviour.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 15
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "build_plan.py records a placeholder envelope_path of envelopes/M2-S03/running.json on the `running` claim, and no such file is ever written; the same placeholder sits on every earlier step's first run record, so a reader of runs[] cannot distinguish a claim record from a run whose envelope went missing.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "The owning agent recorded three platform behaviours as ungrounded rather than asserting them - Profile element ordering, whether a layoutAssignments entry is accepted for a record type the same profile marks visible=false, and whether Person Accounts are enabled - and only a mock deploy settles the first two. Whether that is acceptable for the M2 gate is the human's call, not this agent's.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03/deploy-order.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access",
+      "observation": "Clarification Q11 asks for profiles cloned from Standard User, and the cited skill's own gotchas file says that at API 60.0 and later a profile absent from the target org is seeded from Minimum Access - Salesforce instead; the answer and the platform disagree, and the plan's answer is the one that is out of date.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/references/gotchas.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "testing",
+      "observation": "M2-S03 is `built` and its four declared acceptance tests have not been run by anything - this agent ran three checkers only to let the owning agent repair its own output, and it wrote no tests/M2-S03/results.json.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests",
+        "count": 0
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "step-tester is the only agent that executes a step's declared acceptance_tests verbatim and writes tests/M2-S03/results.json, which set-status tested requires."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S03",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md = 39",
+    "owning_envelope_path": "envelopes/M2-S03/2026-09-12T00-44-16Z.json",
+    "owning_envelope_validation": "python3 scripts/validate_envelope.py .sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-44-16Z.json -> OK",
+    "owning_agent_confidence": "MEDIUM",
+    "step_runnable_via": "build_plan.py next - M2-S03 was the first of two entries (M2-S03, M2-S04); no Step 2 carve-out applied",
+    "human_gate": "step:M2-S03 approved 2026-09-12T00:38:44Z by 'dry-run operator (Fable; design-only, nothing deploys)'. This agent neither approved nor requested it.",
+    "build_mode": "design-only",
+    "owning_agent_requires_org": false,
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "missing_outputs": [],
+    "undeclared_artefacts": [],
+    "files_outside_step_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "acceptance_tests_declared_not_run": [
+      "checker: check_access_model.py --manifest-dir artefacts/M2-S03 (step scope)",
+      "checker: check_record_type_layouts.py --manifest-dir artefacts --strict (build scope)",
+      "xml: ElementTree parse of artefacts/M2-S03",
+      "manifest: Profile members vs files"
+    ],
+    "checkers_run_by_owning_agent_for_repair": [
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M2-S03",
+        "exit_code": 0
+      }
+    ],
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S03 running --started 2026-09-12T00:44:16Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S03 built --run-agent metadata-builder --envelope envelopes/M2-S03/2026-09-12T00-44-16Z.json --result \"<one-line outcome>\" --started 2026-09-12T00:44:16Z"
+    ],
+    "terminal_status": "built",
+    "persistence_note": "Build-scoped only. The Wave 10 pair at docs/reports/build-step-runner/<run_id>.{md,json} was NOT written: the invoking instruction constrained this run to the build directory, and no earlier run of this loop created docs/reports/build-step-runner/ or docs/reports/metadata-builder/ either. Recorded as a deliberate deviation from this agent's default_output_dir, not an omission.",
+    "workflow_return": {
+      "step_id": "M2-S03",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/case-onboarding/artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S03/package.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S03/deploy-order.md"
+      ],
+      "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-44-16Z.json",
+      "notes": "Closes M1 finding F-01: check_record_type_layouts.py --manifest-dir artefacts --strict now resolves 9 layoutAssignment and 12 record-type references (15 files, 0 findings, exit 0); a negative fixture exits 1."
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "The run-time rules this invocation is bound by: no org write, no deploy, one target per invocation, no auto-chaining into step-tester"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The 8-section shape, the Process Observations requirement, the Citations schema, and the default confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "The atomic-write rule, the dimensions_skipped state enum, and the redaction requirement on echoed inputs; also the default persistence path this run deliberately deviated from"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The canonical refusal enum - no code was used; the step was runnable and the owning agent did not refuse"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (design-only build_mode, and that no agent hand-edits plan.json), section 3 (the step:<id> gate), section 4 (step record fields, agent eligibility, the status machine, and the rule that every metadata-builder metadata step declares its package.xml), section 5 (checker scope: the literal command governs and `build` is the declared intent; who owns the tests), section 8 (build_plan.py is the single writer)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The field-level shape of steps[], inputs{}, outputs[], depends_on[] and runs[], so this agent read and wrote only the fields it owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/metadata-builder/AGENT.md",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "The owning agent's Inputs table (build_dir, step_id, optional api_version), its Output Contract, and its full Plan - executed inline as the Step 6 'any other host' branch"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Confirming the source-format layout the emitted artefacts had to obey - profiles/<Name>.profile-meta.xml as a directory-per-type sibling of the manifest, not a file dropped beside the layouts"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "Confirming Profile is a Metadata-API-carried type, so this step's declared outputs are deployable metadata rather than a report the plan mislabelled"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The workbook row schema the step was derived from, so the owning agent's Inputs were mapped from inputs{} and the answered clarifications rather than paraphrased from the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The Q-id conventions echoed into the envelope (Q3, Q7, Q11, Q12) so build-doc-keeper can join step to requirement without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "What a credential looks like inside a plan input - checked against this step's inputs{}, which carries three profile names, four Q ids and a note, none credential-shaped"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md",
+      "used_for": "Carried through from the owning agent's citations: the base-profile element inventory and the bare Profile package.xml member form"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "Carried through from the owning agent's citations: the Profile layoutAssignments + recordTypeVisibilities worked example the three files are adapted from"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M2-S03 is built and its four declared acceptance tests have not been run; step-tester executes them verbatim and writes tests/M2-S03/results.json, which set-status tested requires."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M2-S03 is tested, the workbook access section, decisions.md and the traceability rows need the three profiles, the four ungrounded items and the F-01 closure recorded."
+    }
+  ]
+}

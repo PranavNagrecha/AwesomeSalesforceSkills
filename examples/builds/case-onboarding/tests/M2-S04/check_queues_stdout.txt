@@ -1,0 +1,33 @@
+Scanning: /Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/artefacts/M2-S04
+
+Queues found (3):
+  Queue: Billing
+    Objects : Case
+    Email   : billing@acme.example
+    Members : 1 member(s)
+  Queue: Tier 1 General
+    Objects : Case
+    Email   : (not configured)
+    Members : 1 member(s)
+  Queue: Tier 2 Engineering
+    Objects : Case
+    Email   : (not configured)
+    Members : 1 member(s)
+
+Public Groups found (3):
+  Group: Billing Team
+    Members : (no members listed)
+  Group: Support Tier 1
+    Members : (no members listed)
+  Group: Support Tier 2
+    Members : (no members listed)
+
+Files referencing queue or group patterns (3):
+  queues/Billing.queue-meta.xml
+  queues/Tier_1_General.queue-meta.xml
+  queues/Tier_2_Engineering.queue-meta.xml
+
+Warnings found (2):
+  WARN: [Queue: Tier 1 General] No <email> configured — the queue address will not receive notifications when records are assigned to this queue.
+  WARN: [Queue: Tier 2 Engineering] No <email> configured — the queue address will not receive notifications when records are assigned to this queue.
+

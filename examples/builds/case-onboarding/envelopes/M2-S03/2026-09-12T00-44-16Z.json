@@ -1,0 +1,362 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T00-44-16Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-44-16Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-44-16Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S03",
+    "api_version": "62.0 (defaulted - plan.json carries no api_version key; the same default M1 report finding F-06 records, and the version already on M1-S01, M1-S02, M2-S01 and M2-S02 manifests)",
+    "step_inputs.profiles": [
+      "Acme Support Tier 1",
+      "Acme Support Tier 2",
+      "Acme Billing"
+    ],
+    "step_inputs.answers": [
+      "Q3",
+      "Q7",
+      "Q11",
+      "Q12"
+    ],
+    "step_inputs.note": "Q11: clone Standard User. Q3: each profile carries an explicit default record type and layout assignment; every object/field/tab grant lives in the M2-S02 permission sets.",
+    "upstream_outputs.M1-S02": "artefacts/M1-S02/layouts/ - 'Case-Case Support Layout' and 'Case-Case Billing Layout'",
+    "upstream_outputs.M2-S02": "artefacts/M2-S02/ - permission sets Case_Agent_Core, Case_Tier1, Case_Tier2, Case_Billing and PSGs PSG_Tier1_Prod, PSG_Tier2_Prod, PSG_Billing_Prod",
+    "upstream_read_beyond_depends_on": "artefacts/M1-S01/objects/Case/recordTypes/ - Support and Billing, read to confirm both are active and object-qualify as Case.Support / Case.Billing. M1-S01 is not in this step's depends_on but is a transitive dependency through M1-S02.",
+    "credentials_received": "none - nothing in inputs{} matched a credential shape per skills/devops/pipeline-secrets-management",
+    "invoked_by": "build-step-runner, executing this AGENT.md inline (the runner's Step 6 non-Claude-Code branch); Step 9 set-status deliberately skipped"
+  },
+  "summary": "Built M2-S03 (access, design-only, owner metadata-builder) into five files: three minimal base Profile files, a single-type package.xml at API 62.0 with bare Profile members, and deploy-order.md. Each profile carries only the residue Q7 names - applicationVisibilities/standard__Service with default=true, two recordTypeVisibilities entries (one default=true), and three layoutAssignments (the fall-through assignment plus one per Case record type) - and no objectPermissions, fieldPermissions, userPermissions, tabVisibilities, loginHours or loginIpRanges. This closes M1 finding F-01: until this step no layoutAssignments element existed anywhere under artefacts/, so check_record_type_layouts.py --manifest-dir artefacts had nothing to cross-check. It now resolves 9 layout-assignment and 12 record-type references and exits 0 on 0 findings over 15 files, while a negative fixture exits 1 - the assertion is live rather than vacuous. All three checkers exited 0 on the first pass with zero repair passes; check-outputs is ok on all five declared outputs with no undeclared file.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10: HIGH on four of five conditions - every emitted element name and enum value traces to the Step 3 inventory built from the two cited skills' metadata-examples.md files, all three checkers exited 0 on the first pass with no repair pass, check-outputs returned ok, and every declared output was written with nothing undeclared and nothing outside artefacts/M2-S03/. MEDIUM because the fifth is not met: two of the ten deduplicated Questions-to-Ask rows were not answered from the plan (managed-package dependency, and whether Person Accounts are enabled) and took a documented skill default or an omission, and because three of the nine layout assignments written depend on a platform behaviour neither cited skill documents - whether a layoutAssignments entry is accepted for a record type the same profile marks visible=false. That is recorded as ungrounded in deploy-order.md rather than asserted.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Two of the ten deduplicated Questions-to-Ask rows across the two cited skills were not answered from plan.json. 'Does a managed package require this profile to be assigned?' has no answer and no managed package appears in requirement.md or any of the 97 clarifications, so no exception list was written. 'Are Person Accounts enabled on this org?' is unanswered, so personAccountDefault was omitted rather than guessed. Neither is a query failure; both are recorded in deploy-order.md.",
+      "confidence_impact": "MEDIUM"
+    },
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Three facts the emitted files depend on are not settled by the cited skills and are recorded as UNGROUNDED in deploy-order.md rather than asserted: (1) whether the Profile deploy enforces element sequence inside the root - the two cited examples order the same elements differently, and alphabetical was chosen because it matches a retrieve; (2) whether a layoutAssignments entry is accepted for a record type the same profile marks visible=false - the guide text the skills quote covers only the inactive-record-type case, and both record types here are active; (3) whether Person Accounts are enabled, which bounds (2) and the omitted personAccountDefault. Every element NAME and enum value written is grounded; these are behaviours, not names.",
+      "confidence_impact": "MEDIUM"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access",
+      "observation": "All three checkers exited 0 on the first pass with zero repair passes, and check_access_model.py returns 1 on ANY finding rather than on a severity threshold - so its zero-finding result is a positive statement that no migratable permission was left on these profiles.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03",
+        "count": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "record-types",
+      "observation": "The build-scope layout checker now resolves 9 layoutAssignment references and 12 record-type references against M1-S01's record types and M1-S02's layouts; a negative fixture naming Case-Ghost Layout and Case.Nonexistent exits 1 under --strict, so the exit code carries a real cross-reference rather than a silent pass.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "access",
+      "observation": "Q11's answer ('clone Standard User into custom profiles') is superseded by the cited skill's own gotcha: at API 60.0 and later a profile that does not exist in the target org is seeded from Minimum Access - Salesforce, and Standard User applies only at 59.0 and earlier. This manifest is 62.0, so the answer names a behaviour the platform no longer has - and the behaviour it does have is the better one for a permission-set-led model.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/references/gotchas.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "access",
+      "observation": "Profile deployment overlays rather than replaces, so if the target org already carries profiles named 'Acme Support Tier 1', 'Acme Support Tier 2' or 'Acme Billing', whatever those profiles grant today survives this deploy silently - these three minimal files create a minimal profile only on a create, never on an overlay.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/references/gotchas.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "record-types",
+      "observation": "Whether the Metadata API accepts a layoutAssignments entry for a record type the same profile marks visible=false is not addressed by either cited skill; the guide text they quote covers only the inactive-record-type case, and both record types here are active. Three of the nine layout assignments written depend on the answer.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "record-types",
+      "observation": "The record-types skill asks whether Person Accounts are enabled and no clarification in plan.json answers it, so personAccountDefault was omitted rather than written with a guessed value; the element is documented as inert when Person Accounts is off.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deployment",
+      "observation": "Element ordering inside the Profile root is not settled by the cited skills - the record-types example is alphabetical and the permission-sets-vs-profiles example is not - so alphabetical was chosen because it matches what a Metadata API retrieve returns, and no mock deploy in this build has yet exercised a Profile.",
+      "evidence": {
+        "source": "heuristic",
+        "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "A mock deploy over M2 would settle the two ungrounded Profile facts this step recorded (element ordering, and layoutAssignments on a not-visible record type) at the cost of one dry-run rather than one production incident.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "step-tester runs the four declared acceptance tests including the build-scope layout checker this step made meaningful; the mock deploy that would settle the two ungrounded Profile facts is scripts/mock_deploy.py, which is the human's to run after the milestone verifies and never an agent's."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S03",
+    "step_type": "access",
+    "build_mode": "design-only",
+    "api_version": "62.0",
+    "invocation_path": "under-runner (Step 9 set-status skipped; the runner sets the terminal status)",
+    "closes_finding": "F-01 (M1 milestone report) - the build-scope record-type/layout checker had no layoutAssignments to resolve until this step",
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
+        "type": "Profile",
+        "source": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md 'Making the record type visible and assigning the page' (layoutAssignments + recordTypeVisibilities) + skills/admin/permission-sets-vs-profiles/references/metadata-examples.md 'The base profile' (custom, description, userLicense, applicationVisibilities with default)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml",
+        "type": "Profile",
+        "source": "same inventory as Acme Support Tier 1; differs only in description (team and PSG name)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml",
+        "type": "Profile",
+        "source": "same inventory; default record type is Case.Billing and the master layout assignment is Case-Case Billing Layout",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/package.xml",
+        "type": "Package",
+        "source": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md package.xml section (bare Profile members); version 62.0 matching M1-S01, M1-S02, M2-S01 and M2-S02",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S03/deploy-order.md",
+        "type": "note",
+        "source": "skills/admin/change-management-and-deployment + both cited skills' gotchas.md; declared on outputs[] by the amend-step of 2026-09-12T00:38:44Z",
+        "declared": true
+      }
+    ],
+    "decision_record": [
+      {
+        "question": "What is on the current profile that has no permission-set equivalent? (permission-sets-vs-profiles)",
+        "answer": "Layout assignments, default app, default record type - and nothing else.",
+        "source": "clarification Q7",
+        "element": "The whole file shape: applicationVisibilities/default, recordTypeVisibilities/default, layoutAssignments. No objectPermissions, fieldPermissions, userPermissions, tabVisibilities, loginHours or loginIpRanges."
+      },
+      {
+        "question": "Which profile does each affected user actually hold? (record-types-and-page-layouts)",
+        "answer": "Three profiles matching the three teams, each with an explicit default record type and layout assignment.",
+        "source": "clarification Q3",
+        "element": "Three Profile files; one recordTypeVisibilities default=true each; three layoutAssignments each (master, Case.Support, Case.Billing)."
+      },
+      {
+        "question": "Is the profile standard (custom=false) or custom? (permission-sets-vs-profiles)",
+        "answer": "Custom, cloned from Standard User before any deploy.",
+        "source": "clarification Q11",
+        "element": "<custom>true</custom>. The clone-source half of the answer is recorded in deploy-order.md as superseded at API 62.0."
+      },
+      {
+        "question": "Which users hold this profile, and do they all hold the same user licence? (permission-sets-vs-profiles)",
+        "answer": "Employees only, 18 internal staff, all on Salesforce licences.",
+        "source": "clarification Q12 (plus Q8 as recorded on M2-S02)",
+        "element": "<userLicense>Salesforce</userLicense>"
+      },
+      {
+        "question": "Which objects, fields, tabs, apps, record types, layouts and classes are in scope? (permission-sets-vs-profiles)",
+        "answer": "Case, Account, Contact, EmailMessage, Entitlement, the Case record types, layouts, and the Service app.",
+        "source": "clarification Q9",
+        "element": "applicationVisibilities/application = standard__Service, matching what Case_Agent_Core already makes visible in M2-S02. Drove the retrieve caveat in deploy-order.md rather than the manifest itself."
+      },
+      {
+        "question": "Are we adding access, or taking it away? (permission-sets-vs-profiles)",
+        "answer": "Additive - this is a new build, not a strip of an existing profile.",
+        "source": "requirement.md",
+        "element": "No element written as an explicit false to revoke; the recordTypeVisibilities visible=false entries encode a grant not made, not a grant removed."
+      },
+      {
+        "question": "Does a managed package require this profile to be assigned? (permission-sets-vs-profiles)",
+        "answer": "No answer on file; no managed package appears anywhere in the requirement or the 97 clarifications.",
+        "source": "skill default (no exception list)",
+        "element": "None. Recorded as a default rather than a decision."
+      },
+      {
+        "question": "Who verifies afterwards, and against what? (permission-sets-vs-profiles)",
+        "answer": "Setup - Object Manager - Case - Page Layouts - Page Layout Assignment, which is the profile x record type x layout grid these files encode.",
+        "source": "skill guidance (record-types-and-page-layouts metadata-examples.md Setup check)",
+        "element": "The verify section of deploy-order.md."
+      },
+      {
+        "question": "Are Person Accounts enabled on this org? (record-types-and-page-layouts)",
+        "answer": "Unanswered by any clarification.",
+        "source": "none - recorded as an ambiguity",
+        "element": "personAccountDefault omitted rather than guessed. Non-blocking: the element is optional and documented as inert when Person Accounts is off."
+      },
+      {
+        "question": "Which standard fields does the platform require on this object's layout? (record-types-and-page-layouts)",
+        "answer": "ContactId, Description, SuppliedEmail, and Status at behavior=Required on Case.",
+        "source": "skill guidance, already satisfied by M1-S02",
+        "element": "None in this step - the layouts are M1-S02's artefacts. Named here because the checker enforces it over the whole tree and it passed."
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 3 access-model metadata file(s); 0 finding(s) detected.\"}",
+        "note": "This checker exits 1 on ANY finding. Zero findings means no objectPermissions, fieldPermissions or userPermissions block was left on a profile and no dangerous system permission or sharing bypass exists."
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.\"}",
+        "note": "Declared at build scope. Baseline before this step: 12 files, 0 findings, but 0 layoutAssignment references existed so the layout assertion was never made - that is M1 finding F-01. Now 15 files and the assertion is live."
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir <scratchpad>/neg/artefacts --strict",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "output": "2 LOW findings: layoutAssignment names layout 'Case-Ghost Layout' which is not in the scanned tree; Profile recordTypeVisibilities names record type 'Case.Nonexistent' which is not in the scanned tree. --strict: failing on review/info findings.",
+        "note": "Negative fixture, run on a scratchpad copy and never in the build directory. Proves the build-scope exit 0 above is an assertion rather than a silent pass."
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M2-S03 --strict",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "output": "2 INFO findings: 12 record-type reference(s) and 9 layoutAssignment reference(s) unresolvable at this scope.",
+        "note": "Diagnostic only, not a declared test. Confirms why plan v5 declares scope build: at step scope the same command cross-checks nothing."
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M2-S03",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 4 manifest or metadata file(s); 0 finding(s) detected.\"}",
+        "note": "Mandatory Reads entry 8 checker. Not a declared acceptance test on this step."
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M2-S03",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "4 file(s) parsed OK",
+        "note": "Step 8 pre-emptive parse of every emitted XML."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "undeclared_artefacts": [],
+    "files_outside_step_dir": [],
+    "blocked_reason": null
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "Questions-to-Ask rows on the residue list, the user-licence population, the in-scope component list, additive-vs-strip, and custom-vs-standard profile"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md",
+      "used_for": "The base-profile element inventory: custom, description, userLicense, applicationVisibilities{application,default,visible}, recordTypeVisibilities{default,personAccountDefault,recordType,visible}, layoutAssignments{layout,recordType}; the Object-Layout Name and Object.RecordTypeName forms; the Profile-only element table; the profiles/<Name>.profile-meta.xml file form and the bare Profile package.xml member"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/references/gotchas.md",
+      "used_for": "Profile deployment overlays rather than replaces; a profile absent from the target org inherits Minimum Access - Salesforce at API 60.0+ (not Standard User, which is 59.0 and earlier) - the fact that makes Q11's clone instruction moot at 62.0; the Minimum Access base-profile pattern's assign-the-PSG-first ordering rule; cloned profiles are not clean slates; a profile retrieve returns only what the rest of the manifest asked for"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "Questions-to-Ask rows on the profile x record type x layout matrix (Q3's answer shape) and on whether Person Accounts are enabled"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "The Profile layoutAssignments + recordTypeVisibilities worked example this step's three files are adapted from; the rule that recordType on a layout assignment is optional and omitted for the fall-through assignment; the one-default-per-profile-per-object constraint; personAccountDefault's Person Account scope"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "Gotcha #3 (a new profile with no record-type assignments leaves users unable to select any record type, with no alert) as the reason every profile carries all three layout assignments; gotcha #7 (retrieving a RecordType or Layout rewrites profiles in the same package) as the retrieve caveat in deploy-order.md; gotcha #8 (inactive record types are not retrieved or deployed) as the case the visible=false pairing is NOT"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "Manifest consistency of the step's package.xml against the files on disk - run as the Mandatory Reads entry 8 checker, exit 0"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 step-type table (access -> metadata-builder in design-only), the every-metadata-step-declares-package.xml rule, and section 8's deepen-a-skill rule that turned the four unresolved elements into recorded gaps rather than guesses"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Runs M2-S03's four declared acceptance tests and writes tests/M2-S03/results.json; this agent ran the checkers only to repair its own output, and the xml and manifest checks are the tester's to execute."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M2-S03 is tested, the workbook access section, decisions.md and the traceability rows need the three profiles and the F-01 closure recorded."
+    }
+  ]
+}

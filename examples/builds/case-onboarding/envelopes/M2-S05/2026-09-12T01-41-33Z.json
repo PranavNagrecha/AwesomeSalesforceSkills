@@ -1,0 +1,222 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T01-41-33Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-41-33Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-41-33Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S05",
+    "status_at_entry": "built"
+  },
+  "summary": "M2-S05 (Case OWD Private + criteria-based sharing rule opening Support cases to Tier 2) passed all 3 runnable declared acceptance tests plus both always-on structural checks: xml (2/2 parse), manifest (SharingRules:Case two-way consistent), and the declared checker skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts (build scope, exit 0, resolved exactly the 1 object OWD the step's own test description claims it would at build scope, versus 0 at step scope). check-outputs: ok, no missing/empty/malformed. 1 manual test (B01+B04) deferred to the M2 gate -- Given/When/Then shape present with a named observable outcome, so usable, not ticked here. Grep-confirmed directly from disk: exactly one sharingCriteriaRules block, sharedTo group is Support_Tier_2 only, no rule names the Billing record type or Billing_Team, the Private OWD lives on M1-S01's Case.object-meta.xml, and no Sharing.settings/*.settings-meta.xml file exists anywhere under artefacts/ (the one textual hit for the string is prose in M2-S04's queue-retirement-runbook.md, not a settings file). Status set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 rubric, HIGH row: every declared test either ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed. No MEDIUM trigger fired -- no command test was refused, no coverage-gap exclusion was needed (the only metadata file present is a SharingRules container, which has a standalone file), and check-outputs reported no missing, empty or malformed declared output. No LOW trigger fired -- the one declared checker existed and ran, the artefact directory holds 4 files (2 XML, 2 markdown), and every exit code was captured to tests/M2-S05/.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "The build-scope declaration on the checker test did what its own description says it would: check_sharing_model.py --manifest-dir artefacts resolved 1 object OWD (Case, from M1-S01's Case.object-meta.xml) and scored the grant against it, rather than the vacuous 0-object-OWD, always-exit-0 result a step-scoped run over artefacts/M2-S05 alone would have produced. Confirms the step's own reproduced-on-a-fixture claim in its acceptance_tests[0].description.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S05/checker_stdout.txt",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "Every negative assertion the manual test and deploy-order.md's 'Elements this step could NOT ground' section make about this rule set held on direct inspection of the artefact: exactly one sharingCriteriaRules block, one sharedTo group (Support_Tier_2), and 'Billing' appearing only inside the rule's free-text description -- never as a criteriaItems.value, a sharedTo.group, or a second rule.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "package.xml manifests this rule under the container form (SharingRules : Case) while the step's own cited skill reference (sharing-and-visibility/references/metadata-examples.md section 6, quoted verbatim in deploy-order.md Decision 1) recommends the rule-type form (SharingCriteriaRule : Case.Support_Cases_To_Tier_2). deploy-order.md records this as a deliberate, reasoned divergence -- the container form is what this agent's own file-name-derived manifest check (Step 3, devops/salesforce-dx-project-structure) can cover, and the rule-type form would leave the file uncovered by that same logic. Both forms are reported to deploy the same file; neither this run's manifest check nor its checker run treats this as a failure, consistent with this run's own instruction to report it as a plan-text observation rather than tick or fail it.",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M2-S05/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "The risk checklist in case-visibility-model.md leaves two boxes explicitly unticked at this point in the build: 'Public group membership exists in the target org' (it does not -- GroupMember rows for Support_Tier_2 are a post-deploy data step tracked in M2-S04's queue-retirement-runbook.md section 6) and 'Access proved with a UserRecordAccess query' (deferred to M5, where a sandbox exists). Neither is this step's acceptance test to close -- both are named, owned, and tracked elsewhere in the build -- but a green tested status here does not by itself mean the grant is live for any user yet.",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M2-S05/case-visibility-model.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "M2-S05 is now tested but its documentation (workbook rows, traceability entries, decisions log) has not yet been updated to reflect this test run.",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the doc keeper is the agent that carries a tested step's evidence into PLAN.md, the workbook and traceability.md, and this run performed no documentation writes.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "Section 5 - Acceptance tests, Checker scope, deploy deny-list, check-outputs; Section 4 metadata step types and the access row",
+      "used_for": "The five test types and their runners, the rule that a declared checker command runs verbatim from the build directory with the literal command (not the scope field) governing the tree read, the deny-list every command was screened against, and the rule that an access-type step with a package.xml of its own runs the manifest check rather than skipping it"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the mandatory Process Observations block, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence of the report/envelope pair and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked against the precondition; none applied because the step's status was built at entry"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "The ban on org writes, on mutating files outside the supplied build directory, and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "branch": "$defs.acceptanceTest, $defs.step.properties.outputs",
+      "used_for": "The shape of acceptance_tests[] and outputs[] this run read from the step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Deriving the metadata type/member (SharingRules : Case) from the artefact file name sharingRules/Case.sharingRules-meta.xml for the always-on manifest check"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar (one types block per type, members naming components, wildcard semantics) the manifest was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Confirming SharingRules is not a type documented as having no standalone source file, so no manifest exclusion applied; only the two markdown artefacts were excluded as non-metadata"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then anatomy (precondition / single action / observable outcome) the manual test was checked against before deferral; it names an observable outcome, so it was reported usable rather than unusable"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "The bar for a manual line being tickable by a human at the gate without re-interpretation"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sharing-and-visibility",
+      "path": "skills/admin/sharing-and-visibility/SKILL.md",
+      "used_for": "Its checker (check_sharing_model.py) is this step's declared acceptance test 1, run verbatim at build scope"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S05",
+    "build_id": "case-onboarding",
+    "status_set": "tested",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M2-S05/results.json",
+    "tests_run": 4,
+    "failed": [],
+    "skipped_manual": [
+      "B01 + B04. B04 (v3): rewritten so it is tickable at the M2 gate from artefacts on disk rather than deferred to M5, which had stopped this step reaching 'documented' and deadlocked M2; the live-user denial check lives in M5's acceptance_tests, where a sandbox exists. B01 (v4): the org-wide default is read from the object file, not from a settings file that cannot carry it. Given assumption A1 reads deferred Q13 as a record-level restriction, when artefacts/M1-S01/objects/Case/Case.object-meta.xml and artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml are read together, then Case.object-meta.xml carries <sharingModel>Private</sharingModel>, the only criteria-based rule shares Support-record-type cases to the Support_Tier_2 public group, no rule names the Billing record type or the Billing_Team group as a target, and case-visibility-model.md states in one sentence why a Tier 1 agent therefore cannot open a Billing case and names Case.object-meta.xml as the file the default lives on."
+    ],
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree over artefacts/M2-S05/** (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "2 files (package.xml, sharingRules/Case.sharingRules-meta.xml), 2 parsed, 0 failed",
+        "capture": "tests/M2-S05/xml_result.json"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way file<->member derivation against artefacts/M2-S05/package.xml (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "1 mapped file -> 1 explicit member (SharingRules:Case), 0 wildcards, 0 unmatched in either direction; case-visibility-model.md and deploy-order.md excluded as non-metadata markdown",
+        "capture": "manual derivation, no separate stdout file"
+      },
+      {
+        "name": "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py",
+        "type": "checker",
+        "declared_scope": "build",
+        "runner": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "score 100; Scanned 10 sharing-model metadata file(s) (1 object OWD(s) resolved); 0 finding(s) detected.",
+        "capture": "tests/M2-S05/checker_stdout.txt"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M2-S05",
+        "exit_code": 0,
+        "verdict": "ok",
+        "detail": "{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []} -- the second half of the checker test's pass condition",
+        "capture": "tests/M2-S05/check_outputs.json"
+      },
+      {
+        "name": "manual: B01 + B04 Case visibility",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M2 milestone gate",
+        "detail": "Given/When/Then shape present and an observable outcome named, so usable; on-disk evidence (sharingCriteriaRules count, sharedTo group, absence of Billing/Billing_Team references, M1-S01's sharingModel, absence of any Sharing.settings/*.settings-meta.xml file) gathered by grep during this run but NOT ticked -- ticking is a human act at the milestone gate."
+      }
+    ],
+    "deny_list_screening": {
+      "standard": "standards/build-orchestration.md section 5 deploy deny-list",
+      "commands_screened": 2,
+      "commands_refused": 0,
+      "detail": "The declared checker command and check-outputs were screened against the full deny-list pattern before execution; neither matched, so both ran verbatim as declared with no flag appended, removed, re-ordered or substituted"
+    },
+    "dimensions_skipped": []
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S05 is now tested and its workbook rows, traceability entries and decisions log have not yet been written for this test run"
+    }
+  ]
+}

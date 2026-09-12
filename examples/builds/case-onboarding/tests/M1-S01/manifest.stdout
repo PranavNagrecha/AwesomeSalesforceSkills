@@ -1,32 +1,27 @@
-manifest: artefacts/M1-S01/package.xml
+Manifest consistency check for M1-S01 (post rebuild #3, F-13)
 
---- direction 1: file -> manifest ---
-  OK      BusinessProcess  Case.Billing_Process     <- objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml
-  OK      BusinessProcess  Case.Support_Process     <- objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml
-  OK      CompactLayout    Case_Intake              <- objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml
-  OK      CustomField      Account.Region__c        <- objects/Account/fields/Region__c.field-meta.xml
-  OK      CustomField      Account.Support_Tier__c  <- objects/Account/fields/Support_Tier__c.field-meta.xml
-  OK      CustomField      Case.Severity__c         <- objects/Case/fields/Severity__c.field-meta.xml
-  OK      CustomObject     Case                     <- objects/Case/Case.object-meta.xml
-  OK      RecordType       Case.Billing             <- objects/Case/recordTypes/Billing.recordType-meta.xml
-  OK      RecordType       Case.Support             <- objects/Case/recordTypes/Support.recordType-meta.xml
-  OK      StandardValueSet CaseOrigin               <- standardValueSets/CaseOrigin.standardValueSet-meta.xml
+package.xml declared types/members:
+  StandardValueSet: CaseOrigin
+  CustomObject: Case
+  CustomField: Account.Region__c, Account.Support_Tier__c, Case.Severity__c
+  BusinessProcess: Case.Billing_Process, Case.Support_Process
+  RecordType: Case.Billing, Case.Support
+  CompactLayout: Case.Case_Intake   <- object-qualified (F-13 / CL-MEM-01, CL-MEM-02)
 
---- direction 2: manifest -> file (wildcards never satisfy this) ---
-  OK      BusinessProcess  Case.Billing_Process
-  OK      BusinessProcess  Case.Support_Process
-  OK      CompactLayout    Case_Intake
-  OK      CustomField      Account.Region__c
-  OK      CustomField      Account.Support_Tier__c
-  OK      CustomField      Case.Severity__c
-  OK      CustomObject     Case
-  OK      RecordType       Case.Billing
-  OK      RecordType       Case.Support
-  OK      StandardValueSet CaseOrigin
+File -> member derivation (skills/devops/salesforce-dx-project-structure):
+  standardValueSets/CaseOrigin.standardValueSet-meta.xml       -> StandardValueSet:CaseOrigin           MATCH
+  objects/Case/Case.object-meta.xml                            -> CustomObject:Case                      MATCH
+  objects/Account/fields/Region__c.field-meta.xml               -> CustomField:Account.Region__c          MATCH
+  objects/Account/fields/Support_Tier__c.field-meta.xml         -> CustomField:Account.Support_Tier__c    MATCH
+  objects/Case/fields/Severity__c.field-meta.xml                -> CustomField:Case.Severity__c           MATCH
+  objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml -> BusinessProcess:Case.Billing_Process MATCH
+  objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml -> BusinessProcess:Case.Support_Process MATCH
+  objects/Case/recordTypes/Billing.recordType-meta.xml          -> RecordType:Case.Billing                MATCH
+  objects/Case/recordTypes/Support.recordType-meta.xml          -> RecordType:Case.Support                MATCH
+  objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml -> CompactLayout:Case.Case_Intake         MATCH (object-qualified member, per admin/list-views-and-compact-layouts v1.2.0 CL-MEM-01/02; this step's package.xml was rewritten in rebuild #3 to carry the object-qualified form)
 
---- excluded from both directions ---
-  EXCL    artefacts/M1-S01/deploy-order.md  (not metadata (non-XML artefact))
-  EXCL    artefacts/M1-S01/record-type-decision.md  (not metadata (non-XML artefact))
-  wildcard <name> blocks: none
+Members with no covering file: none
+Files with no covering member: none
+Wildcards used: none
 
-files_mapped=10 manifest_members=10 failures=0
+VERDICT: consistent

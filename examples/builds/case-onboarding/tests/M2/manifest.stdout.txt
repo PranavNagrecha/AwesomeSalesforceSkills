@@ -1,0 +1,58 @@
+FILE -> MANIFEST (every derived member must be in the merged manifest)
+  OK   CustomPermission:Bypass_Case_Intake_Validation
+  OK   Group:Billing_Team
+  OK   Group:Support_Tier_1
+  OK   Group:Support_Tier_2
+  OK   PermissionSet:Case_Agent_Core
+  OK   PermissionSet:Case_Billing
+  OK   PermissionSet:Case_Intake_Integration
+  OK   PermissionSet:Case_Tier1
+  OK   PermissionSet:Case_Tier2
+  OK   PermissionSetGroup:PSG_Billing_Prod
+  OK   PermissionSetGroup:PSG_Tier1_Prod
+  OK   PermissionSetGroup:PSG_Tier2_Prod
+  OK   Profile:Acme Billing
+  OK   Profile:Acme Support Tier 1
+  OK   Profile:Acme Support Tier 2
+  OK   Queue:Billing
+  OK   Queue:Tier_1_General
+  OK   Queue:Tier_2_Engineering
+  OK   SharingRules:Case
+
+MANIFEST -> FILE (every member must have a file behind it)
+  OK   CustomPermission:Bypass_Case_Intake_Validation
+  OK   Group:Billing_Team
+  OK   Group:Support_Tier_1
+  OK   Group:Support_Tier_2
+  OK   PermissionSet:Case_Agent_Core
+  OK   PermissionSet:Case_Billing
+  OK   PermissionSet:Case_Intake_Integration
+  OK   PermissionSet:Case_Tier1
+  OK   PermissionSet:Case_Tier2
+  OK   PermissionSetGroup:PSG_Billing_Prod
+  OK   PermissionSetGroup:PSG_Tier1_Prod
+  OK   PermissionSetGroup:PSG_Tier2_Prod
+  OK   Profile:Acme Billing
+  OK   Profile:Acme Support Tier 1
+  OK   Profile:Acme Support Tier 2
+  OK   Queue:Billing
+  OK   Queue:Tier_1_General
+  OK   Queue:Tier_2_Engineering
+  OK   SharingRules:Case
+
+Files under the M2 artefacts that reach NO <types> block:
+   - artefacts/M2-S01/deploy-order.md
+   - artefacts/M2-S01/package.xml
+   - artefacts/M2-S02/deploy-order.md
+   - artefacts/M2-S02/package.xml
+   - artefacts/M2-S03/deploy-order.md
+   - artefacts/M2-S03/package.xml
+   - artefacts/M2-S04/deploy-order.md
+   - artefacts/M2-S04/package.xml
+   - artefacts/M2-S04/queue-retirement-runbook.md
+   - artefacts/M2-S05/case-visibility-model.md
+   - artefacts/M2-S05/deploy-order.md
+   - artefacts/M2-S05/package.xml
+
+RESULT: missing=[] orphan=[]
+CONSISTENT

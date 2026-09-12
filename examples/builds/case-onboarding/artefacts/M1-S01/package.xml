@@ -25,7 +25,7 @@
         <name>RecordType</name>
     </types>
     <types>
-        <members>Case_Intake</members>
+        <members>Case.Case_Intake</members>
         <name>CompactLayout</name>
     </types>
     <version>62.0</version>

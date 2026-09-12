@@ -1,0 +1,14 @@
+{
+  "step_id": "M2-S05",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "B01 + B04. B04 (v3): rewritten so it is tickable at the M2 gate from artefacts on disk rather than deferred to M5, which had stopped this step reaching 'documented' and deadlocked M2; the live-user denial check lives in M5's acceptance_tests, where a sandbox exists. B01 (v4): the org-wide default is read from the object file, not from a settings file that cannot carry it. Given assumption A1 reads deferred Q13 as a record-level restriction, when artefacts/M1-S01/objects/Case/Case.object-meta.xml and artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml are read together, then Case.object-meta.xml carries <sharingModel>Private</sharingModel>, the only criteria-based rule shares Support-record-type cases to the Support_Tier_2 public group, no rule names the Billing record type or the Billing_Team group as a target, and case-visibility-model.md states in one sentence why a Tier 1 agent therefore cannot open a Billing case and names Case.object-meta.xml as the file the default lives on."
+  ]
+}

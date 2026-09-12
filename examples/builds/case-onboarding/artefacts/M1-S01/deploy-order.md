@@ -8,6 +8,44 @@ This step is the first in the build and depends on nothing (`depends_on: []`).
 
 ## Rebuild history
 
+**Rebuild #3 — 2026-09-12, `documented → running → built`.** Cause: finding **F-13** in
+`reports/MOCK-DEPLOY-M1.md` § "Mock deploy #3" (confirmed against a Summer '26 developer org).
+`sf project deploy start --manifest ... --dry-run` rejected the merged M1 manifest with "An object
+'Case_Intake' of type CompactLayout was named in package.xml, but was not found in zipped
+directory": `package.xml` carried the bare member `<members>Case_Intake</members>` under
+`<name>CompactLayout</name>`, which is what `admin/list-views-and-compact-layouts` documented at the
+time this step was first built. A `--source-dir` deploy of the identical tree never surfaces this,
+because that flag derives the member list from the files on disk (`Case.Case_Intake`) instead of
+reading `package.xml`.
+
+The rule is now in the library rather than only in a report: `admin/list-views-and-compact-layouts`
+v1.2.0 states it in `references/gotchas.md` ("Manifest member form (CL-MEM-01 .. CL-MEM-02)") and its
+checker enforces **CL-MEM-01** (ERROR — a bare `CompactLayout`/`ListView` member whose file exists in
+the scanned tree must be object-qualified) and **CL-MEM-02** (WARN — an undeclared compact layout
+file). Against this step's `package.xml` before the rebuild, that checker printed one `ERROR
+CL-MEM-01` finding and exited 1.
+
+Rebuilt in this pass, and nothing else:
+
+| File | Change |
+|---|---|
+| `package.xml` | `CompactLayout` member `Case_Intake` → `Case.Case_Intake` |
+| `deploy-order.md` | this section |
+
+Every other declared output — `Case.object-meta.xml`, `standardValueSets/CaseOrigin.standardValueSet-meta.xml`,
+the two `businessProcess-meta.xml` files, both `recordType-meta.xml` files,
+`compactLayouts/Case_Intake.compactLayout-meta.xml`, the three `CustomField` files and
+`record-type-decision.md` — is byte-identical to rebuild #2 (verified by SHA-256 before/after this
+pass; `.sfskills/` is gitignored so a `git diff` cannot be used as the check). All four of this
+step's declared checkers plus a fifth confirmatory run of
+`check_list_views_and_compact_layouts.py` exit 0 on pass 1 after the edit; `check-outputs` is ok.
+
+**Open item for the plan, not for this step.** The plan's step test description for the
+`check_list_views_and_compact_layouts.py` checker (`acceptance_tests[1].description`) still reads
+as though the bare member form were correct — it predates CL-MEM-01/02 and the v1.2.0 skill fix.
+`build-step-runner` does not edit `plan.json` beyond status transitions, so this is a v6 plan amend
+item for the planner, not an action available here.
+
 **Rebuild #2 — 2026-09-09, `documented → running → built`.** Cause: finding **F-11** in
 `reports/MOCK-DEPLOY-M1.md` (HIGH). `sf project deploy start --dry-run` rejected this step's
 business processes in source format because each `*.businessProcess-meta.xml` carried a spaced

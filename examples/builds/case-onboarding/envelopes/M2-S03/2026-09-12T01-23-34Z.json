@@ -1,0 +1,255 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T01-23-34Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T01-23-34Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T01-23-34Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S03",
+    "status_on_entry": "built",
+    "step_type": "access",
+    "owning_agent": "metadata-builder",
+    "build_mode": "design-only",
+    "context_supplied": "M2-S03 was moved to built after Rebuild #2 (metadata-builder run 2026-09-12T01-17-55Z), a description-only fix closing mock-deploy finding F-15 (Profile.description over the 255-char Metadata API ceiling). check_access_model.py gained PSVP-DESC-01/02 in the same fix."
+  },
+  "summary": "Re-ran every declared acceptance test on M2-S03 against the Rebuild #2 artefacts, plus the two always-on structural checks and the check-outputs precondition: 4 runnable tests, 4 passed, 0 failed, no manual test declared on this step. check_access_model.py --manifest-dir artefacts/M2-S03 exited 0 with 'Scanned 3 access-model metadata file(s); 0 finding(s) detected.' - PSVP-DESC-01/02 clean on all three profiles now that descriptions were trimmed. check_record_type_layouts.py --manifest-dir artefacts --strict (declared at build scope) exited 0 with 'Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.'. xml parsed 4 of 4 files (package.xml + 3 .profile-meta.xml). The manifest is consistent in both directions: package.xml's Profile <types> block carries three bare <members> - 'Acme Support Tier 1', 'Acme Support Tier 2', 'Acme Billing' - and each was independently confirmed to equal the corresponding .profile-meta.xml filename stem (spaces preserved) per the source-format mapping in skills/devops/salesforce-dx-project-structure; every named member has a file and every file's derived member is named, no wildcard involved. check-outputs (run from the repo root against .sfskills/builds/case-onboarding/plan.json, per the literal form the playbook specifies) reports {ok: true, missing: [], empty: [], malformed: []} over all five declared outputs. The five file-checkable facts the invocation asked to be verified directly rather than merely trusted from a checker exit code were read from the three .profile-meta.xml files with ElementTree/regex, not inferred: objectPermissions/fieldPermissions/userPermissions entries = 0 in all three files; exactly one recordTypeVisibilities default=true per profile (Case.Support for both Tier 1 and Tier 2, Case.Billing for Billing); exactly three layoutAssignments per profile in all three files; description lengths are 152 (Acme Support Tier 1), 152 (Acme Support Tier 2) and 147 (Acme Billing) characters, all comfortably under both the PSVP-DESC-01 255-char ERROR ceiling and the PSVP-DESC-02 200-char WARN threshold, and matching the lengths artefacts/M2-S03/deploy-order.md section Rebuild #2 records for the post-edit files. Step set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH: every declared test ran (none was correctly classified as manual because none is declared on this step), both always-on checks completed, and every verdict came from an exit code this run observed directly (not copied from deploy-order.md's self-report, though the two agree). No command test was refused, no coverage-gap-type manifest exclusion was needed (Profile is a top-level type with a standalone file per member), no declared checker was missing, and check-outputs reported ok on all five declared outputs.",
+  "outcome": "completed",
+  "extensions": {
+    "step_id": "M2-S03",
+    "results_path": "tests/M2-S03/results.json",
+    "tests_run": 4,
+    "status_set": "tested",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree parse over artefacts/M2-S03/ (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "4 files scanned (package.xml + 3 .profile-meta.xml), all parsed, 0 failed",
+        "capture": "inline (see markdown twin); command re-run and re-verified this session"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> file consistency (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Profile type: 3 explicit bare members (Acme Support Tier 1, Acme Support Tier 2, Acme Billing), no wildcard; each member independently confirmed to equal its file's stem (source-format filename-to-type mapping, spaces preserved exactly); file->manifest and manifest->file both clean. Step type access is a metadata type with package.xml present, so this check was required to run rather than skip, and it ran.",
+        "capture": "inline (see markdown twin)"
+      },
+      {
+        "name": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+        "declared_scope": "step",
+        "run_from": "build directory (skills symlink resolves skills/...; artefacts/M2-S03 resolves as written)",
+        "run_verbatim": true,
+        "deny_list": "clear - no sf/sfdx/deploy/curl/wget/pipe-to-shell/bash -c/python3 -c/rm -rf/git push token present",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Scanned 3 access-model metadata file(s); 0 finding(s) detected. PSVP-DESC-01/02 (new since the pre-Rebuild-2 run) both clean.",
+        "capture": "tests/M2-S03/check_access_model.stdout.txt"
+      },
+      {
+        "name": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+        "declared_scope": "build",
+        "run_from": "build directory (skills symlink resolves skills/...; artefacts resolves as written)",
+        "run_verbatim": true,
+        "deny_list": "clear - no sf/sfdx/deploy/curl/wget/pipe-to-shell/bash -c/python3 -c/rm -rf/git push token present",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.",
+        "capture": "tests/M2-S03/check_record_type_layouts.stdout.txt"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M2-S03 (run from the repo root, per the literal form standards/build-orchestration.md and the AGENT.md give for this command)",
+        "deny_list": "clear",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "{ok: true, missing: [], empty: [], malformed: []} over all five declared outputs",
+        "capture": "tests/M2-S03/check_outputs.stdout.txt"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [],
+    "manual_evidence": {
+      "note": "No manual acceptance test is declared on M2-S03 in plan.json (acceptance_tests[] lists two checker entries, xml, manifest only). The invocation additionally asked for six file-checkable facts to be verified from disk and reported, not ticked, since none is a declared plan test:",
+      "no_forbidden_elements": "Confirmed - a full-text scan for <objectPermissions>, <fieldPermissions> and <userPermissions> across all three .profile-meta.xml files returned 0 occurrences of each tag in each file",
+      "single_default_record_type_per_profile": "Confirmed via ElementTree - Acme Support Tier 1: recordTypeVisibilities defaults [true(Case.Support), false(Case.Billing)]; Acme Support Tier 2: same as Tier 1; Acme Billing: [false(Case.Support), true(Case.Billing)]. Exactly one default=true in each of the three files.",
+      "three_layout_assignments_per_profile": "Confirmed via ElementTree - layoutAssignments element count is exactly 3 in each of the three files",
+      "description_lengths": "Confirmed via regex length count on the <description> text node - Acme Support Tier 1: 152 chars; Acme Support Tier 2: 152 chars; Acme Billing: 147 chars. All three are <=200 (DESC-02 WARN line) and <=255 (DESC-01 ERROR line/Metadata API hard limit); the numbers match artefacts/M2-S03/deploy-order.md section 'Rebuild #2 - descriptions' exactly.",
+      "manifest_bare_members_from_stems": "Confirmed - package.xml's three bare <members> values ('Acme Support Tier 1', 'Acme Support Tier 2', 'Acme Billing') are character-for-character equal to the corresponding .profile-meta.xml filename stems, spaces included, with no URL-encoding or normalization applied by the manifest."
+    }
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access-model-hygiene",
+      "observation": "Rebuild #2 touched only the <description> element of all three profiles - re-verified this run that objectPermissions/fieldPermissions/userPermissions, layoutAssignments and recordTypeVisibilities are unchanged from the pre-rebuild shape and still carry no permission grants, matching the step's own claim that every object/field/tab grant lives in the M2-S02 permission sets.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03/profiles/",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "check_access_model.py's new PSVP-DESC-01/02 rule is exercised non-vacuously here: the same checker's exit code flips from 1 (3x ERROR, reproduced against the pre-edit files per deploy-order.md) to 0 purely from the description-text edit, so the skill fix and the artefact fix are independently confirmed to agree rather than one being asserted on the other's authority.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "access",
+      "observation": "The new descriptions (147-152 chars) sit well under the 200-char PSVP-DESC-02 WARN line, but nothing in the checker enforces staying under DESC-02 specifically once a future hand-edit lengthens a description again - only DESC-01's 255-char ERROR line would eventually catch a regression, after roughly 100 more characters of drift.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Nothing ambiguous surfaced in this run that the human needs to adjudicate: the rebuild's own before/after evidence, this run's independent re-derivation of the same facts, and the checker exit codes all agree.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03/deploy-order.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "M2-S03 is tested again after its rebuild, so the doc keeper is the next stage of the loop for this step - its workbook rows, traceability and deploy-order references to the pre-rebuild description text should be reconciled with the Rebuild #2 section.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "A tested step's workbook rows and traceability need writing/confirming now that the Rebuild #2 description fix is verified independently."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "standards/build-orchestration.md section 4 notes a rebuild leaves the milestone above it stale until /verify-milestone is re-run; M2's milestone verdict predates this rebuild.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "M2's milestone-level verdict was computed before Rebuild #2 and should be re-run once every M2 step (including any concurrently-running step) reaches documented again."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 5 - the five test types and their runners, the run-verbatim rule, the deny-list, the check-outputs precondition, the metadata-type manifest fail-rather-than-skip rule, and the checker-scope table; section 4 for the access step type and the rebuild-status-machine note"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules binding this invocation - no org write, no auto-chaining, citations mandatory"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope persistence, the atomic-write rule, and the scope guardrails"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Checked against the refusal enum; no refusal condition was met on this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The shape of acceptance_tests[] and outputs[] this agent reads, and the meaning of the scope field as declared intent"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "Envelope shape - the test payload rides in extensions, never as a top-level key"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar the manifest check is judged against - one types block per type, members naming components, and what a wildcard member legitimately means"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format filename-to-metadata-type mapping used to derive each Profile member as the filename stem, spaces preserved, for the three space-containing profile filenames"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checked whether Profile or its members are a coverage-gap type excluded from the manifest check; Profile is a top-level type with a standalone file per member, so no exclusion applied"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "What a manual test line must contain to be tickable; confirmed no manual test is declared on this step so none needed classifying"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then shape a manual test would be checked against; not applicable since M2-S03 declares no manual test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "The skill the step cites and whose scripts/check_access_model.py is the declared step-scope checker, now carrying PSVP-DESC-01/02"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "The skill the step cites and whose scripts/check_record_type_layouts.py is the declared build-scope --strict checker"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S03 is tested again after Rebuild #2 - its workbook rows and traceability should reconcile the pre-rebuild description text with the new Rebuild #2 section in deploy-order.md"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M2's milestone-level verdict predates this rebuild per standards/build-orchestration.md section 4 and should be re-run once every M2 step reaches documented again"
+    }
+  ]
+}

@@ -89,3 +89,12 @@ was not found in zipped directory`. The merged manifest carries the bare member 
 `Case.Case_Intake` — exactly what mock deploy #2's `--source-dir` run derived. **F-13 is confirmed, not theoretical.**
 Fix belongs in `admin/list-views-and-compact-layouts` (member form + a checker rule), then M1-S01's `package.xml` at v6.
 The 12 other components validated.
+
+## Mock deploy #4 — 2026-09-11, manifest-driven, after rebuild #3 (F-13 closed)
+
+`python3 scripts/mock_deploy.py plan.json --org-alias sfskills-dev --step M1-S01 --step M1-S02 --mode manifest`
+(the new tool; `checkOnly: true`). After `admin/list-views-and-compact-layouts` v1.2.0 (rules CL-MEM-01/02) and
+rebuild #3 of M1-S01 (the single manifest member `Case_Intake` → `Case.Case_Intake`):
+
+**Succeeded — 12 components, 0 errors, merged manifest read by the CLI.** F-13 is closed at the source and proven
+by the only check that reads the merged package.xml. Both deploy modes now validate milestone M1 unmodified.

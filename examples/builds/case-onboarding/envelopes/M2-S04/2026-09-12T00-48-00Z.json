@@ -1,0 +1,394 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T00-48-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-48-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-48-00Z.json",
+  "outcome": "completed",
+  "summary": "M2-S04 (type access, design-only): built three Case Queues (Tier_1_General, Tier_2_Engineering, Billing) and three public Groups (Support_Tier_1, Support_Tier_2, Billing_Team) as source-format metadata at API 62.0, plus package.xml, a queue-retirement + ownership-skew runbook and deploy-order.md. 9 files written, all 9 declared. Every element and enum copied from skills/admin/queues-and-public-groups/references/metadata-examples.md and skills/admin/data-skew-and-sharing-performance/references/metadata-examples.md section 2. The step's declared checker (check_queues.py) exits 0 with two documented no-email WARNs; check-outputs ok. Built, not blocked.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: a documented skill default stood in for two unanswered settings (doesIncludeBosses=true on the three Groups; doesSendEmailToMembers=false read off the Q88 notification matrix), and one cited skill's checker (check_data_skew_and_sharing_performance.py) exits 1 on three INFO findings that cannot be fixed inside this step's declared outputs. Not LOW: check-outputs returned ok, every declared output was written, nothing landed outside artefacts/M2-S04/, and the step is not blocked. Not HIGH: two values the answers do not carry (the Tier 2 shared-mailbox address and any role-hierarchy queue member) were left unwritten rather than invented.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S04",
+    "api_version": "62.0 (plan carries no api_version key; 62.0 is the agent default and matches every prior step's package.xml)",
+    "target_org_alias": "absent - build_mode is design-only and this agent is requires_org: false",
+    "credential_shaped_inputs": "none; no step input, clarification answer or requirement line matched a credential shape per skills/devops/pipeline-secrets-management"
+  },
+  "dimensions_compared": [
+    "element-grounding",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Of the deduplicated Questions-to-Ask rows across the three cited skills, the five queue rows were answered from plan.json (Q26, Q29, Q30, Q88, Q89) and one - 'Should managers above the members see queue-owned records?' (queue-behaviour-matrix) - took the skill's documented default of doesIncludeBosses=true because no clarification asks it. Two further rows are answered only in posture, not in value: Q88 fixes a shared mailbox for Tier 2 but no address exists anywhere on file, and Q29 answers 'role and public group' while no role developer name exists in the requirement, the 97 clarifications, or any upstream artefact. The seven permission-set-architecture rows and the seven data-skew rows are not applicable to a step that writes no PermissionSet and has no org to count records in.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer the Tier 2 queue mailbox address and, if the role hierarchy is meant to feed these queues, the role developer names; then rebuild the step."
+    },
+    {
+      "dimension": "checker-pass",
+      "state": "partial",
+      "reason": "check_queues.py exits 0 (two documented WARNs). check_permission_set_architecture.py exits 0 but checked nothing - it WARNs that no PermissionSet/PSG/Profile file exists under this step, which is correct for a Queue/Group step. check_data_skew_and_sharing_performance.py exits 1 on three INFO findings ('Group X is deployed but no sharing rule in this manifest references it'). No artefact fix exists inside this step: the groups are referenced by queueMembers, which that checker does not read as a use, and the only sharing rule in the build is M2-S05's declared output, so writing one here would be an undeclared metadata file (metadata-builder Step 5 rule 2). No repair pass was attempted for that reason; 0 of 3 passes used.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Either teach check_data_skew_and_sharing_performance.py that queueMembers/publicGroups is a use of a Group, or add it to standards/build-orchestration.md section 5's cross-referential checker list so the assertion is carried at build scope."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The cited queue skill's version table carries per-element API floors, which caught doesIncludeBosses (Queue, 67.0+) before it was written into a 62.0 manifest.",
+      "domain": "metadata-grounding",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/queues-and-public-groups/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_queues.py now recurses and reads the real element names, so the step's first-ever declared run of it needed no argument-form workaround and produced exactly the findings the plan predicted.",
+      "domain": "checker-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The Billing queue's email address is billing@acme.example, which requirement.md also names as the finance Email-to-Case intake address, so a queue-assignment notification is delivered to an address Email-to-Case reads.",
+      "domain": "email-loop-risk",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/requirement.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "All three Groups deploy empty because group membership is GroupMember data, so a green deploy of this step produces three work pools with nobody in them until the post-deploy load runs.",
+      "domain": "deploy-completeness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/data-skew-and-sharing-performance/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The plan orders M3-S05's queueRoutingConfig after M2-S04, while the cited reference says to deploy the routing configuration before the queue, so Tier_1_General ships without its Omni-Channel link and needs a second pass.",
+      "domain": "plan-ordering",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Q88 accepts 'a shared mailbox' for Tier 2 but names no address, so Tier_2_Engineering ships with no email element and the step's own acceptance-test description - written from a fixture in which it had one - predicts one WARN where the checker now emits two.",
+      "domain": "answer-completeness",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Q29's answer names role and public group as the membership sources, but no role developer name exists in the requirement, in any of the 97 clarifications, or in an upstream artefact, so the role half of the answer could not be written.",
+      "domain": "answer-completeness",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's type is access while standards/build-orchestration.md section 4 files Queue metadata under routing; both types are owned by this agent in design-only mode, so the build proceeded, but the type and the artefact column disagree.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The step's five acceptance tests, including the four manual ones, belong to the tester rather than to this agent.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because standards/build-orchestration.md section 5 gives the declared acceptance tests to step-tester, and this step cannot reach tested until results.json exists."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Four items in deploy-order.md's could-not-ground section are decisions a human has to take, and they belong in decisions.md rather than only in an artefact.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/deploy-order.md",
+        "count": 4
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the doc keeper is the writer of decisions.md and traceability.md, and the ungrounded Tier 2 mailbox and role-member items need to survive as open items past this step."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "step_type": "access",
+    "build_mode": "design-only",
+    "api_version": "62.0",
+    "invocation_path": "under agents/build-step-runner - this agent set no step status itself (metadata-builder Step 9, runner clause)",
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+        "type": "Queue",
+        "declared": true,
+        "element_source": "skills/admin/queues-and-public-groups/references/metadata-examples.md - 'Case queue with mixed membership and an Omni-Channel routing configuration'"
+      },
+      {
+        "path": "artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+        "type": "Queue",
+        "declared": true,
+        "element_source": "same reference; email omitted (value ungrounded)"
+      },
+      {
+        "path": "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+        "type": "Queue",
+        "declared": true,
+        "element_source": "same reference; email from requirement.md + Q88"
+      },
+      {
+        "path": "artefacts/M2-S04/groups/Support_Tier_1.group-meta.xml",
+        "type": "Group",
+        "declared": true,
+        "element_source": "queues-and-public-groups 'Public group used as a queue member' + data-skew metadata-examples section 2 (description, 62.0+)"
+      },
+      {
+        "path": "artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml",
+        "type": "Group",
+        "declared": true,
+        "element_source": "same"
+      },
+      {
+        "path": "artefacts/M2-S04/groups/Billing_Team.group-meta.xml",
+        "type": "Group",
+        "declared": true,
+        "element_source": "same"
+      },
+      {
+        "path": "artefacts/M2-S04/queue-retirement-runbook.md",
+        "type": "markdown",
+        "declared": true,
+        "element_source": "Q89 + queues gotchas 1/2/3/4 + data-skew SKILL.md:88 and metadata-examples sections 1, 2 and 6"
+      },
+      {
+        "path": "artefacts/M2-S04/package.xml",
+        "type": "Package",
+        "declared": true,
+        "element_source": "queues-and-public-groups metadata-examples 'package.xml and CLI'"
+      },
+      {
+        "path": "artefacts/M2-S04/deploy-order.md",
+        "type": "markdown",
+        "declared": true,
+        "element_source": "skills/admin/change-management-and-deployment + the cited skills' gotchas; declared via the 2026-09-12 amend-step"
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Who works this pool, and how does that membership list change?",
+        "source": "clarification Q29",
+        "answer": "By role and public group, no named users.",
+        "element": "queueMembers/publicGroups/publicGroup on each queue = Support_Tier_1 / Support_Tier_2 / Billing_Team. No users element anywhere. The role half of the answer is unwritten - see ungrounded[1]."
+      },
+      {
+        "question": "Which objects will each queue own?",
+        "source": "clarification Q30",
+        "answer": "Case only, on all three queues.",
+        "element": "queueSobject/sobjectType = Case on all three files"
+      },
+      {
+        "question": "Who should be notified of a new record: shared mailbox, every member, nobody?",
+        "source": "clarification Q88",
+        "answer": "Tier 1 none (Omni-Channel push); Billing the queue address; Tier 2 a shared mailbox (accepted default).",
+        "element": "doesSendEmailToMembers=false on all three; email present only on Billing (billing@acme.example); absent on Tier_1_General by answer and on Tier_2_Engineering for want of an address"
+      },
+      {
+        "question": "Queue or person, and what happens when nobody matches?",
+        "source": "clarification Q26",
+        "answer": "Unmatched cases go to the Tier 1 General queue.",
+        "element": "No element in this step - it sets the assignment-rule target in M3-S04. It is why Tier_1_General is the ownership-skew subject of the runbook."
+      },
+      {
+        "question": "What happens to queue-owned records when a queue is retired?",
+        "source": "clarification Q89",
+        "answer": "Reassign open Cases to the surviving queue before deletion.",
+        "element": "queue-retirement-runbook.md section 4"
+      },
+      {
+        "question": "Should managers above the members see queue-owned records?",
+        "source": "DEFAULT - skills/admin/queues-and-public-groups documented default ('leave it true unless managers must not see queue-owned records')",
+        "answer": "Yes (default, not an answered decision).",
+        "element": "doesIncludeBosses=true on the three Group files. NOT written on the Queue files: the cited reference dates that element 67.0+ on Queue and this manifest is 62.0."
+      },
+      {
+        "question": "What is the top owner's record count?",
+        "source": "DEFAULT / not applicable - no org in a design-only build",
+        "answer": "Cannot be measured; the ~480 cases a day in requirement.md is the arrival rate, not an owned count.",
+        "element": "queue-retirement-runbook.md sections 1-3 record the 10,000 threshold, the monitoring query and the bucket remedy instead of a measured number."
+      }
+    ],
+    "ungrounded": [
+      "Tier 2 queue mailbox address - Q88 gives the posture, no answer gives a value; email omitted rather than invented.",
+      "Role developer names for queueMembers/roles - Q29 names roles as a membership source; no role name exists on file.",
+      "Fall-through owner if Tier_1_General itself is retired - Q26 makes it the catch-all, leaving it no target.",
+      "Whether Billing_Team should be excluded from non-billing cases - Q13 is DEFERRED (assumption A1)."
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S04",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "3 queues and 3 groups listed, every queue 'Objects : Case'; 2 WARNs, both 'No <email> configured' (Tier 1 General, Tier 2 Engineering). --strict not passed, per the plan's declared form."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S04",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "WARN: no PermissionSet, MutingPermissionSet, PermissionSetGroup or Profile files found - nothing was checked. Correct for a Queue/Group step; the permission sets this skill governs are M2-S02's."
+      },
+      {
+        "command": "python3 skills/admin/data-skew-and-sharing-performance/scripts/check_data_skew_and_sharing_performance.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S04",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "output_summary": "3 INFO findings, one per Group: 'deployed but no sharing rule in this manifest references it'. Its group-use scan reads only sharingRules sharedTo/sharedFrom, so queueMembers/publicGroups is invisible to it, and its main() returns 1 on any finding including INFO.",
+        "disagreement": "Stated in full per metadata-builder Step 8. The artefacts are correct: all three groups ARE used, by queueMembers in the same manifest, and Support_Tier_2 will additionally be a sharedTo target of M2-S05's Case.sharingRules. No artefact fix is available - adding a sharing rule here would be an undeclared metadata file (Step 5 rule 2) and would duplicate M2-S05's declared output. The checker was NOT edited. REFUSAL_NEEDS_HUMAN_REVIEW was considered and not taken: the checker emits INFO advisories whose own remedy is 'confirm it is used', which this envelope and deploy-order.md do, and it is not one of this step's declared acceptance tests - the declared checker is check_queues.py, which exits 0. A human who reads that differently should reject the step rather than accept this reading."
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" .sfskills/builds/case-onboarding/artefacts/M2-S04",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "All 7 XML files parse (6 metadata + package.xml)."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "deploy_order_note": "artefacts/M2-S04/deploy-order.md - Groups before Queues (the queue names its group by developer name); this step before M3-S04, M3-S05 and M4, which all name these queues; no component outside the step must be deployed first; one forward reference (queueRoutingConfig Tier_1_Push, M3-S05) deliberately not written; validate-only command included as text for a human."
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "Queue and Group element sets, the four queueMembers sources, the email vs doesSendEmailToMembers matrix, and the Questions-to-Ask rows bound to Q26/Q29/Q30/Q88/Q89"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/references/metadata-examples.md",
+      "used_for": "The deployable Queue and Group XML copied element for element, the per-element API floors (doesIncludeBosses 67.0+ on Queue), the package.xml shape, and the stem-is-the-developer-name rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/references/queue-behaviour-matrix.md",
+      "used_for": "The membership-source table (which sources deploy by developer name) and the four-row notification matrix that makes 'no email + doesSendEmailToMembers false' a documented state"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/references/gotchas.md",
+      "used_for": "Retirement runbook content: orphaned records on queue delete (2), nested-group recalculation cost (3), deactivated members (4), queue-as-owner reporting (1), and the roleAndSubordinatesInternal rename (6)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/templates/queues-and-public-groups-template.md",
+      "used_for": "The queue and group inventory shape and the nesting review that the runbook's membership-hygiene section follows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/data-skew-and-sharing-performance",
+      "path": "skills/admin/data-skew-and-sharing-performance/SKILL.md",
+      "used_for": "The 10,000-record ownership-skew threshold at SKILL.md:88 and what crossing it costs, which the runbook records for Tier_1_General"
+    },
+    {
+      "type": "skill",
+      "id": "admin/data-skew-and-sharing-performance",
+      "path": "skills/admin/data-skew-and-sharing-performance/references/metadata-examples.md",
+      "used_for": "Group description/doesIncludeBosses grounding (section 2), the bucket-split remedy and its GroupMember caveat, the Sharing.settings defer pair (section 1) and the ownership-count query (section 6)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "Confirming that queue and group membership grants no object or field permission, so record access here stays with the OWD and M2-S05's sharing rule rather than these six files"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "The component ordering and manifest shape deploy-order.md is written from"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 step types and the access row, section 5's declare-a-manifest rule and cross-referential checker list, section 8's deepen-a-skill rule for the four ungrounded items"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope pairing, the atomic-write rule and the dimensions_skipped confidence rule that caps this run at MEDIUM"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Checking REFUSAL_NEEDS_HUMAN_REVIEW against the data-skew checker disagreement before deciding not to refuse"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The steps[] fields this agent reads (inputs, outputs, skills, depends_on) and the ones it must leave alone"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "The five declared acceptance tests, including the four manual ones, are the tester's to run; this step cannot reach tested without tests/M2-S04/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "The four ungrounded items and the Billing email loop risk need to reach decisions.md and traceability.md rather than living only in deploy-order.md."
+    }
+  ]
+}

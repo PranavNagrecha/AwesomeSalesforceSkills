@@ -1,0 +1,16 @@
+{
+  "step_id": "M2-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/queues-and-public-groups/scripts/check_queues.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given the step claims to have built the work pools, when artefacts/M2-S04/ is listed, then all six components are present and named: queues Tier_1_General, Tier_2_Engineering and Billing, and groups Support_Tier_1, Support_Tier_2 and Billing_Team, and every queue's <queueSobject><sobjectType> is Case (Q30). [file-checkable evidence: PASS — all six files present under artefacts/M2-S04/queues/ and artefacts/M2-S04/groups/; all three queue files carry <queueSobject><sobjectType>Case</sobjectType></queueSobject>]",
+    "W02 (1 of 3): given Q88 fixes the per-queue email posture, when the three queue files are read, then Tier_1_General carries no <email> (work is pushed by Omni-Channel, not emailed), Billing carries the billing@ queue address, and Tier_2_Engineering carries the Tier 2 shared mailbox. [file-checkable evidence: PARTIAL MISMATCH — Tier_1_General.queue-meta.xml has no <email> (matches); Billing.queue-meta.xml has <email>billing@acme.example</email> (matches); Tier_2_Engineering.queue-meta.xml has NO <email> element at all, so it does not carry 'the Tier 2 shared mailbox' the criterion asserts. check_queues.py independently confirms this with a WARN on Tier 2 Engineering. Flagged for human adjudication at the gate, not ticked.]",
+    "W02 (2 of 3): given Q29 says membership changes monthly and must not require a deploy, when the three group files are read, then no <users> element names an individual username in any queue or group file — membership is expressed by public group and role only — and a support manager confirms the three public-group memberships match the current rosters. [file-checkable evidence: PASS on the file-checkable half — none of the 3 queue files or 3 group files contains a <users> element; queue membership is expressed only via <queueMembers><publicGroups><publicGroup>. The roster-confirmation half is not file-checkable and requires a support manager at the gate.]",
+    "W02 (3 of 3) and S4: given skills/admin/data-skew-and-sharing-performance SKILL.md:88 defines ownership data skew as a single user or queue owning more than 10,000 records of one object, and this build routes roughly 480 cases a day to Tier_1_General as the catch-all, when queue-retirement-runbook.md is read, then it records that 10,000-record threshold, names who monitors the open-case count owned by each queue, and states the split-into-buckets remedy that skill documents. [file-checkable evidence: PASS — queue-retirement-runbook.md §1 states the 10,000-record threshold citing SKILL.md:88; §2 names the CRM admin lead as monitor with a weekly/monthly cadence and SOQL; §3 states the split-into-ownership-buckets remedy.]"
+  ]
+}

@@ -1,0 +1,325 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T00-21-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-12T00-21-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-12T00-21-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "status_at_entry": "built"
+  },
+  "summary": "M1-S01 re-tested after rebuild #3 (finding F-13, mock deploy #3, reports/MOCK-DEPLOY-M1.md): package.xml's CompactLayout member Case_Intake was rewritten to the object-qualified Case.Case_Intake, closing the member-form gap the previous test run had flagged as concerning. All 6 runnable acceptance tests passed: both always-on structural checks (xml 11/11 parse; manifest 10 files <-> 10 members, two-way consistent, no wildcards, CompactLayout matched on its object-qualified form) and all 4 declared checkers at exit 0, each paired with check-outputs ok (12/12 declared outputs present, non-empty, parsing). 2 manual tests deferred to the M1 gate, neither ticked here. Step set to tested. Observation only, outside acceptance_tests[]: check_case_management_setup.py exits 0 (CMS-STEM-01/02 unaffected by this rebuild).",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 rubric, HIGH row: every declared test either ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code observed in this run. No MEDIUM trigger fired -- no command test was refused, no coverage-gap exclusion was needed for any of the six metadata types present, and check-outputs reported no missing, empty or malformed declared output. No LOW trigger fired -- every declared checker resolved to exactly one existing script, the artefact directory holds 13 files, and every exit code was captured to tests/M1-S01/.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "The CompactLayout member-form gap the prior test run (2026-09-09T19-52-47Z) flagged as concerning is now closed rather than merely patched around. That run found the manifest's bare Case_Intake member disagreed with the object-qualified Case.Case_Intake the mock deploy's --source-dir derivation produced, and deploy-order.md called it the manifest's thinnest grounding. Rebuild #3 rewrote package.xml to the object-qualified form, admin/list-views-and-compact-layouts was bumped to v1.2.0 with rules CL-MEM-01 (ERROR on a bare enumerated CompactLayout/ListView member) and CL-MEM-02, and this run's declared checker now enforces the same form it exercises, not merely a form the mock deploy happened to prefer.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "Rebuild #3 was surgical and self-documented at the metadata-builder run record: 'package.xml CompactLayout member Case_Intake -> Case.Case_Intake (object-qualified); ... all other 12 artefacts byte-identical (sha256)'. This run's own manifest and xml checks corroborate that scope: the only content difference visible from artefacts on disk versus the prior test run is the single CompactLayout member string in package.xml.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "Per this run's own instruction, the manifest derivation this agent's AGENT.md documents (Step 3, citing devops/salesforce-dx-project-structure's generic source-format mapping) does not itself state that a CompactLayout member must be object-qualified -- that rule lives one level down, in admin/list-views-and-compact-layouts' checker and references, which is not in step-tester's own Mandatory Reads (it is read only because this step's plan.json cites it as a checker). This run applied the object-qualified form as the correct one because CL-MEM-01/02 and the checker's own exit code say so, and the manifest test still reads consistent -- recorded here as a tester-logic note, not a step failure, per this run's explicit instruction.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/step-tester/AGENT.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "build_plan.py emitted three WARNs on unrelated steps while writing this status transition -- M5-S02 acceptance_tests[0], M5-S04 acceptance_tests[0] and [3] each declare a checker with a non-standard argument form that step-tester will run verbatim. They did not affect M1-S01 and are the known unconverged-checker-flag follow-up in standards/build-orchestration.md section 5, unchanged since the prior run's note on this.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "admin",
+      "observation": "Manual test 1's counter-example text is still stale as of this run, unchanged from the prior test cycle: it reads 'the BARE process name (not Case.Support Process)', a form the businessProcess fix (F-11, rebuild #2) already superseded. The assertion it guards still holds against the artefacts on disk. Neither this agent nor build-step-runner may edit a plan field beyond its own status transition.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "M1-S01 is tested and its documentation predates rebuild #3.",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the workbook rows, traceability entries and decisions log for this step were written against rebuild #2 and do not yet record the F-13 CompactLayout object-qualification change.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "M1's acceptance report predates rebuild #3, as reports/MOCK-DEPLOY-M1.md itself records for the F-13 finding.",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because M1's report was written before rebuild #3 and the milestone stays stale until it is re-run across every step in M1, not just this one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M1-REPORT.md",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "Section 5 - Acceptance tests; Checker scope; deploy deny-list; check-outputs; Section 4 metadata step types",
+      "used_for": "The five test types and their runners, the rule that a declared checker command is run verbatim from the build directory, the deny-list every command was screened against, and the rule that a metadata step with no package.xml fails rather than skips the manifest check"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the mandatory Process Observations block and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence of the report/envelope pair and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked against the precondition; none applied because the step's status was built"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "branch": "Run-time Agents",
+      "used_for": "The ban on org writes, on mutating files outside the supplied paths, and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "branch": "$defs.acceptanceTest",
+      "used_for": "The shape of acceptance_tests[] and the meaning of scope as declared intent rather than a path source"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format decomposed directory layout that turns each artefact file into the metadata type and member the manifest check compares"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar the manifest was judged against - one types block per type, members naming components, and what a wildcard member legitimately means"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checking whether any of the six types present legitimately has no standalone source file or no manifest member; none did, so no exclusion was applied and only the two non-XML markdown artefacts were excluded"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then shape both manual tests were checked against before deferral; both name an observable outcome, so neither was reported unusable"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "The bar for a manual line being tickable by a human without re-interpretation"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "Its checker is declared acceptance test 1"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/SKILL.md",
+      "used_for": "Its checker is declared acceptance test 2; v1.2.0's CL-MEM-01/CL-MEM-02 rules are what settle the CompactLayout member-form question this run's manifest derivation had to defer to rather than resolve on its own reading of devops/salesforce-dx-project-structure"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/SKILL.md",
+      "used_for": "Its checker is declared acceptance test 3"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-type-id-management",
+      "path": "skills/admin/record-type-id-management/SKILL.md",
+      "used_for": "Its checker is declared acceptance test 4"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "Its checker was run as an additional observation outside acceptance_tests[] per this run's instructions"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "build_id": "case-onboarding",
+    "status_set": "tested",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M1-S01/results.json",
+    "tests_run": 6,
+    "failed": [],
+    "skipped_manual": [
+      "Given B01, when artefacts/M1-S01/ is listed, then two businessProcess-meta.xml files exist beside the two recordType-meta.xml files, each record type's <businessProcess> carries the BARE process name (not Case.Support Process), and package.xml lists BusinessProcess with object-qualified members.",
+      "B01: given the Case org-wide default is what makes 'a Tier 1 agent cannot open a Billing case' true, when artefacts/M1-S01/objects/Case/Case.object-meta.xml is read, then it carries <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel> as direct children of <CustomObject>, and no separate settings file anywhere in the build claims to carry the OWD. Tickable from this step's own artefacts at the M1 gate; the machine assertion that the OWD is not looser than the sharing rule's grant is M2-S05's build-scoped check_sharing_model.py test, which needs both files."
+    ],
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree over artefacts/M1-S01/** (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "11 files, 11 parsed, 0 failed",
+        "capture": "tests/M1-S01/xml.stdout"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way file<->member derivation against artefacts/M1-S01/package.xml (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "10 mapped files, 10 explicit members, 0 wildcards, 0 unmatched in either direction; CompactLayout member is now object-qualified (Case.Case_Intake, per F-13) and matched against objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml on that basis; 2 markdown artefacts excluded as non-metadata",
+        "capture": "tests/M1-S01/manifest.stdout"
+      },
+      {
+        "name": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "type": "checker",
+        "declared_scope": "step",
+        "runner": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "score 100; Scanned 5 metadata file(s): 2 record type(s), 0 layout(s); 0 finding(s) detected.",
+        "capture": "tests/M1-S01/check_record_type_layouts.stdout"
+      },
+      {
+        "name": "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py",
+        "type": "checker",
+        "declared_scope": "step",
+        "runner": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "No issues found. CL-MEM-01 clean on the object-qualified member.",
+        "capture": "tests/M1-S01/check_list_views_and_compact_layouts.stdout"
+      },
+      {
+        "name": "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+        "type": "checker",
+        "declared_scope": "step (field absent, default)",
+        "runner": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "No issues found across 1 object file(s).",
+        "capture": "tests/M1-S01/check_object_creation_and_design.stdout"
+      },
+      {
+        "name": "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py",
+        "type": "checker",
+        "declared_scope": "step (field absent, default)",
+        "runner": "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "No record-type ID anti-patterns detected.",
+        "capture": "tests/M1-S01/check_record_type_id_management.stdout"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M1-S01",
+        "exit_code": 0,
+        "verdict": "ok",
+        "detail": "{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []} - the second half of every checker's pass condition",
+        "capture": "tests/M1-S01/check-outputs.stdout"
+      },
+      {
+        "name": "manual: business processes beside record types",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M1 milestone gate",
+        "detail": "Given/When/Then shape present and an observable outcome named, so usable; on-disk evidence gathered into tests/M1-S01/manual-evidence.stdout but NOT ticked. Counter-example in the text is stale (predates rebuild #2's F-11 fix)."
+      },
+      {
+        "name": "manual: Case OWD Private/Private",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M1 milestone gate",
+        "detail": "Given/When/Then shape present and an observable outcome named, so usable; on-disk evidence gathered into tests/M1-S01/manual-evidence.stdout but NOT ticked."
+      }
+    ],
+    "observation_only_not_an_acceptance_test": {
+      "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts/M1-S01",
+      "exit_code": 0,
+      "stdout": "No case management setup issues found.",
+      "rules_of_interest": [
+        "CMS-STEM-01",
+        "CMS-STEM-02"
+      ],
+      "did_not_contribute_to_passed": true,
+      "capture": "tests/M1-S01/OBSERVATION-check_case_management_setup.stdout"
+    },
+    "deny_list_screening": {
+      "standard": "standards/build-orchestration.md section 5 deploy deny-list",
+      "commands_screened": 6,
+      "commands_refused": 0,
+      "detail": "All four declared checker commands, check-outputs and the observation-only checker were screened against the full pattern before execution; none matched, so all ran verbatim as declared with no flag appended, removed, re-ordered or substituted"
+    },
+    "dimensions_skipped": []
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "the workbook rows, traceability entries and decisions log for M1-S01 were written against rebuild #2 and do not yet record the F-13 CompactLayout object-qualification change"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's acceptance report and gate notes predate rebuild #3, and the milestone stays stale until it is re-run across every step in M1, not just this one"
+    }
+  ]
+}

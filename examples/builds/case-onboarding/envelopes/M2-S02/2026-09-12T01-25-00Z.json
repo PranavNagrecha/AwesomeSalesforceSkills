@@ -1,0 +1,70 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "summary": "Ran M2-S02 rebuild #2 (documented -> running -> built) under the standards/build-orchestration.md § 4 rebuild carve-out, with reason 'reports/MOCK-DEPLOY-M2.md run 1, F-15: Description max length=255'. Owning agent metadata-builder rewrote only the <description> element of the 4 PermissionSet files to <=200 characters; none of the 3 PermissionSetGroup files needed editing (all already <=200). Stored the owning agent's envelope verbatim at envelopes/M2-S02/2026-09-12T01-20-00Z.json, re-ran check-outputs (ok, no missing/empty/malformed), and set the step built.",
+  "confidence": "HIGH",
+  "confidence_rationale": "The step qualified for the documented -> running rebuild carve-out with a named reason; the owning agent's envelope validated cleanly against the envelope schema; check-outputs exited 0 after the edit; nothing was written outside artefacts/M2-S02/.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuild carve-out in standards/build-orchestration.md § 4 worked exactly as documented: set-status accepted documented -> running once a reason was supplied, and refused nothing else about the transition.",
+      "evidence": { "source": "repo_scan", "path": "standards/build-orchestration.md" }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "M2-S02's runs[] now carries two built-adjacent narratives (the first pass's tested/documented records and this rebuild's running/built records) inside one steps[] entry, which is correct per the schema but means a reader must check timestamps to know which artefact state a given run record describes.",
+      "evidence": { "source": "repo_scan", "path": ".sfskills/builds/case-onboarding/plan.json" }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The step is built but not yet re-tested against the rebuilt descriptions; its prior tested/documented status and the M2 milestone verdict above it are stale until this rebuild is retested.",
+      "evidence": { "source": "input", "path": ".sfskills/builds/case-onboarding/plan.json" },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Confirm the step's acceptance tests still pass against the new descriptions before treating M2-S02 as tested again."
+    }
+  ],
+  "citations": [
+    { "type": "standard", "id": "build-orchestration-4", "path": "standards/build-orchestration.md", "used_for": "the documented -> running rebuild carve-out this run used, and the built/failed/blocked terminal-status rules" },
+    { "type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section shape and Process Observations requirement this envelope follows" },
+    { "type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence and atomic-write rule for the envelope pair" },
+    { "type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "steps[]/runs[]/outputs[] field shape read and written" },
+    { "type": "probe", "id": "check-outputs", "path": "scripts/build_plan.py", "used_for": "adjudicating declared outputs before setting the step built" }
+  ],
+  "run_id": "2026-09-12T01-25-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T01-25-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T01-25-00Z.json",
+  "extensions": {
+    "step_id": "M2-S02",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": "envelopes/M2-S02/2026-09-12T01-20-00Z.json",
+    "artefacts": [
+      { "path": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml", "declared": true },
+      { "path": "artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml", "declared": true },
+      { "path": "artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml", "declared": true },
+      { "path": "artefacts/M2-S02/permissionsets/Case_Billing.permissionset-meta.xml", "declared": true },
+      { "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml", "declared": true },
+      { "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml", "declared": true },
+      { "path": "artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml", "declared": true },
+      { "path": "artefacts/M2-S02/package.xml", "declared": true }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S02 built --run-agent metadata-builder --envelope envelopes/M2-S02/2026-09-12T01-20-00Z.json --result \"Rebuild #2: only the <description> element of the 4 PermissionSets was rewritten (419/380/290/456 -> 192/183/193/199 chars, all <=200); no PSG needed editing (all already <=200). All 3 cited checkers + check-outputs exit 0 with no DESC finding.\" --started 2026-09-12T01:20:00Z",
+    "rebuild": {
+      "number": 2,
+      "path": "documented -> running -> built",
+      "reason": "reports/MOCK-DEPLOY-M2.md run 1, F-15: 4 PermissionSet files rejected by the org (Description max length=255), 3 PermissionSetGroup files cascaded"
+    }
+  }
+}

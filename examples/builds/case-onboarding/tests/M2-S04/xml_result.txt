@@ -1,0 +1,8 @@
+PASS artefacts/M2-S04/groups/Billing_Team.group-meta.xml 
+PASS artefacts/M2-S04/groups/Support_Tier_1.group-meta.xml 
+PASS artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml 
+PASS artefacts/M2-S04/package.xml 
+PASS artefacts/M2-S04/queues/Billing.queue-meta.xml 
+PASS artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml 
+PASS artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml 
+TOTAL: 7

@@ -1,0 +1,205 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T01-17-55Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T01-17-55Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T01-17-55Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S03",
+    "reason": "rebuild #2 - mock deploy #1 (reports/MOCK-DEPLOY-M2.md, F-15) rejected all three Profile files: 'Description: data value too large ... (max length=255)'. skills/admin/permission-sets-vs-profiles was fixed today at v1.2.0 - references/metadata-examples.md now states the 255-char Profile.description / PermissionSet.description ceiling from the Metadata API Developer Guide, and check_access_model.py gained PSVP-DESC-01 (ERROR >=255 chars) and PSVP-DESC-02 (WARN >=200 chars).",
+    "scope": "narrow - rewrite only the <description> element of the three existing Profile files to <=200 characters; every other element stays byte-identical. Not a full re-run of metadata-builder's Plan.",
+    "carve_out": "step was 'pending' (reset by the operator after F-15) and appeared directly in `build_plan.py next` under its approved step:M2-S03 gate - the ordinary Step 2 path, not the documented->running rebuild carve-out.",
+    "credentials_received": "none - nothing in this run's inputs matched a credential shape per skills/devops/pipeline-secrets-management",
+    "invoked_by": "build-step-runner, executing agents/metadata-builder/AGENT.md's owning-agent role inline per the operator's explicit narrow-scope instruction (a three-line description edit does not warrant a full Agent-tool subagent invocation); Step 9 set-status handled by the runner, not by this role"
+  },
+  "summary": "Rebuild #2 of M2-S03: rewrote only the <description> element of the three base Profile files (Acme Support Tier 1, Acme Support Tier 2, Acme Billing) to close F-15 - the org's 'Description: data value too large (max length=255)' rejection from mock deploy #1. New descriptions are 152, 152 and 147 characters respectively (previously 280, 279 and 407), all under the skill's own DESC-02 warning line of 200 as well as the DESC-01 error line of 255. Every other element in all three files is confirmed byte-identical before and after by SHA-256 of the whole file plus a line diff. The rationale each old description carried (user counts, PSG names, the Q7/Q11/Q13 citations, the Acme Billing visible=false note) was not discarded: it was already duplicated in deploy-order.md's 'Decisions worth reading before deploy' section and is now recorded once, in a new 'Rebuild #2 - descriptions' section there, alongside the F-15 evidence and the before/after hash table. Both declared checkers were re-run from the build directory: check_access_model.py now exits 0 with zero findings (reproducing the pre-edit 3x PSVP-DESC-01 ERROR / exit 1 first, to evidence the fix), and check_record_type_layouts.py --manifest-dir artefacts --strict still exits 0 over the unchanged 15-file build tree. check-outputs is ok on all five declared outputs.",
+  "confidence": "HIGH",
+  "outcome": "completed",
+  "confidence_rationale": "Runner Step 9 rubric: the step was in `next` under its approved step:M2-S03 gate, the one required change (the description text) traces entirely to skills/admin/permission-sets-vs-profiles v1.2.0's own DESC-01/DESC-02 rule rather than to an invented value, both cited checkers exited 0 on the first pass with zero repair passes, check-outputs returned ok, and nothing was written outside artefacts/M2-S03/. No undeclared artefact appeared and no optional input needed a default.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "byte-identity-of-unchanged-elements"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "not-run",
+      "reason": "This run answers no new Questions-to-Ask row - the file's element inventory (Q3/Q7/Q11/Q12) was already settled by the 2026-09-12T00-44-16Z build run and is unchanged here. Re-deriving it would not change the outcome of a description-length fix.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "deploy-order",
+      "state": "partial",
+      "reason": "deploy-order.md's pre-existing content (order, cross-step dependencies, decisions 1-8, the three UNGROUNDED items) was not re-verified in this run - only appended to. Those facts were checker-verified and human-notated in the prior build run and are unaffected by a description-only edit.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access",
+      "observation": "check_access_model.py went from 3x PSVP-DESC-01 ERROR / exit 1 (reproduced against the pre-edit files) to 0 findings / exit 0 after only the description text changed, confirming the checker's new rule is exactly what mock deploy #1's org rejection encoded, and that the fix needed no other element touched.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "The skill-then-checker-then-rebuild loop worked as standards/build-orchestration.md section 8 describes: a real org rejection (F-15) became a skill fix (metadata-examples.md + PSVP-DESC-01/02) rather than a one-off patch to this build's three files, so every future access step built by this agent inherits the same guard.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "access",
+      "observation": "check_access_model.py's DESC-02 WARN line (>=200 chars) exists as headroom below the hard 255-char DESC-01 ERROR; the new descriptions were written to 147-152 characters, comfortably under both, but no automated check enforces staying under DESC-02 specifically - a future hand-edit could creep back toward 255 without tripping an ERROR until it crosses that line.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md marks the PermissionSetGroup.description 255-char ceiling as UNVERIFIED (2026-09-11) - the Metadata API Developer Guide states no explicit Limit: clause for that field, and the guide's own text is the only tier-1 source this skill cites. M2-S02's PermissionSetGroup files were not re-checked in this run since this step touches only Profile files.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "A second mock-deploy run over M2 would confirm the org itself now accepts these three files, closing F-15 at the same evidentiary level F-09..F-11 were closed at for M1.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/mock-deploy"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "step-tester re-runs this step's declared acceptance tests (both checkers plus the always-on xml and manifest checks) now that the step is built again; a mock deploy itself is the human's script to run afterward, never an agent's."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md",
+      "used_for": "The 'Description length' section: the 255-character Profile.description / PermissionSet.description ceiling from the Metadata API Developer Guide (api_meta L97678 / L94788), the 'where rationale goes instead' rule that sent the removed prose to deploy-order.md, and the PSVP-DESC-01 / PSVP-DESC-02 thresholds the checker enforces"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+      "used_for": "Run before and after the edit: 3x PSVP-DESC-01 ERROR / exit 1 pre-edit (reproduced against the F-15 originals), 0 findings / exit 0 post-edit"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "Re-run at build scope with --strict per the step's declared acceptance test; unaffected by the description-only edit, still exits 0 over 15 files"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4's status machine (the rebuild path back through built/tested/documented and the stale-milestone rule), and section 3's step:<id> human-gate rule confirming step:M2-S03 was already approved before this run claimed the step"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S03",
+    "step_type": "access",
+    "build_mode": "design-only",
+    "rebuild_number": 2,
+    "f15_evidence": "reports/MOCK-DEPLOY-M2.md run 1: all three Profile files rejected with 'Description: data value too large ... (max length=255)'",
+    "pre_edit_checker_result": {
+      "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir <reconstructed pre-edit files>",
+      "exit_code": 1,
+      "result": {
+        "score": 55,
+        "findings": [
+          {
+            "severity": "ERROR",
+            "location": "Acme Billing.profile-meta.xml",
+            "message": "PSVP-DESC-01 Profile description is 407 characters, over the 255-character limit; move rationale to deploy-order.md or the configuration workbook."
+          },
+          {
+            "severity": "ERROR",
+            "location": "Acme Support Tier 1.profile-meta.xml",
+            "message": "PSVP-DESC-01 Profile description is 280 characters, over the 255-character limit; move rationale to deploy-order.md or the configuration workbook."
+          },
+          {
+            "severity": "ERROR",
+            "location": "Acme Support Tier 2.profile-meta.xml",
+            "message": "PSVP-DESC-01 Profile description is 279 characters, over the 255-character limit; move rationale to deploy-order.md or the configuration workbook."
+          }
+        ],
+        "summary": "Scanned 3 access-model metadata file(s); 3 finding(s) detected."
+      }
+    },
+    "post_edit_checker_results": [
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+        "exit_code": 0,
+        "result": {
+          "score": 100,
+          "findings": [],
+          "summary": "Scanned 3 access-model metadata file(s); 0 finding(s) detected."
+        }
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+        "exit_code": 0,
+        "result": {
+          "score": 100,
+          "findings": [],
+          "summary": "Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected."
+        }
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "file_hashes": [
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
+        "sha256_before": "b6253d609dd5572c442ab12d5050562757057854b02cacdf3728656935f4eca5",
+        "sha256_after": "52bfdc3a2327efed2dd910e44d7573c8840cd17e9310df5ea200f06358712255",
+        "description_len_before": 280,
+        "description_len_after": 152
+      },
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml",
+        "sha256_before": "bb834a1e5dbf598bf3dbbddf80ba18d6f7a7234c7c3b0cc026262b354fc2c29e",
+        "sha256_after": "b941eedef44c47dfbcbdd262b3f5697e71aaf1563e4b048c65ae2aaf8e1923fe",
+        "description_len_before": 279,
+        "description_len_after": 152
+      },
+      {
+        "path": "artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml",
+        "sha256_before": "6889ae2463b1aca832362771e7655f8a2bfb7cf3515b248d5f7ffafd80ae0f1d",
+        "sha256_after": "2d62df1f26f30ebd54553e06e3657e7a4eae634d5a84b29eaa5a837e116830c6",
+        "description_len_before": 407,
+        "description_len_after": 147
+      }
+    ],
+    "rationale_relocated_to": "artefacts/M2-S03/deploy-order.md#rebuild-2--descriptions",
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S03 built --run-agent metadata-builder --envelope envelopes/M2-S03/2026-09-12T01-17-55Z.json --result \"Rebuild #2: description-only fix for F-15 (PSVP-DESC-01), both checkers exit 0, check-outputs ok 5/5\" --started 2026-09-12T01:16:41Z"
+  }
+}

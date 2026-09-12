@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Membership source for the Tier 2 Engineering case queue (4 engineers, Q8). Q29 - membership is expressed by group, not by named users, so a roster change is a GroupMember load rather than a deploy. Owner: CRM admin lead.</description>
+    <doesIncludeBosses>true</doesIncludeBosses>
+    <name>Support Tier 2</name>
+</Group>

@@ -1,13 +1,50 @@
-PARSED   artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml
-PARSED   artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml
-PARSED   artefacts/M1-S01/objects/Case/Case.object-meta.xml
-PARSED   artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml
-PARSED   artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml
-PARSED   artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml
-PARSED   artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml
-PARSED   artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml
-PARSED   artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml
-PARSED   artefacts/M1-S01/package.xml
-PARSED   artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml
-
-files=11 parsed=11 failed=0
+{
+  "total": 11,
+  "failed": 0,
+  "files": [
+    {
+      "file": "artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Case/Case.object-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/package.xml",
+      "parsed": true
+    },
+    {
+      "file": "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+      "parsed": true
+    }
+  ]
+}

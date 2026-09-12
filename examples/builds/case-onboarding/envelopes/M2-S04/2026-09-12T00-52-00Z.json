@@ -1,0 +1,412 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T00-52-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-52-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-52-00Z.json",
+  "outcome": "completed",
+  "summary": "Ran step M2-S04 of .sfskills/builds/case-onboarding (plan v5, status building). The step was in build_plan.py next, its step:M2-S04 gate was already approved, and it was claimed pending -> running before any agent work. Owning agent metadata-builder was executed inline per its AGENT.md and wrote 9 files under artefacts/M2-S04/ - three Queues, three Groups, package.xml, the queue-retirement runbook and deploy-order.md. check-outputs returned ok, the step's declared checker exits 0, both envelopes validate, and the step was set built. Terminal status: built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM on the second row: an optional input of the owning agent had no value in the plan and the agent defaulted it - plan.json carries no api_version key, so metadata-builder applied its documented 62.0 default (which matches every prior step's package.xml). Everything on the HIGH row holds: M2-S04 was in next, every required input of the owning agent resolved from the plan, both envelopes validate against output-envelope.schema.json, check-outputs exited 0, no undeclared artefact appeared, and no file was written outside artefacts/M2-S04/ and this agent's own envelopes/M2-S04/ directory. Not LOW: nothing is missing, empty or malformed and the step is not blocked.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S04",
+    "reason": "absent - not a re-run; the step was pending and in next, so no Step 2 carve-out applied"
+  },
+  "dimensions_compared": [
+    "runnability",
+    "input-mapping",
+    "artefact-capture",
+    "envelope-validation",
+    "status-transition"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "partial",
+      "reason": "standards/build-orchestration.md section 5 gives all seven of this step's declared acceptance tests to step-tester. This runner ran the one declared checker-type test verbatim from the build directory to record its exit code as evidence (exit 0), and the owning agent ran it plus two more cited checkers as its own repair loop, but the xml and manifest always-on checks and the four manual tests were not run and no tests/M2-S04/results.json was written. The step therefore stands at built, not tested.",
+      "confidence_impact": "NONE",
+      "retry_hint": "python3 scripts/build_plan.py status .sfskills/builds/case-onboarding/plan.json, then run step-tester on M2-S04."
+    },
+    {
+      "dimension": "owning-agent-defaults",
+      "state": "partial",
+      "reason": "api_version is an optional input of metadata-builder and the plan binds no value, so the agent's own 62.0 default was used rather than a plan-supplied number. Recorded per Step 5 so the owning agent's confidence rubric can account for it; it is also the reason this run is MEDIUM rather than HIGH.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Add an api_version key to plan.json (a planner/amend-step change, not a runner one) if the build should pin the version explicitly."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "build_plan.py next, set-status running and check-outputs each did their own gate work, so the runner never had to re-derive runnability or adjudicate the outputs by eye.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "scripts/build_plan.py"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The 2026-09-12 amend-step that added deploy-order.md to outputs[] worked as intended: the file the owning agent writes on every run is now a declared path check-outputs confirms, so this is the first step in the build where nothing is produced undeclared.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 9
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The concurrent M2-S03 run was visible in plan.json as running throughout and neither its status nor its artefacts directory was touched by this invocation.",
+      "domain": "concurrency",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The step's acceptance_tests[0] description predicts one checker WARN and names it, but the built artefacts produce two, because the Tier 2 queue mailbox address the fixture assumed is not answered anywhere in the plan.",
+      "domain": "test-declaration-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "M2-S04 declares depends_on M2-S02 but nothing it writes can reference a permission set or permission set group, so the dependency is a sequencing preference rather than a metadata one - worth knowing before anyone reads the absence of PSG names as a missing link.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "A cited skill's checker (check_data_skew_and_sharing_performance.py) exits 1 on three INFO findings that no change inside this step's declared outputs can clear; the owning agent stated the disagreement and did not edit the checker, and this runner did not convert it into a failed step because that checker is not one of the step's declared acceptance tests.",
+      "domain": "checker-scope",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/data-skew-and-sharing-performance/scripts/check_data_skew_and_sharing_performance.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "This agent's Wave 10 persistence clause names a docs/reports/build-step-runner/ pair, and the caller's instruction for this run forbids writing outside the build directory; the build-scoped envelope pair was written and the repo-scoped pair was not, which matches what all four earlier steps of this build did.",
+      "domain": "contract-conflict",
+      "evidence": {
+        "source": "input",
+        "path": "agents/build-step-runner/AGENT.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The step is built and its seven declared acceptance tests have not been adjudicated.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 7
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because built -> tested requires tests/M2-S04/results.json with passed true, and this agent never runs the acceptance tests or writes that file."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Once the step is tested, the four ungrounded items and the test-description drift need to land in the build's own documents.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/deploy-order.md",
+        "count": 4
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because decisions.md, traceability.md and the workbook are the doc keeper's, and the ungrounded Tier 2 mailbox and role-member items must survive past this step as open items."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md = 39; it declares build_dir and step_id as its inputs and writes to artefacts/<step-id>/, so no relocation was needed",
+    "owning_agent_invocation": "inline execution of agents/metadata-builder/AGENT.md in full (Step 6 'any other host' path), as the caller directed. The three Step 6 clauses were honoured: every write under artefacts/M2-S04/, an envelope returned against output-envelope.schema.json with its own confidence, observations and citations, and no deploy, no sf command, no second agent invoked.",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-48-00Z.json",
+    "owning_envelope_validation": "OK - python3 scripts/validate_envelope.py returned 'OK .sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-48-00Z.json'",
+    "input_map": {
+      "build_dir": {
+        "value": ".sfskills/builds/case-onboarding/",
+        "source": "caller"
+      },
+      "step_id": {
+        "value": "M2-S04",
+        "source": "caller"
+      },
+      "api_version": {
+        "value": "62.0",
+        "source": "owning agent default - plan.json has no api_version key; optional input, recorded as absent per Step 5"
+      }
+    },
+    "step_inputs_passed": {
+      "queues": [
+        "Tier 1 General",
+        "Tier 2 Engineering",
+        "Billing"
+      ],
+      "answers": [
+        "Q26",
+        "Q29",
+        "Q30",
+        "Q88",
+        "Q89"
+      ],
+      "note": "passed verbatim from plan.json.steps[].inputs; the note field carries the Q29/Q88/Q30 bindings, the S2 checker-rebuild history and the S4 rationale for citing admin/data-skew-and-sharing-performance",
+      "skills": [
+        "admin/queues-and-public-groups",
+        "admin/permission-set-architecture",
+        "admin/data-skew-and-sharing-performance"
+      ],
+      "templates": [],
+      "decision_trees": [],
+      "acceptance_tests_passed_as_context": 7
+    },
+    "clarification_answers_resolved": {
+      "Q26": "Unmatched cases go to the Tier 1 General queue (blocking, answered)",
+      "Q29": "By role and public group, no named users (blocking, answered)",
+      "Q30": "Case only, on all three queues (blocking, answered)",
+      "Q88": "Tier 1 no queue email (Omni push); Billing the queue address; Tier 2 a shared mailbox (informational, answered - default accepted for the Tier 2 portion)",
+      "Q89": "Reassign open Cases to the surviving queue before deletion (informational, answered - default accepted)"
+    },
+    "clarification_answers_note": "Matched by recorded question id from plan.json.clarifications, never by text similarity. All five are status answered; two carry accepted defaults, which is why the owning agent's confidence is MEDIUM.",
+    "upstream_outputs_passed": {
+      "M2-S02": [
+        "artefacts/M2-S02/permissionsets/{Case_Agent_Core,Case_Billing,Case_Tier1,Case_Tier2}.permissionset-meta.xml",
+        "artefacts/M2-S02/permissionsetgroups/{PSG_Billing_Prod,PSG_Tier1_Prod,PSG_Tier2_Prod}.permissionsetgroup-meta.xml",
+        "artefacts/M2-S02/package.xml",
+        "artefacts/M2-S02/deploy-order.md"
+      ],
+      "note": "Paths were passed, not contents. The owning agent read them to confirm the naming and the API version (62.0) and reported that no Queue or Group element can reference a PermissionSet or PermissionSetGroup, so none of the seven names appears in this step's artefacts - recorded in deploy-order.md rather than left as an apparent omission."
+    },
+    "secrets_redacted": [],
+    "secrets_redacted_note": "No input matched a credential shape per skills/devops/pipeline-secrets-management. The step's inputs are queue labels, clarification ids and a naming note; the one address that reached an artefact (billing@acme.example) is a business mailbox from requirement.md, not a credential. Nothing was redacted because nothing needed it.",
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/groups/Support_Tier_1.group-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/groups/Billing_Team.group-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/queue-retirement-runbook.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S04/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "files_written_outside_step_artefacts": [
+      ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-48-00Z.json",
+      ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-48-00Z.md",
+      ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-52-00Z.json",
+      ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-52-00Z.md"
+    ],
+    "files_written_outside_step_artefacts_note": "The four envelope-directory files only, which is this agent's own contracted location (envelopes/<step-id>/), not a Step 6 violation. No metadata file landed outside artefacts/M2-S04/, nothing was written anywhere else in the build directory, and nothing was written in the repo - no skill, agent, standard, script or plan.json was edited by hand.",
+    "relocations": [],
+    "relocations_note": "None needed: metadata-builder has a build-layer contract (39 grep hits) and wrote directly onto the declared paths.",
+    "checker_runs": [
+      {
+        "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M2-S04",
+        "cwd": ".sfskills/builds/case-onboarding (the build directory, via the skills symlink)",
+        "exit_code": 0,
+        "declared_as": "acceptance_tests[0], type checker, scope step",
+        "verbatim": true,
+        "output_summary": "3 queues listed, each 'Objects : Case'; 3 groups listed; 2 WARNs, both 'No <email> configured' - Tier 1 General and Tier 2 Engineering. Exit 0 because --strict is deliberately not declared."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S04",
+        "cwd": "repo root",
+        "exit_code": 0,
+        "declared_as": "not declared - owning agent Step 8 self-check over a cited skill",
+        "output_summary": "WARN: nothing to check; no PermissionSet/MutingPermissionSet/PermissionSetGroup/Profile file under this step."
+      },
+      {
+        "command": "python3 skills/admin/data-skew-and-sharing-performance/scripts/check_data_skew_and_sharing_performance.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S04",
+        "cwd": "repo root",
+        "exit_code": 1,
+        "declared_as": "not declared - owning agent Step 8 self-check over a cited skill",
+        "output_summary": "3 INFO findings, one per Group: deployed but no sharing rule in this manifest references it. Its group-use scan reads only sharingRules sharedTo/sharedFrom, so queueMembers is invisible to it, and main() returns 1 on any finding including INFO."
+      },
+      {
+        "command": "python3 -c \"...ET.parse over rglob('*.xml')...\" .sfskills/builds/case-onboarding/artefacts/M2-S04",
+        "cwd": "repo root",
+        "exit_code": 0,
+        "declared_as": "not declared - owning agent Step 8 pre-check of the tester's always-on xml test",
+        "output_summary": "7/7 XML files parse."
+      }
+    ],
+    "checker_runs_note": "Only the first is one of the step's declared acceptance tests, and it was run verbatim from the build directory as declared - no flag added, removed or re-ordered and no path substituted. The other three are the owning agent's own repair-loop checks, recorded because their exit codes are evidence about the artefacts. None of them is the step's verdict: step-tester runs the declared set and writes tests/M2-S04/results.json.",
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "check_outputs_exit_code": 0,
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S04 built --run-agent metadata-builder --envelope envelopes/M2-S04/2026-09-12T00-48-00Z.json --result \"Built 3 Case Queues (Tier_1_General, Tier_2_Engineering, Billing) and 3 public Groups (Support_Tier_1, Support_Tier_2, Billing_Team) at API 62.0 plus package.xml, queue-retirement-runbook.md and deploy-order.md; 9/9 declared outputs, 0 undeclared; check-outputs ok; declared checker check_queues.py exit 0 with 2 documented no-email WARNs (Tier 1 by Q88, Tier 2 ungrounded address).\" --started 2026-09-12T00:40:56Z",
+    "set_status_result": "M2-S04: running -> built (run appended: metadata-builder). Exit 0. Three unrelated WARNs printed about M5-S02 and M5-S04 checker argument forms - pre-existing plan-wide validate warnings, not this step's.",
+    "claim_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S04 running --started 2026-09-12T00:40:56Z",
+    "terminal_status": "built",
+    "ungrounded_items_reported_by_owning_agent": [
+      "Tier 2 queue mailbox address - posture answered by Q88, value nowhere on file; <email> omitted rather than invented.",
+      "Role developer names for queueMembers/roles - Q29 names roles as a source, no role name exists in the requirement, the 97 clarifications or an upstream artefact.",
+      "Fall-through owner if Tier_1_General itself is retired - Q26 makes it the catch-all, leaving it no target.",
+      "Whether Billing_Team should be excluded from non-billing cases - Q13 is DEFERRED, assumption A1 applies."
+    ],
+    "next_command_for_the_human": "python3 scripts/build_plan.py status .sfskills/builds/case-onboarding/plan.json  # then run step-tester on M2-S04 (/test-build-step)",
+    "gates_this_agent_did_not_touch": [
+      "step:M2-S04 - already approved 2026-09-12T00:38:44Z by the dry-run operator; this agent neither approved nor re-recorded it",
+      "step:M2-S03 - approved, and that step was claimed running by a concurrent runner; untouched here",
+      "step:M2-S05 - no gate record was read or written by this run",
+      "milestone:M2 - pending; it needs every M2 step documented, or blocked with a recorded reason"
+    ],
+    "workflow_return": {
+      "step_id": "M2-S04",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Billing.queue-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/groups/Support_Tier_1.group-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/groups/Billing_Team.group-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/queue-retirement-runbook.md",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/package.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S04/deploy-order.md"
+      ],
+      "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T00-52-00Z.json",
+      "notes": "Owning agent metadata-builder returned built with MEDIUM confidence and four recorded ungrounded items; the step's declared checker exits 0 with two documented WARNs where its description predicts one."
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "The run-time rules this invocation is bound by: no org write, no auto-chaining into the tester, one target per invocation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The 8-section shape, the Process Observations requirement and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope + markdown pairing, the atomic-write rule, the dimensions_skipped confidence rule, and the persistence clause whose docs/reports pair the caller's instruction overrode"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Confirming no refusal code applied: the step was in next, every required input resolved, and the owning agent neither refused nor reported a skill gap"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 build_mode and the no-hand-edit rule, section 3 the step:<id> gate, section 4 the access row and the status machine, section 5 who owns the tests and the check-outputs precondition on built, section 8 the CLI as the only writer of derived state"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The steps[] field-level truth - which fields this runner reads and which it writes only through build_plan.py"
+    },
+    {
+      "type": "standard",
+      "id": "agents/metadata-builder/AGENT.md",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "The owning agent's Inputs table, Output Contract and eleven-step Plan, executed inline in full for this step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Judging that queues/ and groups/ are the correct source-format directories for these two types, so the tree the tester's manifest check and a later deploy read is well formed"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "Confirming Queue and Group are Metadata API component types the step can legally declare as outputs, and that explicit members beat wildcards in a CI manifest"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The workbook row schema (target_value, recommended_agent, recommended_skills, source_req_id) the step derives from, so the owning agent got the plan's cells rather than a paraphrase of the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The REQ-XXX / US-XXX id conventions echoed into the envelope so the doc keeper can join step to requirement without re-deriving it"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "The credential shapes checked for before echoing any step input into this envelope; billing@acme.example is a business mailbox, not a credential, so nothing was redacted"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "built -> tested needs tests/M2-S04/results.json with passed true, and this agent never runs the declared acceptance tests."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M2-S04 is tested, the workbook rows, traceability rows and the four ungrounded items belong in the build's documents."
+    }
+  ]
+}

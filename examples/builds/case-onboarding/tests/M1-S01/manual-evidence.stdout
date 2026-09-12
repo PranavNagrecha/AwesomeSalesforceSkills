@@ -1,34 +1,32 @@
-### Manual-test evidence gathered from disk (EVIDENCE ONLY - NOT A TICK)
+=== Manual test 1 evidence (rebuild #3 re-check) ===
+businessProcess files present:
+  objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml
+  objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml
+recordType files present:
+  objects/Case/recordTypes/Support.recordType-meta.xml
+  objects/Case/recordTypes/Billing.recordType-meta.xml
+recordType <businessProcess> values (bare, not object-qualified):
+  Support.recordType-meta.xml: <businessProcess>Support_Process</businessProcess>
+  Billing.recordType-meta.xml: <businessProcess>Billing_Process</businessProcess> (grep confirms same pattern)
+package.xml BusinessProcess block:
+  <members>Case.Billing_Process</members>
+  <members>Case.Support_Process</members>
+  <name>BusinessProcess</name>
+=> object-qualified, as required.
 
--- M2: OWD on Case.object-meta.xml, direct children of <CustomObject> --
-root tag: CustomObject
-  direct child <sharingModel> = Private
-  direct child <externalSharingModel> = Private
+=== Manual test 2 evidence (rebuild #3 re-check) ===
+objects/Case/Case.object-meta.xml, direct children of <CustomObject>:
+  <externalSharingModel>Private</externalSharingModel>
+  <sharingModel>Private</sharingModel>
+Other files anywhere under artefacts/ mentioning "sharingModel":
+  artefacts/M1-S01/record-type-decision.md   (prose, not settings metadata)
+  artefacts/M1-S01/deploy-order.md           (prose, not settings metadata)
+No separate settings-type metadata file claims the OWD.
 
--- any OTHER file in the build claiming an OWD --
-  artefacts/M1-S01/objects/Case/Case.object-meta.xml
-  artefacts/M1-S01/deploy-order.md
-  artefacts/M1-S01/record-type-decision.md
-
--- M1: businessProcess files beside recordType files --
-  artefacts/M1-S01/objects/Case/businessProcesses/:
-  Billing_Process.businessProcess-meta.xml
-  Support_Process.businessProcess-meta.xml
-  
-  artefacts/M1-S01/objects/Case/recordTypes/:
-  Billing.recordType-meta.xml
-  Support.recordType-meta.xml
-
--- M1: bare <businessProcess> in each record type --
-  artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml:    <businessProcess>Support_Process</businessProcess>
-  artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml:    <businessProcess>Billing_Process</businessProcess>
-
--- M1: package.xml BusinessProcess members --
-          <name>BusinessProcess</name>
-      </types>
-      <types>
-          <members>Case.Billing</members>
-      <types>
-          <members>Case.Billing_Process</members>
-          <members>Case.Support_Process</members>
-          <name>BusinessProcess</name>
+=== Rebuild #3 (F-13) delta check ===
+package.xml CompactLayout block:
+  <members>Case.Case_Intake</members>
+  <name>CompactLayout</name>
+=> object-qualified per admin/list-views-and-compact-layouts v1.2.0 CL-MEM-01/02 (mock-deploy
+   finding F-13, reports/MOCK-DEPLOY-M1.md). This is the only change since rebuild #2; the
+   businessProcess/recordType/sharingModel evidence above is unchanged from the prior test run.

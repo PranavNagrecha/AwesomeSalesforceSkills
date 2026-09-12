@@ -1,0 +1,258 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T01-42-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T01-42-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T01-42-00Z.json",
+  "outcome": "completed",
+  "summary": "Documented M2-S03 (three base Profile files for Acme Support Tier 1, Acme Support Tier 2 and Acme Billing) after step-tester's Rebuild #2 re-test marked it tested. Re-rendered PLAN.md; appended seven decisions (D-M2S03-01..07) plus three planner open items (O-M2S03-01..03) to decisions.md; wrote three new workbook rows to workbook/03-profiles-permission-sets-and-psgs.md (CWB-PERM-010..012, one per Profile) and two to workbook/99-other-configuration.md (CWB-OTHER-013, -014, for package.xml and deploy-order.md); minted and anchored three traceability rows (REQ-026..028, continuing from the highest existing id REQ-025); recorded no manual tests to compile because M2-S03 declares none; and set the step's status to documented via build_plan.py. This step also closes M1 finding F-01 (the record-type-to-layout binding both M1 milestone reports named as unasserted anywhere in the tree, now resolved 9 layoutAssignments + 12 record-type references, exit 0), recorded as D-M2S03-07 and superseding the pointer-correction O-M2S01-01 asked for.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Per Step 11's per-step table: every artefact (three Profile files) produced a workbook row, every row carries a real source_req_id (REQ-026..028, all sourced to answered clarification Q7), every requirement this step serves has a traceability row, and re-running this documentation pass would replace the same five workbook rows and three traceability rows with the same content. Not MEDIUM: no artefact needed judgment to place in a section (Profile maps cleanly to Section 3), and no req_id was inferred from an ambiguous field. Two things recorded rather than treated as reducing confidence: the M2 mock deploy, not a cited skill, settles two of the three grounding gaps the builder recorded (D-M2S03-01, D-M2S03-02), and this run reads both M1 milestone reports to record F-01's closure rather than inferring it from artefacts alone.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S03",
+    "precondition_checked": "step status was 'tested' at the start of this run (tests/M2-S03/results.json 'passed': true, 4 ran, 0 failed, 0 manual -- the Rebuild #2 re-test)",
+    "prior_envelopes_read": [
+      "envelopes/M2-S03/2026-09-12T00-44-16Z.json (metadata-builder, build #1)",
+      "envelopes/M2-S03/2026-09-12T00-54-31Z.json (build-step-runner)",
+      "envelopes/M2-S03/2026-09-12T00-59-34Z.json (step-tester, build #1 test)",
+      "envelopes/M2-S03/2026-09-12T01-17-55Z.json (metadata-builder, Rebuild #2 for F-15)",
+      "envelopes/M2-S03/2026-09-12T01-23-34Z.json (step-tester, newest before this run)",
+      "envelopes/M2-S04/2026-09-12T01-19-14Z.json (latest prior doc-keeper envelope, for convention)",
+      "envelopes/M2-S02/2026-09-12T00-30-00Z.json (earlier doc-keeper convention reference)"
+    ],
+    "concurrency_note": "A second session was rebuilding M2-S02 for mock-deploy finding F-15 (four PermissionSet description lengths) around the same time as this run. decisions.md, traceability.md and workbook/99-other-configuration.md were each re-read immediately before every write; only M2-S03's own rows and this run's appended entries were written."
+  },
+  "dimensions_compared": [
+    "workbook-row-completeness",
+    "traceability-row-completeness",
+    "decision-log-completeness",
+    "idempotence-keying"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "skill-grounding-of-mock-deploy-settled-elements",
+      "state": "partial",
+      "reason": "Two elements the builder flagged UNGROUNDED (layoutAssignments paired with visible=false on the same record type; alphabetical Profile element order) are settled for this build by one successful mock deploy (reports/MOCK-DEPLOY-M2.md Run 2), not by either cited skill documenting the pairing or the ordering rule as valid. Recorded as D-M2S03-01/-02 with a skill-gap signal rather than treated as a closed question in the library.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Add the accepted layoutAssignments/visible=false pairing and a statement on Profile element-order enforcement to admin/record-types-and-page-layouts' element inventory so a future build does not re-derive the same fact from a fresh mock deploy."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three Profile rows resolved against a real checker exit; check_record_type_layouts.py --manifest-dir artefacts --strict resolving 9 layoutAssignments and 12 record-type references and exiting 0 with 0 findings is a positive statement this build could not make before this step existed -- it is what closes M1 finding F-01.",
+      "domain": "build-loop-health",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S03/results.json",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The F-15 rebuild is the skill-gap loop working as standards/build-orchestration.md section 8 describes: a real org rejection (Description: data value too large) became a skill rule (PSVP-DESC-01/-02 in admin/permission-sets-vs-profiles), which this step's rebuild then satisfied by rewriting only the description element, verified byte-identical elsewhere by SHA-256.",
+      "domain": "checker-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Two elements this step needed were settled by one successful org validation rather than by either cited skill documenting them as valid: whether a layoutAssignments entry is accepted for a record type the same profile marks visible=false on, and whether Profile element order is enforced by the Metadata API. One passing deploy is evidence for this build, not a documented platform guarantee.",
+      "domain": "plan-artefact-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Two Questions-to-Ask rows from the two cited skills -- 'Does a managed package require this profile to be assigned?' and 'Are Person Accounts enabled on this org?' -- are unanswered by any of the plan's 97 clarifications, the same unaddressed-question shape D-M1S02-03 already records for Q24's 'defaulted on' half.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "M1 finding F-01, carried as open in both reports/MILESTONE-M1-REPORT.md and reports/MILESTONE-M1-REPORT-v2.md, is closed by this step's own artefacts and test result. Neither report is rewritable by this agent; a human's next re-verification of M1 needs to record F-01 CLOSED rather than merely re-pointed to M2-S03.",
+      "domain": "build-loop-health",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M1-REPORT-v2.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "assumptions[A1].steps[] in plan.json still reads only [\"M2-S05\"]. This is the third step in the build (after M1-S01 and M2-S02) whose artefacts are shaped by A1's conservative reading without being named in it.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M2-S03 is documented; M2-S05 (built) is the only remaining M2 step to test and document before the M2 milestone can be re-verified, and this step alone closes a HIGH finding (F-01) carried open since the M1 gate.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because milestone-verifier runs cross-step checks and the acceptance report, and M1's own re-verification (already flagged stale for rebuilds #2/#3, O-M1S02-03) should record F-01's closure in the same pass rather than a separate one."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, Process Observations requirement, confidence rubric."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence and the atomic-write rule for this envelope's markdown/JSON pair."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Confirmed the step's tested status did not trigger REFUSAL_OUT_OF_SCOPE and that no artefact lacked a source_req_id, which would trigger REFUSAL_NEEDS_HUMAN_REVIEW."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (rendered views, plan.json single-writer rule), Section 4 (step-type table, access row, artefact map), Section 5 (acceptance-test types, checker scope), Section 6 (this agent's Tier-4 role), Section 8 (skill-gap-vs-freestyle rule, and the rebuild-drops-to-built rule this step followed twice)."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "Fields read from steps[M2-S03] (inputs, outputs, skills, depends_on, amendments) and left untouched beyond the CLI-mediated status transition."
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The ten canonical sections and the row schema (row_id, target_value, owner, source_req_id, source_story_id, recommended_agent, recommended_skills[], status, notes) used for all five new workbook rows."
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The build-layer RTM column set, the REQ-XXX id convention, the single-value artefact / pipe-delimited artefact_paths convention."
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "The decision-entry shape (date, decision, alternative rejected, source grounded in) applied to all seven D-M2S03-* entries."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "Read per Mandatory Reads; not applicable this run -- no manual test declared on M2-S03."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "Read per Mandatory Reads; not applicable this run, same reason."
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Read per Mandatory Reads; not applicable this run, same reason."
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "Read read-only for the target_value cells: the Profile Deployment Overlays gotcha (D-M2S03-04, -05), the Description-length rule and PSVP-DESC-01/-02 (D-M2S03-06), the managed-package Questions-to-Ask row (O-M2S03-02)."
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "Read read-only for the target_value cells: the Person Accounts Questions-to-Ask row (D-M2S03-03, O-M2S03-02), the layout/record-type checker's --strict cross-reference behaviour that closes F-01."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Every M2 step but M2-S05 (built, not yet documented) is now documented, and this step closes a HIGH finding (F-01) carried open since the M1 gate that M1's own stale-milestone re-verification should also record."
+    },
+    {
+      "agent": "build-planner",
+      "because": "Seven new decisions and three new open items (two unanswered Questions-to-Ask rows, and assumptions[A1].steps[] now missing three steps) await a v6 re-plan."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S03",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": [
+      "CWB-PERM-010",
+      "CWB-PERM-011",
+      "CWB-PERM-012",
+      "CWB-OTHER-013",
+      "CWB-OTHER-014"
+    ],
+    "traceability_rows": [
+      "REQ-026",
+      "REQ-027",
+      "REQ-028"
+    ],
+    "decisions_appended": [
+      "D-M2S03-01",
+      "D-M2S03-02",
+      "D-M2S03-03",
+      "D-M2S03-04",
+      "D-M2S03-05",
+      "D-M2S03-06",
+      "D-M2S03-07",
+      "O-M2S03-01",
+      "O-M2S03-02",
+      "O-M2S03-03"
+    ],
+    "rows_replaced": [],
+    "idempotence": "First doc-keeper run for M2-S03; no existing rows in workbook/ or traceability.md carried this step's keys, so every write above is a new row, not a replacement.",
+    "step_9_status_transition": {
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S03 documented --run-agent build-doc-keeper --envelope envelopes/M2-S03/2026-09-12T01-42-00Z.json --result \"workbook rows 5 (3 Section 3 + 2 Other configuration); traceability rows 3; decisions appended 7 (D-M2S03-01..07) + 3 open items (O-M2S03-01..03)\" --started 2026-09-12T01:35:00Z",
+      "result": "M2-S03: tested -> documented (run appended: build-doc-keeper)"
+    }
+  }
+}

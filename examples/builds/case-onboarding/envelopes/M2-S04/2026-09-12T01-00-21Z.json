@@ -1,0 +1,159 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T01-00-21Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T01-00-21Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T01-00-21Z.json",
+  "summary": "Ran the always-on xml and manifest checks plus the one declared checker acceptance test for M2-S04 (Case queues and public groups for Tier 1 General, Tier 2 Engineering and Billing). All 7 XML/meta-XML files under artefacts/M2-S04/ parsed. package.xml is consistent with the six queue/group files in both directions. check_queues.py --manifest-dir artefacts/M2-S04 exited 0, printing 2 WARNs (Tier 1 General and Tier 2 Engineering both lack <email>) -- one more WARN than the declared test's own description predicts, reported below rather than treated as a failure since exit 0 is still the pass condition. check-outputs confirmed all 9 declared outputs exist, are non-empty and parse. Four manual acceptance tests are declared; each was checked against disk where file-checkable and recorded as evidence in skipped_manual, not ticked. One of them (W02 1 of 3, per-queue email posture) does not match what the artefact actually contains for Tier_2_Engineering. Status set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Per agents/step-tester/AGENT.md Step 7 (which overrides the default rubric): every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly. None of the three named MEDIUM triggers applies -- no command test was refused as out of policy, no manifest exclusion was needed for a coverage-gap type, and check-outputs reported no missing, empty or malformed output. The two discrepancies found (the checker description predicting 1 WARN against an observed 2, and manual test W02(1/3) not matching Tier_2_Engineering's actual file) are artefact/plan-text findings, not failures of this agent's own test execution, so they are carried in process_observations rather than discounting confidence outside the stated rubric.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three queue files carry an explicit <queueSobject><sobjectType>Case</sobjectType></queueSobject>, matching Q30 (Case is the only supported object on all three queues), and no queue or group file contains a <users> element -- membership is expressed only through <queueMembers><publicGroups><publicGroup>, matching Q29's no-named-users constraint.",
+      "domain": "queue-configuration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "queue-retirement-runbook.md records the 10,000-record ownership-skew threshold with its skill citation (SKILL.md:88), names the CRM admin lead as monitor with a weekly-then-monthly cadence and two named SOQL queries, and states the split-into-ownership-buckets remedy -- all three sub-claims of the W02 (3/3)/S4 manual test are present and correct on the file actually on disk.",
+      "domain": "documentation-completeness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queue-retirement-runbook.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "acceptance_tests[0].description for the declared checker predicts 'Warnings found (1)' with only the Tier 1 General no-email WARN named. Running the exact declared command over these exact six files prints 'Warnings found (2)' -- Tier 1 General and Tier 2 Engineering both lack <email>. The checker's pass condition (exit 0) still holds and check-outputs is ok, so this is not a test failure, but the plan text is stale against the artefact. The step's own runs[] entry for 2026-09-12T00-52-00Z already reflects the 2-WARN reality, so only acceptance_tests[0].description in plan.json needs correction.",
+      "domain": "plan-artefact-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S04/check_queues_stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Manual acceptance test W02 (1 of 3) asserts 'Tier_2_Engineering carries the Tier 2 shared mailbox.' Tier_2_Engineering.queue-meta.xml has no <email> element at all -- there is no mailbox address on the file to carry. This is the same fact the checker's second WARN independently reports. Recorded as evidence for the human at the M2 gate, not ticked here.",
+      "domain": "acceptance-criteria-accuracy",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Manual test W02 (2 of 3)'s roster-confirmation half ('a support manager confirms the three public-group memberships match the current rosters') cannot be checked from disk -- Group metadata carries no <members> element (membership is GroupMember data, per queue-retirement-runbook.md section 6), so this half is left for the human gate rather than adjudicated here.",
+      "domain": "manual-test-scope",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/groups/"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration-5",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 5 governs acceptance-test types, runner dispatch, the literal-command rule (never rewrite a declared command), checker scope, the deny-list, and the always-on xml/manifest checks this run followed."
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration-4",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 step-type table confirms 'access' is a metadata step type, so the always-on manifest check must fail rather than skip if no package.xml existed; here one exists and was checked."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (one <types> block per type, <members> naming components, <name> naming the type) that the manifest check was judged against."
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Source-format filename-to-metadata-type mapping used to derive Queue/Group member names from the .queue-meta.xml / .group-meta.xml files under artefacts/M2-S04/."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checked whether Queue or Group has any coverage-gap exclusion from manifest checking; neither does, so no exclusion was applied in either direction."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "Judged whether each manual test's observable outcome is stated precisely enough to be tickable by a human rather than re-interpreted; used to flag the W02(1/3) mismatch as evidence rather than silently deferring it."
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Checked all four manual tests against the Given/When/Then shape before carrying them into skipped_manual; all four have an explicit Given, When and Then naming an observable outcome."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S04 is now tested; it is next in the pipeline to fold this step into the workbook and traceability matrix."
+    },
+    {
+      "agent": "build-step-runner",
+      "because": "if the plan-artefact mismatches recorded above are dispositioned as needing an artefact change (rather than only a plan-text fix), a re-run of this step would follow after that decision -- not needed for the current tested status, which stands on the artefacts as built."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M2-S04/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree parse of every *.xml/*-meta.xml under artefacts/M2-S04/",
+        "exit_code": null,
+        "verdict": "pass",
+        "detail": "7/7 files parsed; see tests/M2-S04/xml_result.txt"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "package.xml vs artefacts/M2-S04/ two-way member check",
+        "exit_code": null,
+        "verdict": "pass",
+        "detail": "3 Queue + 3 Group members, consistent both directions, no wildcards, no coverage-gap exclusions applicable."
+      },
+      {
+        "name": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M2-S04",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Warnings found (2): Tier 1 General and Tier 2 Engineering both lack <email>. Declared test description predicts only 1 WARN; see process_observations. Pass condition (exit 0) holds."
+      }
+    ],
+    "check_outputs": {
+      "command": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M2-S04",
+      "exit_code": 0,
+      "result": {"ok": true, "step": "M2-S04", "missing": [], "empty": [], "malformed": []}
+    },
+    "failed": [],
+    "skipped_manual": [
+      "Given the step claims to have built the work pools, when artefacts/M2-S04/ is listed, then all six components are present and named: queues Tier_1_General, Tier_2_Engineering and Billing, and groups Support_Tier_1, Support_Tier_2 and Billing_Team, and every queue's <queueSobject><sobjectType> is Case (Q30). File-checkable evidence: PASS -- all six files present, all three queues carry sobjectType Case.",
+      "W02 (1 of 3): given Q88 fixes the per-queue email posture, when the three queue files are read, then Tier_1_General carries no <email>, Billing carries the billing@ queue address, and Tier_2_Engineering carries the Tier 2 shared mailbox. File-checkable evidence: MISMATCH -- Tier_1_General and Billing match; Tier_2_Engineering.queue-meta.xml has no <email> element at all, so it does not carry a shared mailbox. Flagged for human adjudication at the gate.",
+      "W02 (2 of 3): given Q29 says membership changes monthly, when the three group files are read, then no <users> element names an individual username in any queue or group file, and a support manager confirms the three public-group memberships match current rosters. File-checkable evidence: PASS on the file-checkable half -- no <users> element anywhere. Roster-confirmation half is not file-checkable.",
+      "W02 (3 of 3) and S4: given the 10,000-record ownership-skew threshold and the ~480 cases/day routed to Tier_1_General, when queue-retirement-runbook.md is read, then it records the threshold, names the monitor, and states the split-into-buckets remedy. File-checkable evidence: PASS -- all three present in queue-retirement-runbook.md sections 1-3."
+    ],
+    "tests_run": 3
+  }
+}

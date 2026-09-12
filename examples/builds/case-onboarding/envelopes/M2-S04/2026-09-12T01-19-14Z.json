@@ -1,0 +1,249 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T01-19-14Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T01-19-14Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S04/2026-09-12T01-19-14Z.json",
+  "outcome": "completed",
+  "summary": "Documented M2-S04 (Case queues and public groups for Tier 1 General, Tier 2 Engineering and Billing) after step-tester marked it tested. Re-rendered PLAN.md; appended six decisions (D-M2S04-01..06) plus four planner open items (O-M2S04-01..04) to decisions.md; wrote six new workbook rows to a new Section 6 file (workbook/06-automation.md, CWB-AUT-001..006 for the three Queue and three Group components) and three new rows to Other Configuration (CWB-OTHER-010..012 for package.xml, deploy-order.md and queue-retirement-runbook.md); minted five new requirement ids (REQ-021..025) and wrote their traceability.md rows, linking Q26/Q29/Q30/Q88/Q89 and the corresponding requirement.md lines to the six artefacts and the step's checker plus four manual tests; staged a four-case UAT draft plus a five-criterion acceptance-criteria file in the session scratchpad and linted both clean. Set the step's status to documented via build_plan.py. The workbook placement diverges from a literal reading of Step 4's type map (access -> Sections 3/4) because Queue/Group content fits neither; Section 6 (Automation) was chosen instead, grounded in build-orchestration.md's own routing row and the configuration-workbook-authoring skill's own CWB-AUT- precedent, and recorded as D-M2S04-06 for a human to confirm at the gate.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Per Step 11's override: every artefact produced a workbook row, every row carries a real source_req_id, and every requirement this step serves has a traceability row with no duplicates on re-render. MEDIUM rather than HIGH because two conditions in the MEDIUM row apply: an artefact (Queue/Group) could not be placed in a Step-4-mapped section without judgment (resolved as D-M2S04-06, Section 6), and two requirement ids (REQ-022, REQ-023) had their source clarification inferred from requirement.md text plus a related-but-not-identical clarification id (Q29, Q13) rather than read off a single unambiguous field on the step. Not LOW: no row was written with an empty source_req_id or an empty verification cell, and the step's test results were fully readable.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S04",
+    "precondition_checked": "step status was 'tested' at the start of this run (tests/M2-S04/results.json 'passed': true)",
+    "prior_envelopes_read": [
+      "envelopes/M2-S04/2026-09-12T00-48-00Z.json (metadata-builder)",
+      "envelopes/M2-S04/2026-09-12T00-52-00Z.json (build-step-runner)",
+      "envelopes/M2-S04/2026-09-12T01-00-21Z.json (step-tester, newest before this run)",
+      "envelopes/M2-S02/2026-09-12T00-30-00Z.json (latest prior doc-keeper envelope, for convention)",
+      "envelopes/M1-S01/2026-09-12T00-25-00Z.json (earliest doc-keeper convention reference)"
+    ],
+    "concurrency_note": "M2-S03 is being reset/rebuilt in a concurrent session per this run's own instructions; only M2-S04 rows were written and only this run's appended decisions.md entries were added -- no M2-S03 row was touched, consistent with the three Profile: orphans check_rtm.py reports at build scope, which belong to that other session's step."
+  },
+  "dimensions_compared": [
+    "workbook-row-completeness",
+    "traceability-row-completeness",
+    "decision-log-completeness",
+    "idempotence-keying"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "workbook-section-fit",
+      "state": "partial",
+      "reason": "The step's declared type (access) maps to Sections 3/4 in Step 4's table, and neither fits a Queue or Group artefact. Resolved by content-based judgment (D-M2S04-06) rather than a mechanical lookup, because Step 4's table itself does not offer an access-vs-content override clause.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Add an explicit content-based override clause to agents/build-doc-keeper/AGENT.md Step 4's mapping table so a future run does not need a per-run judgment call recorded in decisions.md."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "M2-S04 is the first metadata-builder step in this build whose package.xml, deploy-order.md and markdown runbook were all three declared in outputs[] from the point check-outputs first ran, closing the undeclared-deploy-order.md pattern decisions.md records as still open on M1-S01, M1-S02 and M2-S02 (O-M1S01-01-adjacent, O-M1S02-02, O-M2S02-01).",
+      "domain": "build-loop-health",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 9
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The data-skew checker's exit-1 gap the metadata-builder envelope recorded as an open checker limitation was closed the same day by a library fix (commit d7cc43e04) found by this very build -- re-running the identical declared-adjacent command over these artefacts in this documentation pass now exits 0 with three accurately-reworded WARNs instead of a false 'unused' framing.",
+      "domain": "checker-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/data-skew-and-sharing-performance/scripts/check_data_skew_and_sharing_performance.py"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Five REQ-021..025 traceability rows had to route their status mostly to 'In Build' rather than 'In UAT' because six downstream steps (M3-S03, M3-S04, M3-S05, M4-S04, M5-S01, M2-S05) all depend on this one -- more fan-out than any prior documented step in this build, which makes M2-S04 a single point where a re-plan of any one of those six steps has wide traceability-row consequences.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 6
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two independent documented gaps on this step both trace to the same missing answer (Tier 2's shared-mailbox address is a posture, not a value): the checker-description WARN-count mismatch (O-M2S04-01) and the manual-test criterion/artefact mismatch (O-M2S04-02). One clarification answer would close both simultaneously, which is worth surfacing before a re-plan treats them as two separate fixes.",
+      "domain": "plan-artefact-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "This step's declared type (access) disagrees with standards/build-orchestration.md's own step-type table, which files Queue metadata under routing -- the same tension metadata-builder's own envelope flagged unresolved. This run resolved only the workbook-section consequence (D-M2S04-06); the plan's step-type field itself is unchanged and the underlying disagreement is unresolved at the plan level.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M2-S04 is now documented, and its deploy-order.md and package.xml are ready inputs for milestone-level cross-step checks once the remaining M2 steps (M2-S03, M2-S05) are documented.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because milestone-verifier runs cross-step checks and the acceptance report only once every M2 step is documented, and this run leaves M2-S03 as the remaining gap (in a concurrent session) and M2-S05 as pending."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, Process Observations requirement, confidence rubric."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence and the atomic-write rule for this envelope's markdown/JSON pair."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Confirmed the step's tested status did not trigger REFUSAL_OUT_OF_SCOPE and that no artefact lacked a source_req_id (which would trigger REFUSAL_NEEDS_HUMAN_REVIEW)."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (rendered views, plan.json single-writer rule), Section 4 (step-type table and artefact map, the routing row that grounds D-M2S04-06), Section 5 (acceptance-test types, checker scope), Section 6 (this agent's Tier-4 role), Section 8 (skill-gap-vs-freestyle rule)."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "Fields read from steps[M2-S04] (inputs, outputs, skills, depends_on, amendments) and left untouched beyond the CLI-mediated status transition."
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The ten canonical sections and the row schema (row_id, target_value, owner, source_req_id, source_story_id, recommended_agent, recommended_skills[], status, notes) used for all nine new workbook rows."
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/references/worked-examples.md",
+      "used_for": "Row CWB-AUT-102's own worked example, which files a queue-routing target under the CWB-AUT- (Automation) prefix -- the precedent grounding D-M2S04-06's Section 6 placement."
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The canonical column set, the REQ-XXX id convention, and the pipe-delimited multi-value convention used for the five new traceability.md rows."
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+      "used_for": "Linted traceability.md at build scope and at artefacts/M2-S04 scope; the setup-only: prefix fix on REQ-025 and the bare-Q<n> fix on REQ-024's source cell both came from this checker's own WARN messages."
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "The decision-entry shape (date, decision, alternative rejected, source grounded in) used for all six D-M2S04 entries and four O-M2S04 open items."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "How a test result becomes acceptance evidence rather than a bare pass/fail, applied to the four manual tests' skipped_manual evidence when writing traceability rows and the staged UAT cases."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/references/worked-examples.md",
+      "used_for": "The TC-/AC-/run-sheet record shape used to stage TC-M2S04-01..04 in the scratchpad UAT draft."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/scripts/check_uat_case.py",
+      "used_for": "Linted the staged UAT case pack (--manifest-dir) clean: 4 case(s), 4 run-sheet row(s), 4 criterion id(s) cross-checked, after marking TC-M2S04-02 negative_path: true to satisfy the per-requirement negative-case rule."
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md",
+      "used_for": "The Given/When/Then criteria-record shape used for the five staged AC-021.1..025.1 criteria."
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py",
+      "used_for": "Linted the staged criteria file: 0 error(s), 3 warning(s) (persona names a job title rather than a permission construct -- an honest gap in a design-only build with no PSG assignment modelled yet)."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Once every M2 step (including the concurrently-rebuilding M2-S03 and the still-pending M2-S05) reaches documented, milestone-verifier runs the cross-step checks and the acceptance report for M2."
+    },
+    {
+      "agent": "config-workbook-author",
+      "because": "Recommended only for the eventual release-level document compile, per this agent's Output Contract; not eligible to own the M5-S04 compile step in this design-only build (requires_org: true), where build-doc-keeper itself does that job."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": [
+      "CWB-AUT-001", "CWB-AUT-002", "CWB-AUT-003", "CWB-AUT-004", "CWB-AUT-005", "CWB-AUT-006",
+      "CWB-OTHER-010", "CWB-OTHER-011", "CWB-OTHER-012"
+    ],
+    "traceability_rows": ["REQ-021", "REQ-022", "REQ-023", "REQ-024", "REQ-025"],
+    "decisions_appended": [
+      "D-M2S04-01", "D-M2S04-02", "D-M2S04-03", "D-M2S04-04", "D-M2S04-05", "D-M2S04-06",
+      "O-M2S04-01", "O-M2S04-02", "O-M2S04-03", "O-M2S04-04"
+    ],
+    "rows_replaced": [],
+    "uat_staging": {
+      "location": "scratchpad (session-local, not the build directory) -- /uat-M2-S04/acceptance-criteria.yaml and /uat-M2-S04/uat-cases.yaml",
+      "not_the_build_directory_because": "the compiled uat-test-cases.yaml and the compiled acceptance-criteria document are M5-S04's declared outputs per agents/build-doc-keeper/AGENT.md Step 10 (the compile run), not this per-step run's -- this staging is a draft for that future compile, and check_uat_case.py / check_ac_format.py were run against it here only to validate the shape early, per this run's own instruction to stage UAT/AC lint in the session scratchpad",
+      "cases_staged": ["TC-M2S04-01", "TC-M2S04-02", "TC-M2S04-03", "TC-M2S04-04"],
+      "criteria_staged": ["AC-021.1", "AC-022.1", "AC-024.1", "AC-025.1"],
+      "note": "AC-023.1 was not staged as a separate criterion; REQ-023's own manual coverage runs through TC-M2S04-02 (AC-024.1's email-posture case) and the six-component presence evidence, since no manual acceptance test in the plan is dedicated to Tier 2 access alone.",
+      "check_uat_case_result": "OK -- 4 case(s), 4 run-sheet row(s), 4 criterion id(s) cross-checked",
+      "check_ac_format_result": "0 error(s), 3 warning(s) -- persona names a job title, not a permission construct"
+    },
+    "idempotence": "First doc-keeper run for M2-S04; no existing rows in workbook/ or traceability.md carried this step's keys, so every write above is a new row, not a replacement.",
+    "step_9_status_transition": {
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S04 documented --run-agent build-doc-keeper --envelope envelopes/M2-S04/2026-09-12T01-19-14Z.json --result \"workbook rows 9 (6 new + 3 new); traceability rows 5; decisions appended 6 (D-M2S04-01..06) + 4 open items (O-M2S04-01..04)\" --started 2026-09-12T01:14:00Z",
+      "result": "M2-S04: tested -> documented (run appended: build-doc-keeper)"
+    }
+  }
+}

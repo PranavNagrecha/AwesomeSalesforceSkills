@@ -1,0 +1,416 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T00-05-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T00-05-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T00-05-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S02",
+    "api_version": "62.0 (defaulted - plan.json carries no api_version; the same default M1 report finding F-06 records, and the version already on M1-S01's and M2-S01's manifests)",
+    "step_inputs.objects_in_scope": [
+      "Case",
+      "Account",
+      "Contact",
+      "EmailMessage",
+      "Entitlement"
+    ],
+    "step_inputs.teams": {
+      "Tier 1": 12,
+      "Tier 2": 4,
+      "Billing": 2
+    },
+    "step_inputs.answers": [
+      "Q7",
+      "Q8",
+      "Q9",
+      "Q10",
+      "Q86",
+      "Q87",
+      "Q96"
+    ],
+    "step_inputs.note": "Q8 leave licenseId unset; Q10 additive only; B02 fixes the three PSG names as PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod",
+    "upstream_outputs.M1-S01": "artefacts/M1-S01/ - Case.object-meta.xml (Private OWD), recordTypes/Support + Billing, fields/Severity__c, Account fields Region__c and Support_Tier__c",
+    "invoked_by": "build-step-runner, executing this AGENT.md inline (the runner's Step 6 'any other host' path); Step 9's set-status commands were therefore skipped and left to the runner",
+    "persist": "--no-persist - the caller restricted writes to the build directory, so the docs/reports/metadata-builder/ pair required by the Wave 10 persistence contract was not written; this envelope pair under envelopes/M2-S02/ is the only persisted copy"
+  },
+  "summary": "Built M2-S02 (access, design-only, owner metadata-builder) into nine files: four PermissionSet files, three PermissionSetGroup files, a two-type package.xml at API 62.0, and deploy-order.md. The design is the baseline-plus-persona shape admin/permission-set-architecture documents: one shared object-access set (Case_Agent_Core) carrying Case CRU, read on Account/Contact/Entitlement, create+read on EmailMessage, three field grants and three standard tabs, plus three thin persona deltas carrying only record-type visibility and the Severity__c edit. Every element name and enum value was copied from the Step 3 inventory built out of skills/admin/permission-set-architecture/references/metadata-examples.md sections 1-3 and 5, skills/admin/permission-sets-vs-profiles/references/metadata-examples.md, and skills/admin/permission-set-group-composition/references/examples.md example 1. All three declared checkers exited 0 on the first pass, the cited-skill checker for the manifest was also run at 0, every XML file parses, and check-outputs returned ok. No system permission is granted anywhere because the only Case-relevant one the cited skills name is marked UNVERIFIED; that and four other ungrounded points are recorded in deploy-order.md rather than invented.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10: HIGH on four of five conditions - every emitted element traces to the Step 3 inventory, all three declared checkers plus check_deployment_manifest.py exited 0 on the first pass with no repair passes, check-outputs returned ok, and every declared output was written. MEDIUM because the fifth is not met and because of one extra file: three Questions-to-Ask rows were answered from a documented skill default or from a builder reading of requirement.md rather than from an answered clarification (expiry, step-up activation, and whether Billing may edit Severity__c), and deploy-order.md is written on every run per Step 5 rule 2 but this step's outputs[] does not declare it, unlike M1-S01, M1-S02 and M2-S01 which all do.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Three of the fourteen deduplicated Questions-to-Ask rows were not answered from plan.json. 'Should any of this expire?' and 'Does any permission need step-up activation?' (both admin/permission-set-architecture) took the skill's documented default - no expiry, hasActivationRequired false, the latter reinforced by that skill's note that group membership removes the session-activation requirement. 'Which objects does this capability touch, and at what CRUD level?' is answered at object level by Q9 but not at CRUD level by any clarification, so the levels were read off requirement.md (agents log and work cases; nothing grants delete). None of the three is a query failure.",
+      "confidence_impact": "MEDIUM"
+    },
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Four elements the step could plausibly have carried were left unwritten because the inventory could not ground them: userPermissions of any kind (the one Case-relevant name in the cited skills, TransferAnyCase, is marked UNVERIFIED 2026-09-04 in permission-set-architecture/references/metadata-examples.md section 2); viewAllFields (API 63.0+ per the same file, against a 62.0 manifest); a tabSettings entry for Entitlement; and any MutingPermissionSet. Each is named in deploy-order.md under 'Elements this step could NOT ground'.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access",
+      "observation": "All three declared checkers exited 0 on the first pass and the composition checker printed exactly the output plan v5's acceptance-test description predicted, including the reuse GOOD line naming Case_Agent_Core across three PSGs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S02",
+        "count": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "security",
+      "observation": "check_access_model.py returns 1 on ANY finding, not on a severity threshold, so its score-100 zero-finding result over the four permission sets is a positive statement that no dangerous system permission and no viewAllRecords or modifyAllRecords grant exists in this step.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "access",
+      "observation": "Case_Tier1 and Case_Tier2 carry byte-identical grants: the requirement separates the two teams by routing and escalation, which are Omni-Channel, queue and EscalationRules concerns in M2-S04, M3 and M4, and no answered clarification gives Tier 2 an access Tier 1 lacks. Both files were written because outputs[] declares both; the composition checker's near-clone heuristic needs four or more shared sets to fire, so it stays silent at this size.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "traceability",
+      "observation": "M2-S02's outputs[] declares package.xml but not deploy-order.md, while M1-S01, M1-S02 and M2-S01 all declare both; metadata-builder Step 5 rule 2 writes the note on every run, so this step produces one file the plan cannot confirm through check-outputs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "naming",
+      "observation": "The declared permission-set names Case_Agent_Core, Case_Tier1, Case_Tier2 and Case_Billing do not follow the Obj_<Object>_<CRUD> / Feat_<Feature> taxonomy that permission-set-architecture's SKILL.md points at in templates/admin/permission-set-patterns.md; the step's templates[] is empty, so no template was cited to resolve the divergence and the declared paths were written as-is, exactly as M2-S01 recorded for Case_Intake_Integration.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/admin/permission-set-patterns.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access",
+      "observation": "Whether Billing may edit Case.Severity__c is decided by a builder reading of requirement.md ('Severity 1 outages are 24/7') rather than by an answered clarification; the file grants Billing read-only and names the reading in deploy-order.md for the M2 gate.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/requirement.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "skill-coverage",
+      "observation": "admin/permission-set-group-composition has no '## Questions to Ask Before Configuring' section, so the deduplicated question list for this step came from two of the three cited skills; the composition decisions it would have driven were taken from that skill's examples.md and gotchas.md instead.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-set-group-composition/SKILL.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "testing",
+      "observation": "The step is built and its eight declared outputs exist; the molecular tests it declares have not been run by this agent.",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because standards/build-orchestration.md section 5 gives the tester, not the builder, the job of running the step's declared acceptance tests and writing tests/M2-S02/results.json.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "step_type": "access",
+    "build_mode": "design-only",
+    "api_version": "62.0",
+    "invocation_path": "under-runner (Step 9 set-status skipped; the runner sets the terminal status)",
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml",
+        "type": "PermissionSet",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 1 (object-access set: objectPermissions six-field block, fieldPermissions, tabSettings/Visible, hasActivationRequired) + section 2 (applicationVisibilities standard__Service) + references/well-architected.md line 34 (standard-<Object> tab form) + skills/admin/permission-sets-vs-profiles/references/metadata-examples.md (the six Required PermissionSetObjectPermissions fields)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml",
+        "type": "PermissionSet",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 1 (recordTypeVisibilities, fieldPermissions)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml",
+        "type": "PermissionSet",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 1",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/permissionsets/Case_Billing.permissionset-meta.xml",
+        "type": "PermissionSet",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 1",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml",
+        "type": "PermissionSetGroup",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 3 (fullName/label/description/hasActivationRequired/permissionSets) + skills/admin/permission-set-group-composition/references/examples.md example 1",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml",
+        "type": "PermissionSetGroup",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 3",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml",
+        "type": "PermissionSetGroup",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 3",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/package.xml",
+        "type": "Package manifest",
+        "source": "skills/admin/permission-set-architecture/references/metadata-examples.md section 5 (PermissionSet and PermissionSetGroup types, version 62.0)",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S02/deploy-order.md",
+        "type": "deploy-order note",
+        "source": "skills/admin/change-management-and-deployment + the cited skills' gotchas and the PSG member-existence rule in permission-set-architecture/references/metadata-examples.md section 3",
+        "declared": false
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M2-S02/deploy-order.md - written on every run per metadata-builder Step 5 rule 2 and Step 7; this step's outputs[] omits it where M1-S01, M1-S02 and M2-S01 all declare it"
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Which user or permission set license does every person in this persona hold?",
+        "answer": "All 18 users hold Salesforce licences with Service Cloud; leave LicenseId empty.",
+        "source": "clarification Q8 (+ step inputs note)",
+        "element": "PermissionSet/license omitted on all four sets"
+      },
+      {
+        "question": "What is on the current profile that has no permission-set equivalent?",
+        "answer": "Layout assignments, default app and default record type stay on a minimal base profile; every object, field and tab grant lives in permission sets.",
+        "source": "clarification Q7",
+        "element": "no layoutAssignments, no <default> under applicationVisibilities or recordTypeVisibilities anywhere in this step - those are M2-S03's"
+      },
+      {
+        "question": "Which objects, fields, tabs, apps, record types, layouts and classes are in scope?",
+        "answer": "Case, Account, Contact, EmailMessage, Entitlement, plus the Case record types, layouts and the Service app.",
+        "source": "clarification Q9 + step inputs objects_in_scope",
+        "element": "five objectPermissions blocks, applicationVisibilities standard__Service, tabSettings for standard-Case / standard-Account / standard-Contact"
+      },
+      {
+        "question": "Which objects does this capability touch, and at what CRUD level?",
+        "answer": "Case create/read/edit, no delete; Account, Contact and Entitlement read; EmailMessage create and read.",
+        "source": "requirement.md (agents log about 20 cases a day by hand and reply to customers; nothing in the requirement or the answers grants a delete)",
+        "element": "the six Required fields on each objectPermissions block, allowDelete false throughout"
+      },
+      {
+        "question": "Are we adding access, or taking it away?",
+        "answer": "Additive - new Service Cloud footprint, no strip phase.",
+        "source": "clarification Q10",
+        "element": "no MutingPermissionSet written; Billing is granted less rather than muted down from more"
+      },
+      {
+        "question": "Does anything here need View All Records or Modify All Records?",
+        "answer": "No. Record access is the Private OWD plus the M2-S05 criteria-based sharing rule.",
+        "source": "clarification Q13 (DEFERRED - conservative reading, plan assumption A1) + M1-S01's Case.object-meta.xml",
+        "element": "viewAllRecords and modifyAllRecords false on every objectPermissions block"
+      },
+      {
+        "question": "Is this bundle for a named person or for a standing role that changes people?",
+        "answer": "A standing role - Tier 1 membership changes monthly.",
+        "source": "requirement.md + step inputs teams",
+        "element": "three PermissionSetGroup files as the assignment unit; no direct member-set assignment is designed"
+      },
+      {
+        "question": "Should any of this expire?",
+        "answer": "No. These are steady-state personas, not elevations.",
+        "source": "DEFAULT - skills/admin/permission-set-architecture documents ExpirationDate for time-boxed elevation; no clarification asks for one",
+        "element": "no PermissionSetAssignment metadata written at all (assignment is data, not metadata)"
+      },
+      {
+        "question": "Does any permission need step-up activation?",
+        "answer": "No.",
+        "source": "DEFAULT - skills/admin/permission-set-architecture section 1 note that hasActivationRequired stays false for anything destined for a PSG, and that group membership removes the session-activation requirement",
+        "element": "hasActivationRequired false on all four sets and all three groups"
+      },
+      {
+        "question": "Who checks the group after deploy, and against which user?",
+        "answer": "The CRM admin lead runs a View Summary check on one user per team plus the assignment-count query before UAT; a PermissionSetGroup.Status gate runs before each UAT session.",
+        "source": "clarifications Q87 and Q96",
+        "element": "recorded in each PSG description and in deploy-order.md's verify section, with the Status SOQL as text"
+      },
+      {
+        "question": "Does a managed package require this profile to be assigned?",
+        "answer": "None known; confirm against the org's installed-package list before the access step runs.",
+        "source": "clarification Q86",
+        "element": "no package-specific permission set is composed into any PSG"
+      },
+      {
+        "question": "Which record types may each persona pick?",
+        "answer": "Tier 1 and Tier 2 see Case.Support; Billing sees Case.Billing only.",
+        "source": "clarification Q13 (DEFERRED - conservative reading) + upstream M1-S01 record types",
+        "element": "recordTypeVisibilities in Case_Tier1, Case_Tier2 and Case_Billing"
+      },
+      {
+        "question": "Which field-level grants does each persona need?",
+        "answer": "Everyone reads Case.Severity__c, Account.Region__c and Account.Support_Tier__c; the two support tiers also edit Severity__c.",
+        "source": "requirement.md + M1-S02's layouts and M1-S01's Case_Intake compact layout, which put Severity__c in front of every persona",
+        "element": "fieldPermissions in Case_Agent_Core (readable), Case_Tier1 and Case_Tier2 (readable + editable)"
+      },
+      {
+        "question": "Who verifies afterwards, and against what?",
+        "answer": "View Summary on one user per team plus the assignment-count SOQL, before UAT opens.",
+        "source": "clarification Q87",
+        "element": "deploy-order.md verify section"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No issues found."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "GOOD: reuse: permission set 'Case_Agent_Core' is referenced by 3 PSGs (PSG_Billing_Prod, PSG_Tier1_Prod, PSG_Tier2_Prod) - composition reuse working as intended. / Summary: 1 good, 0 error, 0 warn, 0 info, scanned 3 PSG file(s)."
+      },
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 7 access-model metadata file(s); 0 finding(s) detected.\"}"
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M2-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "note": "Not a declared acceptance test. Run because metadata-builder Step 8 names it for the manifest this agent writes on every run.",
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 8 manifest or metadata file(s); 0 finding(s) detected.\"}"
+      },
+      {
+        "command": "python3 -c \"<ElementTree parse of every *.xml under artefacts/M2-S02>\"",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "all parse OK"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "deploy_order_note": "artefacts/M2-S02/deploy-order.md - permission sets before groups (a group's permissionSets entries must exist in the org or in the same deploy), M1-S01's object, fields and record types before either, PermissionSetAssignment left as post-deploy data, and a validate-only sf command written as text for a human."
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "Baseline-plus-feature-bundle pattern, the PSG-as-assignment-unit rule, and the Questions-to-Ask rows on licence, CRUD level, sharing bypass, standing role, expiry, activation and post-deploy verification"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "Element inventory for PermissionSet (objectPermissions, fieldPermissions, tabSettings/Visible, recordTypeVisibilities, applicationVisibilities, hasActivationRequired) and PermissionSetGroup (fullName, label, permissionSets); the objectPermissions dependency chain; the API 63.0+ date on viewAllFields; the UNVERIFIED marker on TransferAnyCase; the package.xml shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/well-architected.md",
+      "used_for": "The standard__ prefix for standard apps and standard-<Object> for standard tabs"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md",
+      "used_for": "The six Required PermissionSetObjectPermissions fields, the tabSettings/tabVisibilities enum split, the profile-only element list that kept layoutAssignments and every <default> out of this step, and the permission-sets-grant-never-deny rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "The Questions-to-Ask rows behind Q7, Q8, Q9, Q10, Q86 and Q87"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-group-composition",
+      "path": "skills/admin/permission-set-group-composition/references/examples.md",
+      "used_for": "The PSG file shape in example 1, the PSG_<persona>_<env> naming convention the plan adopted in B02, and the mute-versus-clone decision that left this step without a MutingPermissionSet"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-group-composition",
+      "path": "skills/admin/permission-set-group-composition/references/gotchas.md",
+      "used_for": "Asynchronous PSG recalculation and the Status=Updated gate recorded in deploy-order.md for Q96"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "The deploy-order note's component ordering and the manifest checker run in Step 8"
+    },
+    {
+      "type": "template",
+      "id": "admin/permission-set-patterns",
+      "path": "templates/admin/permission-set-patterns.md",
+      "used_for": "The object-access -> feature -> PSG -> muting -> assignment deploy sequence quoted in deploy-order.md, and the naming taxonomy the plan's declared names diverge from (recorded as an ambiguity, not applied over the plan)"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 step-type table (access), section 5 on who runs the tests and the package.xml declaration rule, section 8 on recording a gap instead of freestyling"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Runs M2-S02's five declared acceptance tests and writes tests/M2-S02/results.json; this agent ran the checkers only to repair its own output."
+    }
+  ]
+}

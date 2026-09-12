@@ -1,0 +1,244 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T00-20-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-12T00-20-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-12T00-20-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "reason": "REBUILD #3 of a documented step (contract \u00a7 4 documented -> running carve-out): mock-deploy finding F-13 (reports/MOCK-DEPLOY-M1.md \u00a7 'Mock deploy #3') proved package.xml's CompactLayout member Case_Intake is not object-qualified; admin/list-views-and-compact-layouts was fixed today to v1.2.0 with checker rules CL-MEM-01/02."
+  },
+  "summary": "Ran build-step-runner's own playbook for a rebuild #3 of M1-S01, acting as the owning agent (metadata-builder) directly per the caller's instruction. The step's own step:M1-S01 human gate was already approved, so the documented -> running carve-out (contract \u00a7 4) applied cleanly. Changed exactly one line of artefacts/M1-S01/package.xml (CompactLayout member Case_Intake -> Case.Case_Intake); every other file under artefacts/M1-S01/ verified byte-identical by SHA-256 before and after, since .sfskills/ is gitignored and git diff cannot serve as the check. The step's four declared acceptance-test checkers, plus a fifth confirmatory run of check_list_views_and_compact_layouts.py, all exit 0 on pass 1 after the edit (before the edit that checker exits 1 with one CL-MEM-01 ERROR). check-outputs returned ok. Set the step running (with reason) then built, storing the owning agent's envelope verbatim at envelopes/M1-S01/2026-09-12T00-15-00Z.json and appending a Rebuild #3 note to artefacts/M1-S01/deploy-order.md. No deploy was run, no gate was approved by this agent, and nothing was written outside .sfskills/builds/case-onboarding/.",
+  "confidence": "HIGH",
+  "outcome": "completed",
+  "confidence_rationale": "Step 9 HIGH: this was a Step 2 carve-out (documented -> running rebuild with reason, gate step:M1-S01 already approved before this run started), every required element of the fix came from the owning skill's own gotchas.md and checker message rather than being freestyled, the owning agent's envelope validates against the envelope schema (validate_envelope.py OK), check-outputs exited 0, and nothing was written outside artefacts/M1-S01/.",
+  "dimensions_compared": [
+    "step-runnability-carveout",
+    "artefact-byte-identity",
+    "checker-exit-codes",
+    "envelope-schema-validity"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuild carve-out worked exactly as the contract describes: the step's own step:M1-S01 gate was already 'approved' in plan.json before this run, so set-status ... running succeeded on the first call with no gate friction.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "This is now the second finding (F-11, then F-13) where a mock-deploy dry-run caught a manifest-form defect that every prior declarative checker pass and step-tester run had missed, and in both cases the fix landed in the owning skill's checker (CMS-STEM-01/02, then CL-MEM-01/02) rather than staying a one-off report fact. The library is visibly getting harder to fool the same way twice.",
+      "domain": "skill-depth",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Neither of this step's two manifest-form defects (F-11, F-13) was caught until a --manifest --dry-run mock deploy ran, well after step-tester and build-doc-keeper had already passed the step twice. The step's own declared acceptance tests do not include a manifest-vs-source-format cross-check, only per-checker declarative scans.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's acceptance_tests[1] description (for check_list_views_and_compact_layouts.py) still narrates the bare-member CompactLayout form as the expected/correct shape; it was written before v1.2.0 of the cited skill and is now stale relative to CL-MEM-01/02 and the corrected artefact. This is a v6 plan-amend item, not something this agent may edit.",
+      "domain": "plan-consistency",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step is back at built; its full declared test set (seven acceptance tests plus always-on xml/manifest checks) should be re-run in full.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "heuristic",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "step-tester owns full acceptance-test execution for a built step; this agent only ran the four checkers the acceptance tests declare plus one confirmatory extra."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-12T00-15-00Z.json",
+    "rebuild_number": 3,
+    "carveout_used": "documented -> running (contract \u00a7 4 rebuild carve-out), reason recorded on the run",
+    "gate_status_at_claim": {
+      "name": "step:M1-S01",
+      "status": "approved",
+      "at": "2026-09-05T19:35:41Z"
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/Case.object-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/recordTypes/Billing.recordType-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/record-type-decision.md",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "declared": true,
+        "changed": true,
+        "change": "CompactLayout member Case_Intake -> Case.Case_Intake"
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "checker_runs_before_after": [
+      {
+        "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M1-S01",
+        "before_exit": 1,
+        "before_output": "ISSUE: ERROR CL-MEM-01 artefacts/M1-S01/package.xml: <members>Case_Intake</members> under <name>CompactLayout</name> is not object-qualified ... 1 ERROR finding(s); this source will not deploy as written.",
+        "after_exit": 0,
+        "after_output": "No issues found."
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+        "after_exit": 0,
+        "after_output": "2 record type(s), 0 layout(s); 0 finding(s) detected."
+      },
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "after_exit": 0,
+        "after_output": "No issues found across 1 object file(s)."
+      },
+      {
+        "command": "python3 skills/admin/record-type-id-management/scripts/check_record_type_id_management.py --manifest-dir artefacts/M1-S01",
+        "after_exit": 0,
+        "after_output": "No record-type ID anti-patterns detected."
+      }
+    ],
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M1-S01 running --run-agent metadata-builder --result \"rebuild #3 claimed: F-13 ...\" --started 2026-09-12T00:11:57Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M1-S01 built --run-agent metadata-builder --envelope envelopes/M1-S01/2026-09-12T00-15-00Z.json --result \"rebuild #3 (F-13): package.xml CompactLayout member Case_Intake -> Case.Case_Intake (object-qualified); 4/4 declared checkers exit 0 on pass 1 incl. CL-MEM-01 now clean; check-outputs ok; all other 12 artefacts byte-identical (sha256)\" --started 2026-09-12T00:15:00Z"
+    ],
+    "deploy_order_note_appended": "artefacts/M1-S01/deploy-order.md \u2014 'Rebuild #3' section added ahead of the existing 'Rebuild #2' section",
+    "no_deploy": "no sf command of any kind was run; no gate was approved by this agent"
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 4 the documented -> running rebuild carve-out and the status machine transitions used; \u00a7 5 test ownership (step-tester, not this agent, runs the full acceptance-test set)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/references/gotchas.md",
+      "used_for": "CL-MEM-01/02 \u2014 the object-qualified CompactLayout member rule that is the entire content of this rebuild"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py",
+      "used_for": "the checker run before and after the edit, confirming CL-MEM-01 clears"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "declared step acceptance-test checker, re-run to confirm no regression"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+      "used_for": "declared step acceptance-test checker, re-run to confirm no regression"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-type-id-management",
+      "path": "skills/admin/record-type-id-management/scripts/check_record_type_id_management.py",
+      "used_for": "declared step acceptance-test checker, re-run to confirm no regression"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step is back at built and its full declared test set (seven acceptance tests plus always-on xml/manifest checks) is step-tester's to execute, not this agent's."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once step-tester marks the step tested again, the workbook/traceability/decisions update for rebuild #3 (F-13 closed at the skill) still needs recording, matching the pattern of the F-11 rebuild #2 pass."
+    }
+  ]
+}

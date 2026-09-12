@@ -1,0 +1,143 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "per-step",
+  "run_id": "2026-09-12T01-52-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-52-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-52-00Z.json",
+  "summary": "Documented M2-S05 (Case org-wide default Private plus the criteria-based sharing rule that opens Support cases to Tier 2) after step-tester marked it tested. Re-rendered PLAN.md/CLARIFICATIONS.md before and after the status transition; wrote two new Section 4 workbook rows (CWB-SHARE-002 for the sharing rule, CWB-SHARE-003 for case-visibility-model.md) and two new Other-Configuration rows (CWB-OTHER-015 package.xml, CWB-OTHER-016 deploy-order.md); minted one new requirement id (REQ-029) covering all four artefacts and wrote its traceability.md row, linking Q13-to-A1, Q80, plan decision D5, the requirement's Tier 2 and Billing access lines, and M1-S01's REQ-010 OWD row to this step's artefacts and its checker (build scope) + xml + manifest + manual (B01+B04) acceptance tests; appended five decisions (D-M2S05-01..05) and two open items for the planner (O-M2S05-01: Billing visibility split across two mechanisms/steps, unreconciled before G3; O-M2S05-02: REQ-010/CWB-SHARE-001 now stale on 'has not run'); compiled the manual test into two UAT cases (TC-M2S05-01, TC-M2S05-02) with the tester's grep evidence, plus two Given/When/Then criteria (AC-029.1, AC-029.2), staged in the session scratchpad and linted clean. Set the step's status to documented via build_plan.py.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 11's MEDIUM row: two requirement ids (REQ-029, and the cross-reference to REQ-010) required judgment to place at one artefact set rather than being read off a single unambiguous field on the step -- Q13's deferral and D5's two-answer citation (Q13, Q80) both had to be read together to write one requirement sentence. Not LOW: no row was written with an empty source_req_id or an empty verification cell, the step's test results were fully readable, and re-running this pass would replace the same rows rather than duplicate them. Not HIGH: the manifest-form divergence (CWB-SHARE-002 gap 1) and the Billing-mechanism reconciliation (O-M2S05-01) are both named as open rather than resolved.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's build-scope check_sharing_model.py test resolved exactly what B01's v4 rewrite predicted it would: 1 object OWD from M1-S01 plus this step's grant, 0 findings, closing the vacuous step-scope reading the same command gives at 0 OWDs resolved.",
+      "domain": "sharing-model-verification",
+      "evidence": {
+        "source": "input",
+        "path": "tests/M2-S05/results.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The RecordTypeId bare-developer-name value format the builder flagged as this step's most likely mock-deploy failure validated cleanly in reports/MOCK-DEPLOY-M2.md Run 3 (32/32 components, 0 errors), closing an UNVERIFIED marker the library itself carried.",
+      "domain": "mock-deploy-verification",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M2.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "package.xml manifests the rule under the container form SharingRules:Case while the cited skill's own worked example recommends the rule-type form SharingCriteriaRule:Case.Support_Cases_To_Tier_2 -- driven by this step's own manifest acceptance test deriving the member from the artefact's file name rather than its fullName.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S05/package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Billing's access to its own cases (queue ownership, M2-S04) and Tier 1's exclusion from Billing cases (the absence of a sharing rule, this step) are served by two different mechanisms across two different steps, and no artefact or decision in plan.json states that the two are meant to compose into the requirement's whole Billing-visibility answer.",
+      "domain": "sharing-model-coherence",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S05/case-visibility-model.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "REQ-010 (M1-S01's OWD row) and CWB-SHARE-001 both state that the build-scope check_sharing_model.py assertion 'has not run'; it ran and passed in this pass, but agents/build-doc-keeper/AGENT.md Step 8 restricts this run to M2-S05's own rows, so the stale sentences were recorded as a correction (O-M2S05-02) rather than edited in place.",
+      "domain": "cross-step-documentation-staleness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "traceability.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M2's five steps (M2-S01 through M2-S05) are all now documented; the milestone has not yet been cross-checked.",
+      "domain": "milestone-readiness",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because every M2 step is documented, M2's cross-step acceptance tests and its acceptance report can now run."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "O-M2S05-01 names a reconciliation gap between two steps' sharing mechanisms that only a build-wide read would catch.",
+      "domain": "sharing-model-coherence",
+      "evidence": {
+        "source": "input",
+        "path": "decisions.md"
+      },
+      "suggested_followup_agent": "config-workbook-author",
+      "followup_reason": "because compiling the workbook into a release-level document is where the Billing-visibility split across M2-S04 and M2-S05 would otherwise resurface unreconciled."
+    }
+  ],
+  "citations": [
+    { "type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns" },
+    { "type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations requirement, confidence rubric this agent's Step 11 overrides" },
+    { "type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "atomic-write rule and envelope persistence shape" },
+    { "type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked against the four refusal triggers; none fired -- the step was tested on entry" },
+    { "type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "section 2 (rendered views, no-hand-edit-plan.json rule), section 4 (access step-type mapping, the docs-row split between metadata-builder and build-doc-keeper), section 5 (checker scope: step vs build, the deploy deny-list), section 6 (this agent's per-step job), section 8 (skill-gap-as-decisions-entry signal)" },
+    { "type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the step, acceptance_tests and decisions[] fields read to write REQ-029's decision_ref and to confirm A1/D5 already name M2-S05" },
+    { "type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "row schema (row_id, target_value, owner, source_req_id, recommended_agent, recommended_skills, status, notes) and Section 4 (Sharing Settings) coverage for CWB-SHARE-002/003" },
+    { "type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "build-layer RTM column set and pipe-delimited multi-value convention for REQ-029's row" },
+    { "type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "read per Mandatory Reads; decision-entry shape (date, decision, alternative rejected, source) applied to D-M2S05-01..05" },
+    { "type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how a test result becomes acceptance evidence rather than a bare pass/fail, applied to REQ-029's test_result narrative" },
+    { "type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "the TC-<step>-<n> case record shape used to compile the manual test's grep evidence into TC-M2S05-01/02" },
+    { "type": "skill", "id": "admin/uat-test-case-design/references/worked-examples.md", "path": "skills/admin/uat-test-case-design/references/worked-examples.md", "used_for": "the lintable YAML fields (case_id, ac_id, steps[], evidence[], pass_rule) copied into the staged uat-cases.yaml" },
+    { "type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then shape for AC-029.1/AC-029.2" },
+    { "type": "skill", "id": "admin/acceptance-criteria-given-when-then/references/worked-examples.md", "path": "skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md", "used_for": "REQ-005's worked scenario (permission set edit + sharing) as the closest analog for AC-029.1/AC-029.2's given/when/then wording" },
+    { "type": "probe", "id": "check_rtm.py", "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py", "used_for": "linted traceability.md at build scope (29 rows, 0 gaps, 2 orphans, 0 errors) and step scope (0 orphans) after the amendments" },
+    { "type": "probe", "id": "check_workbook.py", "path": "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py", "used_for": "linted workbook/04-sharing-settings.md and workbook/99-other-configuration.md per-file; both exit 1 on the expected missing-canonical-section shape every prior per-file run in this build produces, zero per-row findings" },
+    { "type": "probe", "id": "check_uat_case.py", "path": "skills/admin/uat-test-case-design/scripts/check_uat_case.py", "used_for": "linted the staged uat-cases.yaml against acceptance-criteria.yaml; OK, 2 case(s), 2 criterion id(s) cross-checked" },
+    { "type": "probe", "id": "check_ac_format.py", "path": "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py", "used_for": "linted the staged acceptance-criteria.yaml; 0 error(s), 0 warning(s)" }
+  ],
+  "extensions": {
+    "step_id": "M2-S05",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/04-sharing-settings.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows": [
+      { "row_id": "CWB-SHARE-002", "section": "4 - Sharing Settings", "file": "workbook/04-sharing-settings.md" },
+      { "row_id": "CWB-SHARE-003", "section": "4 - Sharing Settings", "file": "workbook/04-sharing-settings.md" },
+      { "row_id": "CWB-OTHER-015", "section": "Other configuration", "file": "workbook/99-other-configuration.md" },
+      { "row_id": "CWB-OTHER-016", "section": "Other configuration", "file": "workbook/99-other-configuration.md" }
+    ],
+    "traceability_rows": [
+      { "req_id": "REQ-029", "step_id": "M2-S05", "artefact": "SharingRules:Case", "test_id": "M2-S05-T2", "test_type": "manual", "status": "In Build" }
+    ],
+    "decisions_appended": [
+      "D-M2S05-01", "D-M2S05-02", "D-M2S05-03", "D-M2S05-04", "D-M2S05-05",
+      "O-M2S05-01", "O-M2S05-02"
+    ],
+    "rows_replaced": [],
+    "uat_staging": {
+      "cases_staged": ["TC-M2S05-01", "TC-M2S05-02"],
+      "criteria_staged": ["AC-029.1", "AC-029.2"],
+      "location": "scratchpad (session-local, not the build directory) -- /uat-M2-S05/acceptance-criteria.yaml and /uat-M2-S05/uat-cases.yaml",
+      "check_uat_case_result": "OK -- 2 case(s), 0 run-sheet row(s), 2 criterion id(s) cross-checked",
+      "check_ac_format_result": "0 error(s), 0 warning(s)",
+      "not_the_build_directory_because": "the compiled uat-test-cases.yaml and the compiled acceptance-criteria document are M5-S04's declared outputs per agents/build-doc-keeper/AGENT.md Step 10 (the compile run), not this per-step run's -- this staging is a draft for that future compile, validated early per this run's own instruction to stage UAT/AC lint in the session scratchpad"
+    },
+    "idempotence": "First build-doc-keeper run for M2-S05. No prior rows in workbook/ or traceability.md carried this step's keys, so every write above is a new row rather than a replacement. decisions.md entries are append-only per its own convention.",
+    "step_9_status_transition": "M2-S05: tested -> documented, via build_plan.py set-status; build_plan.py validate returned OK with 3 pre-existing WARNs on M5-S02/M5-S04, unrelated to this step"
+  }
+}

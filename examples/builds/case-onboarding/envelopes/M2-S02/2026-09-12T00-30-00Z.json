@@ -1,0 +1,555 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T00-30-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T00-30-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T00-30-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S02",
+    "persist": "--no-persist (the caller restricted writes to the build directory, so the docs/reports/build-doc-keeper/ pair required by the Wave 10 persistence contract was not written; this envelope pair under envelopes/M2-S02/ is the run's record)"
+  },
+  "summary": "Documented M2-S02 (access, owner metadata-builder, status tested, no manual acceptance test declared). Re-rendered PLAN.md/CLARIFICATIONS.md; appended six decision entries (D-M2S02-01..06) and three planner open items (O-M2S02-01..03) to decisions.md; wrote nine workbook rows -- seven new rows in workbook/03-profiles-permission-sets-and-psgs.md (CWB-PERM-003..009, one per PermissionSet and PermissionSetGroup) and two in workbook/99-other-configuration.md (CWB-OTHER-008, CWB-OTHER-009, for package.xml and deploy-order.md); minted and anchored four traceability rows (REQ-017..020, next available id -- REQ-001..016 already exist, so the invocation's 'starting at REQ-016' instruction was read as 'do not touch REQ-001..015' and the ids were placed at the first free slot, REQ-017); recorded no manual tests to compile, since M2-S02 declares none; and set the step documented. Every sentence is sourced from plan.json, the step's three envelopes (metadata-builder, build-step-runner, step-tester), tests/M2-S02/results.json and its checker outputs, or the eight artefact files under artefacts/M2-S02/ read read-only for the target_value cells. A concurrent session rebuilding M1-S01 for finding F-13 was writing decisions.md, traceability.md and workbook/99-other-configuration.md at the same time; this run touched only M2-S02's own rows and sections, re-read each shared file immediately before writing it, and recorded (rather than corrected) the transient linter reading that the concurrent rebuild produced -- see Process Observations and traceability.md \u00a7 'Linter result -- after M2-S02'.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM on two of its three named conditions. (1) package.xml and deploy-order.md could not be placed in a numbered section without judgment and fell to the Other configuration artefact-level default, the same call M1-S01, M1-S02 and M2-S01 all made. (2) REQ-017..020 were minted in this run and anchored to requirement.md line ranges plus the clarifications that settled them (Q7/Q8/Q9/Q10/Q13), because this build still carries no requirement register -- the same reason every prior step's confidence in this build has been capped at MEDIUM rather than HIGH. Not LOW: no row has an empty source_req_id, no verification cell is empty, all three step envelopes and the checker outputs were readable, and re-running this step's documentation would replace the same nine keyed rows with the same content.",
+  "dimensions_compared": [
+    "workbook-rows",
+    "traceability-rows",
+    "decisions",
+    "deploy-order",
+    "verification-coverage",
+    "assumption-linkage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-test-compilation",
+      "state": "not-run",
+      "reason": "M2-S02 declares no `type: manual` acceptance test (tests/M2-S02/results.json -> skipped_manual: []), so there is no manual test to compile into a UAT case or Given/When/Then criterion on this step.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Not applicable to this step. TC-M1S01-01, TC-M1S01-02, TC-M1S02-01 and TC-M2S01-01 remain the build's four outstanding manual tests, unchanged by this run."
+    },
+    {
+      "dimension": "workbook-row-lint-of-the-default-section",
+      "state": "not-run",
+      "reason": "check_workbook.py recognises a section only from a '## Section <n> -- <name>' heading, so the two new rows in workbook/99-other-configuration.md are parsed into no section and row-checked by nothing per-file. Confirmed schema-valid only inside a full ten-section staging harness assembled in the session scratchpad, with the Other-configuration block placed first (where the parser skips it) to avoid the escaped-pipe column-shift already recorded against three M1-S01 rows.",
+      "confidence_impact": "NONE",
+      "retry_hint": "M5-S04's compile run is the one that places these rows in a document a parser reads at scale."
+    },
+    {
+      "dimension": "assumption-a1-steps-repair",
+      "state": "not-run",
+      "reason": "This step's Case_Tier1/Case_Tier2/Case_Billing recordTypeVisibilities are shaped by assumption A1's conservative reading, but plan.json assumptions[A1].steps[] names only M2-S05. Adding M1-S01 and M2-S02 to that list is a plan-file edit this agent may not make (standards/build-orchestration.md \u00a7 2: set-plan alone writes assumptions[]).",
+      "confidence_impact": "NONE",
+      "retry_hint": "Recorded in decisions.md O-M2S02-03 and traceability.md \u00a7 'What M2-S02 rests on' for a v6 re-plan to action."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "verification-coverage",
+      "observation": "Every one of the seven Section 3 rows and both new Other-configuration rows resolved against a real checker exit and the always-on xml/manifest checks; none was written from the step title alone. check_access_model.py's zero-finding, score-100 result over all four permission sets is a positive statement (it returns 1 on any finding) that no dangerous system permission or sharing-bypass grant exists in this step.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S02/check_access_model.stdout.txt",
+        "count": 7
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "composition",
+      "observation": "Case_Agent_Core is reused across all three PSGs rather than duplicated per persona, and check_permission_set_group_composition.py scores it GOOD; the baseline-plus-thin-persona pattern this build has now applied twice (M2-S01's single grant, M2-S02's three-persona bundle) reads consistently across both.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S02/check_permission_set_group_composition.stdout.txt",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "traceability",
+      "observation": "Case_Tier1 and Case_Tier2 are byte-identical in every grant-bearing element, and three independent agents (metadata-builder, build-step-runner, step-tester) recorded the observation without adjudicating it. Recorded as decisions.md D-M2S02-05 and flagged as O-M2S02-02 for a v6 planner decision on whether to collapse the two declared outputs into one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "traceability",
+      "observation": "M2-S02's outputs[] declares package.xml but not deploy-order.md, even though M2-S01 -- the step immediately before it -- was the first step in the build to declare it and close this exact gap. The fix did not carry forward to the next metadata-builder step; two of four metadata-builder steps (M1-S01, M1-S02) never declared it, one (M2-S01) declared it, and this one regresses. Recorded as O-M2S02-01.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "steps[M2-S02].outputs[]",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "shared-file-concurrency",
+      "observation": "A second session was actively rebuilding M1-S01 for finding F-13 while this run was writing decisions.md, traceability.md and workbook/99-other-configuration.md. Re-reading traceability.md's linter output mid-pass and again after the concurrent session amended REQ-006 produced two different check_rtm.py readings (2 orphans/2 warnings, then 2 orphans/1 warning) over the same command; both are recorded in traceability.md \u00a7 'Linter result -- after M2-S02' rather than only the final one, because REQ-006's own amended row points back to that section for the explanation.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/package.xml",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "assumption-linkage",
+      "observation": "assumptions[A1].steps[] in plan.json names only M2-S05, but this step's Case_Tier1/Case_Tier2/Case_Billing recordTypeVisibilities are shaped by A1's conservative reading (deploy-order.md names A1 explicitly), and M1-S01's OWD already carries the same unlisted relationship. Recorded as O-M2S02-03, extending the identical gap traceability.md already records for M1-S01.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "assumptions[A1].steps",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "requirement-registry",
+      "observation": "The invoking instruction said to continue the REQ-id derivation table 'starting at REQ-016', but REQ-016 was already minted on M2-S01's own documentation run (2026-09-06) and is present in traceability.md today. Read as 'do not renumber or touch REQ-001..015' -- which this run honoured -- and the four new ids were placed at the next actually-free slot, REQ-017..020, rather than colliding with or renumbering REQ-016.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "query": "REQ-016 row, pre-existing",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "M2-S02 is documented; M2-S03 (base profiles) is the next step in M2 and its step gate should be checked before a runner claims it.",
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "It is the stage that claims a pending step once its gate is approved and invokes the owning agent.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "query": "next"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "Once M1-S01's concurrent rebuild #3 (F-13) reaches documented, milestone M1's acceptance report and gate notes are stale against a third rebuild and M2's steps so far (M2-S01, M2-S02) have never been covered by any milestone verification run at all.",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "M1's report predates two rebuilds already and a third is landing concurrently with this run; M2 has no report yet.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M1-REPORT-v2.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "Six new decisions and three new open items now sit in decisions.md for M2-S02 alone, on top of the standing items from M1-S01, M1-S02 and M2-S01; a v6 re-plan has a growing backlog to clear in one pass rather than piecemeal.",
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "Only set-plan may write assumptions[].steps[], outputs[] additions (deploy-order.md), or a Case_Tier1/Case_Tier2 collapse.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the confidence rubric this agent's Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and the --no-persist opt-out invoked here"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against the four refusal triggers; none fired -- the step was tested on entry"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step fields this agent reads (type, agent, skills, inputs, outputs, acceptance_tests, status) and the ones it leaves alone"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the fixed top-level field set; this run's payload rides in extensions"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 rendered views and the no-hand-edit-plan.json rule; \u00a7 4 step types, the design-only owner map, and the access row; \u00a7 5 the test runners, check-outputs and checker scope; \u00a7 6 this agent's per-step job; \u00a7 8 a decision entry as the deepen-a-skill / re-plan signal"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concept 1 the row schema every new cell had to keep, Concept 2 the ten fixed sections and the Section 3 default, Concept 3 one agent per row, the status enum (executed, never a placeholder)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set, the REQ-XXX key convention, the status enum, and the single-value artefact / pipe-delimited artefact_paths convention"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "\u00a7 Org-level design standards -- an entry recording the alternative rejected and the source it rests on, rather than a sentence asserting the outcome"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "read per Mandatory Reads; not applicable this run -- M2-S02 declares no manual acceptance test to record as evidence"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "read per Mandatory Reads; not applicable this run, same reason"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "read per Mandatory Reads; not applicable this run, same reason"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "read read-only for the target_value cells: element inventory, the API 63.0+ date on viewAllFields, the UNVERIFIED marker on TransferAnyCase, the PSG package.xml shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md",
+      "used_for": "read read-only for the target_value cells: the six Required PermissionSetObjectPermissions fields and the grants-never-denies rule cited in D-M2S02-06"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-group-composition",
+      "path": "skills/admin/permission-set-group-composition/references/examples.md",
+      "used_for": "read read-only for the target_value cells: the PSG_<persona>_<env> naming convention and the composition-reuse pattern"
+    },
+    {
+      "type": "template",
+      "id": "admin/permission-set-patterns",
+      "path": "templates/admin/permission-set-patterns.md",
+      "used_for": "the Obj_/Feat_ naming taxonomy the declared names diverge from, named in the workbook rows rather than restated as a new finding"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-step-runner",
+      "because": "M2-S02 is documented; M2-S03 (base profiles) is next in M2 pending its step gate."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's acceptance report predates a third rebuild landing concurrently with this run, and neither M2-S01 nor M2-S02 has been covered by any milestone verification yet."
+    },
+    {
+      "agent": "build-planner",
+      "because": "Six new decisions and three new open items (the deploy-order.md regression, the Case_Tier1/Case_Tier2 collapse question, and A1.steps[] missing M1-S01 and M2-S02) await a v6 re-plan."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "files_updated_note": "CLARIFICATIONS.md is listed because build_plan.py render writes both rendered views on every invocation; its bytes did not materially change beyond the status field this run touched.",
+    "workbook_rows": [
+      {
+        "row_id": "CWB-PERM-003",
+        "section": "3 -- Profiles + Permission Sets + PSGs",
+        "artefact": "PermissionSet:Case_Agent_Core",
+        "source_req_id": "REQ-017",
+        "deploy_position": "6 of 10 (permission sets); 1 inside the step",
+        "verified_by": "check_access_model.py exit 0 (1 of 7 files, 0 findings) + check_permission_set_architecture.py exit 0 (build scope) + manifest two-way + xml parse",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-PERM-004",
+        "section": "3 -- Profiles + Permission Sets + PSGs",
+        "artefact": "PermissionSet:Case_Tier1",
+        "source_req_id": "REQ-018",
+        "deploy_position": "6 of 10; 2 inside the step",
+        "verified_by": "check_access_model.py exit 0 (1 of 7 files) + check_permission_set_architecture.py exit 0 + manifest two-way + xml parse; record ACCESS still rests on M1-S01's OWD + the pending M2-S05 sharing rule, not this row",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-PERM-005",
+        "section": "3 -- Profiles + Permission Sets + PSGs",
+        "artefact": "PermissionSet:Case_Tier2",
+        "source_req_id": "REQ-019",
+        "deploy_position": "6 of 10; 3 inside the step",
+        "verified_by": "same three checks as CWB-PERM-004; grant is byte-identical to Case_Tier1's -- D-M2S02-05",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-PERM-006",
+        "section": "3 -- Profiles + Permission Sets + PSGs",
+        "artefact": "PermissionSet:Case_Billing",
+        "source_req_id": "REQ-020",
+        "deploy_position": "6 of 10; 4 inside the step",
+        "verified_by": "check_access_model.py exit 0 (1 of 7 files) + check_permission_set_architecture.py exit 0 + manifest two-way + xml parse; carries no fieldPermissions element at all -- D-M2S02-06",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-PERM-007",
+        "section": "3 -- Profiles + Permission Sets + PSGs",
+        "artefact": "PermissionSetGroup:PSG_Tier1_Prod",
+        "source_req_id": "REQ-018",
+        "deploy_position": "6 of 10, after all four permission sets",
+        "verified_by": "check_permission_set_group_composition.py exit 0 (GOOD: reuse) + manifest two-way + xml parse",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-PERM-008",
+        "section": "3 -- Profiles + Permission Sets + PSGs",
+        "artefact": "PermissionSetGroup:PSG_Tier2_Prod",
+        "source_req_id": "REQ-019",
+        "deploy_position": "6 of 10, after all four permission sets",
+        "verified_by": "same composition-checker run + manifest two-way + xml parse",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-PERM-009",
+        "section": "3 -- Profiles + Permission Sets + PSGs",
+        "artefact": "PermissionSetGroup:PSG_Billing_Prod",
+        "source_req_id": "REQ-020",
+        "deploy_position": "6 of 10, after all four permission sets",
+        "verified_by": "same composition-checker run + manifest two-way + xml parse; no MutingPermissionSet anywhere in this step",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-OTHER-008",
+        "section": "Other configuration",
+        "artefact": "artefacts/M2-S02/package.xml",
+        "source_req_id": "REQ-017; REQ-018; REQ-019; REQ-020",
+        "deploy_position": "not a component",
+        "verified_by": "always-on manifest test two-way, 7 members to 7 files, both gap lists empty; xml parse (8 of 8); check-outputs ok (declared); gap named -- no declared checker reads package.xml directly",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-OTHER-009",
+        "section": "Other configuration",
+        "artefact": "artefacts/M2-S02/deploy-order.md",
+        "source_req_id": "REQ-017; REQ-018; REQ-019; REQ-020",
+        "deploy_position": "not a component",
+        "verified_by": "nothing -- undeclared in outputs[], the fix M2-S01 made did not carry forward (O-M2S02-01)",
+        "status": "executed"
+      }
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-017",
+        "source": "Q9",
+        "artefact": "PermissionSet:Case_Agent_Core",
+        "test_id": "M2-S02-T3",
+        "test_type": "checker",
+        "status": "In UAT",
+        "why_in_uat": "every step serving this requirement is documented and no further metadata-producing step remains for the baseline footprint"
+      },
+      {
+        "req_id": "REQ-018",
+        "source": "Q13",
+        "artefact": "PermissionSet:Case_Tier1",
+        "test_id": "M2-S02-T2",
+        "test_type": "checker",
+        "status": "In Build",
+        "why_in_build": "the record-level restriction A1 stands for (Private OWD + M2-S05's sharing rule) is not yet built; recordTypeVisibilities alone does not deliver it"
+      },
+      {
+        "req_id": "REQ-019",
+        "source": "Q13",
+        "artefact": "PermissionSet:Case_Tier2",
+        "test_id": "M2-S02-T2",
+        "test_type": "checker",
+        "status": "In Build",
+        "why_in_build": "same reasoning as REQ-018; M2-S05 remains pending"
+      },
+      {
+        "req_id": "REQ-020",
+        "source": "Q13",
+        "artefact": "PermissionSet:Case_Billing",
+        "test_id": "M2-S02-T2",
+        "test_type": "checker",
+        "status": "In Build",
+        "why_in_build": "same reasoning as REQ-018/REQ-019; A1's conservative reading is only partly delivered by this step"
+      }
+    ],
+    "decisions_appended": [
+      {
+        "id": "D-M2S02-01",
+        "date": "2026-09-11",
+        "kind": "design trade-off recorded as a source substitution",
+        "decision": "CRUD levels per object (Case C/R/E no delete; Account/Contact/Entitlement read; EmailMessage create+read) were read from requirement.md, not from an answered clarification",
+        "alternative_rejected": "blocking the step until a clarification names the CRUD level; Q9 answers only the object list",
+        "grounded_in": "requirement.md L7, L19; envelope extensions.decision_record[3]; dimensions_skipped[0] (question-coverage, MEDIUM)"
+      },
+      {
+        "id": "D-M2S02-02",
+        "date": "2026-09-11",
+        "kind": "design trade-off recorded as two skill defaults",
+        "decision": "No permission-set expiry and no step-up activation (hasActivationRequired false) on any of the seven files",
+        "alternative_rejected": "blocking the step until a clarification answers either question; both skills document the default",
+        "grounded_in": "admin/permission-set-architecture defaults; envelope extensions.decision_record[7] and [8]"
+      },
+      {
+        "id": "D-M2S02-03",
+        "date": "2026-09-11",
+        "kind": "omission recorded rather than left to be noticed",
+        "decision": "No userPermissions on any set; TransferAnyCase is the only Case-relevant name in the cited skills and is marked UNVERIFIED (2026-09-04)",
+        "alternative_rejected": "granting TransferAnyCase to Tier 2 on the theory it plausibly needs case transfer",
+        "grounded_in": "permission-set-architecture/references/metadata-examples.md \u00a7 2 (UNVERIFIED marker); artefacts/M2-S02/deploy-order.md"
+      },
+      {
+        "id": "D-M2S02-04",
+        "date": "2026-09-11",
+        "kind": "version-gated omission",
+        "decision": "No viewAllFields on any objectPermissions block; the cited reference dates it API 63.0+ and this manifest is 62.0",
+        "alternative_rejected": "writing it for read-simplicity on the read-only objects",
+        "grounded_in": "permission-set-architecture/references/metadata-examples.md; artefacts/M2-S02/package.xml (version 62.0)"
+      },
+      {
+        "id": "D-M2S02-05",
+        "date": "2026-09-11",
+        "kind": "design trade-off recorded, not resolved",
+        "decision": "Case_Tier1 and Case_Tier2 are byte-identical because outputs[] declares them as two separate paths; no answered clarification distinguishes their access",
+        "alternative_rejected": "collapsing them into one set on the builder's own judgment, which check-outputs would fail against the declared two-path output",
+        "grounded_in": "plan.json steps[M2-S02].outputs[1] and [2]; requirement.md L12-L16 (routing/escalation, not access); three independent agent envelopes"
+      },
+      {
+        "id": "D-M2S02-06",
+        "date": "2026-09-11",
+        "kind": "design trade-off recorded as an inference from the requirement",
+        "decision": "Billing's read-only access to Case.Severity__c is inherited entirely from Case_Agent_Core through composition; Case_Billing itself carries no fieldPermissions element for it at all",
+        "alternative_rejected": "writing an explicit deny on Case_Billing; a permission set can only grant, never deny",
+        "grounded_in": "requirement.md L18; decisions.md D-M1S02-02 (same reading applied once already, to the Billing layout); envelope extensions.decision_record[12]"
+      }
+    ],
+    "planner_open_items_recorded": [
+      {
+        "id": "O-M2S02-01",
+        "where": "decisions.md \u00a7 Open items for the planner -- raised by the M2-S02 documentation run",
+        "item": "deploy-order.md is undeclared in outputs[] on M2-S02, regressing the fix M2-S01 made",
+        "why_not_fixed_here": "outputs[] is set-plan's alone to write"
+      },
+      {
+        "id": "O-M2S02-02",
+        "where": "same section",
+        "item": "Case_Tier1 and Case_Tier2 are identical; flagged for a v6 decision on whether to collapse the two declared outputs",
+        "why_not_fixed_here": "collapsing a declared output is a re-plan, not a builder judgment call"
+      },
+      {
+        "id": "O-M2S02-03",
+        "where": "same section",
+        "item": "assumptions[A1].steps[] names only M2-S05, though M1-S01's OWD and M2-S02's recordTypeVisibilities are both shaped by A1's conservative reading",
+        "why_not_fixed_here": "assumptions[].steps[] is set-plan's alone to write"
+      }
+    ],
+    "manual_tests_compiled": [],
+    "rows_replaced": [],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../.. (first reading, mid-pass)",
+        "exit": 0,
+        "result": "20 row(s), 0 coverage gap(s), 2 orphan(s), 0 error(s), 2 warning(s) -- a concurrent M1-S01 rebuild (F-13) had just qualified the CompactLayout manifest member, dropping one orphan while making REQ-006's then-unamended row a transient resolution failure"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts/M2-S02 --repo-root ../../..",
+        "exit": 0,
+        "result": "20 row(s), 0 coverage gap(s), 0 orphan(s), 0 error(s), 16 warning(s) -- the 16 rows belonging to other steps, out of scope at this manifest dir; both new M2-S02-scoped resolutions (Case_Agent_Core etc.) are not separately warned because they are read correctly"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../.. (second reading, after the concurrent M1-S01 pass amended REQ-006)",
+        "exit": 0,
+        "result": "20 row(s), 0 coverage gap(s), 2 orphan(s), 0 error(s), 1 warning(s) -- current/final state"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/03-profiles-permission-sets-and-psgs.md --repo-root ../../.. --allow-empty-section",
+        "exit": 1,
+        "result": "9 issue(s), every one 'Missing canonical section' -- zero per-row findings, the same shape every per-file run in this build has produced"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/99-other-configuration.md --repo-root ../../.. --allow-empty-section",
+        "exit": 1,
+        "result": "10 issue(s), all 'Missing canonical section'; this file's rows are parsed into no section and are row-checked by nothing per-file"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook <scratchpad>/wb-m2s02/cwb.md --repo-root <repo> (full ten-section staging harness, Other-configuration block first)",
+        "exit": 0,
+        "result": "OK: workbook passes all checks -- the 25 real rows (9 Section 1, 2 Section 2, 9 Section 3, 1 Section 4, 9 Other-configuration read where the parser skips it) validate, including all 9 new M2-S02 rows; six placeholder not-in-scope-this-release rows fill Sections 5-10"
+      },
+      {
+        "command": "python3 scripts/build_plan.py render .sfskills/builds/case-onboarding/plan.json (Step 2, before the status transition)",
+        "exit": 0,
+        "result": "wrote PLAN.md, CLARIFICATIONS.md"
+      },
+      {
+        "command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S02 documented --run-agent build-doc-keeper --envelope envelopes/M2-S02/2026-09-12T00-30-00Z.json --result \"workbook rows 9 (7 Section 3 + 2 Other configuration); traceability rows 4; decisions appended 6\" --started 2026-09-12T00:25:00Z",
+        "exit": 0,
+        "result": "M2-S02: tested -> documented (run appended: build-doc-keeper); 3 pre-existing WARNs on M5 steps, unrelated"
+      },
+      {
+        "command": "python3 scripts/build_plan.py render .sfskills/builds/case-onboarding/plan.json (again, after the transition)",
+        "exit": 0,
+        "result": "PLAN.md and CLARIFICATIONS.md rewritten; PLAN.md now shows M2-S02 documented"
+      },
+      {
+        "command": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json",
+        "exit": 0,
+        "result": "OK: 5 milestone(s), 22 step(s), 3 warning(s) -- all three pre-existing, on M5 steps, unchanged"
+      }
+    ],
+    "workflow_return": {
+      "step_id": "M2-S02",
+      "status": "documented",
+      "files_updated": [
+        ".sfskills/builds/case-onboarding/PLAN.md",
+        ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+        ".sfskills/builds/case-onboarding/decisions.md",
+        ".sfskills/builds/case-onboarding/traceability.md",
+        ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md",
+        ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+      ],
+      "notes": "9 workbook rows across 2 files (7 new Section 3, 2 new Other configuration); 4 traceability rows (REQ-017..020, minted and anchored -- REQ-016 was already taken by M2-S01, so the invocation's 'starting at REQ-016' was read as 'do not touch REQ-001..015' and ids were placed at the next free slot); 6 decisions appended plus 3 planner open items; 0 rows replaced (first documentation run on this step); 0 manual tests to compile (none declared on M2-S02)."
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "test": "manifest",
+  "package_xml": "artefacts/M2-S02/package.xml",
+  "manifest_contents": {
+    "PermissionSet": ["Case_Agent_Core", "Case_Billing", "Case_Tier1", "Case_Tier2"],
+    "PermissionSetGroup": ["PSG_Billing_Prod", "PSG_Tier1_Prod", "PSG_Tier2_Prod"]
+  },
+  "derived_from_files": {
+    "PermissionSet": ["Case_Agent_Core", "Case_Billing", "Case_Tier1", "Case_Tier2"],
+    "PermissionSetGroup": ["PSG_Billing_Prod", "PSG_Tier1_Prod", "PSG_Tier2_Prod"]
+  },
+  "file_to_manifest_missing": [],
+  "manifest_to_file_missing": [],
+  "excluded_types": [],
+  "consistent": true
+}

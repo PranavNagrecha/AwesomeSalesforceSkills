@@ -1,0 +1,153 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T00-14-33Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T00-14-33Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T00-14-33Z.json",
+  "summary": "Ran the always-on xml and manifest checks plus all three declared checker acceptance tests for M2-S02 (permission sets and permission set groups for Tier 1, Tier 2 and Billing). All 8 XML files parsed, package.xml is consistent with the artefacts in both directions, and check_permission_set_architecture.py (build scope), check_permission_set_group_composition.py and check_access_model.py (step scope) each exited 0. check-outputs confirmed all 8 declared outputs exist, are non-empty and parse. No manual acceptance tests are declared on this step. Status set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran to completion, both always-on checks completed, and every result came from an exit code this agent observed directly; no checker was missing, no manifest exclusion was needed, and check-outputs passed clean.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The permission-set-architecture checker was run at build scope per its cross-referential-checker listing in standards/build-orchestration.md section 5, and the plan's own test description already explains why build scope is declared even though the object-and-field cross-reference is not implemented in the current checker file.",
+      "domain": "checker-scope",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json#steps[M2-S02].acceptance_tests[0]"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "No PermissionSet or PermissionSetGroup file under artefacts/M2-S02/ carries a viewAllRecords or modifyAllRecords element set to true; the ten occurrences of those elements (all in Case_Agent_Core.permissionset-meta.xml) are all false, and the other three permission sets and all three groups carry neither element.",
+      "domain": "security",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -rn \"viewAllRecords\\|modifyAllRecords\" artefacts/M2-S02/",
+        "count": 10,
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S02/permissionsets/"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Case_Agent_Core is reused across all three permission set groups rather than duplicated per persona, which is the composition pattern check_permission_set_group_composition.py scores as GOOD.",
+      "domain": "permission-architecture",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S02/check_permission_set_group_composition.stdout.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "deploy-order.md sits under artefacts/M2-S02/ but is not named in any of the step's five declared acceptance_tests, so it is not covered by the xml, manifest or checker checks; per this agent's brief it is reported as undeclared rather than failed.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S02/deploy-order.md"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration-5",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 5 governs acceptance-test types, runner dispatch, the literal-command rule, checker scope, the deny-list, and the always-on xml/manifest checks this run followed."
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration-4",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 step-type table confirms 'access' is a metadata step type, so the always-on manifest check must fail rather than skip if no package.xml existed."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (one <types> block per type, <members> naming components, <name> naming the type) that the manifest check was judged against."
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Source-format filename-to-metadata-type mapping used to derive PermissionSet/PermissionSetGroup member names from the .permissionset-meta.xml / .permissionsetgroup-meta.xml files under artefacts/M2-S02/."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checked whether PermissionSet or PermissionSetGroup has any coverage-gap exclusion from manifest checking; neither does, so no exclusion was applied."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "Read per Mandatory Reads to judge tickability of any manual test; none is declared on M2-S02 so no manual line was evaluated against it."
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Read per Mandatory Reads to check a manual test's Given/When/Then shape; not applicable, M2-S02 declares no manual acceptance test."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M2-S02/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree parse of every *.xml/*-meta.xml under artefacts/M2-S02/",
+        "exit_code": null,
+        "verdict": "pass",
+        "detail": "8/8 files parsed; see tests/M2-S02/xml_parse.json"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "package.xml vs artefacts/M2-S02/ two-way member check",
+        "exit_code": null,
+        "verdict": "pass",
+        "detail": "4 PermissionSet + 3 PermissionSetGroup members, consistent both directions; see tests/M2-S02/manifest_check.json"
+      },
+      {
+        "name": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "No issues found."
+      },
+      {
+        "name": "skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "GOOD: reuse: permission set 'Case_Agent_Core' is referenced by 3 PSGs (PSG_Billing_Prod, PSG_Tier1_Prod, PSG_Tier2_Prod). Summary: 1 good, 0 error, 0 warn, 0 info, scanned 3 PSG file(s)."
+      },
+      {
+        "name": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 7 access-model metadata file(s); 0 finding(s) detected.\"}"
+      }
+    ],
+    "check_outputs": {
+      "command": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M2-S02",
+      "exit_code": 0,
+      "result": {"ok": true, "step": "M2-S02", "missing": [], "empty": [], "malformed": []}
+    },
+    "failed": [],
+    "skipped_manual": [],
+    "tests_run": 5,
+    "undeclared_artefact": "artefacts/M2-S02/deploy-order.md is present but not named in acceptance_tests[]; reported, not failed."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "step_id": "M2-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+    "skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py",
+    "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": []
+}

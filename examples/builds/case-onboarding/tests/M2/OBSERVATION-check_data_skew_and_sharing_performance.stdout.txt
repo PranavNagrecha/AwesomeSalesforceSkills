@@ -1,0 +1,14 @@
+NOTE: No skew plan supplied, so record-count checks were skipped. Skew is data, not metadata - the counts must come from a live org query. Run these, then pass the results as --skew-plan:
+  -- Ownership skew
+  SELECT OwnerId, COUNT(Id) cnt FROM <Object> GROUP BY OwnerId HAVING COUNT(Id) > 10000 ORDER BY COUNT(Id) DESC
+  -- Account (parent-child) skew
+  SELECT AccountId, COUNT(Id) cnt FROM Contact GROUP BY AccountId HAVING COUNT(Id) > 10000 ORDER BY COUNT(Id) DESC
+  -- Lookup skew: repeat per custom lookup field on the object
+  SELECT <Lookup_Field__c>, COUNT(Id) cnt FROM <Object> GROUP BY <Lookup_Field__c> HAVING COUNT(Id) > 10000 ORDER BY COUNT(Id) DESC
+Expected shape - skew-plan.json:
+  {"ownership": [{"object": "Lead", "owner": "Marketing Import User", "count": 120000}],
+   "parents":   [{"childObject": "Contact", "parentField": "AccountId", "parentName": "Unassigned Contacts", "count": 398000}],
+   "lookups":   [{"object": "Loan__c", "field": "Servicer__c", "targetId": "a0X...", "count": 903000, "concurrentWrites": true}]}
+Or skew-plan.csv with columns: kind,object,field,key,label,count,concurrent_writes
+Weight every lookup hit by write concurrency before remediating.
+No data skew or sharing performance issues found.

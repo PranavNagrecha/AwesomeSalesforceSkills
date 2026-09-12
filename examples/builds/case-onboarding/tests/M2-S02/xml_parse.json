@@ -1,0 +1,16 @@
+{
+  "test": "xml",
+  "scope": "artefacts/M2-S02/",
+  "count": 8,
+  "all_parsed": true,
+  "results": [
+    { "path": "artefacts/M2-S02/package.xml", "parsed": true },
+    { "path": "artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml", "parsed": true },
+    { "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml", "parsed": true },
+    { "path": "artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml", "parsed": true },
+    { "path": "artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml", "parsed": true },
+    { "path": "artefacts/M2-S02/permissionsets/Case_Billing.permissionset-meta.xml", "parsed": true },
+    { "path": "artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml", "parsed": true },
+    { "path": "artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml", "parsed": true }
+  ]
+}

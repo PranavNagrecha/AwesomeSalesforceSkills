@@ -2367,7 +2367,8 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "building"
+      "status": "rejected",
+      "report_path": "reports/MILESTONE-M2-REPORT.md"
     },
     {
       "id": "M3",
@@ -2674,6 +2675,30 @@
           "started": "2026-09-09T20:05:00Z",
           "envelope_path": "envelopes/M1-S01/2026-09-09T20-05-00Z.json",
           "result": "update pass after rebuild #2 (F-11): workbook rows 5 replaced / 0 new; traceability rows 4 replaced / 0 new; decisions appended 1 (D-M1S01-05); planner items O-M1S01-01/02/03 opened, F-11 closed at the skill"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:11:57Z",
+          "envelope_path": "envelopes/M1-S01/running.json",
+          "result": "rebuild #3 claimed: F-13 (mock-deploy #3, reports/MOCK-DEPLOY-M1.md) - package.xml CompactLayout member Case_Intake must be object-qualified Case.Case_Intake per admin/list-views-and-compact-layouts v1.2.0 CL-MEM-01/02; documented -> running rebuild carve-out, gate step:M1-S01 already approved"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:15:00Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-12T00-15-00Z.json",
+          "result": "rebuild #3 (F-13): package.xml CompactLayout member Case_Intake -> Case.Case_Intake (object-qualified); 4/4 declared checkers exit 0 on pass 1 incl. CL-MEM-01 now clean; check-outputs ok; all other 12 artefacts byte-identical (sha256)"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T00-21-00Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-12T00-21-00Z.json",
+          "result": "ran 6, failed 0, manual 2 (post-F-13 rebuild #3; CompactLayout object-qualified member accepted by manifest test)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T00:25:00Z",
+          "envelope_path": "envelopes/M1-S01/2026-09-12T00-25-00Z.json",
+          "result": "update pass after rebuild #3 (F-13): workbook rows 2 replaced / 0 new; traceability rows 1 replaced / 0 new; decisions appended 1 (D-M1S01-06); O-M1S01-03 closed"
         }
       ],
       "human_gate": true
@@ -2963,8 +2988,57 @@
           "expected": "consistent"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:00:20Z",
+          "envelope_path": "envelopes/M2-S02/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:00:20Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T00-05-00Z.json",
+          "result": "Built 9 files: 4 PermissionSet, 3 PermissionSetGroup, package.xml at 62.0, deploy-order.md. All three declared checkers exit 0 on the first pass; check-outputs ok."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T00-14-33Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T00-14-33Z.json",
+          "result": "ran 5 (3 checkers + xml + manifest), failed 0, manual 0"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T00:25:00Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T00-30-00Z.json",
+          "result": "workbook rows 9 (7 Section 3 + 2 Other configuration); traceability rows 4; decisions appended 6"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T01:17:42Z",
+          "envelope_path": "envelopes/M2-S02/running.json",
+          "result": "Rebuild #2: mock-deploy F-15 — org rejected all 4 PermissionSet files, Description over 255-char limit; cited skills (permission-set-architecture v1.2.0, permission-set-group-composition v1.1.0, permission-sets-vs-profiles v1.2.0) fixed with DESC-01/DESC-02 checks; rebuilding descriptions only"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T01:20:00Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T01-20-00Z.json",
+          "result": "Rebuild #2: only the <description> element of the 4 PermissionSets was rewritten (419/380/290/456 -> 192/183/193/199 chars, all <=200); no PSG needed editing (all already <=200). All 3 cited checkers + check-outputs exit 0 with no DESC finding."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T01:25:30Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T01-26-00Z.json",
+          "result": "ran 5 (3 checkers + xml + manifest), failed 0, manual 0 -- rebuild #2 retest, all descriptions <=200 chars"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T01:35:00Z",
+          "envelope_path": "envelopes/M2-S02/2026-09-12T01-40-00Z.json",
+          "result": "UPDATE pass after rebuild #2 (F-15): amended CWB-PERM-003..006 target_value+notes (description trimmed, rebuild cited), amended REQ-017..020 test_result (re-tested 2026-09-12T01-26-00Z, all checkers exit 0 with new DESC rules), appended D-M2S02-07 and O-M2S02-04, F-15 closed at the skills"
+        }
+      ],
       "human_gate": true
     },
     {
@@ -2997,7 +3071,8 @@
         "artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
         "artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml",
         "artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml",
-        "artefacts/M2-S03/package.xml"
+        "artefacts/M2-S03/package.xml",
+        "artefacts/M2-S03/deploy-order.md"
       ],
       "depends_on": [
         "M1-S02",
@@ -3028,9 +3103,82 @@
           "expected": "consistent"
         }
       ],
-      "status": "pending",
-      "runs": [],
-      "human_gate": true
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:44:16Z",
+          "envelope_path": "envelopes/M2-S03/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:44:16Z",
+          "envelope_path": "envelopes/M2-S03/2026-09-12T00-44-16Z.json",
+          "result": "Built 3 Profile files + package.xml (API 62.0, bare Profile members) + deploy-order.md. Closes M1 F-01: check_record_type_layouts.py --manifest-dir artefacts --strict now resolves 9 layoutAssignment + 12 record-type references and exits 0 over 15 files (0 findings); negative fixture exits 1. check_access_model.py step scope exit 0; check-outputs ok, 5/5 declared, 0 undeclared."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T00:59:34Z",
+          "envelope_path": "envelopes/M2-S03/2026-09-12T00-59-34Z.json",
+          "result": "ran 4 (xml, manifest, check_access_model.py, check_record_type_layouts.py), failed 0, manual 0"
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T01:04:38Z",
+          "envelope_path": "envelopes/M2-S03/failed.json",
+          "result": "operator verdict from scripts/mock_deploy.py (reports/MOCK-DEPLOY-M2.md run 1, F-15): all three Profile descriptions exceed 255 chars — 'Description: data value too large'. Declared checkers passed; the org rejected the files."
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T01:04:38Z",
+          "envelope_path": "envelopes/M2-S03/pending.json",
+          "result": "reset for rebuild after the F-15 skill fix (DESC rules in the access skills)"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T01:16:41Z",
+          "envelope_path": "envelopes/M2-S03/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T01:16:41Z",
+          "envelope_path": "envelopes/M2-S03/2026-09-12T01-17-55Z.json",
+          "result": "Rebuild #2: description-only fix for F-15 (PSVP-DESC-01), both checkers exit 0, check-outputs ok 5/5"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T01:23:34Z",
+          "envelope_path": "envelopes/M2-S03/2026-09-12T01-23-34Z.json",
+          "result": "ran 4 (xml, manifest, check_access_model.py, check_record_type_layouts.py), failed 0, manual 0"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T01:35:00Z",
+          "envelope_path": "envelopes/M2-S03/2026-09-12T01-42-00Z.json",
+          "result": "workbook rows 5 (3 Section 3 + 2 Other configuration); traceability rows 3; decisions appended 7 (D-M2S03-01..07) + 3 open items (O-M2S03-01..03)"
+        }
+      ],
+      "human_gate": true,
+      "amendments": [
+        {
+          "at": "2026-09-12T00:38:44Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "metadata-builder Step 7 writes deploy-order.md on every run; every M1/M2 step so far produced it undeclared so check-outputs never confirmed it (open items O-M1S02-02, O-M2S01-*, O-M2S02-01)",
+          "fields": [
+            "outputs"
+          ],
+          "before": {
+            "outputs": [
+              "artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml",
+              "artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml",
+              "artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml",
+              "artefacts/M2-S03/package.xml"
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "M2-S04",
@@ -3068,7 +3216,8 @@
         "artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml",
         "artefacts/M2-S04/groups/Billing_Team.group-meta.xml",
         "artefacts/M2-S04/queue-retirement-runbook.md",
-        "artefacts/M2-S04/package.xml"
+        "artefacts/M2-S04/package.xml",
+        "artefacts/M2-S04/deploy-order.md"
       ],
       "depends_on": [
         "M2-S02"
@@ -3112,9 +3261,56 @@
           "expected": "ticked at the M2 milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
-      "human_gate": true
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:40:56Z",
+          "envelope_path": "envelopes/M2-S04/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T00:40:56Z",
+          "envelope_path": "envelopes/M2-S04/2026-09-12T00-48-00Z.json",
+          "result": "Built 3 Case Queues (Tier_1_General, Tier_2_Engineering, Billing) and 3 public Groups (Support_Tier_1, Support_Tier_2, Billing_Team) at API 62.0 plus package.xml, queue-retirement-runbook.md and deploy-order.md; 9/9 declared outputs, 0 undeclared; check-outputs ok; declared checker check_queues.py exit 0 with 2 documented no-email WARNs (Tier 1 by Q88, Tier 2 ungrounded address)."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T01:00:21Z",
+          "envelope_path": "envelopes/M2-S04/2026-09-12T01-00-21Z.json",
+          "result": "ran 3 (checker, xml, manifest) passed; 4 manual deferred to gate"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T01:14:00Z",
+          "envelope_path": "envelopes/M2-S04/2026-09-12T01-19-14Z.json",
+          "result": "workbook rows 9 (6 new + 3 new); traceability rows 5; decisions appended 6 (D-M2S04-01..06) + 4 open items (O-M2S04-01..04)"
+        }
+      ],
+      "human_gate": true,
+      "amendments": [
+        {
+          "at": "2026-09-12T00:38:44Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "metadata-builder Step 7 writes deploy-order.md on every run; every M1/M2 step so far produced it undeclared so check-outputs never confirmed it (open items O-M1S02-02, O-M2S01-*, O-M2S02-01)",
+          "fields": [
+            "outputs"
+          ],
+          "before": {
+            "outputs": [
+              "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+              "artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+              "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+              "artefacts/M2-S04/groups/Support_Tier_1.group-meta.xml",
+              "artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml",
+              "artefacts/M2-S04/groups/Billing_Team.group-meta.xml",
+              "artefacts/M2-S04/queue-retirement-runbook.md",
+              "artefacts/M2-S04/package.xml"
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "M2-S05",
@@ -3147,7 +3343,8 @@
       "outputs": [
         "artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
         "artefacts/M2-S05/case-visibility-model.md",
-        "artefacts/M2-S05/package.xml"
+        "artefacts/M2-S05/package.xml",
+        "artefacts/M2-S05/deploy-order.md"
       ],
       "depends_on": [
         "M1-S01",
@@ -3177,9 +3374,51 @@
           "expected": "ticked at the M2 milestone gate from the artefacts on disk"
         }
       ],
-      "status": "pending",
-      "runs": [],
-      "human_gate": true
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T01:24:36Z",
+          "envelope_path": "envelopes/M2-S05/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T01:24:36Z",
+          "envelope_path": "envelopes/M2-S05/2026-09-12T01-27-40Z.json",
+          "result": "Built: sharingRules/Case.sharingRules-meta.xml (one criteria rule Support_Cases_To_Tier_2, RecordTypeId equals Support, includeRecordsOwnedByAll true, Edit to Support_Tier_2), package.xml (SharingRules:Case), case-visibility-model.md, deploy-order.md. No OWD and no Sharing.settings file (B01). check-outputs ok; all cited checkers exit 0 first pass."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T01-41-33Z",
+          "envelope_path": "envelopes/M2-S05/2026-09-12T01-41-33Z.json",
+          "result": "ran 4 (xml, manifest, check_sharing_model.py, check-outputs), failed 0, manual 1 deferred to M2 gate"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T01:44:00Z",
+          "envelope_path": "envelopes/M2-S05/2026-09-12T01-52-00Z.json",
+          "result": "workbook rows 5 (CWB-SHARE-002, CWB-SHARE-003, CWB-OTHER-015, CWB-OTHER-016 new; none replaced); traceability rows 1 (REQ-029, new); decisions appended 7 (D-M2S05-01..05, O-M2S05-01..02)"
+        }
+      ],
+      "human_gate": true,
+      "amendments": [
+        {
+          "at": "2026-09-12T00:38:44Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "metadata-builder Step 7 writes deploy-order.md on every run; every M1/M2 step so far produced it undeclared so check-outputs never confirmed it (open items O-M1S02-02, O-M2S01-*, O-M2S02-01)",
+          "fields": [
+            "outputs"
+          ],
+          "before": {
+            "outputs": [
+              "artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
+              "artefacts/M2-S05/case-visibility-model.md",
+              "artefacts/M2-S05/package.xml"
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "M3-S01",
@@ -4343,19 +4582,31 @@
     },
     {
       "name": "step:M2-S02",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-11T23:58:50Z",
+      "notes": "Access step; approved for the dry run so M2 can proceed. Real deployment needs the security owner's signature."
     },
     {
       "name": "step:M2-S03",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T00:38:44Z",
+      "notes": "Access step; approved for the dry run. Real deployment needs the security owner's signature."
     },
     {
       "name": "step:M2-S04",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T00:38:44Z",
+      "notes": "Access step; approved for the dry run. Real deployment needs the security owner's signature."
     },
     {
       "name": "step:M2-S05",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T01:22:54Z",
+      "notes": "Sharing step (criteria-based sharing rule + the Private OWD already on Case). Approved for the dry run; real deployment needs the security owner's signature."
     },
     {
       "name": "milestone:M2",

@@ -1,0 +1,12 @@
+Scanning: /Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/artefacts
+
+Custom permissions defined:        1
+Permission sets / profiles parsed: 8
+Distinct permissions referenced:   0
+
+Coverage (custom permission -> consumers, granting containers):
+  Custom Permission              Consumers  Granted by
+  -----------------------------------------------------------
+  Bypass_Case_Intake_Validation          0  permission set 'Case_Intake_Integration'
+
+Summary: 0 error(s), 0 warning(s), 0 info.

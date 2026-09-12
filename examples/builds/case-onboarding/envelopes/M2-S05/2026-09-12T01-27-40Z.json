@@ -1,0 +1,384 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T01-27-40Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-27-40Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-27-40Z.json",
+  "outcome": "completed",
+  "summary": "M2-S05 (type access) built as one SharingRules container file plus its manifest and two notes. One criteria-based rule, Support_Cases_To_Tier_2: RecordTypeId equals Support, includeRecordsOwnedByAll true, Edit to the Support_Tier_2 public group built in M2-S04. No Sharing.settings file and no OWD written here - the Private sharingModel stays on M1-S01's Case.object-meta.xml (v4 blocker B01). No rule targets the Billing record type or Billing_Team, per assumption A1 and this step's declared manual acceptance test. Four declared outputs written, nothing undeclared, all cited checkers exit 0 on the first pass, check-outputs ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM row: the step declares an output whose shape the cited skills document by worked example rather than by element table for the two values that matter most. (1) criteriaItems.value for a RecordTypeId criterion is written as the bare developer name 'Support' on the strength of admin/duplicate-management's worked example, which carries an explicit UNVERIFIED marker saying the guide does not establish whether the field takes a developer name or an 18-character Id. (2) The package.xml type name is the container form (SharingRules:Case), which two library skills document and this step's declared manifest test names, while the step's own primary cited skill recommends the rule-type form (SharingCriteriaRule:Case.Support_Cases_To_Tier_2). Every element NAME and every enum value traces to the Step 3 inventory, every cited checker exited 0 on the first pass, check-outputs is ok, and no Questions-to-Ask row was answered by an undocumented default - so nothing here is a LOW condition.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S05",
+    "api_version": "62.0 (no plan-level api_version; taken from the sibling manifests M1-S01/M2-S04 and from the cited skill's own package.xml example, both 62.0)",
+    "credentials_present": false
+  },
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Element names and enum values are fully grounded in the cited skill's XML fence. Two DATA values are grounded only by worked example elsewhere in the library: criteriaItems.value = 'Support' (admin/duplicate-management/references/metadata-examples.md, which marks the RecordTypeId value format UNVERIFIED) and the package.xml type name SharingRules (admin/experience-cloud-guest-access and admin/data-skew-and-sharing-performance metadata-examples.md), against admin/sharing-and-visibility's contrary recommendation.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "A mock deploy against a sandbox settles both in one request. Findings F-xx from that run should be written back into admin/sharing-and-visibility/references/metadata-examples.md so the next sharing step is not left choosing between two documented manifest forms."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The plan's own v4 blocker B01 was already correct on disk: no settings/Sharing.settings-meta.xml is declared, and the Private OWD this rule is measured against sits on M1-S01's Case.object-meta.xml, which is exactly where the cited skill says sharingModel lives ('Both live on the CustomObject file, not in a separate settings file').",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/objects/Case/Case.object-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's checker test was widened to build scope with a reproduced negative recorded in the plan, so the exit code stands for something: at step scope the checker resolves 0 object OWDs and passes vacuously, at build scope it resolves 1 and would fire HIGH if the grant were not above the default.",
+      "domain": "test-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two skills in the library manifest a SharingRules file by its container type with an object member, and one - the skill this step actually cites - says in bold that the container 'is not what you address' and to manifest SharingCriteriaRule with Object.RuleName members; the library therefore documents two incompatible manifest shapes for the same file with no note reconciling them.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/sharing-and-visibility/references/metadata-examples.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Support_Tier_2 carries doesIncludeBosses=true (set in M2-S04 and labelled a skill default there), which the gotchas file says 'applies retroactively to every rule that ever targets it' - so the Edit grant this step writes will silently travel up the role hierarchy the day one is loaded, and no clarification asks whether that is wanted.",
+      "domain": "record-access",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "observation": "The invoking instruction described this step as 'the criteria-based sharing rule(s) that let Billing see Billing cases', while the step's declared manual acceptance test asserts the opposite - that the only rule shares Support cases to Support_Tier_2 and that no rule names the Billing record type or Billing_Team; the plan was followed and Billing's own access is carried by queue ownership from M2-S04, but the two readings should be reconciled before the M2 gate.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The RecordTypeId criterion value format is UNVERIFIED in the library's own words - the guide does not establish whether the field takes a record type developer name or an 18-character Id - and this build has no org to settle it, so the bare developer name 'Support' was written with the marker carried into deploy-order.md decision 3 beside the fix order rather than buried in a well-architected note.",
+      "domain": "metadata-grounding",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/duplicate-management/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The molecular tests this step declares have not been run by their owner; this agent ran the same checker for its own repair loop only.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It owns the declared checker, xml and manifest tests and writes tests/M2-S05/results.json, which this agent must not."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Two decisions in this step (the manifest form and the UNVERIFIED RecordTypeId value) belong in the build's decisions log rather than only in an artefact note.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S05/deploy-order.md",
+        "count": 7
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once M2-S05 is tested it owns decisions.md, the workbook rows and the traceability link from REQ to this artefact."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules binding this invocation: no org write, one target, no files outside the step's artefact directory."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement and the Citations schema this block follows."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope persistence and the redaction rule applied to echoed inputs (no credential-shaped value was present)."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked against at Steps 1, 2 and 4; none fired."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 for the access step type and this agent's ownership of it in design-only mode; section 5 for the rule that every metadata-builder metadata step declares its own package.xml; section 8 for recording a gap rather than freestyling."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The steps[] fields this agent reads (inputs, outputs, skills, depends_on) and the ones it must leave alone."
+    },
+    {
+      "type": "skill",
+      "id": "admin/sharing-and-visibility",
+      "path": "skills/admin/sharing-and-visibility/SKILL.md",
+      "used_for": "The Questions-to-Ask table bound in Step 4: the OWD baseline, the recipient type (group, never a named user), the includeRecordsOwnedByAll decision and the named reviewer for the exception layer."
+    },
+    {
+      "type": "skill",
+      "id": "admin/sharing-and-visibility (metadata-examples)",
+      "path": "skills/admin/sharing-and-visibility/references/metadata-examples.md",
+      "used_for": "Section 4 supplied the whole element inventory for the emitted file - SharingRules, sharingCriteriaRules, fullName, accessLevel, description, label, criteriaItems (field/operation/value), includeRecordsOwnedByAll, sharedTo/group - plus the bare-fullName-inside-the-container shape and the SharedTo element list. Section 1 supplied the sharingModel enum this rule is measured against; section 6 supplied the deploy order and the contrary manifest recommendation recorded as a divergence."
+    },
+    {
+      "type": "skill",
+      "id": "admin/sharing-and-visibility (gotchas)",
+      "path": "skills/admin/sharing-and-visibility/references/gotchas.md",
+      "used_for": "'A Grant At Or Below the OWD Adds Nothing', 'A Deployed Public Group Arrives Empty' and the doesIncludeBosses gotcha - the three facts the deploy-order note and the visibility model are built from."
+    },
+    {
+      "type": "template",
+      "id": "admin/sharing-and-visibility sharing-model-template",
+      "path": "skills/admin/sharing-and-visibility/templates/sharing-model-template.md",
+      "used_for": "case-visibility-model.md is this template filled in - Object Overview, Baseline Access, Sharing Grants, Bypasses and Narrowing, Risk Checks - per Step 5 rule 3."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "The second cited skill. Its Questions-to-Ask rows are all queue-scoped and this step writes no queue or group; it supplied the group-developer-name-is-the-file-stem rule used to write sharedTo.group as Support_Tier_2, and its checker was run and exited 0 with nothing to scan."
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "The seven-position dependency order that puts sharing rules at 6 of 7, 'which depend on OWD and object existence' - the source for the deploy-order note rather than this agent's intuition."
+    },
+    {
+      "type": "skill",
+      "id": "admin/duplicate-management",
+      "path": "skills/admin/duplicate-management/references/metadata-examples.md",
+      "used_for": "The only worked RecordTypeId filter item in the library (field/operation/value with a bare developer name) and its explicit UNVERIFIED marker on that value format, both carried into deploy-order.md decision 3."
+    },
+    {
+      "type": "skill",
+      "id": "admin/experience-cloud-guest-access",
+      "path": "skills/admin/experience-cloud-guest-access/references/metadata-examples.md",
+      "used_for": "A documented package.xml manifesting SharingRules with an object as the member (FAQ_Article__c), one of the two groundings for the container manifest form; also the FilterOperation enum listing that contains 'equals'."
+    },
+    {
+      "type": "skill",
+      "id": "admin/data-skew-and-sharing-performance",
+      "path": "skills/admin/data-skew-and-sharing-performance/references/metadata-examples.md",
+      "used_for": "The second documented package.xml manifesting SharingRules with an object member (Loan__c)."
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "used_for": "Q3 branch 'Yes, criteria are on the record itself -> Criteria-Based Sharing Rule', cited (not re-decided) per decision D5; Q8 supplied the fact that restriction rules are unavailable on Case, recorded in the visibility model.",
+      "branch": "Q3 \u2014 'Yes, criteria are on the record itself \u2192 Criteria-Based Sharing Rule'"
+    },
+    {
+      "type": "probe",
+      "id": "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py",
+      "path": "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py",
+      "used_for": "Step 8 self-check on the emitted XML, and the step's declared acceptance-test command."
+    },
+    {
+      "type": "probe",
+      "id": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+      "path": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+      "used_for": "Step 8 self-check for the second cited skill."
+    },
+    {
+      "type": "probe",
+      "id": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "Step 8 self-check on the emitted package.xml."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns M2-S05's declared checker, xml, manifest and manual tests and writes tests/M2-S05/results.json; this agent ran the checkers only to repair its own output."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M2-S05 is tested it carries the manifest-form divergence and the UNVERIFIED RecordTypeId value into decisions.md and links the artefacts into traceability.md."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S05",
+    "step_type": "access",
+    "build_mode": "design-only",
+    "invoked_by": "build-step-runner",
+    "step_9_status_transition": "Not taken. standards/build-orchestration.md and this agent's Step 9 both say the runner sets the terminal status when this agent is invoked under it; two writers of one transition is how a run record ends up disagreeing with itself.",
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
+        "metadata_type": "SharingRules",
+        "declared": true,
+        "element_source": "skills/admin/sharing-and-visibility/references/metadata-examples.md section 4"
+      },
+      {
+        "path": "artefacts/M2-S05/case-visibility-model.md",
+        "metadata_type": "documentation",
+        "declared": true,
+        "element_source": "skills/admin/sharing-and-visibility/templates/sharing-model-template.md"
+      },
+      {
+        "path": "artefacts/M2-S05/package.xml",
+        "metadata_type": "Package manifest",
+        "declared": true,
+        "element_source": "skills/admin/experience-cloud-guest-access/references/metadata-examples.md and skills/admin/data-skew-and-sharing-performance/references/metadata-examples.md"
+      },
+      {
+        "path": "artefacts/M2-S05/deploy-order.md",
+        "metadata_type": "documentation",
+        "declared": true,
+        "element_source": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md deployment-order list"
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "What is the most restrictive baseline the business can actually live with?",
+        "answer": "Private, already declared on M1-S01's Case.object-meta.xml; this step writes no OWD.",
+        "source": "step inputs (owd.Case) + upstream artefact M1-S01",
+        "element": "not written here - sharingModel stays on the CustomObject file per B01"
+      },
+      {
+        "question": "Does this object have an owner of its own, or is it a master-detail child?",
+        "answer": "Case is a standard object with an Owner field, a CaseShare table and queues - sharing rules are available.",
+        "source": "upstream artefacts (M2-S04 queues own Case) + the requirement",
+        "element": "the SharingRules container exists at all"
+      },
+      {
+        "question": "Is the population a group, a role, a territory, or one named person?",
+        "answer": "A public group, Support_Tier_2, built in M2-S04. No role name exists anywhere in the build.",
+        "source": "clarification Q29 + upstream artefact M2-S04/groups/Support_Tier_2.group-meta.xml",
+        "element": "sharedTo/group = Support_Tier_2"
+      },
+      {
+        "question": "Are external users in scope, and through what relationship to the record?",
+        "answer": "No - the customer portal is out of scope in requirement.md, and externalSharingModel is already Private on M1-S01.",
+        "source": "requirement.md",
+        "element": "no sharingSets/ directory, no sharingGuestRules"
+      },
+      {
+        "question": "Can an integration user or automated process user own these records?",
+        "answer": "Yes. M2-S01 built Case_Intake_Integration precisely for the Email-to-Case / Web-to-Case automated-process identity, which owns the case until M3-S04's assignment rules transfer it.",
+        "source": "upstream artefact M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml + requirement.md intake volumes",
+        "element": "includeRecordsOwnedByAll = true (grounded, not defaulted; the guide says it cannot be edited after creation)"
+      },
+      {
+        "question": "Who will be asked to prove the access next quarter, and with what query?",
+        "answer": "M5's live-user test in a sandbox. The two queries are written into case-visibility-model.md, with the UserRecordAccess 200-id and pre-restriction-rule limits stated.",
+        "source": "clarification Q80 + the step's own manual acceptance test",
+        "element": "documentation only - no metadata element"
+      },
+      {
+        "question": "Which layer is allowed to be the exception, and who reviews it?",
+        "answer": "Manual sharing, with no standing use in this greenfield build. UNANSWERED: no clarification names a reviewer or a cadence for it. Recorded as an open box in the visibility model's Risk Checks rather than filled with an invented owner.",
+        "source": "none of the four sources",
+        "element": "none - the absence is recorded, and the element it would have changed does not exist"
+      },
+      {
+        "question": "Which criteria are restrictions rather than capabilities (Q80)?",
+        "answer": "Tier 1 must not see billing cases. Taken as record-level per assumption A1 because Q13 is deferred.",
+        "source": "clarification Q80 + assumption A1",
+        "element": "the absence of any rule naming the Billing record type or Billing_Team - asserted by this step's manual acceptance test"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S05",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "score 100, 0 findings; 'Scanned 1 sharing-model metadata file(s) (0 object OWD(s) resolved)' - the vacuous step-scope reading the plan's B01 note predicted"
+      },
+      {
+        "command": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts (run from the build directory - the step's declared acceptance test, verbatim)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "score 100, 0 findings; 'Scanned 10 sharing-model metadata file(s) (1 object OWD(s) resolved)'. Baseline before this step was 9 files / 1 OWD / 0 findings, so the one added file introduced no finding."
+      },
+      {
+        "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S05",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "'No queue or public group metadata found under this directory.' Correct: this step writes neither. The groups it references live in M2-S04 and were checked there."
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir .sfskills/builds/case-onboarding/artefacts/M2-S05",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "score 95, 1 WARN: 'manifest includes SharingRules; require explicit review and smoke tests'. Documented as a review flag rather than a defect in that skill's metadata-examples.md, and it is the point of the human gate on this step."
+      },
+      {
+        "command": "python3 -c \"...ElementTree parse sweep...\" .sfskills/builds/case-onboarding/artefacts/M2-S05",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "2 file(s) parsed"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "workflow_return": {
+      "step_id": "M2-S05",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/case-visibility-model.md",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/package.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/deploy-order.md"
+      ]
+    }
+  }
+}

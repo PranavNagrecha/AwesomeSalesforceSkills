@@ -1,0 +1,67 @@
+=== SYMBOL INVENTORY (M1 = earlier/accepted, M2 = this milestone) ===
+  object: Case [M1-S01]
+  field: Account.Region__c [M1-S01], Account.Support_Tier__c [M1-S01], Case.Severity__c [M1-S01]
+  recordType: Case.Billing [M1-S01], Case.Support [M1-S01]
+  layout: Case-Case Billing Layout [M1-S02], Case-Case Support Layout [M1-S02]
+  queue: Billing [M2-S04], Tier_1_General [M2-S04], Tier_2_Engineering [M2-S04]
+  group: Billing_Team [M2-S04], Support_Tier_1 [M2-S04], Support_Tier_2 [M2-S04]
+  permissionSet: Case_Agent_Core [M2-S02], Case_Billing [M2-S02], Case_Intake_Integration [M2-S01], Case_Tier1 [M2-S02], Case_Tier2 [M2-S02]
+  psg: PSG_Billing_Prod [M2-S02], PSG_Tier1_Prod [M2-S02], PSG_Tier2_Prod [M2-S02]
+  profile: Acme Billing [M2-S03], Acme Support Tier 1 [M2-S03], Acme Support Tier 2 [M2-S03]
+  customPermission: Bypass_Case_Intake_Validation [M2-S01]
+  businessProcess: Case.Billing_Process [M1-S01], Case.Support_Process [M1-S01]
+  compactLayout: Case.Case_Intake [M1-S01]
+  [unclassifiable] criteriaItems field=RecordTypeId value=Support in artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml
+
+=== REFERENCE RESOLUTION (M2 artefacts) ===
+class                                symbol                             status                     defined-by   artefact
+Custom-permission grant              customPermission:Bypass_Case_Intake_Validation resolved-in-M2             M2-S01       artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml
+PSG membership                       permissionSet:Case_Agent_Core      resolved-in-M2             M2-S02       artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml
+PSG membership                       permissionSet:Case_Billing         resolved-in-M2             M2-S02       artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml
+PSG membership                       permissionSet:Case_Agent_Core      resolved-in-M2             M2-S02       artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml
+PSG membership                       permissionSet:Case_Tier1           resolved-in-M2             M2-S02       artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml
+PSG membership                       permissionSet:Case_Agent_Core      resolved-in-M2             M2-S02       artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml
+PSG membership                       permissionSet:Case_Tier2           resolved-in-M2             M2-S02       artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml
+Permission grant — field             field:Case.Severity__c             resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Permission grant — field             field:Account.Region__c            resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Permission grant — field             field:Account.Support_Tier__c      resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Permission grant — object            object:Case                        resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Permission grant — object            object:Account                     resolved-standard-object   platform     artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Permission grant — object            object:Contact                     resolved-standard-object   platform     artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Permission grant — object            object:EmailMessage                resolved-standard-object   platform     artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Permission grant — object            object:Entitlement                 resolved-standard-object   platform     artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml
+Record-type visibility               recordType:Case.Billing            resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Billing.permissionset-meta.xml
+Permission grant — field             field:Case.Severity__c             resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml
+Record-type visibility               recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml
+Permission grant — field             field:Case.Severity__c             resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml
+Record-type visibility               recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml
+Record-type visibility               recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml
+Record-type visibility               recordType:Case.Billing            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml
+Layout assignment                    layout:Case-Case Billing Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml
+Layout assignment                    layout:Case-Case Support Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml
+Layout assignment — record type      recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml
+Layout assignment                    layout:Case-Case Billing Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml
+Layout assignment — record type      recordType:Case.Billing            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml
+Record-type visibility               recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml
+Record-type visibility               recordType:Case.Billing            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml
+Layout assignment                    layout:Case-Case Support Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml
+Layout assignment                    layout:Case-Case Support Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml
+Layout assignment — record type      recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml
+Layout assignment                    layout:Case-Case Billing Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml
+Layout assignment — record type      recordType:Case.Billing            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml
+Record-type visibility               recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml
+Record-type visibility               recordType:Case.Billing            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml
+Layout assignment                    layout:Case-Case Support Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml
+Layout assignment                    layout:Case-Case Support Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml
+Layout assignment — record type      recordType:Case.Support            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml
+Layout assignment                    layout:Case-Case Billing Layout    resolved-in-M1             M1-S02       artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml
+Layout assignment — record type      recordType:Case.Billing            resolved-in-M1             M1-S01       artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml
+Queue membership — public group      group:Billing_Team                 resolved-in-M2             M2-S04       artefacts/M2-S04/queues/Billing.queue-meta.xml
+Queue supported object               object:Case                        resolved-in-M1             M1-S01       artefacts/M2-S04/queues/Billing.queue-meta.xml
+Queue membership — public group      group:Support_Tier_1               resolved-in-M2             M2-S04       artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml
+Queue supported object               object:Case                        resolved-in-M1             M1-S01       artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml
+Queue membership — public group      group:Support_Tier_2               resolved-in-M2             M2-S04       artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml
+Queue supported object               object:Case                        resolved-in-M1             M1-S01       artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml
+Sharing rule — sharedTo group        group:Support_Tier_2               resolved-in-M2             M2-S04       artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml
+
+TOTAL references: 48   UNRESOLVED: 0

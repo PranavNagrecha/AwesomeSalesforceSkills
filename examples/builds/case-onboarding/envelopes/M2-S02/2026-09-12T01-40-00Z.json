@@ -1,0 +1,149 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T01-40-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T01-40-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S02/2026-09-12T01-40-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S02",
+    "task": "UPDATE pass after REBUILD #2 (mock-deploy finding F-15, PermissionSet descriptions trimmed to <=200 chars) -- amend the four workbook permission-set rows and the four traceability rows, append a decision entry and an open item, then re-set the step documented"
+  },
+  "summary": "UPDATE pass on M2-S02 after rebuild #2 (F-15). On inspection, CWB-PERM-003..006's notes/target_value did not literally quote the old long descriptions -- those four rows never named the <description> element at all (only CWB-PERM-001/002/007/008/009 did), so 'amend the quoted text' had no literal target. Amended target_value on all four rows to add the current (<=200-char) <description> element, and amended notes on all four to record Rebuild #2, the char counts before/after, and a pointer to deploy-order.md § Rebuild #2 -- descriptions and decisions.md D-M2S02-07. Amended the test_result cell on REQ-017..020 in traceability.md with the rebuild #2 retest evidence (step-tester run 2026-09-12T01-26-00Z, all three cited checkers exit 0 with the new PSA-DESC-01/02 / PSGC-DESC-01/02 / PSVP-DESC-01 rules firing clean). Appended D-M2S02-07 (the rebuild decision record) and O-M2S02-04 (F-15 closed at the skill level; the plan's own five acceptance_tests descriptions for this step do not mention the DESC rule at all, verified by reading plan.json directly) to decisions.md. Appended a 'Linter result -- after M2-S02 rebuild #2 (F-15)' section to traceability.md recording two check_rtm.py runs (build scope: 25 rows, 0 gaps, 6 orphans -- 4 of them M2-S03's, mid-rebuild in a concurrent session, not this run's to fix; step scope: 0 orphans, all four amended rows resolve). Re-rendered PLAN.md/CLARIFICATIONS.md before and after the status transition, and set the step tested -> documented. A concurrent session was writing M2-S03's own rows into the same workbook file and (per its own doc-keeper pass) into decisions.md at an earlier point; this run re-read each shared file immediately before writing it, touched only M2-S02's own rows and its own appended entries, and confirmed after the fact that the concurrent M2-S03 rows (CWB-PERM-010..012, D-M2S03-01..07) landed intact alongside this run's edits with no truncation or overwrite in either direction.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "MEDIUM on the same grounds every prior documentation run on this build has recorded, plus one new one from this pass: (1) the invocation's premise that CWB-PERM-003..006 already quoted the old long descriptions did not hold on inspection -- verified by grep before writing, and resolved by adding the description element and a rebuild note rather than by fabricating a 'was quoted, now trimmed' narrative that the prior text does not support; this is reported rather than smoothed over. (2) package.xml and deploy-order.md remain outside the ten-position deploy sequence and in the Other-configuration default, unchanged from every prior run on this build (not re-touched this pass). Not LOW: no row this run wrote or amended has an empty source_req_id or an empty verification cell, both check_rtm.py runs and both check_workbook.py runs (per-file and full ten-section harness) exited with the same shape a rerun should produce, and every amendment is keyed to a row_id/req_id that already existed -- a re-run of this same amendment would replace the same text, not add a duplicate.",
+  "dimensions_compared": [
+    "workbook-rows-amended",
+    "traceability-rows-amended",
+    "decisions-appended"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-test-compilation",
+      "state": "not-run",
+      "reason": "M2-S02 declares no `type: manual` acceptance test; this UPDATE pass touches only rows already written on the first documentation pass and adds no new manual test.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Not applicable. TC-M1S01-01, TC-M1S01-02, TC-M1S02-01 and TC-M2S01-01 remain the build's outstanding manual tests, unchanged by this run."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "verification-coverage",
+      "observation": "Rebuild #2 closed F-15 at the org boundary (reports/MOCK-DEPLOY-M2.md run 2, 30/30 components) and at the skill level (three checkers gained DESC rules at PSA-DESC-01/02, PSGC-DESC-01/02, PSVP-DESC-01). Every amended workbook and traceability cell in this pass cites the specific checker exit and rule that now covers the finding, rather than restating 'it passed'.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S02/deploy-order.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "concurrency",
+      "observation": "A concurrent session wrote M2-S03's own rows into workbook/03-profiles-permission-sets-and-psgs.md (CWB-PERM-010..012) and decisions.md (D-M2S03-01..07) while this run was in progress. Re-reading each file immediately before writing it, and keying every write to this run's own row_id/req_id set, meant both sessions' writes landed intact with no truncation or overwrite in either direction.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "test-description-drift",
+      "observation": "None of M2-S02's five declared acceptance_tests in plan.json mentions the DESC rule in its description field, even though the same checker commands now enforce it. The commands themselves ran correctly and did exercise the new rule, but a reader of PLAN.md checking what `exit 0` proves would not learn that a description-length ERROR is now one of the things it rules out. Recorded as O-M2S02-04.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "task-premise-mismatch",
+      "observation": "The invocation stated CWB-PERM-003..006's notes/target_value quote the old long descriptions. A direct grep of the file before editing found zero occurrences of the word 'description' in any of those four rows -- only the sibling rows CWB-PERM-001/002/007/008/009 named the <description> element at all. Resolved by adding the (now current, <=200-char) description element to target_value and a rebuild note to notes on all four rows, rather than assuming the premise and editing text that was not there.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md",
+        "count": 4
+      }
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations requirement, confidence rubric this agent's Step 11 overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "atomic-write rule and envelope persistence shape"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked against the four refusal triggers; none fired -- the step was `tested` on entry"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the step and acceptance_tests fields read for O-M2S02-04"},
+    {"type": "standard", "id": "agents/_shared/schemas/output-envelope.schema.json", "path": "agents/_shared/schemas/output-envelope.schema.json", "used_for": "fixed top-level field set; this run's payload rides in extensions"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 the access step type and the rebuild carve-out this pass documents; § 6 this agent's per-step job"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "row schema for the CWB-PERM-003..006 amendments; Section 3 default agent reasoning"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "build-layer RTM column set and pipe-delimited convention for the REQ-017..020 test_result amendments"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "read per Mandatory Reads; decision-entry shape (date, decision, alternative rejected, source) applied to D-M2S02-07"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "read per Mandatory Reads; not applicable this run, no manual test declared or compiled"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "read per Mandatory Reads; not applicable this run, same reason"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "read per Mandatory Reads; not applicable this run, same reason"},
+    {"type": "probe", "id": "check_rtm.py", "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py", "used_for": "re-linted traceability.md at build and step scope after the amendments"},
+    {"type": "probe", "id": "check_workbook.py", "path": "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py", "used_for": "re-linted the Section 3 file per-file and inside a staged ten-section harness after the amendments"}
+  ],
+  "followups": [
+    {"agent": "milestone-verifier", "because": "M2's steps now include a rebuild-and-retest cycle for F-15 on both M2-S02 and M2-S03; the M2 milestone has not been verified against the post-rebuild state."},
+    {"agent": "build-step-runner", "because": "M2-S02 is documented again; M2-S03's own rebuild/retest/documentation cycle is still in progress in a concurrent session."}
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "mode": "per-step",
+    "run_kind": "update-pass",
+    "trigger": "REBUILD #2 (mock-deploy finding F-15) retested at 2026-09-12T01-26-00Z; this pass brings the workbook and traceability rows in line with the retest",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/03-profiles-permission-sets-and-psgs.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows_amended": [
+      {"row_id": "CWB-PERM-003", "field": "target_value+notes", "change": "added <description> element (192 chars) to target_value; notes note Rebuild #2 (419->192) and D-M2S02-07"},
+      {"row_id": "CWB-PERM-004", "field": "target_value+notes", "change": "added <description> element (193 chars) to target_value; notes note Rebuild #2 (290->193) and D-M2S02-07"},
+      {"row_id": "CWB-PERM-005", "field": "target_value+notes", "change": "added <description> element (199 chars) to target_value; notes note Rebuild #2 (456->199) and D-M2S02-07"},
+      {"row_id": "CWB-PERM-006", "field": "target_value+notes", "change": "added <description> element (183 chars) to target_value; notes note Rebuild #2 (380->183) and D-M2S02-07"}
+    ],
+    "traceability_rows_amended": [
+      {"req_id": "REQ-017", "field": "test_result", "change": "appended rebuild #2 retest evidence (192-char description, checkers exit 0 with new DESC rules)"},
+      {"req_id": "REQ-018", "field": "test_result", "change": "appended rebuild #2 retest evidence (193-char description, checkers exit 0 with new DESC rules)"},
+      {"req_id": "REQ-019", "field": "test_result", "change": "appended rebuild #2 retest evidence (199-char description, checkers exit 0 with new DESC rules)"},
+      {"req_id": "REQ-020", "field": "test_result", "change": "appended rebuild #2 retest evidence (183-char description, checkers exit 0 with new DESC rules)"}
+    ],
+    "decisions_appended": [
+      {
+        "id": "D-M2S02-07",
+        "date": "2026-09-12",
+        "kind": "deviation (rebuild triggered by an org-boundary finding)",
+        "decision": "Rewrote only the <description> element of all four M2-S02 PermissionSet files (419/290/456/380 -> 192/193/199/183 chars); no PermissionSetGroup file needed editing",
+        "alternative_rejected": "leaving the long rationale inline and truncating the description lossily; rejected because the 255-char ceiling is a hard Metadata API limit, not a display truncation",
+        "grounded_in": "admin/permission-set-architecture v1.2.0 PSA-DESC-01/02, admin/permission-set-group-composition v1.1.0 PSGC-DESC-01/02, admin/permission-sets-vs-profiles v1.2.0 PSVP-DESC-01, and reports/MOCK-DEPLOY-M2.md run 2 (30/30, 0 errors)"
+      }
+    ],
+    "planner_open_items_recorded": [
+      {
+        "id": "O-M2S02-04",
+        "date": "2026-09-12",
+        "summary": "F-15 CLOSED at the skill level (three checkers now enforce the 255-char ceiling; org validation confirms). Not closed: none of M2-S02's five acceptance_tests[].description strings in plan.json mentions the DESC rule, even though the same commands now enforce it -- a documentation drift, not a test failure."
+      }
+    ],
+    "rows_replaced": [],
+    "checker_results": [
+      {"command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..", "exit": 0, "result": "25 row(s), 0 coverage gap(s), 6 orphan(s), 0 error(s), 1 warning(s) -- 4 of the 6 orphans are M2-S03's, mid-rebuild in a concurrent session"},
+      {"command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts/M2-S02 --repo-root ../../..", "exit": 0, "result": "25 row(s), 0 coverage gap(s), 0 orphan(s), 0 error(s), 20 warning(s) -- all four amended rows resolve at step scope"},
+      {"command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/03-profiles-permission-sets-and-psgs.md --repo-root ../../.. --allow-empty-section", "exit": 1, "result": "9 issue(s), every one 'Missing canonical section' -- zero per-row findings, the same shape every per-file run in this build has produced"},
+      {"command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook <scratchpad>/wb-m2s02-update/cwb.md --repo-root <repo> (full ten-section staging harness)", "exit": 1, "result": "8 issue(s): six pre-existing Section 6 automation-tree-citation ERRORs (unrelated to this pass) plus two placeholder-skill-path typos in this run's own Section 7/10 stub rows; zero findings anywhere in Section 3, confirming the four amended rows parse and validate cleanly"},
+      {"command": "python3 scripts/build_plan.py render .sfskills/builds/case-onboarding/plan.json", "exit": 0, "result": "wrote PLAN.md, CLARIFICATIONS.md (run before and after the status transition)"},
+      {"command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S02 documented --run-agent build-doc-keeper --envelope envelopes/M2-S02/2026-09-12T01-40-00Z.json --result \"UPDATE pass after rebuild #2 (F-15): amended CWB-PERM-003..006 target_value+notes, amended REQ-017..020 test_result, appended D-M2S02-07 and O-M2S02-04\" --started 2026-09-12T01:35:00Z", "exit": 0, "result": "M2-S02: tested -> documented (run appended: build-doc-keeper); 3 pre-existing WARNs on M5 steps, unrelated"},
+      {"command": "python3 scripts/build_plan.py validate .sfskills/builds/case-onboarding/plan.json", "exit": 0, "result": "OK: 5 milestone(s), 22 step(s), 3 warning(s) -- all three pre-existing, on M5 steps, unchanged"}
+    ]
+  }
+}

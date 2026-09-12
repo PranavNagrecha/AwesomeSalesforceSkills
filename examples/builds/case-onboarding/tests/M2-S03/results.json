@@ -1,0 +1,12 @@
+{
+  "step_id": "M2-S03",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+    "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": []
+}

@@ -1,0 +1,268 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T00-59-34Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-59-34Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S03/2026-09-12T00-59-34Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S03",
+    "status_on_entry": "built",
+    "step_type": "access",
+    "owning_agent": "metadata-builder",
+    "build_mode": "design-only"
+  },
+  "summary": "Ran every declared acceptance test on M2-S03, plus the two always-on structural checks and the check-outputs precondition: 4 runnable tests, 4 passed, 0 failed, no manual test declared on this step. check_access_model.py exited 0 at step scope with 0 findings over the three profiles. check_record_type_layouts.py --manifest-dir artefacts --strict, declared at build scope, exited 0 and reported 'Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.' - the first non-vacuous run of this cross-reference (M1 finding F-01), since M2-S03's three profiles are the first layoutAssignments elements to exist anywhere under artefacts/. The test's own plan-text description quotes the expected count as 14, which is now stale by one file; the checker's live output and exit code are unaffected. xml parsed 4 of 4 files; the manifest is consistent in both directions (3 Profile members, 3 files, bare names derived from the space-containing filename stems); check-outputs reports ok on all five declared outputs. Three file-checkable facts requested by the invocation - no objectPermissions/fieldPermissions/userPermissions/viewAll in any profile, exactly one recordTypeVisibilities default=true per profile, exactly three layoutAssignments per profile - were verified directly against the artefacts and are reported, not ticked, since no manual acceptance test carries them in plan.json. Step set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH: every declared test ran (none was correctly classified as manual because none is declared), both always-on checks completed, and every verdict came from an exit code this run observed. No command test was refused, no coverage-gap-type manifest exclusion was needed (Profile is a top-level type with a standalone file per member), no declared checker was missing, and check-outputs reported ok.",
+  "outcome": "completed",
+  "extensions": {
+    "step_id": "M2-S03",
+    "results_path": "tests/M2-S03/results.json",
+    "tests_run": 4,
+    "status_set": "tested",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree parse over artefacts/M2-S03/ (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "4 files scanned (package.xml + 3 .profile-meta.xml), 0 failed",
+        "capture": "tests/M2-S03/xml (inline, no separate capture file)"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> file consistency (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Profile type: 3 explicit bare members (Acme Support Tier 1, Acme Support Tier 2, Acme Billing), no wildcard; members derived from filename stems with spaces preserved exactly; file->manifest and manifest->file both clean. Step type access is a metadata type, so this check was required to run rather than skip, and it ran.",
+        "capture": "tests/M2-S03/manifest (inline, no separate capture file)"
+      },
+      {
+        "name": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+        "declared_scope": "step",
+        "run_from": "build directory (skills symlink resolves skills/...; artefacts/M2-S03 resolves as written)",
+        "run_verbatim": true,
+        "deny_list": "clear",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Scanned 3 access-model metadata file(s); 0 finding(s) detected.",
+        "capture": "tests/M2-S03/check_access_model.stdout.txt"
+      },
+      {
+        "name": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+        "declared_scope": "build",
+        "run_from": "build directory (skills symlink resolves skills/...; artefacts resolves as written)",
+        "run_verbatim": true,
+        "deny_list": "clear",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected. Closes M1 F-01 - the first build-scope run where this cross-reference is non-vacuous.",
+        "capture": "tests/M2-S03/check_record_type_layouts.stdout.txt"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs <plan> M2-S03",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "{ok: true, missing: [], empty: [], malformed: []} over all five declared outputs",
+        "capture": "inline (see markdown twin)"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [],
+    "manual_evidence": {
+      "note": "No manual acceptance test is declared on M2-S03 in plan.json. The invocation additionally asked for three file-checkable facts to be verified from disk and reported, not ticked, since they are not a declared plan test:",
+      "no_forbidden_elements": "Confirmed - grep for objectPermissions|fieldPermissions|userPermissions|viewAll across all three .profile-meta.xml files returned no match",
+      "single_default_record_type_per_profile": "Confirmed - Acme Billing: recordTypeVisibilities defaults [false, true] -> Case.Billing default; Acme Support Tier 1: [true, false] -> Case.Support default; Acme Support Tier 2: [true, false] -> Case.Support default. Exactly one default=true in each of the three files.",
+      "three_layout_assignments_per_profile": "Confirmed - layoutAssignments count is 3 in each of the three files"
+    },
+    "plan_text_observation": {
+      "location": "plan.json step M2-S03 acceptance_tests[1].description",
+      "claim": "quotes the expected build-scope checker output as 'Scanned 14 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.'",
+      "actual": "live run printed 'Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.' and the artefacts/ tree independently counts 15 *.xml/*-meta.xml files",
+      "effect": "none on the test verdict - exit 0, 0 findings either way. Reported as plan-text drift, not a test failure."
+    }
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S03 is the step that finally makes the record-type/layout build-scope cross-reference non-vacuous: before it, no layoutAssignments element existed anywhere under artefacts/, so the checker's assertion was declared but never actually exercised across three prior steps' worth of green exits. This run is the first real proof of F-01's closure.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S03/check_record_type_layouts.stdout.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-hygiene",
+      "observation": "The three profile filenames contain spaces (e.g. 'Acme Support Tier 1.profile-meta.xml') and package.xml's bare <members> entries match the filename stems exactly, character for character, so the file<->manifest derivation had no ambiguity to resolve.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03/package.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access-model-hygiene",
+      "observation": "None of the three profiles carries objectPermissions, fieldPermissions, userPermissions or viewAll - every object/field/tab grant genuinely lives in the M2-S02 permission sets as the step's own description claims, rather than the claim and the artefact disagreeing.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03/profiles/"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-drift",
+      "observation": "The M2-S03 acceptance test's own description text predicts the build-scope checker will print 'Scanned 14 metadata file(s)'; the live tree now has 15 and the checker printed 15. The exit code and finding count are unaffected, but the description is stale evidence for a future reader comparing predicted vs. actual output.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 15
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "plan-validation",
+      "observation": "set-status printed three plan-wide WARNs about non-standard checker argument forms on M5-S02 and M5-S04 (the pre-existing, not-yet-converged forms standards/build-orchestration.md documents); they touch no M2 step and did not affect this run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "M2-S03 is tested, so the doc keeper is the next stage of the loop for this step.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "A tested step's workbook rows, traceability and deploy-order note need writing/confirming now that M2-S03 closes M1 F-01."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "Another tester run is concurrently in flight on M2-S04 per the invocation's own caution; this run touched only M2-S03's tests/, artefacts/ and envelopes/ paths and made no plan.json edit beyond the single set-status transition for M2-S03.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M2-S04/"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Once every M2 step (including the concurrently-running M2-S04) reaches documented, the milestone-wide record-type/layout and access-model cross-references should be re-verified together."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 5 - the five test types and their runners, the run-verbatim rule, the deny-list, the check-outputs precondition, the metadata-type manifest fail-rather-than-skip rule, and the checker-scope table; section 4 for the access step type"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules binding this invocation - no org write, no auto-chaining, citations mandatory"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope persistence, the atomic-write rule, and the scope guardrails"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Checked against the refusal enum; no refusal condition was met on this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The shape of acceptance_tests[] and outputs[] this agent reads, and the meaning of the scope field as declared intent"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "Envelope shape - the test payload rides in extensions, never as a top-level key"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar the manifest check is judged against - one types block per type, members naming components, and what a wildcard member legitimately means"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format filename-to-metadata-type mapping used to derive each Profile member as the filename stem, spaces preserved, for the three space-containing profile filenames"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checked whether Profile or its members are a coverage-gap type excluded from the manifest check; Profile is a top-level type with a standalone file per member, so no exclusion applied"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "What a manual test line must contain to be tickable; confirmed no manual test is declared on this step so none needed classifying"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then shape a manual test would be checked against; not applicable since M2-S03 declares no manual test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "The skill the step cites and whose scripts/check_access_model.py is the declared step-scope checker"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "The skill the step cites and whose scripts/check_record_type_layouts.py is the declared build-scope --strict checker"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S03 is tested and is the next stage of the loop - its workbook rows, traceability and F-01 closure note need writing"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "Once M2's steps (including the concurrently-running M2-S04) reach documented, the milestone-wide cross-references should be re-verified together"
+    }
+  ]
+}

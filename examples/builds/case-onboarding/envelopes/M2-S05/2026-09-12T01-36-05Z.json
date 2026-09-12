@@ -1,0 +1,298 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T01-36-05Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-36-05Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-36-05Z.json",
+  "outcome": "completed",
+  "summary": "Step M2-S05 (access, owner metadata-builder) executed and set built. build_plan.py next returned it as the only runnable step, its step:M2-S05 human gate is approved, and set-status running was accepted. The owning agent is build-aware (grep count 39), so its Plan was executed inline per Step 6's non-Claude-Code clause at the caller's instruction and it wrote directly under artefacts/M2-S05/ - no relocation was needed. Four declared outputs written, zero undeclared files, zero files outside the step's artefact directory. check-outputs ok. Both envelopes validate.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9's HIGH row is met on every mechanical condition - the step was in next, every required input of the owning agent resolved from the plan, both envelopes validate, check-outputs exited 0, and nothing was written outside artefacts/M2-S05/. It is held at MEDIUM for one reason the HIGH row does not cover and the runner will not paper over: the owning agent's own envelope returned MEDIUM, and a runner cannot be more confident in a step than the agent that built it. The owning agent's optional api_version input also had no plan-level value and was resolved to 62.0 from the sibling manifests - Step 9's MEDIUM row names exactly that case.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M2-S05",
+    "reason": null,
+    "credentials_present": false,
+    "note": "No credential-shaped value appeared in the step's inputs{}, in the bound clarifications (Q13, Q80) or in requirement.md, so nothing required [REDACTED] treatment."
+  },
+  "dimensions_compared": [
+    "runnability",
+    "input-mapping",
+    "artefact-adjudication",
+    "envelope-validation",
+    "status-transition"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-test-execution",
+      "state": "partial",
+      "reason": "The runner does not own the step's molecular tests - step-tester does, per standards/build-orchestration.md section 5. The step's declared checker command was nevertheless run verbatim from the build directory as evidence for the built transition, because check-outputs alone cannot tell a well-formed sharing rule from one that grants nothing. The xml and manifest always-on checks and the manual test were not run.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run /test-build-step M2-S05; the manual test is ticked by a human at the M2 gate from the artefacts on disk."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The amend-step that added deploy-order.md to this step's outputs[] did its job: this is the first M2 step where the deploy-order note is a declared output check-outputs actually confirms, rather than a file the owning agent writes on every run that no reader of plan.json can see.",
+      "domain": "build-loop-health",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step:M2-S05 human gate did the work a gate exists for - set-status running was accepted only because a human had approved it first, and this step is exactly the irreversible-if-wrong kind (record access) the gate is meant to catch.",
+      "domain": "governance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The step's declared manifest acceptance test hard-codes one of the two manifest forms the library documents for a sharing-rules file ('SharingRules:Case as its own <name> block'), which means the plan, not the skill, decided a metadata question - and the skill the step cites recommends the other form.",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "plan.json carries no api_version field at all, so every metadata-builder step has resolved 62.0 from its own default or from a sibling manifest; five steps have now independently reached the same value, which works until one of them does not.",
+      "domain": "plan-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 5
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "observation": "The invoking instruction described this step as building 'the criteria-based sharing rule(s) that let Billing see Billing cases', while the step's own declared manual acceptance test asserts that the only rule shares Support cases to Support_Tier_2 and that no rule names the Billing record type or Billing_Team; the runner followed the plan, which is the artefact the tester and the gate read, and is flagging the divergence rather than resolving it.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M2-S05 is at built; its declared checker, xml, manifest and manual tests have not been run by their owner.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It runs the step's molecular tests and writes tests/M2-S05/results.json, which set-status tested requires and this agent must not write."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M2-S05 is the last pending step in M2; once it is tested and documented the milestone gate becomes decidable.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "It runs the cross-step M2 checks and writes the acceptance report the human needs before the milestone:M2 gate decision."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "The run-time rules binding this invocation: no org write, one step per invocation, no auto-chaining into the tester."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The eight-section shape, the Process Observations requirement and the Citations schema; the confidence rubric this agent's Step 9 overrides."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope persistence, the atomic-write rule and the redaction requirement checked against the echoed inputs."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked at Steps 2, 3 and 5; none fired."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (design-only build_mode; no agent hand-edits plan.json), section 3 (the step:<id> gate), section 4 (the access step type, metadata-builder as its design-only owner, the status machine), section 5 (who owns the tests, the check-outputs precondition on built, the package.xml declaration rule and the checker-scope rules behind this step's build-scoped test), section 8 (the plan CLI is the only writer of derived state)."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "The steps[] fields this agent reads and the ones it writes only through build_plan.py."
+    },
+    {
+      "type": "standard",
+      "id": "agents/metadata-builder/AGENT.md",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "Step 4's read of the owning agent's Inputs table and Output Contract, and the Plan executed inline at the caller's instruction."
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Judging that sharingRules/Case.sharingRules-meta.xml sits in the directory-per-type shape a later deploy and the tester's manifest check can read - and noting that this skill documents no sharingRules mapping of its own."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "Confirming the step's declared outputs[] are deployable metadata (SharingRules) plus two documentation files that are correctly not in the manifest."
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "The workbook row schema behind the step's inputs{} - target_value, recommended_skills[], source_req_id - mapped onto the owning agent's Inputs rather than paraphrasing the step title at it."
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "The Qnn / assumption-id conventions echoed into the envelope (Q13, Q80, A1, A26) so the doc keeper can join step to requirement without re-deriving the link."
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "The credential shapes checked for in the step's inputs{}, the bound clarifications and requirement.md before anything was echoed into a git-adjacent envelope; none were present."
+    },
+    {
+      "type": "probe",
+      "id": "scripts/build_plan.py",
+      "path": "scripts/build_plan.py",
+      "used_for": "next, set-status running, check-outputs and set-status built - the only writer of plan state this agent touched."
+    },
+    {
+      "type": "probe",
+      "id": "scripts/validate_envelope.py",
+      "path": "scripts/validate_envelope.py",
+      "used_for": "Validating both envelopes stored under envelopes/M2-S05/."
+    },
+    {
+      "type": "probe",
+      "id": "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py",
+      "path": "skills/admin/sharing-and-visibility/scripts/check_sharing_model.py",
+      "used_for": "The step's declared checker command, run verbatim from the build directory as evidence for the built transition."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns M2-S05's declared checker, xml, manifest and manual tests and writes tests/M2-S05/results.json; this agent ran the checker command only as evidence and never wrote a results file."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M2-S05 is tested it updates PLAN.md, the workbook rows, decisions.md and traceability.md - including the manifest-form divergence this step recorded."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S05",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "build_awareness_probe": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md -> 39",
+    "invocation_mode": "inline (Step 6 'any other host' clause, at the caller's explicit instruction to follow the owning agent's AGENT.md directly rather than spawning a subagent; testers may be running concurrently on M2-S02/M2-S03)",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-27-40Z.json",
+    "input_map": {
+      "build_dir": {
+        "value": ".sfskills/builds/case-onboarding/",
+        "source": "caller",
+        "required": true
+      },
+      "step_id": {
+        "value": "M2-S05",
+        "source": "caller",
+        "required": true
+      },
+      "api_version": {
+        "value": "62.0",
+        "source": "not in plan.json (no api_version field); the owning agent's documented fallback, corroborated by every sibling manifest in this build",
+        "required": false
+      }
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S05/case-visibility-model.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S05/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M2-S05/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "files_outside_step_directory": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "declared_checker_run": {
+      "command": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts",
+      "cwd": ".sfskills/builds/case-onboarding (the skills symlink resolves the checker path; artefacts resolves the manifest dir)",
+      "scope": "build",
+      "exit_code": 0,
+      "stdout_summary": "score 100, 0 findings, 'Scanned 10 sharing-model metadata file(s) (1 object OWD(s) resolved); 0 finding(s) detected.'",
+      "baseline_before_this_step": "9 file(s), 1 object OWD resolved, 0 findings, exit 0 - so the one file this step added introduced no finding"
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S05 running --started 2026-09-12T01:24:36Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M2-S05 built --run-agent metadata-builder --envelope envelopes/M2-S05/2026-09-12T01-27-40Z.json --result \"Built: sharingRules/Case.sharingRules-meta.xml (one criteria rule Support_Cases_To_Tier_2, RecordTypeId equals Support, includeRecordsOwnedByAll true, Edit to Support_Tier_2), package.xml (SharingRules:Case), case-visibility-model.md, deploy-order.md. No OWD and no Sharing.settings file (B01). check-outputs ok; all cited checkers exit 0 first pass.\" --started 2026-09-12T01:24:36Z"
+    ],
+    "terminal_status": "built",
+    "envelope_validation": {
+      "owning_agent_envelope": "OK (after the owning agent's own Step 11 self-repair: its decision_tree citation initially omitted the required branch field, which it fixed and re-validated before the envelope was stored)",
+      "runner_envelope": "validated before returning"
+    },
+    "workflow_return": {
+      "step_id": "M2-S05",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/case-visibility-model.md",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/package.xml",
+        ".sfskills/builds/case-onboarding/artefacts/M2-S05/deploy-order.md"
+      ],
+      "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2-S05/2026-09-12T01-36-05Z.json",
+      "notes": "Owning agent returned MEDIUM confidence; two data values (the RecordTypeId criterion value format and the package.xml type name) are grounded by worked example rather than by element table and are the two things a mock deploy would settle."
+    }
+  }
+}

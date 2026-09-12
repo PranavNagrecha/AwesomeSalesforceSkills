@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "step": "M2-S02",
+  "missing": [],
+  "empty": [],
+  "malformed": []
+}

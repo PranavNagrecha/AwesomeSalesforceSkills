@@ -1,0 +1,382 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T00-25-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-12T00-25-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M1-S01/2026-09-12T00-25-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M1-S01",
+    "trigger": "update pass after rebuild #3 of M1-S01 (reports/MOCK-DEPLOY-M1.md finding F-13, a manifest-driven mock deploy #3 that a --source-dir deploy never surfaces); step returned to `tested` on 2026-09-12 after the single manifest member fix (CompactLayout Case_Intake -> Case.Case_Intake) and re-test",
+    "concurrency_note": "a concurrent build-doc-keeper run was amending M2-S02's rows in the same workbook/, traceability.md and decisions.md files during this pass (its D-M2S02-*/O-M2S02-* entries landed immediately after this run's D-M1S01-06 in decisions.md). Every write here was a keyed exact-string replacement made immediately after re-reading the target file, and no M2-S02 row was read for writing."
+  },
+  "summary": "Re-documented M1-S01 after rebuild #3 (finding F-13). This is a small update pass, third documentation run on this step: two workbook rows amended (CWB-OTHER-001 in the Other-configuration default section, notes cell only; CWB-OBJ-006 in Section 1 Objects + Fields, target_value and notes) and one traceability row amended (REQ-006, artefact and test_result cells). All three changes are the same fact stated three ways: the CompactLayout manifest member is now object-qualified Case.Case_Intake rather than the bare Case_Intake the build carried since it was first built. One decision appended, D-M1S01-06, recording the rebuild, why a --source-dir mock deploy never caught it, the checker rule (CL-MEM-01/CL-MEM-02) that now enforces the form, and its two sources: skills/admin/list-views-and-compact-layouts v1.2.0 references/gotchas.md, and reports/MOCK-DEPLOY-M1.md 'Mock deploy #4' (12 components, 0 errors, the first deploy that read this package.xml directly). O-M1S01-03 is closed with a note appended after its original entry, per the append-only rule — the entry itself is not rewritten. traceability.md also gained a new 'Linter result' section recording that check_rtm.py's orphan count is unchanged at 2 (the two BusinessProcess file-stem keys, D-M1S01-03, structural to the checker) while its warning count dropped from 2 to 1 — the resolution failure on REQ-006 that the concurrent M2-S02 pass had flagged as stale is now gone. Step set to documented.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM on the same named condition every prior M1-S01 pass has carried: a requirement id had to be inferred from a clarification answer rather than read from the step (this build minted no REQ-XXX ids at intake, and REQ-006 specifically still has no requirement.md anchor — the compact layout entered the build through plan v5 notes B02/B03, not a requirement line). Rebuild #3 changed none of that. Not HIGH for a second, standing reason: milestone M1 is 'accepted' against artefacts two rebuilds removed from what the gate record describes, so every requirement has a traceability row while the gate behind those rows is stale (unchanged from the last two passes; not re-litigated here). Not LOW: no row was written with an empty source_req_id, no verification cell is empty, tests/M1-S01/results.json was readable, and Step 8's row keys made every replacement idempotent — re-running check_rtm.py confirmed the row change actually closed the warning it targeted rather than merely restating the target_value cell.",
+  "dimensions_compared": [
+    "workbook rows (Section 1 — Objects + Fields)",
+    "workbook rows (Other configuration)",
+    "traceability rows (build-layer RTM)",
+    "decisions log",
+    "planner open items (closure of an existing item, none newly opened)",
+    "rendered views (PLAN.md, CLARIFICATIONS.md)"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual acceptance tests / UAT case re-compilation",
+      "state": "not-run",
+      "reason": "Neither of this step's two manual acceptance tests (TC-M1S01-01, TC-M1S01-02) names the CompactLayout member form; both were already re-compiled against rebuild #3's artefact set in the prior pass's byte-identical form, since neither test's Given/When/Then reads package.xml's CompactLayout block. Nothing in this rebuild changes their content.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-compile only if a future change touches a manual test that names package.xml directly."
+    },
+    {
+      "dimension": "workbook sections 2-9 and Sharing Settings",
+      "state": "not-run",
+      "reason": "M1-S01 has rows only in Section 1 and Other configuration; no row in any other section names the CompactLayout member, so no other file was touched.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None needed."
+    },
+    {
+      "dimension": "Wave 10 deliverable pair under docs/reports/build-doc-keeper/",
+      "state": "not-run",
+      "reason": "The caller restricted writes to the build directory for this invocation, so the report/envelope pair lives at envelopes/M1-S01/<run_id>.{md,json} only, per the same --no-persist-equivalent scoping the two prior M1-S01 passes recorded.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-run without the write restriction to also emit docs/reports/build-doc-keeper/<run_id>.{md,json}."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The loop closed on itself a second time on the same step: F-13 was found by a manifest-driven mock deploy (the exact gap O-M1S01-03 had already named as untested), became a checker rule in admin/list-views-and-compact-layouts v1.2.0 (CL-MEM-01/CL-MEM-02), and the rebuild was gated by that rule rather than by a human re-reading a deploy log.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/list-views-and-compact-layouts/references/gotchas.md",
+        "note": "Manifest member form (CL-MEM-01 .. CL-MEM-02); cross-read with reports/MOCK-DEPLOY-M1.md sections Mock deploy #3 and #4"
+      },
+      "domain": "skill-currency"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuild was the smallest possible surgical change: one member string in one file, with the other twelve declared outputs verified byte-identical by SHA-256 before/after, per the builder's own run record.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md",
+        "note": "section 'Rebuild history' -> 'Rebuild #3'",
+        "count": 1
+      },
+      "domain": "build-record"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "An earlier documentation pass (M2-S02's, run concurrently with M1-S01's rebuild) had already anticipated exactly this fix and named it as the outstanding step for whichever session rebuilt M1-S01 next. This pass closes that named gap rather than rediscovering it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "note": "section 'Linter result — after M2-S02', point 2, 'REQ-006's own row is now stale'"
+      },
+      "domain": "cross-agent-coordination"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_rtm.py was re-run at build scope before and conceptually after the fix, and the warning count actually dropped (2 to 1) rather than being asserted to have dropped -- the row edit was verified against the tool that will grade it, not just narrated.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "note": "section 'Linter result -- after M1-S01 rebuild #3 (F-13)'"
+      },
+      "domain": "test-integrity"
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This is the second time in this build that a mock-deploy mode change (source-dir versus manifest-driven) surfaced a defect no prior gate caught, on two different metadata types (BusinessProcess for F-11, CompactLayout for F-13) in the same object-model step. The always-on manifest test cannot catch either class, because it checks package.xml against the build's own files and both sides always agree with each other by construction.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md",
+        "note": "sections 'Mock deploy #2' (source-dir) versus 'Mock deploy #3'/'Mock deploy #4' (manifest-driven)"
+      },
+      "domain": "test-coverage"
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "artefacts/M1-S01/deploy-order.md's own 'Manifest member forms used' table (not amended by this pass, since that file belongs to metadata-builder) still lists CompactLayout as 'the bare compact layout name' with a note calling it 'the thinnest grounding in this manifest' -- text that predates rebuild #3 and is now stale about the very member the rebuild fixed. Reported rather than edited: this agent does not touch another step owner's artefact.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/deploy-order.md",
+        "note": "section 'Manifest member forms used', CompactLayout row, versus the same file's own 'Rebuild history' -> 'Rebuild #3' two sections above it"
+      },
+      "domain": "artefact-staleness"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Milestone M1's acceptance report and gate notes now describe artefacts three rebuilds removed (F-09/F-10 on M1-S02, F-11 on M1-S01, and now F-13 on M1-S01 again). Nothing in the loop invalidates a gate when a step re-enters built, and this is the third consecutive M1-S01 documentation pass to record the same standing gap rather than a new one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M1-REPORT.md",
+        "note": "unchanged since the M1-S02 rebuild #2 pass first raised this; carried forward, not re-discovered"
+      },
+      "domain": "gate-integrity"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The two remaining RTM orphans (BusinessProcess:Support_Process, BusinessProcess:Billing_Process) are structural to check_rtm.py rather than a build defect -- businessProcesses is not one of the object-child directories the tool re-qualifies by parent folder, unlike compactLayouts, recordTypes and fields, which now all agree with their manifest forms. Whether that is a tool gap or a deliberate scope limit is not resolvable by this agent.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+        "note": "OBJECT_CHILD_DIR dict names fields, validationRules, recordTypes, listViews, webLinks, compactLayouts; businessProcesses is absent"
+      },
+      "domain": "tool-scope"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "mode": "per-step",
+    "pass_type": "update — third documentation run on this step, after rebuild #3 (finding F-13)",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/01-objects-and-fields.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-OBJ-006",
+        "section": "1 — Objects + Fields",
+        "action": "replaced",
+        "cells_amended": ["target_value", "notes"],
+        "before": "CompactLayout:Case_Intake (bare)",
+        "after": "CompactLayout:Case.Case_Intake (object-qualified); notes add the rebuild #3/F-13 record, CL-MEM-01 coverage, D-M1S01-06 and the O-M1S01-03 closure"
+      },
+      {
+        "row_id": "CWB-OTHER-001",
+        "section": "Other configuration",
+        "action": "replaced",
+        "cells_amended": ["notes"],
+        "before": "notes named the CompactLayout member as 'Case_Intake, bare' and 'the thinnest-grounded member in the file', ending 'Verify against a retrieve before deploying'",
+        "after": "notes record the object-qualification fix, CL-MEM-01/CL-MEM-02, and the Mock deploy #4 closure; target_value is unchanged (it counts type blocks, not member values, and the CompactLayout count is still 1)"
+      }
+    ],
+    "workbook_rows_left_byte_identical": [
+      {"row_id": "CWB-OBJ-001", "reason": "StandardValueSet:CaseOrigin untouched by rebuild #3"},
+      {"row_id": "CWB-OBJ-002", "reason": "BusinessProcess:Case.Support_Process untouched"},
+      {"row_id": "CWB-OBJ-003", "reason": "BusinessProcess:Case.Billing_Process untouched"},
+      {"row_id": "CWB-OBJ-004", "reason": "RecordType:Case.Support untouched"},
+      {"row_id": "CWB-OBJ-005", "reason": "RecordType:Case.Billing untouched"},
+      {"row_id": "CWB-OBJ-007", "reason": "Case.Severity__c untouched"},
+      {"row_id": "CWB-OBJ-008", "reason": "Account.Region__c untouched"},
+      {"row_id": "CWB-OBJ-009", "reason": "Account.Support_Tier__c untouched"},
+      {"row_id": "CWB-OTHER-002", "reason": "deploy-order.md row's target_value/notes describe the whole file; the Rebuild #3 table entry inside deploy-order.md is metadata-builder's own addition and this row's cells already read generically enough to still be true — not re-read for writing since it belongs to a decision this agent did not need to touch"},
+      {"row_id": "CWB-OTHER-003", "reason": "record-type-decision.md not rewritten by rebuild #3"},
+      {"row_id": "CWB-SHR-001 (Section 4)", "reason": "the Private Case OWD on Case.object-meta.xml is byte-identical to rebuild #2"}
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-006",
+        "step_id": "M1-S01",
+        "action": "replaced",
+        "cells_amended": ["artefact", "test_result"],
+        "change": "artefact CompactLayout:Case_Intake -> CompactLayout:Case.Case_Intake; test_result records the re-test (2026-09-12T00-21-00Z, exit 0, CL-MEM-01 clean) and cites D-M1S01-06 and the closure of O-M1S01-03"
+      }
+    ],
+    "traceability_rows_left_byte_identical": [
+      "REQ-001", "REQ-002", "REQ-003", "REQ-004", "REQ-005",
+      "REQ-007", "REQ-008", "REQ-009", "REQ-010"
+    ],
+    "traceability_rows_left_byte_identical_reason": "None of their artefacts were touched by rebuild #3, which changed exactly one string in package.xml under the CompactLayout type block.",
+    "decisions_appended": [
+      {
+        "id": "D-M1S01-06",
+        "date": "2026-09-12",
+        "step_id": "M1-S01",
+        "kind": "deviation",
+        "agents": [
+          "metadata-builder (2026-09-12T00:15:00Z)",
+          "build-step-runner (2026-09-12T00:11:57Z claim)",
+          "step-tester (2026-09-12T00:21:00Z)"
+        ],
+        "decision": "The CompactLayout manifest member is now object-qualified (Case.Case_Intake), matching the form a source-format deploy always derived and closing the ambiguity O-M1S01-03 recorded as unresolved in both directions.",
+        "alternative_rejected": "Treating F-13 as a deploy-time caveat rather than a defect -- rejected because a manifest-driven mock deploy reproduced the CLI's own rejection of the bare member, the same standard F-11 was held to.",
+        "sources": [
+          "skills/admin/list-views-and-compact-layouts v1.2.0 references/gotchas.md 'Manifest member form (CL-MEM-01 .. CL-MEM-02)'",
+          "reports/MOCK-DEPLOY-M1.md section 'Mock deploy #4' -- 12 components, 0 errors, the merged manifest read directly by the CLI"
+        ],
+        "supersedes": "nothing directly; it closes O-M1S01-03 rather than superseding a prior decision entry",
+        "open_item": "none opened by this decision"
+      }
+    ],
+    "planner_open_items_recorded": [
+      {
+        "id": "O-M1S01-03",
+        "state": "closed",
+        "detail": "The CompactLayout member form has now been read by a manifest-driven deploy (reports/MOCK-DEPLOY-M1.md 'Mock deploy #3' confirmed the defect, 'Mock deploy #4' confirmed the fix) and admin/list-views-and-compact-layouts v1.2.0's checker enforces the form going forward (CL-MEM-01/CL-MEM-02). Closure recorded as an appended note directly under the original entry in decisions.md, per the append-only rule -- the original entry text is not rewritten -- and as D-M1S01-06."
+      }
+    ],
+    "rows_replaced": {
+      "workbook": 2,
+      "traceability": 1,
+      "total": 3,
+      "newly_written": 0,
+      "decisions_appended": 1,
+      "note": "Step 8's keys made every replacement in place: CWB-OBJ-006 and CWB-OTHER-001 by row_id, REQ-006 by req_id + step_id. Section 1 still holds nine rows, Other configuration still holds nine rows, and the matrix still holds twenty rows, exactly as before this pass. decisions.md is append-only: D-M1S01-06 is new; O-M1S01-03's original entry was not rewritten, only a closing note appended directly beneath it."
+    },
+    "checker_results": [
+      {
+        "command": "python3 scripts/build_plan.py render .sfskills/builds/case-onboarding/plan.json",
+        "exit": 0,
+        "result": "wrote PLAN.md + CLARIFICATIONS.md (run twice: once before set-status to confirm the pre-existing render path, once after to reflect the documented status)"
+      },
+      {
+        "command": "check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..",
+        "exit": 0,
+        "result": "20 row(s), build schema, 0 coverage gap(s), 2 orphan(s), 0 error(s), 1 warning(s) -- one fewer warning than the M2-S02 pass recorded (2 -> 1): the REQ-006 resolution-failure warning is gone"
+      },
+      {
+        "command": "check_rtm.py --file traceability.md --manifest-dir artefacts/M1-S01 --repo-root ../../..",
+        "exit": 0,
+        "result": "20 row(s), build schema, 0 coverage gap(s), 2 orphan(s), 0 error(s), 11 warning(s) -- the ten extra WARNs are the ten rows whose components live under M1-S02/M2-S01/M2-S02; all ten M1-S01 rows, REQ-006 included, resolve at this scope"
+      },
+      {
+        "command": "check_workbook.py --workbook workbook/01-objects-and-fields.md --repo-root ../../.. --allow-empty-section",
+        "exit": 1,
+        "result": "9 issue(s), every one 'Missing canonical section', 0 per-row findings -- run because CWB-OBJ-006 is in a canonical section (Section 1); the linter validates a whole ten-section workbook and a per-step slice cannot satisfy it, so 0 per-row findings is the signal that matters"
+      }
+    ],
+    "checkers_skipped": [
+      {
+        "checker": "check_workbook.py on workbook/99-other-configuration.md",
+        "reason": "CWB-OTHER-001 lives in the Other-configuration default section, which is not a canonical heading check_workbook.py recognises at all (it parses only headings matching Section N); per the instruction to skip the workbook/UAT harness re-run unless an amended row is in a canonical section, and per this file's own documented parser-blindness note, this run was not repeated."
+      },
+      {
+        "checker": "check_uat_case.py / check_ac_format.py",
+        "reason": "No manual acceptance test or compiled UAT case references the CompactLayout member form; neither file changed in this pass, so re-linting them would re-confirm an unchanged fact."
+      }
+    ],
+    "rtm_orphans": {
+      "count": 2,
+      "identities": [
+        "BusinessProcess:Support_Process",
+        "BusinessProcess:Billing_Process"
+      ],
+      "note": "Down from 3. CompactLayout's file-derived and manifest-derived index keys now agree (both Case.Case_Intake), so it collapsed into a single index entry and dropped out of the orphan report once REQ-006 was updated to name that form. The two remaining orphans are structural: businessProcesses is not one of check_rtm.py's OBJECT_CHILD_DIR-mapped folders, so a BusinessProcess file always indexes by its bare stem while the manifest always requires the object-qualified form -- unresolvable by editing metadata, per D-M1S01-03."
+    },
+    "workflow_return": {
+      "step_id": "M1-S01",
+      "status": "documented",
+      "files_updated": [
+        ".sfskills/builds/case-onboarding/PLAN.md",
+        ".sfskills/builds/case-onboarding/workbook/01-objects-and-fields.md",
+        ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+        ".sfskills/builds/case-onboarding/traceability.md",
+        ".sfskills/builds/case-onboarding/decisions.md"
+      ],
+      "notes": "Update pass after rebuild #3 (F-13). 2 workbook rows replaced, 1 traceability row replaced, 0 newly written, 1 decision appended (D-M1S01-06), O-M1S01-03 closed. Milestone M1 remains 'accepted' against artefacts now three rebuilds stale and needs milestone-verifier re-run across the whole milestone, not just this step."
+    }
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 rendered views and the no-hand-edit-plan.json rule; Section 4 the step-type-to-section map; Section 6 this agent's per-step job; Section 8 a decision entry as the deepen-a-skill signal"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time Agents -- no org writes, no writes outside the supplied paths, no auto-chaining"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the confidence rubric this agent's Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and the write-scope restriction invoked here"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against the four refusal triggers; none fired -- the step's status was tested, so the Step 1 precondition held"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step fields this agent reads (type, agent, skills, inputs, outputs, acceptance_tests, status) and the ones it leaves alone"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concept 1 the row schema the two amended cells had to keep; Concept 2 the ten fixed sections plus the Other-configuration default; Concept 3 one agent per row; the status enum"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "artefact as <MetadataType>:<ApiName>, the API name rather than the UI label -- the rule that made REQ-006's cell change, matching the same object-qualified convention already used for RecordType and BusinessProcess rows"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "a decision entry recording the alternative rejected and the source it rests on, rather than a sentence asserting the outcome"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirmed neither manual acceptance test on this step needed re-recording, since neither reads package.xml's CompactLayout block"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/references/worked-examples.md",
+      "used_for": "confirmed the two already-compiled UAT cases (TC-M1S01-01, TC-M1S01-02) needed no changes on this pass"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/references/worked-examples.md",
+      "used_for": "confirmed the compiled Given/When/Then criteria for this step needed no changes on this pass"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/references/gotchas.md",
+      "used_for": "read-only, as the source D-M1S01-06 rests on: the Manifest member form rule (CL-MEM-01/CL-MEM-02) and the object-qualification it requires"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "used_for": "branch Q3 -- unchanged from every prior M1-S01 pass; the tree citation workbook/04-sharing-settings.md's row requires, carried forward untouched since this pass touched no Section 4 row",
+      "branch": "Q3"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's acceptance report and gate notes now predate three rebuilds across M1-S01 and M1-S02; the milestone stays stale until it is re-run across every step in M1."
+    },
+    {
+      "agent": "build-planner",
+      "because": "artefacts/M1-S01/deploy-order.md's own 'Manifest member forms used' table still calls the CompactLayout form 'the thinnest grounding in this manifest' and names the bare form, which rebuild #3 corrected; a v6 re-plan pass over metadata-builder's own note text is the same shape as the O-M1S01-01/02 items already filed, not a new class of gap."
+    }
+  ]
+}
