@@ -1,0 +1,1055 @@
+{
+  "scope": {
+    "in": [
+      "Detect a Case whose owner changes to the Tier_2_Engineering queue, in an after-update context, and act within a minute of the save (requirement para 1; Q9, Q13).",
+      "POST one JSON notification per escalated Case to the on-call tool's HTTPS REST endpoint, carrying case number, severity, subject and a link back to the Case (requirement para 1; Q1, Q30, Q31).",
+      "Authenticate that call through a SecuredEndpoint Named Credential over a separate External Credential with a named principal, so the API key never appears in code or a custom setting (requirement para 4; Q2, Q3, Q4, Q5, Q6, Q25).",
+      "Classify the response: retry 429/502/503/504 and connection timeouts up to three times with backoff; write the failure record immediately on 400/401/403/404/422 (requirement para 2; Q7, Q15).",
+      "Send an Idempotency-Key header built from the Case Id and the escalation timestamp so a retry cannot double-page (Q8).",
+      "Publish a Tier2_Escalation__e platform event with PublishAfterCommit for the external ops dashboard, and check the publish result rather than assuming delivery (requirement para 2; Q10, Q11, Q12, Q39).",
+      "Create Integration_Failure__c with the diagnostic field set Q18 names, the restricted Status and Severity picklists Q17 fixes, and a Resend checkbox (requirement para 3; Q16, Q17, Q18).",
+      "Stamp Case.Tier2_Notified_At__c when the webhook succeeds, and skip a Case already stamped inside the last ten minutes, so a re-save does not re-page (Q14).",
+      "Grant the External Credential principal and Integration_Failure__c CRUD/FLS through a Tier2_Webhook_Admin permission set (Q19, Q20, Q23).",
+      "Re-send a failed notification when a Support Engineering admin ticks Resend on the failure record (requirement para 3; Q20).",
+      "Run an hourly channel-health check that emails Support Engineering when more than three failures land in an hour, or when no success has occurred in 24 hours while escalations exist (Q24).",
+      "Ship every artefact in one build-level package.xml with a written deploy order, including the Apex members the apex-builder steps cannot manifest themselves (Q25; standards/build-orchestration.md section 5, The Apex exception)."
+    ],
+    "out": [
+      "Any customer-facing change. The requirement states 'No customer-facing change' and Q44 confirms the audience is internal employees only, with no Experience Cloud or partner licence implication; nothing in this plan touches a site, a customer-visible layout or an external email.",
+      "The ops dashboard's Pub/Sub API subscriber, its authenticating principal, its IP allowlisting, its login-hour policy and its service-account ownership. Q32, Q33, Q34, Q35 and Q37 each record the subscription as already established and owned by the dashboard's own team.",
+      "Salesforce-side deduplication of the escalation event. Q12: the dashboard team dedupes on case number plus escalation time and accepts duplicate events, so no dedupe is built here.",
+      "Outbound Message / Workflow Rule mechanics - WSDL version, sending user, includeSessionId and the dead letter queue permission. Q26, Q27, Q28 and Q29 are all moot once Q2 rejected Outbound Message in favour of a Named-Credential Apex callout.",
+      "An in-Salesforce report or dashboard on notification failure rates. Q45: none requested beyond the external ops dashboard the platform event feeds.",
+      "Creating or changing the Tier_2_Engineering queue and the escalation rule that fills it. The requirement's closing paragraph states the existing case-intake build already provides them and this build may assume the queue exists (see assumption A8).",
+      "Verifying the org-wide email address support-noreply@acme.example. Q24 records it as a deploy prerequisite, and skills/admin/email-templates-and-alerts states that org-wide email addresses have no metadata type, so nothing in this build can deploy or verify it (see assumption A4).",
+      "Flow-based alternatives for the triggering automation and their fault routing. Q40, Q41 and Q42 are each conditional on choosing Flow, and decision D8 chose Apex.",
+      "Apex managed sharing, sharing rules or a criteria-based rule on Integration_Failure__c. Decision D12 settles record visibility with a Private OWD plus an object-scoped grant on one narrow admin permission set instead."
+    ],
+    "fit_gap": [
+      {
+        "requirement": "Notify the on-call tool within a minute of a Tier 2 escalation, with retry and a visible failure record",
+        "verdict": "partial",
+        "steps": [
+          "M1-S03"
+        ],
+        "note": "The platform supplies the callout surface (Queueable with Database.AllowsCallouts) and the credential vault; the detection, the status-code classification, the Finalizer-guaranteed failure record and the resend path are all code. Tiered Custom because the whole delivery path is the Apex step M1-S03. Effort is base(Custom)=L plus the risk multiplier for customization-debt, so XL; the scope multiplier does not apply (three sObjects, not more than three, and one internal-employee persona class per Q44).",
+        "tier": "Custom",
+        "effort": "XL",
+        "risk_tag": [
+          "customization-debt"
+        ],
+        "recommended_agents": [
+          "apex-builder"
+        ],
+        "skills": [
+          "apex/callouts-and-http-integrations",
+          "apex/apex-queueable-patterns",
+          "apex/apex-named-credentials-patterns",
+          "apex/apex-hardcoded-id-elimination"
+        ]
+      },
+      {
+        "requirement": "Publish an escalation event the existing external ops dashboard can consume",
+        "verdict": "fit",
+        "steps": [
+          "M1-S01",
+          "M1-S03"
+        ],
+        "note": "Platform Events cover this as shipped: the event definition is declarative metadata written in M1-S01 and the publish is one EventBus call. Tiered Custom rather than Configuration because M1-S03, an Apex step, is in the delivery path and the tier follows the mechanism that actually ships the capability; that also keeps this row in agreement with the two other rows pointing at M1-S03. Effort base(Custom)=L with no multiplier.",
+        "tier": "Custom",
+        "effort": "L",
+        "risk_tag": [],
+        "recommended_agents": [
+          "metadata-builder",
+          "apex-builder"
+        ],
+        "skills": [
+          "apex/platform-events-apex"
+        ]
+      },
+      {
+        "requirement": "A visible failure record an admin can see, triage and re-send from",
+        "verdict": "partial",
+        "steps": [
+          "M1-S01",
+          "M1-S03"
+        ],
+        "note": "A custom object with a Resend checkbox is configuration; making the tick do something is not, so the row is partial and the delivery path reaches Apex in M1-S03. Tiered Custom, in agreement with the other rows on M1-S03. Effort base(Custom)=L with no multiplier: risk_tag is empty because the governance question the tag exists for - who is allowed to re-page on-call - is closed by Q20's named owner rather than left open.",
+        "tier": "Custom",
+        "effort": "L",
+        "risk_tag": [],
+        "recommended_agents": [
+          "metadata-builder",
+          "apex-builder"
+        ],
+        "skills": [
+          "admin/object-creation-and-design",
+          "admin/picklist-and-value-sets",
+          "flow/flow-error-monitoring"
+        ]
+      },
+      {
+        "requirement": "The on-call tool's API key must never be stored in code or in a custom setting",
+        "verdict": "fit",
+        "steps": [
+          "M1-S02"
+        ],
+        "note": "External Credential plus Named Credential is the platform's own answer, and the secret is entered in Setup against the principal after deploy rather than shipped. Point-and-click metadata with no formula language and no Flow, so Configuration; effort base(Configuration)=S with no multiplier.",
+        "tier": "Configuration",
+        "effort": "S",
+        "risk_tag": [],
+        "skills": [
+          "apex/apex-named-credentials-patterns",
+          "admin/permission-set-architecture"
+        ]
+      },
+      {
+        "requirement": "Alert a named owner when the notification channel itself goes dark, not only when one delivery fails",
+        "verdict": "partial",
+        "steps": [
+          "M1-S04"
+        ],
+        "note": "Nothing on the platform reports a dead channel on its own. An hourly clock plus two threshold queries plus an email is a Schedulable Apex job per decision D11, so the delivery path is Apex and the tier is Custom; effort base(Custom)=L with no multiplier. The org-wide sender it needs is a deploy prerequisite, not a build artefact (assumption A4).",
+        "tier": "Custom",
+        "effort": "L",
+        "risk_tag": [],
+        "recommended_agents": [
+          "apex-builder"
+        ],
+        "skills": [
+          "apex/apex-scheduled-jobs",
+          "flow/flow-error-monitoring"
+        ]
+      },
+      {
+        "requirement": "The build deploys as one reviewable unit: a manifest that carries every member, and a written deploy order",
+        "verdict": "fit",
+        "steps": [
+          "M1-S05"
+        ],
+        "note": "A delivery requirement rather than a business one: it comes from Q25 (one Named Credential API name across every org, so the manifest is the portable unit) and from standards/build-orchestration.md section 5, whose Apex exception makes a build-level manifest the only place the ApexClass and ApexTrigger members can live. Configuration tier, effort base(Configuration)=S.",
+        "tier": "Configuration",
+        "effort": "S",
+        "risk_tag": [],
+        "skills": [
+          "admin/change-management-and-deployment"
+        ]
+      }
+    ]
+  },
+  "assumptions": [
+    {
+      "id": "A1",
+      "text": "No documented as-is process is being replaced: the plan treats the on-call notification as a new automated channel and removes no existing manual paging step.",
+      "because": "Q43 is informational, open, and carries no proposed default - the as-is step list was never supplied.",
+      "risk": "low",
+      "steps": [
+        "M1-S03"
+      ]
+    },
+    {
+      "id": "A2",
+      "text": "The escalation Queueable runs as the async context user - the Salesforce user whose save enqueued it - not as the Automated Process entity, so Tier2_Webhook_Admin must be assigned to every user who can escalate a Case to Tier 2, not only to the three Support Engineering admins Q19 names.",
+      "because": "Q23 asserts the Automated Process entity and asks the plan to settle it. skills/apex/apex-user-and-permission-checks states the async context user is 'often the user who fired the async, but for scheduled jobs the scheduler, for platform events the Automated Process user' - a trigger-enqueued Queueable is neither of the two exceptions - and skills/flow/flow-and-platform-events records that Automated Process 'has no profile and no permission set assignments', so the grant Q19 describes cannot be made to it. UNVERIFIED: the word 'often' is the library's own hedge; confirm in a scratch org before go-live.",
+      "risk": "high",
+      "steps": [
+        "M1-S02",
+        "M1-S03"
+      ]
+    },
+    {
+      "id": "A3",
+      "text": "Integration_Failure__c ships with a Private org-wide default, and the three Support Engineering admins reach every failure row through object-scoped View All Records / Modify All Records on Tier2_Webhook_Admin rather than through a sharing rule.",
+      "because": "Q19 and Q20 answer CRUD/FLS and the resend owner but not record visibility. Decision D12 settles it from standards/decision-trees/sharing-selection.md.",
+      "risk": "medium",
+      "steps": [
+        "M1-S01",
+        "M1-S02"
+      ]
+    },
+    {
+      "id": "A4",
+      "text": "The org-wide email address support-noreply@acme.example already exists and is verified in the target org before this build deploys; the health-check Apex references it and does not create it.",
+      "because": "Q24 names it as a deploy prerequisite, and skills/admin/email-templates-and-alerts states that org-wide email addresses have no metadata type, so no step can ship one.",
+      "risk": "medium",
+      "steps": [
+        "M1-S04"
+      ]
+    },
+    {
+      "id": "A5",
+      "text": "The External Credential's AuthHeader parameterValue formula that injects the stored API key into the X-API-Key header is written in the scoped {!$Credential.<ExternalCredential>.<ParameterName>} form.",
+      "because": "skills/apex/apex-named-credentials-patterns/references/code-examples.md section 1 marks that grammar UNVERIFIED (2026-09-05): the Metadata API guide says the field is 'a formula of a header value that is evaluated at run time' but publishes no grammar for it. The header name and the AuthHeader parameter type are documented and are not assumed.",
+      "risk": "high",
+      "steps": [
+        "M1-S02"
+      ]
+    },
+    {
+      "id": "A6",
+      "text": "The on-call tool takes one incident POST per escalated Case; it exposes no batch endpoint, so the Queueable makes one callout per Case Id it carries.",
+      "because": "Q31 describes a small per-escalation JSON payload and Q8 an idempotency key scoped to a single Case; no answer describes a batch contract. Worst burst is 50 in five minutes (Q22), inside the 100-callouts-per-transaction ceiling.",
+      "risk": "medium",
+      "steps": [
+        "M1-S03"
+      ]
+    },
+    {
+      "id": "A7",
+      "text": "The API names are OnCall_Tool (Named Credential), OnCall_Tool_EC (External Credential) and OnCallToolNamedPrincipal (principal), identical in every target org with only the Url parameter differing.",
+      "because": "Q25's answer begins 'e.g. OnCall_Tool' - an example rather than a confirmed name - while confirming the same-name-everywhere portability rule.",
+      "risk": "low",
+      "steps": [
+        "M1-S02",
+        "M1-S03",
+        "M1-S05"
+      ]
+    },
+    {
+      "id": "A8",
+      "text": "A queue with the developer name Tier_2_Engineering exists in the target org and is not created or modified by this build.",
+      "because": "The requirement's closing paragraph states the existing case-intake build supplies it and that this build may assume it.",
+      "risk": "medium",
+      "steps": [
+        "M1-S03"
+      ]
+    },
+    {
+      "id": "A9",
+      "text": "Tier2_Escalation__e is declared with eventType HighVolume.",
+      "because": "No clarification asked. skills/apex/platform-events-apex/references/code-examples.md records StandardVolume as deprecated and returning an error on creation, so HighVolume is the only writable value.",
+      "risk": "low",
+      "steps": [
+        "M1-S01"
+      ]
+    },
+    {
+      "id": "A10",
+      "text": "The escalation timestamp half of the Idempotency-Key is the time the notification work is enqueued in the escalating transaction, carried into the Queueable, so every retry of the same escalation re-sends the same key.",
+      "because": "Q8 says 'the Case Id plus the escalation timestamp' without naming a field. Case.Tier2_Notified_At__c cannot supply it - it is stamped only after success - so the key must be captured at enqueue time.",
+      "risk": "medium",
+      "steps": [
+        "M1-S03"
+      ]
+    },
+    {
+      "id": "A11",
+      "text": "Every component this build emits is stamped at API version 67.0.",
+      "because": "Q23's answer names 'the API 67 default user mode' as the required Apex behaviour, and the security idiom in agents/_shared/AGENT_CONTRACT.md is gated on the class's own apiVersion, so the whole package is pinned to one version rather than mixed.",
+      "risk": "low",
+      "steps": [
+        "M1-S01",
+        "M1-S02",
+        "M1-S03",
+        "M1-S04",
+        "M1-S05"
+      ]
+    },
+    {
+      "id": "A12",
+      "text": "'Escalated to the Tier 2 Engineering queue' means the Case OwnerId changed, in this save, to the Tier_2_Engineering queue - not a status change, not an Escalated flag.",
+      "because": "The requirement says 'escalated to the Tier 2 Engineering queue' and Q13 places the detection in the Case after-update handler; no answer names a different condition.",
+      "risk": "medium",
+      "steps": [
+        "M1-S03"
+      ]
+    },
+    {
+      "id": "A13",
+      "text": "The user who runs System.schedule for the hourly health check holds Tier2_Webhook_Admin, which is what gives them read on Integration_Failure__c and on Case.Tier2_Notified_At__c; scheduled Apex runs as that user, and in API 67.0 default user mode both queries enforce their FLS with no keyword at all.",
+      "because": "PV-001 asked whether M1-S04's scheduling user is inside the D14 assignee set. Nothing in the answers says the scheduling user can also escalate a Case, so membership is not implied by D14's own wording and is stated here instead. skills/apex/apex-user-and-permission-checks names the scheduler as the running user for a scheduled job.",
+      "risk": "medium",
+      "steps": [
+        "M1-S02",
+        "M1-S04"
+      ]
+    },
+    {
+      "id": "A14",
+      "text": "Tier2_Webhook_Admin grants FLS on Case.Tier2_Notified_At__c but adds no objectPermissions row for Case: the users it is assigned to already hold Case object access from their profile, and a Case CRUD row in this set would be a broader grant than any answer asked for.",
+      "because": "PV-001. check_permission_set_architecture.py raises an ERROR only when a set that HAS an objectPermissions row for an object grants a field on it without allowRead=true - a fieldPermissions entry with no object row for the same object is a legal and narrower shape. Verified in both directions on a fixture.",
+      "risk": "low",
+      "steps": [
+        "M1-S02"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "decision": "Salesforce calls out to the on-call tool fire-and-forget from a Queueable implementing Database.AllowsCallouts; nothing calls into Salesforce for this feature.",
+      "decision_tree": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q1",
+      "branch_quote": "    \u251c\u2500\u2500 No, fire-and-forget                     \u2192 Queueable with AllowsCallouts",
+      "rationale": "Q1's answer confirms Direction 1 only and Q9 confirms no user waits on the result, which is exactly this branch. Continuation is excluded because nobody watches a spinner; Batch is excluded because the volume is 15 a day peaking at 50 in five minutes (Q22).",
+      "alternatives_rejected": [
+        "Continuation",
+        "Batch Apex",
+        "Outbound Message on a Workflow Rule",
+        "@future(callout=true)"
+      ],
+      "consequences": "The notification is decoupled from the save, so a webhook outage never blocks a Support agent's escalation - and the only evidence a notification failed is the Integration_Failure__c row this build creates.",
+      "adr_required": false
+    },
+    {
+      "id": "D2",
+      "decision": "Authenticate with a Named Credential over a separate External Credential using the Custom authentication protocol, with the API key injected as the X-API-Key header by the credential rather than by Apex.",
+      "decision_tree": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q2",
+      "branch_quote": "    \u251c\u2500\u2500 Custom header / API key                 \u2192 Named Credential + External Credential (Custom)",
+      "rationale": "Q6 names X-API-Key as the tool's documented header and Q5 assigns header ownership to the platform, so generateAuthorizationHeader is deployed false and the header is an ExternalCredential AuthHeader parameter. Apex sets no credential header at all, so allowMergeFieldsInHeader stays false.",
+      "alternatives_rejected": [
+        "API key in a Custom Setting or Custom Label",
+        "Apex-built Authorization header with an Apex-side {!$Credential.*} merge field",
+        "Basic auth"
+      ],
+      "consequences": "The secret is entered in Setup against the principal after deploy and is never in source, an export, or a sandbox refresh - which also means the deploy alone does not make the integration work: a human must enter the value and assign the permission set.",
+      "adr_required": false
+    },
+    {
+      "id": "D3",
+      "decision": "The External Credential declares a NamedPrincipal, not a PerUserPrincipal, and the Named Credential is the enhanced SecuredEndpoint type rather than Legacy.",
+      "source_reference": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "rationale": "integration-pattern-selection.md Q2 routes to 'Named Credential + External Credential (Custom)' but does not choose between principal types or between the legacy and enhanced models; the skill's Decision Guidance does, on both counts - 'Async job (Batch / Queueable / Scheduled) -> NamedPrincipal' and 'every legacy field is deprecated at 56.0 - new work goes on SecuredEndpoint'. Q3 and Q4 answer the same way.",
+      "alternatives_rejected": [
+        "PerUserPrincipal",
+        "Legacy Named Credential with an embedded endpoint and protocol"
+      ],
+      "consequences": "One shared service identity means the on-call tool's audit trail attributes every incident to Salesforce rather than to the escalating agent; the trade is that a per-user principal would not work from a Queueable at all.",
+      "adr_required": true
+    },
+    {
+      "id": "D4",
+      "decision": "The webhook body is JSON, serialised and deserialised in Apex through templates/apex/HttpClient.cls rather than a hand-built HttpRequest.",
+      "decision_tree": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q3",
+      "branch_quote": "    \u251c\u2500\u2500 JSON REST                               \u2192 HttpClient + JSON.serialize/deserialize",
+      "rationale": "Q1 and Q6 both describe a JSON POST. Q31 sizes the payload well under the 6MB/12MB ceilings, so no paging or chunking is needed.",
+      "alternatives_rejected": [
+        "Raw HttpRequest construction in the Queueable",
+        "SOAP",
+        "form-encoded body"
+      ],
+      "consequences": "The endpoint, the timeout and the retry switch are all set through one builder the checker recognises, which is also why the per-Case callout loop does not trip check_callouts_and_http_integrations.py rule 4.",
+      "adr_required": false
+    },
+    {
+      "id": "D5",
+      "decision": "Transient failures (429, 502, 503, 504 and connection timeouts) are retried up to three times by re-enqueueing from the Finalizer with a MinimumQueueableDelayInMinutes backoff; 400, 401, 403, 404 and 422 write the failure record immediately with no retry.",
+      "decision_tree": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q4",
+      "branch_quote": "    \u251c\u2500\u2500 Known 429 throttling                    \u2192 Queueable with exponential backoff + Finalizer",
+      "rationale": "Q7 supplies the classification table verbatim. skills/apex/apex-queueable-patterns bounds the pattern: the delay caps at 10 minutes and a Finalizer may re-enqueue a failed job five consecutive times, so three attempts sits inside both ceilings. HttpClient.retryOnTransient is deliberately off because its backoff is a busy-wait that burns Apex CPU.",
+      "alternatives_rejected": [
+        "HttpClient.retryOnTransient(true)",
+        "a hand-rolled retry loop inside execute()",
+        "retrying every non-2xx status"
+      ],
+      "consequences": "A permanent failure surfaces in under a second rather than after three pointless retries, and a 401 never becomes a lockout - but anything needing more than three attempts or more than ten minutes of backoff is out of this pattern and lands in the failure record as Abandoned.",
+      "adr_required": false
+    },
+    {
+      "id": "D6",
+      "decision": "Every webhook POST carries an Idempotency-Key header built from the Case Id and the escalation timestamp captured at enqueue time.",
+      "decision_tree": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q4",
+      "branch_quote": "    \u251c\u2500\u2500 Idempotency key required                \u2192 Generate in Apex, send as header; tie to Request_Id__c",
+      "rationale": "Q8 confirms the tool accepts an Idempotency-Key header and names the Case Id plus the escalation timestamp as the key. The tree's 'tie to Request_Id__c' is adapted: this build has no Request_Id__c and the same string is stored on the failure record instead, so a resend replays the identical key.",
+      "alternatives_rejected": [
+        "No key, accepting a possible double-page on an ambiguous 5xx",
+        "a random UUID per attempt",
+        "the AsyncApexJob Id"
+      ],
+      "consequences": "A retry after an ambiguous transport failure cannot page twice; the cost is that the key must be captured once at enqueue and carried through every retry rather than recomputed, which is what assumption A10 records.",
+      "adr_required": false
+    },
+    {
+      "id": "D7",
+      "decision": "A Queueable Finalizer, attached as the first statement of execute(), is what guarantees the failure record is written - including when the job dies on a limit or unhandled exception.",
+      "decision_tree": "standards/decision-trees/async-selection.md",
+      "branch": "Q7",
+      "branch_quote": "    \u251c\u2500\u2500 Yes \u2192 Use a Queueable Finalizer to dispatch the compensating action",
+      "rationale": "Q15 requires the failure record on every terminal state. skills/apex/apex-queueable-patterns is explicit that try/catch cannot survive a limit exception that terminates the transaction and that the Finalizer runs either way, with FinalizerContext.getResult() returning SUCCESS or UNHANDLED_EXCEPTION.",
+      "alternatives_rejected": [
+        "try/catch inside execute() alone",
+        "a platform event published from the catch block",
+        "relying on AsyncApexJob.NumberOfErrors for visibility"
+      ],
+      "consequences": "The Finalizer runs in its own transaction under synchronous governor limits, so it must stay thin - it records and re-enqueues, and does not do the work over again.",
+      "adr_required": false
+    },
+    {
+      "id": "D8",
+      "decision": "The escalation-detection automation is Apex - a Case after-update trigger delegating to a handler and a service layer - not a record-triggered Flow.",
+      "decision_tree": "standards/decision-trees/automation-selection.md",
+      "branch": "Q3",
+      "branch_quote": "    \u251c\u2500\u2500 Yes  \u2192 Apex (trigger + handler + service layer)",
+      "rationale": "Q3's list is satisfied on two counts: callouts that need retry and backoff, and a deployable unit under an enforced coverage gate with assertion-style tests. The tree's own note that 'one straightforward callout is NOT on this list' does not apply - the classification table in Q7, the Finalizer, the idempotency key and the resend path are the opposite of straightforward. Q13 also places the enqueue in the after-update handler's service layer.",
+      "alternatives_rejected": [
+        "After-save record-triggered Flow with an InvocableMethod callout action",
+        "Flow plus an Apex invocable per automation-selection Q6",
+        "Outbound Message"
+      ],
+      "consequences": "Apex carries a 75% org-wide coverage gate Flow does not, and the fault path is a failure record this build owns rather than a Flow error email - which is also why Q40, Q41 and Q42 are out of scope.",
+      "adr_required": false
+    },
+    {
+      "id": "D9",
+      "decision": "The ops dashboard is fed by a Tier2_Escalation__e platform event it consumes through the Pub/Sub API, not by a second direct callout or an internal service call.",
+      "decision_tree": "standards/decision-trees/async-selection.md",
+      "branch": "Q11",
+      "branch_quote": "     \u251c\u2500\u2500 Yes \u2192 Platform Event + Pub/Sub API gRPC subscriber",
+      "rationale": "The requirement states the dashboard is a separate system already subscribed to Salesforce platform events, and Q39 confirms no internal Apex or Flow subscriber exists. The tree's delivery-allocation note applies: an API subscriber draws on the 24-hour delivery allocation, and 15 escalations a day is far inside it.",
+      "alternatives_rejected": [
+        "A second HTTP callout to the dashboard",
+        "Change Data Capture on Case",
+        "an internal Apex service call"
+      ],
+      "consequences": "Delivery is at-least-once and the dashboard dedupes its own duplicates (Q12); EventBus.publish returning success means queued, not delivered, which is why D10 requires the SaveResult to be inspected.",
+      "adr_required": false
+    },
+    {
+      "id": "D10",
+      "decision": "Tier2_Escalation__e is declared with publishBehavior PublishAfterCommit and is published from the escalating transaction's service layer - before the Queueable runs - rather than from inside the Queueable's execute().",
+      "source_reference": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "rationale": "Q10 requires that a rolled-back escalation reach neither the on-call tool nor the dashboard, which PublishAfterCommit gives directly. The sequencing half is not in any tree: skills/apex/apex-queueable-patterns states that callouts are impossible after DML in the same transaction, and a publish-after-commit publish is a DML statement, so publishing inside execute() before the callout would break the callout. Publishing in the trigger transaction also means the dashboard sees the escalation regardless of webhook outcome, which was Q9's proposed sequencing default. Q11 requires the publish SaveResult to be checked and a failed publish logged to the same failure object.",
+      "alternatives_rejected": [
+        "Publish inside the Queueable before the callout",
+        "publish inside the Queueable after the callout, carrying the callout outcome",
+        "PublishImmediately"
+      ],
+      "consequences": "The event carries no callout outcome - the dashboard learns that an escalation happened, not whether the page landed - and a failed publish is a separate Integration_Failure__c row from a failed webhook.",
+      "adr_required": true
+    },
+    {
+      "id": "D11",
+      "decision": "The hourly channel-health check is Schedulable Apex whose execute() only enqueues a Queueable, not a schedule-triggered Flow.",
+      "decision_tree": "standards/decision-trees/async-selection.md",
+      "branch": "Q2",
+      "branch_quote": "    \u251c\u2500\u2500 Clock (cron)                     \u2192 Schedulable wrapper that enqueues Queueable",
+      "rationale": "Q24 delegates the choice to this tree, and standards/decision-trees/README.md assigns Schedulable-versus-Scheduled-Flow to async-selection.md rather than to automation-selection.md or flow-pattern-selector.md. The cadence is the reason it does not fall out to Flow: flow-pattern-selector.md Q6 gates a schedule-triggered flow on a daily, weekly or monthly cadence, and this is hourly. The library also disagrees with itself on whether a scheduled flow can run hourly at all - skills/flow/flow-time-based-patterns says it can, skills/flow/scheduled-flows says the granularity may not fit - which is a second reason not to build on it.",
+      "alternatives_rejected": [
+        "Schedule-triggered Flow",
+        "Batch Apex",
+        "a Flow scheduled path on Integration_Failure__c"
+      ],
+      "consequences": "Schedulable Apex runs under synchronous governor limits and cannot call out, which is fine for two aggregate queries and an email, and the CRON literal makes the hourly cadence explicit and deployable rather than a Setup-time choice.",
+      "adr_required": false
+    },
+    {
+      "id": "D12",
+      "decision": "Integration_Failure__c ships with a Private org-wide default, and the three Support Engineering admins get every row through object-scoped View All Records / Modify All Records on the Tier2_Webhook_Admin permission set rather than through a sharing rule.",
+      "decision_tree": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1",
+      "branch_quote": "    \u251c\u2500\u2500 Public Read-Only / Public Read-Write    \u2192 Tighten OWD before adding anything \u2192 Q2",
+      "rationale": "Q19 and Q20 answer CRUD/FLS and the resend owner but not record visibility. The tree's Q1 rules out shipping a Public Read/Write default; its 'Permission sets vs sharing' table then places this case - 'Can user bypass sharing to do admin things?' - on View/Modify All at object scope, to be used for narrow admin permission sets, which Tier2_Webhook_Admin is. A criteria-based sharing rule was rejected because the criterion would be 'every row', which is a whole-object grant wearing a rule's clothes.",
+      "alternatives_rejected": [
+        "Public Read/Write OWD",
+        "criteria-based sharing rule",
+        "Apex managed sharing",
+        "View All Data on the permission set"
+      ],
+      "consequences": "The grant is object-scoped and auditable in one named set, and check_permission_set_architecture.py reports it as a sharing-bypass WARN by design rather than as an error; the trade is that anyone holding Tier2_Webhook_Admin sees every failure row including its stored request payload.",
+      "adr_required": false
+    },
+    {
+      "id": "D13",
+      "decision": "Cross-transaction duplicate suppression uses the Case.Tier2_Notified_At__c stamp with a ten-minute window, not AsyncOptions.DuplicateSignature.",
+      "source_reference": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "rationale": "Q14 chose this mechanism explicitly. The skill's own canonical answer to the same question is DuplicateSignature, which suppresses across transactions where a static guard cannot; it is recorded as the rejected alternative rather than silently dropped. The field stamp was chosen because it is also the audit trail an admin reads on the Case, and because a suppressed DuplicateSignature enqueue throws DuplicateMessageException rather than no-op'ing, which would need its own catch.",
+      "alternatives_rejected": [
+        "AsyncOptions.DuplicateSignature built from the Case Id",
+        "a static in-transaction guard alone",
+        "no dedup"
+      ],
+      "consequences": "The window is wall-clock rather than transactional, so two escalations of the same Case eleven minutes apart both page - which is the intended behaviour - and a Case whose webhook never succeeded is never stamped, so it is never suppressed.",
+      "adr_required": true
+    },
+    {
+      "id": "D14",
+      "decision": "Tier2_Webhook_Admin is assigned to every user who can escalate a Case to Tier 2 and to the user who schedules the hourly health check, because the Queueable calls out as the user whose save enqueued it and scheduled Apex runs as the user who scheduled the job - neither is the Automated Process entity.",
+      "source_reference": "skills/apex/apex-user-and-permission-checks/SKILL.md",
+      "rationale": "Q23 asserts the Automated Process entity and asks the plan to settle how it gets the principal grant. The skill states that async Apex runs as the async context user - the user who fired the async, except for scheduled jobs and platform-event triggers - and skills/flow/flow-and-platform-events records that Automated Process holds no profile and no permission set assignments, so the grant Q19 describes cannot be made to it at all. skills/apex/apex-named-credentials-patterns is the matching rule from the credential side: the permission set must be assigned to the user the transaction runs as, which for Queueable Apex is not necessarily whoever started the work. The same rule settles M1-S04: skills/apex/apex-user-and-permission-checks names the scheduler as the running user for a scheduled job, so the scheduling user needs the same permission set for read on Integration_Failure__c and on Case.Tier2_Notified_At__c. That user is inside the assignee set only if they can also escalate a Case, which nothing guarantees, so the set is stated as the union of the two rather than left to coincidence.",
+      "alternatives_rejected": [
+        "Assigning the permission set to the three admins only",
+        "granting the principal to the Automated Process entity",
+        "moving the callout into a platform-event-triggered subscriber so it does run as Automated Process"
+      ],
+      "consequences": "The assignee list is wider than Q19 anticipated - every user who can escalate, plus the scheduling user - and is an access decision a human signs at the M1-S02 gate. If it is wrong the failure is loud rather than silent: every escalation returns 401 and lands in the failure record, and the hourly check throws on the first query. Assumption A2 carries the library's own hedge on the word 'often' and A13 carries the scheduling-user half.",
+      "adr_required": true
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M1",
+      "title": "Tier 2 escalation notification, event and failure record, deploy-ready",
+      "goal": "Given a Case whose owner changes to the Tier_2_Engineering queue, when that save commits, then a Tier2_Escalation__e event is published for the ops dashboard, the on-call tool receives one authenticated JSON POST carrying case number, severity, subject and a case link, Case.Tier2_Notified_At__c is stamped on success, any failure leaves an Integration_Failure__c row a Support Engineering admin can see and re-send from, an hourly job reports a dark channel, and every component is listed in one package.xml with a written deploy order.",
+      "steps": [
+        "M1-S01",
+        "M1-S02",
+        "M1-S03",
+        "M1-S04",
+        "M1-S05"
+      ],
+      "status": "pending",
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+          "description": "Cross-step: runs across the whole artefacts tree so the permission set written in M1-S02 is read against the Integration_Failure__c object and field metadata written in M1-S01. This is the cross-referential run that standards/build-orchestration.md section 5 names for check_permission_set_architecture.py; the M1-S02 step test carries the same assertion at build scope and this is the milestone-level confirmation once every step is documented. Verified on a fixture holding the permission set plus the object and field files: the modifyAllRecords sharing-bypass WARN that decision D12 makes deliberate is printed and does not affect the exit code, which is 1 only on ERROR.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts",
+          "description": "Cross-step: resolves every callout: name in the Apex written by M1-S03 against the Named Credential written by M1-S02, and flags a legacy namedCredentialType, a SecuredEndpoint credential with no externalCredential link, and an Authorization header that collides with the platform's. Run without --strict, so WARN findings are reported and only ERROR findings fail. Verified on a fixture holding the credential pair, the permission set and the Apex together: exit 0 with no findings, with and without --strict.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+          "description": "Recurses the whole artefacts tree, finds every package.xml under it, and applies the companion-manifest checks per directory - so the per-step fragments and the M1-S05 build-level manifest are all read in one pass. Run without --strict: ERROR/CRITICAL exits 1, while the HIGH risky-type findings for ExternalCredential and NamedCredential are printed and do not fail. Verified on a fixture of all five steps' artefacts: exit 0 with exactly those two WARN findings.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "manual",
+          "description": "Cross-step acceptance read: open artefacts/M1-S05/deploy-order.md alongside the five steps' artefacts.",
+          "expected": "A reviewer confirms, from the artefacts alone: (a) the deploy order runs ExternalCredential, then NamedCredential, then PermissionSet, then the object and field metadata, then Apex; (b) the build-level package.xml names every ApexClass and ApexTrigger file emitted by M1-S03 and M1-S04 and every metadata member emitted by M1-S01 and M1-S02, with no member lacking a file and no file lacking a member; (c) the deploy-order note states the two steps no deploy performs - a human entering the API key against the OnCall_Tool_EC principal in Setup, and assigning Tier2_Webhook_Admin to the assignee set decision D14 defines."
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "id": "M1-S01",
+      "milestone": "M1",
+      "type": "object-model",
+      "title": "Integration_Failure__c with its restricted picklists, Case.Tier2_Notified_At__c, and the Tier2_Escalation__e platform event",
+      "agent": "metadata-builder",
+      "skills": [
+        "admin/object-creation-and-design",
+        "admin/picklist-and-value-sets",
+        "apex/platform-events-apex",
+        "flow/flow-error-monitoring"
+      ],
+      "templates": [],
+      "decision_trees": [
+        "standards/decision-trees/sharing-selection.md",
+        "standards/decision-trees/async-selection.md"
+      ],
+      "inputs": {
+        "api_version": "67.0",
+        "custom_object": {
+          "fullName": "Integration_Failure__c",
+          "label": "Integration Failure",
+          "pluralLabel": "Integration Failures",
+          "sharingModel": "Private",
+          "deploymentStatus": "Deployed - the checker exits 1 on InDevelopment, which is also invisible to non-admin users.",
+          "nameField": "AutoNumber, displayFormat IF-{00000000}",
+          "why_private": "Decision D12 and assumption A3 - a Public Read/Write default is what sharing-selection.md Q1 tells you to tighten before adding anything, and check_object_creation_and_design.py exits 1 on it.",
+          "description": "A non-empty <description> under 1000 characters is required: the checker exits 1 on a missing or empty one.",
+          "enableSearch": "true - an explicit <enableSearch> element is required; the checker exits 1 when the element is absent.",
+          "optional_feature_trio": "enableBulkApi, enableSharing and enableStreamingApi are set all-or-none - each element's own guide entry states the other two must also be enabled, and the checker exits 1 on a partial trio."
+        },
+        "fields_on_integration_failure": [
+          "Case__c - Lookup(Case), the escalated Case (Q18)",
+          "Case_Number__c - Text(30), denormalised so the row stays readable after a Case delete (Q18)",
+          "Endpoint__c - Text(255), the callout: path actually used (Q18)",
+          "HTTP_Status__c - Number(3,0), the status code returned (Q18)",
+          "Response_Body__c - LongTextArea(32768), first 32k characters of the response (Q18)",
+          "Attempt_Count__c - Number(2,0), how many attempts this row represents (Q18)",
+          "Last_Attempted_At__c - DateTime, the last attempt time (Q18)",
+          "Error_Message__c - LongTextArea(4000), the exception or classification message (Q18)",
+          "Request_Payload__c - LongTextArea(32768), the JSON body sent, including the Idempotency-Key used, so a resend replays it exactly (Q18, decision D6)",
+          "Status__c - restricted Picklist, required, values exactly New / Retrying / Resent / Resolved / Abandoned, default New (Q17)",
+          "Severity__c - restricted Picklist, values exactly Error / Warning (Q17)",
+          "Resend__c - Checkbox, the tick a Support Engineering admin makes to replay the call (Q18, Q20)"
+        ],
+        "field_on_case": "Tier2_Notified_At__c - DateTime on Case, stamped when the webhook succeeds; the ten-minute suppression window in decision D13 reads it (Q14)",
+        "platform_event": {
+          "fullName": "Tier2_Escalation__e",
+          "label": "Tier 2 Escalation",
+          "eventType": "HighVolume",
+          "publishBehavior": "PublishAfterCommit",
+          "fields": "Case_Number__c Text(30) required, Severity__c Text(40), Subject__c Text(255), Case_Link__c Text(255), Escalated_At__c DateTime - the four payload fields the requirement names plus the escalation time the dashboard dedupes on (Q12, Q30)",
+          "why_publish_after_commit": "Q10 - a rolled-back escalation must reach nobody. Omitting the element defaults to PublishImmediately, which fires regardless (decision D10).",
+          "do_not_declare": "EventUuid and ReplayId are system fields on the delivered message and are not declared in the definition."
+        },
+        "picklist_restriction": "Both picklists are restricted value sets. Q17 requires the Apex in M1-S03 to write exactly these values and nothing else; a required, restricted picklist the sending code does not match exactly makes the fault path itself fault.",
+        "assumptions": [
+          "A3",
+          "A9",
+          "A11"
+        ],
+        "unverified": "None on this step: every element and enum named above resolves to a fenced example in admin/object-creation-and-design/references/metadata-examples.md, admin/picklist-and-value-sets/references/metadata-examples.md or apex/platform-events-apex/references/code-examples.md."
+      },
+      "outputs": [
+        "artefacts/M1-S01/objects/Integration_Failure__c/Integration_Failure__c.object-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Case__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Case_Number__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Endpoint__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/HTTP_Status__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Response_Body__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Attempt_Count__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Last_Attempted_At__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Error_Message__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Request_Payload__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Status__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Severity__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Integration_Failure__c/fields/Resend__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml",
+        "artefacts/M1-S01/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml",
+        "artefacts/M1-S01/package.xml",
+        "artefacts/M1-S01/deploy-order.md"
+      ],
+      "depends_on": [],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+          "scope": "step",
+          "description": "Walks every *.object-meta.xml and field file in this step's artefacts and judges only the __c object - it returns early on any file whose stem is not __c, so Tier2_Escalation__e is scanned but not judged. It has no severity flag, so its ISSUE and WARN tiers both exit 1, and the full exit-1 set the artefact must clear is: a missing or empty <description>, or one over 1000 characters; an AutoNumber <nameField> with no <displayFormat>; a partially-set enableBulkApi / enableSharing / enableStreamingApi trio; <deploymentStatus>InDevelopment</deploymentStatus>; <sharingModel>ReadWrite</sharingModel>; and a missing <enableSearch> element. Verified on a fixture of this step's object, the two field shapes and the __e definition: sharingModel ReadWrite printed a WARN and exited 1; with sharingModel Private and enableSearch and a description present it printed 'No issues found across 2 object file(s) and 2 field file(s)' and exited 0. The command is declared bare because no flag separates the two tiers.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01 --min-severity ERROR",
+          "scope": "step",
+          "description": "Checks the two restricted value sets on Integration_Failure__c. The checker exits 1 on any finding at or above --min-severity, whose default is INFO; --min-severity ERROR is what makes this an ERROR-only gate rather than one that fails on an advisory. Verified on a fixture carrying the restricted Status__c value set: 'No findings', exit 0, at the default INFO floor as well as at ERROR.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S01",
+          "scope": "step",
+          "description": "Of its eight rules, the two that apply to a step holding no Apex are the object-file rules: R6 fails a *__e.object-meta.xml with no <publishBehavior> element, or with a value outside PublishAfterCommit / PublishImmediately, and flags the deprecated eventType StandardVolume. It exits 1 on any finding at any severity. Verified on a fixture holding Tier2_Escalation__e with publishBehavior PublishAfterCommit and eventType HighVolume alongside the two __c object files: 'Scanned 0 Apex file(s) and 2 object file(s); 0 platform-event finding(s)', exit 0. The Apex-side rules on the same checker run at M1-S03.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "Every *.object-meta.xml, *.field-meta.xml and package.xml under artefacts/M1-S01 parses.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "Every member in artefacts/M1-S01/package.xml has a file under this step's artefacts and every file has a member - CustomObject for Integration_Failure__c and Tier2_Escalation__e, CustomField for the twelve Integration_Failure__c fields and Case.Tier2_Notified_At__c.",
+          "expected": "consistent"
+        },
+        {
+          "type": "manual",
+          "description": "Picklist-to-code contract check, tickable from this step's artefacts alone at the M1 gate.",
+          "expected": "A reviewer opens Status__c.field-meta.xml and Severity__c.field-meta.xml and confirms the value sets are restricted and contain exactly New, Retrying, Resent, Resolved, Abandoned and exactly Error, Warning - the lists Q17 fixed and the Apex in M1-S03 must match character for character."
+        }
+      ],
+      "status": "pending",
+      "runs": [],
+      "human_gate": false,
+      "notes": "The platform event definition rides with the two object-model artefacts rather than taking a step of its own: it is the same CustomObject metadata family, the same owning agent, and the same position in deploy order, and the feature tier allows five steps in one milestone. Assumptions A3 (Private OWD plus an object-scoped grant), A9 (eventType HighVolume, taken from the skill because no clarification asked) and A11 (API 67.0) each carry a matching row in assumptions[] naming this step. Round 2: the object checker's full exit-1 set is now named in inputs.custom_object and in that test's description, because it has no severity flag and its WARN tier - a missing <enableSearch>, a missing <description> - fails the step just as its ISSUE tier does (verifier W2)."
+    },
+    {
+      "id": "M1-S02",
+      "milestone": "M1",
+      "type": "access",
+      "title": "OnCall_Tool_EC External Credential, OnCall_Tool Named Credential and the Tier2_Webhook_Admin permission set",
+      "agent": "metadata-builder",
+      "skills": [
+        "apex/apex-named-credentials-patterns",
+        "admin/permission-set-architecture"
+      ],
+      "templates": [],
+      "decision_trees": [
+        "standards/decision-trees/integration-pattern-selection.md",
+        "standards/decision-trees/sharing-selection.md"
+      ],
+      "inputs": {
+        "api_version": "67.0",
+        "external_credential": {
+          "fullName": "OnCall_Tool_EC",
+          "label": "On-Call Tool Credential",
+          "authenticationProtocol": "Custom",
+          "principal": "externalCredentialParameters with parameterName OnCallToolNamedPrincipal, parameterType NamedPrincipal, sequenceNumber 1 (Q4, decision D3)",
+          "auth_header": "externalCredentialParameters with parameterName X-API-Key, parameterType AuthHeader, sequenceNumber 1 - the tool's documented header name (Q6), injected by the platform at callout time so Apex never sees the secret (Q5)",
+          "secret": "[REDACTED] - no credential value is written into this file. The value is entered in Setup against the principal after deploy; the deploy-order note must say so."
+        },
+        "named_credential": {
+          "fullName": "OnCall_Tool",
+          "label": "On-Call Tool",
+          "namedCredentialType": "SecuredEndpoint",
+          "url_parameter": "namedCredentialParameters parameterName Url, parameterType Url, parameterValue the per-org endpoint - the same API name in every org with a different Url value is the platform's own portability mechanism (Q25)",
+          "authentication_parameter": "namedCredentialParameters parameterType Authentication with externalCredential OnCall_Tool_EC. externalCredential is a field of NamedCredentialParameter, not a top-level field of NamedCredential.",
+          "generateAuthorizationHeader": "false - the External Credential's AuthHeader supplies the header, and Q5 assigns ownership to the platform rather than to Apex",
+          "allowMergeFieldsInHeader": "false - Apex sets no {!$Credential.*} merge field anywhere, because Q5 says Apex never reads or builds the key header",
+          "allowMergeFieldsInBody": "false",
+          "calloutStatus": "Enabled"
+        },
+        "permission_set": {
+          "fullName": "Tier2_Webhook_Admin",
+          "label": "Tier 2 Webhook Admin",
+          "description": "Must be 255 characters or fewer - PermissionSet.description is a documented 255-character ceiling and check_permission_set_architecture.py raises PSA-DESC-01 as an ERROR above it.",
+          "externalCredentialPrincipalAccesses": "enabled true, externalCredentialPrincipal OnCall_Tool_EC-OnCallToolNamedPrincipal - the External Credential file stem and the principal parameterName joined by a dash, not an underscore",
+          "objectPermissions": "Integration_Failure__c with allowCreate, allowRead, allowEdit, allowDelete, viewAllRecords and modifyAllRecords all true (Q19 CRUD, decision D12 record visibility). The dependency chain the checker enforces: Create and Edit require Read, Delete requires Read and Edit, ViewAllRecords requires Read, ModifyAllRecords requires Read, Delete, Edit and ViewAllRecords.",
+          "fieldPermissions": "Every custom field on Integration_Failure__c from M1-S01 readable and editable (Q19 FLS), plus Case.Tier2_Notified_At__c readable and editable. The Case field is not optional: M1-S03 reads it for the ten-minute suppression window and writes it on webhook success, and M1-S04 queries it for the 24-hour success check, all in API 67.0 default user mode where SOQL, SOSL, DML and Database methods enforce the running user's FLS with no keyword at all. editable true always ships with readable true - the checker ERRORs otherwise, because PermissionsEdit requires PermissionsRead and the row is deleted without it.",
+          "assignees": "Per decision D14 and assumption A2 the assignee set is every user who can escalate a Case to the Tier_2_Engineering queue, not only the three Support Engineering admins Q19 names - the Queueable calls out as the user whose save enqueued it. Assignment is a post-deploy human step (sf org assign permset), not something this step ships.",
+          "objectPermissions_scope_note": "No objectPermissions row is added for Case. Its users already hold Case object access from their profile, a CRUD row here would grant more than any answer asked for, and the checker's object-row rule only fires when a set that HAS a row for an object grants a field on it without allowRead=true - a fieldPermissions entry with no matching object row is legal and narrower. Assumption A14."
+        },
+        "deploy_order": "ExternalCredential, then NamedCredential, then PermissionSet - each artefact names the one before it. The note must also carry the two steps no deploy performs: entering the API key in Setup against the principal, and assigning the permission set.",
+        "assumptions": [
+          "A2",
+          "A3",
+          "A5",
+          "A7",
+          "A11",
+          "A13",
+          "A14"
+        ],
+        "unverified": "UNVERIFIED (from skills/apex/apex-named-credentials-patterns/references/code-examples.md section 1): the merge-field grammar inside an AuthHeader parameterValue. The Metadata API guide states the field is 'a formula of a header value that is evaluated at run time' but publishes no grammar, and the External-Credential-scoped {!$Credential.<EC>.<Param>} form appears in no guide. The header name and the AuthHeader parameter type are documented. Assumption A5 carries this; the skill's own instruction is to confirm it against Salesforce Help before deploying."
+      },
+      "outputs": [
+        "artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+        "artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+        "artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "artefacts/M1-S02/package.xml",
+        "artefacts/M1-S02/deploy-order.md"
+      ],
+      "depends_on": [
+        "M1-S01"
+      ],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+          "scope": "step",
+          "description": "At step scope this reads the credential pair alone and asserts what one step owns: that the credential is not a legacy namedCredentialType, that a SecuredEndpoint credential carries an externalCredential link, and that nothing sets an Authorization header that would collide with the platform's. Declared without --strict, so its WARN tier is reported and only ERROR fails. Verified on a fixture of exactly these three files: 'OK: no Named Credential findings', exit 0. The cross-file half - resolving the Apex callout: names against this credential - is carried by the M1 milestone test running the same checker across artefacts.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+          "scope": "build",
+          "description": "Declared at build scope because this is one of the four cross-referential checkers standards/build-orchestration.md section 5 names: it asserts a permission set's object and field permissions against the object and field metadata another step wrote, which here is M1-S01. Left at step scope it would read the permission set with none of those files and validate would WARN. What it proves about the Case.Tier2_Notified_At__c grant PV-001 asked for: that the entry is well-formed - editable true with readable true, ERROR otherwise - and that it does not sit beside a Case objectPermissions row lacking allowRead. What it cannot prove is absence: no checker in the library fails because a grant was never written, which is why the manual test below reads for the entry by name. It fails only on ERROR - the object-permission dependency chain, an editable field permission with readable absent, a description over 255 characters, a PSG naming a member not in the tree. Verified in both directions on a fixture: this step's three files plus M1-S01's object and field files under one artefacts root gave exit 0 with one WARN, that modifyAllRecords bypasses sharing for Integration_Failure__c, which decision D12 makes deliberate; a control permission set carrying Case.Tier2_Notified_At__c with editable true and readable false gave 'fieldPermissions Case.Tier2_Notified_At__c has editable=true with readable not true' and exit 1.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "The External Credential, Named Credential, permission set and package.xml under artefacts/M1-S02 all parse.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "artefacts/M1-S02/package.xml names OnCall_Tool_EC under ExternalCredential, OnCall_Tool under NamedCredential and Tier2_Webhook_Admin under PermissionSet, with no member lacking a file and no file lacking a member.",
+          "expected": "consistent"
+        },
+        {
+          "type": "manual",
+          "description": "Access review at the M1 gate, before the permission set is ever assigned. This step carries human_gate: true, so a human also signs its step:M1-S02 gate before it runs.",
+          "expected": "A reviewer confirms, from artefacts/M1-S02 alone: (a) externalCredentialPrincipal reads exactly OnCall_Tool_EC-OnCallToolNamedPrincipal, dash-joined, matching the External Credential file stem and the principal's parameterName; (b) no credential value appears anywhere in the three files; (c) generateAuthorizationHeader is explicitly false; (d) fieldPermissions carries Case.Tier2_Notified_At__c with readable and editable both true, and every Integration_Failure__c field from M1-S01 - this is the grant PV-001 found missing, and no checker fails on its absence, so the reviewer is the check; (e) the assignee set written in deploy-order.md is the one decision D14 defines - every user who can escalate a Case, plus the user who schedules the hourly job - and a named person accepts that wider list, or sends D14 back; (f) the X-API-Key AuthHeader parameterValue formula is flagged for confirmation against Salesforce Help before the credential is deployed, because assumption A5 records that grammar as UNVERIFIED in the cited skill."
+        }
+      ],
+      "status": "pending",
+      "runs": [],
+      "human_gate": true,
+      "notes": "Two contract frictions a reader should see rather than infer. First, standards/build-orchestration.md section 4 gives the access row the artefacts 'PermissionSet / PSG / sharing XML' and agents/metadata-builder/AGENT.md Step 2 repeats that list, so neither names NamedCredential or ExternalCredential; access is still the right type because it is the authentication and authorisation layer, its design-only owner is the one agent that emits metadata XML, and the integration row's owner (bulk-migration-planner) produces pattern decisions and contracts rather than XML. metadata-builder's own Step 3 settles the vocabulary question: the step's skills[] is authoritative for the step and the list in its Mandatory Reads is a floor, and apex/apex-named-credentials-patterns carries fenced, deployable XML for all three files. Second, this step depends_on M1-S01 for the field list its fieldPermissions must name, which is also why its permission-set checker runs at build scope. Round 2 adds the Case.Tier2_Notified_At__c field permission the verifier found missing (PV-001), the no-object-row reasoning behind it (A14), the scheduling user's membership in the D14 assignee set (A13), and the UNVERIFIED-grammar confirmation the manual test now carries to a human (verifier W3)."
+    },
+    {
+      "id": "M1-S03",
+      "milestone": "M1",
+      "type": "automation",
+      "title": "Case escalation trigger, publish-and-enqueue service, webhook Queueable with Finalizer retry, resend path and tests",
+      "agent": "apex-builder",
+      "skills": [
+        "apex/apex-design-patterns",
+        "apex/trigger-framework",
+        "apex/apex-queueable-patterns",
+        "apex/callouts-and-http-integrations",
+        "apex/apex-named-credentials-patterns",
+        "apex/platform-events-apex",
+        "apex/error-handling-framework",
+        "apex/test-class-standards",
+        "apex/apex-mocking-and-stubs",
+        "apex/apex-hardcoded-id-elimination"
+      ],
+      "templates": [
+        "templates/apex/TriggerHandler.cls",
+        "templates/apex/BaseService.cls",
+        "templates/apex/HttpClient.cls",
+        "templates/apex/ApplicationLogger.cls",
+        "templates/apex/tests/MockHttpResponseGenerator.cls",
+        "templates/apex/tests/TestDataFactory.cls"
+      ],
+      "decision_trees": [
+        "standards/decision-trees/automation-selection.md",
+        "standards/decision-trees/async-selection.md",
+        "standards/decision-trees/integration-pattern-selection.md"
+      ],
+      "inputs": {
+        "kind": "trigger",
+        "primary_sobject": "Case",
+        "api_version": "67.0",
+        "feature_summary": "When a Case owner changes to the Tier_2_Engineering queue on after update, publish a Tier2_Escalation__e event for the ops dashboard and enqueue one Queueable for the whole transaction that POSTs each escalated Case to the on-call tool through the OnCall_Tool Named Credential, retrying transient failures from a Finalizer and leaving an Integration_Failure__c row for every failure. This is one feature, not two: the second trigger, on Integration_Failure__c, does nothing but re-enter the same Queueable when an admin ticks Resend, so it adds a call site rather than a second unit of work - it emits no callout, no event and no class the escalation path does not already need.",
+        "include_logger": true,
+        "test_bulk_size": 200,
+        "async_hint": "conservative",
+        "detection": "After update on Case: OwnerId changed in this save to the Tier_2_Engineering queue (assumption A12). The queue developer name is resolved to a Group Id, never written as a literal: a private static Map<String, Id> populated once per transaction from SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue', read through a queueId(String devName) accessor - the shape in skills/apex/apex-hardcoded-id-elimination/references/examples.md Example 3, 'Group/Queue assignment for Case routing'. One SOQL per transaction, no Id literal, and the same code deploys to every org. A hardcoded Group Id is not the fallback: apex-builder's REFUSAL_SECURITY_GUARD clause (d) refuses it. The queue is assumed to exist (assumption A8).",
+        "enqueue_contract": "Exactly one Queueable per transaction carrying every escalated Case Id in that transaction, never one per Case (Q13). The enqueue ceiling is 50 per synchronous transaction and exactly one per asynchronous transaction, which is why a per-Case enqueue in the handler is wrong even though it passes a single-record test.",
+        "ordering_constraint": "The platform event publish happens in the escalating transaction's service layer, before the Queueable runs; the callout happens first inside the Queueable's execute() and the DML that writes Integration_Failure__c and stamps Case.Tier2_Notified_At__c happens after it. A callout cannot follow DML in the same transaction, which is decision D10's second half.",
+        "publish_result": "EventBus.publish never throws for a rejected event; the SaveResult is the only failure signal (Q11). A failed publish writes an Integration_Failure__c row with Severity__c Error, distinct from a failed webhook row.",
+        "retry_contract": "Transient: 429, 502, 503, 504 and connection timeouts, retried up to three times; permanent: 400, 401, 403, 404, 422, no retry (Q7). Retry is a Finalizer re-enqueue with an AsyncOptions MinimumQueueableDelayInMinutes backoff; the delay caps at 10 minutes and a Finalizer may re-enqueue a failed job five consecutive times, so three attempts sits inside both ceilings. HttpClient.retryOnTransient stays false because its backoff is a busy-wait against Apex CPU time.",
+        "finalizer_contract": "System.attachFinalizer is the first statement of execute(). On ParentJobResult.UNHANDLED_EXCEPTION the Finalizer writes or updates the Integration_Failure__c row and re-enqueues within the attempt budget; on SUCCESS it records completion (Q15). FinalizerContext exposes getAsyncApexJobId, getRequestId, getResult and getException - it has no getJobId.",
+        "idempotency": "Idempotency-Key header = Case Id plus the escalation timestamp captured at enqueue time, stored on Request_Payload__c so a resend replays the identical key (Q8, decision D6, assumption A10).",
+        "suppression": "Skip any Case whose Tier2_Notified_At__c is inside the last ten minutes; stamp it on webhook success (Q14, decision D13). AsyncOptions.DuplicateSignature is the rejected alternative and is not used.",
+        "resend_path": "A second trigger on Integration_Failure__c, after update, re-enqueues the same Queueable for rows whose Resend__c has just become true, then sets Status__c to Retrying. It reuses the Queueable and the Finalizer rather than duplicating the callout - which is why this stays one feature for one apex-builder invocation rather than a sixth step the feature tier has no room for.",
+        "picklist_values": "Status__c is written only as New, Retrying, Resent, Resolved or Abandoned; Severity__c only as Error or Warning. Both are required, restricted value sets from M1-S01 - a value the code invents makes the fault path itself fault (Q17).",
+        "sharing_and_security": "Classes are declared with sharing, running in the API 67.0 default user mode; SOQL uses WITH USER_MODE (Q23). Never emit WITH SECURITY_ENFORCED - it does not compile at 67.0.",
+        "callout_endpoint": "callout:OnCall_Tool plus a path, composed through templates/apex/HttpClient.cls. No literal hostname, no Apex-set X-API-Key or Authorization header, no reading of the credential value (Q5).",
+        "volume": "15 escalations a day, peaking at 2 an hour; worst single burst 50 in five minutes (Q22). One callout per Case (assumption A6) keeps a 50-Case burst inside the 100-callouts-per-transaction ceiling with an explicit setTimeout well under the 120-second cumulative budget.",
+        "tests": "HttpCalloutMock through templates/apex/tests/MockHttpResponseGenerator.cls covering a success, one transient code, one permanent code and the 401 path; enqueue inside Test.startTest()/Test.stopTest(); route mock responses by path substring rather than asserting on the request endpoint. Assert on the decision the job recorded - the failure row, the stamp, the Status__c value - not on how many chain links the test runtime happened to drive. Two rules the checkers enforce on the test classes themselves: any direct EventBus.publish inside a test method assigns its result and pairs it with Test.getEventBus().deliver(), because check_platform_events_apex.py exits 1 on any finding at any severity and a discarded publish result inside a test is enough to fail the step; and no test seeds a Group Id as a literal - queues are created or queried by DeveloperName.",
+        "assumptions": [
+          "A1",
+          "A2",
+          "A6",
+          "A7",
+          "A8",
+          "A10",
+          "A11",
+          "A12"
+        ],
+        "unverified": "UNVERIFIED (from skills/apex/apex-named-credentials-patterns/references/code-examples.md section 6): whether the HttpRequest handed to HttpCalloutMock.respond() still carries the literal callout:OnCall_Tool/... string or a platform-resolved endpoint. Route mock responses by path substring, which is present either way, and do not assert on getEndpoint(). UNVERIFIED (from skills/apex/apex-queueable-patterns/SKILL.md): the runtime exception text when Database.AllowsCallouts is missing, and whether the single-child-per-parent rule is enforced during Test.stopTest() - the requirement is grounded, the message text and the test-time enforcement are not, so a passing chained-job test is not evidence either way."
+      },
+      "outputs": [
+        "artefacts/M1-S03/triggers/CaseTrigger.trigger",
+        "artefacts/M1-S03/triggers/CaseTrigger.trigger-meta.xml",
+        "artefacts/M1-S03/triggers/IntegrationFailureTrigger.trigger",
+        "artefacts/M1-S03/triggers/IntegrationFailureTrigger.trigger-meta.xml",
+        "artefacts/M1-S03/classes/CaseTriggerHandler.cls",
+        "artefacts/M1-S03/classes/CaseTriggerHandler.cls-meta.xml",
+        "artefacts/M1-S03/classes/IntegrationFailureTriggerHandler.cls",
+        "artefacts/M1-S03/classes/IntegrationFailureTriggerHandler.cls-meta.xml",
+        "artefacts/M1-S03/classes/Tier2EscalationService.cls",
+        "artefacts/M1-S03/classes/Tier2EscalationService.cls-meta.xml",
+        "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls",
+        "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls-meta.xml",
+        "artefacts/M1-S03/classes/Tier2WebhookFinalizer.cls",
+        "artefacts/M1-S03/classes/Tier2WebhookFinalizer.cls-meta.xml",
+        "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls",
+        "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls-meta.xml",
+        "artefacts/M1-S03/classes/Tier2WebhookQueueableTest.cls",
+        "artefacts/M1-S03/classes/Tier2WebhookQueueableTest.cls-meta.xml",
+        "artefacts/M1-S03/classes/IntegrationFailureResendTest.cls",
+        "artefacts/M1-S03/classes/IntegrationFailureResendTest.cls-meta.xml"
+      ],
+      "depends_on": [
+        "M1-S01",
+        "M1-S02"
+      ],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S03",
+          "scope": "step",
+          "description": "Seven rules over this step's .cls and .trigger files. The four that fail the run are QP001 System.enqueueJob inside a loop, QP004 a callout after DML in the same AllowsCallouts execute() body, QP006 a test calling System.enqueueJob outside Test.startTest()/stopTest(), and QP007 an @future method with a non-primitive parameter; QP002, QP003 and QP005 are WARN or ADVISORY and are reported without failing. Declared without --strict, which would promote the WARNs and make the chain-depth advisory a blocker. Verified on a fixture of the trigger, handler, service, Queueable, Finalizer and test: 'Scanned 5 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY', exit 0 both with and without --strict.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py --manifest-dir artefacts/M1-S03 --fail-on HIGH",
+          "scope": "step",
+          "description": "Ten rules over the callout path. --fail-on HIGH is the ERROR-only line for this checker, whose top severity is CRITICAL rather than ERROR: it fails on CRITICAL (DML before a callout in one method body; a send reachable from a trigger) and on HIGH (a literal http(s):// endpoint instead of callout:, a callout inside a loop, a Queueable calling out without Database.AllowsCallouts, a test with no Test.setMock or with setMock after startTest, a swallowed CalloutException) while leaving the MEDIUM, LOW and REVIEW advisories - missing setTimeout, a body on a GET, an unreleased savepoint - reported and non-failing. Verified on a fixture of this step's shape: 'Scanned 5 Apex file(s); 0 callout finding(s)', exit 0 at the default --fail-on LOW and at HIGH. The per-Case callout loop does not trip rule 4 because the call goes through templates/apex/HttpClient.cls rather than a bare Http().send(), which is one reason decision D4 mandates that template.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S03",
+          "scope": "step",
+          "description": "At step scope this reads only the Apex, so the rules that apply are the publish-side ones: R1 a discarded EventBus.publish result - the SaveResult is the only signal a publish was rejected, which is exactly what Q11 requires be checked - R2 a publish inside a loop, and R7 a test that publishes without calling Test.getEventBus().deliver(). It exits 1 on any finding at any severity. The event definition's own R6 publishBehavior assertion is carried by the M1-S01 run of the same checker, because the __e file is that step's artefact; this run cannot see it.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "Every .cls-meta.xml and .trigger-meta.xml under artefacts/M1-S03 parses, with apiVersion 67.0 and the trigger events declared on the two ApexTrigger files.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "Records skipped-not-applicable and names M1-S05. This is the Apex exception in standards/build-orchestration.md section 5: apex-builder's Output Contract names no manifest, section 4's borrowed-agent condition 2 forbids declaring an output the owning agent does not produce, so this step declares no package.xml of its own and the build-level manifest step M1-S05 - type docs, owned by metadata-builder, depends_on this step - carries its ApexClass and ApexTrigger members.",
+          "expected": "skipped-not-applicable, with M1-S05 named as the step carrying these members"
+        },
+        {
+          "type": "manual",
+          "description": "Two-point code read at the M1 gate, tickable from this step's artefacts alone.",
+          "expected": "A reviewer opens Tier2EscalationService.cls and Tier2WebhookQueueable.cls and confirms (a) the EventBus.publish call is in the service, in the escalating transaction, and its List<Database.SaveResult> is inspected with a failure writing an Integration_Failure__c row - not discarded, and not moved inside the Queueable; (b) no class anywhere sets an X-API-Key or Authorization header, reads a credential value, or names a literal hostname, and every endpoint is composed as callout:OnCall_Tool plus a path through templates/apex/HttpClient.cls."
+        }
+      ],
+      "status": "pending",
+      "runs": [],
+      "human_gate": false,
+      "notes": "This is the largest step in the plan and it is one step because the feature tier allows five and because splitting it would split one apex-builder feature across two invocations, which its own refusal rules treat as out of scope. Ten classes and triggers is inside its twelve-class ceiling for kind: trigger. The resend path lives here rather than in a step of its own for the same reason: it re-enqueues the Queueable this step already emits. Assumptions A1, A2, A6, A7, A8, A10, A11 and A12 each carry a matching row in assumptions[] naming this step; A1 is the open informational question Q43, which nothing in this step depends on structurally but which would change the story if an existing manual paging step turns out to need retiring. Round 2: apex/apex-hardcoded-id-elimination is now cited and the Group-by-DeveloperName lookup is bound in inputs.detection, so the builder has a grounded shape instead of a choice between freestyling and a refusal (PV-002). The resend trigger stays in this step and the exception is recorded rather than hidden (verifier W6): splitting it out would be a sixth step, which the feature tier's five-step ceiling does not allow, and the argument that it is one feature is now stated in feature_summary where apex-builder's own refusal check will read it. inputs.tests now carries the publish-in-test rule that would otherwise fail the platform-events checker on a REVIEW finding (verifier W7)."
+    },
+    {
+      "id": "M1-S04",
+      "milestone": "M1",
+      "type": "automation",
+      "title": "Hourly channel-health check: Schedulable Apex, threshold queries and the Support Engineering alert",
+      "agent": "apex-builder",
+      "skills": [
+        "apex/apex-scheduled-jobs",
+        "apex/apex-queueable-patterns",
+        "apex/apex-outbound-email-patterns",
+        "apex/error-handling-framework",
+        "apex/test-class-standards"
+      ],
+      "templates": [
+        "templates/apex/ApplicationLogger.cls",
+        "templates/apex/tests/TestDataFactory.cls"
+      ],
+      "decision_trees": [
+        "standards/decision-trees/async-selection.md",
+        "standards/decision-trees/automation-selection.md"
+      ],
+      "inputs": {
+        "kind": "schedulable",
+        "api_version": "67.0",
+        "feature_summary": "An hourly scheduled job that counts Integration_Failure__c rows created in the last hour and Cases stamped with Tier2_Notified_At__c in the last day, and emails Support Engineering from the org-wide address when more than three failures landed in the hour or when no success has occurred in 24 hours while escalations exist.",
+        "include_logger": true,
+        "thresholds": "Alert when Integration_Failure__c rows created in the last hour exceed three, OR when no Case has been stamped with Tier2_Notified_At__c in the last 24 hours while at least one escalation occurred in that window (Q24).",
+        "cadence": "Hourly. The CRON literal is six or seven whitespace-separated fields in the order Seconds Minutes Hours Day_of_month Month Day_of_week Optional_year, with '?' in one of the two day fields - the checker rejects anything else.",
+        "shape": "Schedulable execute() only enqueues a Queueable and does nothing else: scheduled Apex runs under synchronous governor limits and cannot make callouts, and the async tree's own default is that a Schedulable body delegates immediately (decision D11).",
+        "sender": "The org-wide email address support-noreply@acme.example, set on the outbound message. It has no metadata type and cannot be deployed by this build - assumption A4 records it as a deploy prerequisite that must already be verified in the target org.",
+        "recipients": "Support Engineering (Q24). The distribution list address is taken from the deploy-order note rather than hardcoded per environment.",
+        "running_user": "Scheduled Apex runs as the user who scheduled the job - not the escalating user and not Automated Process. That user needs read on Integration_Failure__c and on Case.Tier2_Notified_At__c, and in API 67.0 default user mode both queries enforce their FLS with no keyword at all. Tier2_Webhook_Admin from M1-S02 now carries both halves: the Integration_Failure__c object and field permissions and the Case.Tier2_Notified_At__c field permission (PV-001). The scheduling user is inside the decision D14 assignee set by that decision's own wording - it is the union of everyone who can escalate a Case and the user who schedules this job - and assumption A13 records that membership as something to confirm rather than assume.",
+        "scheduling": "System.schedule is a post-deploy step recorded in the deploy-order note, not something this step performs. Aborting a prior job of the same name is required before rescheduling - a duplicate job name throws.",
+        "tests": "System.schedule inside Test.startTest()/Test.stopTest(); assert the CronTrigger or AsyncApexJob row exists and that the alert branch fires on seeded data and stays silent below the thresholds.",
+        "assumptions": [
+          "A4",
+          "A11",
+          "A13"
+        ],
+        "unverified": "None on the mechanism. The library disagrees with itself on whether a schedule-triggered Flow supports an hourly cadence - skills/flow/flow-time-based-patterns lists hourly as available, skills/flow/scheduled-flows says the granularity may not fit - and decision D11 routes away from Flow rather than resolving that disagreement."
+      },
+      "outputs": [
+        "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls",
+        "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls-meta.xml",
+        "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+        "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls-meta.xml",
+        "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+        "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls-meta.xml"
+      ],
+      "depends_on": [
+        "M1-S01"
+      ],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04",
+          "scope": "step",
+          "description": "Six rules over the Schedulable source. The three that fail the run are R2 a direct HTTP callout from scheduled Apex, R3 a malformed CRON literal - not six or seven fields, or neither day field '?' - and R5 a test calling System.schedule outside a Test.startTest()/stopTest() bracket. R1 (an execute() doing more than dispatch: over one DML or over two SOQL) is WARN, R4 (a hardcoded job name with no abort of a prior job) is WARN, R6 is ADVISORY and never fails. Declared without --strict so the WARN tier stays advisory. Verified on a fixture of the Schedulable, its Queueable and its test with the CRON literal '0 0 * * * ?': '0 ERROR, 0 WARN, 0 ADVISORY', exit 0. Note the canonical file name is used - check_apex_scheduled.py in the same directory is a backward-compatible alias that delegates to it.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04",
+          "scope": "step",
+          "description": "The Schedulable delegates to a Queueable, so the same four failing rules apply here as at M1-S03: an enqueue inside a loop, a callout after DML in an AllowsCallouts execute(), a test enqueueing outside the startTest/stopTest bracket, and an @future with a non-primitive parameter. This Queueable makes no callout, so QP004 is inert by construction; QP006 is the one that matters for the test class. Declared without --strict. Verified on a fixture of these three classes: 'Scanned 3 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY', exit 0.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "checker",
+          "command": "python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04",
+          "scope": "step",
+          "description": "This is the step's empty-directory guard, and it is declared for that behaviour specifically (PV-003). Run against an empty artefacts/M1-S04 it prints 'ISSUE: No .cls or .trigger files found under <dir> - confirm --manifest-dir points to a Salesforce metadata source directory' and exits 1, where both other checkers on this step exit 0 on nothing, the xml test has nothing to parse and the manifest test is skipped-not-applicable under the Apex exception. It is not only a presence check: on files that do exist it fails on rollback-unsafe logging, AuraHandledException boundary violations, BatchApexErrorEvent truncation risks and bulk publish anti-patterns, which is why apex/error-handling-framework was already in this step's skills[] before the verifier asked for a test that can fail. Verified both ways on fixtures: empty directory exit 1 with that ISSUE line, and this step's three classes 'No issues found', exit 0.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "The three .cls-meta.xml files under artefacts/M1-S04 parse, each at apiVersion 67.0.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "Records skipped-not-applicable and names M1-S05, for the same reason as M1-S03: apex-builder's Output Contract names no manifest, so the three ApexClass members here are carried by the build-level manifest step M1-S05.",
+          "expected": "skipped-not-applicable, with M1-S05 named as the step carrying these members"
+        },
+        {
+          "type": "manual",
+          "description": "Prerequisite and threshold read at the M1 gate, tickable from this step's artefacts.",
+          "expected": "A reviewer confirms (a) the CRON literal in Tier2ChannelHealthSchedulable.cls is hourly and the Schedulable's execute() does nothing but enqueue; (b) the two thresholds in Tier2ChannelHealthQueueable.cls are the ones Q24 stated - more than three failures in an hour, or no success in 24 hours while escalations exist; (c) the sender is support-noreply@acme.example and a named person confirms that org-wide address is already verified in the target org, because assumption A4 records that no step in this build can create or verify it."
+        }
+      ],
+      "status": "pending",
+      "runs": [],
+      "human_gate": false,
+      "notes": "This is a second apex-builder step rather than extra classes on M1-S03 because apex-builder takes one kind and one feature per invocation, and a channel-health monitor is a different feature from the escalation webhook. Its skills[] cites apex/apex-scheduled-jobs, which is not in apex-builder's own Mandatory Reads - the AGENT.md's guidance is to prefer skills the owning agent already reads, and this is the exception: it is where the Schedulable element set and the checker live, and metadata-builder's equivalent rule states the step's skills[] is authoritative for the step. Assumptions A4 and A11 carry matching rows naming this step. Round 2 adds the check_error_handling_framework.py test, which is the only automated test on this step that fails on an absent artefact (PV-003); its skill was already cited, so nothing new entered the reading list. The step also now states that the scheduling user is inside the D14 assignee set and why (PV-001, assumption A13)."
+    },
+    {
+      "id": "M1-S05",
+      "milestone": "M1",
+      "type": "docs",
+      "title": "Build-level package.xml and the compiled deploy order, including the Apex members M1-S03 and M1-S04 cannot manifest",
+      "agent": "metadata-builder",
+      "skills": [
+        "admin/change-management-and-deployment"
+      ],
+      "templates": [],
+      "decision_trees": [],
+      "inputs": {
+        "api_version": "67.0",
+        "purpose": "The one place the whole build is addressable as a unit. standards/build-orchestration.md section 5 makes this step mandatory for this plan: apex-builder's Output Contract names no manifest, so the ApexClass and ApexTrigger members emitted by M1-S03 and M1-S04 exist in no package.xml until this step aggregates them.",
+        "members": {
+          "CustomObject": "Integration_Failure__c, Tier2_Escalation__e",
+          "CustomField": "the twelve Integration_Failure__c fields and Case.Tier2_Notified_At__c",
+          "ExternalCredential": "OnCall_Tool_EC",
+          "NamedCredential": "OnCall_Tool",
+          "PermissionSet": "Tier2_Webhook_Admin",
+          "ApexClass": "CaseTriggerHandler, IntegrationFailureTriggerHandler, Tier2EscalationService, Tier2WebhookQueueable, Tier2WebhookFinalizer, Tier2EscalationServiceTest, Tier2WebhookQueueableTest, IntegrationFailureResendTest, Tier2ChannelHealthSchedulable, Tier2ChannelHealthQueueable, Tier2ChannelHealthTest",
+          "ApexTrigger": "CaseTrigger, IntegrationFailureTrigger"
+        },
+        "version": "67.0 - one version across the whole manifest (assumption A11)",
+        "deploy_order": "ExternalCredential, NamedCredential, PermissionSet, then the object and field metadata, then the Apex. Each artefact names the one before it, so a single combined deploy can succeed; deploying in stages gives a readable failure when a reference is wrong.",
+        "manual_steps_the_deploy_does_not_perform": "1) Confirm the X-API-Key AuthHeader parameterValue formula against Salesforce Help before the External Credential is deployed - assumption A5 records that merge-field grammar as UNVERIFIED in the cited skill, which says to confirm it or build the header in Apex instead. 2) A human enters the API key in Setup against the OnCall_Tool_EC principal - secrets are never in the repo, so no deploy can do it. 3) A human assigns Tier2_Webhook_Admin to the assignee set decision D14 defines: every user who can escalate a Case, plus the user who will schedule the hourly job. 4) A human runs System.schedule for the hourly health check, aborting any prior job of the same name. 5) The org-wide address support-noreply@acme.example must already be verified (assumption A4).",
+        "validate_only_command": "The deploy-order note records python3 scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone M1 --mode manifest as the human's own dry run. It is written as text for a human and is never run by an agent in this loop.",
+        "assumptions": [
+          "A7",
+          "A11"
+        ],
+        "unverified": "None."
+      },
+      "outputs": [
+        "artefacts/M1-S05/package.xml",
+        "artefacts/M1-S05/deploy-order.md"
+      ],
+      "depends_on": [
+        "M1-S01",
+        "M1-S02",
+        "M1-S03",
+        "M1-S04"
+      ],
+      "acceptance_tests": [
+        {
+          "type": "checker",
+          "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S05",
+          "scope": "step",
+          "description": "Reads this step's own manifest and applies the directory-level checks - a destructive manifest with no companion package.xml, an invalid or development-only testLevel, a malformed types block. Declared without --strict: ERROR and CRITICAL exit 1 while HIGH, MEDIUM, WARN and LOW are printed and do not fail, which matters because ExternalCredential and NamedCredential are both on the checker's risky-types list and legitimately shipped here. Verified on a fixture of this build's merged manifest: exactly two WARN findings - 'manifest includes ExternalCredential' and 'manifest includes NamedCredential', each asking for explicit review and smoke tests - and exit 0. The build-wide run of the same checker is the M1 milestone test.",
+          "expected": "exit 0"
+        },
+        {
+          "type": "xml",
+          "description": "artefacts/M1-S05/package.xml parses.",
+          "expected": "all parse"
+        },
+        {
+          "type": "manifest",
+          "description": "Every member in this step's package.xml resolves to a file somewhere under artefacts/, and no artefact file in M1-S01 through M1-S04 lacks a member here. This is the check that catches the Apex exception failing silently - an ApexClass emitted by M1-S03 or M1-S04 that never reached this manifest.",
+          "expected": "consistent"
+        },
+        {
+          "type": "manual",
+          "description": "Deploy-order read at the M1 gate.",
+          "expected": "A reviewer confirms deploy-order.md lists the five manual steps no deploy performs - confirming the AuthHeader formula grammar, entering the API key against the principal, assigning Tier2_Webhook_Admin to the D14 assignee set, scheduling the hourly job, and confirming the org-wide sender is verified - and that the mock_deploy.py command is written as text for a human to run rather than as anything an agent executes."
+        }
+      ],
+      "status": "pending",
+      "runs": [],
+      "human_gate": false,
+      "notes": "Type docs, owned by metadata-builder, which standards/build-orchestration.md section 4 splits from build-doc-keeper's half of the docs row: the workbook, the traceability matrix, the UAT pack and the compiled acceptance criteria are the doc keeper's and appear on no step here, because at the feature tier the workbook is optional and traceability is produced from the plan record rather than built as a step. This step is only the package.xml and the deploy-order note. Round 2 adds the UNVERIFIED AuthHeader-grammar confirmation as the first manual deploy step, so the high-risk assumption A5 reaches a human instead of living only in the plan record (verifier W3)."
+    }
+  ]
+}

@@ -1,0 +1,316 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T10-46-11Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-46-11Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-46-11Z.json",
+  "outcome": "completed",
+  "summary": "Step M1-S04 of build tier2-webhook, owned by apex-builder, executed inline and set to 'built'. build_plan.py next listed the step, set-status running claimed it, the owning agent's Plan was run end to end under the artefact-path clause, check-outputs returned ok on all six declared outputs, and set-status built recorded the run against the owning agent's envelope. Five files landed that the plan did not declare - verbatim copies of ApplicationLogger.cls and TestDataFactory.cls with their meta XML, forced by apex-builder Step 6's provenance rule, plus deploy-order.md - which caps confidence at MEDIUM. The owning agent returned no refusal but a P0 finding: ApplicationLogger's own metadata prerequisites are shipped by no step of this build, so the package is not deployable until a human settles it at the M1 gate.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM row: five undeclared artefacts appeared under artefacts/M1-S04/, and two optional inputs of the owning agent (test_bulk_size, async_hint) had no value from any of the three Step 5 sources. Everything the HIGH row asks for otherwise held - the step was in next, every required input resolved from the plan, check-outputs exited 0, and no file was written outside artefacts/M1-S04/.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S04",
+    "reason": "(not supplied - this is a first run of a pending step, not a re-run)",
+    "credentials_seen": "none - no value in steps[M1-S04].inputs{} matched a credential shape, so nothing needed [REDACTED]"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "build_plan.py next, set-status and check-outputs each did exactly what the step needed and refused nothing, so no plan state was written by hand at any point in this run.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's three declared checkers each ran verbatim from the build directory and resolved through the skills symlink exactly as written, with no path substitution needed.",
+      "domain": "testability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/skills",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Noticed that a step's templates[] and outputs[] can disagree with no gate catching it: the provenance rule forces four files into the package that check-outputs will never confirm, and amend-step cannot fix it once the step has left pending.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "query": "section 2 amend-step preconditions vs section 4 Apex row note"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Noticed that apex-builder has no build-layer contract at all - the AGENT.md grep for artefact/build_dir/step_id/.sfskills returns zero - so the artefact-path clause is honourable only because the owner was run inline rather than as a separate agent that would have persisted to its own default_output_dir.",
+      "domain": "agent-contract",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/apex-builder/AGENT.md",
+        "count": 0
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The runner's Wave 10 persistence clause names docs/reports/build-step-runner/ while this invocation was constrained to write only under the build directory; both envelopes were written under the build directory only, which the envelope schema's build-layer path pattern permits.",
+      "domain": "deliverable-contract",
+      "evidence": {
+        "source": "input",
+        "path": "agents/_shared/schemas/output-envelope.schema.json",
+        "query": "report_path pattern, third alternative"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step is built and its declared tests have not been recorded by the agent that owns that record.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because tests/M1-S04/results.json with passed:true is what gates the step's move from built to tested, and this agent never runs the step's acceptance tests."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Two findings on this step - the unmet logger prerequisite and the missing Apex foundations step - belong in the build's decisions log before the M1 gate.",
+      "domain": "documentation",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because it owns decisions.md and traceability.md, and a P0 deploy prerequisite discovered during a build is exactly the kind of decision the M1 gate has to see."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/apex-scheduled-jobs",
+      "path": "skills/apex/apex-scheduled-jobs/SKILL.md",
+      "used_for": "Schedulable-as-dispatcher shape, the six-field CRON grammar and the hourly ceiling, the post-deploy abort-then-schedule runbook, and the CronTrigger/AsyncApexJob test assertions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "Queueable worker shape and the rule that the test's async hand-off must sit inside the startTest/stopTest bracket"
+    },
+    {
+      "type": "skill",
+      "id": "apex/error-handling-framework",
+      "path": "skills/apex/error-handling-framework/SKILL.md",
+      "used_for": "the ApplicationLogger logging path, and its references/code-examples.md section 9 deploy order, which names Application_Log__c and Logger_Setting__mdt as hard prerequisites of shipping ApplicationLogger"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "assertion style, no SeeAllData, and the rule that a referenced templates/apex/tests class must ship in the same manifest"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-outbound-email-patterns",
+      "path": "skills/apex/apex-outbound-email-patterns/SKILL.md",
+      "used_for": "setOrgWideEmailAddressId rather than setSenderDisplayName, allOrNone=false meaning nothing throws so SendEmailResult must be inspected, setSaveAsActivity needing a whatId, and the 5,000/day recipient-counted cap"
+    },
+    {
+      "type": "template",
+      "id": "apex/ApplicationLogger.cls",
+      "path": "templates/apex/ApplicationLogger.cls",
+      "used_for": "shipped verbatim (diff empty) and called for info/warn/error/flush; every logging identifier in the emitted code is quoted from this file"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "shipped verbatim (diff empty); the test seeds its Case through createCases(count, accountId, overrides)"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Clock (cron) - decision D11 routes the hourly check to Schedulable Apex over a schedule-triggered Flow",
+      "used_for": "confirming the async surface the step's kind=schedulable already names, rather than re-deciding it"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Apex over Flow for the notification-channel monitor, per decision D11 and the plan's own citation",
+      "used_for": "the Apex-vs-declarative half of the same choice; no branch was re-opened by this step"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step records and agent eligibility, section 5 The Apex exception (no package.xml on an apex-builder step), and section 8's rule that build_plan.py is the only writer of plan state"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the API 67.0 row of the Apex security idiom table (default user mode, WITH SECURITY_ENFORCED removed) and Gate C self-verification for code-emitting agents"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-gates",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate B symbol grounding and Gate D's computed-confidence rule, which caps this run at MEDIUM because no compile check could run"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence pair, the atomic-write rule, the redaction requirement on echoed inputs, and the dimensions_skipped states"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checking that no refusal condition applied - the owning agent returned findings, not a refusal, so the step is built rather than blocked"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "which steps[] fields this agent owns - status and runs[] only, written through build_plan.py"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming classes/ is the source-format home for .cls plus .cls-meta.xml pairs, so the artefact tree is one the tester's checks and any later deploy can read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming ApexClass is a Metadata API type, so the step's declared outputs are deployable metadata rather than notes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step derives from, so the owning agent received the plan's cells rather than a paraphrase of the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the Q-id convention echoed into this envelope (Q16, Q19, Q24) so the doc keeper can join step to requirement without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "screening every echoed input for credential shapes before it reached this envelope; none matched, so nothing was redacted"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step is built and its declared tests are the tester's to run and record; this agent never runs them and never auto-chains."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once the step is tested, the P0 logger prerequisite and the missing Apex foundations step belong in decisions.md before the M1 gate."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S04",
+    "milestone": "M1",
+    "owning_agent": "apex-builder",
+    "owning_agent_build_aware": false,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/apex-builder/AGENT.md -> 0",
+    "owning_agent_invocation": "inline - the owning agent's AGENT.md, its GATES.md and its Mandatory Reads were read and its Plan executed in this session, so the artefact-path clause was honoured directly and no relocation was needed",
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-44-00Z.json",
+    "terminal_status": "built",
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/ApplicationLogger.cls",
+        "declared": false,
+        "why": "apex-builder Step 6 template provenance; no earlier step declares it"
+      },
+      {
+        "path": "artefacts/M1-S04/classes/ApplicationLogger.cls-meta.xml",
+        "declared": false,
+        "why": "meta sibling of the above"
+      },
+      {
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls",
+        "declared": false,
+        "why": "apex-builder Step 6 template provenance; referenced by the test's @TestSetup"
+      },
+      {
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls-meta.xml",
+        "declared": false,
+        "why": "meta sibling of the above"
+      },
+      {
+        "path": "artefacts/M1-S04/deploy-order.md",
+        "declared": false,
+        "why": "named by apex-builder's Output Contract item 2 as where template provenance is recorded; excluded from any deploy tree by mock_deploy's *.md rule"
+      }
+    ],
+    "missing_outputs": [],
+    "undeclared_artefacts": 5,
+    "relocations": [],
+    "files_written_outside_step_artefacts": [
+      ".sfskills/builds/tier2-webhook/envelopes/M1-S04/ (both envelopes and their markdown twins - the path this agent's own Output Contract names)"
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S04 running --started 2026-09-12T10-36-06Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S04 built --run-agent apex-builder --envelope envelopes/M1-S04/2026-09-12T10-44-00Z.json --result \"5 classes + 5 meta XML at 67.0; 3 declared checkers exit 0; P0: ApplicationLogger prerequisites Application_Log__c and Logger_Setting__mdt shipped by no step\" --started 2026-09-12T10-36-06Z"
+    ],
+    "inputs_unresolved_optional": [
+      "test_bulk_size",
+      "async_hint",
+      "namespace",
+      "primary_sobject"
+    ],
+    "next_command": "python3 scripts/build_plan.py next .sfskills/builds/tier2-webhook/plan.json  # then /test-build-step for M1-S04"
+  }
+}

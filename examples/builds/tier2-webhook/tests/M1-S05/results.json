@@ -1,0 +1,13 @@
+{
+  "step_id": "M1-S05",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "A reviewer confirms deploy-order.md lists the five manual steps no deploy performs - confirming the AuthHeader formula grammar, entering the API key against the principal, assigning Tier2_Webhook_Admin to the D14 assignee set, scheduling the hourly job, and confirming the org-wide sender is verified - and that the mock_deploy.py command is written as text for a human to run rather than as anything an agent executes."
+  ]
+}

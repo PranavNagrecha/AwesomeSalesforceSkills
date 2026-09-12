@@ -1,0 +1,336 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T09-34-25Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T09-34-25Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T09-34-25Z.json",
+  "summary": "Step M1-S01 (type object-model) built: Integration_Failure__c with its twelve custom fields including the two restricted picklists Status__c (New/Retrying/Resent/Resolved/Abandoned, default New, required) and Severity__c (Error/Warning), Case.Tier2_Notified_At__c, the Tier2_Escalation__e platform event with eventType HighVolume and publishBehavior PublishAfterCommit and five inline payload fields, plus package.xml at version 67.0 and deploy-order.md. 17 files written, exactly the 17 the step declared, nothing undeclared. All three declared checkers exited 0 on the first pass with no repair; every XML file parses; check-outputs ok. Nothing was deployed and no sf command was run.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 HIGH requires every emitted element to trace to the Step 3 inventory built from the step's cited skills. Two FieldType enum values the step needs \u2014 DateTime (three fields) and Checkbox plus its defaultValue element (Resend__c) \u2014 appear in no fenced example in any of the four cited skills or in metadata-builder's eight floor skills, so they were grounded in admin/custom-field-creation, which the step does not cite. Five further elements are written but unbound by the plan and are flagged in deploy-order.md section 5.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S01",
+    "api_version": "67.0",
+    "source": "plan.json steps[M1-S01].inputs \u2014 used verbatim; no value taken from the invocation message",
+    "credentials_present": false,
+    "redactions": "none \u2014 this step's inputs carry no credential-shaped value (the External Credential and API key are M1-S02's)"
+  },
+  "dimensions_compared": [
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "10 of 12 field-type shapes and every object/platform-event element trace to a fenced example in the step's cited skills. <type>DateTime</type> and <type>Checkbox</type>/<defaultValue> do not: grep for them across the four cited skills and metadata-builder's eight floor skills returns nothing. They were taken from admin/custom-field-creation/references/metadata-examples.md (the FieldType enum list at line 64, quoted from api_meta.txt:45718-45765, and the Checkbox example in section 4) \u2014 a real library skill, but one the step's skills[] does not name.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "amend-step M1-S01 to add admin/custom-field-creation to skills[]; it is the library's owner of CustomField XML and admin/object-creation-and-design's own description delegates field design to it."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-grounding",
+      "observation": "The step's inputs.unverified asserts that every element and enum resolves to a fenced example in one of three named files; DateTime and Checkbox do not appear in any of them.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -rn '<type>DateTime</type>|<type>Checkbox</type>' over the four cited skills",
+        "count": 0,
+        "path": "skills/admin/object-creation-and-design/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-grounding",
+      "observation": "An object-model step writing twelve CustomFields cites no field-creation skill, and admin/object-creation-and-design's own description says 'NOT for designing the fields on the object - use admin/custom-field-creation'.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/object-creation-and-design/SKILL.md",
+        "query": "frontmatter description line 3"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "fls",
+      "observation": "Status__c is required true, and permissions for required fields cannot be retrieved or deployed (api_meta.txt:95020-95021), so M1-S02's 'every custom field readable and editable' covers eleven fields, not twelve \u2014 a fieldPermissions entry for Status__c would fail that deploy.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-field-creation/references/metadata-examples.md",
+        "query": "section 9, Contract_Number__c deliberately absent"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "sharing",
+      "observation": "externalSharingModel is a second OWD that defaults on in an Experience Cloud org, and nothing in the plan, the clarifications or D12 names it; the element was left out rather than guessed and is flagged in deploy-order.md section 5.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S01].inputs.custom_object"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "object-design",
+      "observation": "inputs.custom_object.optional_feature_trio states the all-or-none rule for enableBulkApi/enableSharing/enableStreamingApi but not whether the three are true or absent; both shapes clear every declared checker, and true was written following the only fenced example the cited skills carry.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S01].inputs.custom_object.optional_feature_trio"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "testability",
+      "observation": "All three declared checkers exited 0 on the first pass with no repair loop, because the plan had already named each checker's full exit-1 set in the step inputs after verifier warning W2.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S01",
+        "count": 3
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step is built and its molecular tests have not been run by this agent.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It runs the three declared checkers plus the always-on xml and manifest checks verbatim from the build directory and writes tests/M1-S01/results.json, which is what gates tested."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/SKILL.md",
+      "used_for": "CustomObject element set, SharingModel enum, nameField AutoNumber shape, the enableBulkApi/enableSharing/enableStreamingApi trio, the 1000-character description limit and Gotchas 6/8/10"
+    },
+    {
+      "type": "skill",
+      "id": "admin/picklist-and-value-sets",
+      "path": "skills/admin/picklist-and-value-sets/references/metadata-examples.md",
+      "used_for": "restricted valueSet / valueSetDefinition / CustomValue shape and the rule that default is required on every value"
+    },
+    {
+      "type": "skill",
+      "id": "apex/platform-events-apex",
+      "path": "skills/apex/platform-events-apex/references/code-examples.md",
+      "used_for": "Artifact 1 \u2014 the __e definition with eventType HighVolume, publishBehavior PublishAfterCommit, inline fields, and the rule not to declare EventUuid or ReplayId"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-error-monitoring",
+      "path": "skills/flow/flow-error-monitoring/references/metadata-examples.md",
+      "used_for": "the failure-record shape and its LongTextArea requirement \u2014 an error-log object with no LongTextArea field is an ERROR because a truncated fault message looks like a log row and is not"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-field-creation",
+      "path": "skills/admin/custom-field-creation/references/metadata-examples.md",
+      "used_for": "NOT CITED BY THE STEP \u2014 the FieldType enum (DateTime, Checkbox) and the Checkbox/Number/Lookup/Text field shapes the four cited skills do not carry; see dimensions_skipped.element-grounding"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "package.xml types/members/version shape and the dependency-driven deployment order deploy-order.md is written from"
+    },
+    {
+      "type": "template",
+      "id": "apex/custom_objects/Application_Log__c",
+      "path": "templates/apex/custom_objects/Application_Log__c.object-meta.xml",
+      "used_for": "the canonical log-object field shapes \u2014 LongTextArea with length + visibleLines, Lookup with referenceTo/relationshipName/relationshipLabel, Text with length/unique/externalId"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table (object-model is metadata-builder's in design-only), section 5 on who runs the tests, section 8 on a knowledge gap being a signal to deepen a skill"
+    },
+    {
+      "type": "decision_tree",
+      "id": "sharing-selection",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1 \u2014 Public Read-Only / Public Read-Write -> Tighten OWD before adding anything",
+      "used_for": "citing, not re-deciding, D12's Private sharingModel"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q11 \u2014 Cross-system fan-out (subscriber is NOT Salesforce) -> Platform Event + Pub/Sub API gRPC subscriber",
+      "used_for": "citing, not re-deciding, D9's platform event for the external ops dashboard"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "it runs M1-S01's declared checkers plus the always-on xml and manifest checks verbatim and writes tests/M1-S01/results.json"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once the step is tested it carries the five flagged items in deploy-order.md section 5 into decisions.md and the traceability rows"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "step_type": "object-model",
+    "build_mode": "design-only",
+    "scale": "feature",
+    "invocation_path": "run under build-step-runner \u2014 this agent set no step status itself (metadata-builder Plan step 9)",
+    "artefacts": [
+      "artefacts/M1-S01/objects/Integration_Failure__c/Integration_Failure__c.object-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Case__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Case_Number__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Endpoint__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/HTTP_Status__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Response_Body__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Attempt_Count__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Last_Attempted_At__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Error_Message__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Request_Payload__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Status__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Severity__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Integration_Failure__c/fields/Resend__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml",
+      "artefacts/M1-S01/package.xml",
+      "artefacts/M1-S01/deploy-order.md"
+    ],
+    "undeclared_artefacts": [],
+    "decision_record": [
+      {
+        "question": "Who owns a record, and does anything ever need to route or reassign one?",
+        "answer": "Owner-held custom object, Private OWD; the three Support Engineering admins reach every row through object-scoped View All / Modify All on Tier2_Webhook_Admin, not a sharing rule",
+        "source": "step inputs (D12 / A3)",
+        "element": "<sharingModel>Private</sharingModel>"
+      },
+      {
+        "question": "Does the name of a record carry business meaning, or is it just a label?",
+        "answer": "No \u2014 system-generated sequence",
+        "source": "step inputs",
+        "element": "<nameField><type>AutoNumber</type><displayFormat>IF-{00000000}</displayFormat>"
+      },
+      {
+        "question": "Will users find these records by typing a name into search?",
+        "answer": "Yes",
+        "source": "step inputs",
+        "element": "<enableSearch>true</enableSearch>"
+      },
+      {
+        "question": "Does an integration read or write this object, and through which API?",
+        "answer": "The trio is set all-or-none; the value itself is unbound and true was written",
+        "source": "step inputs + the worked example in the cited skill (flagged, deploy-order.md section 5 item 1)",
+        "element": "enableBulkApi / enableSharing / enableStreamingApi all true"
+      },
+      {
+        "question": "Which field changes must be auditable?",
+        "answer": "None named; enableHistory is not set and no field carries trackHistory true",
+        "source": "no answer on file, no documented default claimed",
+        "element": "enableHistory omitted"
+      },
+      {
+        "question": "Is this org an Experience Cloud org?",
+        "answer": "Unanswered \u2014 element left out and flagged rather than guessed",
+        "source": "none of the four sources",
+        "element": "externalSharingModel omitted (deploy-order.md section 5 item 2)"
+      },
+      {
+        "question": "Restricted value sets and their exact members",
+        "answer": "Status__c New/Retrying/Resent/Resolved/Abandoned default New required; Severity__c Error/Warning with no default named",
+        "source": "step inputs (Q17)",
+        "element": "<valueSet><restricted>true</restricted>\u2026"
+      },
+      {
+        "question": "Publish semantics for the event",
+        "answer": "A rolled-back escalation must reach nobody",
+        "source": "step inputs (Q10 / D10)",
+        "element": "<publishBehavior>PublishAfterCommit</publishBehavior>"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No issues found across 2 object file(s) and 13 field file(s)."
+      },
+      {
+        "command": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01 --min-severity ERROR",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No findings.",
+        "note": "also exits 0 at the default INFO floor, checked separately"
+      },
+      {
+        "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 0 Apex file(s) and 2 object file(s); 0 platform-event finding(s).\"}"
+      },
+      {
+        "command": "python3 -c \"\u2026ElementTree parse of every *.xml under the step artefacts\u2026\"",
+        "cwd": ".sfskills/builds/tier2-webhook/artefacts/M1-S01",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "16 xml files parse"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "13 CustomField members and 2 CustomObject members; every member has a file and every metadata file has a member. The five Tier2_Escalation__e payload fields are inline in the __e object file and are deliberately not separate CustomField members, which is what the step's manifest acceptance test enumerates.",
+    "traceability_ids": {
+      "note": "this build carries no REQ-XXX / FG-XXX key; its requirement ids are clarification Q-numbers",
+      "clarifications": [
+        "Q10",
+        "Q12",
+        "Q14",
+        "Q17",
+        "Q18",
+        "Q20",
+        "Q30"
+      ],
+      "decisions": [
+        "D6",
+        "D9",
+        "D10",
+        "D12",
+        "D13"
+      ],
+      "assumptions": [
+        "A3",
+        "A9",
+        "A11"
+      ]
+    },
+    "unbound_elements_flagged": [
+      "enableBulkApi/enableSharing/enableStreamingApi value (all-or-none rule bound, value not)",
+      "externalSharingModel \u2014 omitted, Experience Cloud decision open",
+      "startingNumber \u2014 omitted, platform default 1, not retrievable",
+      "nameField/label, Tier2_Escalation__e/pluralLabel, Case__c relationshipName/relationshipLabel \u2014 derived",
+      "visibleLines on the three LongTextArea fields \u2014 display-only, copied from the Application_Log__c template"
+    ],
+    "deploy_performed": false
+  }
+}

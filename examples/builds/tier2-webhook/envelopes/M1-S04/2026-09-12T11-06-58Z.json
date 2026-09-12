@@ -1,0 +1,115 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T11-06-58Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T11-06-58Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T11-06-58Z.json",
+  "summary": "Ran the molecular tests for M1-S04 (tier2-webhook, apex-builder, status built at invocation) after the 2026-09-12 rebuild. Always-on xml: 4/4 .cls-meta.xml parse, all apiVersion 67.0. Always-on manifest: skipped-not-applicable under the Apex exception, naming build-level manifest step M1-S05 (no package.xml exists or is declared for this step). Three declared checkers ran verbatim from the build directory and all exited 0 with zero findings: check_apex_scheduled_jobs.py, check_apex_queueable_patterns.py, check_error_handling_framework.py. check-outputs confirmed all six declared outputs present, non-empty and parseable. One manual test is deferred to the M1 gate, checked against the Given/When/Then observable-outcome bar and found tickable. Step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (Step 7 HIGH row). No checker was missing, no command was refused, and check-outputs reported ok with nothing missing/empty/malformed.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three declared checkers and the always-on xml check ran clean with zero ERROR/WARN/ADVISORY findings, and deploy-order.md section 8 independently documents the identical exit-0 results plus a brace/paren/bracket balance check this agent re-derived and confirmed.",
+      "domain": "apex-quality",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/deploy-order.md", "query": "section 8"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's rebuild trail is fully reconstructable from plan.json amendments[0] plus deploy-order.md section 0, so this test run could confirm the artefacts on disk match the amended inputs (include_logger false, alert_recipients roster) rather than the round-1 P0'd version.",
+      "domain": "orchestration",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/plan.json", "query": "steps[M1-S04].amendments[0]"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "deploy-order.md section 4 records five still-open UNVERIFIED/unbound items on this step's own admission: PermissionSetAssignment read access for resolveRecipients() is granted by nothing this build ships, WITH USER_MODE on an aggregate COUNT() stays unverified against any cited skill, Case record visibility for the third query depends on an unstated OWD, the recipient-gap row counts toward the job's own alert thresholds (a self-inflicted alert loop after ~4 hours with no active assignee), and there is no duplicate-alert suppression across up to 24 hourly repeats. None of these are checker-visible; a green checker run does not mean these are closed.",
+      "domain": "apex-security",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/deploy-order.md", "query": "section 4, items 1-3, 5-6"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "No org test has run or can run in this design-only build: coverage on Tier2ChannelHealthQueueable is deploy-order.md's own estimate from reading the bodies (~80-95%), not a measured Apex-test number, and no offline compile check exists for Apex in the sf CLI.",
+      "domain": "apex-testing",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/deploy-order.md", "query": "section 8, last two paragraphs"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "plan.json steps[M1-S04].inputs carries two disagreeing keys for the same concept: the older recipients (\"Support Engineering\", a distribution list) and the 2026-09-12 alert_recipients (active Tier2_Webhook_Admin assignees, which the rebuilt code actually implements). deploy-order.md section 0 already flags this as a stale sibling needing a prose-only amendment. Recorded verbatim per this run's instruction; not resolved here, since amend-step is refused once a step has left pending and resolving it is a plan edit, not a test-runner action.",
+      "domain": "orchestration",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/plan.json", "query": "steps[M1-S04].inputs.recipients vs steps[M1-S04].inputs.alert_recipients"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's own acceptance_tests[] manifest-test description says the build-level manifest step M1-S05 carries \"the three ApexClass members\" from this step, but the rebuilt artefacts on disk ship four (Schedulable, Queueable, Test, TestDataFactory) -- the description predates the TestDataFactory template-provenance addition. Does not change the manifest classification (still skipped-not-applicable, still naming M1-S05), but M1-S05's own test run should expect four members from this step, not three.",
+      "domain": "orchestration",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/plan.json", "query": "steps[M1-S04].acceptance_tests[type=manifest].description"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's manual acceptance test is not written in literal Given/When/Then clauses, but it names three concrete observable outcomes (the CRON literal's value, the two Q24 threshold values, the sender address plus a named person's org-verification confirmation). Judged tickable rather than unusable, but a human reviewer could reasonably want it reformatted into strict Given/When/Then before the M1 gate.",
+      "domain": "acceptance-testing",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/plan.json", "query": "steps[M1-S04].acceptance_tests[type=manual]"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Step is now tested; build-doc-keeper is the next stage of the loop for this step.",
+      "domain": "orchestration",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/plan.json", "query": "steps[M1-S04].status"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because the step is tested and documented is the next status in the loop, and build-doc-keeper is the agent that writes the workbook/traceability/deploy-order rows for a tested step."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Section 4's PermissionSetAssignment-read-access and Case-visibility gaps are security-posture questions a test run cannot adjudicate.",
+      "domain": "apex-security",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/deploy-order.md", "query": "section 4, items 1 and 3"},
+      "suggested_followup_agent": "security-posture-reviewer",
+      "followup_reason": "because whether the scheduling user's profile grants PermissionSetAssignment read, and whether Case OWD lets that user see other people's Cases, are org-configuration questions outside this molecular-test pass."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES", "path": "AGENT_RULES.md", "used_for": "run-time rules binding this invocation, incl. the ban on org writes and auto-chaining"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations schema, and the confidence rubric this agent's Step 7 overrides"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence, atomic-write rule, and the Output Contract template this envelope follows"},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum; not triggered this run, precondition was already built"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "section 5 acceptance-test types/runners/pass-conditions and the Apex exception that governs this step's manifest classification; section 4 for the automation step type and depends_on ordering"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "package.xml grammar the manifest check would be judged against, had one existed for this step"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "source-format filename-to-metadata-type mapping used to derive manifest members, not exercised this run since no package.xml applies to this step"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "confirms which component types legitimately have no standalone file/manifest member; not triggered since ApexClass is not such a type"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "bar for what a manual test line must contain to be tickable by a human at the milestone gate"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "Given/When/Then observable-outcome bar this run's manual test was checked against before being carried into skipped_manual[]"},
+    {"type": "skill", "id": "apex/apex-scheduled-jobs", "path": "skills/apex/apex-scheduled-jobs/SKILL.md", "used_for": "the checker skill this step declares; check_apex_scheduled_jobs.py run verbatim, exit 0"},
+    {"type": "skill", "id": "apex/apex-queueable-patterns", "path": "skills/apex/apex-queueable-patterns/SKILL.md", "used_for": "the checker skill this step declares; check_apex_queueable_patterns.py run verbatim, exit 0"},
+    {"type": "skill", "id": "apex/error-handling-framework", "path": "skills/apex/error-handling-framework/SKILL.md", "used_for": "the checker skill this step declares; check_error_handling_framework.py run verbatim, exit 0"}
+  ],
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the step is now tested and documented is the next status in the build loop."},
+    {"agent": "security-posture-reviewer", "because": "PermissionSetAssignment read access and Case OWD visibility for the alert roster are org-configuration questions this molecular-test pass cannot adjudicate."}
+  ],
+  "extensions": {
+    "step_id": "M1-S04",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S04/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "ElementTree parse (stdlib)", "exit_code": null, "verdict": "pass"},
+      {"name": "manifest", "type": "manifest", "runner": "n/a - structural classification", "exit_code": null, "verdict": "skipped-not-applicable, names M1-S05"},
+      {"name": "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py", "type": "checker", "runner": "python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py", "type": "checker", "runner": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py", "type": "checker", "runner": "python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04", "exit_code": 0, "verdict": "pass"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "A reviewer confirms (a) the CRON literal in Tier2ChannelHealthSchedulable.cls is hourly and the Schedulable's execute() does nothing but enqueue; (b) the two thresholds in Tier2ChannelHealthQueueable.cls are the ones Q24 stated - more than three failures in an hour, or no success in 24 hours while escalations exist; (c) the sender is support-noreply@acme.example and a named person confirms that org-wide address is already verified in the target org, because assumption A4 records that no step in this build can create or verify it."
+    ],
+    "tests_run": 5
+  }
+}

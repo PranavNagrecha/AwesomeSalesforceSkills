@@ -1,0 +1,246 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T12-18-40Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-18-40Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-18-40Z.json",
+  "summary": "Ran step M1-S05 of build tier2-webhook. build_plan.py next listed it as the only runnable step; it was claimed running, its owning agent metadata-builder was executed inline per the invocation instruction, and it returned a built envelope with no refusal. check-outputs exited 0 on both declared outputs, so the step was set built. The owning agent wrote artefacts/M1-S05/package.xml (7 types blocks, 33 members, version 67.0, no wildcards) and artefacts/M1-S05/deploy-order.md. Nothing was written outside artefacts/M1-S05 and envelopes/M1-S05; no relocation was needed because metadata-builder is build-aware. Two plan-text defects were carried into the envelope rather than worked around: inputs.members.ApexClass names 11 classes where the artefacts carry 13, and inputs.deploy_order sequences the PermissionSet ahead of the fields it grants.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 rubric: the step was in next, every required input of the owning agent resolved from the plan, both envelopes validate, check-outputs exited 0 and nothing landed outside artefacts/M1-S05 - which is the HIGH row - except that two of the step's bound inputs contradicted the artefacts they describe, so the owning agent had to resolve membership and ordering against the upstream outputs. That is not a HIGH-row 'resolved from the plan'.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S05",
+    "reason": "not supplied - ordinary pending -> running claim, no carve-out used",
+    "credentials_in_inputs": "none; no step input or artefact carries a secret value, so no [REDACTED] substitution was required"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The owning agent is build-aware - grep for artefact/build_dir/step_id/.sfskills over its AGENT.md returned 39 - so it wrote straight onto the declared output paths and no Step 7 relocation was needed.",
+      "domain": "agent-contract",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 39
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step carried human_gate false and its four dependencies were all documented, so build_plan.py next listed it without any of the three Step 2 blockers, and set-status running was accepted first time.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two of this step's bound inputs describe the build as it stood before the M1-S03 and M1-S04 rebuilds: inputs.members.ApexClass enumerates 11 classes where 13 exist, and inputs.deploy_order sequences PermissionSet ahead of the object and field metadata its fieldPermissions rows name.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Step 5 of this agent's own playbook makes step inputs the winning source and forbids an invocation from correcting them, while the step's declared manifest acceptance test requires every artefact file to be covered by a member; the two point opposite ways here, and the artefacts were followed because the acceptance test is what gates the step and the input's own prose is a description of the members rather than a constraint on them.",
+      "domain": "agent-contract",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].acceptance_tests[2].description"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Neither agent's Wave 10 report pair under docs/reports/ was written, because this invocation constrained all writes to the build directory; the build-scoped envelope pairs are the only record of both runs.",
+      "domain": "deliverable-contract",
+      "evidence": {
+        "source": "input",
+        "path": "docs/reports/build-step-runner/"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1-S05 is the last step of M1; every other step is documented, so the milestone is one tester and one doc-keeper pass from the G3 gate.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[]",
+        "count": 5
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "M1-S05's four acceptance tests - the declared checker, the xml parse, the build-wide manifest consistency check and the manual deploy-order read - are the tester's to run."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json is the only shared state, build_plan.py the only writer), section 3 (gates), section 4 (step record fields, docs-row ownership split, status machine), section 5 (the Apex exception, acceptance-test types, check-outputs as the precondition on built), section 8 (determinism)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement and the citation schema this envelope obeys"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence, the atomic-write rule, and the redaction requirement on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical enum - no refusal was raised this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{}, outputs[], depends_on[] and runs[] this agent reads and writes"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the source-format layout the upstream artefacts obey, so the manifest members derived from their file names are the ones a deploy would read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming every declared output type is Metadata API-carriable before the owning agent spent a run on it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step's inputs were mapped from - at feature scale no workbook step exists, so the mapping came straight from inputs{}"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the assumption and decision id conventions (A-nn, D-nn, D-M1Snn-nn) echoed into this envelope so the doc keeper can join step to requirement"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes to redact before echoing an input - none matched; the External Credential carries a merge-field reference, not a key"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "carried through from the owning agent's citations - the package.xml shape and the checker's argument form"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S05 is now built and its four acceptance tests have not been run; that is the tester's stage, and this agent never auto-chains into it."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M1-S05 is tested, the two plan-text defects recorded here belong in decisions.md alongside D-M1S03-06's discharge."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-16-55Z.json",
+    "invocation_form": "inline - agents/metadata-builder/AGENT.md read end to end and its Plan executed in this process, per the caller's instruction. Step 9 of that playbook was taken on the 'under the runner' branch, so the owning agent set no status itself.",
+    "artefacts": [
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S05/package.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S05/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "relocations": [],
+    "files_outside_step_artefact_dir": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S05 running --started 2026-09-12T12:12:54Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S05 built --run-agent metadata-builder --envelope envelopes/M1-S05/2026-09-12T12-16-55Z.json --result \"<one-line outcome>\" --started 2026-09-12T12:12:54Z"
+    ],
+    "terminal_status": "built",
+    "input_map": {
+      "build_dir": "from the invocation",
+      "step_id": "from the invocation",
+      "api_version": "plan.json steps[M1-S05].inputs.api_version = 67.0 (plan.api_version is null; assumption A11 carries it)",
+      "upstream_outputs_passed": [
+        "artefacts/M1-S01/",
+        "artefacts/M1-S02/",
+        "artefacts/M1-S03/",
+        "artefacts/M1-S04/"
+      ],
+      "clarification_answers_used": "none - no Questions-to-Ask row for this step resolved to a clarification; every answer came from step inputs or upstream artefacts",
+      "org_alias": "none - build_mode is design-only and metadata-builder declares requires_org false, so the section 5 ineligibility rule does not fire"
+    },
+    "plan_input_divergences": [
+      {
+        "field": "steps[M1-S05].inputs.members.ApexClass",
+        "plan_says": "11 classes - CaseTriggerHandler, IntegrationFailureTriggerHandler, Tier2EscalationService, Tier2WebhookQueueable, Tier2WebhookFinalizer, Tier2EscalationServiceTest, Tier2WebhookQueueableTest, IntegrationFailureResendTest, Tier2ChannelHealthSchedulable, Tier2ChannelHealthQueueable, Tier2ChannelHealthTest",
+        "artefacts_say": "13 classes - the same 11 plus MockHttpResponseGenerator (M1-S03) and TestDataFactory (both Apex steps, emitted once)",
+        "resolved": "artefacts followed. The step's own manifest acceptance test requires that no artefact file lack a member, and D-M1S03-06 instructs this step to carry TestDataFactory exactly once",
+        "writer_for_the_fix": "amend-step, refused once the step left pending - so a human or a re-plan"
+      },
+      {
+        "field": "steps[M1-S05].inputs.deploy_order",
+        "plan_says": "ExternalCredential, NamedCredential, PermissionSet, then the object and field metadata, then the Apex",
+        "artefacts_say": "objects and fields first, then the credentials, then the Apex, then the PermissionSet - per admin/change-management-and-deployment llm-anti-patterns Anti-Pattern 4 and both M1-S01 section 3 and M1-S02 section 3",
+        "resolved": "the reconciled order is written into deploy-order.md section 2 with the divergence stated in full rather than silently corrected",
+        "writer_for_the_fix": "amend-step, refused once the step left pending - so a human or a re-plan"
+      }
+    ],
+    "dimensions_skipped": [
+      {
+        "dimension": "acceptance-test execution",
+        "state": "not-run",
+        "reason": "standards/build-orchestration.md section 5 gives the step's acceptance tests to step-tester; this agent runs none of them and does not auto-chain",
+        "confidence_impact": "NONE",
+        "retry_hint": "Run /test-build-step for M1-S05"
+      },
+      {
+        "dimension": "org-side validation",
+        "state": "not-run",
+        "reason": "build_mode is design-only; mock_deploy.py --mode manifest is the operator's own dry run and is written into deploy-order.md as text",
+        "confidence_impact": "NONE",
+        "retry_hint": "The operator runs python3 scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone M1 --mode manifest after the milestone verifies"
+      },
+      {
+        "dimension": "Wave 10 report persistence",
+        "state": "not-run",
+        "reason": "this invocation constrained all writes to the build directory, so neither agent's docs/reports pair was written; the build-scoped envelope pairs carry the full record instead",
+        "confidence_impact": "NONE",
+        "retry_hint": "Re-run without the write constraint, or copy the envelope pairs to docs/reports/<agent-id>/"
+      }
+    ]
+  }
+}

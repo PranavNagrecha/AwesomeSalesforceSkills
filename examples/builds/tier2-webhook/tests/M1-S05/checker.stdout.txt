@@ -1,0 +1,16 @@
+{
+  "score": 90,
+  "findings": [
+    {
+      "severity": "WARN",
+      "location": "artefacts/M1-S05/package.xml",
+      "message": "manifest includes ExternalCredential; require explicit review and smoke tests"
+    },
+    {
+      "severity": "WARN",
+      "location": "artefacts/M1-S05/package.xml",
+      "message": "manifest includes NamedCredential; require explicit review and smoke tests"
+    }
+  ],
+  "summary": "Scanned 2 manifest or metadata file(s); 2 finding(s) detected."
+}

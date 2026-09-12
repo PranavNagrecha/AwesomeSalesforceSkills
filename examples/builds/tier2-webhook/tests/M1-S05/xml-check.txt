@@ -1,0 +1,2 @@
+PARSE_OK artefacts/M1-S05/package.xml
+TOTAL 1

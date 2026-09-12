@@ -1,0 +1,303 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T10-08-07Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-08-07Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-08-07Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S02",
+    "api_version": "67.0",
+    "external_credential.secret": "[REDACTED]",
+    "note": "Values taken from plan.json steps[M1-S02].inputs{} as amended 2026-09-12T09:41:08Z (F-S2-01). No value was taken from the invocation brief."
+  },
+  "summary": "Built step M1-S02 (type access) into five files under artefacts/M1-S02: the OnCall_Tool_EC External Credential (Custom protocol, NamedPrincipal OnCallToolNamedPrincipal, X-API-Key AuthHeader parameter), the OnCall_Tool SecuredEndpoint Named Credential (Url parameter + Authentication parameter linking the EC, generateAuthorizationHeader false), the Tier2_Webhook_Admin permission set (principal grant, full CRUD plus View/Modify All on Integration_Failure__c, and 12 fieldPermissions rows - the eleven non-required Integration_Failure__c fields plus Case.Tier2_Notified_At__c), package.xml at version 67.0, and deploy-order.md. Both declared checkers exited 0 on the first pass with the single deliberate D12 sharing-bypass WARN; check-outputs ok. Two values the plan leaves unbound - the AuthHeader parameterValue formula and the endpoint URL - were not guessed: the first is written as no element at all and handed to the human as deploy step 1 (verifier W3 / assumption A5), the second ships as a flagged reserved-domain placeholder.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM row: every emitted element traces to the Step 3 inventory, both checkers passed first pass, check-outputs ok, and every declared output was written and nothing else. MEDIUM rather than HIGH because two Questions-to-Ask rows were not answered from the plan - the permission set's license (left deliberately empty) and, more consequentially, the AuthHeader parameterValue whose parameter name no source names, so the element ships without that child rather than with a guessed one.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "metadata-grounding",
+      "observation": "Every element name and enum value emitted for all three types was available verbatim in the two cited skills' fenced XML; nothing had to be reached for outside the step's skills[].",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "Both declared checkers exited 0 on the first pass with no repair loop, and the one WARN raised is the sharing-bypass finding the plan's own test description predicted word for word.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "integration-auth",
+      "observation": "The X-API-Key AuthHeader parameter ships with no parameterValue because two unknowns sit on top of each other: the formula grammar is marked UNVERIFIED in the cited skill, and the parameter name the key is stored under in Setup is named in no clarification, decision or step input.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+        "query": "UNVERIFIED (2026-09-05)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "integration-config",
+      "observation": "The on-call tool's endpoint URL appears nowhere in requirement.md, the 45 clarifications or the step inputs, so the Url parameter ships a reserved-documentation-domain placeholder flagged in three places rather than a real host.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "https?://",
+        "count": 0
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access-governance",
+      "observation": "The permission set carries no license element; the skill requires that to be populated or empty by decision, and D14's assignee set (everyone who can escalate a Case plus the scheduling user) is not pinned to one license by any answer.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "metadata-shape",
+      "observation": "None of the three cited fenced examples for ExternalCredential, NamedCredential or PermissionSet carries a fullName element, so none was written; the step inputs name fullName values which source format carries in the file name instead.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-set-architecture/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step's five acceptance tests include four automated ones this agent does not run.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the step's checker, xml, manifest and manual tests are the tester's to execute and record, not the builder's."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "access",
+    "invocation": "inline under build-step-runner; Step 9 set-status commands deliberately skipped so the runner is the single writer of the transition",
+    "metadata_types_emitted": [
+      "ExternalCredential",
+      "NamedCredential",
+      "PermissionSet"
+    ],
+    "artefacts": [
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/package.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md"
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Is the credential Legacy or SecuredEndpoint?",
+        "answer": "SecuredEndpoint",
+        "source": "step inputs (+ D3)",
+        "element": "NamedCredential/namedCredentialType"
+      },
+      {
+        "question": "Named principal or per-user principal?",
+        "answer": "NamedPrincipal OnCallToolNamedPrincipal, sequenceNumber 1",
+        "source": "step inputs (Q4, D3)",
+        "element": "ExternalCredential/externalCredentialParameters"
+      },
+      {
+        "question": "Which permission set grants the principal, and is it assigned to the user the callout runs as?",
+        "answer": "Tier2_Webhook_Admin; assignment is a post-deploy human step per D14+A13",
+        "source": "step inputs (+ D14, A13)",
+        "element": "PermissionSet/externalCredentialPrincipalAccesses"
+      },
+      {
+        "question": "Who owns the Authorization header - the platform or your Apex?",
+        "answer": "The platform. generateAuthorizationHeader written explicitly false; it defaults to true.",
+        "source": "step inputs (Q5, D2)",
+        "element": "NamedCredential/generateAuthorizationHeader"
+      },
+      {
+        "question": "Does the endpoint need a credential value in a specific header name or in the body?",
+        "answer": "Custom header X-API-Key; body is JSON and carries no credential, so both merge-field flags stay false",
+        "source": "step inputs (Q6)",
+        "element": "ExternalCredential AuthHeader parameter; allowMergeFieldsInHeader/Body"
+      },
+      {
+        "question": "What is the Named Credential's API name, and does it exist in every org you deploy to?",
+        "answer": "OnCall_Tool, identical in every org, Url parameter differs (A7)",
+        "source": "step inputs (Q25, A7)",
+        "element": "NamedCredential file stem + Url parameter"
+      },
+      {
+        "question": "Which objects does this capability touch, and at what CRUD level?",
+        "answer": "Integration_Failure__c, full CRUD; no object row for Case (A14)",
+        "source": "step inputs (Q19, A14)",
+        "element": "PermissionSet/objectPermissions"
+      },
+      {
+        "question": "Does anything here need View All Records or Modify All Records?",
+        "answer": "Yes, both, on Integration_Failure__c only - D12 chose object-scoped override over a sharing rule",
+        "source": "step inputs (+ D12, A3)",
+        "element": "PermissionSet/objectPermissions viewAllRecords+modifyAllRecords"
+      },
+      {
+        "question": "Which user or permission set license does every person in this persona hold?",
+        "answer": "UNANSWERED - license deliberately left empty; D14's assignee set is not pinned to one license",
+        "source": "no source; recorded as a deliberate empty per the skill's 'populated or empty by decision' rule",
+        "element": "PermissionSet/license (omitted)"
+      },
+      {
+        "question": "Is this bundle for a named person or a standing role?",
+        "answer": "Standing role: everyone who can escalate a Case + the scheduling user (D14)",
+        "source": "step inputs (D14, A13)",
+        "element": "deploy-order.md section 7 step 3"
+      },
+      {
+        "question": "Should any of this expire?",
+        "answer": "No - no ExpirationDate; assignment is standing",
+        "source": "step inputs (no expiry named)",
+        "element": "n/a (PermissionSetAssignment is not shipped)"
+      },
+      {
+        "question": "Does any permission need step-up activation?",
+        "answer": "No",
+        "source": "skill default",
+        "element": "PermissionSet/hasActivationRequired=false"
+      },
+      {
+        "question": "Who checks the group after deploy, and against which user?",
+        "answer": "No PSG is shipped; verification against a real user is deploy-order.md section 7 step 4",
+        "source": "skill workflow step 7",
+        "element": "deploy-order.md section 7"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+        "scope": "step",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "OK: no Named Credential findings."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "scope": "build",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml: objectPermissions for Integration_Failure__c sets modifyAllRecords=true, which bypasses sharing for that object; keep sharing overrides in a named set that is not composed into a persona group.",
+        "note": "The single WARN is the sharing-bypass finding decision D12 makes deliberate and the plan's own test description predicted. WARN does not fail this checker."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "field_permissions_written": 12,
+    "field_permissions_excluded": [
+      "Integration_Failure__c.Status__c (required=true; api_meta L95020-95021; operator amendment F-S2-01, decision D-M1S01-02)"
+    ],
+    "unbound_inputs": [
+      "ExternalCredential X-API-Key AuthHeader parameterValue - grammar UNVERIFIED in the cited skill AND the stored-parameter name unnamed anywhere; element omitted, handed to the human as deploy step 1 (W3/A5)",
+      "NamedCredential Url parameterValue - no source names the on-call tool host; reserved-domain placeholder written and flagged",
+      "NamedCredential Authentication parameterName (OnCallToolAuth) - derived from the skill's fenced example; cosmetic, referenced by nothing",
+      "PermissionSet license - deliberately empty"
+    ],
+    "dimensions_skipped": []
+  },
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "used_for": "Questions-to-Ask rows for principal type, header ownership, credential shape and API-name portability"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+      "used_for": "sections 1-3: the ExternalCredential, SecuredEndpoint NamedCredential and externalCredentialPrincipalAccesses element sets and enum values, verbatim"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/references/gotchas.md",
+      "used_for": "gotchas 5, 6, 7 and 10 - URL-in-parameter, the API 58.0 grant move, the dash-joined principal, and per-user re-auth risk"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "the Questions-to-Ask table, the license-by-decision rule and the deploy/verify workflow steps"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "the PermissionSet element set, the objectPermissions dependency chain and the editable-requires-readable FLS rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4 - fields must land before the permission set that references them"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table placing NamedCredential/ExternalCredential in the access row, and section 5 checker scope"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/integration-pattern-selection.md",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q2 - Custom header / API key -> Named Credential + External Credential (Custom)",
+      "used_for": "decision D2, cited not re-decided"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1 - Public Read-Only / Public Read-Write -> Tighten OWD before adding anything -> Q2",
+      "used_for": "decision D12 behind the object-scoped View/Modify All grant, cited not re-decided"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step's four automated acceptance tests and its manual access review are the tester's to run and record, not the builder's"
+    }
+  ]
+}

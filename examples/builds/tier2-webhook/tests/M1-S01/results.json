@@ -1,0 +1,63 @@
+{
+  "step_id": "M1-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+    "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py",
+    "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Picklist-to-code contract check, tickable from this step's artefacts alone at the M1 gate. Expected: A reviewer opens Status__c.field-meta.xml and Severity__c.field-meta.xml and confirms the value sets are restricted and contain exactly New, Retrying, Resent, Resolved, Abandoned and exactly Error, Warning - the lists Q17 fixed and the Apex in M1-S03 must match character for character."
+  ],
+  "details": {
+    "xml": {
+      "files_checked": 16,
+      "all_parsed": true
+    },
+    "manifest": {
+      "package_xml": "artefacts/M1-S01/package.xml",
+      "custom_object_members": ["Integration_Failure__c", "Tier2_Escalation__e"],
+      "custom_field_members_count": 13,
+      "file_to_manifest": "consistent - every derived member (2 CustomObject, 13 CustomField) appears in package.xml",
+      "manifest_to_file": "consistent - every named non-wildcard member has a backing file",
+      "excluded_types": [],
+      "note": "Tier2_Escalation__e's five inline payload fields are declared inside the object's own object-meta.xml (per deploy-order.md section 2 item 3) and are deliberately not separate CustomField members or files; they are excluded from both manifest directions as documented by the step's own artefacts rather than by a metadata-api-coverage-gaps exclusion."
+    },
+    "checkers": [
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "stdout": "No issues found across 2 object file(s) and 13 field file(s)."
+      },
+      {
+        "command": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01 --min-severity ERROR",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "stdout": "No findings."
+      },
+      {
+        "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 0 Apex file(s) and 2 object file(s); 0 platform-event finding(s).\"}"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manual_test_classification": {
+      "given": "Status__c.field-meta.xml and Severity__c.field-meta.xml exist under this step's artefacts",
+      "when": "a reviewer opens both files",
+      "then": "the value sets are restricted and contain exactly the named values, character for character",
+      "verdict": "usable - names an observable, deterministic outcome per admin/acceptance-criteria-given-when-then and is tickable per admin/uat-and-acceptance-criteria; not ticked by this agent"
+    }
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T10-47-43Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-47-43Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-47-43Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S02",
+    "step_status_on_entry": "tested",
+    "pass": "first documentation pass for M1-S02 (per-step run)",
+    "scale": "feature"
+  },
+  "summary": "First documentation pass for M1-S02 (External Credential OnCall_Tool_EC, Named Credential OnCall_Tool, permission set Tier2_Webhook_Admin), tested after one rebuild (S2-F-02/S2-F-03). Re-rendered PLAN.md/CLARIFICATIONS.md. Appended six decisions to decisions.md (D-M1S02-01..06): the AuthHeader-parameterValue checker-coverage gap and its closure by the requester's amendment (skill fix left open); the step:M1-S02 gate reject/re-approve after an operator sequencing error; the D12 modifyAllRecords sharing-bypass (deliberate); the A14 no-Case-objectPermissions-row shape; the post-deploy API-key Setup entry as a deploy prerequisite owned by Support Engineering; and the PV-007 deploy-order prose lag in M1-S05, flagged rather than fixed (out of this step's scope). Updated traceability.md: REQ-005 and REQ-006 (minted at the M1-S01 pass) amended in place \u2014 step_id unchanged at M1-S01, artefact_paths and test_result extended with the M1-S02 permission-set evidence, REQ-005's status raised to In UAT \u2014 and two new requirements minted, REQ-008 (the on-call tool authentication mechanism, Q4) and REQ-009 (the API key never stored in code/custom setting, Q5), continuing the id sequence from REQ-007. The workbook was NOT written this pass: 'workbook optional' at scale: feature (standards/build-orchestration.md \u00a7 'The three tiers'), no workbook file exists yet for this build, and no other step has started one \u2014 recorded as a deliberate deferral, not an omission. check_rtm.py corrected an assumption the M1-S01 pass made and never tested: req_id must be unique across the whole matrix (confirmed by reproducing the ERROR with two REQ-005 rows), so multi-step coverage for one requirement is an in-place row update, never a second row \u2014 matching the real precedent in examples/builds/case-onboarding/traceability.md, which this build's own file already cites. Final check_rtm.py run: 9 rows, 0 coverage gaps, 0 errors, 5 orphans (all M1-S04 Apex classes \u2014 that step is `running`, owned by a concurrent runner, out of scope for this pass), 1 warning (the standing orphan WARN). Step set to documented.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM: two conditions push this off HIGH. First, REQ-008 and REQ-009 are minted ids inferred from clarification answers (Q4, Q5) rather than read from a requirement register the build does not have \u2014 the same reason the first M1-S01 pass itself was not HIGH. Second, the workbook step type (`access`) fell into a genuine scale-driven skip rather than the 'Other configuration' default, which the Step 11 table does not enumerate as its own case; scored MEDIUM rather than argued to HIGH by analogy. Not LOW: every requirement this step serves got a real verification cell and a real source_req_id, decisions.md's six entries all cite an envelope or plan.json record rather than narrating, and check_rtm.py returned 0 errors on the final run.",
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook-rows",
+      "state": "not-run",
+      "reason": "scale: feature makes the workbook optional (standards/build-orchestration.md \u00a7 'The three tiers': 'workbook optional, traceability required'); no workbook/ file exists for this build yet from any prior step, so starting one for M1-S02 alone, out of section order, was judged lower-value than the required traceability work. Recorded as a deliberate call, not a silent gap.",
+      "confidence_impact": "NONE",
+      "retry_hint": "If the build's workbook is wanted before the end, run build-doc-keeper again on M1-S01 first (section 5 \u2014 Automation, sharing) so sections are populated in deploy order, then re-run on M1-S02 for sections 3/4."
+    },
+    {
+      "dimension": "m1-s04-orphan-coverage",
+      "state": "not-run",
+      "reason": "check_rtm.py's orphan report names 5 ApexClass components under artefacts/M1-S04/; plan.json shows M1-S04 status running, owned by a concurrent build-step-runner invocation outside this task's scope (M1-S02 only, one step per invocation per AGENT_RULES.md). Documenting M1-S04 before it is even tested would invent requirement coverage for artefacts that may still change.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run build-doc-keeper on M1-S04 once that step reaches tested."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The rebuild that fixed S2-F-02 was fully contained: the permission set and package.xml are byte-identical (SHA-256 unchanged) between run 1 and run 2, so this documentation pass could cite the access-review evidence (12 field-permission rows, the D12 WARN) without any doubt about which version of the permission set it describes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md",
+        "query": "sha256 9988b317...65de5a unchanged"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "documentation",
+      "observation": "Every sentence written into decisions.md and traceability.md this pass traces to a specific envelope, plan.json record or artefact file the step already produced; no decision or requirement text was reconstructed from memory of the conversation.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-28-30Z.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "checker-coverage-gap",
+      "observation": "Confirmed independently of the tester's own finding: check_apex_named_credentials_patterns.py and check_permission_set_architecture.py both exit 0 whether or not an AuthHeader parameter carries parameterValue. This is a real gap between library-green and org-acceptable that cost one full rebuild cycle here and will recur on the next External-Credential-authoring step unless the checker gains the rule reports/MOCK-DEPLOY-M1.md's own remedy names.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "documentation-schema",
+      "observation": "agents/build-doc-keeper/AGENT.md Step 8 describes traceability rows as 'keyed by req_id plus step_id', which reads as license for one row per (req_id, step_id) pair. check_rtm.py enforces req_id uniqueness across the whole matrix and has no such composite key; a documentation pass that took Step 8's wording literally (as this build's own M1-S01 pass predicted it would) produces an ERROR the moment a second step serves an already-covered requirement. The contract's prose and the checker it must satisfy disagree, and this run's traceability.md now documents the correction found by actually hitting it, not by re-reading the prose more carefully.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+        "query": "req_id in seen -> duplicate req_id ERROR"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "checker-run-scope",
+      "observation": "This run's `check_rtm.py --manifest-dir artefacts` sweeps the whole build tree, including M1-S04's in-flight artefacts from a concurrent runner. The 5 orphans it reports are correct facts about the directory at this moment but say nothing about this step's own completeness; a human reading only the exit summary without the orphan report could mistake them for an M1-S02 gap.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M1's milestone-level checker test (check_permission_set_architecture.py --manifest-dir artefacts) has not been re-run at milestone scope since this rebuild, only at the step's own build/test passes.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because cross-step milestone acceptance for M1 is milestone-verifier's to run once every M1 step reaches documented, and M1-S02 is now one of those steps."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "skill-quality",
+      "observation": "skills/apex/apex-named-credentials-patterns is missing Questions-to-Ask rows for the endpoint URL and the stored-secret parameter name, and its checker has no AuthHeader-parameterValue rule.",
+      "evidence": {
+        "source": "input",
+        "path": "decisions.md"
+      },
+      "suggested_followup_agent": "config-workbook-author",
+      "followup_reason": "Not this agent's fix; recorded here so the skill-deepening backlog carries it (build-doc-keeper does not author skills)."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "mode": "per-step",
+    "pass": "first documentation pass",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      ".sfskills/builds/tier2-webhook/decisions.md",
+      ".sfskills/builds/tier2-webhook/traceability.md"
+    ],
+    "workbook_rows": [],
+    "workbook_skipped": {
+      "reason": "scale: feature makes the workbook optional; no workbook/ file exists yet for this build",
+      "citation": "standards/build-orchestration.md \u00a7 'The three tiers' (Documentation row: 'workbook optional, traceability required')"
+    },
+    "traceability_rows": [
+      {
+        "req_id": "REQ-005",
+        "action": "amended in place",
+        "step_id_unchanged": "M1-S01",
+        "cells_amended": [
+          "status",
+          "artefact_paths",
+          "test_result"
+        ],
+        "change": "status In Build -> In UAT; artefact_paths gained the M1-S02 permission-set file and package.xml; test_result narrates the 12-field-permission grant now built and tested"
+      },
+      {
+        "req_id": "REQ-006",
+        "action": "amended in place",
+        "step_id_unchanged": "M1-S01",
+        "cells_amended": [
+          "artefact_paths",
+          "test_result"
+        ],
+        "change": "artefact_paths gained the M1-S02 permission-set file and package.xml; test_result narrates the Resend__c grant and the D14/A13 assignee set now built and tested; status stays In Build (M1-S03 resend trigger still pending)"
+      },
+      {
+        "req_id": "REQ-008",
+        "action": "new row",
+        "step_id": "M1-S02",
+        "source": "Q4",
+        "status": "In Build",
+        "change": "minted this pass: the on-call tool authentication mechanism (Named Principal, custom AuthHeader, portable per-org URL)"
+      },
+      {
+        "req_id": "REQ-009",
+        "action": "new row",
+        "step_id": "M1-S02",
+        "source": "Q5",
+        "status": "In UAT",
+        "change": "minted this pass: the API key never stored in code or a custom setting, requirement.md L7-8 verbatim"
+      }
+    ],
+    "decisions_appended": [
+      "D-M1S02-01",
+      "D-M1S02-02",
+      "D-M1S02-03",
+      "D-M1S02-04",
+      "D-M1S02-05",
+      "D-M1S02-06"
+    ],
+    "rows_replaced": [],
+    "idempotence_note": "REQ-005/REQ-006 were amended by named-cell replacement, not row deletion and re-add: a second run over unchanged sources would write the identical cell text. REQ-008/REQ-009 are new rows keyed on their own req_id, so a re-run would need to delete-then-rewrite them by req_id (no step_id component to the key, corrected this pass). decisions.md remains append-only; none of the six new entries duplicates an existing step+date+text combination.",
+    "checker_results": [
+      {
+        "command": "python3 scripts/build_plan.py render .sfskills/builds/tier2-webhook/plan.json",
+        "exit": 0,
+        "result": "wrote PLAN.md and CLARIFICATIONS.md"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo-root>",
+        "exit": 1,
+        "result": "first run (with a duplicate REQ-005/REQ-006 pair, before the row-per-step-per-requirement approach was corrected): 11 rows, 2 errors (duplicate req_id), 5 orphans, 1 warning"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo-root>",
+        "exit": 0,
+        "result": "final run, after correcting to in-place row updates: 9 rows, build schema, 0 coverage gaps, 0 errors, 5 orphans (all M1-S04, a concurrently-running step out of scope), 1 warning (the standing orphan WARN)"
+      }
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, Process Observations, and the confidence rubric this agent overrides at Step 11"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and the atomic-write rule for this agent's own deliverable pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the refusal enum (none raised this run \u2014 step status was tested on entry)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 (rendered views, no hand-edit), \u00a7 3.1 (the three tiers table \u2014 workbook optional at scale: feature), \u00a7 4 (step-type to workbook-section map), \u00a7 6 (this agent's Tier-4 row), \u00a7 8 (a decisions.md skill gap as the signal to deepen a skill)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the steps[] fields read this run (status, inputs, amendments, runs, human_gates) and the ones left untouched"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the ten canonical section map, consulted to confirm the workbook-skip decision was legitimate at this scale rather than a section-mapping failure"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+      "used_for": "the build-layer RTM shape, the req_id-uniqueness rule that corrected this run's first draft, and the checker invocation itself"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decisions.md entry shape \u2014 date, step, agent, alternative rejected, source grounded in \u2014 already established by this build's own D-M1S01-* entries and followed for D-M1S02-01..06"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming REQ-009's evidence (direct inspection plus a deferred manual test) is recorded as acceptance evidence rather than a false pass"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "confirming this per-step run correctly leaves uat-test-cases.yaml alone \u2014 that compilation belongs to M1-S05's Step 10 run, not this one"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming REQ-008/REQ-009's requirement text is written as an observable claim traceable to requirement.md, not a paraphrase that drifts from it"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1-S01 and M1-S02 are both documented now; a milestone-scope acceptance pass over artefacts can confirm the cross-step permission-set/object checker still holds and the M1 gate note is current."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "M1-S04 is running with 5 undocumented ApexClass artefacts (the orphans this run's check_rtm.py reported); once that step reaches tested, its own documentation pass closes them."
+    }
+  ]
+}

@@ -1,0 +1,361 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T10-44-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-44-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-44-00Z.json",
+  "outcome": "completed",
+  "summary": "kind=schedulable, feature: the hourly Tier 2 notification-channel health check. Emitted five classes and five .cls-meta.xml siblings at apiVersion 67.0 under artefacts/M1-S04/classes/ - a thin Tier2ChannelHealthSchedulable holding the hourly CRON literal '0 0 * * * ?' whose execute() only enqueues, a Tier2ChannelHealthQueueable carrying three aggregate COUNT() queries and both Q24 thresholds, a nine-method Tier2ChannelHealthTest, plus verbatim copies of templates/apex/ApplicationLogger.cls and templates/apex/tests/TestDataFactory.cls required by the Step 6 provenance rule. All four skill checkers exit 0. Confidence is MEDIUM, not HIGH: no compile check ran because the build is design-only, and ApplicationLogger's own two metadata prerequisites - Application_Log__c and Logger_Setting__mdt - are shipped by no step of this build, which makes the package undeployable until a human settles it.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "GATES.md Gate D row 3: zero unresolved symbols but no target_org_alias, so the dry-run compile did not run at all and coverage is unmeasured - computed MEDIUM, never self-declared HIGH. Gate B resolved every symbol against a file on disk (Integration_Failure__c, Case.Tier2_Notified_At__c and Status__c against artefacts/M1-S01; ApplicationLogger and TestDataFactory against templates/apex). Application_Log__c and Logger_Setting__mdt resolve to template files too, which is why this is a deploy-order finding rather than a Gate B refusal.",
+  "inputs_received": {
+    "kind": "schedulable",
+    "feature_summary": "(from plan.json steps[M1-S04].inputs.feature_summary, used verbatim)",
+    "primary_sobject": "(absent - required only for trigger/selector/domain/batch)",
+    "api_version": "67.0",
+    "namespace": "(absent - non-packaged org; nothing in the plan binds one)",
+    "include_logger": true,
+    "test_bulk_size": "(absent - default 200; applied as a 200-row bulk insert inside the startTest bracket in queryBudgetStaysFlatAtBulkVolume)",
+    "async_hint": "(absent - no default applied; the worker is three aggregate queries and one email, so sizing was not a live question)",
+    "thresholds": "more than three Integration_Failure__c rows created in the last hour, OR no Case stamped with Tier2_Notified_At__c in the last 24 hours while at least one escalation occurred in that window (Q24)",
+    "sender": "support-noreply@acme.example (org-wide address; assumption A4, deploy prerequisite)",
+    "recipients": "Support Engineering - no address bound by any answer; see deploy-order.md section 4 item 1",
+    "running_user": "the user who runs System.schedule; assumption A13, decision D14",
+    "credentials_seen": "none - no credential-shaped value appeared in any input, so nothing needed [REDACTED]"
+  },
+  "dimensions_compared": [
+    "class-decomposition",
+    "governor-budget",
+    "security-posture",
+    "secret-handling",
+    "id-handling",
+    "error-handling"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "bulk-safety",
+      "state": "partial",
+      "reason": "The feature has no per-record path to bulk-test: evaluate() is three aggregate COUNT() queries whose cost is flat at any row count. queryBudgetStaysFlatAtBulkVolume asserts that directly at 202 rows (3 queries, delta measured with Limits.getQueries()), which is the strongest claim this shape supports; the 200-record collection-iteration assertion the dimension normally means does not apply.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None. A collection-iteration test would be asserting a loop this feature does not have."
+    },
+    {
+      "dimension": "test-coverage",
+      "state": "partial",
+      "reason": "No Apex test was executed - the loop does not deploy and there is no offline Apex compiler in the sf CLI. Coverage is an estimate from reading the bodies (~80-85% on the Queueable without the org-wide address, ~95% with it), and the eight lines of sendAlert that build and send the message are unreachable in an org lacking the org-wide address row, because OrgWideEmailAddress cannot be inserted by a test.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run sf project deploy start --dry-run --test-level RunLocalTests against a sandbox that already carries the verified org-wide address, after the Application_Log__c prerequisite is met."
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-01",
+      "severity": "P0",
+      "title": "ApplicationLogger is wired per include_logger:true, but Application_Log__c and Logger_Setting__mdt are shipped by no step of this build",
+      "detail": "Step input include_logger:true means every class wires through templates/apex/ApplicationLogger.cls (apex-builder Inputs table). That class writes Application_Log__c rows and reads Logger_Setting__mdt.getInstance('Default'). skills/apex/error-handling-framework/references/code-examples.md section 9 rows 1-3 make both hard compile prerequisites of shipping ApplicationLogger. Clarification Q16 answered 'We have no existing Apex log object in the org', and M1-S01's object model ships Integration_Failure__c, Case.Tier2_Notified_At__c and Tier2_Escalation__e only. apex-builder emits .cls/.trigger files only and cannot ship the object or the CMDT, and M1-S01 is already documented. The step's classes therefore do not compile in the target org as it stands.",
+      "recommendation": "A human chooses at the M1 gate: (a) add an object-model step owned by metadata-builder shipping templates/apex/custom_objects/Application_Log__c plus its eight fields and templates/apex/cmdt/Logger_Setting__mdt with a Default record, which M1-S03 and M1-S04 then depend on; or (b) amend-step this step's inputs.include_logger to false and re-run it, accepting that a suppressed alert leaves no queryable record. Nothing in this run guesses between them."
+    },
+    {
+      "id": "AB-02",
+      "severity": "P1",
+      "title": "The plan's outputs[] does not declare the two template copies its own templates[] requires",
+      "detail": "templates[] cites templates/apex/ApplicationLogger.cls and templates/apex/tests/TestDataFactory.cls; outputs[] declares six paths, none of them those copies or their meta XML. Step 6's provenance rule forces them into the package, so five files (four class/meta files plus deploy-order.md) land as undeclared artefacts that check-outputs never confirms.",
+      "recommendation": "The writer is build_plan.py amend-step, and it is refused once a step has left pending - so this is a note for whoever re-plans, not a fix this run can apply. standards/build-orchestration.md section 4's Apex row note names the structural remedy: a dedicated Apex foundations step, since M1-S03 and M1-S04 share both dependencies."
+    },
+    {
+      "id": "AB-03",
+      "severity": "P2",
+      "title": "The Support Engineering recipient address is bound by no answer, so alertRecipients ships empty with a // UNKNOWN: marker",
+      "detail": "Q24 names the team, not an address, and the step input says the address comes from the deploy-order note rather than being hardcoded per environment. A Custom Metadata Type or Custom Label is the right home; no step in this build ships either, and a reference to a Custom Label that does not exist is a compile error. sendAlert logs 'Channel health alert NOT sent' and returns when the list is empty, so an unconfigured job is loud rather than silently mailing nowhere.",
+      "recommendation": "Set the list at release, or add the configuration metadata in the same change as AB-01 fix (a)."
+    },
+    {
+      "id": "AB-04",
+      "severity": "P2",
+      "title": "The scheduling user's Case record visibility is not guaranteed, and an under-count raises a false dead-channel alert",
+      "detail": "Tier2_Webhook_Admin grants viewAllRecords on Integration_Failure__c, so both failure counts are complete for any assignee. It carries no objectPermissions row for Case (assumption A14), so the successesLastDay query returns only Cases the scheduling user can see under the org's Case sharing model. If that user cannot see other people's Cases, successesLastDay reads 0 and rule 2 fires on a healthy channel.",
+      "recommendation": "Confirm the scheduling user's Case access at the M1 gate. No answer names a Case OWD, so nothing was assumed here."
+    },
+    {
+      "id": "AB-05",
+      "severity": "INFO",
+      "title": "While the channel is dark the job emails Support Engineering every hour for up to 24 hours",
+      "detail": "Q24 asked for the alert and said nothing about repetition, and no answer names an acknowledgement mechanism, so no suppression was invented. At most 24 of the org's 5,000 daily external emails, which counts recipients rather than calls.",
+      "recommendation": "If alert fatigue matters, the cheapest suppression is a high-water-mark field on a configuration record - which needs metadata this build does not ship. Decide at the M1 gate."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "M1-S01 shipped Case.Tier2_Notified_At__c with a description naming this health check as a consumer, so the field's purpose was verifiable from the artefact rather than inferred from the plan.",
+      "domain": "data-model",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "M1-S02's permission set grants viewAllRecords on Integration_Failure__c, which is what makes the two failure counts trustworthy for any assignee under the Private OWD decision D12 set.",
+      "domain": "record-access",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "Noticed that include_logger:true pulls in two metadata components no step of this build ships, so the emitted package cannot compile in the target org until the object model gains Application_Log__c and Logger_Setting__mdt.",
+      "domain": "deploy-order",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/error-handling-framework/references/code-examples.md",
+        "query": "section 9 Deploy order rows 1-3"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Noticed that M1-S03 cites the same two template classes and declares no output for either, so both Apex steps carry the same undeclared-copy problem and the plan has no Apex foundations step to hold them.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S03].templates[] vs steps[M1-S03].outputs[]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Noticed that check_apex_scheduled_jobs.py blanks line comments before string literals, so a '//' inside an Apex string literal mis-lexes the remainder of the file; the seeded endpoint value in the test drops its scheme to stay out of that path.",
+      "domain": "library-tooling",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py",
+        "query": "strip_comments then blank_strings"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The step input says execute() does nothing but enqueue while also setting include_logger:true; one ApplicationLogger.info plus flush was kept in execute() and the tension is recorded so a strict reader can delete those two lines.",
+      "domain": "scope",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S04].inputs.shape vs inputs.include_logger"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "No cited skill states whether WITH USER_MODE may be appended to an aggregate COUNT() query, so the clause was omitted on the authority of the step input and the API 67.0 default-user-mode row rather than guessed either way.",
+      "domain": "fls",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/soql-security/references/gotchas.md",
+        "query": "WITH USER_MODE with COUNT()"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "A security pass over the emitted classes would independently confirm the user-mode reading of the three aggregate queries against the assignee set decision D14 names.",
+      "domain": "fls",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "because the FLS and sharing reading of three unqualified 67.0 queries is exactly what that agent re-derives from the code rather than from the plan's claim about it."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The Apex foundations gap - two steps sharing two template classes with no step owning them - is a change-planning question rather than a coding one.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      },
+      "suggested_followup_agent": "change-impact-planner",
+      "followup_reason": "because adding Application_Log__c and Logger_Setting__mdt to a documented milestone touches deploy order for M1-S03, M1-S04 and M1-S05 at once."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/apex-scheduled-jobs",
+      "path": "skills/apex/apex-scheduled-jobs/SKILL.md",
+      "used_for": "Schedulable-as-dispatcher shape, the six-field CRON grammar and the hourly ceiling, the post-deploy abort-then-schedule runbook, and the CronTrigger/AsyncApexJob test assertions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "Queueable worker shape and the rule that the test's async hand-off must sit inside the startTest/stopTest bracket"
+    },
+    {
+      "type": "skill",
+      "id": "apex/error-handling-framework",
+      "path": "skills/apex/error-handling-framework/SKILL.md",
+      "used_for": "the ApplicationLogger logging path, and its references/code-examples.md section 9 deploy order, which names Application_Log__c and Logger_Setting__mdt as hard prerequisites of shipping ApplicationLogger"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "assertion style, no SeeAllData, and the rule that a referenced templates/apex/tests class must ship in the same manifest"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-outbound-email-patterns",
+      "path": "skills/apex/apex-outbound-email-patterns/SKILL.md",
+      "used_for": "setOrgWideEmailAddressId rather than setSenderDisplayName, allOrNone=false meaning nothing throws so SendEmailResult must be inspected, setSaveAsActivity needing a whatId, and the 5,000/day recipient-counted cap"
+    },
+    {
+      "type": "template",
+      "id": "apex/ApplicationLogger.cls",
+      "path": "templates/apex/ApplicationLogger.cls",
+      "used_for": "shipped verbatim (diff empty) and called for info/warn/error/flush; every logging identifier in the emitted code is quoted from this file"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "shipped verbatim (diff empty); the test seeds its Case through createCases(count, accountId, overrides)"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Clock (cron) - decision D11 routes the hourly check to Schedulable Apex over a schedule-triggered Flow",
+      "used_for": "confirming the async surface the step's kind=schedulable already names, rather than re-deciding it"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Apex over Flow for the notification-channel monitor, per decision D11 and the plan's own citation",
+      "used_for": "the Apex-vs-declarative half of the same choice; no branch was re-opened by this step"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step records and agent eligibility, section 5 The Apex exception (no package.xml on an apex-builder step), and section 8's rule that build_plan.py is the only writer of plan state"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the API 67.0 row of the Apex security idiom table (default user mode, WITH SECURITY_ENFORCED removed) and Gate C self-verification for code-emitting agents"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-gates",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate B symbol grounding and Gate D's computed-confidence rule, which caps this run at MEDIUM because no compile check could run"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "this step is built and its three declared checkers plus the always-on xml and manifest checks are the tester's to run and record in tests/M1-S04/results.json."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "an independent FLS and sharing read of the three user-mode aggregate queries would confirm the assignee set decision D14 names is sufficient."
+    }
+  ],
+  "extensions": {
+    "kind": "schedulable",
+    "api_version": "67.0",
+    "class_inventory": [
+      {
+        "name": "Tier2ChannelHealthSchedulable",
+        "role": "schedulable",
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls",
+        "template": "none - shape from skills/apex/apex-scheduled-jobs references/code-examples.md section 1"
+      },
+      {
+        "name": "Tier2ChannelHealthQueueable",
+        "role": "queueable-worker",
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+        "template": "none - logging via templates/apex/ApplicationLogger.cls"
+      },
+      {
+        "name": "Tier2ChannelHealthTest",
+        "role": "test",
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+        "template": "templates/apex/tests/TestDataFactory.cls for the Case seed"
+      },
+      {
+        "name": "ApplicationLogger",
+        "role": "shipped-template",
+        "path": "artefacts/M1-S04/classes/ApplicationLogger.cls",
+        "template": "templates/apex/ApplicationLogger.cls - diff empty"
+      },
+      {
+        "name": "TestDataFactory",
+        "role": "shipped-template",
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls",
+        "template": "templates/apex/tests/TestDataFactory.cls - diff empty"
+      }
+    ],
+    "gate_c": {
+      "symbol_grounding": "pass - Integration_Failure__c, Integration_Failure__c.Status__c/.Endpoint__c/.Error_Message__c and Case.Tier2_Notified_At__c resolved against artefacts/M1-S01; ApplicationLogger and TestDataFactory against templates/apex; CronTrigger, CronJobDetail, AsyncApexJob, OrgWideEmailAddress and the Messaging namespace are platform. Zero unresolved symbols, zero // UNKNOWN: markers on a symbol - the one // UNKNOWN: marker in the package is on an unbound VALUE (the recipient address), not on a symbol.",
+      "identifier_provenance": "pass - the only non-platform Type.method calls emitted are ApplicationLogger.info/warn/error/flush and TestDataFactory.createCases(Integer, Id, Map<String,Object>), each quoted from the template file shipped alongside it.",
+      "compile": "NOT RUN - build_mode is design-only, no target_org_alias exists, and there is no offline Apex compiler in the sf CLI (sf apex run --file executes a file as anonymous Apex against a required --target-org). Confidence capped at MEDIUM per GATES.md Gate D.",
+      "requirements_deviation": "none - every class, method and threshold traces to the step's inputs{} or to a cited skill; no capability was added that the plan did not ask for."
+    },
+    "checkers_run": [
+      {
+        "command": "python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "Scanned 5 .cls file(s) under artefacts/M1-S04: 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "Scanned 5 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "No issues found."
+      },
+      {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "Scanned 5 Apex class file(s); audited 2 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0",
+        "note": "not declared on this step; run as due diligence because the skill is cited"
+      }
+    ],
+    "governor_budget": {
+      "schedulable_execute": {
+        "soql": 0,
+        "dml": "0, plus 1 if the buffered log flushes",
+        "note": "synchronous limits apply to scheduled Apex"
+      },
+      "queueable_evaluate": {
+        "soql": 3,
+        "dml": 0,
+        "note": "all aggregate COUNT(); flat at any row count, asserted at 202 rows"
+      },
+      "queueable_sendAlert": {
+        "soql": 1,
+        "dml": "0, plus 1 if the log flushes",
+        "email": "1 message, recipients counted against the org's 5,000/day cap"
+      }
+    },
+    "integration_notes": [
+      "No existing file is modified by this step. Every artefact is a new file.",
+      "M1-S05 must carry five ApexClass members for this step, with ApplicationLogger and TestDataFactory listed once each across M1-S03 and M1-S04.",
+      "Scheduling is a post-deploy Anonymous Apex step; the abort-then-schedule script is in artefacts/M1-S04/deploy-order.md section 6."
+    ]
+  }
+}

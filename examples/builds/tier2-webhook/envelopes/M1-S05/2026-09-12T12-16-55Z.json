@@ -1,0 +1,275 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T12-16-55Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-16-55Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-16-55Z.json",
+  "summary": "Built step M1-S05 (type docs) for build tier2-webhook: the build-level package.xml aggregating every member of M1-S01 through M1-S04, and the compiled build-wide deploy-order note. The manifest carries 7 <types> blocks and 33 members at <version>67.0</version> with no wildcards: CustomObject x2 (including the platform event Tier2_Escalation__e), CustomField x13 (object-qualified, including Case.Tier2_Notified_At__c), ExternalCredential x1, NamedCredential x1, ApexClass x13, ApexTrigger x2, PermissionSet x1. The plan's inputs.members enumeration predates the M1-S03/M1-S04 rebuilds and names 11 ApexClass members; the artefacts on disk carry 13, because both Apex steps ship template-provenance copies (TestDataFactory in both, MockHttpResponseGenerator in M1-S03). TestDataFactory is emitted as ONE member, verified byte-identical across both steps and against templates/apex/tests/TestDataFactory.cls by SHA-256, discharging the open item in decision D-M1S03-06. Manifest-to-file consistency was verified in both directions: 33 members, 33 backing components, no member without a file and no artefact file without a member. The declared checker exits 0 with exactly the two WARN findings the plan predicted (ExternalCredential, NamedCredential on the risky-types list).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: every element traced to the cited skill's fenced manifest example, the declared checker exited 0 on the first pass and check-outputs is ok, but the manifest membership had to be resolved against the artefacts on disk rather than from the plan's own inputs.members enumeration, which the M1-S03/M1-S04 rebuilds left two ApexClass members short, and the plan's inputs.deploy_order orders the PermissionSet before the fields it grants.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S05",
+    "api_version": "67.0",
+    "source_of_api_version": "step inputs (plan.api_version is null; assumption A11)",
+    "members_input_used_as": "cross-check only, superseded by the artefacts on disk where the two disagree",
+    "credentials_in_inputs": "none - no secret appears in any step input or artefact; the External Credential carries a merge-field reference, not a key"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every upstream step's deploy-order.md already named M1-S05 as the aggregator and stated what it must carry, so the member roll-up was read from the build's own record rather than re-derived from the raw file list.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The TestDataFactory duplication was flagged by both producing steps and recorded as a decision before this step ran, so the de-duplication was a discharge of a known open item rather than a discovery.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md",
+        "query": "D-M1S03-06"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The plan's inputs.members.ApexClass for this step names 11 classes while the artefacts carry 13; the two template-provenance copies (TestDataFactory, MockHttpResponseGenerator) reached the build after the input was written and were never added to it.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs.members.ApexClass",
+        "count": 11
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The plan's inputs.deploy_order for this step places PermissionSet third, ahead of the object and field metadata its twelve fieldPermissions rows name, which is the ordering the cited skill's Anti-Pattern 4 and both upstream steps' notes say fails when the deploy is staged.",
+      "domain": "deploy-order",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs.deploy_order"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "M1-S01 and M1-S02 each instruct that the other must not travel in the same deploy request, while the build-level manifest necessarily puts them in one; the cited gotcha's own remedy carries an 'unless the access change is the point of the deployment' carve-out and describes a retrieve-side hazard, which is why the combined request is written as safe here and the reasoning is recorded rather than assumed.",
+      "domain": "deploy-order",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/object-creation-and-design/references/gotchas.md",
+        "query": "Gotcha 10"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "This step's own manual acceptance test still frames the AuthHeader parameterValue question in its pre-amendment form, which decision D-M1S02-06 records as the PV-007 prose lag; the narrowed reading is written into deploy-order.md section 3 step 1, but amend-step is refused now the step has left pending, so the plan text remains stale.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].acceptance_tests[3].description"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Both Apex steps recommend a dedicated Apex-foundations step to hold the shared template dependency and to restore the TriggerControl kill switch that remedy B dropped; that is a re-plan, not a file change.",
+      "domain": "plan-structure",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md",
+        "query": "Apex foundations"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "An Apex-foundations step is the structural fix for one template shared by two Apex steps and is where TriggerControl and Trigger_Setting__mdt would live."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "the package.xml element shape, the object-qualified CustomField member form, the version element, and the checker's argument form and exit policy"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4's dependency-driven deploy order - data model, then Apex, then permission sets - which is the build-wide sequence in deploy-order.md section 2"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/references/gotchas.md",
+      "used_for": "Gotcha 10's 'unless the access change is the point of the deployment' carve-out, which is why objects and the permission set can legitimately share this one manifest"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 5 The Apex exception - why the ApexClass and ApexTrigger members belong in this build-level manifest step - and section 4's docs-row split between metadata-builder and build-doc-keeper"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "SHA-256 comparison proving both steps' copies are byte-identical to the template and to each other, so one ApexClass member covers both"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S05's four acceptance tests - the declared checker, the xml parse, the build-wide manifest consistency check and the manual deploy-order read - are the tester's to run, not this agent's."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "The two plan-text defects this run recorded (the stale inputs.members enumeration and the PV-007 AuthHeader prose lag) belong in decisions.md once the step is tested."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "step_type": "docs",
+    "build_id": "tier2-webhook",
+    "build_mode": "design-only",
+    "scale": "feature",
+    "terminal_path": "built - status set by build-step-runner, not by this agent (Step 9 standalone branch not taken)",
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S05/package.xml",
+        "declared": true,
+        "kind": "manifest",
+        "source": "admin/change-management-and-deployment/references/metadata-examples.md section 1"
+      },
+      {
+        "path": "artefacts/M1-S05/deploy-order.md",
+        "declared": true,
+        "kind": "note",
+        "source": "admin/change-management-and-deployment/references/llm-anti-patterns.md Anti-Pattern 4 plus the four upstream deploy-order.md files"
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "member_counts": {
+      "CustomObject": 2,
+      "CustomField": 13,
+      "ExternalCredential": 1,
+      "NamedCredential": 1,
+      "ApexClass": 13,
+      "ApexTrigger": 2,
+      "PermissionSet": 1,
+      "total": 33
+    },
+    "member_provenance": {
+      "M1-S01": "CustomObject x2, CustomField x13",
+      "M1-S02": "ExternalCredential x1, NamedCredential x1, PermissionSet x1",
+      "M1-S03": "ApexClass x10 (incl. TestDataFactory, MockHttpResponseGenerator), ApexTrigger x2",
+      "M1-S04": "ApexClass x4 (incl. TestDataFactory)",
+      "dedup": "TestDataFactory is contributed by both M1-S03 and M1-S04 and emitted once; SHA-256 2f87c8c320406e1c8381f26862cdcc17130a9fe2f8a133f098ab64a271de782c for both .cls and a242f6e22b472afffbd726be71165de394e417355cdf1edd81b5601278ddea32 for both .cls-meta.xml, and the .cls matches templates/apex/tests/TestDataFactory.cls exactly"
+    },
+    "manifest_consistency": {
+      "members_without_a_file": [],
+      "files_without_a_member": [],
+      "duplicate_members": [],
+      "wildcards": [],
+      "bidirectional": "consistent"
+    },
+    "decision_record": [
+      {
+        "question": "Which API version does the manifest carry?",
+        "answer": "67.0",
+        "source": "step inputs (api_version and version), assumption A11",
+        "element": "<version>67.0</version>"
+      },
+      {
+        "question": "How is the platform event declared?",
+        "answer": "Tier2_Escalation__e as a CustomObject member; its five payload fields are inline in the object file and are not CustomField members",
+        "source": "upstream artefact artefacts/M1-S01/package.xml and M1-S01 deploy-order.md section 2 item 3",
+        "element": "CustomObject/members"
+      },
+      {
+        "question": "Is a Case CustomObject member declared?",
+        "answer": "No. Only Case.Tier2_Notified_At__c as a CustomField member; M1-S01 deliberately ships no Case.object-meta.xml",
+        "source": "upstream artefact artefacts/M1-S01/, M1-S01 deploy-order.md section 2 item 2",
+        "element": "CustomField/members"
+      },
+      {
+        "question": "How many ApexClass members?",
+        "answer": "13 - the union of M1-S03's ten and M1-S04's four with TestDataFactory de-duplicated. The plan's inputs.members.ApexClass names 11 and predates the rebuilds",
+        "source": "artefacts on disk, cross-checked against D-M1S03-06 and both steps' deploy-order.md",
+        "element": "ApexClass/members"
+      },
+      {
+        "question": "What is the build-wide deploy order?",
+        "answer": "1 objects+fields, 2 ExternalCredential then NamedCredential, 3 Apex, 4 PermissionSet",
+        "source": "admin/change-management-and-deployment llm-anti-patterns Anti-Pattern 4, reconciled against all four upstream deploy-order.md files; diverges from the plan's inputs.deploy_order, which is recorded in the note",
+        "element": "deploy-order.md section 2"
+      },
+      {
+        "question": "Are wildcards used anywhere?",
+        "answer": "No. Every member is named explicitly",
+        "source": "step inputs ('no wildcards') and metadata-examples.md section 1's wildcard caution",
+        "element": "all types blocks"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S05",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "score": 90,
+        "findings": "2 WARN, 0 blocking - 'manifest includes ExternalCredential' and 'manifest includes NamedCredential', both asking for explicit review and smoke tests. Exactly the two the plan's acceptance-test description predicted"
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M1-S05",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "findings": "1 XML file, parses"
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "score": 80,
+        "findings": "PREVIEW ONLY - this is the M1 milestone acceptance test, not this step's. Run here as a self-check: 58 files scanned, 4 WARN (the same two risky-type findings on each of artefacts/M1-S02/package.xml and artefacts/M1-S05/package.xml), 0 blocking"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "dimensions_skipped": [
+      {
+        "dimension": "org-side validation",
+        "state": "not-run",
+        "reason": "build_mode is design-only and no agent in this loop deploys or validates against an org; mock_deploy.py --mode manifest is written into deploy-order.md as text for the operator to run",
+        "confidence_impact": "NONE",
+        "retry_hint": "The operator runs python3 scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone M1 --mode manifest after the milestone verifies"
+      },
+      {
+        "dimension": "acceptance-test execution",
+        "state": "not-run",
+        "reason": "the step's four acceptance tests belong to step-tester per standards/build-orchestration.md section 5; the declared checker was run here only as this agent's own Step 8 self-check",
+        "confidence_impact": "NONE",
+        "retry_hint": "Run /test-build-step for M1-S05"
+      }
+    ],
+    "persistence_note": "The Wave 10 pair under docs/reports/metadata-builder/ was NOT written: this invocation was constrained to write only under the build directory. The build-scoped envelope pair is the complete record of this run."
+  }
+}

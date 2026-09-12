@@ -1,0 +1,239 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T11-00-32Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-00-32Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-00-32Z.json",
+  "summary": "Ran step M1-S03 of build tier2-webhook with its owning agent apex-builder, executed inline per AGENT.md Step 6's non-Claude-Code clause. The step was in `next`, was claimed `running` at 2026-09-12T10:57:25Z, and the owning agent refused with REFUSAL_INPUT_AMBIGUOUS at its Step 6 template-class provenance check before emitting any file: three of the five templates the step's templates[] mandates cannot be shipped into this build because each references a further templates/apex class whose own custom object or custom metadata type no step of this plan ships. check-outputs reported all 20 declared outputs missing and exited 1, so `built` was unreachable; the step was set `blocked` with reason `ambiguity`, carrying the owning agent's own words into --result. Zero files were written under artefacts/M1-S03/ and nothing outside the build directory was touched. Two remedies are named for a human; neither was applied, and no gate was approved.",
+  "confidence": "LOW",
+  "confidence_rationale": "LOW per this agent's Step 9 table: the step was set `blocked`, and check-outputs reported 20 missing outputs. Every required input of the owning agent resolved from plan.json alone, the step was legitimately in `next`, both envelopes validate, and nothing was written outside artefacts/M1-S03/ - so the LOW is the blocked exit rather than any defect in the run.",
+  "outcome": "partial",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S03",
+    "reason": "not supplied - the step was `pending` and in `next`, so no carve-out was needed",
+    "input_map_source": "plan.json steps[M1-S03].inputs, all 24 keys, read after the 2026-09-12T10:51:56Z amendment. The invocation brief restated include_logger and the ApplicationLogger prohibition; both agree with the amended plan record, so nothing was taken from the brief over the plan.",
+    "credentials": "[REDACTED] - none present. M1-S02's AuthHeader parameterValue is a merge-field reference rather than a key and was not echoed into either envelope."
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The plan CLI held every line it is supposed to hold: `next` listed M1-S03 and nothing else, set-status running was accepted because M1-S04 being `running` in the same milestone does not block a sibling, set-status blocked required --blocked-reason, and check-outputs refused the `built` transition on its own rather than leaving it to the runner's judgment.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "scripts/build_plan.py next / set-status / check-outputs on .sfskills/builds/tier2-webhook/plan.json"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The amendment record on the step made the mid-flight input change auditable without a hand edit: amendments[0] carries the whole prior inputs{} and templates[] block, so the runner could see exactly what changed and why rather than trusting the coordinator's summary of it.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S03].amendments[0]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The same defect class has now blocked two of this build's three Apex-touching steps in one morning - M1-S04 on ApplicationLogger, M1-S03 on ApplicationLogger reached through two templates plus TriggerControl reached through a third - which suggests the gap is in what plan-time validation can see rather than in either step.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M1-S04].runs[1].result and steps[M1-S03].runs[1].result"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "build_plan.py validate confirms that each path in a step's templates[] exists, and the plan verifier's grounding lens does the same, but neither opens the template file to see which further templates/apex classes or custom metadata types it needs - so a step can cite TriggerHandler without TriggerControl, or HttpClient without ApplicationLogger, and pass every plan-time gate.",
+      "domain": "tooling-gap",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md section 8, and plan.json verification block recording 3 lenses / 0 blockers on plan v2"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The runner's Wave 10 persistence contract names docs/reports/build-step-runner/<run_id>.{md,json} as a second, repo-tracked copy of this deliverable, while the invocation constrained writes to the build directory; the build-scoped pair under envelopes/M1-S03/ was written and the docs/reports/ pair was not, which is a divergence a reader of the contract would not predict from the envelope alone.",
+      "domain": "deliverable-contract",
+      "evidence": {
+        "source": "input",
+        "path": "agents/build-step-runner/AGENT.md, Persistence (Wave 10 contract)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The remedy is a change to the step's templates[] and inputs, or a new Apex-foundations step, both of which are plan authorship.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "because amending templates[] or adding an Apex-foundations step is plan authorship, and this runner never edits plan.json beyond a status transition.",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md section 2, amend-step"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "step-tester is the next agent for this step once it is unblocked and rebuilt; it is not runnable now because the step has no artefacts and no `built` status.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because the three declared checkers and the always-on xml and manifest checks only run once the step reaches `built`.",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md section 5"
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "owning_agent": "apex-builder",
+    "owning_agent_build_aware": false,
+    "owning_agent_build_awareness_probe": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/apex-builder/AGENT.md returned 0, so apex-builder has no build-layer clause in its contract. Step 6's artefact-path constraint was therefore stated as a preference; the question was moot because the agent refused before writing anything, and no relocation was needed.",
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T10-57-25Z.json",
+    "artefacts": [],
+    "undeclared_artefacts": [],
+    "missing_outputs": [
+      "artefacts/M1-S03/triggers/CaseTrigger.trigger",
+      "artefacts/M1-S03/triggers/CaseTrigger.trigger-meta.xml",
+      "artefacts/M1-S03/triggers/IntegrationFailureTrigger.trigger",
+      "artefacts/M1-S03/triggers/IntegrationFailureTrigger.trigger-meta.xml",
+      "artefacts/M1-S03/classes/CaseTriggerHandler.cls",
+      "artefacts/M1-S03/classes/CaseTriggerHandler.cls-meta.xml",
+      "artefacts/M1-S03/classes/IntegrationFailureTriggerHandler.cls",
+      "artefacts/M1-S03/classes/IntegrationFailureTriggerHandler.cls-meta.xml",
+      "artefacts/M1-S03/classes/Tier2EscalationService.cls",
+      "artefacts/M1-S03/classes/Tier2EscalationService.cls-meta.xml",
+      "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls",
+      "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls-meta.xml",
+      "artefacts/M1-S03/classes/Tier2WebhookFinalizer.cls",
+      "artefacts/M1-S03/classes/Tier2WebhookFinalizer.cls-meta.xml",
+      "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls",
+      "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls-meta.xml",
+      "artefacts/M1-S03/classes/Tier2WebhookQueueableTest.cls",
+      "artefacts/M1-S03/classes/Tier2WebhookQueueableTest.cls-meta.xml",
+      "artefacts/M1-S03/classes/IntegrationFailureResendTest.cls",
+      "artefacts/M1-S03/classes/IntegrationFailureResendTest.cls-meta.xml"
+    ],
+    "relocations": [],
+    "check_outputs": {
+      "ok": false,
+      "step": "M1-S03",
+      "missing_count": 20,
+      "empty": [],
+      "malformed": [],
+      "exit_code": 1
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S03 running --started 2026-09-12T10:57:25Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S03 blocked --blocked-reason \"ambiguity\" --run-agent apex-builder --envelope envelopes/M1-S03/2026-09-12T10-57-25Z.json --result \"<the owning agent's own message>\" --started 2026-09-12T10:57:25Z"
+    ],
+    "terminal_status": "blocked",
+    "blocked_reason": "ambiguity",
+    "blocked_reason_choice": "`ambiguity` rather than `skill-gap`: no skill is missing. Every fact needed is on disk - the templates, their dependencies, and the metadata that would satisfy them all exist in templates/apex/. What is unresolved is which of two bound step inputs wins, which is a plan question for a human.",
+    "gates_touched": "none. This step carries human_gate: false, so no step:M1-S03 gate exists; no gate was read for approval and none was written.",
+    "concurrency": "M1-S04 was `running` under another runner throughout. Nothing under artefacts/M1-S04/ or its envelopes was written, moved or read for anything other than its committed deploy-order.md, which records the same ApplicationLogger finding from its run 1.",
+    "step_inputs_vs_invocation_brief": "The brief restated include_logger: false, the ApplicationLogger prohibition and the TestDataFactory duplication. All three agree with the amended plan record, so no divergence had to be reported under Step 5's invocation-is-not-a-source rule. The brief's Step 6 instruction to 'ship every template class you reference verbatim' is what the refusal is about: two of those classes cannot be shipped.",
+    "section_3_1_support_gaps": [
+      "The feature tier's plan shape is 1 milestone and <= 5 steps, with a carve-out only for the aggregating Apex manifest step. Remedy A adds an Apex-foundations step, which section 4's Apex row note explicitly prescribes for a plan with two Apex steps sharing a template dependency - so a correctly-shaped feature-tier plan with two Apex steps needs six, and section 3.1 has no carve-out for it the way it has one for the manifest step. The CLI reports this only as a validate WARN, so the plan reads green.",
+      "Neither build_plan.py validate nor the plan verifier's grounding lens reads the body of a cited template, so a templates[] entry that needs a second template or a custom metadata type passes plan time and fails at the builder. Both Apex steps of this build hit it.",
+      "The runner's Wave 10 persistence names docs/reports/build-step-runner/<run_id>.{md,json} alongside the build-scoped pair, while the build layer's own section 2 layout puts agent envelopes under envelopes/<step-id>/. The invocation constrained writes to the build directory; the docs/reports/ pair was not written and the divergence is recorded here rather than resolved."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/build-step-runner/AGENT.md",
+      "path": "agents/build-step-runner/AGENT.md",
+      "used_for": "Steps 1-10: the next check, the running claim, the input-map priority rules, the three clauses on the owning-agent invocation, the Step 7 artefact adjudication and the Step 9 confidence table"
+    },
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "read end to end and executed inline per Step 6's any-other-host clause: the Inputs table, Steps 1-7, the Output Contract and the refusal table"
+    },
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/GATES.md",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gates A-D, and the computed-confidence rule that overrode a self-declared score on the owning agent's envelope"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement, rule 2 on incomplete templates, rule 7 on no side effects, and the Gate C section"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule, the redaction requirement on echoed inputs, and the refused-run clause that still requires a written deliverable"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical enum REFUSAL_INPUT_AMBIGUOUS was drawn from"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json is the only shared state, amend-step), section 3.1 (feature tier), section 4 (step record fields, agent eligibility, the status machine, the Apex row note), section 5 (the Apex exception and the check-outputs gate on built), section 8 (the CLI is the only writer)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the shape of both envelopes written this run, including the build-layer report_path and envelope_path patterns and the additionalProperties:false rule that puts everything agent-specific under extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format layout the step's declared outputs assume - classes/ and triggers/ under artefacts/M1-S03/ - which the refusal leaves unwritten"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming ApexClass and ApexTrigger are deployable types, so the step's declared outputs are the right shape and the blocker is the missing prerequisites rather than the outputs themselves"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema a planned step derives from, used to map the step's inputs onto apex-builder's Inputs table rather than paraphrasing the step title at it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the Q-number and assumption id conventions echoed into the envelopes so the doc keeper can join the block back to Q16 and D4 without re-deriving it"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes checked for before echoing any input; M1-S02's AuthHeader parameterValue is a merge-field reference rather than a key and was still kept out of both envelopes"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-planner",
+      "because": "the remedy is an amend-step on templates[] and inputs, or a new Apex-foundations step, and this runner never edits plan.json beyond a status transition."
+    },
+    {
+      "agent": "step-tester",
+      "because": "it is the next agent for M1-S03 once the step is unblocked, rebuilt and at `built` - not now, because there are no artefacts to test."
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+WARN: artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml: objectPermissions for Integration_Failure__c sets modifyAllRecords=true, which bypasses sharing for that object; keep sharing overrides in a named set that is not composed into a persona group.

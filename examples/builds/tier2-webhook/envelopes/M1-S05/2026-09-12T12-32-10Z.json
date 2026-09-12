@@ -1,0 +1,241 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T12-32-10Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-32-10Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-32-10Z.json",
+  "outcome": "completed",
+  "summary": "Documentation pass for M1-S05 (tier2-webhook), the last M1 step, status tested at invocation. Re-read the three envelopes under envelopes/M1-S05/, artefacts/M1-S05/deploy-order.md (sec 2 the reconciled deploy order vs. the plan input's order, sec 3 the five manual steps and their owners, and the four out-of-manifest prerequisites), reports/MOCK-DEPLOY-M1.md runs 4-5, and tests/M1-S05/ (results.json, manifest-check.txt, checker.stdout.txt, check-outputs.json). Appended five decisions (D-M1S05-01..05): manifest-step authority (artefacts over the step's own stale inputs.members -- 13 ApexClass vs. 11, reports/drivers-log.md friction 43); the input deploy_order defect placing PermissionSet ahead of the fields it grants (friction 44); the M1-S01/M1-S02 combined-manifest decision under Gotcha 10's own 'unless the access change is the point of the deployment' carve-out; the PV-007/D-M1S02-06 AuthHeader manual-test prose, narrowed in deploy-order.md sec 3 Step 1 but still stale in plan.json because amend-step is refused once a step has left pending; and the manifest-mode dry run (run 5, 38/38) as this build's own proof that the aggregated package.xml deploys as one unit, distinct from what source-mode run 4 could prove. traceability.md: no new or edited row. M1-S05 mints no requirement of its own and ships no per-file metadata component (package.xml is explicitly indexed by check_rtm.py but every one of its 33 members was already keyed by an earlier step's file before the walk reaches M1-S05, so index.setdefault is a no-op for all 33; deploy-order.md is a non-metadata .md note) -- per Step 7's 'add its artefact to the rows it serves or a coverage note,' a build-wide coverage note was written instead, replacing the prior 'updated after M1-S03' heading with 'updated after M1-S05' and demoting that note to a superseded pass-note section. check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root confirms 16 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings. Workbook not written: scale is feature (workbook optional per build-orchestration.md sec 3.1), and this is the build-wide choice every prior pass has kept -- this pass keeps it too. Re-rendered PLAN.md/CLARIFICATIONS.md and set the step documented via build_plan.py.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "check_rtm.py returned a clean run (16 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings) and every decision this pass recorded traces to a specific envelope, test artefact or drivers-log entry rather than a paraphrase. Held to MEDIUM rather than HIGH for two reasons the rubric's own MEDIUM row names: D-M1S05-01 and D-M1S05-02 required a judgment call between two disagreeing sources (the step's own stale inputs.members / inputs.deploy_order versus the artefacts and the always-on manifest check) rather than a single unambiguous reading; and D-M1S05-04 records an ambiguity this pass narrowed but could not close -- the plan's own manual-test text still frames the AuthHeader question in its pre-amendment form, and amend-step is refused now the step has left pending, so the stale text D-M1S02-06 first flagged (PV-007) persists into the record this pass produced.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S05",
+    "scale": "feature",
+    "credentials_seen": "none - no value in steps[M1-S05].inputs{}, the three envelopes, or artefacts/M1-S05/deploy-order.md carried a literal secret; the AuthHeader parameterValue is a merge-field formula naming where the platform reads the key, not the key itself, so nothing needed [REDACTED]"
+  },
+  "dimensions_compared": [
+    "decisions-log",
+    "traceability-coverage-note",
+    "plan-render",
+    "rtm-lint"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook",
+      "state": "not-run",
+      "reason": "scale: feature makes the ten-section workbook optional per standards/build-orchestration.md sec 3.1 ('workbook optional, traceability required'), and this build has written no workbook/ rows at any prior pass (M1-S01, M1-S02, M1-S03, M1-S04) -- M1-S05's own step notes name the same build-wide choice explicitly, and this is the last M1 step, so the choice now stands for the whole milestone.",
+      "confidence_impact": "NONE",
+      "retry_hint": "If a human wants the workbook started retroactively, re-run this agent's Step 4 default path across every documented step of M1 in one pass rather than partially."
+    },
+    {
+      "dimension": "traceability-row-per-requirement",
+      "state": "not-run",
+      "reason": "M1-S05 mints no requirement of its own (agents/build-doc-keeper/AGENT.md Step 7) and produces no per-file metadata component that could orphan or need a new artefact_paths entry -- package.xml's 33 members are all already keyed by an earlier step's own file in check_rtm.py's index_manifest (index.setdefault is a no-op for all 33), and deploy-order.md is a non-metadata note. A build-wide coverage note was written in traceability.md instead of a row.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Not applicable -- there is no row to write. If a future step ever ships a metadata component of its own under a docs type, Step 7's ordinary row-per-requirement path applies to that step, not to this one."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's own artefact (deploy-order.md sec 3 Step 1) already carried the narrowed AuthHeader reading before this pass started, so D-M1S05-04 collates and grounds an existing narrowing rather than performing new analysis -- the metadata-builder run that built this step had already done the work of reading D-M1S02-06 and responding to it in the artefact.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S05/deploy-order.md",
+        "query": "section 3, Step 1"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_rtm.py ran clean against the unchanged 16-row matrix: 0 coverage gaps, 0 orphans, 0 errors, 0 warnings -- the 11 orphans the M1-S03 pass resolved stayed resolved, and M1-S05's own package.xml introduced no new ones, confirming the index.setdefault reasoning in the coverage note rather than merely asserting it.",
+      "domain": "traceability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/traceability.md",
+        "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This is the second consecutive step (after M1-S04's D-M1S04-07) whose own plan-declared acceptance-test description or input field went stale relative to the artefacts a rebuild produced -- inputs.members names 11 ApexClass where the step's own manifest carries 13. The pattern across the build (D-M1S02-06, D-M1S03-08, D-M1S04-02/07, this step's D-M1S05-01/02/04) suggests a plan-hygiene gap wider than any one step: nothing currently re-checks a step's own inputs/acceptance-test text against a sibling step's rebuild.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md",
+        "query": "D-M1S02-06, D-M1S03-08, D-M1S04-02, D-M1S04-07, D-M1S05-01, D-M1S05-02, D-M1S05-04"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "D-M1S05-04's open item (amend-step M1-S05 --prose-only to narrow the manual test's AuthHeader wording) has now been named twice -- once by D-M1S02-06 at the M1-S02 pass, once here -- without a writer able to apply it, because amend-step is refused once a step has left pending and M1-S05 is now tested. Whether this waits for milestone-verifier's own re-plan trigger or a direct human amendment is not this pass's to decide.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md",
+        "query": "D-M1S02-06 open item; D-M1S05-04 open item"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Every M1 step (M1-S01 through M1-S05) is now documented, and the build-level manifest's manifest-mode dry run (run 5, 38/38) has been recorded as evidence.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[*].status"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because it is the agent that cross-checks every step in a completed milestone and writes the M1 acceptance report and the G3 gate request -- every step this milestone declares is now documented."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "D-M1S05-01's open item recommends a build-planner rule that an aggregating step's own inputs.members/deploy_order should be treated as a floor, not a ceiling, so a later rebuild of a contributing step cannot silently leave the manifest step's declared inputs stale.",
+      "domain": "plan-structure",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md",
+        "query": "D-M1S05-01 open item; D-M1S05-02 open item"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "because the recurring stale-input pattern across D-M1S02-06/D-M1S03-08/D-M1S04-02/D-M1S04-07/D-M1S05-01/D-M1S05-02 is a planning-contract gap, not something a documentation pass can fix step by step."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the prohibition on mutating files outside the paths this agent owns"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, and the confidence rubric this agent's own Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and the atomic-write rule; this run's envelope pair is written under the build directory only, per this build's own precedent (build-step-runner, apex-builder, and this agent's own M1-S01..S04 passes)"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum; not triggered -- the step's status was tested, satisfying Step 1's precondition"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "sec 2 (rendered views are never hand-edited), sec 3.1 (feature-scale documentation tier: workbook optional, traceability required), sec 4 (docs step type, the step-type-to-workbook-section map and its default, and the Apex-exception build-level manifest step), sec 5 (manifest-mode vs. source-mode dry-run coverage; the manifest check reads the merged package.xml), sec 6 (this agent's Tier-4 row), sec 8 (a decisions.md skill gap is the signal to deepen a skill)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields this agent reads (status, envelopes, inputs{}, acceptance_tests[]) and the type enum Step 4 maps to workbook sections"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set and check_rtm.py's own resolution rules, read directly from its module docstring, that ground why package.xml and deploy-order.md mint no new coverage obligation for this step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "confirming the ten-section workbook shape this pass deliberately did not invoke at this scale"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, step, agent, alternative rejected, source grounded in) this build's decisions.md already follows and this pass's five new entries continue"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming this step's manual acceptance test (the deploy-order read at the M1 gate) is a recordable, deferrable manual test rather than something this pass should try to tick itself"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "confirming this is a per-step run rather than a compile run (the step's agent is metadata-builder, not build-doc-keeper), so the UAT case-pack format does not apply here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming the same per-step/compile-run distinction for the compiled acceptance-criteria document, also not produced on this run"
+    },
+    {
+      "type": "standard",
+      "id": "object-creation-and-design-gotchas",
+      "path": "skills/admin/object-creation-and-design/references/gotchas.md",
+      "used_for": "Gotcha 10, the object/access same-request carve-out D-M1S05-03 applies"
+    },
+    {
+      "type": "standard",
+      "id": "change-management-and-deployment-anti-patterns",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4, the dependency-driven deploy order D-M1S05-02 applies against the plan's stale input"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "every M1 step (M1-S01 through M1-S05) is now documented, and the manifest-mode dry run (run 5, 38/38) is on record as evidence for the M1 acceptance report."
+    },
+    {
+      "agent": "build-planner",
+      "because": "the recurring pattern of a step's own inputs/acceptance-test text going stale relative to a sibling step's rebuild (D-M1S02-06, D-M1S03-08, D-M1S04-02, D-M1S04-07, D-M1S05-01, D-M1S05-02) is a planning-contract gap this documentation pass can only keep naming, not fix."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/decisions.md",
+      ".sfskills/builds/tier2-webhook/traceability.md",
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      ".sfskills/builds/tier2-webhook/plan.json"
+    ],
+    "workbook_rows": [],
+    "traceability_rows": [],
+    "decisions_appended": [
+      "D-M1S05-01",
+      "D-M1S05-02",
+      "D-M1S05-03",
+      "D-M1S05-04",
+      "D-M1S05-05"
+    ],
+    "rows_replaced": [],
+    "coverage_note_written": {
+      "file": ".sfskills/builds/tier2-webhook/traceability.md",
+      "heading": "Coverage notes (build-wide, updated after M1-S05 -- supersedes the M1-S03 note below)",
+      "superseded_heading": "M1-S03 pass note (superseded by the M1-S05 note above, kept for the record)",
+      "reason": "M1-S05 mints no requirement of its own and ships no per-file metadata component; package.xml's 33 members are all already keyed by an earlier step's file in check_rtm.py's index_manifest, and deploy-order.md is a non-metadata note"
+    },
+    "rtm_check": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root \"/Users/pranavnagrecha/VS Code/Personal/SfSkills\"",
+      "exit_code": 0,
+      "result": "traceability.md: 16 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 0 warning(s)"
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S05 documented --run-agent build-doc-keeper --envelope envelopes/M1-S05/2026-09-12T12-32-10Z.json --result \"traceability: coverage note only, 0 new rows, 16 rows unchanged, 0 orphans; decisions appended: 5 (D-M1S05-01..05); workbook skipped (scale: feature, optional, build-wide choice); RTM checker 0 errors, 0 warnings\" --started 2026-09-12T12-30-00Z",
+    "render_command": "python3 scripts/build_plan.py render .sfskills/builds/tier2-webhook/plan.json"
+  }
+}

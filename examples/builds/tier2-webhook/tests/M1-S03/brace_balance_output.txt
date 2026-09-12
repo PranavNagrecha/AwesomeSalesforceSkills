@@ -1,0 +1,62 @@
+[
+  {
+    "path": "artefacts/M1-S03/classes/CaseTriggerHandler.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/IntegrationFailureResendTest.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/IntegrationFailureTriggerHandler.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/TestDataFactory.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/Tier2EscalationService.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/Tier2WebhookFinalizer.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/classes/Tier2WebhookQueueableTest.cls",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/triggers/CaseTrigger.trigger",
+    "balanced": true,
+    "error": null
+  },
+  {
+    "path": "artefacts/M1-S03/triggers/IntegrationFailureTrigger.trigger",
+    "balanced": true,
+    "error": null
+  }
+]

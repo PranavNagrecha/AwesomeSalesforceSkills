@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Business event: a Case was escalated to the Tier 2 Engineering queue. Consumed by the external ops dashboard over the Pub/Sub API.</description>
+    <eventType>HighVolume</eventType>
+    <label>Tier 2 Escalation</label>
+    <pluralLabel>Tier 2 Escalations</pluralLabel>
+    <publishBehavior>PublishAfterCommit</publishBehavior>
+    <fields>
+        <fullName>Case_Number__c</fullName>
+        <label>Case Number</label>
+        <length>30</length>
+        <required>true</required>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Severity__c</fullName>
+        <label>Severity</label>
+        <length>40</length>
+        <required>false</required>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Subject__c</fullName>
+        <label>Subject</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Case_Link__c</fullName>
+        <label>Case Link</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Escalated_At__c</fullName>
+        <label>Escalated At</label>
+        <required>false</required>
+        <type>DateTime</type>
+    </fields>
+</CustomObject>

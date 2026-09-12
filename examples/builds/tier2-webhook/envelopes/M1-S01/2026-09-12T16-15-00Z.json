@@ -1,0 +1,217 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T16-15-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T16-15-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T16-15-00Z.json",
+  "summary": "Correction pass on the prior M1-S01 documentation run (2026-09-12T14-50-00Z): traceability.md's seven rows were re-keyed from the raw clarification id (Q10, Q12, ...) to minted REQ-001..REQ-007 in req_id, with the settling clarification id preserved in source, per this loop's own precedent in examples/builds/case-onboarding/traceability.md § 'Requirement id derivation'. Added a 'Requirement id derivation' table anchoring each minted id to requirement.md (or stating no line exists) and the clarification that settled it. Re-ran check_rtm.py: 0 errors, 0 coverage gaps, 0 orphans (previously 7 req_id-format errors). No other row content changed. No plan.json write: M1-S01 was already documented and remains so. No workbook, decisions.md, PLAN.md or artefact change.",
+  "confidence": "HIGH",
+  "confidence_rationale": "All Step 11 HIGH conditions hold for this narrow correction: the re-keying was mechanical (req_id column only), the derivation table's anchors were read directly from requirement.md line-by-line and the clarification answers in plan.json's clarifications[], and check_rtm.py now reports 0 errors/0 coverage gaps/0 orphans — verified by an independent re-run of the exact command, not narrated. No input was missing or defaulted.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S01",
+    "precondition_status": "documented (unchanged by this run)",
+    "scale": "feature",
+    "source": "traceability.md (this run's own prior output), requirement.md (in full), plan.json clarifications[] entries Q10/Q12/Q14/Q17/Q18/Q20/Q30, examples/builds/case-onboarding/traceability.md § 'Requirement id derivation' (the convention this correction conforms to)",
+    "credentials_present": false,
+    "redactions": "none",
+    "correction_of": "envelopes/M1-S01/2026-09-12T14-50-00Z.json",
+    "trigger": "coordinator correction: the prior run's decision to key req_id on the raw clarification id and accept the resulting check_rtm.py errors as a documented gap was wrong — this build's own precedent already establishes minting REQ-XXX ids regardless of whether a formal elicitation pass ran"
+  },
+  "dimensions_compared": [
+    "req-id-minting",
+    "rtm-lint",
+    "idempotence"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability",
+      "observation": "Re-keying req_id to REQ-001..REQ-007 and re-running check_rtm.py moved the lint result from 7 errors to 0 errors, 0 coverage gaps, 0 orphans, with no change to any other column — confirming the prior run's coverage claim (every artefact named by a row) was already sound and the only defect was the key format.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/traceability.md",
+        "query": "check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo>",
+        "count": 7
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "process",
+      "observation": "The prior run (2026-09-12T14-50-00Z) treated 'no formal elicitation pass ran' as license to key req_id on a non-conformant id and document the resulting lint errors as accepted, rather than checking this loop's own committed precedent first. examples/builds/case-onboarding/traceability.md already shows the correct pattern (mint REQ-XXX regardless, anchor it in a derivation table). Worth a standing reminder in this agent's own playbook rather than relying on a human catching it each time.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "examples/builds/case-onboarding/traceability.md",
+        "query": "§ 'Requirement id derivation'"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M1-S01 remains documented; M1-S02's step:M1-S02 human gate is still pending and untouched by this correction.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S02].human_gate"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Not yet eligible — same reason as the prior run: four more M1 steps to document first."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation — no org writes, build-dir-only writes"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations, Citations schema for this envelope"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence shape and atomic-write rule for this envelope pair"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the req_id REQ-/FG- convention and the artefact_paths convention this correction re-keys the matrix against"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape this file conforms to"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "eligible once every M1 step is documented — unchanged by this correction"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "mode": "per-step",
+    "scale": "feature",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/traceability.md"
+    ],
+    "workbook_rows": [],
+    "workbook_skip": {
+      "skipped": true,
+      "reason": "unchanged from the prior run — optional at scale:feature; not re-evaluated this pass since this correction touches only traceability.md",
+      "citation": "standards/build-orchestration.md § 3.1, table row 'Documentation'"
+    },
+    "traceability_rows": [
+      {
+        "req_id": "REQ-001",
+        "source": "Q10",
+        "step_id": "M1-S01",
+        "artefact": "CustomObject:Tier2_Escalation__e",
+        "status": "In Build"
+      },
+      {
+        "req_id": "REQ-002",
+        "source": "Q12",
+        "step_id": "M1-S01",
+        "artefact": "CustomObject:Tier2_Escalation__e",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-003",
+        "source": "Q14",
+        "step_id": "M1-S01",
+        "artefact": "CustomField:Case.Tier2_Notified_At__c",
+        "status": "In Build"
+      },
+      {
+        "req_id": "REQ-004",
+        "source": "Q17",
+        "step_id": "M1-S01",
+        "artefact": "CustomField:Integration_Failure__c.Status__c",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-005",
+        "source": "Q18",
+        "step_id": "M1-S01",
+        "artefact": "CustomObject:Integration_Failure__c",
+        "status": "In Build"
+      },
+      {
+        "req_id": "REQ-006",
+        "source": "Q20",
+        "step_id": "M1-S01",
+        "artefact": "CustomField:Integration_Failure__c.Resend__c",
+        "status": "In Build"
+      },
+      {
+        "req_id": "REQ-007",
+        "source": "Q30",
+        "step_id": "M1-S01",
+        "artefact": "CustomObject:Tier2_Escalation__e",
+        "status": "In UAT"
+      }
+    ],
+    "decisions_appended": [],
+    "rows_replaced": [
+      {
+        "req_id": "Q10",
+        "replaced_by": "REQ-001",
+        "step_id": "M1-S01"
+      },
+      {
+        "req_id": "Q12",
+        "replaced_by": "REQ-002",
+        "step_id": "M1-S01"
+      },
+      {
+        "req_id": "Q14",
+        "replaced_by": "REQ-003",
+        "step_id": "M1-S01"
+      },
+      {
+        "req_id": "Q17",
+        "replaced_by": "REQ-004",
+        "step_id": "M1-S01"
+      },
+      {
+        "req_id": "Q18",
+        "replaced_by": "REQ-005",
+        "step_id": "M1-S01"
+      },
+      {
+        "req_id": "Q20",
+        "replaced_by": "REQ-006",
+        "step_id": "M1-S01"
+      },
+      {
+        "req_id": "Q30",
+        "replaced_by": "REQ-007",
+        "step_id": "M1-S01"
+      }
+    ],
+    "rtm_check": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root \"/Users/pranavnagrecha/VS Code/Personal/SfSkills\"",
+      "cwd": ".sfskills/builds/tier2-webhook",
+      "exit_code": 0,
+      "stdout_tail": "traceability.md: 7 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 0 warning(s)",
+      "errors": [],
+      "note": "0 errors after re-keying, versus 7 req_id-format errors on the prior run's raw-clarification-id keying."
+    },
+    "render_command": null,
+    "set_status_command_planned": null,
+    "deploy_performed": false
+  }
+}

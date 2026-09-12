@@ -1,0 +1,161 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T11-33-01Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-33-01Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-33-01Z.json",
+  "summary": "Ran the molecular tests for M1-S03 (build tier2-webhook, type automation, owner apex-builder, status entering this run: built). Two always-on checks plus the step's three declared checkers all passed: 12/12 *-meta.xml files parse at apiVersion 67.0, both triggers declare 'after update'; the manifest check is skipped-not-applicable under the Apex exception (apex-builder ships no package.xml; M1-S05 aggregates); check_apex_queueable_patterns.py, check_callouts_and_http_integrations.py --fail-on HIGH and check_platform_events_apex.py each exited 0 with zero findings at any severity, matching the owning agent's own reported results. check-outputs confirmed all 20 declared outputs present, non-empty and well-formed (exit 0). A mechanical brace/paren/bracket/string-balance scan (comments and string literals stripped) over all 12 Apex files found no mismatch. The one declared manual test is classified usable (two independently observable outcomes) and deferred to the M1 gate, with one inline caveat: its clause (b) still names templates/apex/HttpClient.cls, a template remedy B dropped from this build. results.json was written with passed: true, failed: [], and the step was transitioned built -> tested via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Per this agent's Step 7 override: every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (no test was refused, no checker was missing, no manifest exclusion had to be applied for a coverage-gap type -- the manifest skip is the documented Apex exception, not a coverage-gap exclusion).",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S03",
+    "precondition_status_observed": "built",
+    "credentials": "[REDACTED] - none present in the step's declared tests or artefacts; nothing echoed here."
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every declared checker exited 0 with zero findings at any severity, not merely zero blocking findings, matching exactly what the owning agent's own envelope reported for the same commands.",
+      "domain": "acceptance-tests",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S03/checker1_queueable.txt, checker2_callouts.txt, checker3_platform_events.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check-outputs confirmed all 20 declared outputs present, non-empty, and (for the meta XML among them) parseable, and a mechanical brace/paren/bracket/string-balance scan over all 12 Apex files with comments and strings stripped found no mismatch -- the cheapest structural checks this loop can run with no target org, and both came back clean.",
+      "domain": "acceptance-tests",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S03/check_outputs.txt, tests/M1-S03/brace_balance_output.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The build-level P1 finding from the owning agent's run 2 stands unresolved: remedy B dropped templates/apex/TriggerHandler.cls (-> TriggerControl -> Trigger_Setting__mdt), so this build ships CaseTrigger with no admin kill switch and no data-load bypass -- a bulk Case-ownership reassignment into Tier_2_Engineering will escalate every affected Case.",
+      "domain": "automation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/deploy-order.md section 4; envelopes/M1-S03/2026-09-12T11-23-31Z.json finding S3-F-01"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Tier2_Escalation__e.Severity__c is mapped from Case.Priority with no clarification saying it should be; the assignment carries an inline // UNVERIFIED comment in the shipped code. Not adjudicated here -- recorded so it is not lost between tested and the milestone gate.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/classes/Tier2EscalationService.cls; deploy-order.md section 5 item 1; finding S3-F-02"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two library documents disagree about Test.setMock ordering: skills/apex/apex-named-credentials-patterns/references/code-examples.md section 6 places setMock before Test.startTest, while the declared checker check_callouts_and_http_integrations.py (rule 6, run this step at --fail-on HIGH) flags exactly that ordering as HIGH, matching the ordering skills/apex/test-class-standards/references/code-examples.md uses. This step's test classes follow the checker's ordering and the checker exited 0 -- the step's artefacts are not at fault, but the contradiction between the two skill documents is unresolved and this agent does not adjudicate which skill is wrong.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md section 6 vs skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py rule 6 vs skills/apex/test-class-standards/references/code-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The manual acceptance test's own clause (b) names templates/apex/HttpClient.cls as the endpoint-composition path; the shipped code does not use it (Tier2WebhookQueueable.cls line 25 records that remedy B dropped it, and line 220 composes the endpoint directly). The substantive security property clause (b) is checking for -- no literal hostname, no Apex-set X-API-Key/Authorization header -- is satisfied by inspection; the named mechanism in the test's own text is stale.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M1-S03].acceptance_tests[] (manual, clause b) vs artefacts/M1-S03/classes/Tier2WebhookQueueable.cls lines 25 and 220"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The step's own acceptance-test description for the callouts checker says it fails on 'a test with setMock after startTest', which is the opposite of what the checker's code enforces (it fails on setMock with no preceding startTest). Already recorded by the owning agent and the runner in prior envelopes; repeated here only because a reader debugging a future failure from PLAN.md's prose alone would be sent the wrong way.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S03].acceptance_tests[1].description"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Nothing in the build's 45 clarifications says whether the org already has an after-update trigger on Case; this step ships CaseTrigger assuming none exists. If one does, deploying a second after-update trigger on Case will not simply add alongside it.",
+      "domain": "automation-drift",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step is now tested; PLAN.md, decisions.md and traceability.md have not yet absorbed the P1 kill-switch loss, the Severity mapping question, or the manifest Apex-exception note.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because updating PLAN.md, decisions.md and traceability.md after a tested step is that agent's job, not this one's.",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md section 6 (role table)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "If the org turns out to already have an after-update trigger on Case, this step's CaseTrigger needs to be merged into it rather than deployed alongside it.",
+      "domain": "automation-drift",
+      "suggested_followup_agent": "trigger-consolidator",
+      "followup_reason": "because a second after-update trigger on Case cannot simply be added, and consolidating triggers on one object is that agent's job.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/triggers/CaseTrigger.trigger"
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S03/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "python3 xml.etree.ElementTree (inline)", "exit_code": 0, "verdict": "pass"},
+      {"name": "manifest", "type": "manifest", "runner": "n/a - Apex exception", "exit_code": null, "verdict": "skipped-not-applicable, naming M1-S05"},
+      {"name": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py", "type": "checker", "runner": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S03", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py", "type": "checker", "runner": "python3 skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py --manifest-dir artefacts/M1-S03 --fail-on HIGH", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py", "type": "checker", "runner": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S03", "exit_code": 0, "verdict": "pass"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Two-point code read at the M1 gate, tickable from this step's artefacts alone. Expected: A reviewer opens Tier2EscalationService.cls and Tier2WebhookQueueable.cls and confirms (a) the EventBus.publish call is in the service, in the escalating transaction, and its List<Database.SaveResult> is inspected with a failure writing an Integration_Failure__c row - not discarded, and not moved inside the Queueable; (b) no class anywhere sets an X-API-Key or Authorization header, reads a credential value, or names a literal hostname, and every endpoint is composed as callout:OnCall_Tool plus a path through templates/apex/HttpClient.cls."
+    ],
+    "tests_run": 5,
+    "check_outputs": {"ok": true, "step": "M1-S03", "missing": [], "empty": [], "malformed": []},
+    "brace_balance": {"files_checked": 12, "all_balanced": true},
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S03 tested --run-agent step-tester --envelope envelopes/M1-S03/2026-09-12T11-33-01Z.json --result \"ran 5 (xml, manifest skipped-not-applicable naming M1-S05, 3 checkers all exit 0), failed 0, manual 1 deferred to M1 gate\" --started 2026-09-12T11:33:01Z",
+    "terminal_status": "tested"
+  },
+  "citations": [
+    {"type": "standard", "id": "agents/step-tester/AGENT.md", "path": "agents/step-tester/AGENT.md", "used_for": "Steps 1-8: precondition check, always-on xml/manifest procedure, acceptance-test dispatch table, results.json/summary.md shape, set-status commands, confidence override, envelope self-validation"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section AGENT.md shape, Process Observations requirement and rules, citation format"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "atomic-write rule and the extensions/top-level split for build-scoped payloads"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "confirming no refusal condition applied this run (step status was built, exactly one step processed)"},
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time agent rules: no org writes, no file mutation outside the build directory, one agent per invocation"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "section 4 (Apex row note, step-type table), section 5 (acceptance-test types, checker verbatim-run rule, checker scope, the Apex exception, check-outputs gating built/tested)"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "acceptanceTest and step object shapes read from plan.json"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "the package.xml types/members/name grammar the manifest check would be judged against, had one existed for this step"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "confirming the emitted tree (classes/, triggers/, -meta.xml siblings) is the source-format layout the manifest check's file-to-member derivation assumes"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "confirming ApexClass and ApexTrigger carry no coverage-gap exclusion, so the manifest skip here is the Apex exception rather than a coverage-gap exclusion"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "the tickability bar (boolean, click-level observable result) applied to classify the manual test as usable"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then testability bar (named observable outcome) applied to the same manual test before carrying it into skipped_manual[]"}
+  ],
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the step is now tested and PLAN.md, decisions.md and traceability.md have not yet absorbed the P1 kill-switch loss, the Severity mapping question, or the manifest Apex-exception note."},
+    {"agent": "trigger-consolidator", "because": "if the org already has an after-update trigger on Case, this step's CaseTrigger needs consolidation rather than a side-by-side deploy."}
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T11-42-43Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-42-43Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-42-43Z.json",
+  "summary": "Third runner invocation for step M1-S03, a rebuild after the operator's dry-run validation 3 compiled run 2's package and returned eleven errors. The step had already been reset tested -> failed -> pending -> running by the operator, so this agent issued no claim of its own and invoked apex-builder inline against the org's verbatim findings. Two roots were fixed in three call sites across three files and every other artefact is byte-identical to run 2: URL.getSalesforceBaseUrl -> URL.getOrgDomainUrl in two classes, and two SOQL filters on a Long Text Area replaced by select-then-pick helpers in one test. check-outputs is ok on all 20 declared paths, the three declared checkers exit 0 with zero findings, and both envelopes validate, so the step was set built. Nothing was deployed, no sf command or mock_deploy.py was run, no gate was written, and nothing outside artefacts/M1-S03/ and envelopes/M1-S03/ was touched. The rebuild leaves the milestone above this step stale: M1-S03 must be re-tested and re-documented, and the M1 verification re-run.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per this agent's Step 9 table: five undeclared artefacts sit under artefacts/M1-S03/, which is the table's MEDIUM row, unchanged from run 2. Everything else is the HIGH row - check-outputs exited 0, both envelopes validate, every required input resolved from plan.json, and no file landed outside the step's artefact directory. The score deliberately does not read as reassurance: run 2 carried the same MEDIUM and the org rejected it, and run 3 has not been compiled by anything.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S03",
+    "reason": "not supplied by the caller; the operator had already moved the step tested -> failed -> pending -> running after dry-run 3, so no carve-out was claimed by this agent",
+    "input_map_source": "plan.json steps[M1-S03].inputs, unchanged since amendments[1]. No amendment accompanied this rebuild, and none was needed: the two faults are defects in run 2's output, not changes to what the plan asked for. The invocation brief named both roots and both fixes; both were verified against reports/MOCK-DEPLOY-M1.md run 3 and against artefacts/M1-S01's field definition before either was applied.",
+    "credentials": "[REDACTED] - none present in the step inputs and none written into any artefact or envelope."
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The org's findings arrived as verbatim messages against named components rather than as a summary, so the rebuild could be scoped to two roots and nine cascades without re-deriving the triage - and the rebuild touched three call sites rather than the eight components the error list named.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M1.md run 3",
+        "count": 11
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The documented-to-running rebuild path standards/build-orchestration.md section 4 describes did what it exists for: the step dropped back, the failure and both fixes are recorded in runs[] and in the step's own deploy-order.md section 0, and no plan field was hand-edited to get there.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S03].runs[]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "This step reached built once, passed step-tester's five acceptance tests, and was then rejected eleven times by the first org that compiled it - so for this step the whole offline gate set, three checkers and two always-on checks, carried no signal about deployability at all.",
+      "domain": "tooling-gap",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S03/results.json versus reports/MOCK-DEPLOY-M1.md run 3"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Both faults were facts about metadata this build itself owns - the apiVersion in the step's own meta XML, and a field type M1-S01 declared - and no offline artefact in this repo joins Apex to either, which is why a corpus grep passed a method removed nine versions earlier and no checker read a field definition another step wrote.",
+      "domain": "tooling-gap",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Request_Payload__c.field-meta.xml and artefacts/M1-S03/classes/*.cls-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The milestone above this step is now stale - M1 was verified on a package the org has since rejected - and re-running the tester and the doc keeper on M1-S03 is necessary but not sufficient: /verify-milestone has to run again before the M1 gate means anything.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md section 4, the documented -> running rebuild rule"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Two of this step's findings remain open and neither is the kind a dry run can close: the missing trigger kill switch is a design consequence a human accepted, and the event's Severity__c mapping is a business question the compiler cannot see.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/deploy-order.md sections 4 and 5"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The step is built again and its declared tests have not been re-run since the rebuild.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because tests/M1-S03/results.json still records run 2's package, and the tested transition is gated on a fresh pass over run 3's artefacts.",
+      "evidence": {
+        "source": "input",
+        "path": "tests/M1-S03/results.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The attestation-is-not-a-version-gate lesson is a build-level decision record, not a step artefact.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because decisions.md should carry why this build stopped trusting a corpus grep as evidence that an Apex identifier is legal at 67.0, alongside the remedy-B trade-off it already owes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/deploy-order.md section 0"
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "owning_agent": "apex-builder",
+    "owning_agent_build_aware": false,
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-40-10Z.json",
+    "runner_run": 3,
+    "previous_runner_envelopes": [
+      "envelopes/M1-S03/2026-09-12T11-00-32Z.json (blocked, ambiguity)",
+      "envelopes/M1-S03/2026-09-12T11-26-31Z.json (built; that package later failed dry run 3)"
+    ],
+    "trigger_for_this_rebuild": {
+      "source": "reports/MOCK-DEPLOY-M1.md run 3 - checkOnly, org sfskills-dev, API 67.0, source mode over M1-S01..M1-S04",
+      "totals": "39 components, 29 ok, 11 errors",
+      "roots": 2,
+      "cascade": 9,
+      "status_path": "the operator reset tested -> failed -> pending and re-claimed running before this invocation; this agent issued no status claim of its own"
+    },
+    "changes_applied": [
+      "artefacts/M1-S03/classes/Tier2EscalationService.cls - URL.getSalesforceBaseUrl() -> URL.getOrgDomainUrl() (S2-F-04)",
+      "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls - the same substitution in requestBody() (S2-F-04)",
+      "artefacts/M1-S03/classes/IntegrationFailureResendTest.cls - two WHERE clauses on a LongTextArea replaced by select-then-pick helpers (S2-F-05)",
+      "artefacts/M1-S03/deploy-order.md - section 0 rebuild record added; section 5 item 4 and the section 9 provenance note corrected as direct consequences"
+    ],
+    "files_byte_identical_to_run_2": 21,
+    "artefacts_declared_present": 20,
+    "artefacts_undeclared": [
+      "artefacts/M1-S03/classes/TestDataFactory.cls",
+      "artefacts/M1-S03/classes/TestDataFactory.cls-meta.xml",
+      "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls",
+      "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls-meta.xml",
+      "artefacts/M1-S03/deploy-order.md"
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "files_written_outside_step_dir": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": [],
+      "exit_code": 0
+    },
+    "declared_checkers_observed": [
+      {
+        "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S03",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py --manifest-dir artefacts/M1-S03 --fail-on HIGH",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S03",
+        "exit_code": 0
+      }
+    ],
+    "set_status_commands": [
+      "python3 scripts/build_plan.py check-outputs .sfskills/builds/tier2-webhook/plan.json M1-S03",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S03 built --run-agent apex-builder --envelope envelopes/M1-S03/2026-09-12T11-40-10Z.json --result \"<the owning agent's own outcome line>\" --started 2026-09-12T11:40:10Z"
+    ],
+    "terminal_status": "built",
+    "staleness": "This rebuild makes the records above the step stale, per standards/build-orchestration.md section 4: tests/M1-S03/results.json describes run 2's package, the doc-keeper rows describe run 2, and the M1 milestone verdict was reached on a package the org has since rejected. The step must be re-tested and re-documented and /verify-milestone re-run before the M1 gate means anything.",
+    "gates_touched": "none. The step carries human_gate: false; no gate was read for approval and none was written. No sf command, no scripts/mock_deploy.py, no org test run.",
+    "concurrency": "M1-S04 is documented and was not touched; its four classes compiled clean in dry run 3 and nothing about this rebuild changes them.",
+    "owning_agent_findings_carried": [
+      "S3-F-06 (P1, fixed this run) - an attested identifier shipped and did not compile; a corpus grep cannot answer whether a name is legal at the apiVersion the step stamps",
+      "S3-F-07 (P2, fixed this run) - a SOQL filter on a Long Text Area, which no declared checker could see",
+      "S3-F-01 (P1, still open) - no trigger kill switch and no data-load bypass, the recorded cost of remedy B",
+      "S3-F-02 (P2, still open) - Tier2_Escalation__e.Severity__c <- Case.Priority is unstated; no dry run will surface it",
+      "S3-F-03 (P2, still open) - five produced artefacts are not declared in outputs[]",
+      "S3-F-05 (INFO, still open) - the retry branch and the chained tail are deliberately uncovered"
+    ],
+    "section_3_1_support_gaps": [
+      "The loop has no offline check that joins emitted Apex to the apiVersion its own meta XML declares. apex-builder's Gate C check 2 greps the corpus for an identifier, which passed a method removed after 58.0 into a 67.0 class from three skills that spell it without naming a ceiling. A version-aware attestation - the skill naming the API range an idiom is legal in, and the check reading it - is the fix; a grep is not.",
+      "No declared checker reads the field definitions another step wrote, so Apex querying a custom field cannot be validated against that field's type offline. A WHERE clause on a LongTextArea is statically decidable from artefacts/M1-S01 plus the step's own SOQL, and nothing in the library decides it. This is the cross-referential-checker problem section 5 already names for four checkers, in a shape the list does not cover.",
+      "Both gaps cost this build a full test-and-document cycle on a package that could never have deployed, and section 3.1's driver's log has no column for that - a step can be built, tested green and documented while being undeployable, and the tier's ceremony budget assumes the offline gates mean more than they do.",
+      "Unchanged from runs 1 and 2: the runner's Wave 10 persistence names a docs/reports/build-step-runner/ pair alongside the build-scoped envelope while section 2 puts agent envelopes under envelopes/<step-id>/; only the build-scoped pair was written, per the invocation's build-dir-only constraint."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/build-step-runner/AGENT.md",
+      "path": "agents/build-step-runner/AGENT.md",
+      "used_for": "Step 2's documented-to-running rebuild carve-out and its requirement to note the rebuild in deploy-order.md and say that the records above the step are stale; Steps 6-9 for the invocation clauses, the artefact adjudication and the confidence table"
+    },
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "executed inline for the three changed call sites - Step 3's emission rules and Step 7's Gate C - rather than re-emitting the package"
+    },
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/GATES.md",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate C's compile row, which names the org-side dry run as the only compile available and puts it in the operator's hands, and the Gate D table that computed the owning envelope's MEDIUM"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "rule 7 on no side effects, rule 11's self-verification gate, and rule 12 on copied identifiers - which S3-F-06 shows is necessary and not sufficient once a method carries a version ceiling"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule, the redaction requirement, and the dimensions_skipped discipline the owning envelope used for the still-unmeasured test coverage"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming this run had no refusal to record - the org's findings are defects to fix, not an ambiguity the runner may not resolve"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4's rebuild transition and its staleness rule, section 5's check-outputs gate on built and its deploy deny-list, and section 8's rule that build_plan.py is the only writer of plan state"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the shape of both envelopes written this run and the build-layer report_path and envelope_path patterns"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "reading dry run 3's component-level result list - which failures are roots and which are the Dependent-class-is-invalid cascade the Metadata API emits for every dependant of a failed class"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the rebuilt tree is still source format with a -meta.xml beside every file, so the tester and the next dry run read it unchanged"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the finding-id and decision-id conventions that let S2-F-04 and S2-F-05 from the mock-deploy report join to S3-F-06 and S3-F-07 in this step's envelopes without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes checked for before echoing the org's verbatim error messages into deploy-order.md and both envelopes; none carries a credential"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step derives from, re-checked to confirm the rebuild changed no target_value the doc keeper has already written rows against"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "tests/M1-S03/results.json still records run 2's package, and the tested transition is gated on a fresh pass over run 3's artefacts."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "decisions.md owes the remedy-B trade-off and now the attestation-is-not-a-version-gate lesson, and the doc-keeper rows for this step describe run 2."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1 was verified on a package the org has since rejected, so the milestone verdict is stale until /verify-milestone runs again."
+    }
+  ]
+}

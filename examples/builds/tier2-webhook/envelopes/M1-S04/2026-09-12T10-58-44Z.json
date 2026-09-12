@@ -1,0 +1,328 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T10-58-44Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-58-44Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-58-44Z.json",
+  "outcome": "completed",
+  "summary": "REBUILD of step M1-S04 of build tier2-webhook against the 2026-09-12 amendment. The step was reset and amended by the operator and was already 'running' when this run began, so no claim transition was made here. apex-builder was re-run inline against the amended inputs{}, ApplicationLogger.cls and its meta XML were deleted from the step's artefacts, the three remaining classes were rewritten, check-outputs returned ok on all six declared outputs, and set-status built recorded the run. Three undeclared artefacts remain (the TestDataFactory copy, its meta XML and deploy-order.md), down from five, which holds confidence at MEDIUM. No blocking prerequisite is left: the round-1 P0 was decided at the plan, not deferred.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM row: three undeclared artefacts under artefacts/M1-S04/, and two optional inputs of the owning agent (test_bulk_size, async_hint) resolved from none of the three Step 5 sources. Everything the HIGH row asks for otherwise held - every required input resolved from plan.json, check-outputs exited 0, and no file was written outside artefacts/M1-S04/ and envelopes/M1-S04/.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S04",
+    "reason": "Rebuild after the operator/requester amendment resolving the round-1 P0 (option b: include_logger false) and binding the alert roster. The step was reset built -> failed -> pending, amended, and set running by the operator before this run.",
+    "credentials_seen": "none - no value in steps[M1-S04].inputs{} matched a credential shape, so nothing needed [REDACTED]"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The amend-step record carries who, when, why and the full prior inputs, so this rebuild could diff the amended inputs against what round 1 actually built rather than trusting a summary of the change.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S04].amendments[0].before"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The loop closed a P0 the way it is designed to: the builder reported it, the plan decided it, and the rebuild implemented the decision - no agent chose between the two remediation options.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/deploy-order.md",
+        "query": "section 0 rebuild record"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Noticed that amend-step replaces inputs wholesale, so a superseded key survives beside its replacement: inputs.recipients and inputs.alert_recipients now say different things and nothing in validate flags the pair.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S04].inputs.recipients vs .alert_recipients"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Noticed that the amendment updated templates[] but not outputs[], so the TestDataFactory copy the provenance rule still forces into the package remains undeclared - the same class of gap the round-1 envelope reported, now smaller rather than closed.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S04].templates[] vs outputs[]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step was already running when this invocation began, so Step 2's next/claim path did not apply; the run was appended by the operator's set-status rather than by this agent.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S04].runs[3]"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The rebuilt step is built and its declared tests have not been recorded by the agent that owns that record.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because tests/M1-S04/results.json with passed:true is what gates built -> tested, and this agent never runs the step's acceptance tests."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The rebuild, the decision behind it and the three remaining P2 findings belong in the build's decisions log before the M1 gate.",
+      "domain": "documentation",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because it owns decisions.md and traceability.md, and a P0 raised, decided and rebuilt inside one milestone is exactly what the M1 gate has to see."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/apex-scheduled-jobs",
+      "path": "skills/apex/apex-scheduled-jobs/SKILL.md",
+      "used_for": "Schedulable-as-dispatcher shape, the six-field CRON grammar and the hourly ceiling, the post-deploy abort-then-schedule runbook, and the CronTrigger/AsyncApexJob test assertions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "Queueable worker shape and the rule that the test's async hand-off must sit inside the startTest/stopTest bracket"
+    },
+    {
+      "type": "skill",
+      "id": "apex/error-handling-framework",
+      "path": "skills/apex/error-handling-framework/SKILL.md",
+      "used_for": "after the amendment, what a logging path may do when there is no log object: the recipient gap is written to the feature's own Integration_Failure__c sink and everything else is System.debug; also the checker's generic-catch rule, which is why no catch (Exception e) appears"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "assertion style, no SeeAllData, and the rule that a referenced templates/apex/tests class must ship in the same manifest"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-outbound-email-patterns",
+      "path": "skills/apex/apex-outbound-email-patterns/SKILL.md",
+      "used_for": "setOrgWideEmailAddressId rather than setSenderDisplayName, allOrNone=false meaning nothing throws so SendEmailResult must be inspected, setSaveAsActivity needing a whatId, and the 5,000/day recipient-counted cap"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-user-and-permission-checks",
+      "path": "skills/apex/apex-user-and-permission-checks/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 3 flags a hardcoded PermissionSet.Name in SOQL; read to establish that it governs permission GATING and not roster resolution, which is what the amendment bound - recorded in deploy-order.md section 4 item 1 rather than silently ignored"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-system-runas",
+      "path": "skills/apex/apex-system-runas/references/gotchas.md",
+      "used_for": "PermissionSetAssignment is a setup object, so the test passes the roster into sendAlert as a parameter rather than inserting an assignment beside the record DML and hitting MIXED_DML_OPERATION"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "shipped verbatim (diff empty); the test seeds its Case through createCases(count, accountId, overrides)"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Clock (cron) - decision D11 routes the hourly check to Schedulable Apex over a schedule-triggered Flow",
+      "used_for": "confirming the async surface the step's kind=schedulable already names, rather than re-deciding it"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Apex over Flow for the notification-channel monitor, per decision D11 and the plan's own citation",
+      "used_for": "the Apex-vs-declarative half of the same choice; no branch was re-opened by this rebuild"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2's amend-step contract (what an amendment may replace and when), section 4's documented->running and failed->pending recovery transitions, and section 5's Apex exception (no package.xml on an apex-builder step)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the API 67.0 row of the Apex security idiom table (default user mode, WITH SECURITY_ENFORCED removed) and Gate C self-verification for code-emitting agents"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-gates",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate B symbol grounding and Gate D's computed-confidence rule, which caps this run at MEDIUM because no compile check could run"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence pair, the atomic-write rule, the redaction requirement on echoed inputs, and the dimensions_skipped states"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checking that no refusal condition applied - the owning agent returned findings, not a refusal, so the step is built rather than blocked"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "which steps[] fields this agent owns - status and runs[] only, written through build_plan.py - and the shape of amendments[]"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming classes/ is the source-format home for .cls plus .cls-meta.xml pairs, so the artefact tree is one the tester's checks and any later deploy can read"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming ApexClass is a Metadata API type, so the step's declared outputs are deployable metadata rather than notes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step derives from, so the owning agent received the plan's amended cells rather than a paraphrase of the coordinator's message"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the Q-id convention echoed into this envelope (Q16-Q18, Q19, Q24) so the doc keeper can join step to requirement without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "screening every echoed input for credential shapes before it reached this envelope; none matched, so nothing was redacted"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the rebuilt step is built and its declared tests are the tester's to run and record; this agent never runs them and never auto-chains."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the P0, the amendment that decided it and the three remaining P2 findings belong in decisions.md before the M1 gate."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S04",
+    "milestone": "M1",
+    "rebuild": true,
+    "rebuild_of_runner_envelope": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-46-11Z.json",
+    "owning_agent": "apex-builder",
+    "owning_agent_build_aware": false,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/apex-builder/AGENT.md -> 0",
+    "owning_agent_invocation": "inline - the owning agent's Plan was executed in this session against the amended inputs{}, so the artefact-path clause was honoured directly and no relocation was needed",
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-57-00Z.json",
+    "terminal_status": "built",
+    "claim_transition": "none made by this agent - the operator had already reset (built -> failed -> pending), amended, and set the step running before this invocation, so Step 2's next/claim path did not apply",
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls",
+        "declared": true,
+        "changed": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+        "declared": true,
+        "changed": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+        "declared": true,
+        "changed": true
+      },
+      {
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls-meta.xml",
+        "declared": true,
+        "changed": false
+      },
+      {
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls",
+        "declared": false,
+        "why": "apex-builder Step 6 template provenance; still cited in templates[] and still not in outputs[]"
+      },
+      {
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls-meta.xml",
+        "declared": false,
+        "why": "meta sibling of the above"
+      },
+      {
+        "path": "artefacts/M1-S04/deploy-order.md",
+        "declared": false,
+        "why": "named by apex-builder's Output Contract item 2; excluded from any deploy tree by mock_deploy's *.md rule"
+      }
+    ],
+    "artefacts_deleted": [
+      {
+        "path": "artefacts/M1-S04/classes/ApplicationLogger.cls",
+        "why": "include_logger:false - the amendment removed the dependency; the class is no longer referenced"
+      },
+      {
+        "path": "artefacts/M1-S04/classes/ApplicationLogger.cls-meta.xml",
+        "why": "meta sibling of the above"
+      }
+    ],
+    "missing_outputs": [],
+    "undeclared_artefacts": 3,
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S04 built --run-agent apex-builder --envelope envelopes/M1-S04/2026-09-12T10-57-00Z.json --result \"REBUILD ...\" --started 2026-09-12T10-50-00Z"
+    ],
+    "inputs_unresolved_optional": [
+      "test_bulk_size",
+      "async_hint",
+      "namespace",
+      "primary_sobject"
+    ],
+    "next_command": "python3 scripts/build_plan.py next .sfskills/builds/tier2-webhook/plan.json  # then /test-build-step for M1-S04"
+  }
+}

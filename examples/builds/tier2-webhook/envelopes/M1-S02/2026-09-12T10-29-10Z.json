@@ -1,0 +1,309 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T10-29-10Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-29-10Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-29-10Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S02",
+    "reason": "rebuild after mock-deploy run 1 rejected the External Credential (S2-F-02); requester answers landed by amendment and the step gate was rejected and re-signed",
+    "note": "Step was already `running` (operator set-status at 2026-09-12T10:27:00Z), so the runner did not re-claim it - a second claim would append a duplicate run record for work the operator already recorded. All values read from plan.json steps[M1-S02].inputs, including inputs.requester_answers_added_2026_09_12; the coordinator message was corroborated against the plan and amendments[1] rather than used as a source.",
+    "api_key_value": "[REDACTED]"
+  },
+  "summary": "Rebuilt step M1-S02 and set it built again. The owning agent ran inline and changed two values in two files: the X-API-Key AuthHeader parameter gained parameterValue {!$Credential.OnCall_Tool_EC.ApiKey} (fixing S2-F-02, the org's 'The parameter type \"AuthHeader\" requires these fields: ParameterValue.'), and the Url parameter took the requester's real endpoint. The permission set and package.xml are byte-identical to run 1 by SHA-256, which is the evidence that S2-F-03 was a cascade rather than a defect. deploy-order.md gained a section 0 rebuild record and a rewritten section 5. Both declared checkers exit 0 verbatim from the build dir; check-outputs ok; five declared outputs, zero undeclared, zero relocations, nothing written outside artefacts/M1-S02.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 9 HIGH row is met on every clause: the step was legitimately claimable (gate re-signed on the amended inputs before the operator moved it to running), every required input of the owning agent resolved from plan.json, both envelopes validate, check-outputs exited 0, and nothing was written outside artefacts/M1-S02. The two unresolved inputs that held run 1 to MEDIUM are now bound by amendments[1].",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The gate sequence was repaired correctly rather than worked around: the operator's own run record shows a sequencing error at 10:23:06Z, a step back to pending, the amendment, then a re-signed gate at 10:23:07Z before the step was claimed again.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S02].runs[] dry-run-operator sequencing error"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "change-containment",
+      "observation": "The rebuild's blast radius is provable rather than asserted: the permission set and package.xml carry the same SHA-256 before and after, so the human-signed access review still applies to the exact bytes it was signed against.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "library-coverage",
+      "observation": "Both declared checkers exited 0 against run 1's credential, which the org then rejected - no rule in either checker fires on an AuthHeader parameter missing parameterValue, so the step's automated test suite had no failure power over the defect that actually stopped the deploy.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py",
+        "query": "NC-META-001..003, NC-XREF-001, NC-PERM-001, NC-RSS-001"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "clarification-coverage",
+      "observation": "Two facts a deployable credential cannot be written without - the endpoint URL and the name of the stored credential parameter - reached the build only after a failed dry run, across 45 clarifications and two verification rounds.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/reports/drivers-log.md",
+        "query": "driver's log 26"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "integration-auth",
+      "observation": "A5 is closed on the parameter name but the formula grammar is narrowed, not proven; a formula that parses and resolves to an empty string would pass mock-deploy run 2 and fail only at UAT, so the deploy checkpoint must not be read as the runtime one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md",
+        "query": "section 5 item 1"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "plan-hygiene",
+      "observation": "M1-S05's manual step 1 and the step's own manual clause (f) were written for a world where the formula was unwritten; clause (f) was updated in this step's artefacts, but M1-S05's prose belongs to another step and was left alone.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S05] manual"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step was already tested once, against artefacts two of which have since changed.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "runs[] step-tester 2026-09-12T10:19:53Z"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the prior tested record is stale against the rebuilt credential, and built is the status it reads."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The rebuild produced a new design decision (A5 closed by requester answer) and a skill-quality finding that exist only in these envelopes.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because S2-F-02, the requester's two answers and the closure of A5 belong in decisions.md once the step is tested."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-28-30Z.json",
+    "owning_envelope_validation": "OK .sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-28-30Z.json",
+    "rebuild": true,
+    "rebuild_of_run": "2026-09-12T10-08-07Z",
+    "rebuild_trigger": {
+      "source": "reports/MOCK-DEPLOY-M1.md run 1 (checkOnly, sfskills-dev, API 67.0)",
+      "findings": [
+        "S2-F-02 HIGH - AuthHeader requires ParameterValue",
+        "S2-F-03 cascade - principal grant could not resolve"
+      ],
+      "org_errors_verbatim": [
+        "The parameter type \"AuthHeader\" requires these fields: ParameterValue.",
+        "The OnCallToolNamedPrincipal parameter value doesn't exist or you may not have permission to access it."
+      ]
+    },
+    "artefacts": [
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+        "declared": true,
+        "changed": true
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+        "declared": true,
+        "changed": true
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "declared": true,
+        "changed": false,
+        "sha256": "9988b317538ff8f31069e1c5d8e7fd8ab3ab9cfbad77180c0d991e971e65de5a"
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/package.xml",
+        "declared": true,
+        "changed": false,
+        "sha256": "43c142d18dfda3cb108c6dd0cd50241dc6372b486e2754fd50f3996d7489b65d"
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md",
+        "declared": true,
+        "changed": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "files_written_outside_step_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "checker_results": [
+      {
+        "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+        "scope": "step",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "scope": "build",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0
+      }
+    ],
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S02 built --run-agent metadata-builder --envelope envelopes/M1-S02/2026-09-12T10-28-30Z.json --result \"REBUILD run 2 ...\" --started 2026-09-12T10:27:00Z",
+    "terminal_status": "built",
+    "step_runnability": {
+      "next_output_contained_step": false,
+      "carve_out_used": "none - the step was already `running`, claimed by the operator at 2026-09-12T10:27:00Z; the runner did not re-claim and appended no duplicate run",
+      "human_gate": "step:M1-S02 rejected and re-signed 2026-09-12T10:23:07Z on the amended inputs, one second after amendments[1] landed"
+    },
+    "gate_writes_performed": [],
+    "org_commands_run": [],
+    "residual_risk": [
+      "AuthHeader formula grammar: narrowed, not proven. Deploy checkpoint = mock-deploy run 2; runtime checkpoint = UAT. A formula resolving to an empty string passes the first and fails the second.",
+      "Assumption A2 (async context user, risk high): unreachable by any checkOnly validation because a dry run does not execute a Queueable."
+    ],
+    "dimensions_skipped": []
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules binding this rebuild, including the ban on org writes"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and redaction of the credential-shaped step input"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum (none raised)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 rebuild path and status machine, section 5 checker scope, section 8 the plan CLI as sole writer"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the amendments[] and runs[] shapes read to confirm the requester's answers and the gate sequence"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape keeping every build key under extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the rebuild kept the source-format directory-per-type layout intact"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/references/gotchas.md",
+      "used_for": "confirming the declared outputs remain deployable component types after the change"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema behind the step's inputs, re-read after the amendment changed them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the id conventions echoed so the doc keeper can join the S2-F-02 finding back to the step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "distinguishing the merge-field reference now in the file from an actual secret, and keeping the key value [REDACTED]"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+      "used_for": "read in full with the owner: section 1 supplied the AuthHeader parameterValue position and section 2 the Url parameter shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "confirming S2-F-03 needed no permission-set change"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/integration-pattern-selection.md",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q2 - Custom header / API key -> Named Credential + External Credential (Custom)",
+      "used_for": "D2 carried through unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1 - Public Read-Only / Public Read-Write -> Tighten OWD before adding anything -> Q2",
+      "used_for": "D12 carried through unchanged"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the prior tested record was taken against run 1's artefacts and two of them changed"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "S2-F-02, the requester's two answers and the closure of A5 belong in decisions.md once the step is tested"
+    }
+  ]
+}

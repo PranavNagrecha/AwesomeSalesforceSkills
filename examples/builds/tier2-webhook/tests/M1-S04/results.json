@@ -1,0 +1,81 @@
+{
+  "step_id": "M1-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py",
+    "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py",
+    "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "A reviewer confirms (a) the CRON literal in Tier2ChannelHealthSchedulable.cls is hourly and the Schedulable's execute() does nothing but enqueue; (b) the two thresholds in Tier2ChannelHealthQueueable.cls are the ones Q24 stated - more than three failures in an hour, or no success in 24 hours while escalations exist; (c) the sender is support-noreply@acme.example and a named person confirms that org-wide address is already verified in the target org, because assumption A4 records that no step in this build can create or verify it."
+  ],
+  "results": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "python3 -c (xml.etree.ElementTree, stdlib)",
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "4 of 4 *-meta.xml files under artefacts/M1-S04 parsed (TestDataFactory.cls-meta.xml, Tier2ChannelHealthQueueable.cls-meta.xml, Tier2ChannelHealthSchedulable.cls-meta.xml, Tier2ChannelHealthTest.cls-meta.xml), all apiVersion 67.0. No .cls files are XML and none were parsed as such. Raw output: tests/M1-S04/xml_results.json"
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "n/a — structural classification per standards/build-orchestration.md § 5 The Apex exception",
+      "exit_code": null,
+      "verdict": "skipped-not-applicable",
+      "detail": "No package.xml under artefacts/M1-S04, none declared in outputs[]. Step type is automation and agent is apex-builder, so this is the Apex exception: the four ApexClass members (Tier2ChannelHealthSchedulable, Tier2ChannelHealthQueueable, Tier2ChannelHealthTest, TestDataFactory) are carried by the build-level manifest step M1-S05, which depends_on this step. Not a failure."
+    },
+    {
+      "name": "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py",
+      "type": "checker",
+      "runner": "python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "Scanned 4 .cls file(s) under artefacts/M1-S04: 0 ERROR, 0 WARN, 0 ADVISORY. check-outputs also ok on this step's declared outputs. Raw output: tests/M1-S04/check_apex_scheduled_jobs.stdout.txt"
+    },
+    {
+      "name": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py",
+      "type": "checker",
+      "runner": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "Scanned 4 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY. check-outputs also ok. Raw output: tests/M1-S04/check_apex_queueable_patterns.stdout.txt"
+    },
+    {
+      "name": "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py",
+      "type": "checker",
+      "runner": "python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "\"No issues found.\" This checker is the step's empty-directory guard per PV-003; the directory is non-empty and clean. check-outputs also ok. Raw output: tests/M1-S04/check_error_handling_framework.stdout.txt"
+    },
+    {
+      "name": "check-outputs",
+      "type": "precondition (run once, applies to every checker test above)",
+      "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/tier2-webhook/plan.json M1-S04",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "{\"ok\": true, \"step\": \"M1-S04\", \"missing\": [], \"empty\": [], \"malformed\": []}. Raw output: tests/M1-S04/check-outputs.json"
+    },
+    {
+      "name": "manual",
+      "type": "manual",
+      "runner": "n/a — human ticks at the M1 gate",
+      "exit_code": null,
+      "verdict": "usable (not ticked; not counted toward pass/fail)",
+      "detail": "Checked against the Given/When/Then bar in skills/admin/acceptance-criteria-given-when-then: it names three concrete observable outcomes (the CRON literal's value, the two Q24 threshold values, and the sender address plus a named person's confirmation that the org-wide address is verified in the target org) rather than an unobservable generality, so it is tickable as written. Carried verbatim into skipped_manual[]."
+    },
+    {
+      "name": "brace/paren/bracket balance (due diligence, not a declared acceptance test)",
+      "type": "n/a",
+      "runner": "python3 -c (stdlib, string/comment-aware lexer)",
+      "exit_code": null,
+      "verdict": "pass (informational)",
+      "detail": "All 4 .cls files balanced on braces, parens and brackets. Raw output: tests/M1-S04/brace_balance.json. Not one of the five declared acceptance-test types (checker/xml/manifest/command/manual); recorded because deploy-order.md § 8 documents the same check as due diligence and the invoking instruction asked for it explicitly. Does not affect passed/failed."
+    }
+  ]
+}

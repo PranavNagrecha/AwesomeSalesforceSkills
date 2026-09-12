@@ -1,0 +1,86 @@
+[
+  {
+    "file": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls",
+    "balanced": true,
+    "counts": {
+      "brace": {
+        "open": 2,
+        "close": 2,
+        "balanced": true
+      },
+      "paren": {
+        "open": 3,
+        "close": 3,
+        "balanced": true
+      },
+      "bracket": {
+        "open": 0,
+        "close": 0,
+        "balanced": true
+      }
+    }
+  },
+  {
+    "file": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+    "balanced": true,
+    "counts": {
+      "brace": {
+        "open": 23,
+        "close": 23,
+        "balanced": true
+      },
+      "paren": {
+        "open": 82,
+        "close": 82,
+        "balanced": true
+      },
+      "bracket": {
+        "open": 6,
+        "close": 6,
+        "balanced": true
+      }
+    }
+  },
+  {
+    "file": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+    "balanced": true,
+    "counts": {
+      "brace": {
+        "open": 23,
+        "close": 23,
+        "balanced": true
+      },
+      "paren": {
+        "open": 147,
+        "close": 147,
+        "balanced": true
+      },
+      "bracket": {
+        "open": 18,
+        "close": 18,
+        "balanced": true
+      }
+    }
+  },
+  {
+    "file": "artefacts/M1-S04/classes/TestDataFactory.cls",
+    "balanced": true,
+    "counts": {
+      "brace": {
+        "open": 17,
+        "close": 17,
+        "balanced": true
+      },
+      "paren": {
+        "open": 48,
+        "close": 48,
+        "balanced": true
+      },
+      "bracket": {
+        "open": 3,
+        "close": 3,
+        "balanced": true
+      }
+    }
+  }
+]

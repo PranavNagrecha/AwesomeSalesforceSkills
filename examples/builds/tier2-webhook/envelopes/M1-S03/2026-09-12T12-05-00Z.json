@@ -1,0 +1,280 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T12-05-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T12-05-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T12-05-00Z.json",
+  "summary": "Documented step M1-S03 (tested -> documented) in build tier2-webhook: re-rendered PLAN.md, appended 9 decisions to decisions.md (the round-1 template-closure refusal and remedy B; the S2-F-04 getSalesforceBaseUrl/version-gate lesson; the S2-F-05 LongTextArea-filter fault; the P1 missing trigger kill switch; the UNVERIFIED Severity mapping; the TestDataFactory duplication for M1-S05; the setMock-ordering library contradiction; and a newly-discovered no-op prose-only amendment that left the manual test's stale HttpClient.cls clause unchanged), and updated traceability.md: 7 existing rows (REQ-001, REQ-003, REQ-004, REQ-005, REQ-006, REQ-008, REQ-009) updated in place with M1-S03 artefacts and narration, 6 new rows minted (REQ-011 through REQ-016) for M1-S03 inputs no earlier row covered. scale: feature keeps the workbook optional and skipped, unchanged from every prior pass. check_rtm.py now reports 0 coverage gaps and 0 orphans (was 11 orphans before this pass).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact this step produced now has a traceability row, every new row carries a real source_req_id (minted this pass, anchored) and a verification note, and re-running the RTM checker shows 0 orphans and 0 coverage gaps with no duplicates. Held to MEDIUM rather than HIGH because the workbook step type this build uses (scale: feature) is documented via traceability.md rather than the ten-section workbook, several rows' evidence rests on source inspection and static checkers rather than an executed Apex test (no compile check exists in this design-only build until a human runs mock_deploy.py), and this pass surfaced a new, unresolved plan-hygiene defect (D-M1S03-08) rather than only recording pre-identified ones.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every one of the 11 orphan Apex artefacts check_rtm.py flagged before this pass now resolves to a traceability row after this pass's updates, with 0 coverage gaps and 0 warnings on re-run.",
+      "domain": "traceability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/traceability.md",
+        "count": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Two run-3 source fixes (S2-F-04, S2-F-05) that the org caught and the operator recorded in deploy-order.md were independently re-confirmed present in the shipped .cls files by this pass's own grep, not merely trusted from the artefact's prose.",
+      "domain": "verification-discipline",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/classes/Tier2EscalationService.cls"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The amendment plan.json records at steps[M1-S03].amendments[2] (prose_only: true, reason: re-word the stale HttpClient.cls manual-test clause) wrote no actual change: the current acceptance_tests field is byte-identical to the amendment's own 'before' snapshot, so the M1 gate's manual test still names a template this build does not ship.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json steps[M1-S03].amendments[2]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "artefacts/M1-S03/deploy-order.md section 6 states 'all six production classes are with sharing' and 'both SOQL statements carry WITH USER_MODE', but a grep this pass over the shipped .cls files counts five with-sharing classes and three WITH USER_MODE SOQL statements -- the compliance claim holds, the artefact's own arithmetic is off by one in each count.",
+      "domain": "documentation-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "M1-S03 ships CaseTrigger.trigger as an after-update trigger on Case, and none of this build's 45 clarifications say whether the target org already has an after-update trigger on Case; a pre-existing trigger of the same name would collide at deploy, which only a human checking the target org can resolve.",
+      "domain": "deploy-collision-risk",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md section 10"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Now that M1-S03 is documented, milestone-verifier should run once M1-S04 and M1-S05 are also documented, since all three of D-M1S03-04 (missing kill switch), D-M1S03-08 (the no-op prose amendment) and D-M1S04-03 (unproven scheduling-user access) are open M1-gate confirmation items this build has accumulated across steps.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "It is the agent that runs cross-step checks and produces the acceptance report the M1 gate actually reads, and it can roll all of this pass's open items into one report rather than leaving them scattered across three steps' documentation.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json steps[M1-S03,M1-S04,M1-S05]"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer traceability.md column set, the REQ-XXX minting rule, and the check_rtm.py orphan/coverage gates this pass had to clear"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "confirming the ten-section workbook stays optional at scale: feature per standards/build-orchestration.md section 3.1, so no workbook rows were written this pass"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decisions.md entry shape -- date, step, agent, alternative rejected, source grounded in -- applied to all nine new entries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming this build's manual acceptance tests (clauses a/b) are the UAT-equivalent evidence a design-only, never-deployed build relies on instead of an executed test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the per-case evidence and automation-verdict framing used when narrating why several new traceability rows rest on source inspection rather than an executed Apex test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "judging the step's manual test clauses (a)/(b) against the testability bar -- a named, code-level observable per clause -- before treating them as usable RTM evidence"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (rendered vs hand-edited files), section 3.1 (scale: feature ceremony -- workbook optional, traceability required), section 4 (the Apex exception and the step-type-to-workbook-section map's default), section 5 (checker scope and the deploy deny-list), section 8 (skill-gap-as-decisions.md-entry rule)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Apex security idiom by API version table, used to judge REQ-016's with-sharing/WITH USER_MODE claim, and the Process Observations / confidence rubric this envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persisted markdown+JSON pair, atomic-write rule and dimensions_skipped shape this envelope and its twin report follow"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied -- step status was tested, a precondition for the ordinary per-step run"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "reading steps[M1-S03] (inputs, outputs, acceptance_tests, amendments, runs) directly rather than through prose, and discovering the amendments[2] before/current mismatch (D-M1S03-08) by diffing against this schema's own step.amendments shape"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      ".sfskills/builds/tier2-webhook/decisions.md",
+      ".sfskills/builds/tier2-webhook/traceability.md"
+    ],
+    "workbook_rows": [],
+    "workbook_skipped_reason": "scale: feature makes the ten-section workbook optional (standards/build-orchestration.md section 3.1); this build has never written one and this pass follows that precedent, per traceability.md's own 'Workbook' coverage note.",
+    "traceability_rows": [
+      {
+        "req_id": "REQ-001",
+        "action": "updated_in_place",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-003",
+        "action": "updated_in_place",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-004",
+        "action": "updated_in_place",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-005",
+        "action": "updated_in_place",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-006",
+        "action": "updated_in_place",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-008",
+        "action": "updated_in_place",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-009",
+        "action": "updated_in_place",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-011",
+        "action": "minted",
+        "source": "Q11",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-012",
+        "action": "minted",
+        "source": "Q13",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-013",
+        "action": "minted",
+        "source": "Q7",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-014",
+        "action": "minted",
+        "source": "Q8",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-015",
+        "action": "minted",
+        "source": "Q22",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-016",
+        "action": "minted",
+        "source": "Q23",
+        "status": "In UAT"
+      }
+    ],
+    "decisions_appended": [
+      "D-M1S03-01",
+      "D-M1S03-02",
+      "D-M1S03-03",
+      "D-M1S03-04",
+      "D-M1S03-05",
+      "D-M1S03-06",
+      "D-M1S03-07",
+      "D-M1S03-08"
+    ],
+    "rows_replaced": [
+      "REQ-001",
+      "REQ-003",
+      "REQ-004",
+      "REQ-005",
+      "REQ-006",
+      "REQ-008",
+      "REQ-009"
+    ],
+    "rtm_check": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo>",
+      "before": {
+        "rows": 10,
+        "coverage_gaps": 0,
+        "orphans": 11,
+        "errors": 0,
+        "warnings": 1
+      },
+      "after": {
+        "rows": 16,
+        "coverage_gaps": 0,
+        "orphans": 0,
+        "errors": 0,
+        "warnings": 0
+      }
+    }
+  },
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook-rows",
+      "state": "not-run",
+      "reason": "scale: feature makes the ten-section workbook optional per standards/build-orchestration.md section 3.1, and no pass of this build has written one; traceability.md is the required deliverable at this scale and was written in full.",
+      "confidence_impact": "NONE",
+      "retry_hint": "run config-workbook-author at release time if the build's committed workbook is later required."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "It runs cross-step checks and produces the M1 acceptance report once every M1 step is documented, and can roll up the open M1-gate items this and prior passes recorded (missing kill switch, unproven scheduling-user access, the no-op prose amendment)."
+    }
+  ]
+}

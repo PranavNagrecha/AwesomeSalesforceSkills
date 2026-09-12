@@ -1,0 +1,906 @@
+{
+  "agent": "plan-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T13-55-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/verification/2026-09-12T13-55-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/verification/2026-09-12T13-55-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook"
+  },
+  "summary": "Round 2 of 2 on tier2-webhook plan v2 (scale: feature, design-only, 1 milestone, 5 steps). All three round-1 blockers are cleared and nothing that passed in round 1 regressed, so the outcome is verified: executability pass, grounding pass, testability pass, 0 blockers, 9 warnings. PV-001 is closed by a Case.Tier2_Notified_At__c field permission on Tier2_Webhook_Admin, with A14's claim about the checker's object-row rule confirmed in that checker's source rather than taken on trust, A13 covering the scheduling user, and the manual test carrying the absence check no checker can make. PV-002 is closed by citing apex/apex-hardcoded-id-elimination and binding its Example-3 Group-by-DeveloperName shape into inputs.detection verbatim. PV-003 is closed by a third M1-S04 checker that this verifier probed itself: check_error_handling_framework.py exits 1 on an empty directory with the exact message the plan quotes, so every step now carries a test with failure power over an absent artefact. Four round-1 warnings are folded in as well: the ten branch quotes are now character-for-character verbatim, M1-S01 names the elements its flagless checker requires, the UNVERIFIED AuthHeader grammar is manual deploy step 1, and the test classes carry the publish-result and deliver() rules.",
+  "confidence": "HIGH",
+  "confidence_rationale": "HIGH per the plan-verifier rubric: all three lenses ran on all five steps plus the milestone and the cross-step set, in a full re-run rather than a diff; every verdict carries evidence naming the file read or the command run and what it printed; and each of the three cleared blockers was re-checked against the artefact of record rather than against the planner's description of it - the field permission against the checker's own source, the queue lookup against the skill's fenced Example 3, and the new checker against its own --help, an empty directory and a missing one. The two judgement calls made against the letter of a lens row (M1-S04's org-only manual clause, and treating the deploy-order prose lag as a warning) are both recorded with their reasoning.",
+  "outcome": "completed",
+  "findings": [
+    {
+      "id": "PV-001",
+      "severity": "INFO",
+      "title": "CLEARED \u2014 Case.Tier2_Notified_At__c FLS is now granted, and the grant is checker-safe",
+      "detail": "v2's Tier2_Webhook_Admin declares the field readable and editable, with the reason stated in the input itself. The shape is safe against the checker that reads it: check_field_permissions() guards its object-row rule with 'if has_object_row and owner not in granted_objects', so a field permission on Case with no Case objectPermissions row cannot fire it - which is what A14 claims, verified in source rather than on the fixture. D14 is restated as the union of escalating users and the scheduling user, A13 carries the scheduling half with the cited skill's 'for scheduled jobs the scheduler' quote behind it, and because no checker in the library fails on a grant that was never written, the M1-S02 manual test now reads the entry by name and says so.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "detail": "lines 139-149, the has_object_row guard; lines 132-137, the editable-without-readable ERROR that manual clause (d) asks the reviewer to rule out"
+      }
+    },
+    {
+      "id": "PV-002",
+      "severity": "INFO",
+      "title": "CLEARED \u2014 the queue lookup is cited, bound and quoted from the skill's worked example",
+      "detail": "M1-S03 now cites apex/apex-hardcoded-id-elimination and inputs.detection names the exact shape: a private static Map<String, Id> filled once per transaction from SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue', read through a queueId(String devName) accessor. That is Example 3's 'After' block element for element, so 'one SOQL per transaction' is the shape's own property rather than an assertion the plan added, and the step states outright that a hardcoded Group Id is not the fallback because apex-builder's REFUSAL_SECURITY_GUARD (d) refuses it. The ban reaches the tests too.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-hardcoded-id-elimination/references/examples.md",
+        "detail": "Example 3 'After': 'private static Map<String, Id> queueIdByDevName;', 'private static Id queueId(String devName)', and the lazy-init loop over [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue']"
+      }
+    },
+    {
+      "id": "PV-003",
+      "severity": "INFO",
+      "title": "CLEARED \u2014 M1-S04 now has a test with failure power over an absent artefact",
+      "detail": "The step declares check_error_handling_framework.py --manifest-dir artefacts/M1-S04, whose skill was already in its skills[]. Probed independently: the script exists, --help shows --manifest-dir, an empty directory gives exit 1 with 'ISSUE: No .cls or .trigger files found under <dir> \u2014 confirm --manifest-dir points to a Salesforce metadata source directory' (the message the plan quotes), and a missing directory gives exit 1. Its source appends every rule hit to one list and returns 1 if the list is non-empty, so it is also a third checker with no severity control.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py",
+        "detail": "--manifest-dir <empty dir> -> exit 1; --manifest-dir /nonexistent -> exit 1; main() prints each issue and returns 1"
+      }
+    },
+    {
+      "id": "PV-007",
+      "severity": "P2",
+      "title": "M1-S02's deploy-order input names two manual steps; two of its own tests read five out of that file",
+      "detail": "inputs.deploy_order still says the note carries 'the two steps no deploy performs', while this step's manual clauses (e) and (f) ask a reviewer to read the D14 assignee union and the A5 confirmation flag out of deploy-order.md, and M1-S05's list has grown to five. The instruction that tells the builder what to write is narrower than the tests that read it. Warning rather than blocker: it is prose, the mismatch surfaces at the M1 gate rather than in a deployed artefact, and amend-step --prose-only is a documented writer for exactly this once the build is building.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "detail": "steps[M1-S02].inputs.deploy_order vs steps[M1-S02].acceptance_tests[-1].expected clauses (e) and (f) and steps[M1-S05].inputs.manual_steps_the_deploy_does_not_perform"
+      }
+    },
+    {
+      "id": "PV-008",
+      "severity": "P2",
+      "title": "M1-S04's new test description credits the checker with a rule that cannot fire on this build",
+      "detail": "The description says the checker 'fails on rollback-unsafe logging'. Rule 2's pattern is name-bound - 'insert new Error_Log__c(' or an insert of an identifier matching error/log - so DML on this build's Integration_Failure__c never trips it. What the checker actually adds to M1-S04 is the empty-directory guard plus rules 1, 3, 4, 5 and the generic-catch rule, which is the live constraint on this step's code: a catch (Exception e) followed only by System.debug or a silent return exits 1.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py",
+        "detail": "_DIRECT_DML_LOG = re.compile(r\"insert\\s+new\\s+Error_Log__c\\s*\\(|insert\\s+\\w*[Ee]rror[Ll]og\\w*\")"
+      }
+    },
+    {
+      "id": "PV-009",
+      "severity": "P2",
+      "title": "Three of ten checkers have no severity control, and seven of ten pass on an empty directory",
+      "detail": "check_object_creation_and_design.py, check_platform_events_apex.py and now check_error_handling_framework.py each fail on findings their own text calls advisory, and only three of the ten declared checkers exit 1 on an empty tree. Which steps can fail on an absent artefact therefore remains an accident of which checkers a step cites - PV-003 was that accident landing badly. A fourth argument form also surfaced this round: check_apex_hardcoded_id_elimination.py takes --src, beyond the three the section 5 follow-up note enumerates, which is why M1-S03 cites that skill without declaring its checker.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 5 'Follow-up: converge checker argument forms' lists three non-standard forms; probes this round found a fourth (--src) and a third flagless checker"
+      }
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "json",
+      "title": "set-verification body, round 2 (the verification block written into plan.json)",
+      "target_path": "inputs/verification/verification.json",
+      "content": "{\n  \"status\": \"verified\",\n  \"verified_at\": \"2026-09-12T13-55-00Z\",\n  \"by\": \"plan-verifier 1.0.0\",\n  \"plan_version\": 2,\n  \"scale\": \"feature\",\n  \"round\": 2,\n  \"rounds_allowed\": 2,\n  \"prior_round\": {\n    \"plan_version\": 1,\n    \"outcome\": \"plan-rejected\",\n    \"blockers\": [\n      \"PV-001 (M1-S02, grounding)\",\n      \"PV-002 (M1-S03, grounding)\",\n      \"PV-003 (M1-S04, testability)\"\n    ],\n    \"all_cleared\": true\n  },\n  \"lenses\": [\n    {\n      \"lens\": \"executability\",\n      \"verdict\": \"pass\",\n      \"notes\": \"5/5 steps, re-run in full. No owner, type, input, output, dependency or collision changed between v1 and v2, and the two changes that touch this lens hold: M1-S03 gained a tenth skill (resolves) and M1-S04 a third checker (exists, accepts --manifest-dir). 50 output paths, 0 collisions, depends_on acyclic and in-milestone, M1-S05's eleven ApexClass and two ApexTrigger members match the emitting steps' declared files name for name.\"\n    },\n    {\n      \"lens\": \"grounding\",\n      \"verdict\": \"pass\",\n      \"notes\": \"Both v1 refutations cleared. PV-001: the permission set now declares Case.Tier2_Notified_At__c readable+editable and A14's claim about the checker's object-row rule is verified in its source, not taken on trust. PV-002: apex/apex-hardcoded-id-elimination is cited and the Example-3 lookup shape is bound verbatim into inputs.detection. All ten tree-cited branch quotes are now character-for-character present in the cited trees; all four source_reference paths resolve; the scheduled-job running-user claim behind A13/D14 is quoted correctly from the cited skill.\"\n    },\n    {\n      \"lens\": \"testability\",\n      \"verdict\": \"pass\",\n      \"notes\": \"PV-003 cleared. Ten distinct checkers now, all present, all accepting the declared flag form, all exiting 1 on --manifest-dir /nonexistent. Every step now carries at least one test with failure power over an absent artefact: M1-S01 and M1-S02 through the always-on manifest check, M1-S03 through check_callouts_and_http_integrations.py, M1-S04 through the newly declared check_error_handling_framework.py (probed: exit 1 on an empty directory), M1-S05 through check_deployment_manifest.py. Scope and --manifest-dir agree on every step test; all three milestone tests are build-wide with scope absent.\"\n    }\n  ],\n  \"steps\": [\n    {\n      \"step_id\": \"M1-S01\",\n      \"verdict\": \"pass\",\n      \"lenses\": [\n        {\n          \"step_id\": \"M1-S01\",\n          \"lens\": \"executability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"metadata-builder unchanged and still eligible: class runtime, status beta, requires_org false; Step 2 owns object-model as CustomObject / CustomField / picklist value sets\",\n            \"17 outputs, all under artefacts/M1-S01/, none written by another step\",\n            \"depends_on [] \"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S01\",\n          \"lens\": \"grounding\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"W2 cleared: inputs.custom_object now names description ('a non-empty <description> under 1000 characters is required'), enableSearch ('true - an explicit <enableSearch> element is required') and the all-or-none optional_feature_trio\",\n            \"skills/apex/platform-events-apex/references/code-examples.md Artifact 1 still fences the __e shape the step declares (eventType HighVolume, publishBehavior PublishAfterCommit)\",\n            \"Q16 still carries the flow-error-monitoring 'reuse the existing sink' question, answered 'We have no existing Apex log object in the org'\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S01\",\n          \"lens\": \"testability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"re-probed: check_object_creation_and_design.py --manifest-dir /nonexistent -> exit 1; --manifest-dir <empty> -> exit 0; --help shows --manifest-dir only, no severity flag\",\n            \"re-probed: check_platform_events_apex.py -> same two results, no severity flag\",\n            \"the test description now enumerates the complete exit-1 set including the missing-<enableSearch> WARN and the __c-only early return, which matches the source: line 210 'if not file_stem.endswith(\\\"__c\\\"): return issues, advisory' and line 442 'return 1 if all_issues else 0'\",\n            \"artefacts/M1-S01/package.xml declared; xml and manifest tests present; the manifest check fails against an empty artefacts/M1-S01\"\n          ]\n        }\n      ]\n    },\n    {\n      \"step_id\": \"M1-S02\",\n      \"verdict\": \"pass\",\n      \"lenses\": [\n        {\n          \"step_id\": \"M1-S02\",\n          \"lens\": \"executability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"Still open from round 1 as a contract edit rather than a plan defect: section 4's access row and metadata-builder Step 2 name PermissionSet / PSG / sharing XML only, so neither names NamedCredential or ExternalCredential.\",\n              \"fix\": \"Add the two credential types to the access row in both tables. The step builds today because metadata-builder Step 3 makes the step's skills[] authoritative for the element inventory.\"\n            }\n          ],\n          \"evidence\": [\n            \"outputs, owner, type, depends_on and human_gate unchanged from v1; 5 outputs, no collision\",\n            \"human_gate true with a pending step:M1-S02 record in human_gates[]\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S02\",\n          \"lens\": \"grounding\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"inputs.deploy_order still names 'the two steps no deploy performs: entering the API key ... and assigning the permission set', while this step's own manual test clauses (e) and (f) ask a reviewer to read the D14 assignee union and the A5 confirmation flag out of that same deploy-order.md, and M1-S05 now lists five manual steps. The instruction that tells the builder what to write is narrower than the two tests that read it.\",\n              \"fix\": \"Align inputs.deploy_order with the five steps M1-S05 lists. It is prose, so once the build is building it is an amend-step --prose-only edit (any status except running, no gate rejection needed) rather than a re-plan.\"\n            },\n            {\n              \"problem\": \"Unchanged from round 1: the cited skill documents two shapes for a token in a custom header - the platform-injected AuthHeader this plan uses, and an Apex setHeader with allowMergeFieldsInHeader true - and does not say which flag governs the platform-injected form. Severity is lower now that A5 reaches the human as manual deploy step 1.\",\n              \"fix\": \"Confirm the flag's scope in the same Salesforce Help check the deploy-order note now mandates.\"\n            }\n          ],\n          \"evidence\": [\n            \"PV-001 CLEARED. inputs.permission_set.fieldPermissions now reads 'plus Case.Tier2_Notified_At__c readable and editable. The Case field is not optional: M1-S03 reads it for the ten-minute suppression window and writes it on webhook success, and M1-S04 queries it for the 24-hour success check, all in API 67.0 default user mode'\",\n            \"A14's checker claim verified in source rather than trusted: check_permission_set_architecture.py check_field_permissions() guards the object-row rule with 'if has_object_row and owner not in granted_objects' (lines 139-149), so a fieldPermissions entry for Case with no objectPermissions row for Case cannot fire it; the editable-without-readable ERROR at lines 132-137 is what the step's manual test clause (d) asks the reviewer to confirm is not the case\",\n            \"A13 added, risk medium, naming M1-S02 and M1-S04: the scheduling user holds Tier2_Webhook_Admin. D14 restated as the union of the escalating users and the scheduling user\",\n            \"the scheduled-job half is quoted correctly: skills/apex/apex-user-and-permission-checks/SKILL.md:63 'runs as the async context user (often the user who fired the async, but for scheduled jobs the scheduler, for platform events the \\\"Automated Process\\\" user)'\",\n            \"the Q23 refutation still holds: skills/flow/flow-and-platform-events/references/gotchas.md:193 'Automated Process has no profile and no permission set assignments'\",\n            \"W3 CLEARED: M1-S05 manual step 1 is 'Confirm the X-API-Key AuthHeader parameterValue formula against Salesforce Help before the External Credential is deployed', and this step's manual clause (f) carries the same check\",\n            \"the credential shapes are unchanged and still fenced in skills/apex/apex-named-credentials-patterns/references/code-examples.md sections 1-3 (NamedPrincipal, AuthHeader with the header name as parameterName, SecuredEndpoint with Url and Authentication parameters, externalCredentialPrincipalAccesses)\",\n            \"standards/decision-trees/integration-pattern-selection.md:48 and sharing-selection.md:63 now match D2 and D12 character-for-character\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S02\",\n          \"lens\": \"testability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"re-probed: check_apex_named_credentials_patterns.py and check_permission_set_architecture.py both exit 1 on /nonexistent, both exit 0 on an empty directory; flags accepted as declared\",\n            \"the build-scope test description now separates what the checker proves (the entry is well-formed, and does not sit beside a Case object row lacking allowRead) from what no checker can prove (absence of a grant), and hands the absence check to manual clause (d) - which is the honest reading of check_field_permissions(), since it iterates only over entries that exist\",\n            \"scope 'build' with --manifest-dir artefacts: intent and command agree, and this is one of the four cross-referential checkers section 5 names\",\n            \"artefacts/M1-S02/package.xml declared; the always-on manifest check fails against an empty artefacts/M1-S02, so the step retains a test that can fail\",\n            \"human_gate true on an access step; the object-scoped View/Modify All grant is not a REFUSAL_SECURITY_GUARD trigger (that code's scope is Modify All Data-class rights)\"\n          ]\n        }\n      ]\n    },\n    {\n      \"step_id\": \"M1-S03\",\n      \"verdict\": \"pass\",\n      \"lenses\": [\n        {\n          \"step_id\": \"M1-S03\",\n          \"lens\": \"executability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"Unchanged from round 1 and deliberately not split: the step packs the resend path - a second trigger on a second sObject - into one apex-builder invocation, and that agent's REFUSAL_OUT_OF_SCOPE covers more than one feature per invocation. v2 records the exception in notes rather than hiding it, and the five-step feature ceiling leaves no sixth step.\",\n              \"fix\": \"None available inside the tier. The contract-level fix is the planner's standing proposal that the aggregating manifest step not count toward the five.\"\n            },\n            {\n              \"problem\": \"Unchanged: 14 of the step's inputs{} keys are not names in apex-builder's Inputs table and reach the agent only through the step record the runner passes.\",\n              \"fix\": \"A line in apex-builder's Inputs table saying the build layer passes the step record whole.\"\n            }\n          ],\n          \"evidence\": [\n            \"kind trigger, feature_summary and primary_sobject Case all present; 8 classes and 2 triggers, inside the documented 12-class ceiling for kind=trigger\",\n            \"the tenth skill resolves: skills/apex/apex-hardcoded-id-elimination/SKILL.md exists\",\n            \"20 outputs unchanged, no package.xml declared, no collision; depends_on M1-S01 and M1-S02\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S03\",\n          \"lens\": \"grounding\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"PV-002 CLEARED. inputs.detection now reads 'a private static Map<String, Id> populated once per transaction from SELECT Id, DeveloperName FROM Group WHERE Type = \\\\'Queue\\\\', read through a queueId(String devName) accessor - the shape in skills/apex/apex-hardcoded-id-elimination/references/examples.md Example 3' and states 'A hardcoded Group Id is not the fallback: apex-builder's REFUSAL_SECURITY_GUARD clause (d) refuses it'\",\n            \"that shape is verbatim in the skill: examples.md Example 3 'After' block declares 'private static Map<String, Id> queueIdByDevName;', 'private static Id queueId(String devName)' and the lazy-init loop 'for (Group g : [SELECT Id, DeveloperName FROM Group WHERE Type = \\\\'Queue\\\\'])' - so 'one SOQL per transaction' is the shape's own property, not an assertion the plan added\",\n            \"the queue-literal ban is carried into the tests too: inputs.tests now says 'no test seeds a Group Id as a literal - queues are created or queried by DeveloperName'\",\n            \"unchanged and re-confirmed: apex-queueable-patterns SKILL.md:71 (no callout after DML), :122 (attachFinalizer first statement), :124 (FinalizerContext has four methods, no getJobId), :72 (five consecutive re-enqueues), :114 (0-10 minute delay), :70/:116 (DuplicateSignature and DuplicateMessageException as D13's rejected alternative); trigger-framework SKILL.md:96/:104 (Trigger.oldMap after update)\",\n            \"D10 still consistent with Q10 and with Q9's proposed default; automation-selection.md:64 and async-selection.md:101/:120 now match D8, D7 and D9 exactly\",\n            \"grep -l '^```apex' over all ten cited skills returns 2-5 files each\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S03\",\n          \"lens\": \"testability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"Recorded rather than refuted: the step cites apex/apex-hardcoded-id-elimination but declares no test from it, because check_apex_hardcoded_id_elimination.py takes --src rather than --manifest-dir - a fourth argument form beyond the three section 5's follow-up note enumerates. Declining to declare it is correct (a checker invoked with an argument its parser does not define exits on a usage error), but the hardcoded-Id ban on this step is therefore enforced by the manual code read and by apex-builder's own refusal, not by a checker.\",\n              \"fix\": \"Library convergence item: give that checker --manifest-dir, then declare it here. Until then the step's declared set is the right one.\"\n            }\n          ],\n          \"evidence\": [\n            \"W7 CLEARED: inputs.tests now requires that 'any direct EventBus.publish inside a test method assigns its result and pairs it with Test.getEventBus().deliver(), because check_platform_events_apex.py exits 1 on any finding at any severity and a discarded publish result inside a test is enough to fail the step' - which matches the source (R1 emits REVIEW in an @IsTest file, and main() exits 1 on any finding)\",\n            \"probed: python3 skills/apex/apex-hardcoded-id-elimination/scripts/check_apex_hardcoded_id_elimination.py --help -> '[--src SRC]' only, confirming the argument form the plan gives as its reason\",\n            \"the three declared checkers re-probed: exit 1 on /nonexistent; on an empty directory queueable -> 0, platform-events -> 0, callouts --fail-on HIGH -> 1, so the step keeps a test with failure power over absent artefacts\",\n            \"manifest test still records skipped-not-applicable naming M1-S05, and the step still declares no package.xml - the Apex exception stated on the right step\",\n            \"all three checker tests declare scope step with --manifest-dir artefacts/M1-S03\"\n          ]\n        }\n      ]\n    },\n    {\n      \"step_id\": \"M1-S04\",\n      \"verdict\": \"pass\",\n      \"lenses\": [\n        {\n          \"step_id\": \"M1-S04\",\n          \"lens\": \"executability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"kind schedulable; primary_sobject correctly absent (required only for trigger / selector / domain / batch); Step 2 emits '<Feature>Schedulable.cls delegating to a Queueable or Batch'\",\n            \"6 outputs unchanged, no package.xml, no collision, depends_on M1-S01\",\n            \"the third checker's skill, apex/error-handling-framework, was already in this step's skills[] in v1, so the new test cites nothing new\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S04\",\n          \"lens\": \"grounding\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"the round-1 cross-reference is closed: A13 now states that the scheduling user holds Tier2_Webhook_Admin and that both its queries enforce that user's FLS in API 67.0 user mode, and A13 names M1-S02 and M1-S04 in both directions\",\n            \"async-selection.md:74 'Clock (cron)' branch now matches D11 character-for-character\",\n            \"grep -l '^```apex' skills/apex/apex-scheduled-jobs/... returns 5 files\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S04\",\n          \"lens\": \"testability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [\n            {\n              \"problem\": \"The new test's description says the checker 'fails on rollback-unsafe logging' among other things. True of its rule set, but rule 2's pattern is name-bound - 'insert new Error_Log__c(' or 'insert <identifier matching error/log>' - so DML on this build's Integration_Failure__c cannot trip it. What the checker actually adds here is the empty-directory guard plus rules 1, 3, 4, 5 and the generic-catch rule 6, which is the live constraint on this step's code: a catch (Exception e) whose following lines hold only System.debug or a silent return exits 1. It is also a third checker with no severity flag.\",\n              \"fix\": \"Trim the description's claim to the rules that can fire on this step's artefacts, and add one line to inputs.tests: the Queueable's email path logs or rethrows rather than swallowing.\"\n            },\n            {\n              \"problem\": \"Unchanged from round 1, and deliberately still a warning rather than a refutation: the manual test's third clause ('a named person confirms that org-wide address is already verified in the target org') is observable only in an org this build never deploys to, and the lens row says to refute at scales other than ask. Demoted because the tick belongs to the human at the M1 gate, who has the org, and A4 records the prerequisite.\",\n              \"fix\": \"None required. Recorded so the demotion stays visible in the second round as well as the first.\"\n            }\n          ],\n          \"evidence\": [\n            \"PV-003 CLEARED, probed independently rather than accepted: ls -la skills/apex/error-handling-framework/scripts/check_error_handling_framework.py -> exists; --help -> '[--manifest-dir MANIFEST_DIR]'; --manifest-dir <empty dir> -> exit 1 with 'ISSUE: No .cls or .trigger files found under <dir> - confirm --manifest-dir points to a Salesforce metadata source directory', the message the plan quotes; --manifest-dir /nonexistent -> exit 1\",\n            \"the command matches the section 5 checker shape ^python3 skills/<domain>/<slug>/scripts/check_<name>.py and declares scope step with --manifest-dir artefacts/M1-S04\",\n            \"source read for the exit policy: the rule loop appends to one issues list and main() prints each and returns 1, so any of rules 1-6 fails the run\",\n            \"the other two checkers re-probed on an empty directory: scheduled-jobs -> exit 0, queueable -> exit 0, so the new test is what carries this step's failure power over absent artefacts\",\n            \"manifest test still skipped-not-applicable naming M1-S05; no package.xml declared\"\n          ]\n        }\n      ]\n    },\n    {\n      \"step_id\": \"M1-S05\",\n      \"verdict\": \"pass\",\n      \"lenses\": [\n        {\n          \"step_id\": \"M1-S05\",\n          \"lens\": \"executability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"metadata-builder Step 2 docs row: 'the build's package.xml and the deploy-order note only' - the step declares exactly those two outputs\",\n            \"depends_on all four earlier steps; no output collision\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S05\",\n          \"lens\": \"grounding\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"member lists re-checked name by name against the emitting steps' outputs: 11 ApexClass declared, 11 .cls files emitted by M1-S03 and M1-S04, no name missing and none extra; 2 ApexTrigger declared and emitted\",\n            \"the manual deploy-step list grew from four to five and now leads with the A5 confirmation; step 3 names the D14 union including the scheduling user\",\n            \"skills/admin/change-management-and-deployment/references/metadata-examples.md carries the xml fence metadata-builder's Step 3 rule requires\"\n          ]\n        },\n        {\n          \"step_id\": \"M1-S05\",\n          \"lens\": \"testability\",\n          \"verdict\": \"pass\",\n          \"blockers\": [],\n          \"warnings\": [],\n          \"evidence\": [\n            \"re-probed: check_deployment_manifest.py --manifest-dir /nonexistent -> exit 1; --manifest-dir <empty> -> exit 1 with an ERROR, 'no package.xml or destructive manifest found anywhere under this directory' - the step's test can fail\",\n            \"scope step with --manifest-dir artefacts/M1-S05; the manifest test asserts the aggregation in both directions; the manual test now counts the five manual steps\"\n          ]\n        }\n      ]\n    }\n  ],\n  \"blockers\": [],\n  \"warnings\": [\n    {\n      \"step\": \"M1-S02\",\n      \"lens\": \"grounding\",\n      \"problem\": \"inputs.deploy_order still names two manual steps while this step's manual test clauses (e) and (f) read the D14 assignee union and the A5 confirmation out of deploy-order.md, and M1-S05 lists five.\",\n      \"fix\": \"Align inputs.deploy_order with M1-S05's five steps; prose, so amend-step --prose-only covers it once the build is building.\"\n    },\n    {\n      \"step\": \"M1-S04\",\n      \"lens\": \"testability\",\n      \"problem\": \"The new checker's test description credits it with rollback-unsafe-logging detection, but that rule is name-bound to Error_Log__c-style identifiers and cannot see DML on Integration_Failure__c. What it adds is the empty-directory guard plus rules 1, 3, 4, 5 and the generic-catch-swallow rule.\",\n      \"fix\": \"Trim the claim to the applicable rules and add a line to inputs.tests requiring the email path to log or rethrow rather than swallow.\"\n    },\n    {\n      \"step\": \"M1-S04\",\n      \"lens\": \"testability\",\n      \"problem\": \"The manual test's org-wide-address clause is confirmable only in a deployed org; the lens row says refute at non-ask scales and this is a deliberate demotion, carried forward from round 1.\",\n      \"fix\": \"None required; recorded so the demotion stays visible.\"\n    },\n    {\n      \"step\": \"M1-S03\",\n      \"lens\": \"testability\",\n      \"problem\": \"The newly cited apex/apex-hardcoded-id-elimination contributes no checker test because its script takes --src, a fourth argument form beyond the three section 5's follow-up note enumerates. The hardcoded-Id ban rests on the manual code read and on apex-builder's own refusal.\",\n      \"fix\": \"Library convergence: give that checker --manifest-dir, then declare it. Declining to declare it as-is is correct.\"\n    },\n    {\n      \"step\": \"M1-S03\",\n      \"lens\": \"executability\",\n      \"problem\": \"The resend path remains a second trigger on a second sObject inside one apex-builder invocation, against that agent's one-feature-per-invocation scope line. v2 records the exception rather than hiding it; the five-step feature ceiling offers no alternative.\",\n      \"fix\": \"Contract-level: exempt the aggregating manifest step from the five-step ceiling, as the planner's driver's log proposes.\"\n    },\n    {\n      \"step\": \"M1-S03\",\n      \"lens\": \"executability\",\n      \"problem\": \"14 inputs{} keys have no counterpart in apex-builder's Inputs table and reach the agent only through the step record.\",\n      \"fix\": \"A line in that Inputs table acknowledging the build layer's step-record handoff.\"\n    },\n    {\n      \"step\": \"M1-S02\",\n      \"lens\": \"executability\",\n      \"problem\": \"Section 4's access row and metadata-builder Step 2 still name no home for NamedCredential or ExternalCredential.\",\n      \"fix\": \"Contract edit in both tables; the step builds because its skills[] is authoritative.\"\n    },\n    {\n      \"step\": \"M1-S02\",\n      \"lens\": \"grounding\",\n      \"problem\": \"The cited skill documents two shapes for a token in a custom header and does not say which flag governs the platform-injected AuthHeader form. Lower severity now that A5 reaches the human as manual deploy step 1.\",\n      \"fix\": \"Settle it in the same Salesforce Help confirmation the deploy-order note mandates.\"\n    },\n    {\n      \"step\": \"all\",\n      \"lens\": \"testability\",\n      \"problem\": \"Three of the ten declared checkers expose no severity control at all - check_object_creation_and_design.py, check_platform_events_apex.py and now check_error_handling_framework.py - so each fails on findings its own text calls advisory, and seven of the ten exit 0 on an empty directory. Which steps have failure power over an absent artefact is still an accident of which checkers a step happened to cite.\",\n      \"fix\": \"Library-level: converge on one severity flag across skill checkers. The plan's own remedy - declaring a checker specifically for its empty-directory behaviour, as M1-S04 now does - is the right local workaround.\"\n    }\n  ],\n  \"cross_step_results\": [\n    {\n      \"check\": \"Every fit_gap requirement reaches at least one step, and every such step carries at least one acceptance test\",\n      \"result\": \"pass\",\n      \"detail\": \"6 rows, all 5 steps reached, no step uncovered; every row carries effort and a risk_tag array\"\n    },\n    {\n      \"check\": \"No two steps write the same output path\",\n      \"result\": \"pass\",\n      \"detail\": \"50 declared paths, 0 duplicates, every path under artefacts/<its own step-id>/\"\n    },\n    {\n      \"check\": \"depends_on graph is acyclic and every id exists\",\n      \"result\": \"pass\",\n      \"detail\": \"unchanged from v1; all ids exist, same milestone, earlier in plan order\"\n    },\n    {\n      \"check\": \"Every milestone has at least one acceptance test, at least one step, and steps[] matches\",\n      \"result\": \"pass\",\n      \"detail\": \"M1: 4 tests (3 build-wide checkers with scope absent, 1 manual cross-step read); declared steps[] equals the actual five\"\n    },\n    {\n      \"check\": \"Every scope-out item names why it is out\",\n      \"result\": \"pass\",\n      \"detail\": \"9 items, each citing a clarification id, a requirement paragraph or a decision\"\n    },\n    {\n      \"check\": \"Assumptions and steps agree in both directions\",\n      \"result\": \"pass\",\n      \"detail\": \"14 rows now (A13 and A14 added by round 2); every step-to-row and row-to-step reference resolves. Q43 remains the one open informational clarification, carried by A1 on M1-S03\"\n    },\n    {\n      \"check\": \"Declared checkers exist and accept their declared flag form\",\n      \"result\": \"pass\",\n      \"detail\": \"10 distinct scripts, all present, all accepting the declared flags, all exiting 1 on --manifest-dir /nonexistent. Empty-directory results: exit 1 for check_callouts_and_http_integrations.py (--fail-on HIGH), check_deployment_manifest.py and check_error_handling_framework.py; exit 0 for the other seven\"\n    },\n    {\n      \"check\": \"Every step has at least one acceptance test that can fail against empty artefacts\",\n      \"result\": \"pass\",\n      \"detail\": \"M1-S01 and M1-S02 via the always-on manifest check on a metadata step with no package.xml; M1-S03 via the callouts checker; M1-S04 via check_error_handling_framework.py (PV-003's fix); M1-S05 via check_deployment_manifest.py\"\n    },\n    {\n      \"check\": \"Every skill, template, decision tree, agent and source_reference citation resolves on disk\",\n      \"result\": \"pass\",\n      \"detail\": \"17 distinct skills across 5 steps (M1-S03 gained apex/apex-hardcoded-id-elimination), 12 fit_gap skill references, 6 templates, 4 trees, 2 agents and 4 decision source_reference paths - all resolve\"\n    },\n    {\n      \"check\": \"Decision-tree branch quotes are verbatim\",\n      \"result\": \"pass\",\n      \"detail\": \"All ten tree-cited quotes (D1, D2, D4, D5, D6, D7, D8, D9, D11, D12) now match the cited line character-for-character, arrow glyph and column padding included; round 1's transliteration warning is closed and the count is stated as ten\"\n    },\n    {\n      \"check\": \"The Apex exception is stated on the right steps\",\n      \"result\": \"pass\",\n      \"detail\": \"M1-S03 and M1-S04 declare no package.xml and name M1-S05; M1-S05 depends_on both and its eleven ApexClass and two ApexTrigger members match the emitting steps' files exactly\"\n    }\n  ]\n}"
+    },
+    {
+      "kind": "markdown",
+      "title": "Plan verification report \u2014 tier2-webhook v2, round 2 of 2",
+      "target_path": "envelopes/verification/2026-09-12T13-55-00Z.md",
+      "content": "See report_path; the rendered report carries the per-blocker verdicts, the verdict matrix, the remaining warnings, the checker probe matrix and the gate line."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "loop",
+      "observation": "Every one of the three blockers came back with the artefact changed rather than the description changed, and two of the three fixes carry their own verification evidence in the plan text, which is what made a second round cheap to check.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "detail": "A14 states the checker rule it relies on, steps[M1-S02].acceptance_tests[1].description records a control-fixture result in both directions, and steps[M1-S04].acceptance_tests[2].description quotes the empty-directory message"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "grounding",
+      "observation": "The queue-lookup fix bound the skill's own code shape into the step rather than paraphrasing it, so the builder inherits the accessor, the lazy-init guard and the one-SOQL-per-transaction property instead of re-deriving them.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-hardcoded-id-elimination/references/examples.md",
+        "detail": "Example 3 'After' block compared element for element against steps[M1-S03].inputs.detection"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "testability",
+      "observation": "The M1-S02 build-scope test description now separates what its checker proves from what no checker can prove and hands the absence case to a named manual clause, which is the honest shape for a grant whose failure mode is omission.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "detail": "steps[M1-S02].acceptance_tests[1].description 'What it cannot prove is absence: no checker in the library fails because a grant was never written'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "tooling",
+      "observation": "A step's ability to fail on an empty artefacts directory is still decided by which checkers it happens to cite: three of ten exit 1 on nothing and seven exit 0, and three of the ten expose no severity control at all.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "ten checkers probed this round on --manifest-dir /nonexistent (all exit 1) and on an empty directory (exit 1: callouts --fail-on HIGH, deployment-manifest, error-handling-framework; exit 0: the other seven)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "contract-coverage",
+      "observation": "Two contract-level items survive a clean verification because no plan edit can close them: section 4's access row names no home for NamedCredential or ExternalCredential, and the five-step feature ceiling counts the mandatory aggregating manifest step, which is what forced the resend path onto M1-S03.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 4 access row; section 3.1 plan-shape row '1 milestone, <= 5 steps'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "testability",
+      "observation": "Two rows were decided against their literal wording and both are recorded: M1-S04's org-only manual clause stays a warning because the tick belongs to a human who has the org, and M1-S02's deploy-order prose lag stays a warning because amend-step --prose-only exists for it.",
+      "evidence": {
+        "source": "heuristic",
+        "path": "agents/plan-verifier/AGENT.md",
+        "detail": "the 'Manual test observable only in a deployed org' row exempts scale ask only; standards/build-orchestration.md section 2 defines amend-step --prose-only and the statuses it allows"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "loop",
+      "observation": "The plan is verified and the only outstanding plan-stage gate is plan; the M1-S02 step gate and milestone:M1 stay pending and are decided later in the loop, not now.",
+      "evidence": {
+        "source": "input",
+        "detail": "human_gates[]: clarifications approved, plan pending, step:M1-S02 pending, milestone:M1 pending"
+      },
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "Once a human approves the plan gate, M1-S01 is the first runnable step; M1-S02 waits on its own step gate."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "architecture",
+      "observation": "Four decisions still carry adr_required true, and the identity question behind D14 grew this round rather than shrinking - the assignee set is now a union of two populations, decided by the plan rather than by any answer.",
+      "evidence": {
+        "source": "input",
+        "detail": "decisions D3, D10, D13, D14; assumptions A2 (risk high) and A13 (risk medium)"
+      },
+      "suggested_followup_agent": "waf-assessor",
+      "followup_reason": "The access identity this build rests on is recorded only in a decision and two assumptions, which is less than an ADR and is what the adr_required flags are asking for."
+    }
+  ],
+  "extensions": {
+    "verification": {
+      "status": "verified",
+      "verified_at": "2026-09-12T13-55-00Z",
+      "by": "plan-verifier 1.0.0",
+      "plan_version": 2,
+      "scale": "feature",
+      "round": 2,
+      "rounds_allowed": 2,
+      "prior_round": {
+        "plan_version": 1,
+        "outcome": "plan-rejected",
+        "blockers": [
+          "PV-001 (M1-S02, grounding)",
+          "PV-002 (M1-S03, grounding)",
+          "PV-003 (M1-S04, testability)"
+        ],
+        "all_cleared": true
+      },
+      "lenses": [
+        {
+          "lens": "executability",
+          "verdict": "pass",
+          "notes": "5/5 steps, re-run in full. No owner, type, input, output, dependency or collision changed between v1 and v2, and the two changes that touch this lens hold: M1-S03 gained a tenth skill (resolves) and M1-S04 a third checker (exists, accepts --manifest-dir). 50 output paths, 0 collisions, depends_on acyclic and in-milestone, M1-S05's eleven ApexClass and two ApexTrigger members match the emitting steps' declared files name for name."
+        },
+        {
+          "lens": "grounding",
+          "verdict": "pass",
+          "notes": "Both v1 refutations cleared. PV-001: the permission set now declares Case.Tier2_Notified_At__c readable+editable and A14's claim about the checker's object-row rule is verified in its source, not taken on trust. PV-002: apex/apex-hardcoded-id-elimination is cited and the Example-3 lookup shape is bound verbatim into inputs.detection. All ten tree-cited branch quotes are now character-for-character present in the cited trees; all four source_reference paths resolve; the scheduled-job running-user claim behind A13/D14 is quoted correctly from the cited skill."
+        },
+        {
+          "lens": "testability",
+          "verdict": "pass",
+          "notes": "PV-003 cleared. Ten distinct checkers now, all present, all accepting the declared flag form, all exiting 1 on --manifest-dir /nonexistent. Every step now carries at least one test with failure power over an absent artefact: M1-S01 and M1-S02 through the always-on manifest check, M1-S03 through check_callouts_and_http_integrations.py, M1-S04 through the newly declared check_error_handling_framework.py (probed: exit 1 on an empty directory), M1-S05 through check_deployment_manifest.py. Scope and --manifest-dir agree on every step test; all three milestone tests are build-wide with scope absent."
+        }
+      ],
+      "steps": [
+        {
+          "step_id": "M1-S01",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S01",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "metadata-builder unchanged and still eligible: class runtime, status beta, requires_org false; Step 2 owns object-model as CustomObject / CustomField / picklist value sets",
+                "17 outputs, all under artefacts/M1-S01/, none written by another step",
+                "depends_on [] "
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "W2 cleared: inputs.custom_object now names description ('a non-empty <description> under 1000 characters is required'), enableSearch ('true - an explicit <enableSearch> element is required') and the all-or-none optional_feature_trio",
+                "skills/apex/platform-events-apex/references/code-examples.md Artifact 1 still fences the __e shape the step declares (eventType HighVolume, publishBehavior PublishAfterCommit)",
+                "Q16 still carries the flow-error-monitoring 'reuse the existing sink' question, answered 'We have no existing Apex log object in the org'"
+              ]
+            },
+            {
+              "step_id": "M1-S01",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "re-probed: check_object_creation_and_design.py --manifest-dir /nonexistent -> exit 1; --manifest-dir <empty> -> exit 0; --help shows --manifest-dir only, no severity flag",
+                "re-probed: check_platform_events_apex.py -> same two results, no severity flag",
+                "the test description now enumerates the complete exit-1 set including the missing-<enableSearch> WARN and the __c-only early return, which matches the source: line 210 'if not file_stem.endswith(\"__c\"): return issues, advisory' and line 442 'return 1 if all_issues else 0'",
+                "artefacts/M1-S01/package.xml declared; xml and manifest tests present; the manifest check fails against an empty artefacts/M1-S01"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M1-S02",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S02",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "Still open from round 1 as a contract edit rather than a plan defect: section 4's access row and metadata-builder Step 2 name PermissionSet / PSG / sharing XML only, so neither names NamedCredential or ExternalCredential.",
+                  "fix": "Add the two credential types to the access row in both tables. The step builds today because metadata-builder Step 3 makes the step's skills[] authoritative for the element inventory."
+                }
+              ],
+              "evidence": [
+                "outputs, owner, type, depends_on and human_gate unchanged from v1; 5 outputs, no collision",
+                "human_gate true with a pending step:M1-S02 record in human_gates[]"
+              ]
+            },
+            {
+              "step_id": "M1-S02",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "inputs.deploy_order still names 'the two steps no deploy performs: entering the API key ... and assigning the permission set', while this step's own manual test clauses (e) and (f) ask a reviewer to read the D14 assignee union and the A5 confirmation flag out of that same deploy-order.md, and M1-S05 now lists five manual steps. The instruction that tells the builder what to write is narrower than the two tests that read it.",
+                  "fix": "Align inputs.deploy_order with the five steps M1-S05 lists. It is prose, so once the build is building it is an amend-step --prose-only edit (any status except running, no gate rejection needed) rather than a re-plan."
+                },
+                {
+                  "problem": "Unchanged from round 1: the cited skill documents two shapes for a token in a custom header - the platform-injected AuthHeader this plan uses, and an Apex setHeader with allowMergeFieldsInHeader true - and does not say which flag governs the platform-injected form. Severity is lower now that A5 reaches the human as manual deploy step 1.",
+                  "fix": "Confirm the flag's scope in the same Salesforce Help check the deploy-order note now mandates."
+                }
+              ],
+              "evidence": [
+                "PV-001 CLEARED. inputs.permission_set.fieldPermissions now reads 'plus Case.Tier2_Notified_At__c readable and editable. The Case field is not optional: M1-S03 reads it for the ten-minute suppression window and writes it on webhook success, and M1-S04 queries it for the 24-hour success check, all in API 67.0 default user mode'",
+                "A14's checker claim verified in source rather than trusted: check_permission_set_architecture.py check_field_permissions() guards the object-row rule with 'if has_object_row and owner not in granted_objects' (lines 139-149), so a fieldPermissions entry for Case with no objectPermissions row for Case cannot fire it; the editable-without-readable ERROR at lines 132-137 is what the step's manual test clause (d) asks the reviewer to confirm is not the case",
+                "A13 added, risk medium, naming M1-S02 and M1-S04: the scheduling user holds Tier2_Webhook_Admin. D14 restated as the union of the escalating users and the scheduling user",
+                "the scheduled-job half is quoted correctly: skills/apex/apex-user-and-permission-checks/SKILL.md:63 'runs as the async context user (often the user who fired the async, but for scheduled jobs the scheduler, for platform events the \"Automated Process\" user)'",
+                "the Q23 refutation still holds: skills/flow/flow-and-platform-events/references/gotchas.md:193 'Automated Process has no profile and no permission set assignments'",
+                "W3 CLEARED: M1-S05 manual step 1 is 'Confirm the X-API-Key AuthHeader parameterValue formula against Salesforce Help before the External Credential is deployed', and this step's manual clause (f) carries the same check",
+                "the credential shapes are unchanged and still fenced in skills/apex/apex-named-credentials-patterns/references/code-examples.md sections 1-3 (NamedPrincipal, AuthHeader with the header name as parameterName, SecuredEndpoint with Url and Authentication parameters, externalCredentialPrincipalAccesses)",
+                "standards/decision-trees/integration-pattern-selection.md:48 and sharing-selection.md:63 now match D2 and D12 character-for-character"
+              ]
+            },
+            {
+              "step_id": "M1-S02",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "re-probed: check_apex_named_credentials_patterns.py and check_permission_set_architecture.py both exit 1 on /nonexistent, both exit 0 on an empty directory; flags accepted as declared",
+                "the build-scope test description now separates what the checker proves (the entry is well-formed, and does not sit beside a Case object row lacking allowRead) from what no checker can prove (absence of a grant), and hands the absence check to manual clause (d) - which is the honest reading of check_field_permissions(), since it iterates only over entries that exist",
+                "scope 'build' with --manifest-dir artefacts: intent and command agree, and this is one of the four cross-referential checkers section 5 names",
+                "artefacts/M1-S02/package.xml declared; the always-on manifest check fails against an empty artefacts/M1-S02, so the step retains a test that can fail",
+                "human_gate true on an access step; the object-scoped View/Modify All grant is not a REFUSAL_SECURITY_GUARD trigger (that code's scope is Modify All Data-class rights)"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M1-S03",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S03",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "Unchanged from round 1 and deliberately not split: the step packs the resend path - a second trigger on a second sObject - into one apex-builder invocation, and that agent's REFUSAL_OUT_OF_SCOPE covers more than one feature per invocation. v2 records the exception in notes rather than hiding it, and the five-step feature ceiling leaves no sixth step.",
+                  "fix": "None available inside the tier. The contract-level fix is the planner's standing proposal that the aggregating manifest step not count toward the five."
+                },
+                {
+                  "problem": "Unchanged: 14 of the step's inputs{} keys are not names in apex-builder's Inputs table and reach the agent only through the step record the runner passes.",
+                  "fix": "A line in apex-builder's Inputs table saying the build layer passes the step record whole."
+                }
+              ],
+              "evidence": [
+                "kind trigger, feature_summary and primary_sobject Case all present; 8 classes and 2 triggers, inside the documented 12-class ceiling for kind=trigger",
+                "the tenth skill resolves: skills/apex/apex-hardcoded-id-elimination/SKILL.md exists",
+                "20 outputs unchanged, no package.xml declared, no collision; depends_on M1-S01 and M1-S02"
+              ]
+            },
+            {
+              "step_id": "M1-S03",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "PV-002 CLEARED. inputs.detection now reads 'a private static Map<String, Id> populated once per transaction from SELECT Id, DeveloperName FROM Group WHERE Type = \\'Queue\\', read through a queueId(String devName) accessor - the shape in skills/apex/apex-hardcoded-id-elimination/references/examples.md Example 3' and states 'A hardcoded Group Id is not the fallback: apex-builder's REFUSAL_SECURITY_GUARD clause (d) refuses it'",
+                "that shape is verbatim in the skill: examples.md Example 3 'After' block declares 'private static Map<String, Id> queueIdByDevName;', 'private static Id queueId(String devName)' and the lazy-init loop 'for (Group g : [SELECT Id, DeveloperName FROM Group WHERE Type = \\'Queue\\'])' - so 'one SOQL per transaction' is the shape's own property, not an assertion the plan added",
+                "the queue-literal ban is carried into the tests too: inputs.tests now says 'no test seeds a Group Id as a literal - queues are created or queried by DeveloperName'",
+                "unchanged and re-confirmed: apex-queueable-patterns SKILL.md:71 (no callout after DML), :122 (attachFinalizer first statement), :124 (FinalizerContext has four methods, no getJobId), :72 (five consecutive re-enqueues), :114 (0-10 minute delay), :70/:116 (DuplicateSignature and DuplicateMessageException as D13's rejected alternative); trigger-framework SKILL.md:96/:104 (Trigger.oldMap after update)",
+                "D10 still consistent with Q10 and with Q9's proposed default; automation-selection.md:64 and async-selection.md:101/:120 now match D8, D7 and D9 exactly",
+                "grep -l '^```apex' over all ten cited skills returns 2-5 files each"
+              ]
+            },
+            {
+              "step_id": "M1-S03",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "Recorded rather than refuted: the step cites apex/apex-hardcoded-id-elimination but declares no test from it, because check_apex_hardcoded_id_elimination.py takes --src rather than --manifest-dir - a fourth argument form beyond the three section 5's follow-up note enumerates. Declining to declare it is correct (a checker invoked with an argument its parser does not define exits on a usage error), but the hardcoded-Id ban on this step is therefore enforced by the manual code read and by apex-builder's own refusal, not by a checker.",
+                  "fix": "Library convergence item: give that checker --manifest-dir, then declare it here. Until then the step's declared set is the right one."
+                }
+              ],
+              "evidence": [
+                "W7 CLEARED: inputs.tests now requires that 'any direct EventBus.publish inside a test method assigns its result and pairs it with Test.getEventBus().deliver(), because check_platform_events_apex.py exits 1 on any finding at any severity and a discarded publish result inside a test is enough to fail the step' - which matches the source (R1 emits REVIEW in an @IsTest file, and main() exits 1 on any finding)",
+                "probed: python3 skills/apex/apex-hardcoded-id-elimination/scripts/check_apex_hardcoded_id_elimination.py --help -> '[--src SRC]' only, confirming the argument form the plan gives as its reason",
+                "the three declared checkers re-probed: exit 1 on /nonexistent; on an empty directory queueable -> 0, platform-events -> 0, callouts --fail-on HIGH -> 1, so the step keeps a test with failure power over absent artefacts",
+                "manifest test still records skipped-not-applicable naming M1-S05, and the step still declares no package.xml - the Apex exception stated on the right step",
+                "all three checker tests declare scope step with --manifest-dir artefacts/M1-S03"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M1-S04",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S04",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "kind schedulable; primary_sobject correctly absent (required only for trigger / selector / domain / batch); Step 2 emits '<Feature>Schedulable.cls delegating to a Queueable or Batch'",
+                "6 outputs unchanged, no package.xml, no collision, depends_on M1-S01",
+                "the third checker's skill, apex/error-handling-framework, was already in this step's skills[] in v1, so the new test cites nothing new"
+              ]
+            },
+            {
+              "step_id": "M1-S04",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "the round-1 cross-reference is closed: A13 now states that the scheduling user holds Tier2_Webhook_Admin and that both its queries enforce that user's FLS in API 67.0 user mode, and A13 names M1-S02 and M1-S04 in both directions",
+                "async-selection.md:74 'Clock (cron)' branch now matches D11 character-for-character",
+                "grep -l '^```apex' skills/apex/apex-scheduled-jobs/... returns 5 files"
+              ]
+            },
+            {
+              "step_id": "M1-S04",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [
+                {
+                  "problem": "The new test's description says the checker 'fails on rollback-unsafe logging' among other things. True of its rule set, but rule 2's pattern is name-bound - 'insert new Error_Log__c(' or 'insert <identifier matching error/log>' - so DML on this build's Integration_Failure__c cannot trip it. What the checker actually adds here is the empty-directory guard plus rules 1, 3, 4, 5 and the generic-catch rule 6, which is the live constraint on this step's code: a catch (Exception e) whose following lines hold only System.debug or a silent return exits 1. It is also a third checker with no severity flag.",
+                  "fix": "Trim the description's claim to the rules that can fire on this step's artefacts, and add one line to inputs.tests: the Queueable's email path logs or rethrows rather than swallowing."
+                },
+                {
+                  "problem": "Unchanged from round 1, and deliberately still a warning rather than a refutation: the manual test's third clause ('a named person confirms that org-wide address is already verified in the target org') is observable only in an org this build never deploys to, and the lens row says to refute at scales other than ask. Demoted because the tick belongs to the human at the M1 gate, who has the org, and A4 records the prerequisite.",
+                  "fix": "None required. Recorded so the demotion stays visible in the second round as well as the first."
+                }
+              ],
+              "evidence": [
+                "PV-003 CLEARED, probed independently rather than accepted: ls -la skills/apex/error-handling-framework/scripts/check_error_handling_framework.py -> exists; --help -> '[--manifest-dir MANIFEST_DIR]'; --manifest-dir <empty dir> -> exit 1 with 'ISSUE: No .cls or .trigger files found under <dir> - confirm --manifest-dir points to a Salesforce metadata source directory', the message the plan quotes; --manifest-dir /nonexistent -> exit 1",
+                "the command matches the section 5 checker shape ^python3 skills/<domain>/<slug>/scripts/check_<name>.py and declares scope step with --manifest-dir artefacts/M1-S04",
+                "source read for the exit policy: the rule loop appends to one issues list and main() prints each and returns 1, so any of rules 1-6 fails the run",
+                "the other two checkers re-probed on an empty directory: scheduled-jobs -> exit 0, queueable -> exit 0, so the new test is what carries this step's failure power over absent artefacts",
+                "manifest test still skipped-not-applicable naming M1-S05; no package.xml declared"
+              ]
+            }
+          ]
+        },
+        {
+          "step_id": "M1-S05",
+          "verdict": "pass",
+          "lenses": [
+            {
+              "step_id": "M1-S05",
+              "lens": "executability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "metadata-builder Step 2 docs row: 'the build's package.xml and the deploy-order note only' - the step declares exactly those two outputs",
+                "depends_on all four earlier steps; no output collision"
+              ]
+            },
+            {
+              "step_id": "M1-S05",
+              "lens": "grounding",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "member lists re-checked name by name against the emitting steps' outputs: 11 ApexClass declared, 11 .cls files emitted by M1-S03 and M1-S04, no name missing and none extra; 2 ApexTrigger declared and emitted",
+                "the manual deploy-step list grew from four to five and now leads with the A5 confirmation; step 3 names the D14 union including the scheduling user",
+                "skills/admin/change-management-and-deployment/references/metadata-examples.md carries the xml fence metadata-builder's Step 3 rule requires"
+              ]
+            },
+            {
+              "step_id": "M1-S05",
+              "lens": "testability",
+              "verdict": "pass",
+              "blockers": [],
+              "warnings": [],
+              "evidence": [
+                "re-probed: check_deployment_manifest.py --manifest-dir /nonexistent -> exit 1; --manifest-dir <empty> -> exit 1 with an ERROR, 'no package.xml or destructive manifest found anywhere under this directory' - the step's test can fail",
+                "scope step with --manifest-dir artefacts/M1-S05; the manifest test asserts the aggregation in both directions; the manual test now counts the five manual steps"
+              ]
+            }
+          ]
+        }
+      ],
+      "blockers": [],
+      "warnings": [
+        {
+          "step": "M1-S02",
+          "lens": "grounding",
+          "problem": "inputs.deploy_order still names two manual steps while this step's manual test clauses (e) and (f) read the D14 assignee union and the A5 confirmation out of deploy-order.md, and M1-S05 lists five.",
+          "fix": "Align inputs.deploy_order with M1-S05's five steps; prose, so amend-step --prose-only covers it once the build is building."
+        },
+        {
+          "step": "M1-S04",
+          "lens": "testability",
+          "problem": "The new checker's test description credits it with rollback-unsafe-logging detection, but that rule is name-bound to Error_Log__c-style identifiers and cannot see DML on Integration_Failure__c. What it adds is the empty-directory guard plus rules 1, 3, 4, 5 and the generic-catch-swallow rule.",
+          "fix": "Trim the claim to the applicable rules and add a line to inputs.tests requiring the email path to log or rethrow rather than swallow."
+        },
+        {
+          "step": "M1-S04",
+          "lens": "testability",
+          "problem": "The manual test's org-wide-address clause is confirmable only in a deployed org; the lens row says refute at non-ask scales and this is a deliberate demotion, carried forward from round 1.",
+          "fix": "None required; recorded so the demotion stays visible."
+        },
+        {
+          "step": "M1-S03",
+          "lens": "testability",
+          "problem": "The newly cited apex/apex-hardcoded-id-elimination contributes no checker test because its script takes --src, a fourth argument form beyond the three section 5's follow-up note enumerates. The hardcoded-Id ban rests on the manual code read and on apex-builder's own refusal.",
+          "fix": "Library convergence: give that checker --manifest-dir, then declare it. Declining to declare it as-is is correct."
+        },
+        {
+          "step": "M1-S03",
+          "lens": "executability",
+          "problem": "The resend path remains a second trigger on a second sObject inside one apex-builder invocation, against that agent's one-feature-per-invocation scope line. v2 records the exception rather than hiding it; the five-step feature ceiling offers no alternative.",
+          "fix": "Contract-level: exempt the aggregating manifest step from the five-step ceiling, as the planner's driver's log proposes."
+        },
+        {
+          "step": "M1-S03",
+          "lens": "executability",
+          "problem": "14 inputs{} keys have no counterpart in apex-builder's Inputs table and reach the agent only through the step record.",
+          "fix": "A line in that Inputs table acknowledging the build layer's step-record handoff."
+        },
+        {
+          "step": "M1-S02",
+          "lens": "executability",
+          "problem": "Section 4's access row and metadata-builder Step 2 still name no home for NamedCredential or ExternalCredential.",
+          "fix": "Contract edit in both tables; the step builds because its skills[] is authoritative."
+        },
+        {
+          "step": "M1-S02",
+          "lens": "grounding",
+          "problem": "The cited skill documents two shapes for a token in a custom header and does not say which flag governs the platform-injected AuthHeader form. Lower severity now that A5 reaches the human as manual deploy step 1.",
+          "fix": "Settle it in the same Salesforce Help confirmation the deploy-order note mandates."
+        },
+        {
+          "step": "all",
+          "lens": "testability",
+          "problem": "Three of the ten declared checkers expose no severity control at all - check_object_creation_and_design.py, check_platform_events_apex.py and now check_error_handling_framework.py - so each fails on findings its own text calls advisory, and seven of the ten exit 0 on an empty directory. Which steps have failure power over an absent artefact is still an accident of which checkers a step happened to cite.",
+          "fix": "Library-level: converge on one severity flag across skill checkers. The plan's own remedy - declaring a checker specifically for its empty-directory behaviour, as M1-S04 now does - is the right local workaround."
+        }
+      ],
+      "cross_step_results": [
+        {
+          "check": "Every fit_gap requirement reaches at least one step, and every such step carries at least one acceptance test",
+          "result": "pass",
+          "detail": "6 rows, all 5 steps reached, no step uncovered; every row carries effort and a risk_tag array"
+        },
+        {
+          "check": "No two steps write the same output path",
+          "result": "pass",
+          "detail": "50 declared paths, 0 duplicates, every path under artefacts/<its own step-id>/"
+        },
+        {
+          "check": "depends_on graph is acyclic and every id exists",
+          "result": "pass",
+          "detail": "unchanged from v1; all ids exist, same milestone, earlier in plan order"
+        },
+        {
+          "check": "Every milestone has at least one acceptance test, at least one step, and steps[] matches",
+          "result": "pass",
+          "detail": "M1: 4 tests (3 build-wide checkers with scope absent, 1 manual cross-step read); declared steps[] equals the actual five"
+        },
+        {
+          "check": "Every scope-out item names why it is out",
+          "result": "pass",
+          "detail": "9 items, each citing a clarification id, a requirement paragraph or a decision"
+        },
+        {
+          "check": "Assumptions and steps agree in both directions",
+          "result": "pass",
+          "detail": "14 rows now (A13 and A14 added by round 2); every step-to-row and row-to-step reference resolves. Q43 remains the one open informational clarification, carried by A1 on M1-S03"
+        },
+        {
+          "check": "Declared checkers exist and accept their declared flag form",
+          "result": "pass",
+          "detail": "10 distinct scripts, all present, all accepting the declared flags, all exiting 1 on --manifest-dir /nonexistent. Empty-directory results: exit 1 for check_callouts_and_http_integrations.py (--fail-on HIGH), check_deployment_manifest.py and check_error_handling_framework.py; exit 0 for the other seven"
+        },
+        {
+          "check": "Every step has at least one acceptance test that can fail against empty artefacts",
+          "result": "pass",
+          "detail": "M1-S01 and M1-S02 via the always-on manifest check on a metadata step with no package.xml; M1-S03 via the callouts checker; M1-S04 via check_error_handling_framework.py (PV-003's fix); M1-S05 via check_deployment_manifest.py"
+        },
+        {
+          "check": "Every skill, template, decision tree, agent and source_reference citation resolves on disk",
+          "result": "pass",
+          "detail": "17 distinct skills across 5 steps (M1-S03 gained apex/apex-hardcoded-id-elimination), 12 fit_gap skill references, 6 templates, 4 trees, 2 agents and 4 decision source_reference paths - all resolve"
+        },
+        {
+          "check": "Decision-tree branch quotes are verbatim",
+          "result": "pass",
+          "detail": "All ten tree-cited quotes (D1, D2, D4, D5, D6, D7, D8, D9, D11, D12) now match the cited line character-for-character, arrow glyph and column padding included; round 1's transliteration warning is closed and the count is stated as ten"
+        },
+        {
+          "check": "The Apex exception is stated on the right steps",
+          "result": "pass",
+          "detail": "M1-S03 and M1-S04 declare no package.xml and name M1-S05; M1-S05 depends_on both and its eleven ApexClass and two ApexTrigger members match the emitting steps' files exactly"
+        }
+      ]
+    },
+    "plan_path": ".sfskills/builds/tier2-webhook/plan.json",
+    "plan_version": 2,
+    "resulting_status": "verified",
+    "round": 2,
+    "rounds_allowed": 2,
+    "prior_envelope": ".sfskills/builds/tier2-webhook/envelopes/verification/2026-09-12T12-40-00Z.json",
+    "validate_baseline": "OK .sfskills/builds/tier2-webhook/plan.json: 1 milestone(s), 5 step(s), 0 warning(s).",
+    "validate_after_set_verification": "OK .sfskills/builds/tier2-webhook/plan.json: 1 milestone(s), 5 step(s), 0 warning(s).",
+    "blocker_verdicts": [
+      {
+        "id": "PV-001",
+        "step": "M1-S02",
+        "lens": "grounding",
+        "verdict": "cleared"
+      },
+      {
+        "id": "PV-002",
+        "step": "M1-S03",
+        "lens": "grounding",
+        "verdict": "cleared"
+      },
+      {
+        "id": "PV-003",
+        "step": "M1-S04",
+        "lens": "testability",
+        "verdict": "cleared"
+      }
+    ],
+    "checker_probe_matrix": [
+      {
+        "checker": "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+        "steps": [
+          "M1-S01"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 0",
+        "severity_flag": "none; exits 1 on ISSUE or WARN"
+      },
+      {
+        "checker": "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py",
+        "steps": [
+          "M1-S01"
+        ],
+        "declared_flags": "--manifest-dir --min-severity ERROR",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 0",
+        "severity_flag": "--min-severity {INFO,WARN,ERROR}"
+      },
+      {
+        "checker": "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py",
+        "steps": [
+          "M1-S01",
+          "M1-S03"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 0",
+        "severity_flag": "none; exits 1 on any finding, REVIEW included"
+      },
+      {
+        "checker": "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py",
+        "steps": [
+          "M1-S02",
+          "M1"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 0",
+        "severity_flag": "--strict, deliberately omitted"
+      },
+      {
+        "checker": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "steps": [
+          "M1-S02 (build scope)",
+          "M1"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 0",
+        "severity_flag": "none needed; exits 1 only on ERROR"
+      },
+      {
+        "checker": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py",
+        "steps": [
+          "M1-S03",
+          "M1-S04"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 0",
+        "severity_flag": "--strict, deliberately omitted"
+      },
+      {
+        "checker": "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py",
+        "steps": [
+          "M1-S03"
+        ],
+        "declared_flags": "--manifest-dir --fail-on HIGH",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 1",
+        "severity_flag": "--fail-on {CRITICAL..REVIEW}"
+      },
+      {
+        "checker": "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py",
+        "steps": [
+          "M1-S04"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 0",
+        "severity_flag": "--strict, deliberately omitted"
+      },
+      {
+        "checker": "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py",
+        "steps": [
+          "M1-S04"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 1",
+        "severity_flag": "none; exits 1 on any rule hit \u2014 new in v2, PV-003's fix"
+      },
+      {
+        "checker": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+        "steps": [
+          "M1-S05",
+          "M1"
+        ],
+        "declared_flags": "--manifest-dir",
+        "nonexistent_dir": "exit 1",
+        "empty_dir": "exit 1",
+        "severity_flag": "--strict, deliberately omitted"
+      },
+      {
+        "checker": "skills/apex/apex-hardcoded-id-elimination/scripts/check_apex_hardcoded_id_elimination.py",
+        "steps": [
+          "cited by M1-S03, deliberately not declared"
+        ],
+        "declared_flags": "n/a",
+        "nonexistent_dir": "n/a",
+        "empty_dir": "n/a",
+        "severity_flag": "takes --src, not --manifest-dir \u2014 a fourth argument form"
+      }
+    ],
+    "next_command": "python3 scripts/build_plan.py gate .sfskills/builds/tier2-webhook/plan.json plan approve --by \"<name>\" --notes \"<what was checked>\""
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 3.1 feature-tier ceremony and the two-round limit, section 4 step types and agent eligibility, section 5 acceptance tests, checker scope, the Apex exception and the checker-argument-form follow-up, section 2 amend-step and --prose-only"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the API-version security table behind PV-001, and the Process Observations and confidence requirements"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the verification block shape, its lenses[] objects and blockers[] required fields"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the envelope's required keys, the outcome enum and the build-layer envelope_path pattern"
+    },
+    {
+      "type": "standard",
+      "id": "metadata-builder-agent",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "re-checking executability on M1-S01, M1-S02 and M1-S05 against the step-type table and the Output Contract"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-agent",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "the kind enum, the 12-class ceiling, the one-feature-per-invocation scope line, and the hardcoded-Group-Id refusal PV-002's fix now names"
+    },
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q1, Q2, Q3, Q4",
+      "used_for": "re-checking D1, D2, D4, D5 and D6 as verbatim quotes after the round-1 transliteration warning"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q2, Q7, Q11",
+      "used_for": "re-checking D11, D7 and D9 as verbatim quotes"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q3",
+      "used_for": "re-checking D8 as a verbatim quote"
+    },
+    {
+      "type": "decision_tree",
+      "id": "sharing-selection",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1",
+      "used_for": "re-checking D12 as a verbatim quote"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-hardcoded-id-elimination",
+      "path": "skills/apex/apex-hardcoded-id-elimination/SKILL.md",
+      "used_for": "confirming PV-002's fix against Example 3's Group-by-DeveloperName accessor, and probing its checker's --src argument form"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "PV-001: the fieldPermissions rules, and the checker source that settles A14's object-row claim"
+    },
+    {
+      "type": "skill",
+      "id": "apex/error-handling-framework",
+      "path": "skills/apex/error-handling-framework/SKILL.md",
+      "used_for": "PV-003: probing the newly declared checker and reading its six rules and exit policy"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-user-and-permission-checks",
+      "path": "skills/apex/apex-user-and-permission-checks/SKILL.md",
+      "used_for": "verifying D14's and A13's running-user claims, including 'for scheduled jobs the scheduler'"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-and-platform-events",
+      "path": "skills/flow/flow-and-platform-events/SKILL.md",
+      "used_for": "verifying that Automated Process holds no permission set assignments, which is why Q23's premise was refuted"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "used_for": "re-confirming the credential shapes and the UNVERIFIED AuthHeader grammar now carried as manual deploy step 1"
+    },
+    {
+      "type": "skill",
+      "id": "apex/platform-events-apex",
+      "path": "skills/apex/platform-events-apex/SKILL.md",
+      "used_for": "re-confirming the __e definition shape and the checker rules behind W7's fix"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "re-confirming the Finalizer, retry-budget, delay-cap and no-callout-after-DML claims M1-S03 rests on"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/SKILL.md",
+      "used_for": "W2: confirming the elements M1-S01's inputs now name against the checker's exit-1 set"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "re-tiering the six fit_gap rows and confirming effort and risk_tag survive the re-plan"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the cross-step coverage check over v2's rows and steps"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "judging the rewritten M1-S02 and M1-S05 manual tests against the precondition-plus-observable-outcome bar"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "judging whether the new manual clauses are tickable by someone who was not in the planning session"
+    },
+    {
+      "type": "template",
+      "id": "apex/HttpClient",
+      "path": "templates/apex/HttpClient.cls",
+      "used_for": "re-confirming that all six cited templates still resolve after the re-plan"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-step-runner",
+      "because": "once a human approves the plan gate, M1-S01 is the first runnable step and the loop moves to building"
+    },
+    {
+      "agent": "waf-assessor",
+      "because": "four decisions still carry adr_required true and the D14 identity question grew into a two-population union this round"
+    }
+  ]
+}

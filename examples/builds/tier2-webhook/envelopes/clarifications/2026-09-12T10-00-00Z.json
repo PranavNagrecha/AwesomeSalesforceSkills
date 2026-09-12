@@ -1,0 +1,1128 @@
+{
+  "agent": "requirements-clarifier",
+  "mode": "single",
+  "run_id": "2026-09-12T10-00-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/clarifications/2026-09-12T10-00-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/clarifications/2026-09-12T10-00-00Z.json",
+  "inputs_received": {
+    "requirement_path": ".sfskills/builds/tier2-webhook/requirement.md",
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "scale": null
+  },
+  "summary": "Clarified the Tier 2 escalation webhook + platform event requirement: searched 12 capability phrases, kept 8 question-table skills, harvested 45 clarifications (24 blocking, 21 informational) plus 2 decision-tree bonus questions, wrote them via set-clarifications, and re-tiered scale from feature to project mid-harvest after the blocking count (24) blew past the feature ceiling (<=8).",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Every capability phrase returned index hits and every clarification traces to a harvested row, the generic set, or a decision tree (the HIGH bar), but 6 of 24 blocking questions have default_source: none on genuinely design-changing, vendor/org-specific facts, which is enough unresolved design surface to hold this at MEDIUM rather than HIGH.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The requirement states the API-key-storage constraint up front, matching what apex/apex-named-credentials-patterns and the integration-pattern-selection tree both independently require.",
+      "domain": "integration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/requirement.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The eight kept skills' Questions-to-Ask tables agree with each other on the core mechanism shape; nothing required source-hierarchy adjudication.",
+      "domain": "integration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/SKILL.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "admin/outbound-message-setup ranks in the top 2 results for an outbound-callout search even though its host, Workflow Rules, reached end of support 31 Dec 2025 per the integration-pattern-selection tree's own anti-pattern list.",
+      "domain": "search-ranking",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "outbound HTTP callout to external system",
+        "path": "skills/admin/outbound-message-setup/SKILL.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The Step 1 a-priori sizing line computed scale: feature, but the Step 4 harvest produced 24 blocking questions, three times the feature ceiling, forcing a mid-step re-tier to project.",
+      "domain": "sizing",
+      "evidence": {
+        "source": "heuristic",
+        "count": 24
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether the ops dashboard's already-existing platform-event subscription counts as a second system for the X sizing signal was a judgment call; it was not counted as one, since no new auth/retry/endpoint contract is built for it.",
+      "domain": "sizing",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/requirement.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "admin/case-management-setup, admin/assignment-rules, admin/escalation-rules and admin/process-automation-selection all carry question tables and surfaced legitimately, but were excluded from harvesting because the requirement states the queue and its escalation rule already exist.",
+      "domain": "scope",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/requirement.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Six blocking questions carry default_source none because they depend on the on-call tool's vendor contract or this org's own facts, which no skill or requirement text could supply without inventing one.",
+      "domain": "defaults",
+      "evidence": {
+        "source": "heuristic",
+        "count": 6
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Once G1 is recorded, build-planner should run against this build directory to turn the answered clarifications into milestones and steps.",
+      "domain": "loop",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "Standard next stage of the build-orchestration loop once clarifications are approved."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Q19 and Q20's access decisions (the External Credential principal's permission set, and who may see/resend the failure record) are permission-set-architect's design surface, not this agent's.",
+      "domain": "access",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "permission-set-architect",
+      "followup_reason": "This agent proposes the access questions but never designs the permission set itself."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "8-section AGENT.md shape and Process Observations requirement"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence, atomic-write and scope-guardrail rules"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "canonical refusal code enum (not triggered this run)"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "repo-wide canonical workflow rules"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "stage-1 contract, \u00a7 2 directory layout, \u00a7 3/3.1 gate and sizing rules"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "path": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "used_for": "owner_hint eligibility check (class/status/requires_org)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "clarification record shape; found owner_role non-nullable and no owner_hint field (see report gaps)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "this envelope's shape"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/observation.schema.json",
+      "path": "agents/_shared/schemas/observation.schema.json",
+      "used_for": "process_observations[] shape"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/citation.schema.json",
+      "path": "agents/_shared/schemas/citation.schema.json",
+      "used_for": "citations[] shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-gathering-for-sf",
+      "path": "skills/admin/requirements-gathering-for-sf/SKILL.md",
+      "used_for": "generic question set (Q21, Q22, Q43, Q44, Q45) applied to every requirement"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "ten canonical workbook sections, used to sanity-check no unaddressed section"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "answer_shape phrasing per clarification"
+    },
+    {
+      "type": "skill",
+      "id": "admin/stakeholder-raci-for-sf-projects",
+      "path": "skills/admin/stakeholder-raci-for-sf-projects/SKILL.md",
+      "used_for": "owner_role vocabulary (Integration architect, Security architect, Support Engineering lead)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/agent-output-formats",
+      "path": "skills/admin/agent-output-formats/SKILL.md",
+      "used_for": "referral path for format-conversion requests (not invoked this run)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/outbound-message-setup",
+      "path": "skills/admin/outbound-message-setup/SKILL.md",
+      "used_for": "Q1-Q2, Q26-Q30: mechanism-rejection questions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "used_for": "Q3-Q6, Q19, Q25: Named/External Credential shape questions"
+    },
+    {
+      "type": "skill",
+      "id": "admin/integration-user-management",
+      "path": "skills/admin/integration-user-management/SKILL.md",
+      "used_for": "Q32-Q38: ops-dashboard subscriber authentication questions"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-error-monitoring",
+      "path": "skills/flow/flow-error-monitoring/SKILL.md",
+      "used_for": "Q16-Q17, Q20, Q24, Q40-Q42: failure-record sink and alerting questions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/platform-events-apex",
+      "path": "skills/apex/platform-events-apex/SKILL.md",
+      "used_for": "Q10-Q12, Q39: platform event publish/subscribe questions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/callouts-and-http-integrations",
+      "path": "skills/apex/callouts-and-http-integrations/SKILL.md",
+      "used_for": "Q7-Q8, Q18, Q31: callout retry/idempotency/payload questions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "Q9, Q13-Q15, Q23: Queueable transaction/Finalizer/sharing questions"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/integration-pattern-selection.md",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Direction 1 Q1-Q4 (synchronicity, auth, payload, retry)",
+      "used_for": "Q1: feature-tier bonus question, integration pattern confirmation"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/async-selection.md",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q2-Q4 (trigger type, callout need, sequencing)",
+      "used_for": "Q9: feature-tier bonus question, async pattern confirmation"
+    }
+  ],
+  "extensions": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "sizing": {
+      "step1_apriori": "scale: feature (D=6 metadata types, S=7 skills with question tables, O=3 objects, integration=implied; no override)",
+      "step4_retier": "scale: project (24 blocking clarifications harvested, exceeding the ask/feature <=8-per-round ceiling by 3x; re-tiered by analogy to AGENT.md's ask->feature test, which has no stated feature->project counterpart)"
+    },
+    "clarifications": [
+      {
+        "id": "Q1",
+        "question": "Per standards/decision-trees/integration-pattern-selection.md Direction 1 (Salesforce calls out): confirm the on-call webhook call is fire-and-forget (Queueable, not Continuation, since no user watches a spinner), authenticated via Named Credential + External Credential (Custom header / API key per Q2), and retried per a status-code classification (Q4) \u2014 does the on-call tool's actual contract match this shape, or does it require something else (e.g. a synchronous ack, OAuth instead of a static key)?",
+        "kind": "blocking",
+        "why": "This is the tree's own top-level direction/auth/retry checklist; a wrong call here is a rebuild of the whole integration shape, not a tweak.",
+        "proposed_default": "Fire-and-forget Queueable, Named Credential + External Credential with Custom header (API key), retry classified by status code.",
+        "status": "open",
+        "source_skill": "admin/outbound-message-setup",
+        "answer_shape": "A direction/auth/retry row naming the pattern actually used, or the deviation and why.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q2",
+        "question": "Reject the legacy Outbound Message / Workflow Rule action mechanism in favor of a Named-Credential-based Apex callout for the on-call notification \u2014 confirm?",
+        "kind": "blocking",
+        "why": "Outbound Message's host (Workflow Rules) reached end of support 31 Dec 2025, cannot express JSON + API-key auth cleanly (it expects a SOAP Ack envelope), and this decision determines every downstream metadata choice.",
+        "proposed_default": "Yes \u2014 use a Named-Credential-based Apex callout, not Outbound Message.",
+        "status": "open",
+        "source_skill": "admin/outbound-message-setup",
+        "answer_shape": "A yes/no plus the rejected-alternative reason recorded in decisions.md.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance"
+      },
+      {
+        "id": "Q3",
+        "question": "Is the on-call tool's Named Credential built on the Legacy model or the enhanced SecuredEndpoint model (separate External Credential)?",
+        "kind": "blocking",
+        "why": "Every field the Legacy shape relies on is deprecated at API 56.0; building new metadata on it means building on a deprecated surface.",
+        "proposed_default": "SecuredEndpoint (Named Credential + separate External Credential).",
+        "status": "open",
+        "source_skill": "apex/apex-named-credentials-patterns",
+        "answer_shape": "The namedCredentialType value and the file count it implies (2 vs 1).",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance"
+      },
+      {
+        "id": "Q4",
+        "question": "Named principal or per-user principal for the on-call tool's External Credential?",
+        "kind": "blocking",
+        "why": "Only Named Principal works from Batch, Queueable and Scheduled Apex \u2014 this design requires a Queueable, so the principal type is not a free choice.",
+        "proposed_default": "Named Principal \u2014 required for the Queueable-based callout.",
+        "status": "open",
+        "source_skill": "apex/apex-named-credentials-patterns",
+        "answer_shape": "NamedPrincipal vs PerUserPrincipal, with the Queueable constraint cited as the reason.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance",
+        "also_asked_by": [
+          "apex/apex-named-credentials-patterns"
+        ]
+      },
+      {
+        "id": "Q5",
+        "question": "Who owns the Authorization header on the webhook call \u2014 does the External Credential inject it (generateAuthorizationHeader default true), or does the Apex code build it explicitly?",
+        "kind": "blocking",
+        "why": "Apex adding its own header on top of the platform default is a documented collision that surfaces as a 401.",
+        "proposed_default": "The platform / External Credential owns it; Apex does not set an Authorization header itself.",
+        "status": "open",
+        "source_skill": "apex/apex-named-credentials-patterns",
+        "answer_shape": "One named owner for the header, encoded in the External Credential metadata.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance"
+      },
+      {
+        "id": "Q6",
+        "question": "Does the on-call tool expect the API key in a specific custom header name, or in the request body?",
+        "kind": "blocking",
+        "why": "This decides the External Credential parameter shape ({!$Credential.*} merge field target) and whether allowMergeFieldsInHeader / allowMergeFieldsInBody must be enabled \u2014 both default false.",
+        "status": "open",
+        "source_skill": "apex/apex-named-credentials-patterns",
+        "answer_shape": "The exact header name (or body path) the vendor's API documents.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "none"
+      },
+      {
+        "id": "Q7",
+        "question": "For the on-call tool's API specifically, which HTTP status codes are transient/retryable (e.g. 429, 503) and which indicate a hard failure that should go straight to the visible failure record (e.g. 401, 422)?",
+        "kind": "blocking",
+        "why": "Retryable vs non-retryable cannot be inferred from the status code alone; retrying a 401 is a lockout, not a fix.",
+        "status": "open",
+        "source_skill": "apex/callouts-and-http-integrations",
+        "answer_shape": "A status-code classification table the retry logic and its tests both read.",
+        "owner_role": "Integration architect",
+        "owner_hint": "apex-builder",
+        "default_source": "none",
+        "group": "integration"
+      },
+      {
+        "id": "Q8",
+        "question": "Is the webhook POST safe to send twice, and does the on-call tool accept/require an idempotency key?",
+        "kind": "blocking",
+        "why": "A 5xx or transport failure means unknown, not failed; retrying without a key can double-page the same escalation.",
+        "status": "open",
+        "source_skill": "apex/callouts-and-http-integrations",
+        "answer_shape": "Either a documented idempotency-key header, or an explicit no-retry-on-ambiguous-outcome decision.",
+        "owner_role": "Integration architect",
+        "owner_hint": "apex-builder",
+        "default_source": "none",
+        "group": "integration"
+      },
+      {
+        "id": "Q9",
+        "question": "Per standards/decision-trees/async-selection.md Q2-Q4: confirm the escalation-triggered work is fire-and-forget (not user-facing), runs from a Queueable (AllowsCallouts) enqueued off the Case-escalation automation, and decide the publish sequencing \u2014 does the platform event publish before the callout (dashboard sees the escalation immediately regardless of webhook outcome) or after it (event carries the callout's outcome too)?",
+        "kind": "blocking",
+        "why": "This is the tree's own entry-point classification plus the one sequencing decision the tree does not make for you; it changes what the Queueable's execute() actually does and in what order.",
+        "proposed_default": "Publish the platform event first (dashboard visibility should not depend on webhook success), then attempt the callout with retry.",
+        "status": "open",
+        "source_skill": "apex/apex-queueable-patterns",
+        "answer_shape": "The chosen sequencing, with the rejected order's reason recorded.",
+        "owner_role": "Integration architect",
+        "owner_hint": "apex-builder",
+        "default_source": "skill-guidance",
+        "group": "automation"
+      },
+      {
+        "id": "Q10",
+        "question": "If the Case-escalation transaction that triggers this automation rolls back, must the on-call tool and the ops dashboard still be notified?",
+        "kind": "blocking",
+        "why": "Decides the Platform Event object's publishBehavior element; omitting it defaults to PublishImmediately, which fires regardless of rollback.",
+        "proposed_default": "No \u2014 publish only after the Case save commits (PublishAfterCommit); a rolled-back escalation should not page anyone.",
+        "status": "open",
+        "source_skill": "apex/platform-events-apex",
+        "answer_shape": "The explicit publishBehavior value and which limit meter the publisher spends.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance",
+        "group": "automation"
+      },
+      {
+        "id": "Q11",
+        "question": "What is the worst-case impact if one escalation's platform event is silently lost (EventBus.publish success only means 'queued', not 'delivered')?",
+        "kind": "blocking",
+        "why": "Decides whether checking Database.SaveResult is enough or an EventPublishFailureCallback plus a logged-failure path is required.",
+        "status": "open",
+        "source_skill": "apex/platform-events-apex",
+        "answer_shape": "Either an accepted-risk note, or the failure callback wired into the same failure record as the webhook path.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": "apex-builder",
+        "default_source": "none",
+        "group": "automation"
+      },
+      {
+        "id": "Q12",
+        "question": "What happens if the ops dashboard processes the same escalation event twice (Platform Events deliver at-least-once)?",
+        "kind": "blocking",
+        "why": "Decides whether the event payload needs a stable EventUuid / case number the dashboard can dedupe on, which is a contract with a team this build does not own.",
+        "proposed_default": "Dashboard dedupes on case number / EventUuid; document as a contract with the dashboard's owning team, not solved on the Salesforce side.",
+        "status": "open",
+        "source_skill": "apex/platform-events-apex",
+        "answer_shape": "The dedupe key named in the event schema, and confirmation the dashboard team has agreed to use it.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance",
+        "group": "automation"
+      },
+      {
+        "id": "Q13",
+        "question": "Where is the callout Queueable enqueued from (the escalation-triggering automation directly, or a service layer), and could that same code path ever run from inside another async job?",
+        "kind": "blocking",
+        "why": "The enqueue ceiling differs by context \u2014 50 per synchronous transaction, exactly 1 per asynchronous transaction \u2014 and a callout cannot follow DML in the same execute().",
+        "status": "open",
+        "source_skill": "apex/apex-queueable-patterns",
+        "answer_shape": "The one call site that owns the enqueue, and confirmation it is never itself inside another async transaction.",
+        "owner_role": "Integration architect",
+        "owner_hint": "apex-builder",
+        "default_source": "none",
+        "group": "automation",
+        "also_asked_by": [
+          "apex/apex-queueable-patterns"
+        ]
+      },
+      {
+        "id": "Q14",
+        "question": "Can the same escalation be enqueued twice from two different transactions (e.g. a re-save, a duplicate escalation trigger firing)? If so, is cross-transaction dedup needed?",
+        "kind": "blocking",
+        "why": "A static in-memory guard resets at the transaction boundary; only AsyncOptions.DuplicateSignature suppresses duplicates across transactions, and a suppressed enqueue throws rather than silently no-op'ing.",
+        "status": "open",
+        "source_skill": "apex/apex-queueable-patterns",
+        "answer_shape": "The stable business key (likely Case Id) the DuplicateSignature is built from, and the catch that turns the exception into a no-op.",
+        "owner_role": "Integration architect",
+        "owner_hint": "apex-builder",
+        "default_source": "none",
+        "group": "automation"
+      },
+      {
+        "id": "Q15",
+        "question": "When the Queueable throws an unhandled or limit exception, must the failure record still get written?",
+        "kind": "blocking",
+        "why": "try/catch cannot survive a limit exception that terminates the transaction; only a Finalizer runs either way, and its budget is five consecutive re-enqueues.",
+        "proposed_default": "Yes \u2014 a Finalizer writes/updates the failure record on both SUCCESS and UNHANDLED_EXCEPTION, since that is the only guaranteed hook.",
+        "status": "open",
+        "source_skill": "apex/apex-queueable-patterns",
+        "answer_shape": "The Finalizer's behavior on each terminal state, named explicitly.",
+        "owner_role": "Integration architect",
+        "owner_hint": "apex-builder",
+        "default_source": "skill-guidance",
+        "group": "automation"
+      },
+      {
+        "id": "Q16",
+        "question": "Where does the visible failure record live \u2014 a new custom object dedicated to this integration, or does Apex already have a sink (e.g. templates/apex/custom_objects/Application_Log__c) that should be reused/extended instead of inventing a new one?",
+        "kind": "blocking",
+        "why": "One sink is queryable, correlatable and reportable; two sinks are two half-monitored portfolios that need a join nobody has written.",
+        "status": "open",
+        "source_skill": "flow/flow-error-monitoring",
+        "answer_shape": "One named object (new or reused), and a reason if a new one is chosen over the existing log sink.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "none",
+        "group": "object-model"
+      },
+      {
+        "id": "Q17",
+        "question": "What does the status/severity picklist on the failure record contain, and does the Apex code send exactly those values?",
+        "kind": "blocking",
+        "why": "A required + restricted picklist that the sending code doesn't match exactly makes the fault-path write itself fault, and then nothing is logged at all.",
+        "proposed_default": "A restricted picklist (e.g. Pending / Failed / Retrying / Resolved) with values matching the Apex enum exactly.",
+        "status": "open",
+        "source_skill": "flow/flow-error-monitoring",
+        "answer_shape": "The exact picklist value list, cross-checked against the Apex constant list.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance",
+        "group": "object-model"
+      },
+      {
+        "id": "Q18",
+        "question": "What fields must the failure record carry to make a resend actionable?",
+        "kind": "blocking",
+        "why": "A permanent failure that only leaves a debug-log line is invisible; the record needs enough to both diagnose and replay the call.",
+        "proposed_default": "Case lookup, Request_Payload__c (long text), Last_Error__c, Retry_Count__c, Status__c, Last_Attempted_Date__c.",
+        "status": "open",
+        "source_skill": "apex/callouts-and-http-integrations",
+        "answer_shape": "The field list, each with the value it must hold to support a one-click resend.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance",
+        "group": "object-model"
+      },
+      {
+        "id": "Q19",
+        "question": "Which permission set grants External Credential principal access and the failure-record's CRUD/FLS, and who/what is it assigned to (the Automated Process running user, a named integration user, the admins who need to see and resend failures)?",
+        "kind": "blocking",
+        "why": "A principal is inert until externalCredentialPrincipalAccesses grants it, and nothing in the deploy fails without it \u2014 the integration returns 401 for every user until this is explicit; record access and field access are separate mechanisms configured in different places.",
+        "status": "open",
+        "source_skill": "apex/apex-named-credentials-patterns",
+        "answer_shape": "A sharing_impact value naming the layer plus a named permission set and its assignees.",
+        "owner_role": "Security architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "none",
+        "group": "access",
+        "also_asked_by": [
+          "admin/requirements-gathering-for-sf"
+        ]
+      },
+      {
+        "id": "Q20",
+        "question": "Who is allowed to resend a failed webhook, and is that the same team that reviews the failure backlog?",
+        "kind": "blocking",
+        "why": "Resend is a write action with real side effects (re-paging the on-call tool); an unnamed owner for that action is a rumour, not a control.",
+        "status": "open",
+        "source_skill": "flow/flow-error-monitoring",
+        "answer_shape": "A named role or permission set assignee, and confirmation they are the same audience that triages the backlog.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": "metadata-builder",
+        "default_source": "none",
+        "group": "access"
+      },
+      {
+        "id": "Q21",
+        "question": "Once a webhook delivery fails and lands in the visible failure record, what is the response-time expectation for someone to notice and resend it, and who is on the hook?",
+        "kind": "blocking",
+        "why": "\"Make it visible\" hides the trigger, the exception path and the owner of the failure; without a named owner and a target, the record is a rumour with a UI.",
+        "status": "open",
+        "source_skill": "admin/requirements-gathering-for-sf",
+        "answer_shape": "The exception path and a named owner, which is what makes the resend flow estimable.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": null,
+        "default_source": "none",
+        "group": "sla"
+      },
+      {
+        "id": "Q22",
+        "question": "What is the real steady-state volume of Tier 2 escalations (per hour and per day) and the worst-case single burst, so retry/backoff sizing, Queueable chunking and the Platform Event publishing-allocation budget (250,000/hour EE/PE/UE) are sized correctly?",
+        "kind": "blocking",
+        "why": "Automation that passes UAT on ten records fails on a real burst; the publishing allocation is an hourly ceiling shared with every other publisher in the org.",
+        "status": "open",
+        "source_skill": "admin/requirements-gathering-for-sf",
+        "answer_shape": "A data_volume value with a steady-state number and a worst-case batch number.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": "apex-builder",
+        "default_source": "none",
+        "group": "sla",
+        "also_asked_by": [
+          "apex/apex-queueable-patterns",
+          "apex/platform-events-apex"
+        ]
+      },
+      {
+        "id": "Q23",
+        "question": "Should the Queueable class run in system mode or explicit user/sharing mode, given it fires as the Automated Process entity rather than an interactive user?",
+        "kind": "blocking",
+        "why": "Outside system mode the running user needs View Setup and Configuration to enqueue asynchronous Apex at all, and from API 67.0 an undeclared class runs with sharing by default where it used to run without \u2014 the wrong choice either over-exposes data or silently fails to enqueue.",
+        "proposed_default": "Without sharing / system mode, typical for an escalation-triggered background job with no per-user data exposure concern \u2014 confirm no FLS/CRUD bypass risk before accepting.",
+        "status": "open",
+        "source_skill": "apex/apex-queueable-patterns",
+        "answer_shape": "The explicit sharing declaration and the permission set that carries the enqueue right.",
+        "owner_role": "Security architect",
+        "owner_hint": "apex-builder",
+        "default_source": "skill-guidance",
+        "group": "sla"
+      },
+      {
+        "id": "Q24",
+        "question": "Who is alerted, and how, when the whole notification channel silently stops working (not a single failed delivery, but the subscription/automation itself going dark)?",
+        "kind": "blocking",
+        "why": "Nothing in Apex reports a dead event subscription or a disabled trigger on its own; a per-delivery failure record does not catch the channel itself failing.",
+        "status": "open",
+        "source_skill": "flow/flow-error-monitoring",
+        "answer_shape": "A scheduled health-check query and a named recipient, so a month-long gap becomes a same-day one.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": null,
+        "default_source": "none",
+        "group": "sla",
+        "also_asked_by": [
+          "apex/platform-events-apex"
+        ]
+      },
+      {
+        "id": "Q25",
+        "question": "What API name should the Named Credential use, and is the same name reused unchanged across scratch/sandbox/production with a per-org URL parameter?",
+        "kind": "informational",
+        "why": "callout: resolves by API name; same-name credentials with different URL parameters are the platform's own portability mechanism, so the naming choice avoids environment checks in code.",
+        "proposed_default": "e.g. OnCall_Tool, identical across all environments, with the endpoint URL parameterized per org.",
+        "status": "open",
+        "source_skill": "apex/apex-named-credentials-patterns",
+        "answer_shape": "The API name, confirmed identical in every target org.",
+        "owner_role": "Integration architect",
+        "owner_hint": "metadata-builder",
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q26",
+        "question": "(Moot if Q2 is accepted) Which WSDL version would the listener be generated against?",
+        "kind": "informational",
+        "why": "Only relevant if Outbound Message is used; superseded by rejecting that mechanism.",
+        "proposed_default": "N/A \u2014 superseded by Q2 (Named-Credential Apex callout replaces Outbound Message).",
+        "status": "open",
+        "source_skill": "admin/outbound-message-setup",
+        "answer_shape": "N/A pending Q2.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q27",
+        "question": "(Moot if Q2 is accepted) Which user would the message send as, and would includeSessionId be needed?",
+        "kind": "informational",
+        "why": "Only relevant if Outbound Message is used; superseded by rejecting that mechanism.",
+        "proposed_default": "N/A \u2014 superseded by Q2.",
+        "status": "open",
+        "source_skill": "admin/outbound-message-setup",
+        "answer_shape": "N/A pending Q2.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q28",
+        "question": "(Moot if Q2 is accepted) Is the org's dead letter queue permission turned on?",
+        "kind": "informational",
+        "why": "Only relevant if Outbound Message is used; superseded by rejecting that mechanism \u2014 this build's equivalent is the failure record (Q16-Q18).",
+        "proposed_default": "N/A \u2014 superseded by Q2; the failure record (Q16-Q18) is this build's landing place for undelivered messages.",
+        "status": "open",
+        "source_skill": "admin/outbound-message-setup",
+        "answer_shape": "N/A pending Q2.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q29",
+        "question": "(Moot if Q2 is accepted) Should the trigger fire once on create, on every save, or only when criteria newly become true?",
+        "kind": "informational",
+        "why": "Only relevant if Outbound Message is used; the equivalent question for this build's actual mechanism is folded into Q9/Q13 (when the Queueable is enqueued).",
+        "proposed_default": "N/A \u2014 superseded by Q2; see Q9/Q13 for this build's trigering-condition equivalent.",
+        "status": "open",
+        "source_skill": "admin/outbound-message-setup",
+        "answer_shape": "N/A pending Q2.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q30",
+        "question": "(Moot if Q2 is accepted) Which fields does the listener actually parse, and who owns that list?",
+        "kind": "informational",
+        "why": "Only relevant if Outbound Message is used; this build's equivalent payload-field question is answered directly by the requirement (case number, severity, subject, case link).",
+        "proposed_default": "N/A \u2014 superseded by Q2; payload fields are case number, severity, subject, case link per the requirement.",
+        "status": "open",
+        "source_skill": "admin/outbound-message-setup",
+        "answer_shape": "N/A pending Q2.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "integration"
+      },
+      {
+        "id": "Q31",
+        "question": "How large is the webhook request/response expected to be?",
+        "kind": "informational",
+        "why": "6MB sync / 12MB async caps the payload and counts against heap; a case-notification payload is unlikely to approach it, but the assumption should be recorded.",
+        "proposed_default": "Small JSON payload (case number, severity, subject, link) \u2014 well under the 6MB/12MB ceilings; no paging needed.",
+        "status": "open",
+        "source_skill": "apex/callouts-and-http-integrations",
+        "answer_shape": "A size estimate and confirmation no paging/chunking is needed.",
+        "owner_role": "Integration architect",
+        "owner_hint": "apex-builder",
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q32",
+        "question": "What authentication flow does the ops dashboard's Pub/Sub API subscriber use to connect to Salesforce?",
+        "kind": "informational",
+        "why": "This is normally a design-changing integration-user question, but the requirement states the dashboard is already subscribed, so the subscriber-side auth is presumed already configured by the dashboard's own team.",
+        "proposed_default": "N/A to this build \u2014 the ops dashboard's subscription and its authenticating principal are described as already established.",
+        "status": "open",
+        "source_skill": "admin/integration-user-management",
+        "answer_shape": "Confirmation the subscriber side is out of this build's scope, or a correction if it is not actually already built.",
+        "owner_role": "Integration architect",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "integration"
+      },
+      {
+        "id": "Q33",
+        "question": "What is the ops dashboard's egress/ingress IP range for its Pub/Sub API connection, and is it allowlisted?",
+        "kind": "informational",
+        "why": "Normally a security control decision, but presumed already handled since the subscription is described as already existing.",
+        "proposed_default": "N/A to this build \u2014 presumed already configured on the existing subscription.",
+        "status": "open",
+        "source_skill": "admin/integration-user-management",
+        "answer_shape": "Confirmation, or a correction if this build must configure it.",
+        "owner_role": "Security architect",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "integration"
+      },
+      {
+        "id": "Q34",
+        "question": "Are there login-hour restrictions on the dashboard's subscribing user that could clip delivery windows?",
+        "kind": "informational",
+        "why": "Normally relevant, but presumed already handled since the subscription is described as already existing.",
+        "proposed_default": "N/A to this build \u2014 presumed already configured.",
+        "status": "open",
+        "source_skill": "admin/integration-user-management",
+        "answer_shape": "Confirmation, or a correction if this build must configure it.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "integration"
+      },
+      {
+        "id": "Q35",
+        "question": "Which objects/fields does the dashboard's subscriber read or write in Salesforce?",
+        "kind": "informational",
+        "why": "A Platform Event subscriber's access is granted via object permission on the event ('Subscribe'), not via field-level CRUD in the traditional sense this row assumes.",
+        "proposed_default": "N/A \u2014 Pub/Sub API subscriber access is 'Subscribe' on the Platform Event object, not field-level CRUD.",
+        "status": "open",
+        "source_skill": "admin/integration-user-management",
+        "answer_shape": "Confirmation the row does not apply as literally worded.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q36",
+        "question": "Does another integration already consume significant API headroom in this org, competing with this one?",
+        "kind": "informational",
+        "why": "Outbound callouts and platform-event publishing don't draw on the org's inbound REST API daily allocation, so this is lower-risk than for an inbound integration, but worth a sanity check.",
+        "proposed_default": "Low risk \u2014 this build's traffic (outbound callout, event publish) does not draw on the inbound REST API daily allocation.",
+        "status": "open",
+        "source_skill": "admin/integration-user-management",
+        "answer_shape": "A go/no-go on headroom if a genuinely shared allocation is identified.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q37",
+        "question": "Who owns the dashboard-side service account, and where does its mail go?",
+        "kind": "informational",
+        "why": "Standard due diligence for any integration user, but this account belongs to the dashboard's own team, not this build.",
+        "proposed_default": "Owned by the ops dashboard's team, not this build.",
+        "status": "open",
+        "source_skill": "admin/integration-user-management",
+        "answer_shape": "Confirmation of ownership outside this build.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "integration"
+      },
+      {
+        "id": "Q38",
+        "question": "What is the org's MFA/session-security posture, and does it affect the dashboard's subscriber or the on-call tool's callout path?",
+        "kind": "informational",
+        "why": "API-only/server-to-server paths are generally not challenged by org-wide UI MFA enforcement, but worth confirming no High Assurance session requirement blocks either path.",
+        "proposed_default": "No impact expected \u2014 neither path is a direct UI login.",
+        "status": "open",
+        "source_skill": "admin/integration-user-management",
+        "answer_shape": "Confirmation, or the specific session-level setting that needs a waiver.",
+        "owner_role": "Security architect",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "integration"
+      },
+      {
+        "id": "Q39",
+        "question": "Is there an internal Apex/Flow subscriber to the escalation platform event inside this org, and if so who owns the records it creates?",
+        "kind": "informational",
+        "why": "The requirement names only the external dashboard as a consumer; if a second, internal subscriber exists it needs its own owner and running-user decision.",
+        "proposed_default": "N/A \u2014 no internal Apex/Flow subscriber to this event is described; the dashboard consumes it externally.",
+        "status": "open",
+        "source_skill": "apex/platform-events-apex",
+        "answer_shape": "Confirmation, or the internal subscriber's owner if one exists.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "automation"
+      },
+      {
+        "id": "Q40",
+        "question": "(Only if a Flow is chosen over Apex for the trigering automation) What flow types are in scope, and does anything rely on FlowInterviewLog?",
+        "kind": "informational",
+        "why": "FlowInterviewLog only covers screen-flow interviews; a record-triggered flow here would need the same failure-record convention as the Apex path (Q16-Q18), not flow-native monitoring.",
+        "proposed_default": "N/A if the trigering automation is Apex; if Flow is chosen, route faults to the same failure object as the Apex path, not flow-native logging.",
+        "status": "open",
+        "source_skill": "flow/flow-error-monitoring",
+        "answer_shape": "Confirmation of the automation choice and, if Flow, the fault-routing decision.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "object-model"
+      },
+      {
+        "id": "Q41",
+        "question": "(Only if Flow is chosen) Who receives this org's flow error emails today, and was that a decision?",
+        "kind": "informational",
+        "why": "Default flow-error email goes to the last person who modified the flow, which is rarely a real on-call owner.",
+        "proposed_default": "N/A if Apex is chosen; if Flow, route faults to the failure object (Q16-Q18) instead of relying on default error email.",
+        "status": "open",
+        "source_skill": "flow/flow-error-monitoring",
+        "answer_shape": "Confirmation of the automation choice and, if Flow, the named recipient or fault-routing decision.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "object-model"
+      },
+      {
+        "id": "Q42",
+        "question": "(Only if Flow is chosen) Who is allowed to resume or delete a paused interview?",
+        "kind": "informational",
+        "why": "Resuming an interview you do not own depends on enableFlowInterviewSharingEnabled; only relevant if the trigering automation is a Flow with a paused-interview surface.",
+        "proposed_default": "N/A if Apex is chosen for the trigering automation.",
+        "status": "open",
+        "source_skill": "flow/flow-error-monitoring",
+        "answer_shape": "Confirmation of the automation choice.",
+        "owner_role": "Support Engineering lead (Pranav)",
+        "owner_hint": null,
+        "default_source": "skill-guidance",
+        "group": "object-model"
+      },
+      {
+        "id": "Q43",
+        "question": "Walk me through what happens today when a Case is escalated to Tier 2 \u2014 is there already a manual step (someone pages on-call by hand) that this automates away?",
+        "kind": "informational",
+        "why": "Stakeholders sometimes describe the workaround they built around a manual process as if it were the requirement; naming the as-is step list keeps the to-be from re-implementing a workaround.",
+        "status": "open",
+        "source_skill": "admin/requirements-gathering-for-sf",
+        "answer_shape": "An as-is step list, each step tagged keep/drop/replace.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": null,
+        "default_source": "none",
+        "group": "docs"
+      },
+      {
+        "id": "Q44",
+        "question": "Is the on-call audience exclusively internal employees, or could this notification ever need to reach an external partner or contractor?",
+        "kind": "informational",
+        "why": "The answer selects a licence implication long before design starts; the requirement's own wording ('our on-call tool') implies internal-only.",
+        "proposed_default": "Internal employees only \u2014 no Experience Cloud / partner licence implication.",
+        "status": "open",
+        "source_skill": "admin/requirements-gathering-for-sf",
+        "answer_shape": "A licence_implication value.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "docs"
+      },
+      {
+        "id": "Q45",
+        "question": "Does anyone need an in-Salesforce report or dashboard on escalation-notification failure rates, beyond the ops dashboard fed by the platform event?",
+        "kind": "informational",
+        "why": "Reporting requirements surfaced late add a join/report-type decision the requirement is currently silent on.",
+        "proposed_default": "No additional in-Salesforce report requested; the ops dashboard (external, fed by the platform event) is the only reporting surface named.",
+        "status": "open",
+        "source_skill": "admin/requirements-gathering-for-sf",
+        "answer_shape": "A reporting row naming base object and join chain, or an explicit 'none needed'.",
+        "owner_role": "Support Engineering lead",
+        "owner_hint": null,
+        "default_source": "requirement-text",
+        "group": "docs"
+      }
+    ],
+    "capability_coverage": [
+      {
+        "phrase": "case escalation queue",
+        "skills_returned": [
+          "admin/case-management-setup",
+          "admin/assignment-rules",
+          "admin/escalation-rules"
+        ],
+        "kept": [],
+        "state": "excluded-precondition"
+      },
+      {
+        "phrase": "outbound HTTP callout to external system",
+        "skills_returned": [
+          "integration/webhook-inbound-patterns",
+          "admin/outbound-message-setup"
+        ],
+        "kept": [
+          "admin/outbound-message-setup"
+        ],
+        "state": "covered"
+      },
+      {
+        "phrase": "webhook to external endpoint",
+        "skills_returned": [
+          "integration/webhook-inbound-patterns",
+          "integration/data-cloud-activation-development"
+        ],
+        "kept": [],
+        "state": "not-covered",
+        "reason": "no question table"
+      },
+      {
+        "phrase": "outbound webhook from Salesforce",
+        "skills_returned": [
+          "integration/outbound-webhook-from-salesforce"
+        ],
+        "kept": [],
+        "state": "not-covered",
+        "reason": "no question table"
+      },
+      {
+        "phrase": "named credential external credential authentication",
+        "skills_returned": [
+          "integration/named-credentials-setup",
+          "apex/apex-named-credentials-patterns"
+        ],
+        "kept": [
+          "apex/apex-named-credentials-patterns"
+        ],
+        "state": "covered"
+      },
+      {
+        "phrase": "API key stored securely",
+        "skills_returned": [
+          "admin/integration-user-management"
+        ],
+        "kept": [
+          "admin/integration-user-management"
+        ],
+        "state": "covered"
+      },
+      {
+        "phrase": "platform event publish",
+        "skills_returned": [
+          "integration/platform-event-publish-patterns"
+        ],
+        "kept": [],
+        "state": "not-covered",
+        "reason": "no question table"
+      },
+      {
+        "phrase": "publish platform event from apex trigger",
+        "skills_returned": [
+          "apex/platform-events-apex",
+          "apex/apex-event-bus-subscriber"
+        ],
+        "kept": [
+          "apex/platform-events-apex"
+        ],
+        "state": "covered"
+      },
+      {
+        "phrase": "platform event subscriber dashboard",
+        "skills_returned": [
+          "flow/flow-platform-events-integration",
+          "apex/apex-event-bus-subscriber"
+        ],
+        "kept": [],
+        "state": "not-covered",
+        "reason": "no question table"
+      },
+      {
+        "phrase": "retry failed integration callout",
+        "skills_returned": [
+          "integration/retry-and-backoff-patterns",
+          "apex/apex-callout-retry-and-resilience"
+        ],
+        "kept": [],
+        "state": "not-covered",
+        "reason": "no question table"
+      },
+      {
+        "phrase": "integration error log visible failure record",
+        "skills_returned": [
+          "flow/flow-error-monitoring"
+        ],
+        "kept": [
+          "flow/flow-error-monitoring"
+        ],
+        "state": "covered"
+      },
+      {
+        "phrase": "queueable apex async callout",
+        "skills_returned": [
+          "integration/callout-limits-and-async-patterns"
+        ],
+        "kept": [],
+        "state": "not-covered",
+        "reason": "no question table"
+      },
+      {
+        "phrase": "apex callout and http integration patterns",
+        "skills_returned": [
+          "apex/callouts-and-http-integrations"
+        ],
+        "kept": [
+          "apex/callouts-and-http-integrations"
+        ],
+        "state": "covered"
+      },
+      {
+        "phrase": "apex queueable job for callout",
+        "skills_returned": [
+          "apex/callouts-and-http-integrations",
+          "apex/apex-queueable-patterns"
+        ],
+        "kept": [
+          "apex/apex-queueable-patterns"
+        ],
+        "state": "covered"
+      },
+      {
+        "phrase": "integration error handling design",
+        "skills_returned": [
+          "integration/error-handling-in-integrations",
+          "integration/api-error-handling-design"
+        ],
+        "kept": [],
+        "state": "not-covered",
+        "reason": "no question table"
+      },
+      {
+        "phrase": "escalation rule trigger flow vs apex",
+        "skills_returned": [
+          "architect/solution-design-patterns",
+          "admin/process-automation-selection"
+        ],
+        "kept": [],
+        "state": "excluded-precondition"
+      },
+      {
+        "phrase": "(generic, always applied)",
+        "skills_returned": [
+          "admin/requirements-gathering-for-sf"
+        ],
+        "kept": [
+          "admin/requirements-gathering-for-sf"
+        ],
+        "state": "covered"
+      }
+    ],
+    "skills_without_question_table": [
+      "integration/webhook-inbound-patterns",
+      "integration/data-cloud-activation-development",
+      "integration/outbound-webhook-from-salesforce",
+      "integration/named-credentials-setup",
+      "integration/platform-event-publish-patterns",
+      "apex/apex-event-bus-subscriber",
+      "flow/flow-platform-events-integration",
+      "integration/retry-and-backoff-patterns",
+      "apex/apex-callout-retry-and-resilience",
+      "integration/callout-limits-and-async-patterns",
+      "integration/error-handling-in-integrations",
+      "integration/api-error-handling-design",
+      "integration/event-driven-architecture-patterns",
+      "integration/event-relay-configuration"
+    ],
+    "deduped_pairs": [
+      {
+        "kept": "Q4",
+        "dropped_from": "apex/apex-named-credentials-patterns",
+        "dropped_row": "transaction-type (sync/Queueable/Batch/Continuation)",
+        "reason": "same principal-type decision, forced by the Queueable choice"
+      },
+      {
+        "kept": "Q13",
+        "dropped_from": "apex/apex-queueable-patterns",
+        "dropped_row": "enqueue call-site row",
+        "reason": "same transaction-boundary decision"
+      },
+      {
+        "kept": "Q19",
+        "dropped_from": "admin/requirements-gathering-for-sf",
+        "dropped_row": "record/field access row",
+        "reason": "same access-grant decision, worded more precisely by the named-credentials skill"
+      },
+      {
+        "kept": "Q22",
+        "dropped_from": "apex/apex-queueable-patterns",
+        "dropped_row": "largest-number-of-records row",
+        "reason": "same volume/sizing decision"
+      },
+      {
+        "kept": "Q22",
+        "dropped_from": "apex/platform-events-apex",
+        "dropped_row": "peak event rate row",
+        "reason": "same volume/sizing decision"
+      },
+      {
+        "kept": "Q24",
+        "dropped_from": "apex/platform-events-apex",
+        "dropped_row": "subscription-alerting row",
+        "reason": "same silent-channel-failure concern"
+      }
+    ],
+    "agent_cli_gaps_at_feature_tier": [
+      "set-clarifications does not implement the feature-tier informational pre-fill described in build-orchestration.md section 3.1's tiers table; verified by direct test at scale=feature.",
+      "build-plan.schema.json has no owner_hint property (has an undocumented asked_by string field instead); owner_hint survives only via non-restrictive additionalProperties.",
+      "build-plan.schema.json types owner_role as a non-empty string, but AGENT.md Step 4 documents a null fallback; set-clarifications refuses null with a schema ERROR.",
+      "AGENT.md states an explicit ask->feature blocking-count re-tier test but no feature->project counterpart; applied by analogy in this run."
+    ]
+  }
+}

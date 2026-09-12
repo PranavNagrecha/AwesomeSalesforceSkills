@@ -1,0 +1,233 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T10-28-30Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-28-30Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-28-30Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S02",
+    "api_version": "67.0",
+    "rebuild_reason": "mock-deploy run 1 S2-F-02/S2-F-03; requester answers landed by amendments[1] 2026-09-12T10:23:06Z; step gate rejected and re-signed 2026-09-12T10:23:07Z",
+    "requester_answers_added_2026_09_12.endpoint_url": "https://api.oncall.example/v1/salesforce/escalations",
+    "requester_answers_added_2026_09_12.auth_header_parameterValue": "{!$Credential.OnCall_Tool_EC.ApiKey}",
+    "requester_answers_added_2026_09_12.api_key_parameter": "ApiKey - entered in Setup post-deploy; the key value itself is [REDACTED] and never enters metadata",
+    "external_credential.secret": "[REDACTED]"
+  },
+  "summary": "Rebuild (run 2) of step M1-S02 after the operator's checkOnly dry run rejected run 1's External Credential: 'The parameter type \"AuthHeader\" requires these fields: ParameterValue.' Run 1 omitted that element deliberately because neither the formula grammar nor the stored-parameter name resolved from any source; the requester has now supplied both by amendment. Two values changed in two files: the AuthHeader parameter gained parameterValue {!$Credential.OnCall_Tool_EC.ApiKey}, and the Url parameter moved from a reserved-domain placeholder to https://api.oncall.example/v1/salesforce/escalations. The permission set and package.xml are byte-identical to run 1 (SHA-256 unchanged) because S2-F-03 was a cascade of the credential failure, not a defect in either file. deploy-order.md gained a section 0 rebuild record carrying the org's two errors verbatim, and its section 5 now records A5 as closed by the requester with the residual grammar risk narrowed to two checkpoints. Both declared checkers exit 0; check-outputs ok.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 10 HIGH row: every emitted element traces to the Step 3 inventory, both checkers exited 0 on the first pass with no repair loop, check-outputs returned ok, every declared output was written and nothing else, and the two Questions-to-Ask rows that held run 2's predecessor to MEDIUM - the AuthHeader parameterValue and the endpoint URL - are now answered from the plan rather than defaulted or omitted.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Run 1's decision to omit the AuthHeader parameterValue rather than guess it produced exactly the right failure: a loud deploy-time error naming the missing element, not a credential that deploys clean and 401s at run time.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md",
+        "query": "The parameter type \"AuthHeader\" requires these fields: ParameterValue."
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access-governance",
+      "observation": "The fix was containable to the credential: the permission set and package.xml are byte-identical to run 1 by SHA-256, so the access review a human already signed does not have to be re-derived from a changed file.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "query": "sha256 9988b317538ff8f31069e1c5d8e7fd8ab3ab9cfbad77180c0d991e971e65de5a unchanged"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "integration-auth",
+      "observation": "A5 is closed on the parameter name but the formula grammar is narrowed rather than proven: the Metadata API guide still publishes no grammar for an AuthHeader parameterValue, and a formula that parses but resolves to an empty string would deploy cleanly and fail only at run time.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+        "query": "UNVERIFIED (2026-09-05)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-quality",
+      "observation": "The cited skill has no Questions-to-Ask row for either fact the requester had to supply late - the endpoint URL and the name of the stored credential parameter - and its own worked example carries the same dangling reference that misled run 1.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+        "query": "$Credential.Partner_Orders_EC.ApiToken"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "plan-hygiene",
+      "observation": "M1-S05's manual step 1 still reads 'confirm the X-API-Key AuthHeader parameterValue formula against Salesforce Help before the External Credential is deployed', which the requester's answer and the dry run have partly overtaken; that prose belongs to another step and was not touched here.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S05] manual test"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step's acceptance tests were run against run 1's artefacts and two of those artefacts have changed.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "count": 5
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the earlier tested record is stale against the rebuilt credential and named credential."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "access",
+    "rebuild": true,
+    "rebuild_of_run": "2026-09-12T10-08-07Z",
+    "invocation": "inline under build-step-runner; Step 9 set-status skipped so the runner is the single writer",
+    "metadata_types_emitted": [
+      "ExternalCredential",
+      "NamedCredential",
+      "PermissionSet"
+    ],
+    "artefacts": [
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/package.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md"
+    ],
+    "blocked_reason": null,
+    "changes_this_run": [
+      {
+        "file": "externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+        "change": "added <parameterValue>{!$Credential.OnCall_Tool_EC.ApiKey}</parameterValue> to the X-API-Key AuthHeader parameter",
+        "fixes": "S2-F-02"
+      },
+      {
+        "file": "namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+        "change": "Url parameterValue https://oncall.acme.example -> https://api.oncall.example/v1/salesforce/escalations; placeholder wording removed from the comment and the parameter description",
+        "fixes": "run-1 section 5 item 2"
+      },
+      {
+        "file": "permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "change": "NONE - byte-identical, sha256 9988b317538ff8f31069e1c5d8e7fd8ab3ab9cfbad77180c0d991e971e65de5a",
+        "fixes": "S2-F-03 expected to clear as a cascade"
+      },
+      {
+        "file": "package.xml",
+        "change": "NONE - byte-identical, sha256 43c142d18dfda3cb108c6dd0cd50241dc6372b486e2754fd50f3996d7489b65d",
+        "fixes": null
+      },
+      {
+        "file": "deploy-order.md",
+        "change": "new section 0 rebuild record (org errors verbatim, S2-F-02/S2-F-03, requester answers, change table); section 4 auth-header and URL rows updated; section 5 items 1 and 2 rewritten as CLOSED with the residual grammar risk narrowed to deploy-run-2 and UAT; section 6 clauses (b) and (f) updated; section 7 renumbered to four human steps with the ApiKey name flagged load-bearing",
+        "fixes": null
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+        "scope": "step",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "OK: no Named Credential findings."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "scope": "build",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: objectPermissions for Integration_Failure__c sets modifyAllRecords=true, which bypasses sharing for that object",
+        "note": "Identical to run 1: the deliberate D12 sharing-bypass WARN. Neither checker has a rule for an AuthHeader without parameterValue - the org caught S2-F-02, the library did not."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "field_permissions_written": 12,
+    "unbound_inputs": [
+      "NamedCredential Authentication parameterName (OnCallToolAuth) - derived from the skill's fenced example; cosmetic, validated in dry-run run 1",
+      "Assumption A2 (async context user) - risk high, self-flagged UNVERIFIED, unreachable by any checkOnly validation"
+    ],
+    "closed_this_run": [
+      "A5 - AuthHeader parameterValue formula and the ApiKey parameter name, answered by the requester",
+      "run-1 section 5 item 2 - endpoint URL, answered by the requester"
+    ],
+    "dimensions_skipped": []
+  },
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+      "used_for": "section 1 AuthHeader parameterName/parameterType/parameterValue/sequenceNumber shape and section 2 Url + Authentication parameter shape"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/references/gotchas.md",
+      "used_for": "gotcha 5 (URL lives in a parameter, not <endpoint>) and gotcha 7 (dash-joined principal) re-checked against the unchanged permission set"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "confirming the permission set needed no change for S2-F-03, which is a cascade rather than a defect"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4 deploy ordering, unchanged by the rebuild"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 status machine for the rebuild path and section 5 checker scope"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/integration-pattern-selection.md",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q2 - Custom header / API key -> Named Credential + External Credential (Custom)",
+      "used_for": "decision D2, carried through unchanged"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1 - Public Read-Only / Public Read-Write -> Tighten OWD before adding anything -> Q2",
+      "used_for": "decision D12, carried through unchanged"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the credential and named credential changed, so the earlier tested record is stale"
+    }
+  ]
+}

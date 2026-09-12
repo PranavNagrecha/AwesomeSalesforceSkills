@@ -1,0 +1,368 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T10-57-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-57-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T10-57-00Z.json",
+  "outcome": "completed",
+  "summary": "REBUILD of M1-S04 against the 2026-09-12 amendment (steps[M1-S04].amendments[0]). The round-1 P0 was decided at the plan, option (b): include_logger is now false, ApplicationLogger is gone from templates[] and from the package, and the alert roster is the active assignees of Tier2_Webhook_Admin resolved at run time. Emitted four classes and four .cls-meta.xml siblings at apiVersion 67.0 - Tier2ChannelHealthSchedulable whose execute() is now a single System.enqueueJob and nothing else, Tier2ChannelHealthQueueable with three aggregate COUNT() queries, a PermissionSetAssignment roster query, the email path and a Severity Warning recipient-gap row, an eleven-method Tier2ChannelHealthTest, plus the verbatim TestDataFactory copy the provenance rule still requires. All four skill checkers exit 0. No refusal, and no blocking prerequisite remains: the class set no longer references metadata this build does not ship.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "GATES.md Gate D row 3: zero unresolved symbols but no target_org_alias, so the dry-run compile did not run at all and coverage is unmeasured - computed MEDIUM, never self-declared HIGH. Gate B resolved every symbol against a file on disk or the platform namespace; the round-1 unmet-metadata finding is closed by the amendment rather than deferred.",
+  "inputs_received": {
+    "kind": "schedulable",
+    "api_version": "67.0",
+    "feature_summary": "(from plan.json steps[M1-S04].inputs, used verbatim)",
+    "include_logger": false,
+    "logging_decision_2026_09_12": "no ApplicationLogger; Integration_Failure__c is the visible log (Q16-Q18); everything else is System.debug",
+    "alert_recipients": "active assignees of Tier2_Webhook_Admin via PermissionSetAssignment -> Assignee.Email, inactive skipped; if none, System.debug plus an Integration_Failure__c row of Severity Warning",
+    "aggregate_user_mode_note": "UNVERIFIED - omit WITH USER_MODE on the aggregate queries and say so",
+    "recipients": "(STALE SIBLING - the pre-amendment key still reads 'taken from the deploy-order note rather than hardcoded per environment'; superseded by alert_recipients, which is dated and specific. Recorded, not silently resolved)",
+    "primary_sobject": "(absent - required only for trigger/selector/domain/batch)",
+    "namespace": "(absent - non-packaged org)",
+    "test_bulk_size": "(absent - default 200; applied as a 200-row insert inside the startTest bracket)",
+    "async_hint": "(absent - no default applied)",
+    "credentials_seen": "none - no credential-shaped value appeared in any input, so nothing needed [REDACTED]"
+  },
+  "dimensions_compared": [
+    "class-decomposition",
+    "governor-budget",
+    "security-posture",
+    "secret-handling",
+    "id-handling",
+    "error-handling"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "bulk-safety",
+      "state": "partial",
+      "reason": "The feature has no per-record path to bulk-test: evaluate() is three aggregate COUNT() queries whose cost is flat at any row count, asserted directly at 202 rows with Limits.getQueries(). The collection-iteration assertion the dimension normally means does not apply to this shape.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None. A collection-iteration test would assert a loop this feature does not have."
+    },
+    {
+      "dimension": "test-coverage",
+      "state": "partial",
+      "reason": "No Apex test was executed - the loop does not deploy and there is no offline Apex compiler in the sf CLI. Coverage is an estimate from reading the bodies (~80-85% on the Queueable without the org-wide address, ~95% with it). The eight lines of sendAlert that build and send the message are unreachable in an org lacking the org-wide address row, because OrgWideEmailAddress cannot be inserted by a test.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run sf project deploy start --dry-run --test-level RunLocalTests against a sandbox carrying the verified org-wide address and at least one active Tier2_Webhook_Admin assignee."
+    }
+  ],
+  "findings": [
+    {
+      "id": "AB-R1",
+      "severity": "INFO",
+      "title": "Round-1 P0 closed by the amendment, not by this step",
+      "detail": "include_logger:false removes the ApplicationLogger dependency entirely, so Application_Log__c and Logger_Setting__mdt are no longer prerequisites of this step and the package no longer references metadata the build does not ship. Every log call is System.debug: LoggingLevel.ERROR on the three failure paths, INFO/WARN on the run outcome.",
+      "recommendation": "None. Recorded so the milestone report can see the P0 was decided rather than deferred."
+    },
+    {
+      "id": "AB-R2",
+      "severity": "P2",
+      "title": "The scheduling user's read access to PermissionSetAssignment is granted by nothing this build ships",
+      "detail": "resolveRecipients() queries PermissionSetAssignment in API 67.0 user mode. Tier2_Webhook_Admin grants Integration_Failure__c permissions and the Case.Tier2_Notified_At__c field permission, and nothing on PermissionSetAssignment. If the scheduling user cannot read it, the query throws or returns empty and every run degrades to the recipient-gap path - writing a Warning row hourly and alerting nobody.",
+      "recommendation": "Confirm the scheduling user's access at the M1 gate, alongside the A13 assignment check. No answer, decision or step input names this permission."
+    },
+    {
+      "id": "AB-R3",
+      "severity": "P2",
+      "title": "The recipient-gap row counts toward this job's own thresholds",
+      "detail": "recordRecipientGap() writes an Integration_Failure__c row of Severity Warning, and the threshold queries count rows with no Severity filter because the step input defines rule 1 as 'Integration_Failure__c rows created in the last hour exceed three'. An org with no active assignee therefore accumulates one self-inflicted row per hour, and after four hours rule 1 fires on the job's own output - though it still cannot alert anyone, which is the condition itself.",
+      "recommendation": "If the gap rows should be excluded, that is a threshold change to the plan, not a code change here. Adding a Severity filter unasked would be inventing a threshold nobody stated."
+    },
+    {
+      "id": "AB-R4",
+      "severity": "P2",
+      "title": "A hardcoded PermissionSet.Name in SOQL is the shape apex-user-and-permission-checks Anti-Pattern 3 flags",
+      "detail": "That anti-pattern governs GATING behaviour on an assignment, where a Custom Permission is the proper abstraction. This is roster resolution - 'who holds this' is a question FeatureManagement.checkPermission cannot answer - and the requester bound the query explicitly on 2026-09-12. The name is a @TestVisible constant so a rename is one edit. A security scan will flag the line.",
+      "recommendation": "Read deploy-order.md section 4 item 1 before accepting or overriding a scanner finding on this line. Separately: whether an assignment made through a Permission Set Group still matches PermissionSet.Name = 'Tier2_Webhook_Admin' is stated by no cited skill and is not asserted; Q19 assigns directly, so the query is right for the org as designed."
+    },
+    {
+      "id": "AB-R5",
+      "severity": "P2",
+      "title": "The Case count still depends on record visibility the permission set does not grant",
+      "detail": "Unchanged from round 1 and untouched by the amendment. Tier2_Webhook_Admin grants viewAllRecords on Integration_Failure__c but carries no Case objectPermissions row (assumption A14), so successesLastDay returns only Cases the scheduling user can see. An under-count makes rule 2 fire on a healthy channel.",
+      "recommendation": "Confirm the scheduling user's Case access at the M1 gate; the answers name no Case OWD."
+    },
+    {
+      "id": "AB-R6",
+      "severity": "INFO",
+      "title": "A healthy run now leaves no durable record anywhere",
+      "detail": "With include_logger false, the only durable sink this feature has is Integration_Failure__c, and a healthy run has no failure to write there. Dispatch is visible on CronTrigger and AsyncApexJob; the run's own outcome exists only in the debug log.",
+      "recommendation": "Set a debug-log trace flag on the scheduling user for the first few runs after deploy. deploy-order.md section 6 carries the verification SOQL for both job tables."
+    },
+    {
+      "id": "AB-R7",
+      "severity": "P2",
+      "title": "inputs.recipients and inputs.alert_recipients now disagree in the plan",
+      "detail": "amend-step replaces inputs wholesale, so the pre-amendment recipients key survived unchanged and still says the address 'is taken from the deploy-order note rather than hardcoded per environment', while the newer alert_recipients binds the PermissionSetAssignment roster. This rebuild implemented the dated, specific one.",
+      "recommendation": "A prose-only amendment on inputs.recipients would remove the ambiguity for the next reader. Flagged rather than resolved: the runner does not write plan fields beyond status and runs[]."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The amendment carried a dated requester answer for every value the round-1 build had to mark UNKNOWN, so this rebuild wrote no placeholder and left no // UNKNOWN: marker anywhere in the package.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S04].inputs.alert_recipients, .logging_decision_2026_09_12, .aggregate_user_mode_note"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Dropping the logger also dissolved the round-1 tension between D11's 'does nothing else' and include_logger:true, so execute() is now a single statement and the ambiguity closed without anyone having to adjudicate it.",
+      "domain": "scope",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Noticed that the feature's log sink and its threshold input are the same object with no discriminator, so the job's own gap row is counted as a delivery failure by its next run.",
+      "domain": "automation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+        "query": "recordRecipientGap vs evaluate's unfiltered COUNT()"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Noticed that the alert roster now depends on read access to a setup object that no artefact in this build grants, which converts a permissions gap into a silent degradation rather than an error.",
+      "domain": "fls",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "inputs.recipients and inputs.alert_recipients both survive in the amended plan and say different things; the dated, specific one was implemented and the disagreement recorded rather than quietly resolved.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S04].inputs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether a Permission Set Group assignment still produces a PermissionSetAssignment row matching the member permission set's Name is stated by no cited skill, so the roster query is documented as correct for the direct assignment Q19 describes rather than asserted in general.",
+      "domain": "record-access",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-user-and-permission-checks/references/llm-anti-patterns.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "A security pass would independently judge the hardcoded PermissionSet.Name line and the four unqualified 67.0 queries.",
+      "domain": "fls",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "because the roster query is deliberately the shape one library anti-pattern flags, and a reviewer should see that judgment made independently of the agent that wrote it."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/apex-scheduled-jobs",
+      "path": "skills/apex/apex-scheduled-jobs/SKILL.md",
+      "used_for": "Schedulable-as-dispatcher shape, the six-field CRON grammar and the hourly ceiling, the post-deploy abort-then-schedule runbook, and the CronTrigger/AsyncApexJob test assertions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "Queueable worker shape and the rule that the test's async hand-off must sit inside the startTest/stopTest bracket"
+    },
+    {
+      "type": "skill",
+      "id": "apex/error-handling-framework",
+      "path": "skills/apex/error-handling-framework/SKILL.md",
+      "used_for": "after the amendment, what a logging path may do when there is no log object: the recipient gap is written to the feature's own Integration_Failure__c sink and everything else is System.debug; also the checker's generic-catch rule, which is why no catch (Exception e) appears"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "assertion style, no SeeAllData, and the rule that a referenced templates/apex/tests class must ship in the same manifest"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-outbound-email-patterns",
+      "path": "skills/apex/apex-outbound-email-patterns/SKILL.md",
+      "used_for": "setOrgWideEmailAddressId rather than setSenderDisplayName, allOrNone=false meaning nothing throws so SendEmailResult must be inspected, setSaveAsActivity needing a whatId, and the 5,000/day recipient-counted cap"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-user-and-permission-checks",
+      "path": "skills/apex/apex-user-and-permission-checks/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 3 flags a hardcoded PermissionSet.Name in SOQL; read to establish that it governs permission GATING and not roster resolution, which is what the amendment bound - recorded in deploy-order.md section 4 item 1 rather than silently ignored"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-system-runas",
+      "path": "skills/apex/apex-system-runas/references/gotchas.md",
+      "used_for": "PermissionSetAssignment is a setup object, so the test passes the roster into sendAlert as a parameter rather than inserting an assignment beside the record DML and hitting MIXED_DML_OPERATION"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "shipped verbatim (diff empty); the test seeds its Case through createCases(count, accountId, overrides)"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Clock (cron) - decision D11 routes the hourly check to Schedulable Apex over a schedule-triggered Flow",
+      "used_for": "confirming the async surface the step's kind=schedulable already names, rather than re-deciding it"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Apex over Flow for the notification-channel monitor, per decision D11 and the plan's own citation",
+      "used_for": "the Apex-vs-declarative half of the same choice; no branch was re-opened by this rebuild"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2's amend-step contract (what an amendment may replace and when), section 4's documented->running and failed->pending recovery transitions, and section 5's Apex exception (no package.xml on an apex-builder step)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the API 67.0 row of the Apex security idiom table (default user mode, WITH SECURITY_ENFORCED removed) and Gate C self-verification for code-emitting agents"
+    },
+    {
+      "type": "standard",
+      "id": "apex-builder-gates",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate B symbol grounding and Gate D's computed-confidence rule, which caps this run at MEDIUM because no compile check could run"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the rebuilt step is built and its three declared checkers plus the always-on xml and manifest checks are the tester's to run and record in tests/M1-S04/results.json."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "the PermissionSet.Name roster query is deliberately the shape Anti-Pattern 3 flags, and that judgment should be made independently."
+    }
+  ],
+  "extensions": {
+    "rebuild": true,
+    "rebuild_of": "2026-09-12T10-44-00Z",
+    "amendment": "steps[M1-S04].amendments[0] - by 'dry-run operator (Fable) + requester', fields inputs and templates",
+    "kind": "schedulable",
+    "api_version": "67.0",
+    "class_inventory": [
+      {
+        "name": "Tier2ChannelHealthSchedulable",
+        "role": "schedulable",
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls",
+        "changed": "ApplicationLogger calls removed; execute() is now one System.enqueueJob statement"
+      },
+      {
+        "name": "Tier2ChannelHealthQueueable",
+        "role": "queueable-worker",
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+        "changed": "logging -> System.debug; alertRecipients constant replaced by resolveRecipients(); sendAlert now takes the roster as a parameter; recordRecipientGap() added"
+      },
+      {
+        "name": "Tier2ChannelHealthTest",
+        "role": "test",
+        "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+        "changed": "two recipient tests rewritten, one roster test added - 11 methods, no setup-object DML anywhere"
+      },
+      {
+        "name": "TestDataFactory",
+        "role": "shipped-template",
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls",
+        "changed": "unchanged - templates/apex/tests/TestDataFactory.cls, diff empty"
+      }
+    ],
+    "removed_from_package": [
+      "classes/ApplicationLogger.cls",
+      "classes/ApplicationLogger.cls-meta.xml"
+    ],
+    "gate_c": {
+      "symbol_grounding": "pass - Integration_Failure__c (Status__c, Severity__c, Error_Message__c, Last_Attempted_At__c) and Case.Tier2_Notified_At__c resolved against artefacts/M1-S01; Tier2_Webhook_Admin against artefacts/M1-S02; TestDataFactory against templates/apex/tests. CronTrigger, CronJobDetail, AsyncApexJob, PermissionSetAssignment, OrgWideEmailAddress and the Messaging namespace are platform. Zero unresolved symbols and zero // UNKNOWN: markers in the package.",
+      "identifier_provenance": "pass - the only non-platform Type.method call emitted is TestDataFactory.createCases(Integer, Id, Map<String,Object>), quoted from the template shipped alongside it. ApplicationLogger.* calls are all gone.",
+      "compile": "NOT RUN - build_mode is design-only, no target_org_alias exists, and there is no offline Apex compiler in the sf CLI. Confidence capped at MEDIUM per GATES.md Gate D.",
+      "requirements_deviation": "none - every class, method and threshold traces to the amended inputs{} or to a cited skill."
+    },
+    "checkers_run": [
+      {
+        "command": "python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "Scanned 4 .cls file(s) under artefacts/M1-S04: 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "Scanned 4 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "No issues found."
+      },
+      {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S04",
+        "exit": 0,
+        "stdout": "Scanned 4 Apex class file(s); audited 2 @IsTest artifact(s); 0 finding(s).",
+        "note": "not declared on this step; run as due diligence because the skill is cited"
+      }
+    ],
+    "governor_budget": {
+      "schedulable_execute": {
+        "soql": 0,
+        "dml": 0,
+        "note": "one statement; synchronous limits apply to scheduled Apex"
+      },
+      "queueable_evaluate": {
+        "soql": 3,
+        "dml": 0,
+        "note": "all aggregate COUNT(); flat at any row count, asserted at 202 rows"
+      },
+      "resolveRecipients": {
+        "soql": 1,
+        "dml": 0,
+        "note": "PermissionSetAssignment, filtered to active assignees"
+      },
+      "sendAlert_roster_present": {
+        "soql": 1,
+        "dml": 0,
+        "email": "1 message; recipients counted against the org's 5,000/day cap"
+      },
+      "recordRecipientGap_roster_empty": {
+        "soql": 0,
+        "dml": 1,
+        "note": "the only DML this feature performs"
+      }
+    },
+    "integration_notes": [
+      "No existing file is modified by this step. Every artefact is a new file.",
+      "M1-S05 must carry four ApexClass members for this step, with TestDataFactory listed once across M1-S03 and M1-S04.",
+      "Scheduling is a post-deploy Anonymous Apex step; the abort-then-schedule script, now with a roster pre-flight, is in artefacts/M1-S04/deploy-order.md section 6."
+    ]
+  }
+}

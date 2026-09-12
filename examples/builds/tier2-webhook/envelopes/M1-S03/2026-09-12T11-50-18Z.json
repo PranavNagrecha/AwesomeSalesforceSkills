@@ -1,0 +1,184 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T11-50-18Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-50-18Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-50-18Z.json",
+  "summary": "Ran the molecular tests for M1-S03 (run 3, the S2-F-04/S2-F-05 rebuild) in build tier2-webhook: both always-on structural checks and all three declared checker acceptance tests pass, check-outputs confirms all 20 declared outputs present, and the two run-3 source fixes (URL.getOrgDomainUrl replacing the removed getSalesforceBaseUrl; the LongTextArea WHERE-filter replaced by select-then-pick helpers) are mechanically confirmed present in the artefacts under test. The step's manual acceptance test is deferred to the M1 gate; its clause (b) still names templates/apex/HttpClient.cls, a template dropped under remedy B and never shipped by this step, though the security property it is testing for is independently verified true by inspection. Status set to tested.",
+  "confidence": "HIGH",
+  "outcome": "completed",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual (Step 7 HIGH row): both always-on checks (xml, manifest) completed, all three declared checkers exited 0 from an exit code this agent observed directly, check-outputs reported ok:true with no missing/empty/malformed paths, and the manual test was classified against the Given/When/Then testability bar rather than skipped. No command test was refused, no manifest exclusion was needed, and check-outputs reported nothing missing -- none of the MEDIUM or LOW triggers in Step 7 fired.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three declared checkers exit 0 with zero findings at any severity, not merely zero blocking findings, on the run-3 artefacts.",
+      "domain": "apex-static-analysis",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S03/checker1_queueable.txt, checker2_callouts.txt, checker3_platform_events.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check-outputs confirms all 20 declared outputs for M1-S03 exist, are non-empty, and (for the 12 XML files among them) parse, and all 12 files are brace/paren/bracket/string balanced under a mechanical scan.",
+      "domain": "artefact-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S03/check_outputs.txt, tests/M1-S03/brace_balance_output.txt",
+        "count": 12
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both run-3 fixes are verifiably present in the source text under test rather than only asserted in deploy-order.md's narrative: getOrgDomainUrl replaces getSalesforceBaseUrl at both call sites, and IntegrationFailureResendTest.cls no longer filters SOQL on the LongTextArea field Request_Payload__c.",
+      "domain": "apex-static-analysis",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/classes/Tier2EscalationService.cls:55, artefacts/M1-S03/classes/Tier2WebhookQueueable.cls:212, artefacts/M1-S03/classes/IntegrationFailureResendTest.cls:73-104"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "No checker in this loop compiles Apex, and this step has still never been compiled: run 2 passed every declared checker plus the xml parse and brace-balance scan and then failed the org on two faults (a removed-after-58.0 method name, a filter on an unfilterable LongTextArea field) invisible to all of them, and run 3 has not yet been through mock_deploy.py.",
+      "domain": "apex-compile-risk",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/deploy-order.md section 0; agents/_shared/AGENT_CONTRACT.md Gate C"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The manual acceptance test's clause (b) names templates/apex/HttpClient.cls as the endpoint-composition mechanism, but that template was dropped under remedy B before run 2 and is not shipped by run 2 or run 3, so a reviewer ticking the clause literally would find the named file absent even though the security property it tests is independently true.",
+      "domain": "plan-text-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls:25,235; plan.json steps[M1-S03].acceptance_tests (manual)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "M1-S03 ships no templates/apex/TriggerHandler.cls / TriggerControl kill switch, so a bulk data load reassigning Case ownership into the Tier_2_Engineering queue would escalate every affected Case with no bypass; this is a build-level decision recorded in deploy-order.md section 4, not a defect in this run's tests.",
+      "domain": "automation-governance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/deploy-order.md section 4"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Whether the org already has an after-update trigger on Case is not settled by any of the build's 45 clarifications, and CaseTrigger.trigger assumes none exists.",
+      "domain": "deploy-collision-risk",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/deploy-order.md section 10 item 1"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Now that M1-S03 is tested, build-doc-keeper should record the manual test's stale HttpClient clause, the missing trigger kill switch, and the manifest Apex-exception note into decisions.md and traceability.md.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S03/results.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because it is the next step in the loop and owns PLAN.md, decisions.md and traceability.md updates after a step reaches tested"
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml <types>/<members>/<name> grammar and wildcard semantics, consulted for the manifest check even though this step has no manifest of its own to check"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "source-format filename-to-metadata-type mapping (classes/, triggers/, -meta.xml siblings) confirmed against this step's artefact tree"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "coverage-gap exclusion list for the manifest check; not applicable this run since ApexClass/ApexTrigger are fully supported types"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "UAT-script tickability bar applied when classifying the step's manual acceptance test"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then testability bar (named observable outcome per clause) applied to the manual test, surfacing clause (b)'s stale HttpClient reference"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step types and the Apex row note, section 5 acceptance-test dispatch, checker scope, the Apex manifest exception, and check-outputs gating built/tested"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "acceptanceTest/step/run object shapes read from plan.json for this step"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "8-section shape, Process Observations requirement, confidence rubric baseline (overridden per step-tester's own Step 7), Gate C no-offline-compiler fact cited in the concerning observation"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "atomic-write rule and the envelope/extensions split governing this envelope's shape"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum reference; not triggered this run"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules including the ban on org writes and on auto-chaining into the doc keeper"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S03/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "python3 -c (xml.etree.ElementTree, stdlib)", "exit_code": null, "verdict": "pass"},
+      {"name": "manifest", "type": "manifest", "runner": "step-tester Step 3 logic (Apex exception)", "exit_code": null, "verdict": "skipped-not-applicable"},
+      {"name": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py", "type": "checker", "runner": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S03", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py", "type": "checker", "runner": "python3 skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py --manifest-dir artefacts/M1-S03 --fail-on HIGH", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py", "type": "checker", "runner": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S03", "exit_code": 0, "verdict": "pass"},
+      {"name": "manual: two-point code read (EventBus.publish placement; no credential/header leakage)", "type": "manual", "runner": "none -- deferred to the M1 gate", "exit_code": null, "verdict": "deferred; classified usable with a flagged stale reference in clause (b)"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Two-point code read at the M1 gate, tickable from this step's artefacts alone. Expected: A reviewer opens Tier2EscalationService.cls and Tier2WebhookQueueable.cls and confirms (a) the EventBus.publish call is in the service, in the escalating transaction, and its List<Database.SaveResult> is inspected with a failure writing an Integration_Failure__c row - not discarded, and not moved inside the Queueable; (b) no class anywhere sets an X-API-Key or Authorization header, reads a credential value, or names a literal hostname, and every endpoint is composed as callout:OnCall_Tool plus a path through templates/apex/HttpClient.cls."
+    ],
+    "tests_run": 5,
+    "check_outputs": {"ok": true, "missing": [], "empty": [], "malformed": []},
+    "status_set": "tested",
+    "run_number": 3
+  }
+}

@@ -1,0 +1,698 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T12-47-33Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1/2026-09-12T12-47-33Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1/2026-09-12T12-47-33Z.json",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "milestone_id": "M1",
+    "approver_name": null,
+    "scale": "feature",
+    "build_mode": "design-only",
+    "plan_version": 2
+  },
+  "summary": "Milestone M1 of build tier2-webhook verifies ready-with-findings. All five steps are documented and none is blocked; the plan gate is approved and M1 has no predecessor. All 46 in-scope cross-step references resolve - the 12 permission-set field grants against M1-S01's fields (Status__c correctly excluded as required), the principal grant against the External Credential's file stem and parameterName, all 18 Apex custom symbols, the five event payload fields against the event definition, the seven restricted picklist literals against their value sets, and callout:OnCall_Tool against the Named Credential. Four further references resolve only against the target org and are documented external prerequisites. The merged manifest (7 types, 33 members, version 67.0, no conflict) is member-for-member identical to artefacts/M1-S05/package.xml - no drift. All three declared checker acceptance tests ran verbatim and exited 0; the milestone's manual test joins five step manual tests in a six-line human checklist. Deployment order is consistent in the artefacts, with one backwards dependency remaining in plan.json's own stale M1-S05 step input. Five new findings (one P1: no Apex test has ever executed) and eight previously-recorded decision items are put to the human. The gate was not approved and nothing was deployed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "AGENT.md Step 10 MEDIUM: four references are unclassifiable - the Tier_2_Engineering queue by DeveloperName, the org-wide sender, PermissionSetAssignment read, and the ApiKey half of the $Credential formula - each resolving against the target org rather than any artefact of this or an earlier milestone. Not LOW: every declared checker exists and ran, no artefact directory is empty, no step is blocked, and there is no earlier milestone inventory to fail.",
+  "dimensions_compared": [
+    "reference-resolution",
+    "merged-manifest",
+    "milestone-acceptance-tests",
+    "manual-checklist",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "deploy-order",
+      "state": "partial",
+      "reason": "AGENT.md Step 4 reads the position the doc keeper recorded on the artefact's workbook row. At scale: feature the workbook is optional and this build skipped it build-wide, so no workbook row exists. Position of record was taken from each step's deploy-order.md and the compiled table in artefacts/M1-S05/deploy-order.md section 2 instead - sufficient to check every dependency, but not the artefact-by-artefact recorded-position cross-check the step describes."
+    }
+  ],
+  "findings": [
+    {
+      "id": "S2-F-06",
+      "severity": "P1",
+      "title": "No Apex test has ever executed; coverage is unmeasured",
+      "detail": "The milestone ships 13 ApexClass and 2 ApexTrigger. Mock-deploy run 5 records runTestsEnabled false, numberTestsCompleted 0 and testLevel null, so the five test classes were written and read but never run. Per skills/devops/pre-deployment-checklist a production deploy requires RunLocalTests with 75 percent org-wide coverage; the predicted failure per skills/devops/deployment-error-diagnosis is 'Average test coverage across all Apex Classes is below 75%'. A sandbox deploy at NoTestRun passes and reports nothing. No checker in the library can produce this signal.",
+      "evidence": {
+        "file": ".sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T12-21-51Z/result.json",
+        "runTestsEnabled": false,
+        "numberTestsCompleted": 0,
+        "testLevel": null,
+        "apex_components": 15
+      },
+      "recommendation": "Run sf project deploy validate --test-level RunLocalTests against the production target and capture the coverage number before the deploy."
+    },
+    {
+      "id": "S2-F-07",
+      "severity": "P2",
+      "title": "PermissionSet full-replace was never checked against the target org",
+      "detail": "From API v40+ a PermissionSet deploy fully replaces the target record and silently removes anything not in the XML (skills/devops/permission-set-deployment-ordering, Full-Replace Semantics). Tier2_Webhook_Admin is new in this build, but no step confirmed the target holds no set of that name, and the pre-deployment-checklist pre-release-backup gate was never run.",
+      "evidence": {
+        "artefact": "artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "skill": "skills/devops/permission-set-deployment-ordering/SKILL.md"
+      },
+      "recommendation": "Retrieve PermissionSet:Tier2_Webhook_Admin from the target before deploying; an empty result clears it."
+    },
+    {
+      "id": "S2-F-08",
+      "severity": "P2",
+      "title": "The feature cannot be deployed dark: both triggers arrive Active and there is no kill switch",
+      "detail": "CaseTrigger.trigger-meta.xml and IntegrationFailureTrigger.trigger-meta.xml both declare status Active, and remedy B removed TriggerControl. Escalation is live the instant the deploy lands - before manual step 2 enters the API key and before manual step 3 assigns Tier2_Webhook_Admin - so every Case escalated in that window returns 401 and lands an Integration_Failure__c row.",
+      "evidence": {
+        "files": [
+          "artefacts/M1-S03/triggers/CaseTrigger.trigger-meta.xml",
+          "artefacts/M1-S03/triggers/IntegrationFailureTrigger.trigger-meta.xml"
+        ],
+        "related": "S3-F-01 / D-M1S03-04"
+      },
+      "recommendation": "Deploy CaseTrigger with status Inactive and activate after manual steps 2 and 3, or deploy off-hours and complete both immediately."
+    },
+    {
+      "id": "S2-F-09",
+      "severity": "INFO",
+      "title": "Milestone acceptance test 3's description undercounts its own findings",
+      "detail": "The declared description says 'exit 0 with exactly those two WARN findings'. The run over artefacts produces four - ExternalCredential and NamedCredential once each for M1-S02/package.xml and M1-S05/package.xml. The fixture it was verified on predated the M1-S05 manifest. Exit code 0 either way; the test passes. Prose only.",
+      "evidence": {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "findings_observed": 4,
+        "findings_described": 2
+      },
+      "recommendation": "Prose-only amendment on the milestone test description if a writer for it exists."
+    },
+    {
+      "id": "S2-F-10",
+      "severity": "INFO",
+      "title": "Finding-id namespace collision between the scenario sequence and a step-local one",
+      "detail": "S2-F-01..05 are scenario-level ids minted by the operator's mock-deploy runs (S2 = scenario 2 in reports/drivers-log.md). S3-F-01..07 are step-local ids minted by the M1-S03 runner (S3 = step M1-S03). Read as a scenario prefix, S3 looks like a scenario that does not exist in this build. This report continues the scenario sequence at S2-F-06 and renumbers nothing.",
+      "evidence": {
+        "scenario_ids": [
+          "S2-F-02",
+          "S2-F-03",
+          "S2-F-04",
+          "S2-F-05"
+        ],
+        "step_ids": [
+          "S3-F-01",
+          "S3-F-02",
+          "S3-F-03",
+          "S3-F-04",
+          "S3-F-05",
+          "S3-F-06",
+          "S3-F-07"
+        ]
+      },
+      "recommendation": "Adopt a step-scoped form that cannot be misread, e.g. M1-S03-F-01."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability",
+      "observation": "The traceability matrix is complete and was verified by running its own checker rather than read off its prose.",
+      "evidence": {
+        "command": "check_rtm.py --file traceability.md --manifest-dir artefacts",
+        "result": "16 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings",
+        "exit_code": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "metadata-hygiene",
+      "observation": "Every custom symbol the Apex names resolves to an M1-S01 artefact and no Salesforce Id literal appears anywhere, tests included.",
+      "evidence": {
+        "files_scanned": 15,
+        "custom_symbols": 18,
+        "unresolved": 0,
+        "id_literals": 0,
+        "method": "regex over all .cls and .trigger under artefacts/"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "deployment",
+      "observation": "TestDataFactory is shipped twice and manifested once; both copies and the repo template hash identically, re-verified by this run rather than taken from the note.",
+      "evidence": {
+        "sha256_prefix": "2f87c8c3",
+        "copies": [
+          "artefacts/M1-S03/classes/TestDataFactory.cls",
+          "artefacts/M1-S04/classes/TestDataFactory.cls",
+          "templates/apex/tests/TestDataFactory.cls"
+        ],
+        "manifest_members": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "apex-testing",
+      "observation": "Fifteen Apex components reached a documented milestone without a single test ever executing, and every green signal in the build came from static checkers that cannot compile Apex.",
+      "evidence": {
+        "finding": "S2-F-06",
+        "file": "reports/mock-deploy/2026-09-12T12-21-51Z/result.json",
+        "numberTestsCompleted": 0,
+        "drivers_log_friction": 38
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-hygiene",
+      "observation": "Three separate stale-prose items reached this gate because amend-step replaces inputs wholesale and is refused once a step leaves pending, leaving no writer for a correction.",
+      "evidence": {
+        "items": [
+          "D-M1S04-02 recipients vs alert_recipients",
+          "D-M1S05-02 stale inputs.deploy_order",
+          "D-M1S05-04 / PV-007 AuthHeader framing"
+        ],
+        "drivers_log_friction": [
+          36,
+          43,
+          44
+        ]
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "monitoring",
+      "observation": "The channel-health job's own recipient-gap row satisfies the dead-channel rule it feeds, so an org with no active assignee alerts itself hourly on its own output.",
+      "evidence": {
+        "class": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls",
+        "methods": [
+          "recordRecipientGap",
+          "evaluate"
+        ],
+        "note": "artefacts/M1-S04/deploy-order.md section 4 item 5",
+        "decision": "D-M1S04-04"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "integration-contract",
+      "observation": "Two run-time behaviours no checkOnly deploy can settle remain open: whether the AuthHeader formula resolves to a non-empty header, and whether Tier2_Escalation__e.Severity__c should carry Case.Priority at all.",
+      "evidence": {
+        "decisions": [
+          "D-M1S05-04",
+          "D-M1S03-05"
+        ],
+        "assumptions": [
+          "A5",
+          "A2"
+        ],
+        "note": "artefacts/M1-S05/deploy-order.md section 3 step 1"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "fls",
+      "observation": "Neither of the scheduling user's two access dependencies - PermissionSetAssignment read and Case record visibility - is granted by anything this build ships, and neither failure produces a deploy error.",
+      "evidence": {
+        "decision": "D-M1S04-03",
+        "assumptions": [
+          "A13",
+          "A14"
+        ],
+        "note": "artefacts/M1-S04/deploy-order.md section 4 items 1 and 3"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "library-consistency",
+      "observation": "The library contradicts itself on Test.setMock ordering and the build resolved it toward the Tier 1 guide quote the checker cites; the skill example is the side that is wrong.",
+      "evidence": {
+        "skill": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+        "checker_rule": "check_callouts_and_http_integrations.py rule 6",
+        "guide": "L35677-35681",
+        "decision": "D-M1S03-07"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "deployment",
+      "observation": "deployment-risk-scorer would score the merged 33-member manifest against a real org, which is the one reading this design-only build cannot produce for itself.",
+      "evidence": {
+        "manifest": "reports/MILESTONE-M1-package.xml",
+        "members": 33
+      },
+      "suggested_followup_agent": "deployment-risk-scorer",
+      "followup_reason": "It scores a change set against a live org, which is the one reading a design-only build cannot produce for itself; the merged 33-member manifest is ready to hand it."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "release",
+      "observation": "release-readiness-reviewer is the right next reviewer because M1 is the only milestone in this plan, so accepting it is the release decision.",
+      "evidence": {
+        "milestones_in_plan": 1,
+        "plan_status": "approved"
+      },
+      "suggested_followup_agent": "release-readiness-reviewer",
+      "followup_reason": "M1 is the only milestone in this plan, so accepting it is the release decision, and finding S2-F-06 (no Apex test has ever run) belongs in front of a release reviewer."
+    }
+  ],
+  "extensions": {
+    "milestone": "M1",
+    "report_path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-REPORT.md",
+    "merged_manifest_path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-package.xml",
+    "passed": false,
+    "verdict": "ready-with-findings",
+    "scale": "feature",
+    "steps": [
+      {
+        "id": "M1-S01",
+        "status": "documented"
+      },
+      {
+        "id": "M1-S02",
+        "status": "documented",
+        "human_gate": true,
+        "gate": "approved"
+      },
+      {
+        "id": "M1-S03",
+        "status": "documented"
+      },
+      {
+        "id": "M1-S04",
+        "status": "documented"
+      },
+      {
+        "id": "M1-S05",
+        "status": "documented"
+      }
+    ],
+    "blocked_steps": [],
+    "reference_resolution": [
+      {
+        "class": "permission-set field grants",
+        "instances": 12,
+        "resolved_this_milestone": 12,
+        "unresolved": 0,
+        "note": "Status__c correctly excluded: required fields cannot carry FLS"
+      },
+      {
+        "class": "permission-set object grants",
+        "instances": 1,
+        "resolved_this_milestone": 1,
+        "unresolved": 0,
+        "note": "no Case objectPermissions row, assumption A14"
+      },
+      {
+        "class": "external-credential principal grant",
+        "instances": 1,
+        "resolved_this_milestone": 1,
+        "unresolved": 0,
+        "note": "OnCall_Tool_EC-OnCallToolNamedPrincipal: file stem + dash + parameterName"
+      },
+      {
+        "class": "apex custom object/field symbols",
+        "instances": 18,
+        "resolved_this_milestone": 18,
+        "unresolved": 0
+      },
+      {
+        "class": "platform-event payload fields written by apex",
+        "instances": 5,
+        "resolved_this_milestone": 5,
+        "unresolved": 0,
+        "note": "subset of the event definition, exactly"
+      },
+      {
+        "class": "restricted picklist literals in apex",
+        "instances": 7,
+        "resolved_this_milestone": 7,
+        "unresolved": 0
+      },
+      {
+        "class": "callout: name to Named Credential",
+        "instances": 1,
+        "resolved_this_milestone": 1,
+        "unresolved": 0
+      },
+      {
+        "class": "Named Credential to External Credential",
+        "instances": 1,
+        "resolved_this_milestone": 1,
+        "unresolved": 0
+      },
+      {
+        "class": "validation rule field references",
+        "instances": 0,
+        "note": "n/a, no validation rule in M1"
+      },
+      {
+        "class": "assignment rule criteria",
+        "instances": 0,
+        "note": "n/a, routing is Apex"
+      },
+      {
+        "class": "flow field references",
+        "instances": 0,
+        "note": "n/a, no Flow in M1; the Apex analogue is trigger status, checked in deploy_order"
+      },
+      {
+        "class": "entitlement process milestones and business hours",
+        "instances": 0,
+        "note": "n/a"
+      },
+      {
+        "class": "layout and path assignments",
+        "instances": 0,
+        "note": "n/a, no ui step in M1"
+      }
+    ],
+    "unclassifiable_references": [
+      {
+        "reference": "queue Tier_2_Engineering by DeveloperName",
+        "made_by": "CaseTriggerHandler.queueId()",
+        "assumption": "A8",
+        "predicted_failure": "no deploy error; queueId() returns null and escalation is silently impossible"
+      },
+      {
+        "reference": "org-wide email address support-noreply@acme.example",
+        "made_by": "Tier2ChannelHealthQueueable.sendAlert()",
+        "assumption": "A4",
+        "predicted_failure": "no deploy error; the job logs at ERROR and sends nothing"
+      },
+      {
+        "reference": "read access on PermissionSetAssignment",
+        "made_by": "Tier2ChannelHealthQueueable.resolveRecipients()",
+        "assumption": "UNBOUND",
+        "predicted_failure": "no deploy error; empty roster, every run takes the gap path"
+      },
+      {
+        "reference": "ApiKey parameter in {!$Credential.OnCall_Tool_EC.ApiKey}",
+        "made_by": "OnCall_Tool_EC.externalCredential-meta.xml",
+        "assumption": "A5",
+        "predicted_failure": "no deploy error; empty header and a 401 on every callout"
+      }
+    ],
+    "deploy_order": [
+      "M1-S01",
+      "M1-S02 (ExternalCredential then NamedCredential)",
+      "M1-S03",
+      "M1-S04",
+      "M1-S02 (PermissionSet)"
+    ],
+    "deploy_order_verdict": "consistent in the artefacts; one backwards dependency remains in plan.json steps[M1-S05].inputs.deploy_order, which sequences PermissionSet before the twelve fields it grants (D-M1S05-02). Unamendable: amend-step is refused once a step leaves pending.",
+    "merged_manifest": {
+      "types": 7,
+      "members": 33,
+      "version": "67.0",
+      "version_conflict": false,
+      "member_counts": {
+        "CustomObject": 2,
+        "CustomField": 13,
+        "ExternalCredential": 1,
+        "NamedCredential": 1,
+        "PermissionSet": 1,
+        "ApexClass": 13,
+        "ApexTrigger": 2
+      },
+      "drift_vs_M1_S05_package_xml": "none - member-for-member and version identical; only <types> block order differs, which carries no documented deployment semantics",
+      "members_in_more_than_one_step_manifest": 18,
+      "collision_resolution": "union; every collision is the same member name backed by the same single file, M1-S05 being the build-level aggregator of M1-S01 and M1-S02",
+      "component_files_reaching_a_types_block": 50,
+      "files_reaching_none": 8,
+      "files_reaching_none_detail": "5 deploy-order.md notes and 3 per-step package.xml fragments - notes and fragments, not components"
+    },
+    "acceptance_tests": [
+      {
+        "type": "checker",
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "output": "1 WARN: modifyAllRecords=true on Integration_Failure__c (decision D12, deliberate); WARN does not affect the exit code"
+      },
+      {
+        "type": "checker",
+        "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "output": "OK: no Named Credential findings."
+      },
+      {
+        "type": "checker",
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "output": "score 80, 4 WARN, 0 blocking, 58 files scanned; the declared description says two WARNs - see S2-F-09"
+      },
+      {
+        "type": "manual",
+        "verdict": "collected to the checklist, not ticked by this agent"
+      }
+    ],
+    "manual_checklist": [
+      "M1-S01 - Open Status__c.field-meta.xml and Severity__c.field-meta.xml and confirm both value sets are restricted and hold exactly New/Retrying/Resent/Resolved/Abandoned and exactly Error/Warning, character for character with the Apex constants.",
+      "M1-S02 - From artefacts/M1-S02 alone confirm: (a) externalCredentialPrincipal reads exactly OnCall_Tool_EC-OnCallToolNamedPrincipal; (b) no credential value appears in any of the three files; (c) generateAuthorizationHeader is explicitly false; (d) fieldPermissions carries Case.Tier2_Notified_At__c readable and editable plus every Integration_Failure__c field bar Status__c; (e) a named person accepts the D14 assignee set or sends D14 back; (f) the X-API-Key formula is flagged for confirmation before deploy.",
+      "M1-S03 - Open Tier2EscalationService.cls and Tier2WebhookQueueable.cls and confirm (a) EventBus.publish is in the service, in the escalating transaction, with its List<Database.SaveResult> inspected and a failure writing an Integration_Failure__c row; (b) no class sets an X-API-Key or Authorization header, reads a credential value or names a literal hostname, and every endpoint is callout:OnCall_Tool.",
+      "M1-S04 - Confirm (a) the CRON literal is hourly and the Schedulable's execute() does nothing but enqueue; (b) the two thresholds are Q24's - more than three failures in an hour, or no success in 24 hours while escalations exist; (c) the sender is support-noreply@acme.example and a named person confirms that org-wide address is already verified in the target org.",
+      "M1-S05 - Confirm deploy-order.md section 3 lists the five manual steps no deploy performs, each with an owner and a timing, and that the mock_deploy.py command is written as text for a human rather than as anything an agent executes.",
+      "M1 (milestone) - Open artefacts/M1-S05/deploy-order.md alongside the five steps' artefacts and confirm (a) the deploy order runs ExternalCredential, NamedCredential, PermissionSet, object and field metadata, then Apex AS THE NOTE'S SECTION 2 TABLE STATES IT, not as the plan's stale step input states it (see report section 4); (b) the build-level package.xml names every ApexClass and ApexTrigger from M1-S03 and M1-S04 and every member from M1-S01 and M1-S02, with no member lacking a file and no file lacking a member; (c) the note states the two steps no deploy performs - a human entering the API key against the OnCall_Tool_EC principal, and assigning Tier2_Webhook_Admin to the D14 assignee set."
+    ],
+    "gate_decision_items": [
+      {
+        "n": 1,
+        "item": "No trigger kill switch (remedy B)",
+        "recorded_as": [
+          "S3-F-01",
+          "D-M1S03-04"
+        ],
+        "severity": "P1",
+        "recommendation": "Accept for this milestone; schedule the Apex-foundations step before go-live. Gate the first deploy on no bulk Case-owner load, and put CaseTrigger status Inactive in the rollback runbook."
+      },
+      {
+        "n": 2,
+        "item": "Tier2_Escalation__e.Severity__c from Case.Priority is UNVERIFIED",
+        "recorded_as": [
+          "S3-F-02",
+          "D-M1S03-05"
+        ],
+        "severity": "P2",
+        "recommendation": "Ask the dashboard team before UAT, not at the gate. A wrong value is silently wrong, not loud; approving M1 is fine as long as the question is owned."
+      },
+      {
+        "n": 3,
+        "item": "Scheduling user's PermissionSetAssignment read and Case record visibility",
+        "recorded_as": [
+          "D-M1S04-03"
+        ],
+        "severity": "P2",
+        "recommendation": "Confirm both before the first scheduled run - the item most likely to bite quietly. Neither failure produces a deploy error; insufficient Case visibility raises a FALSE dead-channel alert. Name the scheduling user at the gate."
+      },
+      {
+        "n": 4,
+        "item": "Gap-row self-alert loop and no duplicate-alert suppression",
+        "recorded_as": [
+          "D-M1S04-04"
+        ],
+        "severity": "P2",
+        "recommendation": "Accept as documented; fix the filter next milestone. Ask one clarification - do Warning rows count toward the failure thresholds - and expect a Severity__c != 'Warning' filter as the answer."
+      },
+      {
+        "n": 5,
+        "item": "Five manual deploy steps plus four out-of-manifest prerequisites",
+        "recorded_as": [
+          "artefacts/M1-S05/deploy-order.md sections 2 and 3"
+        ],
+        "severity": "P2",
+        "recommendation": "Accept - the shape is correct and unusually complete. Close one gap at the gate: prerequisite 3 (no pre-existing CaseTrigger on Case) is the only one producing a hard deploy error and was never asked in any of the 45 clarifications."
+      },
+      {
+        "n": 6,
+        "item": "Stale AuthHeader plan prose (PV-007)",
+        "recorded_as": [
+          "D-M1S02-06",
+          "D-M1S05-04"
+        ],
+        "severity": "P2",
+        "recommendation": "Accept the deploy-order note as the carrier; do not block on prose. Tick manual line 5 against the narrowed question. A prose-only amendment that could reach a documented step's test descriptions would have closed this."
+      },
+      {
+        "n": 7,
+        "item": "inputs.recipients vs inputs.alert_recipients disagree",
+        "recorded_as": [
+          "D-M1S04-02"
+        ],
+        "severity": "P2",
+        "recommendation": "Accept - verified directly that the built code followed alert_recipients: resolveRecipients() queries PermissionSetAssignment and no distribution-list address appears in the class. Residual risk is a future reader trusting the stale key; recommend a superseded_by convention on inputs keys."
+      },
+      {
+        "n": 8,
+        "item": "setMock-ordering library contradiction",
+        "recorded_as": [
+          "D-M1S03-07"
+        ],
+        "severity": "P2 (library)",
+        "recommendation": "No action on this build. All three M1-S03 test classes put startTest() first, matching the Tier 1 guide quote the checker cites; per standards/source-hierarchy.md the skill's example is the defect. Fix the skill outside this build."
+      }
+    ],
+    "requirement_closure": {
+      "rows": 16,
+      "ids": "REQ-001..REQ-016",
+      "status": "In UAT",
+      "released": 0,
+      "open": 0,
+      "coverage_gaps": 0,
+      "orphans": 0,
+      "checker": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts",
+      "exit_code": 0,
+      "note": "In UAT records that the artefacts exist and their checkers pass; no Apex test has executed and no manual line has been ticked"
+    },
+    "finding_id_reconciliation": {
+      "scenario_sequence": "S2-F-01..S2-F-05, minted by the operator's mock-deploy runs; S2 = scenario 2 in reports/drivers-log.md",
+      "step_sequence": "S3-F-01..S3-F-07, minted by the M1-S03 runner; S3 = step M1-S03, not scenario 3",
+      "this_run": "continues the scenario sequence at S2-F-06..S2-F-10; renumbers nothing"
+    },
+    "validate_only_command_optional_human_run": "python3 scripts/mock_deploy.py .sfskills/builds/tier2-webhook/plan.json --org-alias <alias> --milestone M1 --mode manifest",
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/tier2-webhook/plan.json M1 --status verified --report-path reports/MILESTONE-M1-REPORT.md",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/tier2-webhook/plan.json milestone:M1 approve --by \"<name>\"",
+    "gate_preconditions_checked": {
+      "plan_gate": "approved",
+      "preceding_milestone_gate": "n/a - M1 is the first milestone",
+      "all_steps_documented": true,
+      "blocked_steps_accepted": 0
+    },
+    "nothing_deployed": true,
+    "gate_not_approved_by_this_agent": true,
+    "section_3_1_support_gaps": [
+      "AGENT.md Step 9's report-shape clause is written for scale: ask only (one page + envelope twin). There is no feature clause, so the report shape at feature is undefined and this run chose a full report.",
+      "AGENT.md Step 10's HIGH carve-out is likewise ask-only; at feature the literal 'every declared acceptance test ran' is reachable, so no carve-out was needed here, but the asymmetry is unstated.",
+      "AGENT.md Step 4 reads the deploy-order position off a workbook row. At feature the workbook is optional and this build skipped it, leaving that step without its declared source.",
+      "standards/build-orchestration.md section 3.1 'Agent deltas' names only the milestone-verifier's report for ask; it defines no feature delta for this agent at all.",
+      "No CLI writer exists for a documented step's stale inputs or test prose: amend-step is refused once a step leaves pending, and --prose-only covers notes and acceptance_tests descriptions but not inputs{} keys. Three items (D-M1S04-02, D-M1S05-02, D-M1S05-04) reached this gate uncorrectable for that reason."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules: never deploy, never chain, never mutate outside the given paths"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "8-section shape, Process Observations block, confidence rubric, citation schema"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence pair and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked REFUSAL_OUT_OF_SCOPE and REFUSAL_NEEDS_HUMAN_REVIEW against the precondition and the manifest-version check; neither triggered"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 report-is-written-not-rendered, section 3 gate preconditions, section 3.1 feature tier, section 5 acceptance tests and the Apex exception, section 7 return-for-the-human"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "milestone and gate fields read from plan.json"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "envelope shape, the report_path vs extensions.report_path distinction, findings and dimensions_skipped"
+    },
+    {
+      "type": "standard",
+      "id": "source-hierarchy",
+      "path": "standards/source-hierarchy.md",
+      "used_for": "resolving the setMock-ordering contradiction toward the Tier 1 Apex Developer Guide quote"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "manifest grammar, the required version element, explicit members over wildcards, object-qualified CustomField, and when destructiveChanges is needed"
+    },
+    {
+      "type": "skill",
+      "id": "devops/permission-set-deployment-ordering",
+      "path": "skills/devops/permission-set-deployment-ordering/SKILL.md",
+      "used_for": "full-replace semantics behind S2-F-07, and the referenced-objects-must-exist-first rule behind the section 4 backwards-dependency finding"
+    },
+    {
+      "type": "skill",
+      "id": "devops/flow-deployment-activation-ordering",
+      "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md",
+      "used_for": "the arrival-state question; no Flow is in M1, so it was applied by analogy to the two triggers' Active status in S2-F-08"
+    },
+    {
+      "type": "skill",
+      "id": "devops/deployment-error-diagnosis",
+      "path": "skills/devops/deployment-error-diagnosis/SKILL.md",
+      "used_for": "the deploy-time error each reference class would produce: FLS-on-non-existent-field for the plan's backwards order, and the sub-75 percent coverage message for S2-F-06"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pre-deployment-checklist",
+      "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+      "used_for": "the go/no-go items the report must cover - test level and coverage (S2-F-06), pre-release backup (S2-F-07), dependency completeness, documented post-deploy manual steps"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the if/then form a manual test must take to be tickable by someone outside the build loop, applied to all six checklist lines"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM columns and the status enum, to state requirement closure as In UAT rather than Released"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "milestone acceptance test 1, run verbatim"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "used_for": "milestone acceptance test 2, run verbatim; its code-examples section 6 is the setMock contradiction in gate item 8"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "milestone acceptance test 3, run verbatim"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "deployment-risk-scorer",
+      "because": "it would score the merged 33-member manifest against a real org, which is the reading this design-only build cannot produce for itself."
+    },
+    {
+      "agent": "release-readiness-reviewer",
+      "because": "M1 is the only milestone in this plan, so accepting it is the release decision and S2-F-06 belongs in front of a release reviewer."
+    }
+  ]
+}

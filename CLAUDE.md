@@ -280,7 +280,9 @@ after five rounds) → milestones M1–M4 built, tested, documented, verified, a
 mock-deployed with `--dry-run` (every org finding fed back into a skill) — is committed under
 `examples/builds/case-onboarding/` (start with its `README.md`). The same loop at
 its smallest tier — a one-line ask → 13 clarifications → 1 step → `RUN.md` → two
-gates (`scale: ask`, § 3.1) — is `examples/builds/opp-amount-lock/`, with a driver's log.
+gates (`scale: ask`, § 3.1) — is `examples/builds/opp-amount-lock/`, with a driver's log; the middle tier —
+an integration feature: credentials, webhook Apex, platform event, five steps, two
+verification rounds, five org dry runs — is `examples/builds/tier2-webhook/`.
 
 ## Golden Evals Layer
 

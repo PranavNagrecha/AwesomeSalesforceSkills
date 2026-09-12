@@ -1,0 +1,143 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T11-17-38Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T11-17-38Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T11-17-38Z.json",
+  "outcome": "completed",
+  "summary": "Documentation pass for M1-S04 (tier2-webhook), status tested at invocation. Re-read the five envelopes under envelopes/M1-S04/, artefacts/M1-S04/deploy-order.md, the step's amendments[0], tests/M1-S04/results.json and PLAN.md's D11/D14/A13 rows. Appended seven decisions (D-M1S04-01..07) covering: the round-1 P0 and its plan-level resolution; the stale inputs.recipients sibling beside inputs.alert_recipients; the PermissionSetAssignment read-access gap and the Case-visibility dependence as M1-gate items; the accepted gap-row self-alert loop and absent duplicate-alert suppression; the aggregate-user-mode UNVERIFIED; the undeclared TestDataFactory/deploy-order artefacts; and M1-S05's stale three-member manifest-test description (four ship). Minted REQ-010 (source Q24) in traceability.md, keyed to M1-S04, with all four ApexClass artefact paths in artefact_paths so check_rtm.py resolves them rather than reporting them as orphans. Workbook not written: scale is feature (workbook optional per build-orchestration.md sec 3.1) and this build has not written one at any prior documentation pass. Re-rendered PLAN.md/CLARIFICATIONS.md and set the step documented via build_plan.py.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact this step produced (four ApexClass files) now has a traceability row and every field required by the RTM schema resolved from plan.json, the step's envelopes, deploy-order.md or tests/M1-S04/results.json -- none narrated. Held to MEDIUM rather than HIGH because REQ-010's source_req_id was minted by this pass rather than inherited from an intake-time requirements register (the same reason M1-S01's and M1-S02's passes recorded MEDIUM for their own minted ids), and because a step type this agent's own section-mapping table does not explicitly enumerate a workbook row for at this scale required the scale note in AGENT.md Step 4 rather than the default table.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S04",
+    "scale": "feature",
+    "credentials_seen": "none - no value in steps[M1-S04].inputs{} or the five envelopes matched a credential shape, so nothing needed [REDACTED]"
+  },
+  "dimensions_compared": [
+    "decisions-log",
+    "traceability-row",
+    "plan-render",
+    "rtm-lint"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook",
+      "state": "not-run",
+      "reason": "scale: feature makes the ten-section workbook optional per standards/build-orchestration.md sec 3.1 ('workbook optional, traceability required'), and this build has written no workbook/ rows at any prior pass (M1-S01, M1-S02) -- M1-S05's own step notes name the same build-wide choice explicitly. This pass follows that established precedent rather than starting a workbook unilaterally at the fourth documented step.",
+      "confidence_impact": "NONE",
+      "retry_hint": "If a human wants the workbook started retroactively, re-run this agent's Step 4 default path across every documented step in one pass rather than partially at M1-S04 alone."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's rebuild trail (round-1 P0, the amendment, the rebuild, the test pass) is fully reconstructable from plan.json amendments[0] plus the five envelopes plus deploy-order.md section 0 -- every decision this pass recorded traces to a specific run_id rather than a paraphrase of a summary.",
+      "domain": "orchestration",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/plan.json", "query": "steps[M1-S04].amendments[0], .runs[]"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_rtm.py ran clean against the updated traceability.md: 0 coverage gaps, 0 errors, and none of the four M1-S04 ApexClass files appear in the orphan report -- they resolved through REQ-010's artefact_paths cell exactly as intended.",
+      "domain": "traceability",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/traceability.md", "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "A concurrent runner materialised M1-S03's artefacts (20 files, status running) between this pass starting and the RTM check running. plan.json's M1-S04 record was unaffected, and traceability.md/decisions.md were re-read immediately before each append per the invoking instruction's append-only discipline, but this is a live demonstration of the shared-file race the instruction warned about -- a documentation pass that read decisions.md/traceability.md once at the start and appended much later without re-reading would have silently dropped M1-S03's own eventual rows if that pass's writer used a stale in-memory copy.",
+      "domain": "concurrency",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03", "query": "directory absent at task start, present with 20 files by RTM-check time"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The task's own briefing said 'six envelopes under envelopes/M1-S04/' and 'M1-S03 has no artefacts yet' -- both were accurate at some earlier point but neither matched what was on disk when this pass actually ran (five envelope JSON files, and M1-S03 had already landed 20 artefact files by the time the RTM checker ran). Neither discrepancy changed what this pass needed to do, but a briefing that goes stale between being written and being executed is exactly the kind of drift a build's own documentation trail should make visible rather than paper over.",
+      "domain": "process",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04", "query": "ls -la; 5 run_ids, 10 files (json+md pairs)"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "REQ-010's artefact cell names Tier2ChannelHealthSchedulable as the single keying component (the 'clock' Q24/D11 route through), while the actual threshold logic and the alert send live in Tier2ChannelHealthQueueable. Both are covered via artefact_paths per the RTM skill's own multi-file convention, but a human auditing the matrix by the artefact column alone could reasonably expect the Queueable named there instead.",
+      "domain": "traceability",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/traceability.md", "query": "REQ-010 row, artefact column"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1-S04 is now documented; M1-S01, M1-S02 and M1-S04 are documented while M1-S03 is running and M1-S05 is pending, so the milestone is not yet complete.",
+      "domain": "orchestration",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/plan.json", "query": "steps[*].status"},
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because it is the agent that cross-checks every step in a milestone once all are documented -- not yet, since M1-S03 and M1-S05 remain."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Two access questions (D-M1S04-03) and one plan-hygiene stale-key question (D-M1S04-02) are named as M1-gate or amend-step items this pass cannot resolve.",
+      "domain": "documentation",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/tier2-webhook/decisions.md", "query": "D-M1S04-02, D-M1S04-03"},
+      "suggested_followup_agent": "security-posture-reviewer",
+      "followup_reason": "because the PermissionSetAssignment read-access and Case-visibility gaps are org-configuration security questions this documentation pass only records, per step-tester's own suggested_followup on the same finding."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "agent-rules", "path": "AGENT_RULES.md", "used_for": "run-time rules binding this invocation, including the prohibition on mutating files outside the paths this agent owns"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations schema, and the confidence rubric this agent's own Step 11 overrides"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence and the atomic-write rule; this run's envelope pair is written under the build directory only, per the schema's build-layer path pattern and this build's own precedent (build-step-runner, apex-builder)"},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum; not triggered -- the step's status was tested, satisfying Step 1's precondition"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "sec 2 (rendered views are never hand-edited), sec 3.1 (feature-scale documentation tier: workbook optional, traceability required), sec 4 (step-type-to-workbook-section map and its default), sec 6 (this agent's Tier-4 row), sec 8 (a decisions.md skill gap is the signal to deepen a skill)"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the fields this agent reads (status, envelopes, amendments[], acceptance_tests[]) and the type enum Step 4 maps to workbook sections"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "the build-layer RTM column set, the REQ-XXX minting rule, the artefact/artefact_paths single-vs-pipe-delimited convention, and check_rtm.py's own resolution rules read directly from its module docstring"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "the decision-entry shape (date, step, agent, alternative rejected, source grounded in) this build's decisions.md already follows and this pass's seven new entries continue"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "confirming the ten-section workbook shape this pass deliberately did not invoke at this scale"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "reading step-tester's manual-test evaluation of M1-S04's skipped_manual[0] entry before citing it in the REQ-010 row"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then bar step-tester checked M1-S04's manual test against, referenced in the REQ-010 row's manual-test note"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "confirming this is a per-step run rather than a compile run, so the UAT case-pack format does not apply here"},
+    {"type": "standard", "id": "async-selection", "path": "standards/decision-trees/async-selection.md", "used_for": "the D11 branch (Clock/cron routes to Schedulable Apex over a schedule-triggered Flow) cited in the REQ-010 row's decision_ref"}
+  ],
+  "followups": [
+    {"agent": "milestone-verifier", "because": "M1-S04 is documented, but M1-S03 is running and M1-S05 is pending, so the milestone is not yet complete and cross-step verification should wait."},
+    {"agent": "security-posture-reviewer", "because": "the PermissionSetAssignment read-access gap and the Case-visibility dependence (D-M1S04-03) are org-configuration security questions this documentation pass only records."}
+  ],
+  "extensions": {
+    "step_id": "M1-S04",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/decisions.md",
+      ".sfskills/builds/tier2-webhook/traceability.md",
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      ".sfskills/builds/tier2-webhook/plan.json"
+    ],
+    "workbook_rows": [],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-010",
+        "source": "Q24",
+        "step_id": "M1-S04",
+        "artefact": "ApexClass:Tier2ChannelHealthSchedulable",
+        "decision_ref": "D11",
+        "test_id": "check_apex_scheduled_jobs",
+        "test_type": "checker",
+        "status": "In UAT",
+        "new_row": true
+      }
+    ],
+    "decisions_appended": [
+      "D-M1S04-01", "D-M1S04-02", "D-M1S04-03", "D-M1S04-04", "D-M1S04-05", "D-M1S04-06", "D-M1S04-07"
+    ],
+    "rows_replaced": [],
+    "rtm_check": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root \"/Users/pranavnagrecha/VS Code/Personal/SfSkills\"",
+      "exit_code": 0,
+      "result": "traceability.md: 10 row(s), build schema, 0 coverage gap(s), 11 orphan(s), 0 error(s), 1 warning(s)",
+      "orphan_note": "all 11 orphans are M1-S03 ApexClass/ApexTrigger members (that step's artefacts landed concurrently during this run, via a separate runner, and are not yet documented into traceability.md by anyone -- out of scope for this M1-S04 pass); zero M1-S04 orphans"
+    },
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S04 documented --run-agent build-doc-keeper --envelope envelopes/M1-S04/2026-09-12T11-17-38Z.json --result \"traceability: 1 new row (REQ-010); decisions appended: 7 (D-M1S04-01..07); workbook skipped (scale: feature, optional); RTM checker 0 errors, 1 WARN (11 orphans, all M1-S03, out of scope)\" --started 2026-09-12T11-15-00Z",
+    "render_command": "python3 scripts/build_plan.py render .sfskills/builds/tier2-webhook/plan.json"
+  }
+}

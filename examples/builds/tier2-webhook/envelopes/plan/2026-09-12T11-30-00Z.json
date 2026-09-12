@@ -1,0 +1,838 @@
+{
+  "agent": "build-planner",
+  "mode": "single",
+  "run_id": "2026-09-12T11-30-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/plan/2026-09-12T11-30-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/plan/2026-09-12T11-30-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook"
+  },
+  "summary": "Planned tier2-webhook at scale feature: one milestone M1 holding five steps \u2014 M1-S01 object-model (Integration_Failure__c with twelve fields and two restricted picklists, Case.Tier2_Notified_At__c, the Tier2_Escalation__e platform event), M1-S02 access (OnCall_Tool_EC External Credential, OnCall_Tool SecuredEndpoint Named Credential, Tier2_Webhook_Admin permission set; human_gate true), M1-S03 automation (the Case escalation trigger, publish-and-enqueue service, webhook Queueable with Finalizer retry, the resend path and three test classes), M1-S04 automation (hourly Schedulable channel-health check), and M1-S05 docs (the build-level package.xml carrying the Apex members and the compiled deploy order). Fourteen decisions recorded, eleven citing a decision-tree branch verbatim and four resolved from a skill reference with adr_required true. Twelve assumptions, each naming the step it constrains. No blocked steps. build_plan.py validate exits 0 with zero warnings.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per the build-planner rubric: four decisions (D3, D10, D13, D14) were resolved from a source_reference rather than a tree branch and carry adr_required true, and one informational clarification (Q43) reached the plan open with no default and became assumption A1. Every agent, skill, template, tree branch and declared checker resolves on disk; every checker was run on a throwaway fixture; validate exits 0 with no warnings; no step is blocked.",
+  "extensions": {
+    "plan_path": ".sfskills/builds/tier2-webhook/plan.json",
+    "plan_version": 1,
+    "scale": "feature",
+    "build_mode": "design-only",
+    "scope_in_count": 12,
+    "scope_out_count": 9,
+    "fit_gap": [
+      {
+        "requirement": "Notify the on-call tool within a minute of a Tier 2 escalation, with retry and a visible failure record",
+        "verdict": "partial",
+        "tier": "Custom",
+        "effort": "XL",
+        "risk_tag": [
+          "customization-debt"
+        ],
+        "steps": [
+          "M1-S03"
+        ]
+      },
+      {
+        "requirement": "Publish an escalation event the existing external ops dashboard can consume",
+        "verdict": "fit",
+        "tier": "Custom",
+        "effort": "L",
+        "risk_tag": [],
+        "steps": [
+          "M1-S01",
+          "M1-S03"
+        ]
+      },
+      {
+        "requirement": "A visible failure record an admin can see, triage and re-send from",
+        "verdict": "partial",
+        "tier": "Custom",
+        "effort": "L",
+        "risk_tag": [],
+        "steps": [
+          "M1-S01",
+          "M1-S03"
+        ]
+      },
+      {
+        "requirement": "The on-call tool's API key must never be stored in code or in a custom setting",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "effort": "S",
+        "risk_tag": [],
+        "steps": [
+          "M1-S02"
+        ]
+      },
+      {
+        "requirement": "Alert a named owner when the notification channel itself goes dark",
+        "verdict": "partial",
+        "tier": "Custom",
+        "effort": "L",
+        "risk_tag": [],
+        "steps": [
+          "M1-S04"
+        ]
+      },
+      {
+        "requirement": "The build deploys as one reviewable unit: a manifest and a written deploy order",
+        "verdict": "fit",
+        "tier": "Configuration",
+        "effort": "S",
+        "risk_tag": [],
+        "steps": [
+          "M1-S05"
+        ]
+      }
+    ],
+    "decisions": [
+      {
+        "id": "D1",
+        "decision": "Fire-and-forget Queueable with Database.AllowsCallouts, Direction 1 only",
+        "source": "integration-pattern-selection.md Q1",
+        "adr_required": false
+      },
+      {
+        "id": "D2",
+        "decision": "Named Credential + External Credential (Custom); API key injected as X-API-Key by the credential",
+        "source": "integration-pattern-selection.md Q2",
+        "adr_required": false
+      },
+      {
+        "id": "D3",
+        "decision": "NamedPrincipal on a SecuredEndpoint credential, not PerUserPrincipal and not Legacy",
+        "source": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+        "adr_required": true
+      },
+      {
+        "id": "D4",
+        "decision": "JSON REST through templates/apex/HttpClient.cls, never a hand-built HttpRequest",
+        "source": "integration-pattern-selection.md Q3",
+        "adr_required": false
+      },
+      {
+        "id": "D5",
+        "decision": "Retry 429/502/503/504 and timeouts three times from the Finalizer with a MinimumQueueableDelayInMinutes backoff; 400/401/403/404/422 never retried",
+        "source": "integration-pattern-selection.md Q4",
+        "adr_required": false
+      },
+      {
+        "id": "D6",
+        "decision": "Idempotency-Key header of Case Id plus enqueue-time escalation timestamp, stored on the failure row",
+        "source": "integration-pattern-selection.md Q4",
+        "adr_required": false
+      },
+      {
+        "id": "D7",
+        "decision": "A Queueable Finalizer, attached first in execute(), guarantees the failure record on every terminal state",
+        "source": "async-selection.md Q7",
+        "adr_required": false
+      },
+      {
+        "id": "D8",
+        "decision": "Apex trigger + handler + service, not a record-triggered Flow",
+        "source": "automation-selection.md Q3",
+        "adr_required": false
+      },
+      {
+        "id": "D9",
+        "decision": "Tier2_Escalation__e consumed by the dashboard over the Pub/Sub API",
+        "source": "async-selection.md Q11",
+        "adr_required": false
+      },
+      {
+        "id": "D10",
+        "decision": "publishBehavior PublishAfterCommit, published from the escalating transaction's service layer rather than inside the Queueable",
+        "source": "skills/apex/apex-queueable-patterns/SKILL.md",
+        "adr_required": true
+      },
+      {
+        "id": "D11",
+        "decision": "Hourly channel-health check is Schedulable Apex delegating to a Queueable, not a schedule-triggered Flow",
+        "source": "async-selection.md Q2",
+        "adr_required": false
+      },
+      {
+        "id": "D12",
+        "decision": "Integration_Failure__c OWD Private plus object-scoped View All / Modify All on one narrow admin permission set",
+        "source": "sharing-selection.md Q1",
+        "adr_required": false
+      },
+      {
+        "id": "D13",
+        "decision": "Cross-transaction suppression by the Tier2_Notified_At__c stamp and a ten-minute window, not AsyncOptions.DuplicateSignature",
+        "source": "skills/apex/apex-queueable-patterns/SKILL.md",
+        "adr_required": true
+      },
+      {
+        "id": "D14",
+        "decision": "Tier2_Webhook_Admin is assigned to every user who can escalate a Case, because the Queueable calls out as the async context user rather than Automated Process",
+        "source": "skills/apex/apex-user-and-permission-checks/SKILL.md",
+        "adr_required": true
+      }
+    ],
+    "milestones": [
+      {
+        "id": "M1",
+        "title": "Tier 2 escalation notification, event and failure record, deploy-ready",
+        "steps": [
+          "M1-S01",
+          "M1-S02",
+          "M1-S03",
+          "M1-S04",
+          "M1-S05"
+        ],
+        "acceptance_tests": 4,
+        "status": "pending"
+      }
+    ],
+    "steps": [
+      {
+        "id": "M1-S01",
+        "type": "object-model",
+        "agent": "metadata-builder",
+        "outputs": 17,
+        "tests": 6,
+        "human_gate": false,
+        "depends_on": []
+      },
+      {
+        "id": "M1-S02",
+        "type": "access",
+        "agent": "metadata-builder",
+        "outputs": 5,
+        "tests": 5,
+        "human_gate": true,
+        "depends_on": [
+          "M1-S01"
+        ]
+      },
+      {
+        "id": "M1-S03",
+        "type": "automation",
+        "agent": "apex-builder",
+        "outputs": 20,
+        "tests": 6,
+        "human_gate": false,
+        "depends_on": [
+          "M1-S01",
+          "M1-S02"
+        ]
+      },
+      {
+        "id": "M1-S04",
+        "type": "automation",
+        "agent": "apex-builder",
+        "outputs": 6,
+        "tests": 5,
+        "human_gate": false,
+        "depends_on": [
+          "M1-S01"
+        ]
+      },
+      {
+        "id": "M1-S05",
+        "type": "docs",
+        "agent": "metadata-builder",
+        "outputs": 2,
+        "tests": 4,
+        "human_gate": false,
+        "depends_on": [
+          "M1-S01",
+          "M1-S02",
+          "M1-S03",
+          "M1-S04"
+        ]
+      }
+    ],
+    "blocked_steps": [],
+    "step_count_by_type": {
+      "object-model": 1,
+      "access": 1,
+      "automation": 2,
+      "docs": 1
+    },
+    "assumptions": [
+      {
+        "id": "A1",
+        "risk": "low",
+        "because": "Q43 open, no default",
+        "steps": [
+          "M1-S03"
+        ]
+      },
+      {
+        "id": "A2",
+        "risk": "high",
+        "because": "Q23 asserts Automated Process; the library says otherwise",
+        "steps": [
+          "M1-S02",
+          "M1-S03"
+        ]
+      },
+      {
+        "id": "A3",
+        "risk": "medium",
+        "because": "Q19/Q20 answer CRUD and the resend owner, not record visibility",
+        "steps": [
+          "M1-S01",
+          "M1-S02"
+        ]
+      },
+      {
+        "id": "A4",
+        "risk": "medium",
+        "because": "Q24 names the org-wide address as a deploy prerequisite",
+        "steps": [
+          "M1-S04"
+        ]
+      },
+      {
+        "id": "A5",
+        "risk": "high",
+        "because": "AuthHeader parameterValue grammar marked UNVERIFIED in the skill",
+        "steps": [
+          "M1-S02"
+        ]
+      },
+      {
+        "id": "A6",
+        "risk": "medium",
+        "because": "no answer describes a batch endpoint",
+        "steps": [
+          "M1-S03"
+        ]
+      },
+      {
+        "id": "A7",
+        "risk": "low",
+        "because": "Q25 gives the API name as an example",
+        "steps": [
+          "M1-S02",
+          "M1-S03",
+          "M1-S05"
+        ]
+      },
+      {
+        "id": "A8",
+        "risk": "medium",
+        "because": "the requirement says the queue may be assumed",
+        "steps": [
+          "M1-S03"
+        ]
+      },
+      {
+        "id": "A9",
+        "risk": "low",
+        "because": "no clarification asked; StandardVolume is deprecated",
+        "steps": [
+          "M1-S01"
+        ]
+      },
+      {
+        "id": "A10",
+        "risk": "medium",
+        "because": "Q8 names no field for the escalation timestamp",
+        "steps": [
+          "M1-S03"
+        ]
+      },
+      {
+        "id": "A11",
+        "risk": "low",
+        "because": "Q23 names API 67 user mode",
+        "steps": [
+          "M1-S01",
+          "M1-S02",
+          "M1-S03",
+          "M1-S04",
+          "M1-S05"
+        ]
+      },
+      {
+        "id": "A12",
+        "risk": "medium",
+        "because": "no answer names a condition other than the owner change",
+        "steps": [
+          "M1-S03"
+        ]
+      }
+    ],
+    "validate_result": {
+      "command": "python3 scripts/build_plan.py validate .sfskills/builds/tier2-webhook/plan.json",
+      "exit_code": 0,
+      "stdout": "OK .sfskills/builds/tier2-webhook/plan.json: 1 milestone(s), 5 step(s), 0 warning(s).",
+      "warnings": 0,
+      "errors": 0
+    },
+    "ensure_gates_result": {
+      "command": "python3 scripts/build_plan.py ensure-gates .sfskills/builds/tier2-webhook/plan.json",
+      "exit_code": 0,
+      "stdout": "gates: 4 present, nothing to add"
+    },
+    "render_result": {
+      "command": "python3 scripts/build_plan.py render .sfskills/builds/tier2-webhook/plan.json",
+      "exit_code": 0,
+      "stdout": "wrote .sfskills/builds/tier2-webhook/PLAN.md\nwrote .sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      "run_md_written": false,
+      "run_md_note": "RUN.md is a scale: ask output per standards/build-orchestration.md section 3.1 CLI deltas; this build is scale: feature, so render correctly wrote only PLAN.md and CLARIFICATIONS.md."
+    },
+    "checker_fixture_runs": [
+      {
+        "checker": "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+        "fixture": "M1-S01 object, two field shapes, the __e definition",
+        "result_before_fix": "exit 1 \u2014 WARN on sharingModel ReadWrite",
+        "result_after_fix": "exit 0 \u2014 'No issues found across 2 object file(s) and 2 field file(s)' with sharingModel Private"
+      },
+      {
+        "checker": "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py",
+        "fixture": "restricted Status__c value set",
+        "result": "exit 0 at both the default INFO floor and --min-severity ERROR"
+      },
+      {
+        "checker": "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py",
+        "fixture": "M1-S01 objects only",
+        "result": "exit 0 \u2014 'Scanned 0 Apex file(s) and 2 object file(s); 0 platform-event finding(s)'"
+      },
+      {
+        "checker": "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py",
+        "fixture": "EC + NC + permission set at step scope, then the whole build tree",
+        "result": "exit 0 \u2014 'OK: no Named Credential findings' at both scopes, with and without --strict"
+      },
+      {
+        "checker": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "fixture": "permission set plus M1-S01 object and field files under one artefacts root",
+        "result": "exit 0 \u2014 one WARN that modifyAllRecords bypasses sharing, which D12 makes deliberate"
+      },
+      {
+        "checker": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py",
+        "fixture": "trigger, handler, service, Queueable, Finalizer, test",
+        "result": "exit 0 \u2014 '0 ERROR, 0 WARN, 0 ADVISORY' with and without --strict"
+      },
+      {
+        "checker": "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py",
+        "fixture": "same Apex slice",
+        "result": "exit 0 \u2014 'Scanned 5 Apex file(s); 0 callout finding(s)' at the default --fail-on LOW and at HIGH"
+      },
+      {
+        "checker": "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py",
+        "fixture": "Schedulable with CRON '0 0 * * * ?', its Queueable and its test",
+        "result": "exit 0 \u2014 '0 ERROR, 0 WARN, 0 ADVISORY'"
+      },
+      {
+        "checker": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+        "fixture": "the merged build manifest, step scope then build scope",
+        "result": "exit 0 \u2014 exactly two WARN risky-type findings (ExternalCredential, NamedCredential) at both scopes"
+      }
+    ],
+    "next_command": "python3 -c is not used here; the next step in the loop is /verify-plan (plan-verifier) against .sfskills/builds/tier2-webhook/plan.json"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "tooling",
+      "observation": "Every one of the nine checkers this plan declares takes --manifest-dir, so no step had to fall back to a non-standard argument form and validate raised no argument-form warning.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "--help on all nine scripts under skills/*/*/scripts/"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "grounding",
+      "observation": "Eleven of the fourteen decisions resolved to a decision-tree branch that says what the decision says, quoted verbatim; the three integration decisions all landed inside one tree's Direction 1 block rather than being spread across trees.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "standards/decision-trees/integration-pattern-selection.md Q1-Q4, async-selection.md Q2/Q7/Q11, automation-selection.md Q3, sharing-selection.md Q1"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "templates",
+      "observation": "Routing the callout through templates/apex/HttpClient.cls is what keeps the per-Case callout loop out of check_callouts_and_http_integrations.py rule 4, so the canonical template earns its mandate rather than being a style preference.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "fixture run of check_callouts_and_http_integrations.py over a Queueable looping HttpClient calls: 0 findings"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "access",
+      "observation": "Q23's answer asserts the escalation Queueable runs as the Automated Process entity and asks the plan to settle how that entity gets the External Credential principal; the library states that async Apex runs as the async context user except for scheduled jobs and platform-event triggers, and that Automated Process holds no profile and no permission set assignments at all, so the grant as described cannot be made.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "skills/apex/apex-user-and-permission-checks/SKILL.md 'Async Context Switches The User'; skills/flow/flow-and-platform-events/references/gotchas.md Gotcha 10; decision D14, assumption A2"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "contract-coverage",
+      "observation": "standards/build-orchestration.md section 4's access row and agents/metadata-builder/AGENT.md Step 2 both list the access artefacts as PermissionSet, PermissionSetGroup and sharing XML, so neither names NamedCredential or ExternalCredential; the integration row's design-only owner produces pattern decisions rather than XML, so the layer has no explicitly documented home for credential metadata.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "standards/build-orchestration.md section 4 step-type table; agents/metadata-builder/AGENT.md Step 2 table; resolved in M1-S02's notes"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-consistency",
+      "observation": "The library disagrees with itself on whether a schedule-triggered Flow can run hourly: skills/flow/flow-time-based-patterns lists hourly among the cron cadences, while skills/flow/scheduled-flows says flow scheduling granularity may not fit a job running several times a day.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "skills/flow/flow-time-based-patterns/SKILL.md line 85 versus skills/flow/scheduled-flows/SKILL.md line 193; decision D11 routes away from Flow rather than resolving it"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-shape",
+      "observation": "M1-S03 carries ten classes and triggers and two sObjects' triggers in one step, because the feature tier's five-step ceiling leaves no room for a sixth step and apex-builder refuses more than one feature per invocation, so splitting it is not free either.",
+      "evidence": {
+        "source": "input",
+        "detail": "standards/build-orchestration.md section 3.1 three-tier table; agents/apex-builder/AGENT.md Escalation rules, REFUSAL_OUT_OF_SCOPE and REFUSAL_OVER_SCOPE_LIMIT"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "credentials",
+      "observation": "The merge-field grammar that injects the stored API key into the External Credential's X-API-Key AuthHeader is marked UNVERIFIED in the cited skill: the Metadata API guide calls the field a run-time formula but publishes no grammar for it.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "skills/apex/apex-named-credentials-patterns/references/code-examples.md section 1; assumption A5, carried into M1-S02 inputs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "fit-gap",
+      "observation": "The fit-gap scope multiplier's phrase 'more than 1 user persona class' could be read as more than one role (escalating agents plus triage admins) or more than one class of persona (internal employee versus partner), which moves two rows between L and XL; the internal-only reading was taken and named in the rows' notes.",
+      "evidence": {
+        "source": "repo_scan",
+        "detail": "skills/admin/fit-gap-analysis-against-org/SKILL.md effort formula; Q44 confirms internal employees only"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "traceability",
+      "observation": "M1-S05 exists because of a build-layer contract clause rather than a business requirement, so its fit-gap row states a delivery requirement the requester never phrased; the alternative was a step no fit_gap row reaches.",
+      "evidence": {
+        "source": "input",
+        "detail": "standards/build-orchestration.md section 5 'The Apex exception'; fit_gap row six"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "loop",
+      "observation": "plan-verifier runs next on this plan, and its grounding lens should re-derive D14 and D10 first because both were resolved from a skill reference rather than a tree branch.",
+      "evidence": {
+        "source": "input",
+        "detail": "agents/build-planner/AGENT.md Step 7 handoff; decisions D10 and D14 carry adr_required true"
+      },
+      "suggested_followup_agent": "plan-verifier",
+      "followup_reason": "Its grounding lens should re-derive D10 and D14 first, because both were resolved from a skill reference rather than a decision-tree branch."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "architecture",
+      "observation": "waf-assessor is worth a run after the plan gate because four decisions carry adr_required true, which is more unrecorded architecture than a five-step feature usually leaves behind.",
+      "evidence": {
+        "source": "input",
+        "detail": "decisions D3, D10, D13, D14"
+      },
+      "suggested_followup_agent": "waf-assessor",
+      "followup_reason": "Four decisions carry adr_required true, which is more unrecorded architecture than a five-step feature usually leaves behind."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 build_mode and directory layout, section 3 gates, section 3.1 the feature tier's one-milestone five-step shape, section 4 step types and the design-only owner column, section 5 acceptance-test types, checker scope and The Apex exception, section 8 the set-plan writer"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement, the citation schema, and the Apex security idiom by API version behind the 67.0 user-mode inputs on M1-S03"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence, atomic write, and redaction of the credential value in M1-S02's inputs"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checking the Q23 conflict against REFUSAL_INPUT_AMBIGUOUS and REFUSAL_POLICY_MISMATCH before settling it as decision D14 instead"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fifteen required step fields, the closed milestone object, the acceptanceTest scope enum, and the fit_gap requirement/verdict pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "path": "agents/_shared/schemas/agent-frontmatter.schema.json",
+      "used_for": "the class/status/requires_org eligibility check on metadata-builder (beta, requires_org false) and apex-builder (stable, requires_org false)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/metadata-builder/AGENT.md",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "Step 2's buildable-type table, Step 3's rule that the step's skills[] is authoritative and the gap rule fires only on a skill with no fenced XML anywhere, and the Inputs table behind each metadata step's inputs{}"
+    },
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "the Inputs table (kind, feature_summary, primary_sobject, include_logger, test_bulk_size, async_hint), the Output Contract that names class bodies and meta XML but no manifest, and the refusal rules that cap one feature per invocation and twelve classes per kind: trigger"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "the five-tier rubric, the effort formula base(tier) + scope_multiplier + risk_multiplier, and the five-tag risk taxonomy on every fit_gap row"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-gathering-for-sf",
+      "path": "skills/admin/requirements-gathering-for-sf/SKILL.md",
+      "used_for": "reading the volume, sharing and licence facts off the answers to Q21, Q22 and Q44 so the automation is sized for a 50-escalation burst rather than for ten records"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the deployment order behind depends_on: data model before the things that reference it, access before the automation that runs as those users"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "linking every in-scope capability to the steps that close it through scope.fit_gap[].steps[], with no row left empty"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the milestone goal and every manual acceptance test, so a human at the gate ticks an observable outcome rather than interpreting 'verify it works'"
+    },
+    {
+      "type": "skill",
+      "id": "architect/architecture-decision-records",
+      "path": "skills/architect/architecture-decision-records/SKILL.md",
+      "used_for": "the context/options/choice/consequences shape of decisions[] and the bar for setting adr_required true on D3, D10, D13 and D14"
+    },
+    {
+      "type": "skill",
+      "id": "admin/agent-output-formats",
+      "path": "skills/admin/agent-output-formats/SKILL.md",
+      "used_for": "where a stakeholder wanting this plan as a spreadsheet is sent, rather than adding a dependency to the build"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "used_for": "the SecuredEndpoint versus Legacy model, NamedPrincipal for async contexts, the AuthHeader parameter type, generateAuthorizationHeader ownership, the dash-joined externalCredentialPrincipal, the EC-NC-PermissionSet-Apex deploy order, and the two UNVERIFIED notes carried into M1-S02 and M1-S03"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "the PermissionSet element set, the 255-character description ceiling, and the object-permission dependency chain behind M1-S02's inputs"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/SKILL.md",
+      "used_for": "the CustomObject element set, the AutoNumber name field with a displayFormat, and the sharingModel enum behind Integration_Failure__c"
+    },
+    {
+      "type": "skill",
+      "id": "admin/picklist-and-value-sets",
+      "path": "skills/admin/picklist-and-value-sets/SKILL.md",
+      "used_for": "the restricted valueSet XML for Status__c and Severity__c, the values Q17 fixed and the Apex must match exactly"
+    },
+    {
+      "type": "skill",
+      "id": "apex/platform-events-apex",
+      "path": "skills/apex/platform-events-apex/SKILL.md",
+      "used_for": "the __e definition XML, publishBehavior PublishAfterCommit versus the PublishImmediately default, eventType HighVolume versus deprecated StandardVolume, and the rule that a discarded publish SaveResult is the only failure signal"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "the enqueue ceilings, the Finalizer contract and its four FinalizerContext methods, the five-consecutive-re-enqueue budget, MinimumQueueableDelayInMinutes as the supported backoff, AsyncOptions.DuplicateSignature as D13's rejected alternative, and the callout-cannot-follow-DML rule that decides D10's sequencing"
+    },
+    {
+      "type": "skill",
+      "id": "apex/callouts-and-http-integrations",
+      "path": "skills/apex/callouts-and-http-integrations/SKILL.md",
+      "used_for": "the status-code classification and retry contract on M1-S03 and the mocking requirements on its test classes"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-user-and-permission-checks",
+      "path": "skills/apex/apex-user-and-permission-checks/SKILL.md",
+      "used_for": "the async context user rule that resolved decision D14 and assumption A2"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-and-platform-events",
+      "path": "skills/flow/flow-and-platform-events/SKILL.md",
+      "used_for": "Gotcha 10, that Automated Process has no profile and no permission set assignments \u2014 the second half of decision D14"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-error-monitoring",
+      "path": "skills/flow/flow-error-monitoring/SKILL.md",
+      "used_for": "the single-sink failure-record convention behind Integration_Failure__c and the channel-health question Q24 came from"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-scheduled-jobs",
+      "path": "skills/apex/apex-scheduled-jobs/SKILL.md",
+      "used_for": "the Schedulable shape, the CRON literal form, and the checker that M1-S04 declares"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the package.xml shape and component ordering M1-S05 compiles, and its deployment-manifest checker"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+      "used_for": "the fact that org-wide email addresses have no metadata type, which is why the Q24 sender is assumption A4 and a scope-out rather than an artefact"
+    },
+    {
+      "type": "skill",
+      "id": "flow/scheduled-flows",
+      "path": "skills/flow/scheduled-flows/SKILL.md",
+      "used_for": "one half of the hourly-cadence disagreement recorded in decision D11's rationale"
+    },
+    {
+      "type": "skill",
+      "id": "flow/flow-time-based-patterns",
+      "path": "skills/flow/flow-time-based-patterns/SKILL.md",
+      "used_for": "the other half of the same disagreement"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/integration-pattern-selection.md",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Direction 1 Q1, Q2, Q3, Q4",
+      "used_for": "decisions D1 (fire-and-forget Queueable), D2 (custom header / API key credential), D4 (JSON REST through HttpClient), D5 (429 backoff plus Finalizer) and D6 (idempotency key header)"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/async-selection.md",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Q2, Q7, Q11",
+      "used_for": "decisions D11 (clock to Schedulable wrapper), D7 (Finalizer for work that must resume after failure) and D9 (platform event for a non-Salesforce subscriber), plus the delivery-allocation note that sizes the dashboard's subscription"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q3",
+      "used_for": "decision D8 \u2014 Apex rather than Flow, on retry-and-backoff callouts and the coverage gate; Q13-Q15 were read and none applies, because this is an owner-change reaction rather than an initial owner write, an intake channel or an ageing clock"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1",
+      "used_for": "decision D12 \u2014 tighten the OWD before adding anything, then grant through a narrow admin permission set rather than a sharing rule"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/flow-pattern-selector.md",
+      "path": "standards/decision-trees/flow-pattern-selector.md",
+      "branch": "Q6",
+      "used_for": "confirming the hourly cadence falls outside the daily/weekly/monthly gate on a schedule-triggered flow, which is part of decision D11's rationale"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/README.md",
+      "path": "standards/decision-trees/README.md",
+      "used_for": "resolving which tree owns the Schedulable-versus-Scheduled-Flow choice when async-selection, automation-selection and flow-pattern-selector all touch it \u2014 the table assigns Scheduled Flow to async-selection",
+      "branch": "the tree-ownership table (read as a router, not as a branch)"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/agentforce-capability-selector.md",
+      "path": "standards/decision-trees/agentforce-capability-selector.md",
+      "used_for": "read and found not to apply \u2014 no part of this requirement is phrased as AI",
+      "branch": "no branch applies"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/performance-tuning.md",
+      "path": "standards/decision-trees/performance-tuning.md",
+      "used_for": "read against the Q22 volume answer \u2014 15 a day peaking at 50 in five minutes makes every step a functional decision rather than a performance one",
+      "branch": "no branch applies"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/HttpClient.cls",
+      "path": "templates/apex/HttpClient.cls",
+      "used_for": "the callout builder M1-S03 must use instead of a bare HttpRequest; its namedCredential/path/method/header/body/timeoutMs/retryOnTransient/send surface and Response.statusCode were read off the file rather than recalled"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/TriggerHandler.cls",
+      "path": "templates/apex/TriggerHandler.cls",
+      "used_for": "the handler shape both triggers in M1-S03 extend"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/BaseService.cls",
+      "path": "templates/apex/BaseService.cls",
+      "used_for": "the service-layer shape Tier2EscalationService extends"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/ApplicationLogger.cls",
+      "path": "templates/apex/ApplicationLogger.cls",
+      "used_for": "uniform error reporting on M1-S03 and M1-S04"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "path": "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "used_for": "the HttpCalloutMock the M1-S03 tests install, routing by path substring"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "@TestSetup data construction in the M1-S03 and M1-S04 test classes"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "plan-verifier",
+      "because": "this plan is a proposal at status planned and the next stage in the loop is the three adversarial lenses before the human sees it at G2"
+    },
+    {
+      "agent": "waf-assessor",
+      "because": "four decisions carry adr_required true, so the architecture this build commits to is not yet written down anywhere an architect would find it"
+    }
+  ]
+}

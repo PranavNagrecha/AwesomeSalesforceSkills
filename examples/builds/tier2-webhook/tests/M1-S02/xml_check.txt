@@ -1,0 +1,5 @@
+artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml ok 
+artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml ok 
+artefacts/M1-S02/package.xml ok 
+artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml ok 
+TOTAL 4

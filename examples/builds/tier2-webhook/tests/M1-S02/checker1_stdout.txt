@@ -1,0 +1,1 @@
+OK: no Named Credential findings.

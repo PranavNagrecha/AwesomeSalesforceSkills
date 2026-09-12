@@ -1,0 +1,383 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T09-36-29Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T09-36-29Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T09-36-29Z.json",
+  "summary": "Step M1-S01 of build tier2-webhook executed once and set built. build_plan.py next returned the step, it was claimed running at 2026-09-12T09:30:26Z, and its owning agent metadata-builder (build-aware: the Step 4 grep returns 39 hits, so no relocation was needed) ran inline and wrote 17 files under artefacts/M1-S01/ \u2014 exactly the 17 declared outputs, nothing undeclared, nothing outside the step's artefact directory. Its three declared checkers each exited 0 on the first pass, check-outputs returned ok, and both envelopes validate. Nothing was deployed, no gate was approved, and no plan field was touched outside the two set-status transitions.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every Step 9 HIGH condition holds for the runner's own mechanics \u2014 step in next, every required input resolved from plan.json, check-outputs exit 0, both envelopes validate, nothing written outside artefacts/M1-S01/. Scored MEDIUM instead because the owning agent returned MEDIUM on a partial element-grounding dimension and the DELIVERABLE_CONTRACT confidence-impact rule caps a roll-up carrying a MEDIUM-impact dimensions_skipped entry at MEDIUM; a HIGH here would assert more about the artefacts than the build underneath it claims.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S01",
+    "reason": null,
+    "input_map_source": "plan.json steps[M1-S01].inputs verbatim",
+    "invocation_restatements_preferred": "none \u2014 the launch message restated several bound values (api_version 67.0, the picklist members, the object elements) and each matched plan.json, so nothing had to be overridden; per AGENT.md Step 5 an invocation is not a fourth source",
+    "credentials_present": false,
+    "redactions": "none required on this step"
+  },
+  "dimensions_compared": [
+    "step-runnability",
+    "input-binding",
+    "artefact-declaration",
+    "check-outputs",
+    "envelope-validation"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Carried through from the owning agent's envelope: <type>DateTime</type> and <type>Checkbox</type>/<defaultValue> appear in no fenced example in the step's four cited skills, and were grounded in admin/custom-field-creation, which the step does not cite. The runner does not adjudicate Salesforce element grounding, so it reports rather than re-judges it.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Human runs: python3 scripts/build_plan.py amend-step .sfskills/builds/tier2-webhook/plan.json M1-S01 --file <amendment.json> --by \"<name>\" --reason \"add admin/custom-field-creation to skills[]\" \u2014 legal only while the step is pending or blocked, so a rebuild path (documented -> running) is the route now that it is built."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step needed no Step 2 carve-out: build_plan.py next returned M1-S01 on the first call, its depends_on is empty, and human_gate is false, so the ordinary path applied end to end.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "build_plan.py next"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "agent-contract",
+      "observation": "The owning agent is build-aware, so the Step 7 relocation table did not apply and no file had to be moved onto a declared path.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 39,
+        "query": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-grounding",
+      "observation": "The step's inputs.unverified asserts zero unverified items for this step, and two FieldType enum values it needs are absent from all three files that claim names it \u2014 an UNVERIFIED-none claim is itself a claim the builder had to refute.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S01].inputs.unverified"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "fls",
+      "observation": "M1-S02's field-permission input says every custom field on Integration_Failure__c is readable and editable, and Status__c is required true, whose permissions cannot be retrieved or deployed \u2014 so that step as written declares a row that fails its own deploy.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-field-creation/references/metadata-examples.md",
+        "query": "section 9 \u2014 api_meta.txt:95020-95021"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "agent-contract",
+      "observation": "This AGENT.md's Persistence sub-section requires a report pair under docs/reports/build-step-runner/ while the invocation constrained writes to the build directory; the only reconciliation the deliverable contract offers is --no-persist, which it frames as interactive rather than build-scoped.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-step-runner/AGENT.md",
+        "query": "### Persistence (Wave 10 contract)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "environment",
+      "observation": "26 repo files outside the build directory \u2014 including scripts/build_plan.py, standards/build-orchestration.md, agents/metadata-builder/AGENT.md and two skill checkers \u2014 were rewritten by a process outside this run at 05:37:50 local, while the step was being built; the three declared checkers and check-outputs were re-run afterwards and all still exit 0.",
+      "evidence": {
+        "source": "repo_scan",
+        "count": 26,
+        "query": "find . -newermt '2026-09-12 05:37:49' -not -newermt '2026-09-12 05:37:51' -type f",
+        "path": "scripts/build_plan.py"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "agent-contract",
+      "observation": "The Step 9 confidence table has no row for an owning agent that returns reduced confidence, so a runner whose own mechanics were clean could report HIGH over a MEDIUM build; the score here was capped by the deliverable contract's rule instead.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-step-runner/AGENT.md",
+        "query": "### Step 9 \u2014 Confidence"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step is built and untested; its five acceptance tests plus the always-on xml and manifest checks have not been run by this agent.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S01].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It runs the declared commands verbatim from the build directory and writes tests/M1-S01/results.json, which is what gates the tested transition."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "documentation",
+      "observation": "Five unbound elements and one cross-step deploy constraint were recorded in deploy-order.md rather than in the plan.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S01/deploy-order.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once M1-S01 is tested it carries those items into decisions.md and the traceability rows, which is where a milestone reviewer will look for them."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by \u2014 no org writes, one target, no auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, the atomic-write rule, the --no-persist opt-out, and the confidence-impact rule that capped this run at MEDIUM"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal code applied \u2014 the step was runnable and every required input resolved"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (only build_plan.py writes plan state), 3/3.1 (gates and the feature tier's ceremony), 4 (step record fields, agent eligibility, the status machine), 5 (who owns tests, check-outputs gates built), 8 (a skill gap is a signal to deepen a skill)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields of steps[] the runner reads and the two it writes through the CLI"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape \u2014 everything agent-specific hangs off extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the artefacts obey source format \u2014 objects/<Object>/ with a sibling fields/ folder, one file per field \u2014 so the tester's manifest check and any later deploy can read the tree"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming every declared output is a real Metadata API component (CustomObject, CustomField) before the owning agent spent a run producing them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step derives from, so the owning agent received the plan's cells rather than a paraphrase of the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ-XXX / FG-XXX id convention \u2014 this build carries neither, so the Q/D/A ids were echoed into the envelope for the doc keeper to join on"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes to redact \u2014 this step's inputs carry none, so nothing was replaced with [REDACTED]"
+    },
+    {
+      "type": "standard",
+      "id": "metadata-builder-contract",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "its Inputs table and Output Contract, which set the input map and told the runner it is build-aware and sets no status of its own"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S01 is built and untested; it runs the five declared acceptance tests plus the always-on xml and manifest checks and writes tests/M1-S01/results.json"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once M1-S01 is tested it carries the flagged unbound elements and the M1-S02 required-field constraint into decisions.md and traceability.md"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_awareness_grep": {
+      "command": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md",
+      "result": 39
+    },
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T09-34-25Z.json",
+    "owning_agent_confidence": "MEDIUM",
+    "invocation_mode": "inline (Plan executed from agents/metadata-builder/AGENT.md in this session, per the launch instruction), not a nested Agent-tool call",
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/Integration_Failure__c.object-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Case__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Case_Number__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Endpoint__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/HTTP_Status__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Response_Body__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Attempt_Count__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Last_Attempted_At__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Error_Message__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Request_Payload__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Status__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Severity__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Integration_Failure__c/fields/Resend__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M1-S01/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "relocations": [],
+    "step_status_before": "pending",
+    "step_status_after": "built",
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S01 running --started 2026-09-12T09:30:26Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S01 built --run-agent metadata-builder --envelope envelopes/M1-S01/2026-09-12T09-34-25Z.json --result \"17/17 declared outputs written; object, picklist and platform-event checkers all exit 0 first pass; check-outputs ok; DateTime and Checkbox enums grounded in admin/custom-field-creation, which the step does not cite\" --started 2026-09-12T09:30:26Z"
+    ],
+    "checkers_run_by_owning_agent": [
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01 --min-severity ERROR",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0
+      }
+    ],
+    "tests_not_run_here": "the five acceptance tests and the always-on xml/manifest checks belong to step-tester (build-orchestration.md section 5)",
+    "persistence_note": "The invocation constrained writes to the build directory, so the Wave 10 report pair under docs/reports/build-step-runner/ was not written \u2014 the --no-persist path. Both build-scoped envelopes were written and validated, and this envelope is emitted inline in the run's chat output.",
+    "deploy_performed": false,
+    "gates_touched": [],
+    "plan_fields_written": [
+      "steps[M1-S01].status",
+      "steps[M1-S01].runs[]"
+    ],
+    "workflow_return": {
+      "step_id": "M1-S01",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/Integration_Failure__c.object-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Case__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Case_Number__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Endpoint__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/HTTP_Status__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Response_Body__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Attempt_Count__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Last_Attempted_At__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Error_Message__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Request_Payload__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Status__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Severity__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields/Resend__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/package.xml",
+        ".sfskills/builds/tier2-webhook/artefacts/M1-S01/deploy-order.md"
+      ],
+      "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S01/2026-09-12T09-36-29Z.json",
+      "notes": "Owning agent metadata-builder returned MEDIUM: DateTime and Checkbox enum values were grounded in admin/custom-field-creation, which steps[M1-S01].skills[] does not cite."
+    },
+    "concurrent_tree_change": {
+      "detected_at": "2026-09-12T09:37:50Z",
+      "files_restamped": 26,
+      "written_by_this_run": false,
+      "revalidation": "the three declared checkers and build_plan.py check-outputs were re-run against the post-change tree; all exit 0, and the passages this run relied on in metadata-builder/AGENT.md and build-orchestration.md are still present",
+      "residual_risk": "this run cannot prove the AGENT.md and skill text read at 09:31 is byte-identical to what step-tester will read next"
+    }
+  }
+}

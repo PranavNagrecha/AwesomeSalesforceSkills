@@ -1,0 +1,399 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T11-23-31Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-23-31Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T11-23-31Z.json",
+  "summary": "Run 2 of M1-S03, built to the remedy-B amendment that unblocked run 1's template-provenance refusal. Twelve Apex files at apiVersion 67.0: two after-update triggers, two handlers, a service, a Queueable, a Finalizer, three test classes (19 test methods), and verbatim copies of the two self-contained templates the step still cites. The escalating transaction publishes Tier2_Escalation__e and enqueues exactly one Queueable for the whole transaction; the Queueable runs every callout before any DML, classifies 429/502/503/504 and connection failures as transient and 400/401/403/404/422 as permanent, and throws before writing anything when a transient failure still has attempt budget so Tier2WebhookFinalizer owns the retry with an AsyncOptions MinimumQueueableDelayInMinutes back-off. The queue is resolved by DeveloperName through a per-transaction cache with no Id literal anywhere, tests included. All three declared checkers exit 0 with zero findings, every -meta.xml parses at 67.0, and brace/paren/bracket/string balance was verified mechanically on all twelve files. Five undeclared artefacts (the two template copies with their meta XML, and this step's deploy-order.md). No compile check ran: build_mode is design-only and there is no offline Apex compiler in the sf CLI.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per GATES.md Gate D row 3: Gate B resolved every symbol, but no target_org_alias exists in a design-only build so Gate C's compile check did not run at all and coverage is unknown. The envelope says that plainly rather than implying the code was checked. Two UNVERIFIED items also remain open (the event's Severity__c mapping, and the Case_Link__c URL form), both flagged at the line and in deploy-order.md section 5.",
+  "outcome": "completed",
+  "inputs_received": {
+    "kind": "trigger",
+    "primary_sobject": "Case",
+    "api_version": "67.0",
+    "include_logger": false,
+    "test_bulk_size": 200,
+    "async_hint": "conservative",
+    "templates_mandated": [
+      "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "templates/apex/tests/TestDataFactory.cls"
+    ],
+    "source": "plan.json steps[M1-S03].inputs, all 25 keys, read after amendments[1] (2026-09-12T11:03:46Z). The invocation brief restated remedy B; every value was taken from the plan record, and the brief and the plan agree.",
+    "credentials": "[REDACTED] - none present in the step inputs. M1-S02's AuthHeader parameterValue is a merge-field reference rather than a key and is not echoed here or written into any emitted class."
+  },
+  "findings": [
+    {
+      "id": "S3-F-01",
+      "severity": "P1",
+      "title": "The org loses its trigger kill switch and its data-load bypass",
+      "detail": "Remedy B dropped templates/apex/TriggerHandler.cls because its closure needs TriggerControl and Trigger_Setting__mdt, which no step ships. TriggerControl is what lets an admin deactivate a handler from Setup without a deployment, and what honours the TriggerControl_BypassAll Custom Permission during a data load. Neither exists here. A bulk load that reassigns Case ownership into Tier_2_Engineering will escalate every affected Case, with no bypass; switching the feature off is a deployment of CaseTrigger.trigger-meta.xml with status Inactive. The per-transaction recursion guard is not a substitute - it stops this handler re-entering itself inside one transaction and does nothing about a load, which is many transactions each doing what it was asked.",
+      "evidence": {
+        "dropped_template": "templates/apex/TriggerHandler.cls:38 calls TriggerControl.isActive()",
+        "missing_metadata": "Trigger_Setting__mdt (templates/apex/cmdt/Trigger_Setting__mdt/) is shipped by no step of this plan",
+        "recorded_at": "artefacts/M1-S03/deploy-order.md section 4"
+      },
+      "recommendation": "Add the Apex-foundations step standards/build-orchestration.md section 4's Apex row note prescribes - a metadata-builder step shipping Trigger_Setting__mdt (and, if the logger is wanted back, Application_Log__c and Logger_Setting__mdt) - then let this step extend TriggerHandler as intended. Decide it at the M1 gate rather than after a data load discovers it."
+    },
+    {
+      "id": "S3-F-02",
+      "severity": "P2",
+      "title": "Tier2_Escalation__e.Severity__c is mapped from Case.Priority and nothing in the plan says it should be",
+      "detail": "The event carries a Severity__c Text(40) and no clarification maps it to a Case field. Case.Priority is the only severity-shaped field this build has seen, so it is what the service writes. Q11's answer speaks of 'a Severity 1 escalation', which is not the shape of standard Case.Priority values (High / Medium / Low), so the org may carry a severity field this build never saw. A wrong value here is silently wrong on the ops dashboard rather than loud.",
+      "evidence": {
+        "file": "artefacts/M1-S03/classes/Tier2EscalationService.cls",
+        "marker": "an inline // UNVERIFIED comment sits on the assignment itself, not only in deploy-order.md",
+        "recorded_at": "artefacts/M1-S03/deploy-order.md section 5 item 1"
+      },
+      "recommendation": "Confirm the mapping with the ops dashboard team before UAT. If the org has a dedicated severity field, amend inputs and re-run this step."
+    },
+    {
+      "id": "S3-F-03",
+      "severity": "P2",
+      "title": "Five artefacts this step produces are not declared in its outputs[]",
+      "detail": "The step's templates[] cites both template classes and its outputs[] declares neither, so TestDataFactory.cls, MockHttpResponseGenerator.cls, their two meta XML files and deploy-order.md are produced but unverified by check-outputs, which only ever confirms paths the plan declared. Identical in shape to the finding M1-S04's run 1 recorded.",
+      "evidence": {
+        "undeclared": [
+          "artefacts/M1-S03/classes/TestDataFactory.cls",
+          "artefacts/M1-S03/classes/TestDataFactory.cls-meta.xml",
+          "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls",
+          "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls-meta.xml",
+          "artefacts/M1-S03/deploy-order.md"
+        ]
+      },
+      "recommendation": "amend-step is refused once a step has left pending, so this belongs to whoever re-plans. The Apex-foundations step in S3-F-01 would also settle it by owning the template copies in one place."
+    },
+    {
+      "id": "S3-F-04",
+      "severity": "INFO",
+      "title": "TestDataFactory is shipped by both M1-S03 and M1-S04; M1-S05 must list the member once",
+      "detail": "Both copies are byte-identical to templates/apex/tests/TestDataFactory.cls and mock_deploy.py:copy_artefacts rebases both onto the same assembled path, so the deploy tree is correct either way. A package.xml listing the ApexClass member twice is a manifest defect.",
+      "evidence": {
+        "this_step": "artefacts/M1-S03/classes/TestDataFactory.cls",
+        "other_step": "artefacts/M1-S04/classes/TestDataFactory.cls",
+        "members_contributed": "10 ApexClass + 2 ApexTrigger, listed in artefacts/M1-S03/deploy-order.md section 2"
+      },
+      "recommendation": "M1-S05 de-duplicates the ApexClass member list across M1-S03 and M1-S04 before writing the build-level package.xml."
+    },
+    {
+      "id": "S3-F-05",
+      "severity": "INFO",
+      "title": "The transient-retry branch and the chained tail are deliberately uncovered",
+      "detail": "A transient failure with attempt budget left makes execute() throw so the Finalizer owns the retry; an unhandled exception in a job run by Test.stopTest() fails the test method, so the throw-to-Finalizer path is not asserted. Only one job may be added to the queue from a test context, so chainRemainder() is guarded by Test.isRunningTest() and the chained tail is not driven either. Both ends of the behaviour are asserted by other means: the classification directly, and the exhausted-budget outcome through a real job.",
+      "evidence": {
+        "uncovered": [
+          "Tier2WebhookQueueable.execute() phase 2 throw",
+          "Tier2WebhookQueueable.chainRemainder() body",
+          "Tier2WebhookFinalizer.execute() UNHANDLED_EXCEPTION path"
+        ],
+        "grounding": "skills/apex/apex-queueable-patterns/references/gotchas.md - the AsyncOptions delay is ignored during Apex testing",
+        "recorded_at": "artefacts/M1-S03/deploy-order.md section 5 item 3"
+      },
+      "recommendation": "Exercise the retry in a scratch org against a stub that returns 503, at UAT. No test change makes this assertable in-platform."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The two templates that survived remedy B are the two that are self-contained - neither MockHttpResponseGenerator nor TestDataFactory references another templates/apex class or names a custom object - which is the same property that would have let the other three survive if the build shipped their metadata.",
+      "domain": "apex-templates",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/apex/tests/"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every declared checker passed on the first run of the emitted package, with zero findings at any severity rather than zero blocking findings - so nothing was left standing as an accepted warning.",
+      "domain": "acceptance-tests",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "check_apex_queueable_patterns.py / check_callouts_and_http_integrations.py --fail-on HIGH / check_platform_events_apex.py --manifest-dir artefacts/M1-S03",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two library checkers disagree with a library skill about where Test.setMock goes: skills/apex/apex-named-credentials-patterns/references/code-examples.md section 6 puts setMock before Test.startTest, while check_callouts_and_http_integrations.py flags exactly that as HIGH and quotes the guide line requiring startTest first - which is the ordering skills/apex/test-class-standards/references/code-examples.md uses.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md section 6 vs skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py rule 6"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The step's own acceptance-test description for the callouts checker states that the checker fails on 'a test with setMock after startTest', which is the opposite of what the code does - it fails when no startTest precedes the first setMock. The prose would mislead anyone fixing a failure by reading the plan instead of the checker.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S03].acceptance_tests[1].description"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Nothing in the 45 clarifications says whether the org already has an after-update trigger on Case; this step ships CaseTrigger and a second trigger of the same name will not deploy, while two triggers on one object is a consolidation problem rather than a deploy one.",
+      "domain": "automation-drift",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "An existing Case trigger would make this a consolidation rather than an addition.",
+      "domain": "automation-drift",
+      "suggested_followup_agent": "trigger-consolidator",
+      "followup_reason": "because a second after-update trigger on Case cannot simply be added alongside the one this step ships, and the consolidation is a different unit of work.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/triggers/CaseTrigger.trigger"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The emitted package has never been compiled and its CRUD and FLS assumptions rest on M1-S02's permission set being assigned.",
+      "domain": "security-posture",
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "because a post-assembly CRUD and FLS pass over the six production classes would check the user-mode assumptions this step made against the grants M1-S02 actually writes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    }
+  ],
+  "dimensions_compared": [
+    "class-decomposition",
+    "governor-budget",
+    "security-posture",
+    "secret-handling",
+    "id-handling",
+    "bulk-safety",
+    "error-handling"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "test-coverage",
+      "state": "not-run",
+      "reason": "No test was executed. build_mode is design-only, there is no target_org_alias, and this loop never runs tests against an org - so the >=85% bar is a design claim about 19 test methods over 6 production classes, not a measurement.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run the classes in a scratch org, or let the operator's scripts/mock_deploy.py --dry-run --test-level RunLocalTests report it."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "run": 2,
+    "run_1_envelope": "envelopes/M1-S03/2026-09-12T10-57-25Z.json",
+    "classes_emitted": 8,
+    "triggers_emitted": 2,
+    "template_copies_shipped": 2,
+    "test_methods": 19,
+    "gate_a": "passed - kind, feature_summary and primary_sobject present; async_hint present for the async surface.",
+    "gate_a5": "not run - no harness drives REQUIREMENTS.md on an inline run. The amended step record plus PLAN.md D4/D10/D13/D14 stood in as the approved requirements, and every class was graded against them in deploy-order.md section 6 rather than against its own plausibility.",
+    "gate_b": "passed - 0 unresolved symbols. Every custom object, field and Named Credential the emitted code names was resolved against artefacts/M1-S01/ or artefacts/M1-S02/ this run; every non-platform Type.method(...) was resolved against a shipped class or a cited skill example. One name was deleted rather than shipped: Database.Error's status-code accessor, which no file in this repo spells (AGENT_CONTRACT.md rule 12).",
+    "gate_c": "checks 1 and 2 passed; check 3 DID NOT RUN. There is no offline Apex compiler in the sf CLI and no target_org_alias in a design-only build, so nothing type-checked this package. What did run: all three declared checkers (0 findings each), XML parse with apiVersion 67.0 on all 12 meta files, and a brace/paren/bracket/unterminated-string scan over all 12 Apex files with comments and string literals stripped. None of those is a compile.",
+    "gate_d": "confidence computed, not self-declared: Gate B unresolved = 0 and Gate C compile not run, which is the MEDIUM row of the GATES.md table.",
+    "checkers_run": [
+      {
+        "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S03",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 12 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py --manifest-dir artefacts/M1-S03 --fail-on HIGH",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 12 Apex file(s); 0 callout finding(s)."
+      },
+      {
+        "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S03",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 12 Apex file(s) and 0 object file(s); 0 platform-event finding(s)."
+      }
+    ],
+    "template_provenance": [
+      {
+        "template": "templates/apex/tests/TestDataFactory.cls",
+        "shipped_as": "artefacts/M1-S03/classes/TestDataFactory.cls",
+        "diff": "empty",
+        "referenced_by": "createCases(count, accountId, overrides) in all three test classes"
+      },
+      {
+        "template": "templates/apex/tests/MockHttpResponseGenerator.cls",
+        "shipped_as": "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls",
+        "diff": "empty",
+        "referenced_by": "withResponse(status, body) in every callout test"
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M1-S03/classes/TestDataFactory.cls",
+      "artefacts/M1-S03/classes/TestDataFactory.cls-meta.xml",
+      "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls",
+      "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls-meta.xml",
+      "artefacts/M1-S03/deploy-order.md"
+    ],
+    "governor_budget": {
+      "CaseTriggerHandler.afterUpdate": "0 or 1 SOQL (the Group query is skipped when no OwnerId changed), 0 DML, 0 callouts",
+      "Tier2EscalationService.escalate": "0 SOQL; 1 publish + at most 1 insert + 1 enqueue; 0 callouts",
+      "Tier2WebhookQueueable.execute": "1 SOQL; up to 3 DML, all after the last callout; up to 50 callouts (MAX_CASES_PER_JOB, against a ceiling of 100) with setTimeout 20000 ms against the 120 s budget",
+      "Tier2WebhookFinalizer.execute": "1 SOQL; up to 2 DML + 1 enqueue; 0 callouts; synchronous limits apply to a Finalizer transaction",
+      "IntegrationFailureTriggerHandler.afterUpdate": "0 SOQL; 1 update + 1 enqueue; 0 callouts"
+    },
+    "integration_notes": [
+      "This run modified no existing file. If the org already has an after-update trigger on Case, CaseTrigger cannot simply be added - recommend trigger-consolidator.",
+      "Tier2_Webhook_Admin must be assigned to every user who can escalate a Case (decision D14) or every callout returns 401.",
+      "The API key must be entered in Setup against OnCallToolNamedPrincipal before the first escalation; no deploy performs it."
+    ],
+    "unverified": [
+      "Tier2_Escalation__e.Severity__c <- Case.Priority is an unstated mapping (S3-F-02); marked inline at the assignment.",
+      "Whether HttpCalloutMock.respond() receives the literal callout: string or a resolved endpoint (step input `unverified`); no test asserts on getEndpoint(), and every callout test uses the mock's default response rather than path routing, so no test depends on the answer.",
+      "AsyncOptions.MinimumQueueableDelayInMinutes is ignored during Apex testing, so no test asserts on the back-off interval.",
+      "Case_Link__c is built with URL.getSalesforceBaseUrl().toExternalForm(); nothing says which URL form the dashboard wants.",
+      "No compile check ran - see gate_c."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "Steps 1-7 executed inline: surface check, class list against the 12-class ceiling for kind:trigger, template instantiation, meta XML, the test class, the drop-in package and the Step 6 template-provenance check"
+    },
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/GATES.md",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate B symbol grounding, Gate C's three checks and the Gate D computed-confidence table that produced the MEDIUM"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 67.0 row of the Apex security idiom table (default user mode, WITH USER_MODE to state intent, WITH SECURITY_ENFORCED does not compile), rule 12 on copied identifiers, and the Gate C section"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 5 The Apex exception (this step declares no package.xml) and section 4's Apex row note (the Apex-foundations step recommended in S3-F-01)"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-hardcoded-id-elimination",
+      "path": "skills/apex/apex-hardcoded-id-elimination/SKILL.md",
+      "used_for": "references/examples.md Example 3 'Group/Queue assignment for Case routing' - the queueIdByDevName cache and the queueId(String) accessor are that shape, minus its CustomMetadata mapping which this feature does not need"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "references/examples.md Example 2 for System.attachFinalizer as the first statement, the FinalizerContext four-method table (and that getJobId() is not one of them), ParentJobResult.SUCCESS, and the direct HttpRequest shape; Example 1 for AsyncOptions.MaximumQueueableStackDepth; references/gotchas.md for the delay being ignored in tests"
+    },
+    {
+      "type": "skill",
+      "id": "apex/callouts-and-http-integrations",
+      "path": "skills/apex/callouts-and-http-integrations/SKILL.md",
+      "used_for": "the ten rules its checker enforces - the callout-before-DML ordering, the explicit setTimeout against the 120 s budget, the per-transaction callout ceiling that MAX_CASES_PER_JOB bounds, and the requirement that a CalloutException catch records rather than swallows"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "used_for": "references/code-examples.md section 4 for naming the Named Credential and never the External Credential, section 6 for the HttpCalloutMock contract and the UNVERIFIED note on what respond() receives"
+    },
+    {
+      "type": "skill",
+      "id": "apex/platform-events-apex",
+      "path": "skills/apex/platform-events-apex/SKILL.md",
+      "used_for": "references/examples.md for the assigned List<Database.SaveResult> and the index-parallel walk with getErrors()/getMessage() - the publish result is the only failure signal"
+    },
+    {
+      "type": "skill",
+      "id": "apex/trigger-framework",
+      "path": "skills/apex/trigger-framework/SKILL.md",
+      "used_for": "the handler-holds-the-sharing-keyword rule (a .trigger file always runs in system mode and cannot carry one) and the one-trigger-per-object dispatch shape the build-local handlers keep after TriggerHandler was dropped"
+    },
+    {
+      "type": "skill",
+      "id": "apex/recursive-trigger-prevention",
+      "path": "skills/apex/recursive-trigger-prevention/SKILL.md",
+      "used_for": "references/examples.md - the per-transaction Set<Id> guard rather than a static Boolean, which would block every record of a bulk save after the first re-entry"
+    },
+    {
+      "type": "skill",
+      "id": "apex/error-handling-framework",
+      "path": "skills/apex/error-handling-framework/SKILL.md",
+      "used_for": "the fault-path taxonomy behind Integration_Failure__c as the visible log, and what falls back to System.debug once ApplicationLogger is not available"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "references/code-examples.md - the Assert methods, an assertion message on every assert, the bulk test at test_bulk_size, and Test.startTest() before Test.setMock() because the @TestSetup DML leaves work pending"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-mocking-and-stubs",
+      "path": "skills/apex/apex-mocking-and-stubs/SKILL.md",
+      "used_for": "HttpCalloutMock as the only way to exercise a callout in a test, and why a callout scaffold without a mock is untestable"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-design-patterns",
+      "path": "skills/apex/apex-design-patterns/SKILL.md",
+      "used_for": "the trigger / handler / service split the class list follows once BaseService was dropped - the service is still the only layer that publishes and enqueues"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "createCases(count, accountId, overrides) in all three test classes; shipped verbatim, diff empty"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/MockHttpResponseGenerator.cls",
+      "path": "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "used_for": "withResponse(status, body) in every callout test; shipped verbatim, diff empty"
+    },
+    {
+      "type": "decision_tree",
+      "id": "automation-selection",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Apex - an outbound HTTP callout with retry and a failure record, which no declarative tool performs",
+      "used_for": "confirming the step's kind:trigger surface rather than a record-triggered Flow"
+    },
+    {
+      "type": "decision_tree",
+      "id": "async-selection",
+      "path": "standards/decision-trees/async-selection.md",
+      "branch": "Queueable - a callout that must leave the trigger transaction, with a Finalizer for failure handling",
+      "used_for": "confirming Queueable over @future (no Finalizer, primitive parameters only) and over Batch (15 records a day is not a batch)"
+    },
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "outbound REST over a Named Credential, low volume, per-record",
+      "used_for": "confirming a per-Case POST through callout:OnCall_Tool is the pattern the plan already decided in D4"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "trigger-consolidator",
+      "because": "a second after-update trigger on Case cannot simply be added alongside the one this step ships, and nothing in the clarifications says whether the org has one."
+    },
+    {
+      "agent": "security-scanner",
+      "because": "a post-assembly CRUD and FLS pass would check this step's user-mode assumptions against the grants M1-S02 actually writes."
+    }
+  ]
+}

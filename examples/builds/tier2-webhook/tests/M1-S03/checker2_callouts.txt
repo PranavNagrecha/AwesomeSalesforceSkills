@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 12 Apex file(s); 0 callout finding(s). Static analysis only -- this script does not compile Apex or resolve call graphs."
+}

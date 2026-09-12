@@ -1,0 +1,14 @@
+{
+  "step_id": "M1-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py",
+    "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Access review at the M1 gate, before the permission set is ever assigned. This step carries human_gate: true, so a human also signs its step:M1-S02 gate before it runs. Expected: A reviewer confirms, from artefacts/M1-S02 alone: (a) externalCredentialPrincipal reads exactly OnCall_Tool_EC-OnCallToolNamedPrincipal, dash-joined, matching the External Credential file stem and the principal's parameterName; (b) no credential value appears anywhere in the three files; (c) generateAuthorizationHeader is explicitly false; (d) fieldPermissions carries Case.Tier2_Notified_At__c with readable and editable both true, and every Integration_Failure__c field from M1-S01 - this is the grant PV-001 found missing, and no checker fails on its absence, so the reviewer is the check; (e) the assignee set written in deploy-order.md is the one decision D14 defines - every user who can escalate a Case, plus the user who schedules the hourly job - and a named person accepts that wider list, or sends D14 back; (f) the X-API-Key AuthHeader parameterValue formula is flagged for confirmation against Salesforce Help before the credential is deployed, because assumption A5 records that grammar as UNVERIFIED in the cited skill."
+  ]
+}

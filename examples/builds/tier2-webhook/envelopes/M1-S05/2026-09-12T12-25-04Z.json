@@ -1,0 +1,193 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T12-25-04Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-25-04Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T12-25-04Z.json",
+  "summary": "Ran the molecular tests for M1-S05 (docs, metadata-builder) of build tier2-webhook: both always-on checks and the step's four declared acceptance tests. xml parsed the step's one file cleanly. The manifest check spanned artefacts/M1-S01 through M1-S04 (M1-S05 itself carries no component files, only package.xml and deploy-order.md) and found 33 derived members bidirectionally consistent with the 33 members in artefacts/M1-S05/package.xml - no member without a file, no file without a member - with TestDataFactory's two source copies (M1-S03, M1-S04) verified byte-identical by SHA-256 to each other and to templates/apex/tests/TestDataFactory.cls, so the single manifest member is correct rather than a missed duplicate. The declared checker (check_deployment_manifest.py --manifest-dir artefacts/M1-S05) exited 0 with exactly the two WARN findings the plan predicted (ExternalCredential, NamedCredential), and check-outputs reported ok:true. The manual test (deploy-order read at the M1 gate) is tickable - it names a concrete, checkable outcome even though it is not literal Given/When/Then - and is deferred to skipped_manual[] verbatim. Status set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH: every declared test ran or was correctly classified as manual, both always-on checks completed over the full cross-step scope the step's own test description requires, and every result (checker exit code, check-outputs JSON, xml parse, manifest derivation) came from an exit code or a parse this agent observed directly rather than from the prior envelopes' claims - the TestDataFactory byte-identity and the 33/33 member count were independently re-derived and re-hashed, not taken on trust.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S05",
+    "precondition_status": "built (verified in plan.json before any test ran)"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared checker's exit code and finding set matched the step's own acceptance-test description exactly - exit 0, exactly two WARN (ExternalCredential, NamedCredential), zero blocking - on the first run, with no repair pass needed.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/checker.stdout.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The build-wide manifest two-way check was independently re-derived from the file tree under artefacts/M1-S01..S04 (not copied from the metadata-builder envelope's member_counts), and it agrees with that envelope exactly: 33 manifest members, 33 derived members, 0 missing in either direction.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/manifest-check.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "TestDataFactory's byte-identity across M1-S03, M1-S04, and templates/apex/tests/TestDataFactory.cls was independently re-hashed (SHA-256) rather than accepted from the metadata-builder envelope's claim, and matched: 2f87c8c3...de782c for both .cls, a242f6e2...8ddea32 for both .cls-meta.xml.",
+      "domain": "template-provenance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/classes/TestDataFactory.cls"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The AuthHeader clause inside steps[M1-S05].inputs.manual_steps_the_deploy_does_not_perform (item 1) is pre-amendment prose - it reads as a single fully-resolvable manual confirmation, while artefacts/M1-S05/deploy-order.md section 3 step 1 already documents the narrower, corrected reading (grammar-parses-on-deploy plus a separate UAT confirmation) under decision D-M1S02-06 / finding PV-007. This is the same prose lag the metadata-builder and build-step-runner envelopes both flagged; it is reported again here because it sits inside the manual test this agent classified, not because it is new.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs.manual_steps_the_deploy_does_not_perform"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The declared manual test's expected text ('confirming the AuthHeader formula grammar, entering the API key...') is phrased as a checklist read rather than literal Given/When/Then, so it was checked against the testability bar (a boolean, observable outcome) rather than against Gherkin form for its pass/fail classification. It clears that bar - a reviewer can tick each of the five named items against deploy-order.md - but a human should confirm whether the shorthand 'confirming the AuthHeader formula grammar' is meant to already carry the D-M1S02-06 narrowing or is a stale summary of the original single-step framing; this agent does not resolve that judgment call.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].acceptance_tests[3].expected"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1-S05 is now tested and is the last step of M1; every other step is documented.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/results.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "M1-S05 needs its documentation pass, including recording the plan-text divergences (inputs.members.ApexClass count, inputs.deploy_order sequencing, the AuthHeader prose lag) in decisions.md, before the M1 milestone can be verified."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 5 - the five acceptance-test types and their runners, the checker-command-run-verbatim rule, the check-outputs precondition on both checker and set-status built, the always-on manifest fail-vs-skip rule for metadata step types, and the Apex exception; section 4 for the docs step-type ownership split"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical enum - no refusal was raised this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptance_tests[] and outputs[] shape this agent read from steps[M1-S05]"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one types block per type, members naming components, name naming the type) the manifest check judges artefacts/M1-S05/package.xml against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive members from the files under artefacts/M1-S01..S04 (objects/<Obj>/fields/*.field-meta.xml, classes/*.cls, triggers/*.trigger, externalCredentials/*, namedCredentials/*, permissionsets/*)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming none of the seven member types here (CustomObject, CustomField, ExternalCredential, NamedCredential, ApexClass, ApexTrigger, PermissionSet) is documented as lacking a standalone source file, so no exclusion was applied to either direction of the manifest check"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the testability bar (acceptance criteria must be boolean/observable) the declared manual test was checked against before being carried into skipped_manual[]"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check whether the manual test names an observable outcome; it does, though it is not phrased as literal Gherkin"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M1-S05 is now tested; the doc keeper's pass records this outcome and the plan-text divergences already flagged by the owning and running agents."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S05/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c ElementTree parse over artefacts/M1-S05/**/*.xml and *-meta.xml",
+        "exit_code": 0,
+        "verdict": "pass - 1 file, parses"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way consistency derivation over artefacts/M1-S01..S05 vs artefacts/M1-S05/package.xml",
+        "exit_code": 0,
+        "verdict": "pass - 33 manifest members, 33 derived members, 0 missing in either direction, TestDataFactory dedup verified consistent"
+      },
+      {
+        "name": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S05",
+        "exit_code": 0,
+        "verdict": "pass - 2 WARN (ExternalCredential, NamedCredential), 0 blocking, matches predicted findings exactly"
+      },
+      {
+        "name": "check-outputs",
+        "type": "checker-precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/tier2-webhook/plan.json M1-S05 (run from repo root)",
+        "exit_code": 0,
+        "verdict": "pass - ok:true, missing/empty/malformed all empty"
+      },
+      {
+        "name": "Deploy-order read at the M1 gate",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred - tickable, carried to skipped_manual[] verbatim"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "A reviewer confirms deploy-order.md lists the five manual steps no deploy performs - confirming the AuthHeader formula grammar, entering the API key against the principal, assigning Tier2_Webhook_Admin to the D14 assignee set, scheduling the hourly job, and confirming the org-wide sender is verified - and that the mock_deploy.py command is written as text for a human to run rather than as anything an agent executes."
+    ],
+    "tests_run": 4,
+    "manifest_scope_note": "Scope spans artefacts/M1-S01 through M1-S04 in addition to M1-S05 itself, because M1-S05's own package.xml aggregates every prior step's members and its own artefact directory carries no component files - matching the step's own acceptance-test[2] description ('no artefact file in M1-S01 through M1-S04 lacks a member here').",
+    "coverage_gap_exclusions": [],
+    "checker_command_run_verbatim": true,
+    "no_command_rewritten": true,
+    "shell": "zsh - each declared command quoted and evaluated as written, no flags added, removed or reordered"
+  }
+}

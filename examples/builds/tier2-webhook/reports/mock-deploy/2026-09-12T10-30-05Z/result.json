@@ -1,0 +1,429 @@
+{
+  "status": 0,
+  "result": {
+    "checkOnly": true,
+    "completedDate": "2026-09-12T10:30:29.000Z",
+    "createdBy": "005dL00001j3fsD",
+    "createdByName": "Pranav Nagrecha",
+    "createdDate": "2026-09-12T10:30:07.000Z",
+    "details": {
+      "componentSuccesses": [
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:28.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Tier2_Notified_At__c",
+          "id": "00NdL00002ePzZhUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Attempt_Count__c",
+          "id": "00NdL00002ePzZiUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Case_Number__c",
+          "id": "00NdL00002ePzZjUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Case__c",
+          "id": "00NdL00002ePzZkUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Endpoint__c",
+          "id": "00NdL00002ePzZlUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Error_Message__c",
+          "id": "00NdL00002ePzZmUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.HTTP_Status__c",
+          "id": "00NdL00002ePzZnUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Last_Attempted_At__c",
+          "id": "00NdL00002ePzZoUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Request_Payload__c",
+          "id": "00NdL00002ePzZpUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Resend__c",
+          "id": "00NdL00002ePzZqUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Response_Body__c",
+          "id": "00NdL00002ePzZrUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Severity__c",
+          "id": "00NdL00002ePzZsUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Status__c",
+          "id": "00NdL00002ePzZtUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Case_Link__c",
+          "id": "00NdL00002ePzZuUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Case_Number__c",
+          "id": "00NdL00002ePzZvUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Escalated_At__c",
+          "id": "00NdL00002ePzZwUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Severity__c",
+          "id": "00NdL00002ePzZxUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Subject__c",
+          "id": "00NdL00002ePzZyUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ExternalCredential",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "externalCredentials/OnCall_Tool_EC.externalCredential",
+          "fullName": "OnCall_Tool_EC",
+          "id": "0ptdL000000X9R7QAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "NamedCredential",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "namedCredentials/OnCall_Tool.namedCredential",
+          "fullName": "OnCall_Tool",
+          "id": "0XAdL00000248yjWAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomObject",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c",
+          "id": "01IdL00000H6HPNUA3",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomObject",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e",
+          "id": "01IdL00000H6HPOUA3",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Tier2_Webhook_Admin.permissionset",
+          "fullName": "Tier2_Webhook_Admin",
+          "id": "0PSdL00000crIvNWAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-12T10:30:29.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "package.xml",
+          "success": true
+        }
+      ],
+      "runTestResult": {
+        "numFailures": 0,
+        "numTestsRun": 0,
+        "totalTime": 0,
+        "codeCoverage": [],
+        "codeCoverageWarnings": [],
+        "failures": [],
+        "flowCoverage": [],
+        "flowCoverageWarnings": [],
+        "successes": []
+      },
+      "componentFailures": []
+    },
+    "done": true,
+    "id": "0AfdL00000gInoTSAS",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2026-09-12T10:30:29.000Z",
+    "numberComponentErrors": 0,
+    "numberComponentsDeployed": 23,
+    "numberComponentsTotal": 23,
+    "numberFiles": "11",
+    "numberTestErrors": 0,
+    "numberTestsCompleted": 0,
+    "numberTestsTotal": 0,
+    "rollbackOnError": true,
+    "runTestsEnabled": false,
+    "startDate": "2026-09-12T10:30:25.000Z",
+    "status": "Succeeded",
+    "success": true,
+    "zipSize": 6385,
+    "files": [
+      {
+        "fullName": "Case.Tier2_Notified_At__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Attempt_Count__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Attempt_Count__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Case_Number__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Case_Number__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Case__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Case__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Endpoint__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Endpoint__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Error_Message__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Error_Message__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.HTTP_Status__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/HTTP_Status__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Last_Attempted_At__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Last_Attempted_At__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Request_Payload__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Request_Payload__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Resend__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Resend__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Response_Body__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Response_Body__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Severity__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Severity__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Status__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/fields/Status__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c",
+        "type": "CustomObject",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Integration_Failure__c/Integration_Failure__c.object-meta.xml"
+      },
+      {
+        "fullName": "Tier2_Escalation__e",
+        "type": "CustomObject",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml"
+      },
+      {
+        "fullName": "OnCall_Tool_EC",
+        "type": "ExternalCredential",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml"
+      },
+      {
+        "fullName": "OnCall_Tool",
+        "type": "NamedCredential",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/namedCredentials/OnCall_Tool.namedCredential-meta.xml"
+      },
+      {
+        "fullName": "Tier2_Webhook_Admin",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T10-30-05Z/force-app/main/default/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    ],
+    "zipFileCount": 7,
+    "deployUrl": "https://orgfarm-76c95d6f7f-dev-ed.develop.my.salesforce.com/lightning/setup/DeployStatus/page?address=%2Fchangemgmt%2FmonitorDeploymentsDetails.apexp%3FasyncId%3D0AfdL00000gInoTSAS%26retURL%3D%252Fchangemgmt%252FmonitorDeployment.apexp"
+  },
+  "warnings": [
+    "CustomField, Tier2_Escalation__e.Case_Link__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Case_Number__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Escalated_At__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Severity__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Subject__c, returned from org, but not found in the local project"
+  ],
+  "api_version": {
+    "value": "67.0",
+    "source": "highest of: M1-S01=67.0, M1-S02=67.0"
+  }
+}

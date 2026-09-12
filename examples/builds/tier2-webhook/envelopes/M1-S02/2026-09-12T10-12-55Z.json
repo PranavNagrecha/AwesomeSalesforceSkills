@@ -1,0 +1,305 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T10-12-55Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-12-55Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-12-55Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S02",
+    "reason": null,
+    "note": "No Step-2 carve-out used: the step was in `next` on the ordinary path. All owning-agent inputs resolved from plan.json steps[M1-S02].inputs{} (source 1 of 3). No value was taken from the invocation brief; the brief's restatement of the Status__c amendment matched the plan's own amendments[0] and was used only as corroboration.",
+    "external_credential.secret": "[REDACTED]"
+  },
+  "summary": "Ran step M1-S02 (access, owner metadata-builder, human_gate approved 2026-09-12T10:01:57Z) and set it built. The owning agent was run inline and wrote all five declared outputs under artefacts/M1-S02 and nothing outside it: the OnCall_Tool_EC External Credential, the OnCall_Tool SecuredEndpoint Named Credential, the Tier2_Webhook_Admin permission set, package.xml at version 67.0 and deploy-order.md. Both declared checkers exited 0 from the build directory on the first pass, the only finding being the sharing-bypass WARN decision D12 makes deliberate. check-outputs returned ok with no missing, empty or malformed path, and no undeclared artefact appeared. Confidence is MEDIUM rather than HIGH because two values the plan binds by shape but not by value - the AuthHeader parameterValue formula and the endpoint URL - could not be resolved from any of the three Step 5 sources and were flagged rather than invented.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 HIGH row is satisfied on every mechanical clause - the step was in `next`, the envelope validates, check-outputs exited 0, nothing was written outside artefacts/M1-S02 and no undeclared artefact appeared. It is held to MEDIUM by the clause 'every required input resolved from the plan': the ExternalCredential AuthHeader parameterValue and the NamedCredential Url parameterValue resolve from none of the three sources, so the owning agent omitted one element and shipped a flagged placeholder for the other.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The human gate did its job in the right order: step:M1-S02 was approved before the runner claimed the step, and set-status running was accepted rather than refused, so no work began behind an open gate.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "human_gates[step:M1-S02].status=approved at 2026-09-12T10:01:57Z"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "cross-step-integrity",
+      "observation": "The build-scope permission-set checker earned its scope declaration: it read M1-S01's object and field files alongside this step's permission set in one tree, which is the only way the field-permission rows could be adjudicated at all.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "cross-step-integrity",
+      "observation": "The eleven-not-twelve field count was re-derived from the M1-S01 field files rather than trusted from the amendment prose, and Status__c is indeed the only one of the twelve carrying required=true.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Integration_Failure__c/fields",
+        "count": 12
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "integration-auth",
+      "observation": "The step's own UNVERIFIED note anticipated one unknown in the AuthHeader parameterValue (the grammar) but not the second one that actually blocks writing it: nothing in the plan, the 45 clarifications or requirement.md names the Setup parameter the API key is stored under.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "ApiKey|Api_Key|AuthParameter",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "requirements-coverage",
+      "observation": "The on-call tool's endpoint URL is bound nowhere in the build, although twenty-five clarifications were asked about the integration; Q25 settled the Named Credential's API name and the per-org portability rule but never the host itself.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "https?://",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-hygiene",
+      "observation": "The known PV-007 prose lag is now visible in the artefacts: inputs.deploy_order names two post-deploy human steps while the step's manual test (f) and M1-S05 together require three, so deploy-order.md was written to the wider set and carries five.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S02].inputs.deploy_order"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deliverable-contract",
+      "observation": "The Wave 10 persistence clause asks both agents to also write docs/reports/<agent-id>/<run_id>.{md,json}, and the invocation's write boundary confines this run to the build directory; the build-scoped pair was written and the repo-scoped pair was not.",
+      "evidence": {
+        "source": "input",
+        "path": "agents/_shared/DELIVERABLE_CONTRACT.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step is built and carries four automated acceptance tests plus a manual access review that no agent in this run executed.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "count": 5
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the step's checker, xml, manifest and manual tests are its to run and record, and built is the status it reads."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Once the step is tested, its decisions and traceability rows are not yet written anywhere outside this envelope pair.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the license-by-decision, the omitted fullName and the two unbound values belong in decisions.md rather than only in a run envelope."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md -> 39",
+    "owning_envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-08-07Z.json",
+    "owning_envelope_validation": "OK .sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-08-07Z.json",
+    "artefacts": [
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/package.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "files_written_outside_step_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "checker_results": [
+      {
+        "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+        "scope": "step",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "scope": "build",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0
+      }
+    ],
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S02 built --run-agent metadata-builder --envelope envelopes/M1-S02/2026-09-12T10-08-07Z.json --result \"...\" --started 2026-09-12T10:08:07Z",
+    "terminal_status": "built",
+    "step_runnability": {
+      "next_output_contained_step": true,
+      "carve_out_used": null,
+      "human_gate": "step:M1-S02 approved 2026-09-12T10:01:57Z by requester (Pranav, Support Engineering lead) via dry-run operator"
+    },
+    "input_map_sources": {
+      "step_inputs": "all bound values",
+      "clarification_answers": "none required beyond what inputs{} already binds; Q4/Q5/Q6/Q19/Q25 reached the builder through inputs{} rather than directly",
+      "upstream_step_outputs": "artefacts/M1-S01/objects/Integration_Failure__c/fields/*.field-meta.xml and artefacts/M1-S01/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml - read for the field names and required flags the fieldPermissions rows name"
+    },
+    "unresolved_inputs": [
+      "ExternalCredential X-API-Key AuthHeader parameterValue (grammar UNVERIFIED per A5 AND the stored-parameter name unbound) - element omitted, handed to the human as deploy step 1",
+      "NamedCredential Url parameterValue - reserved-documentation-domain placeholder written and flagged in three places"
+    ],
+    "dimensions_skipped": []
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the repo-wide run-time rules binding this invocation, including the ban on org writes"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule and the redaction requirement on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum (none raised this run)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step types and status machine, section 5 acceptance tests and checker scope, section 8 the plan CLI as sole writer"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{}, outputs[] and runs[] the runner reads and writes"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape that puts every build-specific key under extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format directory-per-type layout the step's artefacts must obey (permissionsets/ confirmed there; externalCredentials/ and namedCredentials/ came from the named-credentials skill)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/references/gotchas.md",
+      "used_for": "confirming the step's declared outputs are deployable Metadata API component types before the owning agent spent a run on them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the planned step derives from, so the owning agent received the plan's cells rather than a paraphrase of the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the id conventions echoed into the envelope so the doc keeper can join step to requirement without re-deriving it"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "recognising the credential-shaped step input and keeping it [REDACTED] in every echoed surface"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/references/code-examples.md",
+      "used_for": "read in full alongside the owning agent, run inline: sections 1-3 supplied every element name and enum value emitted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "read in full alongside the owning agent: the PermissionSet element set, the dependency chain and the FLS readable-floor rule"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/integration-pattern-selection.md",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Q2 - Custom header / API key -> Named Credential + External Credential (Custom)",
+      "used_for": "the branch decision D2 already recorded; carried through, not re-decided"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1 - Public Read-Only / Public Read-Write -> Tighten OWD before adding anything -> Q2",
+      "used_for": "the branch decision D12 already recorded; carried through, not re-decided"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step is built and its four automated tests plus the manual access review are the tester's to run and record"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once the step is tested, the license-by-decision and the two unbound values belong in decisions.md rather than only in a run envelope"
+    }
+  ]
+}

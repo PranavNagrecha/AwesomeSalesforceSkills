@@ -1,0 +1,221 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T10-19-53Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-19-53Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T10-19-53Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S02",
+    "note": "Step status was 'built' at invocation. Both prior run envelopes under envelopes/M1-S02/ (metadata-builder 2026-09-12T10-08-07Z, build-step-runner 2026-09-12T10-12-55Z) and artefacts/M1-S02/deploy-order.md section 5 were read before testing."
+  },
+  "summary": "Ran the molecular tests for M1-S02 (access, owner metadata-builder) and set it tested. Both always-on checks passed: 4/4 XML files parsed, and package.xml is two-way consistent with the three artefact files (no type on this step is on the metadata-api-coverage-gaps no-standalone-file list, so no exclusions applied). Both declared checker tests were run verbatim from the build directory and passed: check_apex_named_credentials_patterns.py (step scope) exited 0 with 'OK: no Named Credential findings'; check_permission_set_architecture.py (build scope, one of the four cross-referential checkers) exited 0 with the single D12 sharing-bypass WARN the plan's own test description predicted. check-outputs returned ok for both. The step's one manual test (the M1-gate access review) was classified against the Given/When/Then and UAT-tickability skills as tickable - every clause (a)-(f) names an observable outcome - and recorded verbatim in skipped_manual[], never ticked here. Clause (d) asks a human to count field-permission rows; this agent observed 12 <fieldPermissions> entries on Tier2_Webhook_Admin.permissionset-meta.xml (Case.Tier2_Notified_At__c plus 11 Integration_Failure__c fields, Status__c correctly absent) and reports that count as evidence without ticking the clause. Two ambiguities recorded verbatim from the artefacts and deploy-order.md section 5, neither resolved by this run: the ExternalCredential's X-API-Key AuthHeader parameter carries no parameterValue (no answer names the stored-parameter key), and the NamedCredential's Url parameterValue is a placeholder on the reserved documentation domain oncall.acme.example. No deploy and no sf command were run; the operator is dry-running this step separately.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH row: every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (checker1 exit 0, checker2 exit 0, check-outputs ok=true both times). No command test was refused, no manifest exclusion was needed, and check-outputs reported nothing missing, empty or malformed.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "Both declared checkers exited 0 on this independent run from the build directory, exactly reproducing the exit codes and WARN text the metadata-builder envelope reported, with no repair loop needed.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S02/checker1_stdout.txt",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "package.xml names exactly the three components the step's artefact directory contains, in both directions, with no wildcard members and nothing to exclude.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "integration-auth",
+      "observation": "The X-API-Key AuthHeader parameter ships with no parameterValue, confirmed verbatim in the XML itself: only parameterName, parameterType and sequenceNumber are present. This is a step artefact fact carried forward from deploy-order.md section 5 item 1, not something this test run resolves.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "integration-config",
+      "observation": "The NamedCredential Url parameterValue is https://oncall.acme.example, an IANA-reserved documentation domain that will not resolve, confirmed verbatim in the XML and flagged in its own comment. Carried forward from deploy-order.md section 5 item 2, not resolved here.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "Clause (d) of the manual test asks a human to count 12 field-permission rows by hand; this agent observed and reports that count as evidence (12, matching the plan's field_permissions_written and the metadata-builder envelope) but does not tick the clause, since counting on artefacts alone is still the reviewer's judgment call at the gate, not this agent's to close.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "count": 12
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step is now tested with results.json and summary.md written under tests/M1-S02/, and its decisions/traceability rows are still only recorded in run envelopes.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because compiling the workbook, decisions.md and traceability.md rows for a tested step, plus the manual checklist entry into the human-facing UAT pack, is the doc keeper's job, not the tester's."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S02/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "always-on ElementTree parse",
+        "exit_code": null,
+        "verdict": "pass - 4/4 files parsed"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "always-on two-way consistency check",
+        "exit_code": null,
+        "verdict": "pass - consistent, no exclusions"
+      },
+      {
+        "name": "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py",
+        "type": "checker",
+        "runner": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+        "exit_code": 0,
+        "verdict": "pass - exit 0 and check-outputs ok"
+      },
+      {
+        "name": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass - exit 0 (one non-failing D12 WARN) and check-outputs ok"
+      },
+      {
+        "name": "Access review at the M1 gate",
+        "type": "manual",
+        "runner": "human at milestone gate",
+        "exit_code": null,
+        "verdict": "deferred - not ticked by this agent"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Access review at the M1 gate, before the permission set is ever assigned. This step carries human_gate: true, so a human also signs its step:M1-S02 gate before it runs. Expected: A reviewer confirms, from artefacts/M1-S02 alone: (a) externalCredentialPrincipal reads exactly OnCall_Tool_EC-OnCallToolNamedPrincipal, dash-joined, matching the External Credential file stem and the principal's parameterName; (b) no credential value appears anywhere in the three files; (c) generateAuthorizationHeader is explicitly false; (d) fieldPermissions carries Case.Tier2_Notified_At__c with readable and editable both true, and every Integration_Failure__c field from M1-S01 - this is the grant PV-001 found missing, and no checker fails on its absence, so the reviewer is the check; (e) the assignee set written in deploy-order.md is the one decision D14 defines - every user who can escalate a Case, plus the user who schedules the hourly job - and a named person accepts that wider list, or sends D14 back; (f) the X-API-Key AuthHeader parameterValue formula is flagged for confirmation against Salesforce Help before the credential is deployed, because assumption A5 records that grammar as UNVERIFIED in the cited skill."
+    ],
+    "tests_run": 4,
+    "manual_evidence_reported_not_ticked": {
+      "clause": "(d) - field-permission row count",
+      "observed_count": 12,
+      "expected_breakdown": "Case.Tier2_Notified_At__c + 11 Integration_Failure__c fields (Status__c excluded, required=true, F-S2-01)",
+      "matches_plan": true
+    },
+    "ambiguities_recorded_verbatim": [
+      {
+        "location": "artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+        "finding": "X-API-Key AuthHeader parameter has no parameterValue element",
+        "source": "deploy-order.md section 5 item 1 (assumption A5, verifier W3)"
+      },
+      {
+        "location": "artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+        "finding": "Url parameterValue is https://oncall.acme.example, an IANA-reserved documentation domain",
+        "source": "deploy-order.md section 5 item 2"
+      }
+    ],
+    "dimensions_skipped": []
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules binding this invocation, including the ban on org writes and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the refusal enum (none raised this run)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 5 acceptance-test types/runners/pass conditions, checker scope, the manifest fail-not-skip rule, the Apex exception, and section 4 step types"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the shape of acceptance_tests[] and outputs[] read for this step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (types/members/name) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive member names from the artefact files"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming ExternalCredential, NamedCredential and PermissionSet are not on the no-standalone-file list, so no manifest exclusion applied"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what makes a manual test line tickable by a human at the gate rather than re-interpreted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape the manual test's clauses (a)-(f) were checked against before being carried into skipped_manual[]"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "the step is now tested and its decisions, traceability rows and the manual checklist entry belong in decisions.md/traceability.md, not only in this envelope"
+    }
+  ]
+}

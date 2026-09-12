@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>OnCall_Tool_EC</members>
+        <name>ExternalCredential</name>
+    </types>
+    <types>
+        <members>OnCall_Tool</members>
+        <name>NamedCredential</name>
+    </types>
+    <types>
+        <members>Tier2_Webhook_Admin</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>67.0</version>
+</Package>
