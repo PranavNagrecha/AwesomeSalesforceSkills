@@ -21,7 +21,7 @@ Checks
           editing standard objects on standard profiles is disabled in API 50.0+
 5. INFO   the same object granted by both a profile and a permission set reachable
           through a permission set group -- redundant grant, ambiguous revocation
-6. PSVP-DESC-01 (ERROR) / PSVP-DESC-02 (WARN) -- `description` length on any
+6. PSVP-DESC-01 (ERROR) / PSVP-DESC-02 (INFO) -- `description` length on any
           Profile, PermissionSet, or PermissionSetGroup file. PermissionSet.description
           and Profile.description are both "Limit: 255 characters" in the Metadata API
           Developer Guide (api_meta L94788, L97678). Empirically confirmed by
@@ -33,15 +33,19 @@ Checks
           -- UNVERIFIED (2026-09-11) as a direct rejection; the same 255-character
           threshold is applied here anyway because a PSG that references a rejected
           member PermissionSet fails to deploy as a cascade ("permission set names
-          are invalid") regardless of its own description length.
+          are invalid") regardless of its own description length. PSVP-DESC-02 is
+          headroom, not a deploy risk: it is printed and counted in the JSON findings
+          list but is exempt from --strict -- it never contributes to the exit code,
+          unlike the WARN findings below.
 
 Exit policy
 -----------
 Exit 1 only on CRITICAL/ERROR/HIGH-class findings -- checks 1, 2, 3, and
-PSVP-DESC-01. WARN/INFO findings (checks 4, 5, PSVP-DESC-02, and an empty scan)
-print but exit 0; pass --strict to promote every finding to a failure. A
-missing --manifest-dir is a usage error, not a finding, and exits 1 immediately
-with a single-line message on stderr.
+PSVP-DESC-01. WARN/INFO findings (checks 4, 5, and an empty scan) print but
+exit 0; pass --strict to promote those to a failure. PSVP-DESC-02 is a
+separate advisory bucket: always printed and counted, never promoted by
+--strict. A missing --manifest-dir is a usage error, not a finding, and exits
+1 immediately with a single-line message on stderr.
 """
 
 from __future__ import annotations
@@ -182,27 +186,47 @@ def normalize_finding(finding: str) -> dict[str, str]:
 BLOCKING_SEVERITIES = {"CRITICAL", "ERROR", "HIGH"}
 
 
-def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
+def emit_result(
+    findings: list[str],
+    summary: str,
+    strict: bool = False,
+    advisory: list[str] | None = None,
+) -> int:
     """Print the JSON report and return the exit code.
 
     Exit 1 only on CRITICAL/ERROR/HIGH findings (platform facts that will fail
     or misbehave at deploy or run time -- dangerous grants, migratable
     permissions still on a profile, profile-only elements in a permission set,
     and PSVP-DESC-01). WARN/INFO findings (a standard-profile edit, a
-    duplicate grant, PSVP-DESC-02, an empty scan) are advisory and exit 0 so a
-    build with only cosmetic findings stays green; pass --strict to promote
-    every finding to a failure.
+    duplicate grant, an empty scan) are advisory and exit 0 so a build with
+    only cosmetic findings stays green; pass --strict to promote every one of
+    those to a failure.
+
+    `advisory` is a second, always-exempt bucket -- currently PSVP-DESC-02
+    headroom only. Its findings are merged into the printed/JSON output and
+    counted like any other finding, but they are excluded from `blocking` and
+    from the `strict` check below: headroom is informational, never a WARN
+    that --strict is meant to promote.
     """
     normalized = [normalize_finding(finding) for finding in findings]
-    score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
+    advisory_normalized = [normalize_finding(finding) for finding in (advisory or [])]
+    all_normalized = normalized + advisory_normalized
+    score = max(
+        0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in all_normalized)
+    )
     blocking = [item for item in normalized if item["severity"] in BLOCKING_SEVERITIES]
     print(json.dumps(
-        {"score": score, "findings": normalized, "summary": summary, "blocking": len(blocking)},
+        {
+            "score": score,
+            "findings": all_normalized,
+            "summary": summary,
+            "blocking": len(blocking),
+        },
         indent=2,
     ))
-    if normalized:
+    if all_normalized:
         print(
-            f"WARN: {len(normalized)} finding(s) detected ({len(blocking)} blocking)",
+            f"WARN: {len(all_normalized)} finding(s) detected ({len(blocking)} blocking)",
             file=sys.stderr,
         )
     if blocking:
@@ -213,8 +237,10 @@ def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
 # --------------------------------------------------------------------------- checks
 
 
-def check_description_length(path: Path, root: ET.Element, root_type: str) -> list[str]:
-    """PSVP-DESC-01 (ERROR, >255 chars) / PSVP-DESC-02 (WARN, >200 chars).
+def check_description_length(
+    path: Path, root: ET.Element, root_type: str
+) -> tuple[list[str], list[str]]:
+    """PSVP-DESC-01 (ERROR, >255 chars) / PSVP-DESC-02 (INFO, >200 chars).
 
     Grounded for PermissionSet and Profile: Metadata API Developer Guide,
     "The permission set description. Limit: 255 characters." (api_meta
@@ -226,11 +252,17 @@ def check_description_length(path: Path, root: ET.Element, root_type: str) -> li
     `sf project deploy start --dry-run` against a Summer '26 developer org on
     2026-09-11, examples/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md,
     once exported).
+
+    Returns (findings, advisory): PSVP-DESC-01 lands in `findings` (ERROR,
+    blocking); PSVP-DESC-02 lands in `advisory` (INFO headroom, printed and
+    counted by the caller, but never blocking and never promoted by
+    --strict).
     """
     findings: list[str] = []
+    advisory: list[str] = []
     description = child_text(root, "description")
     if not description:
-        return findings
+        return findings, advisory
     length = len(description)
     if length > DESC_MAX_LEN:
         findings.append(
@@ -239,11 +271,11 @@ def check_description_length(path: Path, root: ET.Element, root_type: str) -> li
             "or the configuration workbook."
         )
     elif length > DESC_WARN_LEN:
-        findings.append(
-            f"WARN {path}: PSVP-DESC-02 {root_type} description is {length} characters, "
+        advisory.append(
+            f"INFO {path}: PSVP-DESC-02 {root_type} description is {length} characters, "
             f"approaching the {DESC_MAX_LEN}-character limit."
         )
-    return findings
+    return findings, advisory
 
 
 def check_dangerous_grants(path: Path, root: ET.Element, root_type: str) -> list[str]:
@@ -444,16 +476,17 @@ def parse_file(path: Path) -> ET.Element | None:
         return None
 
 
-def audit_file(path: Path) -> list[str]:
+def audit_file(path: Path) -> tuple[list[str], list[str]]:
+    """Return (findings, advisory) for one metadata file. See emit_result."""
     root = parse_file(path)
     if root is None:
-        return [f"ERROR {path}: file is not well-formed XML and could not be parsed"]
+        return [f"ERROR {path}: file is not well-formed XML and could not be parsed"], []
 
     root_type = local_name(root.tag)
-    findings = check_description_length(path, root, root_type)
+    findings, advisory = check_description_length(path, root, root_type)
 
     if root_type == "PermissionSetGroup":
-        return findings
+        return findings, advisory
 
     findings.extend(check_dangerous_grants(path, root, root_type))
 
@@ -463,7 +496,7 @@ def audit_file(path: Path) -> list[str]:
     elif root_type == "PermissionSet":
         findings.extend(check_permission_set_holds_profile_only(path, root))
 
-    return findings
+    return findings, advisory
 
 
 def main() -> int:
@@ -505,15 +538,18 @@ def main() -> int:
         )
 
     findings: list[str] = []
+    advisory: list[str] = []
     for path in files:
-        findings.extend(audit_file(path))
+        file_findings, file_advisory = audit_file(path)
+        findings.extend(file_findings)
+        advisory.extend(file_advisory)
     findings.extend(check_duplicate_object_grants(files))
 
     summary = (
         f"Scanned {len(files)} access-model metadata file(s); "
-        f"{len(findings)} finding(s) detected."
+        f"{len(findings) + len(advisory)} finding(s) detected."
     )
-    return emit_result(findings, summary, strict=args.strict)
+    return emit_result(findings, summary, strict=args.strict, advisory=advisory)
 
 
 if __name__ == "__main__":

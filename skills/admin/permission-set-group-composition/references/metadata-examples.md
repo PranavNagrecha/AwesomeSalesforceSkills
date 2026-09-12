@@ -299,7 +299,7 @@ What each finding would mean if it were not clean:
 | Finding | Cause in this example set |
 |---|---|
 | `PSGC-DESC-01` ERROR | A `description` past 255 characters on any of the three types |
-| `PSGC-DESC-02` WARN | A `description` past 200 — the headroom rung, which is why every fence here stays short |
+| `PSGC-DESC-02` INFO | A `description` past 200 — the headroom rung, which is why every fence here stays short (never affects the exit code, even under `--strict`) |
 | no `<label>` ERROR | Dropping `label` from the group or the muting file; both are documented as required |
 | unknown `<status>` ERROR | A fifth value pasted into the retrieved-group fence |
 | unresolved reference WARN | Deploying step 3 without steps 1 and 2 — the checker's static preview of `permission set names are invalid` |

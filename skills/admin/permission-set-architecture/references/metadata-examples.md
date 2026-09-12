@@ -301,4 +301,4 @@ Note the limits of these queries: absence of an `ObjectPermissions` row means no
 
 **Where rationale goes instead.** A 300–450 character justification — who owns a set, why it exists, what it composes into, which open question it resolves — does not fit in `description` and should never be squeezed into it. Write that in the build's `deploy-order.md` or the configuration workbook, next to the component it explains, and keep `description` to what a Setup user reads at a glance: capability and owner, one line.
 
-`scripts/check_permission_set_architecture.py` enforces this: `PSA-DESC-01` (ERROR) at 255+ characters on any `PermissionSet`, `MutingPermissionSet`, `PermissionSetGroup`, or `Profile` file; `PSA-DESC-02` (WARN) at 200+ characters as headroom.
+`scripts/check_permission_set_architecture.py` enforces this: `PSA-DESC-01` (ERROR) at 255+ characters on any `PermissionSet`, `MutingPermissionSet`, `PermissionSetGroup`, or `Profile` file; `PSA-DESC-02` (INFO) at 200+ characters as headroom — printed and counted, never affects the exit code.

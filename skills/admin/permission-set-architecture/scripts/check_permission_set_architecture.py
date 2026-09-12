@@ -24,7 +24,8 @@ Checks performed:
      Grounded: Object Reference, SessionPermSetActivation — session-based
      permission sets in a permission set group don't require activation.
   8. Feature-heavy custom profiles (profile-sprawl signal).
-  9. PSA-DESC-01 / PSA-DESC-02 — description length on PermissionSet,
+  9. PSA-DESC-01 (ERROR) / PSA-DESC-02 (INFO, headroom only — never affects
+     the exit code) — description length on PermissionSet,
      MutingPermissionSet, PermissionSetGroup, and Profile files.
      Grounded: Metadata API Developer Guide, PermissionSet.description and
      Profile.description are both "Limit: 255 characters" (api_meta L94788,
@@ -150,7 +151,11 @@ def check_field_permissions(path: Path, root: ET.Element, issues: list[tuple[str
 def check_description_length(
     path: Path, root: ET.Element, kind: str, issues: list[tuple[str, str]]
 ) -> None:
-    """PSA-DESC-01 (ERROR, >255 chars) / PSA-DESC-02 (WARN, >200 chars).
+    """PSA-DESC-01 (ERROR, >255 chars) / PSA-DESC-02 (INFO, >200 chars).
+
+    PSA-DESC-02 is headroom, not a deploy risk: it is printed and counted
+    under the INFO severity bucket but never affects the exit code (this
+    checker only fails on ERROR; there is no --strict flag to promote it).
 
     Grounded for PermissionSet and Profile: Metadata API Developer Guide,
     "The permission set description. Limit: 255 characters." (api_meta
@@ -177,7 +182,7 @@ def check_description_length(
         ))
     elif length > DESC_WARN_LEN:
         issues.append((
-            "WARN",
+            "INFO",
             f"PSA-DESC-02 {path}: {kind} description is {length} characters, "
             f"approaching the {DESC_MAX_LEN}-character limit.",
         ))

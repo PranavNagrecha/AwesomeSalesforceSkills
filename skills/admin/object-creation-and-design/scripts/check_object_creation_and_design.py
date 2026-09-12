@@ -35,7 +35,7 @@ Checks performed on each ``*.object-meta.xml`` whose file name ends in ``__c``:
     from the 255-character ceiling documented for CustomPermission,
     PermissionSet, Profile and RecordType descriptions — do not reuse that
     number here.
-11. OCD-DESC-02 (WARN, advisory — does not affect exit code) — any
+11. OCD-DESC-02 (INFO, advisory — does not affect exit code) — any
     ``CustomObject`` or ``CustomField`` ``<description>`` over 200 characters.
     For ``CustomField`` there is no documented ceiling at all: the guide
     states only "Description of the field." with no ``Limit:`` clause
@@ -49,9 +49,9 @@ Checks performed on each ``*.object-meta.xml`` whose file name ends in ``__c``:
 Stdlib only. Exit code 1 if any of checks 1-6, 10 fired, or if any WARN from
 checks 7-9 fired — that combined ISSUE-or-WARN policy is unchanged from
 before this file added description-length checking. OCD-DESC-02 (check 11) is
-the one exception: it is a headroom hint, not a deploy-breaking condition, so
-it is printed but never contributes to the exit code, even alone in an
-otherwise-clean tree.
+the one exception: it is an INFO-level headroom hint, not a deploy-breaking
+condition, so it is printed and counted but never contributes to the exit
+code, even alone in an otherwise-clean tree.
 
 Usage:
     python3 check_object_creation_and_design.py
@@ -239,7 +239,7 @@ def check_object_file(obj_path: Path) -> tuple[list[str], list[str]]:
             )
         elif desc_len > DESC_WARN_LEN:
             advisory.append(
-                f"WARN: {file_stem}: OCD-DESC-02 <description> is {desc_len} characters, "
+                f"INFO: {file_stem}: OCD-DESC-02 <description> is {desc_len} characters, "
                 f"approaching the {OBJECT_DESC_MAX_LEN}-character CustomObject limit "
                 "(api_meta.txt L42007). Keep it terse — move rationale for irreversible "
                 "feature choices to the build's deploy-order.md or the configuration "
@@ -356,7 +356,7 @@ def check_field_file(field_path: Path) -> list[str]:
     description = child_text(root, "description")
     if description and len(description) > DESC_WARN_LEN:
         advisory.append(
-            f"WARN: {file_stem}: OCD-DESC-02 <description> is {len(description)} "
+            f"INFO: {file_stem}: OCD-DESC-02 <description> is {len(description)} "
             "characters. The Metadata API Developer Guide states no length limit for "
             "CustomField.description (api_meta.txt L43360) — UNVERIFIED (2026-09-11) "
             f"whether the {FIELD_DESC_UNVERIFIED_CANDIDATE_LEN}-character ceiling used "
@@ -436,6 +436,8 @@ def main() -> int:
         print(issue)
     for note in all_advisory:
         print(note)
+
+    print(f"Summary: {len(all_issues)} issue(s)/warning(s), {len(all_advisory)} info.")
 
     return 1 if all_issues else 0
 

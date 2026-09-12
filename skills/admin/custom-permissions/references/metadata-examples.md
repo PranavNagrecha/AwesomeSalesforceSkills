@@ -157,7 +157,7 @@ FlexiPage / Dynamic Forms component visibility and In-App Guidance — note the 
 
 **Where rationale goes instead.** The description is the only place the consumer list survives (Gotcha 9), so it fills up fast — `Bypass_Case_Intake_Validation` in `examples/builds/case-onboarding/artefacts/M2-S01` sits at 250 characters, six from the limit. Once the consumer list itself does not fit, split the permission (Gotcha with the "if the sentence needs an 'and'" test in `## Questions to Ask Before Configuring`) rather than compressing the list into unreadable abbreviations, and keep any narrative rationale — why the bypass exists, who approved it — in the build's `deploy-order.md` or the configuration workbook next to the component it explains.
 
-`scripts/check_custom_permissions.py` enforces this: `CP-DESC-01` (ERROR) at 255+ characters on any `CustomPermission` file; `CP-DESC-02` (WARN) at 200+ characters as headroom.
+`scripts/check_custom_permissions.py` enforces this: `CP-DESC-01` (ERROR) at 255+ characters on any `CustomPermission` file; `CP-DESC-02` (INFO) at 200+ characters as headroom — printed and counted, never affects the exit code, even under `--strict`.
 
 ## package.xml
 

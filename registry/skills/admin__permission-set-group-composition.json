@@ -150,7 +150,7 @@
     "e9a1c99d7c093558d761",
     "fef29b743b17f85fb648"
   ],
-  "content_hash": "ec2d72a43c0b5389289f4d45da0ea0df396e149ea71e16961a03a5801d65aad5",
+  "content_hash": "c093001e2609ddadb72effae2268a64a2c51a94c89690cf9906f5f1bbc804a01",
   "dependencies": [],
   "description": "Tactical guidance for composing Permission Set Groups: layering permission sets, applying Mute Permission Sets to subtract narrow capabilities, sequencing the recalculation lifecycle, deletion order, and assignment-vs-activation lifecycle. Triggers: 'PSG composition', 'mute permission set', 'PSG recalculation', 'cannot delete permission set in PSG', 'PSG explosion', 'expired PSG assignment'. NOT for the strategic profile-vs-PSG choice or migrating off profiles - use admin/permission-set-architecture. NOT for record-sharing design (OWD, role hierarchy, sharing rules) - use admin/sharing-and-visibility.",
   "file_location": "skills/admin/permission-set-group-composition",
@@ -205,5 +205,5 @@
   ],
   "updated": "2026-09-12",
   "vector_embedding": null,
-  "version": "1.2.0"
+  "version": "1.2.1"
 }

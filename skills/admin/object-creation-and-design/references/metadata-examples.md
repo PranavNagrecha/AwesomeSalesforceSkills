@@ -187,7 +187,7 @@ How to read it:
 
 **Where rationale goes instead.** Neither field is the place for the reason each irreversible feature (Gotcha 2) was enabled, or the tracked-field audit reasons (Gotcha 11) — put those in the object's own `description` only as a short pointer, and the full rationale in the build's `deploy-order.md` or the configuration workbook.
 
-`scripts/check_object_creation_and_design.py` enforces this: `OCD-DESC-01` (ISSUE) at 1000+ characters on `CustomObject` files only, grounded at the object's own documented limit; `OCD-DESC-02` (WARN, advisory — does not affect the exit code) at 200+ characters on either `CustomObject` or `CustomField` files, as a headroom hint rather than a claimed limit.
+`scripts/check_object_creation_and_design.py` enforces this: `OCD-DESC-01` (ISSUE) at 1000+ characters on `CustomObject` files only, grounded at the object's own documented limit; `OCD-DESC-02` (INFO, advisory — does not affect the exit code) at 200+ characters on either `CustomObject` or `CustomField` files, as a headroom hint rather than a claimed limit.
 
 ## package.xml
 

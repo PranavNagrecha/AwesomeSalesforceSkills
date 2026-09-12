@@ -14,8 +14,10 @@ Scans a Salesforce DX metadata tree and reports, by severity:
          characters. Metadata API Developer Guide, CustomPermission field
          table: "The custom permission description. Limit: 255 characters."
          (api_meta.txt L46651-46652). The deploy will be rejected.
-  WARN   CP-DESC-02 -- a custom permission's `description` is over 200
-         characters, approaching the 255-character limit above.
+  INFO   CP-DESC-02 -- a custom permission's `description` is over 200
+         characters, approaching the 255-character limit above. Headroom is
+         advisory, not a deploy risk: it is printed and counted but never
+         affects the exit code, even under --strict.
   WARN   A custom permission has an empty or missing `description`. The
          description is the only place the consumer list can live.
   WARN   A consumer references a custom permission that is not defined in the
@@ -302,9 +304,10 @@ def analyse(
                 "api_meta.txt L46651-46652) and the deploy will be rejected."
             )
         elif len(description) > CP_DESC_WARN_LEN:
-            warnings.append(
+            infos.append(
                 f"CP-DESC-02 '{name}' has a {len(description)}-character description "
-                f"({record['file']}); approaching the {CP_DESC_MAX_LEN}-character limit."
+                f"({record['file']}); approaching the {CP_DESC_MAX_LEN}-character limit. "
+                "Headroom only -- never fails the run, even under --strict."
             )
 
     # WARN -- a consumer references a permission that is not defined here.

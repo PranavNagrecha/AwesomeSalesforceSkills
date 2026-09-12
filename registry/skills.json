@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "74df0f442b285f91dc3d6e3fca57e188d1245d8f34ae454f0a0618ce02da5d97",
+  "generated_from_hash": "1c30d39e9ead661bb2ccc06c2d2c5829cd278a46b16ca23c839ea7cda88e7bd7",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -13614,7 +13614,7 @@
         "f7d7441c78c52d2c468d",
         "fe8c81f125c005a1d895"
       ],
-      "content_hash": "94f0ebdcd4d08aee82b7bb65e9356d77711e5873784707e93607951d4ac21adb",
+      "content_hash": "beba58c7e753b250654061b31756dc57b02408d34f7e1a8bbda52162db33e6db",
       "dependencies": [],
       "description": "Use when creating, assigning, or checking custom permissions to control feature access beyond CRUD and FLS. Trigger keywords: 'custom permission', 'FeatureManagement.checkPermission', '$Permission global variable', 'feature gate', 'named access grant', 'beta feature flag', 'SetupEntityAccess', 'requiredPermission', 'who has this custom permission'. NOT for gating Apex service code and its tests \u2014 use apex/apex-custom-permissions-check. NOT for permission set design \u2014 use admin/permission-set-architecture.",
       "file_location": "skills/admin/custom-permissions",
@@ -13664,9 +13664,9 @@
       "templates": [
         "skills/admin/custom-permissions/templates/custom-permissions-template.md"
       ],
-      "updated": "2026-09-11",
+      "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "admin",
@@ -32714,7 +32714,7 @@
         "fe862447f029ec05973a",
         "fff3af0f929cedadc954"
       ],
-      "content_hash": "7ff88672622396dff2b929fb0534917a82f12af5a961e52b1924405983a9464e",
+      "content_hash": "9719a3a943105ab1d91a633ce7e8f16065d20dddfaa7fc0e099e028290e96d32",
       "dependencies": [],
       "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for designing the fields on the object - use admin/custom-field-creation. NOT for sharing rules or role hierarchy configuration - use admin/sharing-and-visibility. NOT for lookup-vs-master-detail and junction design - use data/data-model-design-patterns. More triggers: 'custom object records not showing in search', 'sharing model greyed out on my object', 'auto number restarted at 1 after deploy', 'cannot create a queue for my custom object', 'CustomObject deploy failed enableBulkApi', 'field history tracking shows no rows'.",
       "file_location": "skills/admin/object-creation-and-design",
@@ -32771,9 +32771,9 @@
       "templates": [
         "skills/admin/object-creation-and-design/templates/object-creation-and-design-template.md"
       ],
-      "updated": "2026-09-11",
+      "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "admin",
@@ -34884,7 +34884,7 @@
         "f7bb52e3d137f809effa",
         "f8e3b96550fa172bb515"
       ],
-      "content_hash": "b687662103ab6d6e0c70ce3204c192a734e004706da469e2ca002ea485984b9e",
+      "content_hash": "ffaf026a19367a4e4024beae2264e4c9bab657e1d32ea21cc65d1c5d40abdf2a",
       "dependencies": [],
       "description": "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege', 'how to slice permission sets', 'permission set naming convention', 'permission set license restriction', 'PSG status Outdated', 'permissionset-meta.xml'. NOT for PSG muting mechanics and recalculation order \u2014 use admin/permission-set-group-composition. NOT for record-sharing model design \u2014 use admin/sharing-and-visibility. NOT for time-boxing an assignment \u2014 use admin/permission-set-expiration.",
       "file_location": "skills/admin/permission-set-architecture",
@@ -34934,9 +34934,9 @@
       "templates": [
         "skills/admin/permission-set-architecture/templates/permission-set-architecture-template.md"
       ],
-      "updated": "2026-09-11",
+      "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "admin",
@@ -35307,7 +35307,7 @@
         "e9a1c99d7c093558d761",
         "fef29b743b17f85fb648"
       ],
-      "content_hash": "ec2d72a43c0b5389289f4d45da0ea0df396e149ea71e16961a03a5801d65aad5",
+      "content_hash": "c093001e2609ddadb72effae2268a64a2c51a94c89690cf9906f5f1bbc804a01",
       "dependencies": [],
       "description": "Tactical guidance for composing Permission Set Groups: layering permission sets, applying Mute Permission Sets to subtract narrow capabilities, sequencing the recalculation lifecycle, deletion order, and assignment-vs-activation lifecycle. Triggers: 'PSG composition', 'mute permission set', 'PSG recalculation', 'cannot delete permission set in PSG', 'PSG explosion', 'expired PSG assignment'. NOT for the strategic profile-vs-PSG choice or migrating off profiles - use admin/permission-set-architecture. NOT for record-sharing design (OWD, role hierarchy, sharing rules) - use admin/sharing-and-visibility.",
       "file_location": "skills/admin/permission-set-group-composition",
@@ -35362,7 +35362,7 @@
       ],
       "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "admin",
@@ -35384,6 +35384,7 @@
         "139650e7eb87a798e1c7",
         "14b5a02eff4b67df5959",
         "1893b5f665a82c75ce5c",
+        "1aba94f3eb0e7a3723d2",
         "1abd7f2c1a22bfe98f0e",
         "1b522013bfc44d1bb8b2",
         "1c80dec72e946d6d5492",
@@ -35436,6 +35437,7 @@
         "5d7b2ed4b33d5e2e101a",
         "5e45c717da5c4b293f66",
         "607e4ad075574ad87de6",
+        "61cbff4b27a583066529",
         "6262bff519643c60eca9",
         "62af3a8bdb57bb1aa26d",
         "64eb4a42ac8966ec5197",
@@ -35475,7 +35477,6 @@
         "9d5a25b66e2145cd051e",
         "a006fa5a51ff4d5bef83",
         "a190bcf682804717f020",
-        "a3b890e86429fc22bf65",
         "a5253dcd3055ae9941c0",
         "a863f43413e792579b95",
         "aae99abe5941771cfb75",
@@ -35542,7 +35543,7 @@
         "f97bf6ffb1aa03e59d6a",
         "fae908b2fc5b22968f67"
       ],
-      "content_hash": "d14580dcb07659ed8ed92064c90ed5587be4f215e6ad700f89fa41ae976cbc96",
+      "content_hash": "a4d0bae8d07b3bf882597c5f43571559cb68eb59548aaf877e2a67edb7482db1",
       "dependencies": [],
       "description": "Use when designing or auditing Salesforce access control \u2014 deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration', 'what stays on the profile', 'profile only settings', 'login hours permission set', 'layout assignment permission set', 'IsOwnedByProfile', 'profile retrieve empty'. NOT for sharing rules or record-level access \u2014 use admin/sharing-and-visibility for that.",
       "file_location": "skills/admin/permission-sets-vs-profiles",
@@ -35590,9 +35591,9 @@
       "templates": [
         "skills/admin/permission-sets-vs-profiles/templates/permission-set-design-template.md"
       ],
-      "updated": "2026-09-11",
+      "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.2.1"
+      "version": "1.2.2"
     },
     {
       "category": "admin",

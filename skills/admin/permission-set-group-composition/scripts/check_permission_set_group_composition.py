@@ -47,8 +47,10 @@ and reports, by severity:
          rejection, applied here anyway because a PSG that references a
          rejected member set fails to deploy as a cascade ("permission set
          names are invalid").
-  WARN   PSGC-DESC-02 -- the same file types with a <description> over 200
-         characters (headroom below the 255-character limit).
+  INFO   PSGC-DESC-02 -- the same file types with a <description> over 200
+         characters (headroom below the 255-character limit). Headroom is
+         advisory: printed and counted but never affects the exit code, even
+         under --strict.
 
 Naming conventions are house style, not platform behaviour, so they never
 fail the run on their own. Use `--strict` in a governance gate where the
@@ -171,7 +173,12 @@ def child_text_values(root: ET.Element, child_name: str) -> list[str]:
 def check_description_length(
     path: Path, root: ET.Element, kind: str
 ) -> tuple[list[str], list[str]]:
-    """PSGC-DESC-01 (ERROR, >255 chars) / PSGC-DESC-02 (WARN, >200 chars).
+    """PSGC-DESC-01 (ERROR, >255 chars) / PSGC-DESC-02 (INFO, >200 chars).
+
+    Returns (errors, infos): PSGC-DESC-02 lands in the INFO bucket so it is
+    printed and counted but is exempt from --strict, unlike the WARN findings
+    (naming convention, unresolved references) that --strict exists to
+    promote.
 
     Grounded for PermissionSet: Metadata API Developer Guide, "The permission
     set description. Limit: 255 characters." (api_meta L94788).
@@ -187,10 +194,10 @@ def check_description_length(
     regardless of its own description length.
     """
     errs: list[str] = []
-    warns: list[str] = []
+    infos: list[str] = []
     description = "".join(child_text_values(root, "description"))
     if not description:
-        return errs, warns
+        return errs, infos
     length = len(description)
     if length > DESC_MAX_LEN:
         errs.append(
@@ -199,11 +206,11 @@ def check_description_length(
             "deploy-order.md or the configuration workbook."
         )
     elif length > DESC_WARN_LEN:
-        warns.append(
+        infos.append(
             f"{path}: PSGC-DESC-02 {kind} description is {length} characters, "
             f"approaching the {DESC_MAX_LEN}-character limit."
         )
-    return errs, warns
+    return errs, infos
 
 
 def analyse(
@@ -239,18 +246,18 @@ def analyse(
                 f"{mute_path}: muting permission set has no <label>; label is a "
                 f"required field and the file will not deploy without one."
             )
-        desc_errs, desc_warns = check_description_length(mute_path, mute_root, "MutingPermissionSet")
+        desc_errs, desc_infos = check_description_length(mute_path, mute_root, "MutingPermissionSet")
         errors.extend(desc_errs)
-        warns.extend(desc_warns)
+        infos.extend(desc_infos)
 
     for ps_path in ps_files:
         ps_root = parse_xml(ps_path)
         if ps_root is None:
             errors.append(f"{ps_path}: unable to parse permission set metadata.")
             continue
-        desc_errs, desc_warns = check_description_length(ps_path, ps_root, "PermissionSet")
+        desc_errs, desc_infos = check_description_length(ps_path, ps_root, "PermissionSet")
         errors.extend(desc_errs)
-        warns.extend(desc_warns)
+        infos.extend(desc_infos)
 
     ps_names_known: set[str] = {stem_developer_name(p) for p in ps_files}
     mute_names_known: set[str] = {stem_developer_name(p) for p in mute_files}
@@ -271,9 +278,9 @@ def analyse(
             errors.append(f"{psg_path}: unable to parse PSG metadata.")
             continue
 
-        desc_errs, desc_warns = check_description_length(psg_path, root, "PermissionSetGroup")
+        desc_errs, desc_infos = check_description_length(psg_path, root, "PermissionSetGroup")
         errors.extend(desc_errs)
-        warns.extend(desc_warns)
+        infos.extend(desc_infos)
 
         included_pses = child_text_values(root, "permissionSets")
         included_mutes = child_text_values(root, "mutingPermissionSets")

@@ -40,9 +40,9 @@ outputs:
   - "Tab creation steps"
   - "Review checklist before deploying the object to production"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-11
+updated: 2026-09-12
 ---
 
 # Object Creation and Design
@@ -266,7 +266,7 @@ Before deploying the object to production:
 - [ ] `enableSearch` set explicitly if users must find records by name; search is off by default on new custom objects.
 - [ ] `enableBulkApi`, `enableSharing` and `enableStreamingApi` set as a set, or all left alone.
 - [ ] `externalSharingModel` set deliberately if the org has Experience Cloud enabled.
-- [ ] Object `description` is under 1000 characters (`OCD-DESC-01` ISSUE) and field `description`s are kept terse (`OCD-DESC-02` WARN past 200) — the two fields do not share one length limit; see `references/metadata-examples.md`.
+- [ ] Object `description` is under 1000 characters (`OCD-DESC-01` ISSUE) and field `description`s are kept terse (`OCD-DESC-02` INFO past 200, headroom only) — the two fields do not share one length limit; see `references/metadata-examples.md`.
 - [ ] `scripts/check_object_creation_and_design.py --manifest-dir <source>` run clean against the metadata being deployed.
 
 ---

@@ -173,7 +173,7 @@
     "fe862447f029ec05973a",
     "fff3af0f929cedadc954"
   ],
-  "content_hash": "7ff88672622396dff2b929fb0534917a82f12af5a961e52b1924405983a9464e",
+  "content_hash": "9719a3a943105ab1d91a633ce7e8f16065d20dddfaa7fc0e099e028290e96d32",
   "dependencies": [],
   "description": "Use when creating a new Salesforce custom object: naming the object and setting its API name, selecting optional features (Activities, Chatter, History Tracking), choosing an org-wide default sharing model, and creating a tab. Triggers: 'create a custom object', 'new custom object setup', 'what sharing model should I choose', 'how do I create a tab for my object', 'object features like activities and history tracking'. NOT for designing the fields on the object - use admin/custom-field-creation. NOT for sharing rules or role hierarchy configuration - use admin/sharing-and-visibility. NOT for lookup-vs-master-detail and junction design - use data/data-model-design-patterns. More triggers: 'custom object records not showing in search', 'sharing model greyed out on my object', 'auto number restarted at 1 after deploy', 'cannot create a queue for my custom object', 'CustomObject deploy failed enableBulkApi', 'field history tracking shows no rows'.",
   "file_location": "skills/admin/object-creation-and-design",
@@ -230,7 +230,7 @@
   "templates": [
     "skills/admin/object-creation-and-design/templates/object-creation-and-design-template.md"
   ],
-  "updated": "2026-09-11",
+  "updated": "2026-09-12",
   "vector_embedding": null,
-  "version": "1.2.0"
+  "version": "1.2.1"
 }

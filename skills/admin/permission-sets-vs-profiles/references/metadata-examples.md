@@ -363,7 +363,7 @@ WHERE PermissionSetId IN (
 
 **Where rationale goes instead.** Residue reasoning ("why this stays on the profile", "which persona this base is for", "what was deferred to a later phase") belongs in the build's `deploy-order.md` or `templates/permission-set-design-template.md`, not in `description`. Keep the metadata field to a one-line label a Setup user can scan.
 
-`scripts/check_access_model.py` enforces this: `PSVP-DESC-01` (ERROR) at 255+ characters on any `Profile`, `PermissionSet`, or `PermissionSetGroup` file; `PSVP-DESC-02` (WARN) at 200+ characters as headroom.
+`scripts/check_access_model.py` enforces this: `PSVP-DESC-01` (ERROR) at 255+ characters on any `Profile`, `PermissionSet`, or `PermissionSetGroup` file; `PSVP-DESC-02` (INFO) at 200+ characters as headroom — printed and counted, never affects the exit code, even under `--strict`.
 
 ## Also read
 

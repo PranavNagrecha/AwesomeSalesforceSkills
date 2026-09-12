@@ -36,9 +36,9 @@ outputs:
   - "review findings for profile-heavy or inconsistent access models"
   - "migration plan from profile-centric access to governed bundles"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-11
+updated: 2026-09-12
 ---
 
 Use this skill when the problem is no longer "which permission do I grant" and has become "how should the org structure access so future changes stay safe?" The goal is to produce a layered access model that supports least privilege, lowers operational risk, and makes persona-based changes predictable.
@@ -143,7 +143,7 @@ Deployable examples of all three, plus `package.xml`, retrieve/deploy commands, 
 2. Draw the license boundaries — group the slices into families per user or permission set license, and decide per set whether `license` is populated or deliberately empty. A shared set assigned across Salesforce and Platform users must leave it empty.
 3. Write object access before field access — `objectPermissions` first, honouring the dependency chain, then `fieldPermissions` only for fields the object grant can carry. Shapes and the full element list are in `references/metadata-examples.md`.
 4. Compose the personas — one PSG per persona listing its `permissionSets`; add a `mutingPermissionSets` entry only for a delta that splitting a set cannot express, and record the business reason in the muting set's `description`.
-5. Check the tree — `python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir force-app/main/default`. It flags edit-without-read FLS, sharing-bypass grants, oversized sets, dangling PSG members, session sets inside groups, no-op muting entries, and an over-length `description` (`PSA-DESC-01` ERROR at 255+ characters, `PSA-DESC-02` WARN at 200+).
+5. Check the tree — `python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir force-app/main/default`. It flags edit-without-read FLS, sharing-bypass grants, oversized sets, dangling PSG members, session sets inside groups, no-op muting entries, and an over-length `description` (`PSA-DESC-01` ERROR at 255+ characters, `PSA-DESC-02` INFO headroom at 200+, never fails the run).
 6. Deploy in order and wait for recalculation — permission sets before groups before muting; then poll `PermissionSetGroup.Status` until it reads `Updated` (see `references/metadata-examples.md`). A `Failed` status is silent in the deploy result.
 7. Verify against a real user — run the `PermissionSetAssignment` and `ObjectPermissions` verification queries in `references/metadata-examples.md` for one member of each persona, then record the persona-to-bundle matrix in `templates/permission-set-architecture-template.md`.
 
