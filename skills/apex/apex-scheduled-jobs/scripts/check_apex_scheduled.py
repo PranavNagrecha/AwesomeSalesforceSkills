@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Backward-compatible alias for check_apex_scheduled_jobs.py.
+"""alias — canonical is check_apex_scheduled_jobs.py in this directory.
+
+Backward-compatible alias for check_apex_scheduled_jobs.py.
 
 The canonical implementation and the rule documentation live in
 ``check_apex_scheduled_jobs.py`` in this directory. This module exists so that older

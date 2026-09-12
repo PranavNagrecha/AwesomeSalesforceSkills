@@ -603,6 +603,42 @@ def test_render_is_deterministic(tmp_path, fixture_repo):
     assert "#### Q1" in clar_md and "Answer:" in clar_md
 
 
+def test_render_writes_verification_section_when_present(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], status="plan-rejected", verification={
+        "status": "plan-rejected",
+        "verified_at": "2026-09-05T09:50:00Z",
+        "lenses": [{"lens": "executability", "verdict": "pass"},
+                   {"lens": "grounding", "verdict": "fail"}],
+        "blockers": [{"step": "M1-S01", "problem": "skill does not resolve",
+                      "lens": "grounding", "severity": "P0"}],
+        "warnings": [{"problem": "minor thing"}],
+        "envelope_path": ".sfskills/builds/b/envelopes/verification/run-1.json",
+    })
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    plan_md = (tmp_path / "b" / "PLAN.md").read_text()
+    assert "## Verification" in plan_md
+    assert "Outcome: `plan-rejected`" in plan_md
+    assert "| executability | `pass` |" in plan_md
+    assert "| grounding | `fail` |" in plan_md
+    assert "`M1-S01` (grounding, P0) — skill does not resolve" in plan_md
+    assert "Warnings: 1" in plan_md
+    assert "Envelope: `.sfskills/builds/b/envelopes/verification/run-1.json`" in plan_md
+
+    # render stays byte-deterministic with the new section in play.
+    first = (tmp_path / "b" / "PLAN.md").read_bytes()
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert (tmp_path / "b" / "PLAN.md").read_bytes() == first
+
+
+def test_render_omits_verification_section_when_absent(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    plan_md = (tmp_path / "b" / "PLAN.md").read_text()
+    assert "## Verification" not in plan_md
+
+
 def test_render_refuses_off_schema_plan(tmp_path, fixture_repo):
     plan = plan_dict([step("M1-S01", "M1")])
     del plan["scope"]
@@ -1575,6 +1611,93 @@ def test_amend_step_ordinary_mode_still_refuses_documented_step(tmp_path, fixtur
              "--by", "pranav", "--reason", "late fix", "--repo-root", str(fixture_repo))
     assert rc == 1
     assert path.read_bytes() == before
+
+
+def test_amend_step_allowed_at_planned_for_acceptance_tests_and_inputs(tmp_path, fixture_repo, capsys):
+    """§ 3.1 / batch fix (a): a plan nobody has gated yet is a draft — the same
+
+    reasoning `set-plan` already uses to allow a full rewrite at 'planned' and
+    'plan-rejected' — so `amend-step` may correct `acceptance_tests` and
+    `inputs` there without forcing a full re-plan round.
+    """
+    plan = plan_dict([step("M1-S01", "M1")])  # status: planned by default
+    path = write_plan_file(tmp_path / "b", plan)
+    before_doc = json.loads(path.read_text())
+    assert before_doc["status"] == "planned"
+
+    new_tests = [{"type": "xml", "description": "every artefact parses, corrected"}]
+    amendment = write_json(tmp_path / "amend.json", {"acceptance_tests": new_tests})
+    capsys.readouterr()
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "checker argument fixed",
+             "--at", "2026-09-05T10:00:00Z", "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "M1-S01: amended acceptance_tests by pranav" in out
+
+    after = json.loads(path.read_text())
+    m1 = after["steps"][0]
+    assert m1["acceptance_tests"] == new_tests
+    assert m1["status"] == "pending"
+    assert after["status"] == "planned"
+    assert len(m1["amendments"]) == 1
+    assert m1["amendments"][0]["fields"] == ["acceptance_tests"]
+
+    new_inputs = {"object": "Case", "queue": "Tier 1 Support"}
+    amendment2 = write_json(tmp_path / "amend2.json", {"inputs": new_inputs})
+    rc2 = run("amend-step", str(path), "M1-S01", "--file", str(amendment2),
+              "--by", "pranav", "--reason", "queue input added",
+              "--at", "2026-09-05T10:05:00Z", "--repo-root", str(fixture_repo))
+    assert rc2 == 0
+    after2 = json.loads(path.read_text())
+    assert after2["steps"][0]["inputs"] == new_inputs
+    assert len(after2["steps"][0]["amendments"]) == 2
+
+
+def test_amend_step_refused_at_planned_for_non_draft_fields(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])  # status: planned
+    path = write_plan_file(tmp_path / "b", plan)
+    before = path.read_bytes()
+
+    amendment = write_json(tmp_path / "amend.json", {"notes": "tweak"})
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "late fix", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_step_allowed_at_plan_rejected_for_acceptance_tests(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], status="plan-rejected")
+    path = write_plan_file(tmp_path / "b", plan)
+
+    new_tests = [{"type": "xml", "description": "every artefact parses, corrected"}]
+    amendment = write_json(tmp_path / "amend.json", {"acceptance_tests": new_tests})
+    rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+             "--by", "pranav", "--reason", "checker argument fixed",
+             "--repo-root", str(fixture_repo))
+    assert rc == 0
+    after = json.loads(path.read_text())
+    assert after["steps"][0]["acceptance_tests"] == new_tests
+    assert after["status"] == "plan-rejected"
+
+
+def test_amend_step_still_refused_at_verified_and_done(tmp_path, fixture_repo):
+    """The draft allowance stops at 'planned'/'plan-rejected'. A verified plan
+
+    has passed G2's lenses against its current tests/inputs, and a done build
+    has no in-flight step left to correct — both stay refused exactly as
+    'approved-with-an-approved-step-gate' already does.
+    """
+    for status in ("verified", "done"):
+        plan = plan_dict([step("M1-S01", "M1")], status=status)
+        path = write_plan_file(tmp_path / f"b-{status}", plan)
+        before = path.read_bytes()
+        amendment = write_json(tmp_path / f"amend-{status}.json",
+                               {"acceptance_tests": [{"type": "xml", "description": "x"}]})
+        rc = run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+                 "--by", "pranav", "--reason", "late fix", "--repo-root", str(fixture_repo))
+        assert rc == 1, f"amend-step must still refuse at status {status!r}"
+        assert path.read_bytes() == before
 
 
 def test_set_verification_records_both_outcomes(tmp_path, fixture_repo):
@@ -3198,6 +3321,55 @@ def test_status_prints_project_as_the_effective_default_scale(tmp_path, fixture_
     out = capsys.readouterr().out
     line = next(l for l in out.splitlines() if l.startswith("build mode:"))
     assert "scale: project" in line
+
+
+def test_status_prints_verification_line_when_plan_rejected(tmp_path, fixture_repo, capsys):
+    """(b): a rejected plan's blockers live in `verification.blockers`, not in
+
+    any step's status — this plan's one step is still 'pending' — so the
+    bottom 'blockers:' section alone would print 'none' with nothing else
+    said about why the plan was rejected. The line under 'status:' carries
+    the real answer.
+    """
+    plan = plan_dict([step("M1-S01", "M1")], status="plan-rejected", verification={
+        "status": "plan-rejected",
+        "blockers": [{"step": "M1-S01", "problem": "x", "lens": "grounding"},
+                     {"step": "M1-S01", "problem": "y", "lens": "testability"}],
+    })
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    lines = out.splitlines()
+    status_idx = next(i for i, l in enumerate(lines) if l.startswith("status:"))
+    assert lines[status_idx + 1] == "verification: plan-rejected  ·  blockers: M1-S01"
+    # "blockers: none" from the bottom section is never the only word said
+    # about blockers on a rejected plan.
+    bottom_blockers_idx = lines.index("blockers:")
+    assert lines[bottom_blockers_idx + 1] == "  none"
+    assert any("verification:" in l and "M1-S01" in l for l in lines)
+
+
+def test_status_prints_verification_line_when_verified(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")], status="verified", verification={
+        "status": "verified", "blockers": [],
+    })
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    lines = out.splitlines()
+    status_idx = next(i for i, l in enumerate(lines) if l.startswith("status:"))
+    assert lines[status_idx + 1] == "verification: verified  ·  blockers: none"
+
+
+def test_status_omits_verification_line_outside_rejected_or_verified(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")])  # status: planned
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert "verification:" not in out
 
 
 def test_set_plan_allowed_at_ask_scale_while_clarifying_with_blocking_answered(

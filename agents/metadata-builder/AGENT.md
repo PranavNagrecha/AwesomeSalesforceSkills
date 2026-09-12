@@ -105,7 +105,7 @@ If `plan.json` is missing, unparseable, or has no such step id, refuse with `REF
 | § 4 step type | What this agent emits for it in design-only mode |
 |---|---|
 | `object-model` | `CustomObject`, `CustomField`, picklist value sets, record types |
-| `access` | `PermissionSet`, `PermissionSetGroup`, sharing metadata |
+| `access` | `PermissionSet`, `PermissionSetGroup`, sharing metadata, `NamedCredential`, `ExternalCredential`, `ExternalCredentialParameter`/principals, and the `PermissionSet` grants of principal access that authorise them |
 | `validation` | `ValidationRule` — standalone or embedded per the skill's documented layout |
 | `routing` | `AssignmentRules`, `AutoResponseRules`, `EscalationRules`, `Queue`, list views |
 | `sla` | `EntitlementProcess`, `MilestoneType`, `EntitlementTemplate`, `BusinessHours` |

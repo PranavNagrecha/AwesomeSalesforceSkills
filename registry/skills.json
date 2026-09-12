@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "2b248e4ddcc2775470c23e552cca568ff2fafc748c2942282e304a3667e170ed",
+  "generated_from_hash": "1f827d0931967622b3219bb8eba0eb10812b2f122e565e37fd6466e4a539e2c1",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -62841,7 +62841,7 @@
         "ff1cc3e278a4967c463f",
         "ffe3f2f9e270ec9beb9b"
       ],
-      "content_hash": "3faceb88b28599a16de4e38ca01fcc1cf688d84b0b4e7b4d77447c588c52b388",
+      "content_hash": "a8073b29e9812a4bcc6fe5e7f432d5b42c05e9679e0726bcab8dface2735ee3b",
       "dependencies": [],
       "description": "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. Triggers: 'run this code every night', 'schedule a class to run daily', 'nightly Apex job', 'run at 2am', 'cron expression for a daily job', 'how do I schedule Apex'. NOT for writing the Batch Apex class a schedule invokes \u2014 use apex/batch-apex-patterns. NOT for org-wide job monitoring and failure alerting in Setup \u2014 use admin/batch-job-scheduling-and-monitoring. NOT for alerting when a scheduled job fails silently \u2014 use apex/scheduled-apex-failure-detection-and-monitoring. Also covers: SchedulableContext.getTriggerId, System.abortJob, System.scheduleBatch, CronTrigger.State, CronJobDetail.JobType, TimesTriggered, NextFireTime, the 100-scheduled-Apex ceiling, the schedulable-class deploy lock, and the unschedule-deploy-reschedule runbook.",
       "file_location": "skills/apex/apex-scheduled-jobs",
@@ -62894,9 +62894,9 @@
       "templates": [
         "skills/apex/apex-scheduled-jobs/templates/apex-scheduled-jobs-template.md"
       ],
-      "updated": "2026-09-05",
+      "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",

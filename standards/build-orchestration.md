@@ -230,8 +230,20 @@ scale: ask (D=1 metadata type, S=2 skills with question tables, O=1 object, inte
 | Clarification scope | only the cited skills' Questions-to-Ask rows, each with its proposed default; **one** round; ≤ 8 put to the human as blocking | those, plus one question per decision tree whose scope the requirement straddles (`standards/decision-trees/`); blocking questions are **not** capped at this tier — an integration feature legitimately asks 20–30 — answered in **one** round (a second round only when answers contradict each other); the tier is re-checked afterward only by the D/S/O/X recount (below), never by how many questions were asked | unchanged: every row of every cited skill plus the generic `admin/requirements-gathering-for-sf` set |
 | Plan shape | 1 milestone, 1 step | 1 milestone, ≤ 5 steps | unchanged: 2–6 milestones |
 | Verification | verifier runs **once** — three lenses over the one step, refutation-only; no re-plan round unless a blocker is CRITICAL (below) | ≤ 2 rounds | unchanged |
-| Gates | two human decisions: `go` and `accept` | `clarifications`, `plan`, one `milestone:M1` | unchanged |
+| Gates | two human decisions: `go` and `accept` | `clarifications`, `plan`, `milestone:M1` — plus a `step:<id>` record for every step the planner marks `human_gate: true` (credentials, permission sets, deletions), as § 3 requires | unchanged |
 | Documentation | envelopes + one `RUN.md`; `decisions.md` appended at every scale (append-only and cheap — a one-step build still makes decisions); workbook and traceability skipped, `RUN.md` carries the artefact↔test rows | workbook optional, traceability required | unchanged |
+
+**The `feature` plan-shape ceiling of ≤ 5 steps does not count the aggregating
+Apex manifest step.** § 5's **The Apex exception** requires a build-level
+`docs` step, owned by `metadata-builder`, whenever an Apex `automation` step
+exists — it is the only place that Apex step's `ApexClass`/`ApexTrigger`
+members reach a `package.xml`, and skipping it to stay under five steps would
+leave the always-on `manifest` check with nothing to read. A `feature` plan
+with five functional steps and this one manifest step is sized correctly, not
+six-over-the-limit; `set-plan`/`validate`'s § 3.1 sizing-rule check is a WARN
+only, never an ERROR (§ 3.1 "CLI deltas": an ERROR here would turn a re-tier
+into a re-plan), so a plan carrying this step and reading the WARN applies the
+carve-out by inspection rather than needing the CLI to special-case the count.
 
 The ≤ 8 is **not** a cap on the harvest. § 3's "questions are never capped" and
 the schema's "Never capped" both still hold: every row of every cited question
@@ -285,7 +297,7 @@ at the `go` gate for the human to weigh.
 
 - `requirements-clarifier` — **Inputs** (accept `scale`); **Step 1** (compute, print, pass to `init`); **Step 4** (`ask`: informational rows pre-filled from their defaults, plus the eight-blocking tier test, plus the one-time post-answer recount once `ingest-answers` runs); **Step 5** (one round, same one-time recount noted against the write-the-plan flow); **Step 6** (`ask`: print the single `gate go` command instead of G1-then-`/plan-build`).
 - `build-planner` — **Step 5** ("between two and six" becomes exactly 1 at `ask` and at `feature`); **Step 6** (`ask`: one step, `human_gate: false`); **Step 7** (`ask`: `render` also writes `RUN.md`).
-- `plan-verifier` — **Step 1** (a one-step plan is a plan); **Step 6** (`ask`: one round, refutation-only, the CRITICAL list above, no second pass).
+- `plan-verifier` — **Step 1** (a one-step plan is a plan); **Step 4** (`ask`: an `expected` observable only in a deployed org is a WARN, not a refutation, on the org-only manual test row — unchanged at `feature`, where the same row is a WARN for the same reason: the tester has no other way to exercise a manual acceptance test than the human's own UAT pass); **Step 6** (`ask`: one round, refutation-only, the CRITICAL list above, no second pass; `feature`: up to two rounds, and CRITICAL is narrower than at `ask` — a refutation earns a re-plan only when **the step would produce wrong or ungrounded artefacts**, the bar the verifier actually applies at this tier, rather than every executability/grounding refutation `ask`'s stricter list names).
 - `build-doc-keeper` — **Step 4** (`ask`: `RUN.md` rows instead of workbook sections; `decisions.md` is still appended, exactly as at every other scale; leave the `traceability.md` stub alone).
 - `milestone-verifier` — **the report** (`ask`: one page, and it is the `accept` gate's evidence).
 - `build-step-runner` and `step-tester` — **no branch.** A step is a step at every scale, and that is the point.
@@ -334,7 +346,7 @@ third column instead.
 | Step type | Owning agents, org-connected (examples) | Design-only owner | Artefacts | Molecular tests the tester runs |
 |---|---|---|---|---|
 | `object-model` | `object-designer` | `metadata-builder` | CustomObject / CustomField XML, picklists, record types | skill checkers for object/field/picklist skills; XML parse; package.xml consistency |
-| `access` | `permission-set-architect`, `profile-to-permset-migrator` | `metadata-builder` | PermissionSet / PSG / sharing XML | permission-set + sharing checkers; no ModifyAllData surprises |
+| `access` | `permission-set-architect`, `profile-to-permset-migrator` | `metadata-builder` | PermissionSet / PSG / sharing XML, including `NamedCredential`, `ExternalCredential`, `ExternalCredentialParameter`/principals, and the `PermissionSet` grants of principal access that authorise them | permission-set + sharing checkers; no ModifyAllData surprises |
 | `validation` | `object-designer` | `metadata-builder` | ValidationRule XML (`validationRules/` under the object) | validation-rule checkers; every field token in the formula resolves; XML parse |
 | `automation` | `flow-builder`, `apex-builder`, `flow-orchestrator-designer` | `metadata-builder` (declarative), `apex-builder` (Apex) | Flow XML, Apex + tests | flow/apex checkers; Apex test class present; fault paths |
 | `routing` | `assignment-and-auto-response-rules-designer`, `omni-channel-routing-designer`, `lead-routing-rules-designer` | `metadata-builder` | AssignmentRules / Queue / routing XML; Email-to-Case and Web-to-Case intake settings | assignment-rules checker; queue membership; business hours present |
@@ -443,6 +455,33 @@ a failing step when nothing about the artefacts is wrong.
 > does not ERROR — on a `checker` command with no `--manifest-dir`, saying the
 > checker declares a non-standard argument form and the tester will run it
 > verbatim.
+
+**Exit-policy forms differ, too, and that is a second axis from the argument
+form above.** The argument-form note is about how a checker is *pointed at*
+its metadata; this one is about what makes it *exit non-zero* once it has
+read that metadata, and the library has not converged on one answer. Four
+shapes are in active use: **bare** (the checker exits non-zero on any finding
+at all, with no severity knob); **`--min-severity ERROR`** (only findings at
+or above the named severity fail the run, so a checker carrying only WARN-tier
+findings exits 0 by design); **absence of `--strict`** (the checker is lenient
+by default and a finding only fails the run once `--strict` is passed, so a
+declared test that omits the flag is deliberately accepting the lenient
+reading, not forgetting the flag); and **`--fail-on HIGH`** (a named-severity
+threshold spelled as its own flag rather than folded into `--min-severity`).
+Layered on top of the argument-form split, a checker may also take **`--src`**
+as its path argument rather than `--manifest-dir`, a positional path, or
+`--file`/`--workbook` — a fourth argument form alongside the three the
+Follow-up above already names. Neither axis is a `validate` ERROR; a checker
+test's declared `command` is run verbatim regardless of which forms it uses.
+What `agents/build-planner/AGENT.md` Step 6 now requires is that a step's
+test `description` says, in one line, which exit-policy form and which
+empty-directory behaviour (does an `artefacts/<step-id>/` with nothing in it
+exit 0 or non-zero?) that specific checker relies on — the same
+`--help`-then-fixture-run discipline Step 6 already applies to the argument
+form, extended to the flag that decides pass/fail. Converging every checker on one exit-policy form and one argument form is
+real work, the same shape of work the Follow-up above already tracks for
+argument forms — a library backlog this layer documents and does not gate on,
+not a defect a plan is refuted for encountering.
 
 ### Checker scope
 

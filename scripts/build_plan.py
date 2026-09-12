@@ -1282,6 +1282,40 @@ def render_plan_md(plan: dict) -> str:
     if not (plan.get("human_gates") or []):
         out.append("| — | — | — | — | — |")
     out.append("")
+
+    verification = plan.get("verification")
+    if verification:
+        out.append("## Verification")
+        out.append("")
+        out.append(f"Outcome: `{_cell(verification.get('status'))}`")
+        out.append("")
+        lenses = verification.get("lenses") or []
+        if lenses:
+            out.append("| Lens | Verdict |")
+            out.append("| --- | --- |")
+            for lens in lenses:
+                out.append(f"| {_cell(lens.get('lens'))} | `{lens.get('verdict')}` |")
+        else:
+            out.append("_No lens verdicts recorded._")
+        out.append("")
+        out.append("Blockers:")
+        out.append("")
+        blockers = verification.get("blockers") or []
+        if blockers:
+            for blocker in blockers:
+                tags = [t for t in (blocker.get("lens"), blocker.get("severity")) if t]
+                tag = f" ({', '.join(tags)})" if tags else ""
+                out.append(f"- `{blocker.get('step')}`{tag} — {_cell(blocker.get('problem'))}")
+        else:
+            out.append("_None recorded._")
+        out.append("")
+        out.append(f"Warnings: {len(verification.get('warnings') or [])}")
+        envelope_path = verification.get("envelope_path")
+        if envelope_path:
+            out.append("")
+            out.append(f"Envelope: `{envelope_path}`")
+        out.append("")
+
     out.append(f"Clarifications view: `{plan['docs']['clarifications']}` · "
                f"decisions log: `{plan['docs']['decisions']}` · "
                f"traceability: `{plan['docs']['traceability']}`")
@@ -2409,6 +2443,25 @@ AMENDABLE_STEP_FIELDS = (
 # discard recorded gates — that is exactly the gap `amend-step` fills.
 AMEND_STEP_PLAN_STATUSES = {"building", "approved"}
 
+# Plan statuses at which nobody has gated the plan yet — `planned` (never
+# reached G2) and `plan-rejected` (rejected, no re-plan written over it yet).
+# `set-plan` already treats both as an open draft it may rewrite wholesale
+# (PLAN_FROZEN_STATUSES excludes them); `amend-step` extends that same
+# reasoning one level down, allowing a narrower, field-level correction —
+# `acceptance_tests` and `inputs` only — without forcing a full re-plan round
+# for something as small as a checker argument fix. `verified` is
+# deliberately excluded: a verified plan has passed G2's lenses against its
+# current acceptance tests and inputs, and amending either behind the
+# verifier's back would invalidate a verdict the human is about to sign.
+AMEND_STEP_DRAFT_STATUSES = {"planned", "plan-rejected"}
+
+# Fields `amend-step` may touch on a plan at one of AMEND_STEP_DRAFT_STATUSES.
+# A strict subset of AMENDABLE_STEP_FIELDS: the plan has not been gated, but
+# it also has not been verified, so a full rewrite of a step's shape still
+# belongs to `set-plan` (or the next planner round) rather than to a one-off
+# amendment.
+AMEND_STEP_DRAFT_FIELDS = ("acceptance_tests", "inputs")
+
 # Step statuses `amend-step` accepts: the step has not started running yet
 # (contract § 4's `pending`), or was parked without having run
 # (`blocked`). Anything from `running` on has already produced runs, artefacts
@@ -2455,11 +2508,15 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
     prose_only = bool(getattr(args, "prose_only", False))
 
     status = plan.get("status")
-    if status not in AMEND_STEP_PLAN_STATUSES:
-        _die(f"refusing to amend a step while the build status is '{status}' — amend-step only "
+    draft_mode = status in AMEND_STEP_DRAFT_STATUSES
+    if status not in AMEND_STEP_PLAN_STATUSES and not draft_mode:
+        _die(f"refusing to amend a step while the build status is '{status}' — amend-step "
              f"corrects a pending/blocked step's declared fields mid-build (status 'building' or "
-             f"'approved'); a '{status}' plan has no in-flight steps to correct this way — "
-             f"re-plan it with `set-plan` instead")
+             f"'approved'), or {', '.join(AMEND_STEP_DRAFT_FIELDS)} on a plan nobody has gated "
+             f"yet (status 'planned' or 'plan-rejected' — a plan not yet approved is still a "
+             f"draft, exactly the reasoning `set-plan` already uses at those two statuses); a "
+             f"'{status}' plan has no step this command may correct — re-plan it with `set-plan` "
+             f"instead")
 
     step = next((s for s in plan.get("steps") or [] if s.get("id") == args.step_id), None)
     if step is None:
@@ -2500,7 +2557,12 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
 
     doc = _read_json_file(Path(args.file))
     if not isinstance(doc, dict):
-        allowed = PROSE_ONLY_FIELDS if prose_only else AMENDABLE_STEP_FIELDS
+        if prose_only:
+            allowed = PROSE_ONLY_FIELDS
+        elif draft_mode:
+            allowed = AMEND_STEP_DRAFT_FIELDS
+        else:
+            allowed = AMENDABLE_STEP_FIELDS
         _die(f"{args.file} must be a JSON object with any of: {', '.join(allowed)}")
 
     if prose_only:
@@ -2521,6 +2583,16 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
             violation = _prose_only_violation(current_tests, new_tests)
             if violation:
                 _die(f"{args.file}: {violation}")
+    elif draft_mode:
+        unknown = sorted(set(doc) - set(AMEND_STEP_DRAFT_FIELDS))
+        if unknown:
+            _die(f"{args.file}: a '{status}' plan may amend-step only "
+                 f"{', '.join(AMEND_STEP_DRAFT_FIELDS)} — refusing {', '.join(unknown)} (a plan "
+                 f"nobody has gated yet is a draft, but not an unverified one — `set-plan` is "
+                 f"where the rest of the step's shape is rewritten, at this status or later)")
+        if not doc:
+            _die(f"{args.file} names none of the fields amendable at status '{status}' "
+                 f"({', '.join(AMEND_STEP_DRAFT_FIELDS)}) — nothing to amend")
     else:
         unknown = sorted(set(doc) - set(AMENDABLE_STEP_FIELDS))
         if unknown:
@@ -2851,6 +2923,18 @@ def cmd_status(args: argparse.Namespace) -> int:
     print(f"{plan['title']}  [{plan['build_id']}]")
     print(f"status: {plan['status']}  ·  plan version: {plan['version']}  ·  "
           f"created: {plan['created']}")
+    # A rejected or verified plan carries a `verification` block whose
+    # blockers are not step-level `blocked`/`failed` statuses — the plan may
+    # still have every step at `pending` — so the "blockers:" section further
+    # down would otherwise print "none" as the ONLY word about blockers on a
+    # plan the verifier just refuted. Print the verification's own outcome
+    # and blocker ids right under the status line so that never happens.
+    if plan.get("status") in {"plan-rejected", "verified"}:
+        verification = plan.get("verification") or {}
+        blocker_ids = sorted({b.get("step") for b in verification.get("blockers") or []
+                              if b.get("step")})
+        print(f"verification: {verification.get('status') or plan['status']}  ·  "
+              f"blockers: {', '.join(blocker_ids) if blocker_ids else 'none'}")
     mode = plan.get("build_mode", "design-only")
     alias = (plan.get("org") or {}).get("alias")
     scale = plan.get("scale")
@@ -2935,7 +3019,10 @@ Walkthrough:
  11a. amend-step         correct a pending/blocked step's declared fields mid-build
                          (inputs/outputs/acceptance_tests/skills/templates/decision_trees/
                          notes/title) without a re-plan; refused once the step has a run,
-                         or its own step:<id> gate is approved
+                         or its own step:<id> gate is approved. Also legal at status
+                         'planned' or 'plan-rejected' — a plan nobody has gated yet — but
+                         narrower there: only acceptance_tests and inputs, since set-plan
+                         already owns a full rewrite of an ungated plan
  13. set-milestone       the milestone verifier's verdict + report path
  14. gate milestone:M1 approve --by <who>        G3 — refused until every step is
                          documented (or blocked with a reason); last milestone → 'done'
@@ -3024,8 +3111,11 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("render", parents=[common], help="write PLAN.md + CLARIFICATIONS.md",
                        description="Render the human-readable views from plan.json. Output is "
                                    "byte-deterministic: nothing but plan.json content reaches it. "
-                                   "§ 3.1: also writes RUN.md at the build root when scale is "
-                                   "'ask'.")
+                                   "Writes a '## Verification' section into PLAN.md (outcome, "
+                                   "per-lens verdicts, blockers with ids/severity, warnings count, "
+                                   "envelope path) whenever plan.json carries a `verification` "
+                                   "block. § 3.1: also writes RUN.md at the build root when scale "
+                                   "is 'ask'.")
     p.add_argument("plan", help="path to plan.json")
     p.set_defaults(func=cmd_render)
 
@@ -3144,7 +3234,13 @@ def build_parser() -> argparse.ArgumentParser:
                        description="One-screen summary: step counts per milestone, gates, "
                                    "blockers. § 3.1: the build-mode line also prints "
                                    "'scale: <tier>' (absent scale reads as 'project', its "
-                                   "contract default).")
+                                   "contract default). When status is 'plan-rejected' or "
+                                   "'verified', prints a 'verification: <outcome> · blockers: "
+                                   "<ids>' line right under the status line — the verification "
+                                   "block's own blockers, which are not the same thing as a "
+                                   "step's blocked/failed status, so a rejected plan whose steps "
+                                   "are all still pending never reads as 'blockers: none' with "
+                                   "nothing else said about why it was rejected.")
     p.add_argument("plan", help="path to plan.json")
     p.set_defaults(func=cmd_status)
 
@@ -3256,23 +3352,27 @@ def build_parser() -> argparse.ArgumentParser:
                                    f"({', '.join(AMENDABLE_STEP_FIELDS)}) from a JSON object in "
                                    "--file; each named key REPLACES that field wholesale (no "
                                    "merge). Refused unless the build status is 'building' or "
-                                   "'approved' (a 'planned'/'verified' plan is corrected with "
-                                   "set-plan; 'done' has no pending steps left), the step's own "
-                                   "status is 'pending' or 'blocked' (a step already run is "
-                                   "rebuilt via documented -> running, or reset via failed -> "
-                                   "pending, not amended), and the step's own step:<id> gate, if "
-                                   "any, is not yet approved (reject it first — an amendment "
-                                   "invalidates what the human signed). Records who/when/why/"
-                                   "which-fields/prior-values in the step's amendments[], "
-                                   "re-validates the whole plan, and refuses the write (leaving "
-                                   "the file untouched) if any ERROR results. Never touches "
-                                   "gates, statuses or runs[]. --prose-only relaxes all of the "
-                                   f"above for text that only describes a test: --file may then "
-                                   f"hold only {', '.join(PROSE_ONLY_FIELDS)}; an acceptance_tests "
-                                   "array must keep the same length with the same type/command/"
-                                   "expected/scope at every index (only description may change); "
-                                   "the step may be at any status except 'running'; and an "
-                                   "already-approved step gate does not block it.")
+                                   "'approved' ('verified' is corrected with set-plan; 'done' has "
+                                   "no pending steps left), the step's own status is 'pending' or "
+                                   "'blocked' (a step already run is rebuilt via documented -> "
+                                   "running, or reset via failed -> pending, not amended), and the "
+                                   "step's own step:<id> gate, if any, is not yet approved (reject "
+                                   "it first — an amendment invalidates what the human signed). "
+                                   "At status 'planned' or 'plan-rejected' — a plan nobody has "
+                                   f"gated yet — --file may hold only {', '.join(AMEND_STEP_DRAFT_FIELDS)}: "
+                                   "the same reasoning set-plan already uses to allow a full "
+                                   "rewrite at those two statuses, narrowed to field-level here "
+                                   "because the plan, though ungated, has not been through set-plan "
+                                   "again either. Records who/when/why/which-fields/prior-values "
+                                   "in the step's amendments[], re-validates the whole plan, and "
+                                   "refuses the write (leaving the file untouched) if any ERROR "
+                                   "results. Never touches gates, statuses or runs[]. --prose-only "
+                                   "relaxes all of the above for text that only describes a test: "
+                                   f"--file may then hold only {', '.join(PROSE_ONLY_FIELDS)}; an "
+                                   "acceptance_tests array must keep the same length with the same "
+                                   "type/command/expected/scope at every index (only description "
+                                   "may change); the step may be at any status except 'running'; "
+                                   "and an already-approved step gate does not block it.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("step_id", metavar="step-id", help="e.g. M1-S01")
     p.add_argument("--file", required=True,

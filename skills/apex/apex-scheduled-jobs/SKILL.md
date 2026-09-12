@@ -41,9 +41,9 @@ outputs:
   - "CronTrigger SOQL query for monitoring and audit"
   - "Guidance on abort-and-reschedule pattern, deployment considerations, and testing approach"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 # Apex Scheduled Jobs
@@ -350,6 +350,8 @@ Full write-ups, with guide line cites, are in `references/gotchas.md` (13 entrie
 | `references/well-architected.md` | You need the Reliability / Operational Excellence framing, the architectural trade-offs, or the official source list with the claim each supports |
 | `templates/apex-scheduled-jobs-template.md` | You are running the skill as a structured engagement — context capture, CRON builder, review record |
 | `scripts/check_apex_scheduled_jobs.py` | Before deploying — static checks over `.cls` files for callouts in `execute()`, malformed CRON literals, unguarded `System.schedule`, and untested schedule calls |
+
+`scripts/check_apex_scheduled_jobs.py` is the canonical checker; `scripts/check_apex_scheduled.py` alongside it is a backward-compatible alias that delegates every argument to the canonical script and returns the same exit code — invoke either name, but cite the canonical one in new plans and tests.
 
 ---
 
