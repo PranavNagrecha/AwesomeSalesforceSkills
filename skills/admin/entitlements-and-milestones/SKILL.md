@@ -43,9 +43,9 @@ outputs:
   - "Verification SOQL for SlaProcess versions, active Entitlements and violated CaseMilestones"
   - "Version-bump plan when SLA terms change, including re-derived time-trigger offsets"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 # Entitlements and Milestones

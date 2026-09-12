@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "047071cb866dfd4a5ca1f8c21330cc88b3e3cf0fb18d9437375ecf3debcbb65f",
+  "generated_from_hash": "dcab592263acb04e24f27eda6c5d10b27b4149fd7e3ee894474e3d653128689d",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -19086,6 +19086,7 @@
         "8aa8d13b9840546d8d48",
         "8b2126ef81af6c78a89b",
         "8d9cf45b03543624cd67",
+        "8dadc87fb18d48be6c05",
         "8dbb57496336d4686ad0",
         "8eb0992722c98fb8581d",
         "8fcd34d0b7d477c5d83c",
@@ -19145,6 +19146,7 @@
         "da931a76518c4e737cf9",
         "dada6ebd323caa8f40a0",
         "db8827a481ee8312c826",
+        "de5d4adcb54fe387c6cf",
         "e05966bbfbfaec459506",
         "e1f2c973c1ef5cd7d66c",
         "e3544e5811750e5b0db2",
@@ -19170,7 +19172,7 @@
         "fe32de0a633a8dc7e8cb",
         "fe7f61499338b7fa208d"
       ],
-      "content_hash": "99550d0d7c0b590c54463b01e47e06b2337aea1c0f6b1b42bc2217c73c89db1d",
+      "content_hash": "08c6c41ffb65eb879d43697a80c0ed912a3fc5f6be4f300033191ddfa4e09d03",
       "dependencies": [],
       "description": "Use this skill to design, configure, and troubleshoot Salesforce Entitlement Management on Cases: entitlement processes, milestone definitions, recurrence types, milestone actions (success/warning/violation), business hours assignment, and entitlement templates. Covers the deployable EntitlementProcess / MilestoneType / EntitlementTemplate / EntitlementSettings metadata, signed timeLength time triggers, recurrenceType semantics, process versioning, and how a milestone actually completes. Trigger keywords: entitlement process, milestone, SLA timer, milestone tracker, first response SLA, time trigger, recursChained, CaseMilestone, EntitlementId, SlaProcess, stopped clock. NOT for SLA milestones on Field Service work orders \u2014 use admin/fsl-sla-configuration-requirements. NOT for time-based case escalation rules \u2014 use admin/escalation-rules. NOT for the business-hours calendar itself \u2014 use admin/business-hours-and-holidays.",
       "file_location": "skills/admin/entitlements-and-milestones",
@@ -19230,9 +19232,9 @@
       "templates": [
         "skills/admin/entitlements-and-milestones/templates/entitlements-and-milestones-template.md"
       ],
-      "updated": "2026-09-05",
+      "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "admin",

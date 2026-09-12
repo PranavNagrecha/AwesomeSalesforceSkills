@@ -44,8 +44,6 @@ WARN (printed, exit 0)
   W3  A process names <businessHours> that is not a <name> in the
       BusinessHours settings file, when that file is present in the tree. Same
       check for milestone-level <businessHours>.
-  W4  A milestone has no <timeTriggers> and no <successActions>: no warning,
-      no violation, no completion action. Nothing observable happens.
   W5  No process file in the tree sets <isVersionDefault>true</isVersionDefault>
       for a given <versionMaster>.
   W6  A process (or a milestone override) names <businessHours> and there is no
@@ -54,6 +52,10 @@ WARN (printed, exit 0)
       build step that does not own settings/BusinessHours.settings-meta.xml
       looks like — so it is a warning about scope, not an error about the
       process. Silence would be worse: it reads as "checked and clean".
+  W7  A time trigger resolves to a negative elapsed offset — it fires before
+      the milestone even starts. The offset is larger than the milestone
+      target, typically a stale <timeLength> left behind when
+      <minutesToComplete> was shortened without re-deriving the triggers.
 
 INFO (does not fail on its own)
   I1  A milestone has violation triggers (positive <timeLength>) but no warning
@@ -65,6 +67,17 @@ INFO (does not fail on its own)
   I2  Each trigger restated as "minutes elapsed" against the milestone target,
       so a percentage-for-offset transcription error is visible in lint output.
   I3  No entitlement process files found at all.
+  W4  A milestone has neither <timeTriggers> nor <successActions>: no warning
+      or completion action is configured; the milestone still counts down and
+      reports violation — intended when completion is driven by a
+      trigger/flow and no notification is wanted; confirm that is the design.
+      Neither field carries a Required marker in the Metadata API Developer
+      Guide (api_meta.txt:59162-59169: successActions/timeTriggers listed with
+      no "Required." qualifier, unlike e.g. apiVersion at api_meta.txt:5481),
+      so an all-declarative milestone with no actions at all is a legitimate
+      shape, not a defect — reported here for confirmation only, and it does
+      not fail the build even under --strict. Retains the historical "W4"
+      code (moved from WARN) so existing references to it still resolve.
   I4  Two triggers on one milestone resolve to the same elapsed minute once
       units are normalised -- usually a copy-paste with the unit not updated.
 """
@@ -363,9 +376,11 @@ def _check_milestone(
 
     if not triggers and not success_actions:
         findings.append(Finding(
-            "WARN", "W4", where,
-            f"Milestone '{label}' has neither <timeTriggers> nor <successActions>. It counts down "
-            "and nothing observable happens at any point.",
+            "INFO", "W4", where,
+            f"Milestone '{label}' has neither <timeTriggers> nor <successActions>: no warning "
+            "or completion action is configured; the milestone still counts down and reports "
+            "violation — intended when completion is driven by a trigger/flow and no "
+            "notification is wanted; confirm that is the design.",
         ))
 
     warning_offsets: list[int] = []
@@ -423,7 +438,7 @@ def _check_milestone(
             ))
             if elapsed < 0:
                 findings.append(Finding(
-                    "WARN", "W4", where,
+                    "WARN", "W7", where,
                     f"{trigger_label} fires before the milestone starts ({elapsed} min elapsed). "
                     "The offset is larger than the milestone target — a stale timeLength left "
                     "behind when minutesToComplete was shortened.",
