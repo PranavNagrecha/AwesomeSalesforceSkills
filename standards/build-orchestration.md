@@ -257,7 +257,7 @@ at the `go` gate for the human to weigh.
 - `validate` applies the tier's plan shape as **WARNs only** — a `scale: ask` plan with four steps warns and names the sizing rule. An ERROR here would turn a re-tier into a re-plan.
 - `ensure-gates` reads `scale`: at `ask` it adds `milestone:M1` and **no** `step:` record, because the single step is written `human_gate: false`.
 - `gate go …` and `gate accept …` are aliases legal only when `scale` is `ask`: `go` writes the `clarifications` and `plan` records in one invocation under one `--by` / `--at` / `--notes`; `accept` writes `milestone:M1`. The stored gate **names** are unchanged, so the § 3 name pattern, every approval precondition and every rejection behaviour apply exactly as written.
-- `status` prints `scale: <tier>` on the build-mode line, with `(override)` when a human set it.
+- `status` prints `scale: <tier>` on the build-mode line (`project (default)` when absent). The schema is `additionalProperties: false` at the top level, so a human override is not persisted: `init` echoes `(human override: init --scale)` once, and `status` never prints an override marker.
 - `render` emits `RUN.md` at the build root when `scale` is `ask`: what was built, every artefact path, the checker commands with their exit codes, the defaults applied and the assumptions they became, the `manual` acceptance lines, and the `mock_deploy.py` command to run next. It is a rendered view — never hand-edited. It is **not** added to `docs{}`, which is `additionalProperties: false`; a `docs.run` key is a separate schema change and is not made here.
 
 ### Agent deltas

@@ -2546,3 +2546,327 @@ def test_set_milestone_never_moves_an_accepted_milestone(tmp_path, fixture_repo,
     assert after["status"] == "accepted"
     assert after["report_path"] == "reports/r.md"
     assert after["reverifications"][0]["verdict"] == "verified"
+
+
+# --------------------------------------------------------------------------
+# § 3.1 "Ceremony scales to the ask" — scale
+# --------------------------------------------------------------------------
+
+def test_init_without_scale_leaves_it_absent(tmp_path, fixture_repo, requirement, capsys):
+    build_dir = tmp_path / "b"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Test Build",
+               "--requirement", str(requirement), "--repo-root", str(fixture_repo),
+               "--now", "2026-09-05T09:00:00Z") == 0
+    out = capsys.readouterr().out
+    plan = json.loads((build_dir / "plan.json").read_text())
+    assert "scale" not in plan
+    scale_line = next(l for l in out.splitlines() if l.strip().startswith("scale:"))
+    assert "unset" in scale_line
+    assert "override" not in scale_line
+
+
+def test_init_with_scale_stores_it_and_echoes_the_override(tmp_path, fixture_repo, requirement, capsys):
+    build_dir = tmp_path / "b"
+    assert run("init", "--build-dir", str(build_dir), "--title", "Test Build",
+               "--requirement", str(requirement), "--repo-root", str(fixture_repo),
+               "--now", "2026-09-05T09:00:00Z", "--scale", "ask") == 0
+    out = capsys.readouterr().out
+    plan = json.loads((build_dir / "plan.json").read_text())
+    assert plan["scale"] == "ask"
+    build_mode_line = next(l for l in out.splitlines() if "build mode:" in l)
+    scale_line = next(l for l in out.splitlines() if l.strip().startswith("scale:"))
+    assert "ask" in scale_line
+    assert "override" in scale_line
+    assert build_mode_line is not None  # scale is echoed beside it, not replacing it
+
+
+def test_init_rejects_an_unknown_scale(tmp_path, fixture_repo, requirement):
+    build_dir = tmp_path / "b"
+    rc = run("init", "--build-dir", str(build_dir), "--title", "Test Build",
+             "--requirement", str(requirement), "--repo-root", str(fixture_repo),
+             "--scale", "epic")
+    assert rc == 2  # argparse's own choices= rejection
+
+
+def test_validate_warns_ask_scale_shape_mismatch(tmp_path, fixture_repo, capsys):
+    steps = [step("M1-S01", "M1"), step("M1-S02", "M1", depends_on=["M1-S01"])]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0, "a shape mismatch is a WARN, never an ERROR (§ 3.1: re-tier, not re-plan)"
+    assert "scale 'ask' expects 1 milestone and 1 step" in out
+    assert "§ 3.1" in out
+
+
+def test_validate_warns_feature_scale_shape_mismatch(tmp_path, fixture_repo, capsys):
+    steps = [step(f"M1-S0{i}", "M1", depends_on=([f"M1-S0{i - 1}"] if i > 1 else []))
+             for i in range(1, 7)]
+    plan = plan_dict(steps, scale="feature")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "scale 'feature' expects 1 milestone and at most 5 steps" in out
+    assert "§ 3.1" in out
+
+
+def test_validate_no_shape_warn_when_scale_is_project_or_absent(tmp_path, fixture_repo, capsys):
+    # Two milestones' worth of shape (more than 'ask' or 'feature' would allow)
+    # is exactly what 'project' is for, and absent scale means 'project'.
+    steps = [step("M1-S01", "M1"), step("M1-S02", "M1", depends_on=["M1-S01"])]
+    for scale_kwargs in ({}, {"scale": "project"}):
+        plan = plan_dict(steps, **scale_kwargs)
+        label = scale_kwargs.get("scale", "absent")
+        path = write_plan_file(tmp_path / f"b-{label}", plan)
+        capsys.readouterr()
+        rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+        out = capsys.readouterr().out
+        assert rc == 0
+        assert "scale 'ask' expects" not in out
+        assert "scale 'feature' expects" not in out
+
+
+def test_ensure_gates_ask_adds_milestone_but_no_step_gate(tmp_path, fixture_repo):
+    steps = [step("M1-S01", "M1", human_gate=False)]
+    plan = plan_dict(steps, scale="ask", human_gates=[])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("ensure-gates", str(path), "--repo-root", str(fixture_repo)) == 0
+    names = [g["name"] for g in json.loads(path.read_text())["human_gates"]]
+    assert names == ["clarifications", "plan", "milestone:M1"]
+
+
+def test_ensure_gates_ask_adds_no_step_gate_even_when_human_gate_true(tmp_path, fixture_repo, capsys):
+    steps = [step("M1-S01", "M1", human_gate=True)]
+    plan = plan_dict(steps, scale="ask", human_gates=[])
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("ensure-gates", str(path), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    names = [g["name"] for g in json.loads(path.read_text())["human_gates"]]
+    assert names == ["clarifications", "plan", "milestone:M1"]
+    assert "step:M1-S01" not in names
+    assert "human_gate: true at scale 'ask'" in out
+
+
+def test_ensure_gates_still_adds_a_step_gate_at_project_scale(tmp_path, fixture_repo):
+    """Control: the ask-only carve-out does not leak into the unscaled default."""
+    steps = [step("M1-S01", "M1", human_gate=True)]
+    plan = plan_dict(steps, human_gates=[])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("ensure-gates", str(path), "--repo-root", str(fixture_repo)) == 0
+    names = [g["name"] for g in json.loads(path.read_text())["human_gates"]]
+    assert "step:M1-S01" in names
+
+
+def test_gate_go_on_ask_writes_clarifications_and_plan_together(tmp_path, fixture_repo):
+    steps = [step("M1-S01", "M1", human_gate=False)]
+    plan = plan_dict(steps, scale="ask", status="verified")
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("gate", str(path), "go", "approve", "--by", "pranav",
+               "--at", "2026-09-05T10:00:00Z", "--notes", "defaults accepted",
+               "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    gates = {g["name"]: g for g in after["human_gates"]}
+    assert gates["clarifications"]["status"] == "approved"
+    assert gates["clarifications"]["by"] == "pranav"
+    assert gates["clarifications"]["at"] == "2026-09-05T10:00:00Z"
+    assert gates["clarifications"]["notes"] == "defaults accepted"
+    assert gates["plan"]["status"] == "approved"
+    assert gates["plan"]["by"] == "pranav"
+    assert gates["plan"]["at"] == "2026-09-05T10:00:00Z"
+    assert gates["plan"]["notes"] == "defaults accepted"
+    assert after["status"] == "approved"
+
+
+def test_gate_go_respects_preconditions_in_order_clarifications_then_plan(tmp_path, fixture_repo):
+    """An open blocking clarification stops 'go' before the plan gate is even attempted."""
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, scale="ask", status="verified",
+                     clarifications=[{"id": "Q1", "question": "Which profiles are exempt?",
+                                      "kind": "blocking", "status": "open"}])
+    path = write_plan_file(tmp_path / "b", plan)
+    rc = run("gate", str(path), "go", "approve", "--by", "pranav", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    after = json.loads(path.read_text())
+    gates = {g["name"]: g for g in after["human_gates"]}
+    assert gates["clarifications"]["status"] == "pending", "nothing is written once the first record refuses"
+    assert gates["plan"]["status"] == "pending"
+    assert after["status"] == "verified"
+
+
+def test_gate_go_and_accept_refuse_outside_ask_scale(tmp_path, fixture_repo, capsys):
+    steps = [step("M1-S01", "M1")]
+    for scale_kwargs in ({}, {"scale": "project"}, {"scale": "feature"}):
+        label = scale_kwargs.get("scale", "absent")
+        plan = plan_dict(steps, status="verified", **scale_kwargs)
+        path = write_plan_file(tmp_path / f"b-{label}", plan)
+        capsys.readouterr()
+        assert run("gate", str(path), "go", "approve", "--by", "pranav",
+                   "--repo-root", str(fixture_repo)) == 1
+        assert run("gate", str(path), "accept", "approve", "--by", "pranav",
+                   "--repo-root", str(fixture_repo)) == 1
+        after = json.loads(path.read_text())
+        assert all(g["status"] == "pending" for g in after["human_gates"]), \
+            f"scale={label}: go/accept must not write anything"
+
+
+def test_gate_go_error_names_the_actual_scale(tmp_path, fixture_repo, capsys):
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, status="verified")  # no 'scale' key at all
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("gate", str(path), "go", "approve", "--by", "pranav", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    err = capsys.readouterr().err
+    assert "'project'" in err, "absent scale is 'project' by contract, and the error should say so"
+
+    plan2 = plan_dict(steps, status="verified", scale="feature")
+    path2 = write_plan_file(tmp_path / "b2", plan2)
+    capsys.readouterr()
+    rc2 = run("gate", str(path2), "accept", "approve", "--by", "pranav", "--repo-root", str(fixture_repo))
+    assert rc2 == 1
+    err2 = capsys.readouterr().err
+    assert "'feature'" in err2
+
+
+def test_gate_go_then_accept_on_ask_takes_the_build_to_done(tmp_path, fixture_repo):
+    steps = [step("M1-S01", "M1", human_gate=False)]
+    plan = plan_dict(steps, scale="ask", status="verified")
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("gate", str(path), "go", "approve", "--by", "pranav",
+               "--at", "2026-09-05T10:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    advance(path, fixture_repo, "M1-S01")
+    assert run("gate", str(path), "accept", "approve", "--by", "pranav",
+               "--at", "2026-09-05T11:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    gate = next(g for g in after["human_gates"] if g["name"] == "milestone:M1")
+    assert gate["status"] == "approved"
+    assert gate["by"] == "pranav"
+    assert gate["at"] == "2026-09-05T11:00:00Z"
+    assert after["status"] == "done"
+
+
+def test_status_prints_scale_on_the_build_mode_line(tmp_path, fixture_repo, capsys):
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    line = next(l for l in out.splitlines() if l.startswith("build mode:"))
+    assert "scale: ask" in line
+
+
+def test_status_prints_project_as_the_effective_default_scale(tmp_path, fixture_repo, capsys):
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps)  # no 'scale' key
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    line = next(l for l in out.splitlines() if l.startswith("build mode:"))
+    assert "scale: project" in line
+
+
+def test_render_writes_run_md_only_at_ask_scale(tmp_path, fixture_repo):
+    steps = [step("M1-S01", "M1")]
+
+    plan_ask = plan_dict(steps, scale="ask")
+    path_ask = write_plan_file(tmp_path / "ask", plan_ask)
+    assert run("render", str(path_ask), "--repo-root", str(fixture_repo)) == 0
+    assert (path_ask.parent / "RUN.md").is_file()
+
+    for scale_kwargs in ({}, {"scale": "feature"}, {"scale": "project"}):
+        label = scale_kwargs.get("scale", "absent")
+        plan = plan_dict(steps, **scale_kwargs)
+        path = write_plan_file(tmp_path / f"other-{label}", plan)
+        assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+        assert not (path.parent / "RUN.md").exists(), f"scale={label} must not get a RUN.md"
+
+
+def test_run_md_is_byte_deterministic_across_two_renders(tmp_path, fixture_repo):
+    steps = [step("M1-S01", "M1",
+                  tests=[{"type": "xml", "description": "every artefact parses"},
+                         {"type": "manual", "description": "admin confirms the fault path emails"}])]
+    plan = plan_dict(steps, scale="ask", clarifications=[
+        {"id": "Q1", "question": "Which profiles are exempt?", "kind": "informational",
+         "status": "answered", "answer": "none", "proposed_default": "none",
+         "default_source": "proposed_default"},
+        {"id": "Q2", "question": "Does it fire on insert too?", "kind": "blocking",
+         "status": "deferred", "answer": "DEFER: ask the PM"},
+    ])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    first = (path.parent / "RUN.md").read_bytes()
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    second = (path.parent / "RUN.md").read_bytes()
+    assert first == second
+
+
+def test_run_md_covers_the_required_sections(tmp_path, fixture_repo):
+    steps = [step("M1-S01", "M1",
+                  tests=[{"type": "xml", "description": "every artefact parses"},
+                         {"type": "manual", "description": "admin confirms the fault path emails"}])]
+    plan = plan_dict(steps, scale="ask", org={"alias": "uat-sandbox"}, build_mode="org-connected",
+                     clarifications=[
+                         {"id": "Q1", "question": "Which profiles are exempt?",
+                          "kind": "informational", "status": "answered", "answer": "none",
+                          "proposed_default": "none", "default_source": "proposed_default"},
+                         {"id": "Q2", "question": "Does it fire on insert too?",
+                          "kind": "blocking", "status": "deferred", "answer": "DEFER: ask the PM"},
+                     ])
+    # alpha-designer declares requires_org: false, so org-connected build_mode
+    # does not change which agent may own the step.
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    text = (path.parent / "RUN.md").read_text()
+
+    assert "M1-S01" in text
+    assert "alpha-designer" in text
+    assert "admin/fake-object-design" in text
+    assert "missing" in text  # the declared output has not been written yet
+    assert "admin confirms the fault path emails" in text  # manual acceptance line
+    assert "none" in text and "proposed_default" in text  # default applied, with its source
+    assert "ask the PM" in text  # deferred question
+    assert "clarifications" in text and "milestone:M1" in text  # gate states
+    assert "python3 scripts/mock_deploy.py plan.json --org-alias uat-sandbox --milestone M1" in text
+
+    write_outputs(path, "M1-S01")
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    text2 = (path.parent / "RUN.md").read_text()
+    assert "exists" in text2
+
+
+def test_run_md_shows_the_latest_test_result_when_present(tmp_path, fixture_repo):
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    write_results(path, "M1-S01", passed=True)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    text = (path.parent / "RUN.md").read_text()
+    assert "results.json" in text
+    assert "passed=true" in text
+
+
+def test_help_mentions_the_new_scale_flag_and_aliases():
+    import contextlib
+    import io
+
+    expectations = (
+        (["init", "--help"], "--scale"),
+        (["validate", "--help"], "3.1"),
+        (["ensure-gates", "--help"], "ask"),
+        (["gate", "--help"], "go"),
+        (["gate", "--help"], "accept"),
+        (["render", "--help"], "RUN.md"),
+        (["status", "--help"], "scale"),
+    )
+    for argv, needle in expectations:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            with pytest.raises(SystemExit):
+                build_plan.main(argv)
+        assert needle in buf.getvalue(), f"{argv}: --help does not mention {needle!r}"

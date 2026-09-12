@@ -148,6 +148,31 @@ BUILD_STATUSES = [
 # only be owned by agents that declare `requires_org: false`.
 BUILD_MODES = ["design-only", "org-connected"]
 
+# Section 3.1: how much ceremony the loop spends on a build. Absent means
+# `project` — every plan written before section 3.1 keeps its behaviour.
+SCALES = ["ask", "feature", "project"]
+
+# Section 3.1's sizing rule, "plan shape" row: the shape a plan is expected to
+# have at each scale, checked as a WARN only (never an ERROR — a shape
+# mismatch is a re-tier, not a re-plan). `project` is unbounded, so it never
+# appears here.
+SCALE_SHAPE_LIMITS = {
+    "ask": {"milestones": 1, "steps": 1},
+    "feature": {"milestones": 1, "max_steps": 5},
+}
+
+# The single milestone id an `ask`-scale plan's gates are written against
+# (section 3.1: "1 milestone, 1 step").
+ASK_MILESTONE_ID = "M1"
+
+# `gate` aliases legal only when `scale == "ask"` (section 3.1). The stored
+# gate names are unchanged — these are shorthand for writing more than one of
+# them, under the same --by/--at/--notes, in one invocation.
+GATE_ALIASES = {
+    "go": ["clarifications", "plan"],
+    "accept": [f"milestone:{ASK_MILESTONE_ID}"],
+}
+
 # Fallback for agents/_shared/schemas/agent-frontmatter.schema.json when that
 # file cannot be read (e.g. a synthetic repo root in a test).
 AGENT_STATUSES = ["stable", "beta", "deprecated"]
@@ -658,6 +683,39 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
                                 "the only thing an org-requiring agent can read metadata "
                                 "through (re-run init with --org-alias)"))
 
+    # --- scale vs. plan shape (§ 3.1's sizing rule) — WARN only ------------
+    # An ERROR here would turn a re-tier into a re-plan (§ 3.1, "CLI deltas").
+    # `project` (including absent `scale`) is the unbounded shape and is never
+    # checked.
+    scale = plan.get("scale")
+    limits = SCALE_SHAPE_LIMITS.get(scale)
+    # Nothing to check before the planner has written a single milestone —
+    # every build is briefly shapeless between `init` and its first
+    # `set-plan`, and that is not a sizing-rule disagreement.
+    if limits and milestones:
+        n_milestones = len(milestones)
+        n_steps = len(steps)
+        if "steps" in limits:  # ask: exactly one milestone, exactly one step
+            if n_milestones != limits["milestones"] or n_steps != limits["steps"]:
+                issues.append(("WARN", f"scale 'ask' expects {limits['milestones']} milestone and "
+                                       f"{limits['steps']} step (§ 3.1's sizing rule: 'ask' plan "
+                                       f"shape is 1 milestone, 1 step) — this plan has "
+                                       f"{n_milestones} milestone(s) and {n_steps} step(s); "
+                                       f"re-tier to 'feature' or 'project', or re-init --scale"))
+        elif n_milestones != limits["milestones"] or n_steps > limits["max_steps"]:
+            issues.append(("WARN", f"scale 'feature' expects {limits['milestones']} milestone and "
+                                   f"at most {limits['max_steps']} steps (§ 3.1's sizing rule: "
+                                   f"'feature' plan shape is 1 milestone, ≤ 5 steps) — this plan "
+                                   f"has {n_milestones} milestone(s) and {n_steps} step(s); "
+                                   f"re-tier to 'project', or re-init --scale"))
+    if scale == "ask":
+        for step in steps:
+            if step.get("human_gate"):
+                issues.append(("WARN", f"step {step.get('id')}: human_gate: true at scale 'ask' — "
+                                       f"§ 3.1's single-step ask plan is written human_gate: "
+                                       f"false; `ensure-gates` still adds no step: gate at this "
+                                       f"scale, so this flag has no effect"))
+
     # --- milestones: ids ordered M1..Mn -----------------------------------
     for i, milestone in enumerate(milestones):
         expected = f"M{i + 1}"
@@ -828,16 +886,22 @@ def required_gate_names(plan: dict) -> list[str]:
     Lifecycle order: G1, G2, then per milestone the `step:<id>` gates of its
     human-gated steps (they are reached before the milestone closes) followed
     by that milestone's own G3.
+
+    Section 3.1: at `scale: ask` the single step is expected `human_gate:
+    false`, and no `step:` gate is added even if it is — a step gate is
+    ceremony `ask` does not spend (`ensure-gates` deltas).
     """
     names = ["clarifications", "plan"]
     steps = plan.get("steps", []) or []
+    ask = plan.get("scale") == "ask"
     for milestone in plan.get("milestones", []) or []:
         mid = milestone.get("id")
         if not mid:
             continue
-        for step in steps:
-            if step.get("milestone") == mid and step.get("human_gate") and step.get("id"):
-                names.append(f"step:{step['id']}")
+        if not ask:
+            for step in steps:
+                if step.get("milestone") == mid and step.get("human_gate") and step.get("id"):
+                    names.append(f"step:{step['id']}")
         names.append(f"milestone:{mid}")
     return names
 
@@ -1279,6 +1343,129 @@ def gate_status(plan: dict, name: str) -> str:
     return "absent"
 
 
+def render_run_md(plan: dict, build_dir: Path) -> str:
+    """§ 3.1: the `scale: ask` rendered view — RUN.md at the build root.
+
+    Only called when `scale == "ask"`. Byte-deterministic like PLAN.md and
+    CLARIFICATIONS.md: every line comes from plan.json content, or from
+    whether a declared path exists on disk right now (a fact checked fresh
+    each render, not a timestamp) — the wall clock never reaches it.
+    """
+    out: list[str] = []
+    out.append(f"# {plan['title']}")
+    out.append("")
+    out.append(GENERATED_BANNER)
+    out.append("")
+    req_summary = ((plan.get("requirement") or {}).get("summary") or "").strip()
+    out.append(req_summary.splitlines()[0].strip() if req_summary
+               else "_No requirement summary recorded._")
+    out.append("")
+
+    steps = plan.get("steps") or []
+    out.append("## Step")
+    out.append("")
+    if not steps:
+        out.append("_No step planned yet._")
+        out.append("")
+    for s in steps:
+        sid = s.get("id")
+        out.append(f"### {sid} — {_cell(s.get('title'))}")
+        out.append("")
+        out.append(f"- Agent: `{s.get('agent')}`")
+        out.append(f"- Skills: {_cell(s.get('skills'))}")
+        out.append(f"- Status: `{s.get('status')}`")
+        out.append("")
+
+        out.append("Outputs:")
+        out.append("")
+        outputs = s.get("outputs") or []
+        if outputs:
+            for path in outputs:
+                exists = (build_dir / path).is_file()
+                out.append(f"- `{path}` — {'exists' if exists else 'missing'}")
+        else:
+            out.append("_No outputs declared._")
+        out.append("")
+
+        out.append("Acceptance tests:")
+        out.append("")
+        tests = s.get("acceptance_tests") or []
+        if tests:
+            for t in tests:
+                out.append(f"- {_test_label(t)}")
+        else:
+            out.append("_No acceptance tests declared._")
+        if sid:
+            results_path = _results_path(plan, sid, build_dir)
+            if results_path.is_file():
+                try:
+                    results = json.loads(results_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    results = None
+                if isinstance(results, dict):
+                    tests_root = (plan.get("docs") or {}).get("tests") or "tests/"
+                    rel = f"{tests_root.rstrip('/')}/{sid}/results.json"
+                    out.append("")
+                    out.append(f"Latest test run (`{rel}`): passed={json.dumps(results.get('passed'))}")
+        out.append("")
+
+    clarifications = plan.get("clarifications") or []
+    out.append("## Defaults applied")
+    out.append("")
+    defaults = [c for c in clarifications if (c.get("default_source") or "").strip()]
+    out.append(_bullets(
+        (f"`{c.get('id')}` — {_cell(c.get('question'))}: "
+         f"{_cell(c.get('answer') or c.get('proposed_default'))} "
+         f"(source: {_cell(c.get('default_source'))})")
+        for c in defaults))
+    out.append("")
+
+    out.append("## Deferred questions")
+    out.append("")
+    deferred = [c for c in clarifications if c.get("status") == "deferred"]
+    out.append(_bullets(
+        f"`{c.get('id')}` — {_cell(c.get('question'))}: {_cell(c.get('answer'))}"
+        for c in deferred))
+    out.append("")
+
+    out.append("## Manual acceptance")
+    out.append("")
+    manual = [
+        _cell(t.get("description"))
+        for owner in (steps, plan.get("milestones") or [])
+        for holder in owner
+        for t in (holder.get("acceptance_tests") or [])
+        if t.get("type") == "manual"
+    ]
+    out.append(_bullets(manual))
+    out.append("")
+
+    out.append("## Gates")
+    out.append("")
+    gate_lines = []
+    for gate in plan.get("human_gates") or []:
+        line = f"`{gate.get('name')}`: `{gate.get('status')}`"
+        if gate.get("by"):
+            line += f" by {gate['by']}"
+        if gate.get("at"):
+            line += f" at {gate['at']}"
+        gate_lines.append(line)
+    out.append(_bullets(gate_lines))
+    out.append("")
+
+    out.append("## Next")
+    out.append("")
+    out.append("Printed, never run:")
+    out.append("")
+    out.append("```bash")
+    alias = (plan.get("org") or {}).get("alias") or "<alias>"
+    out.append(f"python3 scripts/mock_deploy.py plan.json --org-alias {alias} "
+              f"--milestone {ASK_MILESTONE_ID}")
+    out.append("```")
+    out.append("")
+    return "\n".join(out)
+
+
 # --------------------------------------------------------------------------
 # Subcommands
 # --------------------------------------------------------------------------
@@ -1363,6 +1550,8 @@ def cmd_init(args: argparse.Namespace) -> int:
     }
     if args.org_alias:
         plan["org"] = {"alias": args.org_alias}
+    if args.scale:
+        plan["scale"] = args.scale
     schema = load_schema(args.schema)
     rc = write_plan(plan_path, plan, Path(args.repo_root), schema)
     if rc:
@@ -1379,6 +1568,16 @@ def cmd_init(args: argparse.Namespace) -> int:
     print(f"  build mode:     {plan['build_mode']}"
           + (f" (org alias: {args.org_alias})" if args.org_alias
              else " — steps may only be owned by agents with requires_org: false"))
+    # Section 3.1: `scale` is optional at init — absent leaves it unset, and
+    # the clarifier's first pass sets it from the printed sizing rule. When a
+    # human passes --scale here, that IS the override the contract describes;
+    # the schema is `additionalProperties: false` (no room for a stored
+    # `scale_override` flag), so this printed line is the only record of it —
+    # `status` later has no on-disk way to know whether `scale` was set by a
+    # human or by the clarifier.
+    print(f"  scale:          " + (f"{args.scale} (human override: init --scale)" if args.scale
+                                   else "(unset — the clarifier's Step 1 sets it from the "
+                                        "printed sizing rule)"))
     print(f"  plan:           {plan_path}")
     print(f"  requirement:    {build_dir / 'requirement.md'}")
     print(f"  rendered views: {build_dir / plan['docs']['plan']}, "
@@ -1410,7 +1609,15 @@ def _render(build_dir: Path, plan: dict) -> list[Path]:
     clar_md = build_dir / plan["docs"]["clarifications"]
     _atomic_write(plan_md, render_plan_md(plan))
     _atomic_write(clar_md, render_clarifications_md(plan))
-    return [plan_md, clar_md]
+    written = [plan_md, clar_md]
+    if plan.get("scale") == "ask":
+        # § 3.1: RUN.md is a rendered view, not part of docs{} (which is
+        # `additionalProperties: false` — a docs.run key is a separate schema
+        # change, not made here), so its path is fixed at the build root.
+        run_md = build_dir / "RUN.md"
+        _atomic_write(run_md, render_run_md(plan, build_dir))
+        written.append(run_md)
+    return written
 
 
 def cmd_render(args: argparse.Namespace) -> int:
@@ -1771,33 +1978,41 @@ def _approval_refusal(plan: dict, name: str) -> tuple[str | None, list[str]]:
     return None, notes
 
 
-def cmd_gate(args: argparse.Namespace) -> int:
-    plan_path = Path(args.plan)
-    schema = load_schema(args.schema)
+def _gate_once(plan_path: Path, schema: dict, repo_root: Path, gate_name: str,
+              decision: str, by: str, notes: str | None, at: str) -> int:
+    """Record one human gate decision. The body `cmd_gate` used to inline.
+
+    Factored out so § 3.1's `go`/`accept` aliases can apply more than one real
+    gate name, under the same --by/--at/--notes, in a single CLI invocation:
+    each alias member is applied with this exact function, in order, and the
+    first one that refuses stops the whole invocation before anything later
+    in the alias is attempted (`cmd_gate` reads a fresh copy of the plan for
+    each call, so a refusal here leaves the file exactly as the previous call
+    left it).
+    """
     plan = read_plan_on_schema(plan_path, schema)
-    gate = next((g for g in plan.get("human_gates") or [] if g.get("name") == args.gate), None)
+    gate = next((g for g in plan.get("human_gates") or [] if g.get("name") == gate_name), None)
     if gate is None:
-        _die(f"no gate {args.gate!r} in this plan — required gates are "
+        _die(f"no gate {gate_name!r} in this plan — required gates are "
              f"{', '.join(required_gate_names(plan))}; run `ensure-gates` to add the missing ones")
-    if args.decision == "approve":
-        refusal, notes = _approval_refusal(plan, args.gate)
-        for line in notes:
+    if decision == "approve":
+        refusal, refusal_notes = _approval_refusal(plan, gate_name)
+        for line in refusal_notes:
             print(line)
         if refusal:
-            _die(f"gate {args.gate} cannot be approved: {refusal}")
-    at = _now(args.at)
-    approving = args.decision == "approve"
+            _die(f"gate {gate_name} cannot be approved: {refusal}")
+    approving = decision == "approve"
     snapshot = copy.deepcopy(plan)
     snapshot.pop("history", None)
 
     gate["status"] = "approved" if approving else "rejected"
-    gate["by"] = args.by
+    gate["by"] = by
     gate["at"] = at
-    if args.notes:
-        gate["notes"] = args.notes
+    if notes:
+        gate["notes"] = notes
 
     milestone_ids = [m.get("id") for m in plan.get("milestones") or []]
-    name = args.gate
+    name = gate_name
     note = ""
     if approving:
         if name == "plan":
@@ -1823,8 +2038,8 @@ def cmd_gate(args: argparse.Namespace) -> int:
             # (`set-plan` from status 'plan-rejected'), not here: a plan that
             # is rejected and then abandoned never gets a v2 that no agent
             # ever wrote.
-            _archive_rejected_plan(plan, snapshot, at, args.by,
-                                   args.notes or "plan gate rejected")
+            _archive_rejected_plan(plan, snapshot, at, by,
+                                   notes or "plan gate rejected")
             plan["status"] = "plan-rejected"
             note = (f"build status -> plan-rejected (v{snapshot['version']} archived in "
                     f"history[]); the planner's next `set-plan` becomes "
@@ -1845,12 +2060,43 @@ def cmd_gate(args: argparse.Namespace) -> int:
     # it because the plan is invalid would trap the build. Schema errors still
     # block — see write_plan().
     lenient = not approving and name in {"plan", "clarifications"}
-    rc = write_plan(plan_path, plan, Path(args.repo_root), schema,
+    rc = write_plan(plan_path, plan, repo_root, schema,
                     allow_semantic_errors=lenient)  # schema was checked on read
     if rc:
         return rc
-    print(f"gate {name}: {gate['status']} by {args.by} at {at}" + (f" — {note}" if note else ""))
+    print(f"gate {name}: {gate['status']} by {by} at {at}" + (f" — {note}" if note else ""))
     return 0
+
+
+def cmd_gate(args: argparse.Namespace) -> int:
+    plan_path = Path(args.plan)
+    schema = load_schema(args.schema)
+    repo_root = Path(args.repo_root)
+    alias = args.gate
+
+    if alias in GATE_ALIASES:
+        # § 3.1: 'go' and 'accept' are shorthand for more than one real gate
+        # name, legal only at scale 'ask'. A fresh read (not the alias's own
+        # cached copy) so `_gate_once` sees whatever the previous member in
+        # the alias just wrote.
+        # Absent `scale` is 'project' by contract (§ 3.1), so the message
+        # names the plan's real effective tier rather than Python's `None`.
+        scale = read_plan(plan_path).get("scale") or "project"
+        if scale != "ask":
+            _die(f"gate '{alias}' is legal only when scale is 'ask' (this plan's scale is "
+                 f"{scale!r}) — § 3.1's go/accept aliases exist for a single-step ask build; "
+                 f"use the real gate name(s) instead: "
+                 f"{', '.join(GATE_ALIASES[alias])}")
+        at = _now(args.at)  # one timestamp, shared by every record 'go'/'accept' writes
+        for real_name in GATE_ALIASES[alias]:
+            rc = _gate_once(plan_path, schema, repo_root, real_name, args.decision,
+                            args.by, args.notes, at)
+            if rc:
+                return rc
+        return 0
+
+    return _gate_once(plan_path, schema, repo_root, alias, args.decision,
+                      args.by, args.notes, _now(args.at))
 
 
 def _ensure_gates(plan: dict) -> list[str]:
@@ -2350,7 +2596,17 @@ def cmd_status(args: argparse.Namespace) -> int:
           f"created: {plan['created']}")
     mode = plan.get("build_mode", "design-only")
     alias = (plan.get("org") or {}).get("alias")
-    print(f"build mode: {mode}" + (f"  ·  org alias: {alias}" if alias else ""))
+    scale = plan.get("scale")
+    # § 3.1: absent `scale` means 'project' by contract, so the effective tier
+    # is printed either way. The contract also asks for '(override)' here when
+    # a human set `scale`, but the schema is `additionalProperties: false` —
+    # there is no field this command could read that field back from, so no
+    # on-disk signal distinguishes a human's `init --scale` from the
+    # clarifier's own first pass. That distinction is recorded only in the
+    # transient `init` summary line (see cmd_init); it is not printed here.
+    scale_cell = scale or "project (default — no scale recorded)"
+    print(f"build mode: {mode}  ·  scale: {scale_cell}"
+          + (f"  ·  org alias: {alias}" if alias else ""))
     print(f"steps: {len(steps)}  ·  milestones: {len(plan.get('milestones') or [])}")
     print("")
     order = ["pending", "running", "built", "tested", "documented", "failed", "blocked"]
@@ -2477,6 +2733,12 @@ def build_parser() -> argparse.ArgumentParser:
                         "agent such as metadata-builder. The layer still never deploys.")
     p.add_argument("--now", default=None, help="ISO timestamp for 'created' (default: UTC now)")
     p.add_argument("--force", action="store_true", help="overwrite an existing plan.json")
+    p.add_argument("--scale", default=None, choices=SCALES,
+                   help="§ 3.1: how much ceremony this build spends — 'ask' (1 milestone, 1 "
+                        "step, two gates), 'feature' (1 milestone, ≤ 5 steps) or 'project' (the "
+                        "full § 3-5 pass). Optional; omit and the requirements-clarifier's "
+                        "printed sizing rule sets it on its first pass. Passing it here IS a "
+                        "human override, echoed on the 'scale:' summary line below.")
     p.set_defaults(func=cmd_init)
 
     p = sub.add_parser("validate", parents=[common], help="schema + contract validation",
@@ -2488,13 +2750,18 @@ def build_parser() -> argparse.ArgumentParser:
                                    "runnable and on the allow-list (no deploy, fetch or shell), "
                                    "milestone membership and ordering, and the required human "
                                    "gates (including step:<id> for every human-gated step). "
-                                   "Exit 1 on any ERROR.")
+                                   "§ 3.1: a `scale` that disagrees with the plan's shape (e.g. "
+                                   "'ask' with more than 1 milestone/step, 'feature' with more "
+                                   "than 5 steps) is a WARN, never an ERROR — it names the "
+                                   "sizing rule and never blocks. Exit 1 on any ERROR.")
     p.add_argument("plan", help="path to plan.json")
     p.set_defaults(func=cmd_validate)
 
     p = sub.add_parser("render", parents=[common], help="write PLAN.md + CLARIFICATIONS.md",
                        description="Render the human-readable views from plan.json. Output is "
-                                   "byte-deterministic: nothing but plan.json content reaches it.")
+                                   "byte-deterministic: nothing but plan.json content reaches it. "
+                                   "§ 3.1: also writes RUN.md at the build root when scale is "
+                                   "'ask'.")
     p.add_argument("plan", help="path to plan.json")
     p.set_defaults(func=cmd_render)
 
@@ -2563,9 +2830,18 @@ def build_parser() -> argparse.ArgumentParser:
                                    "marks that milestone rejected and leaves the build building; "
                                    "rejecting 'plan' archives the rejected body in history[] "
                                    "and sets the build status to plan-rejected — the version "
-                                   "number moves at the re-plan, when `set-plan` runs.")
+                                   "number moves at the re-plan, when `set-plan` runs. § 3.1: "
+                                   "'go' and 'accept' are aliases legal only when the plan's "
+                                   "scale is 'ask' — 'go' writes the 'clarifications' and 'plan' "
+                                   "records in this one invocation, under the same --by/--at/"
+                                   "--notes, honouring each record's own precondition in order "
+                                   "(clarifications first, then plan); 'accept' writes "
+                                   "'milestone:M1'. The stored gate names are unchanged; using "
+                                   "either alias on a non-'ask' plan is an error naming the "
+                                   "plan's actual scale.")
     p.add_argument("plan", help="path to plan.json")
-    p.add_argument("gate", help="clarifications | plan | milestone:M1 | step:M1-S01")
+    p.add_argument("gate", help="clarifications | plan | milestone:M1 | step:M1-S01 | "
+                                "go | accept (go/accept: scale 'ask' only, see description)")
     p.add_argument("decision", choices=["approve", "reject"])
     p.add_argument("--by", required=True, help="the human who decided")
     p.add_argument("--notes", default=None)
@@ -2590,7 +2866,11 @@ def build_parser() -> argparse.ArgumentParser:
                    help="replace dest-dir if it already exists")
     p.set_defaults(func=cmd_export)
 
-    p = sub.add_parser("status", parents=[common], help="one-screen build summary")
+    p = sub.add_parser("status", parents=[common], help="one-screen build summary",
+                       description="One-screen summary: step counts per milestone, gates, "
+                                   "blockers. § 3.1: the build-mode line also prints "
+                                   "'scale: <tier>' (absent scale reads as 'project', its "
+                                   "contract default).")
     p.add_argument("plan", help="path to plan.json")
     p.set_defaults(func=cmd_status)
 
@@ -2599,7 +2879,11 @@ def build_parser() -> argparse.ArgumentParser:
                        description="Add 'clarifications', 'plan', one 'milestone:<id>' gate per "
                                    "milestone and one 'step:<step-id>' gate per step carrying "
                                    "human_gate: true, each as pending, then sort them into "
-                                   "lifecycle order. Never changes an existing gate.")
+                                   "lifecycle order. Never changes an existing gate. § 3.1: at "
+                                   "scale 'ask' this adds 'milestone:M1' and no 'step:' record "
+                                   "at all — the single step is expected human_gate: false, and "
+                                   "even when it is true no step gate is added (validate WARNs "
+                                   "instead).")
     p.add_argument("plan", help="path to plan.json")
     p.set_defaults(func=cmd_ensure_gates)
 
