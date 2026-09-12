@@ -310,3 +310,150 @@ the **Deploy order** table in `references/code-examples.md`. Run this skill's ch
 classes from one dedicated foundations step ahead of every Apex step that needs them
 (`agents/build-planner/AGENT.md` Step 6) rather than assuming a later or earlier step
 covered it.
+
+---
+
+## Gotcha 13: A `SeeAllData` Test Must Select Its Entitlement Process By Name, Not `LIMIT 1`
+
+**What happens:** `requireActiveProcess()` (Gotcha 6) needs `@IsTest(SeeAllData=true)`
+because `SlaProcess` has no `create()` call — the annotation "grant[s] test methods access
+to all data in the organization" (`apexdev L5802–5813`). A version of that method filtered
+only `WHERE IsActive = true LIMIT 1`, with no filter naming which process. In a scratch org
+with nothing else configured, that query can only return the one process the test deployed,
+so the gap is invisible. In a target org that already runs its own entitlement process for
+the same case type, `LIMIT 1` with no `ORDER BY` returns whichever active row the platform
+hands back first — the org's pre-existing process, not the deployed one — and if that
+process carries no matching milestone, the test proceeds against the wrong process
+entirely. It does not fail loudly: it queries a real `CaseMilestone` search space, finds no
+open "First Response" milestone because the row it entered has none, and asserts "no open
+milestone was generated" — a true statement about the wrong process, read as a false
+statement about the deployed one.
+
+**When it occurs:** Any `@IsTest(SeeAllData=true)` entitlement test deployed into an org
+that has ever configured entitlement management on its own, independent of the build under
+test — which is most orgs holding an active Service Cloud implementation. It is invisible
+in every earlier dry run against a bare scratch org and surfaces for the first time against
+a real target org.
+
+**How to avoid:** Select the deployed process by name, not by recency or `LIMIT 1`, assert
+the result count is exactly one (catching both "missing" and "more than one match"), and
+name the process in the failure message so a future run that regresses says which
+prerequisite is missing rather than just "assertion failed":
+
+```apex
+private static final List<String> STANDARD_PROCESS_NAMES = new List<String>{
+    'First_Response_Standard', 'First Response Standard'
+};
+
+private static SlaProcess requireActiveProcess() {
+    List<SlaProcess> processes = [
+        SELECT Id, Name
+        FROM SlaProcess
+        WHERE IsActive = true
+          AND Name IN :STANDARD_PROCESS_NAMES
+    ];
+    Assert.areEqual(
+        1,
+        processes.size(),
+        'Expected exactly one active SlaProcess named "First_Response_Standard" (or its ' +
+        'label form "First Response Standard") in this org — found ' + processes.size() +
+        '. This test cannot create that row (SlaProcess has no create()), so the deployed ' +
+        'process must exist, be active, and be the only match before this test proves ' +
+        'anything.'
+    );
+    return processes[0];
+}
+```
+
+UNVERIFIED (2026-09-12): whether the `SlaProcess.Name` field preserves the metadata
+`<name>` attribute literally (e.g. `First_Response_Standard`) or whether the platform
+stores or displays a space-separated label form (`First Response Standard`) instead.
+Neither extract states it, and neither does this skill nor `admin/entitlements-and-milestones`.
+Query both candidate spellings with `IN` and assert the count is exactly one, rather than
+guessing which one your org uses — one match either way settles it without the test needing
+to know in advance.
+
+Checker rule `EAH010` flags a `SlaProcess` query in a `@IsTest`/`@TestSetup` file with no
+`Name` filter.
+
+**Where this came from:** `case-onboarding` build F-61 —
+`.sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md` runs 6–7;
+`.sfskills/builds/case-onboarding/artefacts/M4-S05/deploy-order.md` § 10. The target org's
+own pre-existing `Standard Case` process, carrying no `First Response` milestone, was
+returned by the unfiltered query instead of the deployed `First_Response_Standard`.
+
+---
+
+## Gotcha 14: The Milestone Stamp Is a System-Integrity Write — Bound It in `AccessLevel.SYSTEM_MODE` and Assert No Swallowed `SaveResult` Errors
+
+**What happens:** `CaseMilestoneService`'s completion query and DML ran without an explicit
+access-level argument, so both inherited the API 67.0 default: user mode, as whichever
+persona's save triggered the `after update` trigger. No permission set in the build granted
+that persona any access — Create, Read, or Edit — to `CaseMilestone` at all, because nothing
+in the requirements ever asked the case-working agent to control SLA infrastructure
+directly. The query still found the open milestone (user-mode visibility on `CaseMilestone`
+was not the gap), but `Database.update(openMilestones, false)` — partial-success DML — ran
+as that same ungranted persona, and the platform refused the write. Partial success does not
+throw; the refusal landed in `saveResults[i].getErrors()` exactly as documented (Gotcha 10),
+and the test asserted only `result.attempted > 0`, never `result.failures`. The visible
+symptom two calls downstream was a wrong count — a milestone that should have shown
+`CompletionDate` still null, and a completed milestone that should have been skipped instead
+showing as re-attempted — not the DML refusal itself, which never surfaced anywhere a
+reviewer would see it.
+
+**When it occurs:** Any milestone-completion service invoked from a trigger, where the
+running user is the business persona whose save fired the trigger (not an integration user,
+not the deploying admin) and where no permission set in the build grants that persona any
+`CaseMilestone` access — the common shape, since `CaseMilestone` is a platform-owned object
+(Gotcha 5) that no persona's job ordinarily calls for editing directly.
+
+**How to avoid:** Treat the milestone stamp as a system-integrity write — the entitlement
+engine's own completion signal, invoked from a trigger the moment a case leaves its opening
+status, not a field the running persona deliberately edits — and bound it in an explicit
+`AccessLevel.SYSTEM_MODE`, with a `// reason:` comment naming why: "In system mode, the
+object and field-level permissions of the current user are ignored, and the record sharing
+rules are controlled by the class sharing keywords" (`apexdev L11436–L11439`);
+`AccessLevel.SYSTEM_MODE` is documented as an explicit argument to `Database` DML methods
+including `update`, alongside `insert`, `upsert`, `merge`, `delete`, `undelete`, and
+`convertLead` (`apexdev L11995–L12006`):
+
+```apex
+List<Database.SaveResult> saveResults = Database.update(
+    openMilestones, false, AccessLevel.SYSTEM_MODE
+);
+```
+
+The alternative — granting the persona Edit on `CaseMilestone` so the default user-mode
+write succeeds — widens a persona to access nobody asked it to have, the same anti-pattern
+`apex/test-class-standards` Gotcha 15 names for seeding test fixtures: don't choose between
+"grant access the job doesn't need" and "can't do the write at all". Narrow to system mode
+instead. See the access-mode decision table in `apex/apex-security-patterns` SKILL.md for
+the general "integration/platform-utility code on a 67.0+ class must see all rows and
+fields" shape this fits.
+
+Whichever access level is used, assert on the `Database.SaveResult` array, not only on the
+attempt count — a swallowed failure changes downstream counts in a way that looks like a
+different bug:
+
+```apex
+Assert.areEqual(0, result.failures.size(), String.join(result.failures, ' | '));
+```
+
+UNVERIFIED (2026-09-12): whether `AccessLevel.USER_MODE` on a `Database.update` call is
+what specifically makes `SaveResult.getErrors()` populate with the FLS refusal (the extract
+documents the tip only for `AccessLevel.USER_MODE`, not for the plain no-argument default
+this build started from — `apexdev L12006`). What is grounded is the asymmetry itself: a
+refusal under partial-success DML never throws regardless of access level, so a test that
+does not iterate `SaveResult` cannot tell a refused write from a silent no-op either way.
+
+**Where this came from:** `case-onboarding` build F-62 —
+`.sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md` runs 7–8;
+`.sfskills/builds/case-onboarding/artefacts/M4-S05/deploy-order.md` § 11. The first repair
+in this build's history to change shipped code rather than only the test.
+
+**See also:** Gotcha 10 (iterate `Database.SaveResult`, don't just trust partial-success
+DML not to throw) is the general rule; this gotcha is the specific case where the write
+itself needs an explicit access-level boundary before the `SaveResult` loop has anything
+correct to report on. `apex/test-class-standards` Gotcha 15 draws the same
+seed-in-system-mode-act-as-persona line for test fixtures; this gotcha draws it for shipped
+service code.

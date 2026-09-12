@@ -35,7 +35,7 @@ outputs:
   - "Scheduled Apex class that queries and processes violated milestones"
   - "Test class covering IsCompleted read-only constraint and bulk DML patterns"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
 updated: 2026-09-12
 ---
@@ -72,6 +72,7 @@ write-up in `references/gotchas.md`.
 | **5. Which org will this be tested in, and does it have an active entitlement process?** (Gotcha 5, Gotcha 6) | A test cannot create an `SlaProcess` and cannot create a `CaseMilestone` — neither object supports `create()`. Without a configured process the test queries an empty list and passes vacuously. | A named sandbox with entitlement management configured, and a decision on whether `@IsTest(SeeAllData=true)` is acceptable to the team. | The test asserts loudly on the missing prerequisite and keeps one method that still runs without it, instead of producing a green build that certifies automation which has never executed. |
 | **6. What should happen when one milestone in a bulk update fails — abort the case save, or complete the rest?** (Gotcha 10) | All-or-nothing `update` rolls the case save back; `Database.update(list, false)` completes the rest but throws nothing, so failures vanish unless the results array is iterated. | An explicit business answer about whether a failed milestone should block the agent's save. | The `Database.SaveResult` loop and a logging destination are part of the design, rather than boilerplate that gets trimmed in review and takes the error signal with it. |
 | **7. How does the business need to see violations and time remaining — a notification, a report, or custom logic?** (Gotcha 7, Gotcha 9) | Notifications and field updates are native milestone actions and need no Apex. Custom logic needs a scheduled poll, because there is no documented DML event for the `IsViolated` transition. And `TimeRemainingInMins` is a text field, so a "due within 30 minutes" report cannot filter on it. | A distinction between "tell someone" and "do something", plus the actual shape of the report. | Half the requirement is met declaratively with no code to maintain, and the half that needs Apex is a scheduled job with an idempotency guard rather than a trigger that never fires. |
+| **8. Which entitlement process, by name, does the target org run for this case type — and does the org already carry others?** (Gotcha 6, Gotcha 13) | A test needs `@IsTest(SeeAllData=true)` to reach a real `SlaProcess` at all. If the target org already has its own active process for this case type, an unfiltered `WHERE IsActive = true LIMIT 1` can silently return that pre-existing process instead of the one being deployed. | The exact process name (and label form, if different) the deployed automation should enter, plus a list of any other active processes the org already runs. | The test selects the process by name and asserts exactly one match, instead of a `LIMIT 1` query that passes vacuously against the wrong process — a defect that only an org dry run surfaces, never a scratch org. |
 
 **What proper configuration adds over just doing it:** the three failure modes in this
 domain — a query that returns nothing, a write to a field that is not updateable, and a
@@ -192,6 +193,9 @@ Run through these before marking work in this area complete:
 - [ ] Bulk-safe: trigger uses `Trigger.new` list, queries use `IN :idSet`, DML uses list `update`
 - [ ] Test class creates the full entitlement process hierarchy so `CaseMilestone` records actually exist during test execution
 - [ ] Idempotency guard in scheduled violation handler (prevents double-escalation on the same milestone)
+- [ ] A `SeeAllData` test selects its `SlaProcess` by name and asserts exactly one match — not `WHERE IsActive = true LIMIT 1` with no name filter (Gotcha 13)
+- [ ] Any `CaseMilestone` write from a trigger-called service that no permission set grants the running persona is bound in an explicit `AccessLevel.SYSTEM_MODE`, with a `// reason:` comment (Gotcha 14)
+- [ ] Every test assertion after a `Database.update(..., false)` call also asserts `result.failures.size() == 0` (or iterates `SaveResult.getErrors()`) — not only an attempt or success count (Gotcha 14)
 
 ---
 
@@ -214,6 +218,9 @@ The full write-up, with source lines and explicit `UNVERIFIED` markers where the
 | 9 | No documented DML event for `IsViolated` | Poll with Scheduled Apex or use native milestone violation actions |
 | 10 | Partial-success DML hides failures | `Database.update(list, false)` throws nothing; iterate the `SaveResult` array |
 | 11 | The milestone type name is a string match | A Setup rename returns zero rows, not an error |
+| 12 | A generated test class ships without the template it calls | `TestDataFactory` and other `templates/apex/**` classes must be copied into the same deployable set |
+| 13 | A `SeeAllData` test must select its entitlement process by name | `WHERE IsActive = true LIMIT 1` can return the target org's own pre-existing process instead of the deployed one |
+| 14 | The milestone stamp is a system-integrity write | Bound it in explicit `AccessLevel.SYSTEM_MODE`, and assert `result.failures.size() == 0` — partial-success DML never throws |
 
 ---
 
@@ -233,6 +240,8 @@ The full write-up, with source lines and explicit `UNVERIFIED` markers where the
 - `admin/case-management-setup` — broader case configuration around the entitlement process
 - `apex/case-trigger-patterns` — entitlement auto-association and assignment logic in a Case trigger, which is a different job from milestone completion
 - `apex/opportunity-trigger-patterns` — general Apex trigger bulk-safety patterns applicable here
+- `apex/test-class-standards` Gotcha 15 — seeds a test fixture in `AccessLevel.SYSTEM_MODE` and acts as the persona; Gotcha 14 in this skill draws the same boundary one level up, for a shipped service's own write
+- `apex/apex-security-patterns` — the general access-mode decision table (`WITH USER_MODE` vs `WITH SYSTEM_MODE`) that Gotcha 14's system-mode write follows
 
 ## Deployable Reference
 

@@ -198,3 +198,46 @@ trigger CaseTrigger on Case (before update) {
 **Correct pattern:** Use `after update` on Case when the business logic requires writing to related `CaseMilestone` records. The case is already committed and the related record write is a separate, clean DML operation.
 
 **Detection hint:** Any trigger that specifies `before update` or `before insert` and then issues DML to `CaseMilestone` is suspect.
+
+---
+
+## Anti-Pattern 7: Asserting the Attempt Count and Never the `Database.SaveResult` Failures
+
+**What the LLM generates:**
+
+```apex
+@IsTest
+static void testCompletion() {
+    // ...
+    CompletionResult result = CaseMilestoneService.completeMilestones(caseIds);
+    Assert.isTrue(result.attempted > 0, 'Should have attempted at least one milestone.');
+    // WRONG — never checks result.failures, so a refused write reads as a pass
+}
+```
+
+**Why it happens:** `Database.update(list, false)` (partial-success DML) does not throw, so a test written against the "happy path" shape passes as long as the call returns without an exception. LLMs generalize the pattern "call the method, assert something about the result" without knowing that on this object the *only* place a persona's lack of `CaseMilestone` access surfaces is inside `result.failures` — the attempt count still increments even when every attempted write was refused, because "attempted" and "succeeded" are tracked separately by design (Gotcha 10).
+
+**What actually happens:** a persona with no permission set granting any access to `CaseMilestone` — the common shape, since `CaseMilestone` is platform-owned (Gotcha 5) and no requirement ordinarily asks the case-working agent to edit it directly — gets every write refused under the API 67.0 user-mode default. The refusal lands in `Database.SaveResult.getErrors()` and nowhere else. The test passes; the milestone never completes in production.
+
+**Correct pattern:**
+
+```apex
+@IsTest
+static void testCompletion() {
+    // ...
+    CompletionResult result = CaseMilestoneService.completeMilestones(caseIds);
+    Assert.isTrue(result.attempted > 0, 'Should have attempted at least one milestone.');
+    Assert.areEqual(0, result.failures.size(), String.join(result.failures, ' | '));  // CORRECT
+}
+```
+
+And on the shipped service side, bound the write in an explicit access level rather than
+relying on the running persona happening to have `CaseMilestone` access:
+
+```apex
+List<Database.SaveResult> saveResults = Database.update(
+    openMilestones, false, AccessLevel.SYSTEM_MODE
+);
+```
+
+**Detection hint:** A test method that calls a `Database.update(..., false)` code path (directly or through a service method) and asserts only a count or a boolean, with no reference to `.failures`, `.getErrors()`, or an equivalent results collection, cannot distinguish "succeeded" from "silently refused." See Gotcha 14 in `references/gotchas.md`.

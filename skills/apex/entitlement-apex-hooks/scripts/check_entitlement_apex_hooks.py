@@ -21,6 +21,9 @@ in `references/gotchas.md`:
     of that class shipped in the same manifest fails deploy with
     `Variable does not exist: <Name>` (rule EAH009, WARN — see references/code-examples.md
     § Deploy prerequisites).
+  * A `SeeAllData` test class that selects its `SlaProcess` with no `Name` filter proves
+    nothing against a target org that already runs its own active process (rule EAH010,
+    WARN — see Gotcha 13 in references/gotchas.md).
 
 stdlib only — no pip dependencies.
 
@@ -473,6 +476,50 @@ def rule_trigger_shape(path: Path, source: str, stripped: str) -> list[Finding]:
     return findings
 
 
+_IS_TEST_CLASS = re.compile(r"@[Ii]s[Tt]est\b|@[Tt]est[Ss]etup\b", re.I)
+_SLA_PROCESS_QUERY = re.compile(
+    r"\[\s*SELECT\b(?:[^\[\]]|\[[^\]]*\])*?\bFROM\s+SlaProcess\b(?:[^\[\]]|\[[^\]]*\])*?\]",
+    re.I | re.S,
+)
+_NAME_FILTER = re.compile(r"\bName\s*(?:=|IN)\s*[:(]", re.I)
+
+
+def rule_slaprocess_missing_name_filter(path: Path, source: str, stripped: str) -> list[Finding]:
+    """EAH010 — a SeeAllData test selects SlaProcess with no Name filter.
+
+    A test class needs `@IsTest(SeeAllData=true)` to reach a real SlaProcess at all
+    (Gotcha 6 — SlaProcess has no create()). `WHERE IsActive = true LIMIT 1` with no name
+    filter returns whichever active SlaProcess the target org already has, not necessarily
+    the one the test was written to exercise — if the org carries its own process with a
+    different milestone shape, the test silently enters the wrong process and proves
+    nothing (F-61, case-onboarding MOCK-DEPLOY-M5.md run 6; deploy-order.md § 10). WARN,
+    not ERROR: this is a test-grounding defect that only an org dry run surfaces, and a
+    query that happens to filter Name on a different clause shape than this regex expects
+    is a false negative this checker will miss, not a false positive it will raise.
+    """
+    findings: list[Finding] = []
+    if not _IS_TEST_CLASS.search(stripped):
+        return findings
+    for match in _SLA_PROCESS_QUERY.finditer(stripped):
+        if _NAME_FILTER.search(match.group(0)):
+            continue
+        findings.append(
+            Finding(
+                WARN,
+                path,
+                line_of(source, match.start()),
+                "EAH010",
+                "SOQL on SlaProcess in a test class with no Name filter — "
+                "`WHERE IsActive = true LIMIT 1` (or similar) takes whichever active "
+                "entitlement process the target org already has, not necessarily the one "
+                "this test was written against. Select by name, assert exactly one match, "
+                "and name the process in the failure message. See Gotcha 13 in "
+                "references/gotchas.md.",
+            )
+        )
+    return findings
+
+
 _RULES = (
     rule_query_or_dml_in_loop,
     rule_non_updateable_writes,
@@ -482,6 +529,7 @@ _RULES = (
     rule_missing_open_filter,
     rule_time_remaining_numeric,
     rule_trigger_shape,
+    rule_slaprocess_missing_name_filter,
 )
 
 
