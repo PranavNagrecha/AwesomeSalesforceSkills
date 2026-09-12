@@ -405,9 +405,15 @@ types.
    has no deploy option). Run it after a milestone verifies and before the G3
    decision; its `summary.md` under `reports/mock-deploy/<ts>/` is evidence for
    the gate. Manifest mode is the only check that reads the merged
-   `package.xml`. The case-onboarding example shows why it matters: three
-   milestones' worth of green checkers let five platform rules through that
-   only the org caught (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`).
+   `package.xml`. The tree is copied whole — every file under
+   `artefacts/<step>/` except `package.xml`, `*.md` notes and dotfiles — and
+   deploys at the highest `<version>` any selected step's `package.xml`
+   declares (`--api-version` overrides; `summary.md` records the choice), because
+   a later step may legitimately need a newer API than the first one pinned.
+   The case-onboarding example shows why it matters: three milestones' worth
+   of green checkers let five platform rules through that only the org caught
+   (`examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md`), and M3's
+   case settings added three more (`MOCK-DEPLOY-M3.md`).
 2. **Checker shape.** A `checker` test's `command` must match
    `^python3 skills/[a-z]+/[a-z0-9-]+/scripts/check_[a-z0-9_]+\.py\b`, and the
    file must exist on disk. A checker that does not exist is an ERROR at plan
