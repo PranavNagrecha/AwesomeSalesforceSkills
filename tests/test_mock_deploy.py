@@ -464,6 +464,188 @@ def test_resolve_manifest_prefer_report_manifest_uses_report_but_still_warns(tmp
 
 
 # --------------------------------------------------------------------------
+# S2-F-22: --milestone under-copies for a build-level manifest
+# --------------------------------------------------------------------------
+
+def test_find_missing_manifest_members_flags_member_with_no_file(tmp_path):
+    manifest = PACKAGE_XML_TEMPLATE.format(
+        members="Tier2EscalationService", type_name="ApexClass", version="67.0"
+    )
+    source_root = tmp_path / "force-app"
+    source_root.mkdir()
+    # Nothing under source_root matches "Tier2EscalationService".
+    assert mock_deploy.find_missing_manifest_members(manifest, source_root) == [
+        ("ApexClass", "Tier2EscalationService"),
+    ]
+
+
+def test_find_missing_manifest_members_empty_when_file_present(tmp_path):
+    manifest = PACKAGE_XML_TEMPLATE.format(
+        members="Tier2EscalationService", type_name="ApexClass", version="67.0"
+    )
+    source_root = tmp_path / "force-app"
+    _write(source_root / "classes" / "Tier2EscalationService.cls", "public class Tier2EscalationService {}")
+    assert mock_deploy.find_missing_manifest_members(manifest, source_root) == []
+
+
+def test_find_missing_manifest_members_missing_root_flags_every_member(tmp_path):
+    manifest = PACKAGE_XML_TEMPLATE.format(
+        members="Case.Severity__c", type_name="CustomField", version="62.0"
+    )
+    assert mock_deploy.find_missing_manifest_members(
+        manifest, tmp_path / "does-not-exist"
+    ) == [("CustomField", "Case.Severity__c")]
+
+
+def test_main_milestone_alone_under_copies_build_level_manifest_warns(tmp_path, monkeypatch):
+    # Reproduces the case-onboarding M5 defect: M4-S05 owns an Apex class;
+    # M5-S05 is a "build-level manifest" step whose own package.xml already
+    # names that class (as a real milestone verifier report would). Selecting
+    # `--milestone M5` alone copies only M5's own files, so the class file
+    # never reaches the assembled tree even though the manifest lists it.
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M4-S05" / "classes" / "Tier2EscalationService.cls",
+        "public class Tier2EscalationService {}",
+    )
+    _write(
+        build_dir / "artefacts" / "M4-S05" / "package.xml",
+        PACKAGE_XML_TEMPLATE.format(
+            members="Tier2EscalationService", type_name="ApexClass", version="67.0"
+        ),
+    )
+    _write(
+        build_dir / "artefacts" / "M5-S05" / "reports" / "Support_Operations"
+        / "Escalated_Open_Cases.report-meta.xml",
+        "<Report/>",
+    )
+    # M5-S05's own package.xml is the "build-level manifest": it already
+    # lists the Apex class that actually lives under M4-S05, alongside a
+    # Report member M5-S05 genuinely owns and copies itself.
+    _write(
+        build_dir / "artefacts" / "M5-S05" / "package.xml",
+        """<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Tier2EscalationService</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Support_Operations/Escalated_Open_Cases</members>
+        <name>Report</name>
+    </types>
+    <version>67.0</version>
+</Package>
+""",
+    )
+    plan = json.loads((build_dir / "plan.json").read_text(encoding="utf-8"))
+    plan["steps"].append({"id": "M4-S05", "milestone": "M4", "status": "documented"})
+    plan["steps"].append({"id": "M5-S05", "milestone": "M5", "status": "documented"})
+    (build_dir / "plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+
+    printed = []
+    monkeypatch.setattr("builtins.print", lambda *a, **k: printed.append(" ".join(str(x) for x in a)))
+
+    out_dir = tmp_path / "under-copy-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M5",
+         "--mode", "manifest", "--plan-only", "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    warn_lines = [line for line in printed if line.startswith("WARN:") and "manifest member" in line]
+    assert warn_lines, "expected a WARN about manifest members with no assembled file"
+    assert "1 manifest member(s)" in warn_lines[0]
+    assert "ApexClass:Tier2EscalationService" in warn_lines[0]
+    assert "default selection = every built step" in warn_lines[0]
+
+    # The Apex class file itself never reached the assembled tree.
+    assert not (out_dir / "force-app" / "main" / "default" / "classes"
+                / "Tier2EscalationService.cls").exists()
+
+
+def test_main_default_selection_every_built_step_has_no_missing_members(tmp_path, monkeypatch):
+    # Same fixture, but with the default selection (no --milestone/--step):
+    # every built/tested/documented step is copied, so nothing is missing.
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M4-S05" / "classes" / "Tier2EscalationService.cls",
+        "public class Tier2EscalationService {}",
+    )
+    _write(
+        build_dir / "artefacts" / "M4-S05" / "package.xml",
+        PACKAGE_XML_TEMPLATE.format(
+            members="Tier2EscalationService", type_name="ApexClass", version="67.0"
+        ),
+    )
+    plan = json.loads((build_dir / "plan.json").read_text(encoding="utf-8"))
+    plan["steps"].append({"id": "M4-S05", "milestone": "M4", "status": "documented"})
+    plan["steps"] = [s for s in plan["steps"] if s["id"] != "M2-S01"]  # drop the pending one
+    (build_dir / "plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+    printed = []
+    monkeypatch.setattr("builtins.print", lambda *a, **k: printed.append(" ".join(str(x) for x in a)))
+
+    out_dir = tmp_path / "default-selection-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev",
+         "--mode", "manifest", "--plan-only", "--out", str(out_dir)]
+    )
+    assert rc == 0
+    warn_lines = [line for line in printed if line.startswith("WARN:") and "manifest member" in line]
+    assert warn_lines == []
+
+    result_json_path = out_dir / "result.json"
+    assert not result_json_path.exists()  # plan-only never writes result.json
+
+
+def test_main_manifest_mode_records_missing_members_in_result_json(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M4-S05" / "classes" / "Tier2EscalationService.cls",
+        "public class Tier2EscalationService {}",
+    )
+    _write(
+        build_dir / "artefacts" / "M5-S05" / "package.xml",
+        PACKAGE_XML_TEMPLATE.format(
+            members="Tier2EscalationService", type_name="ApexClass", version="67.0"
+        ),
+    )
+    plan = json.loads((build_dir / "plan.json").read_text(encoding="utf-8"))
+    plan["steps"].append({"id": "M4-S05", "milestone": "M4", "status": "documented"})
+    plan["steps"].append({"id": "M5-S05", "milestone": "M5", "status": "documented"})
+    (build_dir / "plan.json").write_text(json.dumps(plan, indent=2), encoding="utf-8")
+
+    payload = {"result": {"status": "Failed", "success": False, "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+
+    out_dir = tmp_path / "missing-members-result-json-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M5",
+         "--mode", "manifest", "--out", str(out_dir)]
+    )
+    assert rc == 1
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["missing_members"] == [
+        {"type": "ApexClass", "member": "Tier2EscalationService"},
+    ]
+
+
+# --------------------------------------------------------------------------
 # JSON-prefix stripping
 # --------------------------------------------------------------------------
 
@@ -912,7 +1094,9 @@ def test_find_test_classes_scans_at_istest_class_and_ignores_non_test(tmp_path):
     )
     _write(
         root / "classes" / "AnotherTest.cls",
-        "@IsTest\npublic class AnotherTest {\n}\n",
+        "@IsTest\npublic class AnotherTest {\n"
+        "    @isTest static void itAlsoWorks() {}\n"
+        "}\n",
     )
     _write(
         root / "classes" / "CaseService.cls",
@@ -923,6 +1107,63 @@ def test_find_test_classes_scans_at_istest_class_and_ignores_non_test(tmp_path):
 
 def test_find_test_classes_missing_root_returns_empty(tmp_path):
     assert mock_deploy.find_test_classes(tmp_path / "does-not-exist") == []
+
+
+def test_find_test_classes_excludes_istest_class_with_no_test_methods(tmp_path):
+    # S2-F-19: a shared test utility (TestDataFactory, MockHttpResponseGenerator)
+    # is idiomatically marked @IsTest at the class level but declares no test
+    # methods of its own; it must no longer be offered to --tests.
+    root = tmp_path / "force-app"
+    _write(
+        root / "classes" / "TestDataFactory.cls",
+        "@isTest\npublic class TestDataFactory {\n"
+        "    public static Case makeCase() {\n"
+        "        return new Case();\n"
+        "    }\n"
+        "}\n",
+    )
+    _write(
+        root / "classes" / "RealTest.cls",
+        "@isTest\nprivate class RealTest {\n"
+        "    @isTest static void itWorks() {}\n"
+        "}\n",
+    )
+    assert mock_deploy.find_test_classes(root) == ["RealTest"]
+
+
+def test_find_test_classes_includes_legacy_testmethod_keyword(tmp_path):
+    root = tmp_path / "force-app"
+    _write(
+        root / "classes" / "LegacyTest.cls",
+        "@isTest\nprivate class LegacyTest {\n"
+        "    static testMethod void itWorks() {}\n"
+        "}\n",
+    )
+    assert mock_deploy.find_test_classes(root) == ["LegacyTest"]
+
+
+def test_find_test_classes_scans_assembled_tree_not_raw_step_artefacts(tmp_path):
+    # S2-F-20: the scan must run against the already-assembled force-app
+    # tree (copy_artefacts's output), not a raw artefacts/<step>/ directory —
+    # a class present on disk under a step but excluded from the assembled
+    # tree (e.g. because that step was never selected/copied) must not count.
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M4-S05" / "classes" / "UnselectedTest.cls",
+        "@isTest\nprivate class UnselectedTest {\n"
+        "    @isTest static void itWorks() {}\n"
+        "}\n",
+    )
+    dest = tmp_path / "force-app" / "main" / "default"
+    # Only M1-S01 is copied into the assembled tree; M4-S05's test class
+    # never reaches it.
+    mock_deploy.copy_artefacts(build_dir, "artefacts", ["M1-S01"], dest)
+    assert mock_deploy.find_test_classes(dest) == []
+    # Scanning the raw step directory directly would have found it — proof
+    # the fix is about which tree is scanned, not just the method filter.
+    assert mock_deploy.find_test_classes(
+        build_dir / "artefacts" / "M4-S05"
+    ) == ["UnselectedTest"]
 
 
 def test_extract_test_summary_all_zero_when_no_test_data():
@@ -968,6 +1209,180 @@ def test_extract_test_summary_computes_coverage_and_failures():
     ]
 
 
+def test_extract_test_summary_reads_coverage_warnings():
+    parsed = {
+        "result": {
+            "numberTestsCompleted": 35,
+            "numberTestErrors": 0,
+            "details": {
+                "runTestResult": {
+                    "codeCoverage": [{"numLocations": 41, "numLocationsNotCovered": 19}],
+                    "failures": [],
+                    "codeCoverageWarnings": [
+                        {
+                            "name": "Tier2EscalationService",
+                            "message": "Test coverage of selected Apex Class is 53.659%, "
+                            "at least 75% test coverage is required",
+                        },
+                    ],
+                }
+            },
+        }
+    }
+    summary = mock_deploy.extract_test_summary(parsed, "RunSpecifiedTests", None)
+    assert summary.coverage_warnings == [
+        ("Tier2EscalationService", "Test coverage of selected Apex Class is 53.659%, "
+         "at least 75% test coverage is required"),
+    ]
+
+
+# --------------------------------------------------------------------------
+# S2-F-21: coverage failures invisible in render_summary
+# --------------------------------------------------------------------------
+
+def test_render_summary_prints_coverage_warnings_heading():
+    parsed = {
+        "result": {
+            "status": "Failed", "checkOnly": True, "success": False,
+            "numberComponentErrors": 0,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    tests = mock_deploy.TestSummary(
+        level="RunSpecifiedTests", requested_tests=["Tier2EscalationServiceTest"],
+        run=35, passed=35, failed=0, coverage_pct=86.2,
+        failures=[],
+        coverage_warnings=[
+            ("Tier2EscalationService",
+             "Test coverage of selected Apex Class is 53.659%, at least 75% test "
+             "coverage is required"),
+        ],
+    )
+    summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
+    assert "## Coverage warnings" in summary
+    assert (
+        "- Tier2EscalationService — Test coverage of selected Apex Class is "
+        "53.659%, at least 75% test coverage is required" in summary
+    )
+    assert (
+        "- reason: no component errors and no test failures — the org refused "
+        "on coverage (see Coverage warnings / the coverage line above)" in summary
+    )
+
+
+def test_render_summary_reason_line_for_aggregate_under_floor_without_warnings():
+    # No per-class codeCoverageWarnings entry, but the aggregate itself is
+    # under 75% — still a coverage-caused failure, still needs the reason.
+    parsed = {
+        "result": {
+            "status": "Failed", "checkOnly": True, "success": False,
+            "numberComponentErrors": 0,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    tests = mock_deploy.TestSummary(
+        level="RunSpecifiedTests", requested_tests=["FooTest"],
+        run=30, passed=30, failed=0, coverage_pct=70.8,
+        failures=[], coverage_warnings=[],
+    )
+    summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
+    assert "## Coverage warnings" not in summary
+    assert (
+        "- reason: no component errors and no test failures — the org refused "
+        "on coverage (see Coverage warnings / the coverage line above)" in summary
+    )
+
+
+def test_render_summary_reason_line_falls_back_when_coverage_is_fine():
+    # Zero errors, zero failures, success False, but coverage itself is >= 75
+    # and there are no per-class warnings — the generic fallback reason.
+    parsed = {
+        "result": {
+            "status": "Failed", "checkOnly": True, "success": False,
+            "numberComponentErrors": 0,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    tests = mock_deploy.TestSummary(
+        level="RunSpecifiedTests", requested_tests=["FooTest"],
+        run=10, passed=10, failed=0, coverage_pct=90.0,
+        failures=[], coverage_warnings=[],
+    )
+    summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
+    assert "- reason: see result.json — not a component or test failure" in summary
+    assert "- reason: no component errors and no test failures" not in summary
+
+
+def test_render_summary_no_reason_line_when_succeeded():
+    parsed = {
+        "result": {
+            "status": "Succeeded", "checkOnly": True, "success": True,
+            "numberComponentErrors": 0,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    tests = mock_deploy.TestSummary(
+        level="RunSpecifiedTests", requested_tests=["FooTest"],
+        run=10, passed=10, failed=0, coverage_pct=90.0,
+        failures=[], coverage_warnings=[],
+    )
+    summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
+    assert "- reason:" not in summary
+
+
+def test_main_coverage_warning_recorded_in_result_json(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "classes" / "CaseServiceTest.cls",
+        "@isTest\nprivate class CaseServiceTest {\n"
+        "    @isTest static void itWorks() {}\n"
+        "}\n",
+    )
+    payload = {
+        "result": {
+            "status": "Failed",
+            "success": False,
+            "checkOnly": True,
+            "numberComponentErrors": 0,
+            "numberTestsCompleted": 1,
+            "numberTestErrors": 0,
+            "details": {
+                "componentSuccesses": [],
+                "componentFailures": [],
+                "runTestResult": {
+                    "codeCoverage": [{"numLocations": 10, "numLocationsNotCovered": 1}],
+                    "failures": [],
+                    "codeCoverageWarnings": [
+                        {"name": "CaseService", "message": "Test coverage of selected "
+                         "Apex Class is 53.659%, at least 75% test coverage is required"},
+                    ],
+                },
+            },
+        }
+    }
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+    out_dir = tmp_path / "coverage-warning-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--test-level", "RunSpecifiedTests", "--out", str(out_dir)]
+    )
+    assert rc == 1  # status: Failed
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["tests"]["coverage_warnings"] == [
+        {"name": "CaseService", "message": "Test coverage of selected Apex Class is "
+         "53.659%, at least 75% test coverage is required"},
+    ]
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "## Coverage warnings" in summary
+    assert "CaseService" in summary
+    assert "- reason:" in summary
+
+
 def test_render_summary_without_tests_omits_tests_line():
     parsed = {
         "result": {
@@ -994,6 +1409,7 @@ def test_render_summary_with_tests_shows_line_and_failures_table():
             ("CaseServiceTest", "itFails", "System.AssertException: Assertion Failed",
              "Class.CaseServiceTest.itFails: line 10, column 1"),
         ],
+        coverage_warnings=[],
     )
     summary = mock_deploy.render_summary(parsed, "source", "sfskills-dev", tests=tests)
     assert (
@@ -1035,7 +1451,9 @@ def test_main_run_specified_tests_auto_discovers_and_reports(tmp_path, monkeypat
     build_dir = make_build(tmp_path)
     _write(
         build_dir / "artefacts" / "M1-S01" / "classes" / "CaseServiceTest.cls",
-        "@isTest\nprivate class CaseServiceTest {\n}\n",
+        "@isTest\nprivate class CaseServiceTest {\n"
+        "    @isTest static void itWorks() {}\n"
+        "}\n",
     )
     _write(
         build_dir / "artefacts" / "M1-S01" / "classes" / "CaseService.cls",
@@ -1166,7 +1584,9 @@ def test_main_plan_only_shows_planned_tests_without_contacting_org(tmp_path, mon
     build_dir = make_build(tmp_path)
     _write(
         build_dir / "artefacts" / "M1-S01" / "classes" / "CaseServiceTest.cls",
-        "@isTest\nprivate class CaseServiceTest {\n}\n",
+        "@isTest\nprivate class CaseServiceTest {\n"
+        "    @isTest static void itWorks() {}\n"
+        "}\n",
     )
     monkeypatch.setattr(
         mock_deploy.subprocess, "run",

@@ -181,36 +181,78 @@ def copy_artefacts(
 
 TEST_CLASS_RE = re.compile(r"@isTest\b[^;{]*?\bclass\s+(\w+)", re.IGNORECASE | re.DOTALL)
 
+# Modifiers/annotation-args that can legally sit between an `@isTest`
+# occurrence and the token that tells us whether it annotates the *class*
+# or a *method* inside it. Deliberately the same style of best-effort regex
+# scan as TEST_CLASS_RE — not a full Apex parser.
+_APEX_MODIFIER_RE = (
+    r"(?:private|public|protected|global|static|virtual|abstract|override|"
+    r"testMethod|with\s+sharing|without\s+sharing|inherited\s+sharing)"
+)
+_ISTEST_HEAD_RE = re.compile(
+    r"@isTest\b\s*(?:\([^)]*\))?\s*(?:" + _APEX_MODIFIER_RE + r"\s+)*(\w+)",
+    re.IGNORECASE | re.DOTALL,
+)
+TEST_METHOD_KEYWORD_RE = re.compile(r"\btestMethod\b", re.IGNORECASE)
+
+
+def _has_test_method(text: str) -> bool:
+    """True when `text` (one `.cls` file's source) contains at least one
+    `@IsTest`/`testMethod` *method*, not only the class-level `@IsTest`
+    annotation that marks the whole class as test-only (S2-F-19).
+
+    Two independent signals, either is sufficient:
+
+    * the legacy `static testMethod void foo() { ... }` modifier, anywhere
+      in the file (`TEST_METHOD_KEYWORD_RE`);
+    * an `@isTest` occurrence whose next significant token — after any
+      `(...)` annotation args and any Apex modifiers — is not `class`.
+      `_ISTEST_HEAD_RE` walks the same modifier list Apex allows on a class
+      or method declaration; when what follows is `class`, that occurrence
+      is the class-level annotation, not a method.
+
+    A class-level `@isTest` with no test method inside it (`TestDataFactory`,
+    `MockHttpResponseGenerator` — idiomatic shared test utilities, excluded
+    from Apex code-size limits but declaring no tests of their own) returns
+    False, so `find_test_classes` no longer offers it to `--tests`.
+    """
+    if TEST_METHOD_KEYWORD_RE.search(text):
+        return True
+    for match in _ISTEST_HEAD_RE.finditer(text):
+        if match.group(1).lower() != "class":
+            return True
+    return False
+
 
 def find_test_classes(root: Path) -> list[str]:
-    """Every Apex class under `root` whose *class* (not a lone test method)
-    carries an `@IsTest`/`@isTest` annotation — the automatic `--tests` list
-    for `--test-level RunSpecifiedTests` (S2-F-06) when no `--tests` override
-    is given.
+    """Every Apex class under `root` whose *class* carries an `@IsTest`/
+    `@isTest` annotation AND declares at least one test method — the
+    automatic `--tests` list for `--test-level RunSpecifiedTests` (S2-F-06)
+    when no `--tests` override is given.
 
     `TEST_CLASS_RE` matches `@isTest`, then only visibility/sharing modifiers
     (no `;` or `{`), then `class <Name>`. A `@isTest` annotating a single test
     *method* — `@isTest static void itWorks() { ... }` — does not match: the
     method's parameter list and opening `{` are reached before any `class`
     keyword, and the non-greedy `[^;{]*?` cannot cross that `{`. A class with
-    no `@isTest` anywhere (an ordinary, non-test `.cls`) never matches at all.
+    no `@isTest` anywhere (an ordinary, non-test `.cls`) never matches at
+    all. `_has_test_method` (S2-F-19) then requires the file to also declare
+    at least one test *method* before the class name is offered to
+    `--tests` — a class-level `@IsTest` utility with no test methods of its
+    own (`TestDataFactory`, `MockHttpResponseGenerator`) no longer produces
+    the org's "no test methods" noise.
 
-    `root` is meant to be the already-assembled `force-app/main/default`
-    tree for the selected steps (built by `copy_artefacts`), so this scans
-    exactly "the selected steps' artefacts" the caller asked for. Returns
+    `root` must be the already-assembled `force-app/main/default` tree —
+    i.e. `copy_artefacts`'s *output*, the exact directory the `sf` command
+    is later pointed at (`--source-dir force-app` / the manifest's implicit
+    package directory) — not a selected step's raw `artefacts/<step>/`
+    directory. Scanning anything else can miss test classes that reach a
+    manifest-mode run only through another step's artefacts merged into the
+    same package.xml (S2-F-20: `--milestone M5`'s Apex lived in step
+    `M4-S05`, reachable only through the build-level manifest). Returns
     names sorted alphabetically and de-duplicated; an empty/missing `root`
     or a `.cls` file that fails to decode as UTF-8 contributes nothing
     rather than raising.
-
-    Known over-inclusion: a shared test *utility* — `TestDataFactory`,
-    `MockHttpResponseGenerator` — is idiomatically marked `@IsTest` even
-    though it declares no test methods of its own (so it can never be
-    invoked from production code and is excluded from Apex code-size
-    limits). Such a class matches this scan like any other `@IsTest` class
-    and is included in the auto `--tests` list; whether `sf` runs zero tests
-    for it harmlessly or errors on "no test methods" is an org/CLI-version
-    behaviour this script does not special-case. Pass `--tests` explicitly
-    to exclude it if that turns out to matter for a given org.
     """
     names: set[str] = set()
     if not root.is_dir():
@@ -219,6 +261,8 @@ def find_test_classes(root: Path) -> list[str]:
         try:
             text = path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
+            continue
+        if not _has_test_method(text):
             continue
         for match in TEST_CLASS_RE.finditer(text):
             names.add(match.group(1))
@@ -496,6 +540,62 @@ def resolve_manifest_text(
     )
 
 
+def _assembled_file_stems(source_root: Path) -> set[str]:
+    """Every candidate "name" a file under `source_root` could correspond to
+    in a package.xml `<members>` entry — used by `find_missing_manifest_members`.
+
+    Not type-aware (this script doesn't carry a metadata-type-to-path map),
+    so each file contributes two stems: `Path.stem` (strips one extension,
+    e.g. `Foo.cls-meta.xml` -> `Foo.cls-meta`) and, after stripping a
+    trailing `-meta.xml` and then one more extension, the "component name"
+    shape most member text actually takes (`Foo.cls-meta.xml` -> `Foo`;
+    `Case-Case Support Layout.layout-meta.xml` -> `Case-Case Support
+    Layout`). Deliberately permissive: a false "present" costs nothing (the
+    org dry run is the real check) while a false "missing" would print a
+    misleading WARN.
+    """
+    stems: set[str] = set()
+    for f in source_root.rglob("*"):
+        if not f.is_file():
+            continue
+        stems.add(f.stem)
+        name = f.name
+        if name.endswith("-meta.xml"):
+            name = name[: -len("-meta.xml")]
+        stems.add(Path(name).stem if "." in name else name)
+    return stems
+
+
+def find_missing_manifest_members(manifest_xml: str, source_root: Path) -> list[tuple[str, str]]:
+    """Members named in `manifest_xml` with no matching file anywhere under
+    the assembled `source_root` (S2-F-22: `--milestone M5` alone selects
+    only M5's own steps, but a build-level manifest step can list members —
+    Apex classes, in the observed case — that physically live in an
+    unselected step and were never copied into the assembled tree; the org
+    then reports the deploy missing files with no earlier warning).
+
+    Matching is by filename stem, not metadata type (see
+    `_assembled_file_stems`): a member's last `.`- or `/`-separated segment
+    must appear as some file's stem under `source_root`. Returns
+    `(type, member)` pairs sorted by type then member; empty when every
+    member has a matching file, or trivially every member when `source_root`
+    does not exist at all (nothing was assembled to check against).
+    """
+    types = _types_from_text(manifest_xml)
+    all_members = sorted((t, m) for t, members in types.items() for m in sorted(members))
+    if not source_root.is_dir():
+        return all_members
+
+    stems = _assembled_file_stems(source_root)
+    missing: list[tuple[str, str]] = []
+    for type_name, member in all_members:
+        last_segment = member.split(".")[-1].split("/")[-1]
+        if last_segment in stems or member in stems:
+            continue
+        missing.append((type_name, member))
+    return missing
+
+
 # --------------------------------------------------------------------------
 # sf CLI invocation + result handling
 # --------------------------------------------------------------------------
@@ -551,6 +651,13 @@ class TestSummary(NamedTuple):
       (`NoTestRun`, or a CLI/org response that omits the field).
     * failures — `(class, method, message, stack_first_line)` tuples from
       `result.details.runTestResult.failures`, sorted by `(class, method)`.
+    * coverage_warnings — `(name, message)` tuples from
+      `result.details.runTestResult.codeCoverageWarnings` (S2-F-21): the
+      platform enforces its 75% floor PER CLASS in `RunSpecifiedTests`/
+      `RunLocalTests`, not only on the aggregate `coverage_pct` above — a
+      run can show a healthy aggregate and still fail because one class
+      individually falls short, and that reason previously lived only in
+      the raw `result.json`, never in `summary.md`.
     """
 
     level: str
@@ -560,6 +667,7 @@ class TestSummary(NamedTuple):
     failed: int
     coverage_pct: float | None
     failures: list[tuple[str, str, str, str]]
+    coverage_warnings: list[tuple[str, str]]
 
 
 def extract_test_summary(
@@ -570,7 +678,10 @@ def extract_test_summary(
     Tolerant of every shape seen so far — a `NoTestRun` response with no
     `details.runTestResult` at all, and one with an all-zeros
     `runTestResult` — both parse to the same all-zero `TestSummary` rather
-    than raising.
+    than raising. Also reads `codeCoverageWarnings` (S2-F-21) — field names
+    `name`/`id` and `message`/`problem`, matching the tolerant extraction
+    `pipelines/product/deploy_result.py`'s `_coverage_row` already uses for
+    the same CLI shape.
     """
     result = parsed.get("result") if isinstance(parsed, dict) else None
     result = result if isinstance(result, dict) else {}
@@ -600,6 +711,12 @@ def extract_test_summary(
         )
     failures.sort(key=lambda t: (t[0], t[1]))
 
+    coverage_warnings: list[tuple[str, str]] = []
+    for w in run_test_result.get("codeCoverageWarnings") or []:
+        name = str(w.get("name") or w.get("id") or "")
+        message = str(w.get("message") or w.get("problem") or "")
+        coverage_warnings.append((name, message))
+
     return TestSummary(
         level=level,
         requested_tests=requested_tests,
@@ -608,6 +725,7 @@ def extract_test_summary(
         failed=failed,
         coverage_pct=coverage_pct,
         failures=failures,
+        coverage_warnings=coverage_warnings,
     )
 
 
@@ -715,6 +833,29 @@ def render_summary(
                 ]
                 for cls, method, message, stack_first in tests.failures:
                     lines.append(f"| {cls} | {method} | {message} | {stack_first} |")
+
+            if tests.coverage_warnings:
+                lines += ["", "## Coverage warnings", ""]
+                for name, message in tests.coverage_warnings:
+                    label = f"{name} — {message}" if name else message
+                    lines.append(f"- {label}")
+
+            # S2-F-21: a run with zero component errors and zero test
+            # failures can still report `status: Failed` on coverage alone
+            # (the org's 75% floor, aggregate or per-class) — a reason that,
+            # before this, lived only in the raw result.json.
+            success = result.get("success")
+            org_rejected = (success is False) or (success is None and status == "Failed")
+            if org_rejected and errors == 0 and tests.failed == 0:
+                under_floor = tests.coverage_pct is not None and tests.coverage_pct < 75
+                if tests.coverage_warnings or under_floor:
+                    lines.append(
+                        "- reason: no component errors and no test failures — the org "
+                        "refused on coverage (see Coverage warnings / the coverage line "
+                        "above)"
+                    )
+                else:
+                    lines.append("- reason: see result.json — not a component or test failure")
 
     if manifest_resolution is not None and manifest_resolution.drift_note:
         lines += ["", "## Manifest drift", "", manifest_resolution.drift_note.rstrip("\n")]
@@ -862,6 +1003,7 @@ def main(argv: list[str] | None = None) -> int:
 
     manifest_name = "package.xml"
     manifest_resolution: ManifestResolution | None = None
+    missing_members: list[tuple[str, str]] = []
     if args.mode == "manifest":
         manifest_resolution = resolve_manifest_text(
             build_dir, artefacts_root, args.milestone, args.step, step_ids, api_version,
@@ -870,6 +1012,18 @@ def main(argv: list[str] | None = None) -> int:
         (out_dir / manifest_name).write_text(manifest_resolution.xml_text, encoding="utf-8")
         if manifest_resolution.warning:
             print(manifest_resolution.warning, file=sys.stderr)
+
+        # S2-F-22: under-copy check — the manifest can name more than the
+        # selected steps' artefacts actually put in the assembled tree.
+        missing_members = find_missing_manifest_members(manifest_resolution.xml_text, force_app_dir)
+        if missing_members:
+            first_type, first_member = missing_members[0]
+            print(
+                f"WARN: {len(missing_members)} manifest member(s) have no file in the "
+                f"assembled tree (first: {first_type}:{first_member}) — select the steps "
+                "that own them (default selection = every built step)",
+                file=sys.stderr,
+            )
 
     test_level = args.test_level
     tests_override = (
@@ -881,8 +1035,8 @@ def main(argv: list[str] | None = None) -> int:
         if not resolved_tests:
             print(
                 "error: --test-level RunSpecifiedTests requires at least one Apex "
-                "test class — none found under the selected steps' artefacts (no "
-                "@IsTest class) and no --tests override given",
+                "test class — none found under the assembled tree (no @IsTest class "
+                "with a test method) and no --tests override given",
                 file=sys.stderr,
             )
             return 2
@@ -953,15 +1107,22 @@ def main(argv: list[str] | None = None) -> int:
             {"class": c, "method": m, "message": msg, "stack_first_line": s}
             for c, m, msg, s in test_summary.failures
         ],
+        "coverage_warnings": [
+            {"name": n, "message": msg} for n, msg in test_summary.coverage_warnings
+        ],
     }
 
     if isinstance(parsed, dict):
         # `parsed` is this run's own in-memory copy of the sf CLI's JSON — safe
-        # to extend before we serialize it. "api_version"/"tests" are not keys
-        # `sf` itself ever emits, so neither can collide with or shadow one of
-        # its existing keys (status, result, warnings, ...).
+        # to extend before we serialize it. "api_version"/"tests"/
+        # "missing_members" are not keys `sf` itself ever emits, so none can
+        # collide with or shadow one of its existing keys (status, result,
+        # warnings, ...).
         parsed["api_version"] = api_version_record
         parsed["tests"] = tests_record
+        parsed["missing_members"] = [
+            {"type": t, "member": m} for t, m in missing_members
+        ]
 
     (out_dir / "result.json").write_text(json.dumps(parsed, indent=2) + "\n", encoding="utf-8")
 
