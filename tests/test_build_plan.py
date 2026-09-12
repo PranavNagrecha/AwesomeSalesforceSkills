@@ -2588,6 +2588,91 @@ def test_init_rejects_an_unknown_scale(tmp_path, fixture_repo, requirement):
     assert rc == 2  # argparse's own choices= rejection
 
 
+def test_set_scale_sets_it_on_intake(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")], status="intake")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("set-scale", str(path), "ask", "--by", "pranav",
+               "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert json.loads(path.read_text())["scale"] == "ask"
+    assert "scale: ask (set by pranav)" in out
+    assert "next:" in out and "set-clarifications" in out
+
+
+def test_set_scale_sets_it_on_clarifying(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], status="clarifying")
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("set-scale", str(path), "feature", "--by", "pranav",
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["scale"] == "feature"
+
+
+def test_set_scale_refused_once_planned(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], status="planned")
+    path = write_plan_file(tmp_path / "b", plan)
+    before = path.read_bytes()
+    rc = run("set-scale", str(path), "ask", "--by", "pranav",
+             "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before  # left untouched
+
+
+def test_set_scale_refused_once_building(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], status="building")
+    path = write_plan_file(tmp_path / "b", plan)
+    before = path.read_bytes()
+    rc = run("set-scale", str(path), "ask", "--by", "pranav",
+             "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_set_scale_refused_change_without_force_names_old_and_new(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")], status="clarifying", scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("set-scale", str(path), "feature", "--by", "pranav",
+             "--repo-root", str(fixture_repo))
+    err = capsys.readouterr().err
+    assert rc == 1
+    assert json.loads(path.read_text())["scale"] == "ask"  # untouched
+    assert "'ask'" in err and "'feature'" in err
+
+
+def test_set_scale_change_allowed_with_force(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")], status="clarifying", scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("set-scale", str(path), "feature", "--by", "pranav", "--force",
+             "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert json.loads(path.read_text())["scale"] == "feature"
+    assert "ask -> feature" in out
+    assert "set by pranav" in out
+
+
+def test_set_scale_rejects_an_invalid_tier(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")], status="intake")
+    path = write_plan_file(tmp_path / "b", plan)
+    before = path.read_bytes()
+    rc = run("set-scale", str(path), "epic", "--by", "pranav",
+             "--repo-root", str(fixture_repo))
+    assert rc == 2  # argparse's own choices= rejection
+    assert path.read_bytes() == before
+
+
+def test_set_scale_then_validate_still_passes(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")], status="intake")
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("set-scale", str(path), "project", "--by", "pranav",
+               "--repo-root", str(fixture_repo)) == 0
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+    assert rc == 0
+
+
 def test_validate_warns_ask_scale_shape_mismatch(tmp_path, fixture_repo, capsys):
     steps = [step("M1-S01", "M1"), step("M1-S02", "M1", depends_on=["M1-S01"])]
     plan = plan_dict(steps, scale="ask")
@@ -2863,6 +2948,8 @@ def test_help_mentions_the_new_scale_flag_and_aliases():
         (["gate", "--help"], "accept"),
         (["render", "--help"], "RUN.md"),
         (["status", "--help"], "scale"),
+        (["set-scale", "--help"], "--force"),
+        (["set-scale", "--help"], "intake"),
     )
     for argv, needle in expectations:
         buf = io.StringIO()

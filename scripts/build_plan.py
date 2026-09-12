@@ -2415,6 +2415,41 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
     return 0
 
 
+# Statuses `set-scale` accepts. Contract § 3.1: the tier is chosen at `init`
+# or by the clarifier's first pass, before `set-plan` has written a body
+# (scope/milestones/steps) on top of it — 'planned' onward, re-tiering is a
+# re-plan (reject the plan gate, then `set-plan` from 'plan-rejected'), not a
+# scale change, so this writer refuses everywhere else, naming the status.
+SET_SCALE_STATUSES = {"intake", "clarifying"}
+
+
+def cmd_set_scale(args: argparse.Namespace) -> int:
+    plan_path = Path(args.plan)
+    plan = read_plan(plan_path)
+    status = plan.get("status")
+    if status not in SET_SCALE_STATUSES:
+        _die(f"refusing to set scale while the build status is '{status}' — scale may be "
+             f"recorded only while status is 'intake' or 'clarifying', before `set-plan` has "
+             f"written a body; re-tiering a planned build is a re-plan (reject the plan gate, "
+             f"then re-run `set-plan`), not a scale change")
+    current = plan.get("scale")
+    if current and current != args.scale and not args.force:
+        _die(f"plan already has scale {current!r} -> {args.scale!r} — refusing to change it "
+             f"without --force")
+    old = current
+    plan["scale"] = args.scale
+    schema = load_schema(args.schema)
+    rc = write_plan(plan_path, plan, Path(args.repo_root), schema)
+    if rc:
+        return rc
+    if old and old != args.scale:
+        print(f"scale: {old} -> {args.scale} (set by {args.by})")
+    else:
+        print(f"scale: {args.scale} (set by {args.by})")
+    print(f"next: `build_plan.py set-clarifications {plan_path} --file <file>`.")
+    return 0
+
+
 def cmd_set_clarifications(args: argparse.Namespace) -> int:
     plan_path = Path(args.plan)
     plan = read_plan(plan_path)
@@ -2654,6 +2689,9 @@ Walkthrough:
 
   1. init                create .sfskills/builds/<id>/ + plan.json (status: intake).
                          Design-only unless --org-alias is given.
+  1a. set-scale          record/change the § 3.1 ceremony tier (ask|feature|project)
+                         while status is intake/clarifying — for a build `init` already
+                         created without --scale; refused once `set-plan` has run.
   2. set-clarifications  the clarifier's questions (status → clarifying)
   3. render              (re)write PLAN.md + CLARIFICATIONS.md from plan.json
   4. ingest-answers      read the human's 'Answer:' lines back into plan.json
@@ -2899,6 +2937,32 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("step_id", metavar="step-id", help="e.g. M1-S01")
     p.set_defaults(func=cmd_check_outputs)
+
+    p = sub.add_parser("set-scale", parents=[common],
+                       help="record the § 3.1 ceremony tier before a plan body exists",
+                       description="Write plan.scale (ask|feature|project) for a build already "
+                                   "initialised — mirrors `init --scale` for the common case "
+                                   "where the requirements-clarifier computes the tier after "
+                                   "`init` already ran. Allowed only while status is 'intake' "
+                                   "or 'clarifying', before `set-plan` has written scope/"
+                                   "milestones/steps; refused everywhere else, naming the "
+                                   "status, because re-tiering a planned build is a re-plan, "
+                                   "not a scale change. If the plan already carries a different "
+                                   "scale, refused unless --force, which prints the old -> new "
+                                   "change. Writes only `scale` — the schema is "
+                                   "additionalProperties: false, so --reason and --at are not "
+                                   "persisted anywhere (there is no field for them); they exist "
+                                   "for the caller's own log.")
+    p.add_argument("plan", help="path to plan.json")
+    p.add_argument("scale", choices=SCALES, help="ask | feature | project")
+    p.add_argument("--by", required=True, help="who is setting the scale")
+    p.add_argument("--reason", default=None,
+                   help="why this tier (not persisted, see description)")
+    p.add_argument("--at", default=None,
+                   help="ISO timestamp (not persisted, see description)")
+    p.add_argument("--force", action="store_true",
+                   help="change an already-set scale to a different tier")
+    p.set_defaults(func=cmd_set_scale)
 
     p = sub.add_parser("set-clarifications", parents=[common],
                        help="replace clarifications[] from a JSON file",

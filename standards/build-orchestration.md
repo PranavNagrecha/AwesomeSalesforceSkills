@@ -253,6 +253,7 @@ at the `go` gate for the human to weigh.
 ### CLI deltas
 
 - `init --scale ask|feature|project` — optional; unset leaves `scale` absent, and the clarifier's first pass sets it. Echoed on the `init` summary beside `build mode:`.
+- `set-scale <plan> ask|feature|project --by <who>` — the clarifier's writer for a build `init` already created without `--scale`; allowed only while `status` is `intake` or `clarifying`, before `set-plan` has written a body (re-tiering a planned build is a re-plan, not a scale change). Refuses a change to an already-set scale unless `--force`, printing the old → new tier.
 - Schema: `scale`, an optional top-level string with enum `["ask","feature","project"]`. No other schema change; absent = `project`.
 - `validate` applies the tier's plan shape as **WARNs only** — a `scale: ask` plan with four steps warns and names the sizing rule. An ERROR here would turn a re-tier into a re-plan.
 - `ensure-gates` reads `scale`: at `ask` it adds `milestone:M1` and **no** `step:` record, because the single step is written `human_gate: false`.
