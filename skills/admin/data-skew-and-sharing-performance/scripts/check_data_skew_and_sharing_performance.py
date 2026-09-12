@@ -31,9 +31,17 @@ Uses stdlib only - no pip dependencies.
 
 Usage:
     python3 check_data_skew_and_sharing_performance.py \
-        [--manifest-dir PATH] [--skew-plan FILE] [--job-plan FILE]
+        [--manifest-dir PATH] [--skew-plan FILE] [--job-plan FILE] [--strict]
 
-Exit code 0 when nothing is flagged, 1 otherwise.
+Exit codes:
+    0 -- no ERROR-class finding (and no WARN when --strict is passed). This
+         includes the normal case where only INFO/WARN findings are printed -
+         e.g. an unreferenced bucket group, or a Private-OWD object with no
+         sharing rules file yet.
+    1 -- at least one ERROR-class finding (unparseable metadata, a missing
+         --skew-plan/--job-plan file that was named explicitly, or a Bulk
+         API 2.0 job pinned to concurrencyMode=Serial), or at least one WARN
+         finding when --strict is passed, or --manifest-dir does not exist.
 """
 
 from __future__ import annotations
@@ -98,6 +106,11 @@ def parse_args() -> argparse.Namespace:
             "--manifest-dir when present."
         ),
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR (INFO never fails the run).",
+    )
     return parser.parse_args()
 
 
@@ -153,6 +166,13 @@ def _groups_dir(manifest_dir: Path):
     )
 
 
+def _queues_dir(manifest_dir: Path):
+    return _first_existing(
+        manifest_dir / "queues",
+        manifest_dir / "force-app" / "main" / "default" / "queues",
+    )
+
+
 def _objects_dir(manifest_dir: Path):
     return _first_existing(
         manifest_dir / "objects",
@@ -171,6 +191,15 @@ def _sharing_rule_files(manifest_dir: Path):
 
 def _object_name_from_rule_file(path: Path) -> str:
     return path.name.split(".")[0]
+
+
+def _queue_files(manifest_dir: Path):
+    queues_dir = _queues_dir(manifest_dir)
+    if queues_dir is None:
+        return []
+    files = sorted(queues_dir.glob("*.queue"))
+    files += sorted(queues_dir.glob("*.queue-meta.xml"))
+    return files
 
 
 def _iter_rules(root):
@@ -210,7 +239,7 @@ def check_sharing_rules(manifest_dir: Path) -> list[str]:
         try:
             root = ET.parse(xml_file).getroot()
         except ET.ParseError as exc:
-            issues.append(f"Could not parse sharing rules file {xml_file.name}: {exc}")
+            issues.append(f"ERROR: Could not parse sharing rules file {xml_file.name}: {exc}")
             continue
         obj_name = _object_name_from_rule_file(xml_file)
         for _kind, rule in _iter_rules(root):
@@ -430,6 +459,48 @@ def _group_files(manifest_dir: Path):
     return files
 
 
+def _queue_member_group_names(queue_members) -> list[str]:
+    """Group developer names under queueMembers/publicGroups/publicGroup.
+
+    Shape confirmed in references/metadata-examples.md: `queueMembers`
+    nests a `publicGroups` container of `publicGroup` leaves, each holding a
+    Group developer name (not the `<name>` label).
+    """
+    if queue_members is None:
+        return []
+    names: list[str] = []
+    public_groups = _child(queue_members, "publicGroups")
+    if public_groups is not None:
+        for child in public_groups:
+            if _local(child.tag) != "publicGroup":
+                continue
+            value = child.text.strip() if child.text else ""
+            if value:
+                names.append(value)
+    return names
+
+
+def _nested_group_member_names(container) -> list[str]:
+    """Group developer names nested under a Group's own membership element.
+
+    The documented `Group` metadata type (references/metadata-examples.md)
+    carries no such element today - membership is never part of Group
+    metadata. This only fires if a manifest's Group XML shape adds one
+    (e.g. a future API version, or a hand-authored fixture), so it is kept
+    generic rather than assuming a fixed tag name is absent forever.
+    """
+    if container is None:
+        return []
+    names: list[str] = []
+    for child in container:
+        if _local(child.tag) not in ("group", "groupMember"):
+            continue
+        value = child.text.strip() if child.text else ""
+        if value:
+            names.append(value)
+    return names
+
+
 def check_group_membership(manifest_dir: Path) -> list[str]:
     """Groups deploy without members; a rule sourced from an empty bucket grants nothing."""
     issues: list[str] = []
@@ -439,7 +510,7 @@ def check_group_membership(manifest_dir: Path) -> list[str]:
         try:
             root = ET.parse(xml_file).getroot()
         except ET.ParseError as exc:
-            issues.append(f"Could not parse group file {xml_file.name}: {exc}")
+            issues.append(f"ERROR: Could not parse group file {xml_file.name}: {exc}")
             continue
         full_name = _text(root, "fullName") or xml_file.name.split(".")[0]
         groups[full_name] = {
@@ -452,6 +523,8 @@ def check_group_membership(manifest_dir: Path) -> list[str]:
 
     referenced: dict[str, list[str]] = defaultdict(list)
     owner_sources: set[str] = set()
+
+    # Sharing rules: sharedTo / sharedFrom group targets.
     for xml_file in _sharing_rule_files(manifest_dir):
         try:
             root = ET.parse(xml_file).getroot()
@@ -470,21 +543,47 @@ def check_group_membership(manifest_dir: Path) -> list[str]:
                     if kind == "sharingOwnerRules" and element_name == "sharedFrom":
                         owner_sources.add(target_name)
 
+    # Queues: queueMembers/publicGroups/publicGroup targets. A group that
+    # only routes a queue is just as "used" as one named by a sharing rule -
+    # missing the membership load step grants the queue nothing either way.
+    for xml_file in _queue_files(manifest_dir):
+        try:
+            root = ET.parse(xml_file).getroot()
+        except ET.ParseError as exc:
+            issues.append(f"ERROR: Could not parse queue file {xml_file.name}: {exc}")
+            continue
+        queue_name = _text(root, "fullName") or xml_file.name.split(".")[0]
+        queue_members = _child(root, "queueMembers")
+        for group_name in _queue_member_group_names(queue_members):
+            referenced[group_name].append(f"queue {queue_name} (queueMembers/publicGroups)")
+
+    # Groups nested inside another Group's own membership element, if this
+    # manifest's Group XML shape carries one (see _nested_group_member_names).
+    for xml_file in _group_files(manifest_dir):
+        try:
+            root = ET.parse(xml_file).getroot()
+        except ET.ParseError:
+            continue
+        owner_group_name = _text(root, "fullName") or xml_file.name.split(".")[0]
+        nested_container = _child(root, "groupMembers")
+        for nested_name in _nested_group_member_names(nested_container):
+            referenced[nested_name].append(f"group {owner_group_name} (groupMembers)")
+
     for group_name, meta in sorted(groups.items()):
         uses = referenced.get(group_name, [])
         if uses:
             issues.append(
                 f"WARN: Group '{group_name}' ({meta['file']}) is referenced by "
-                f"{len(uses)} sharing rule reference(s) ({', '.join(uses[:3])}) but Group "
+                f"{len(uses)} reference(s) ({', '.join(uses[:3])}) but Group "
                 f"metadata never carries members - members are not migrated when the group "
                 f"type is deployed. Pair this deploy with a GroupMember load step, or the "
-                f"rule resolves to an empty group and grants nothing."
+                f"rule or queue resolves to an empty group and grants nothing."
             )
         else:
             issues.append(
                 f"INFO: Group '{group_name}' ({meta['file']}) is deployed but no sharing "
-                f"rule in this manifest references it. Confirm it is used, or drop it - an "
-                f"unused group still participates in group membership recalculation."
+                f"rule or queue in this manifest references it. Confirm it is used, or drop "
+                f"it - an unused group still participates in group membership recalculation."
             )
         if meta["doesIncludeBosses"] and group_name in owner_sources:
             issues.append(
@@ -727,6 +826,20 @@ def check_bulk_job_plan(plan, source_path, skewed_objects: set[str]) -> list[str
 # --------------------------------------------------------------------------------------
 # Driver
 # --------------------------------------------------------------------------------------
+def _severity(issue: str) -> str:
+    """Classify an issue string by its leading tag.
+
+    Every issue this checker produces is emitted as "SEVERITY: ..." or
+    "SEVERITY [source]: ...". Anything without a recognised tag defaults to
+    WARN rather than being silently dropped from the exit-code decision.
+    """
+    stripped = issue.lstrip()
+    for severity in ("ERROR", "WARN", "INFO"):
+        if stripped.startswith(severity):
+            return severity
+    return "WARN"
+
+
 def check_data_skew_and_sharing_performance(
     manifest_dir: Path,
     skew_plan_arg: str | None = None,
@@ -734,8 +847,10 @@ def check_data_skew_and_sharing_performance(
 ) -> list[str]:
     issues: list[str] = []
 
-    if not manifest_dir.exists():
-        return [f"ERROR: Manifest directory not found: {manifest_dir}"]
+    if not any(manifest_dir.iterdir()):
+        return [
+            f"WARN: Manifest directory {manifest_dir} is empty; nothing to check."
+        ]
 
     issues.extend(check_sharing_rules(manifest_dir))
     issues.extend(check_object_owd(manifest_dir))
@@ -781,6 +896,11 @@ def check_data_skew_and_sharing_performance(
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+
+    if not manifest_dir.exists():
+        print(f"ERROR: Manifest directory not found: {manifest_dir}")
+        return 1
+
     issues = check_data_skew_and_sharing_performance(
         manifest_dir, args.skew_plan, args.job_plan
     )
@@ -792,8 +912,21 @@ def main() -> int:
     for issue in issues:
         print(f"ISSUE: {issue}")
 
-    print(f"\n{len(issues)} finding(s).")
-    return 1
+    errors = [i for i in issues if _severity(i) == "ERROR"]
+    warns = [i for i in issues if _severity(i) == "WARN"]
+    infos = [i for i in issues if _severity(i) == "INFO"]
+
+    print(
+        f"\n{len(issues)} finding(s): {len(errors)} error, {len(warns)} warn, "
+        f"{len(infos)} info."
+    )
+
+    if errors:
+        return 1
+    if args.strict and warns:
+        print("--strict: failing on warnings.")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

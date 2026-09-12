@@ -3,6 +3,7 @@
   "chunk_ids": [
     "00d7ed1a4c7c5f4f903f",
     "02addab7334895bcf37c",
+    "030a52341a5ecd1c24d3",
     "062bed0ae3a6add6ea27",
     "07104dd9df1989c7ebf4",
     "0d5a3604cde6dda4bb0a",
@@ -31,6 +32,7 @@
     "26f28c46aef0947d5b1f",
     "2743c35346a49c300594",
     "287c33d2e3fd28e38aba",
+    "28a857792fdc65209296",
     "29750c74fac021e6d1e2",
     "2a5332289b785b829dc4",
     "2a99a0a71b5afe58119a",
@@ -64,6 +66,7 @@
     "432d94bae46d1b4dc7b4",
     "43cf4c4d5c413d470096",
     "44f7a5e431e17350a360",
+    "467b7312ac96d98b4c0d",
     "49f44bb81a647795f153",
     "4b2cc9795d9cbb7e6640",
     "4b40fd0a4aa465a513e5",
@@ -86,6 +89,7 @@
     "60f9f44550672ce4b854",
     "63c19312b1ed66e0b1f9",
     "66f32288d9fc060c19d2",
+    "67268e32c00ebb2a61f9",
     "67750ef33f380c416e13",
     "69f0e9ac93357611a6cc",
     "6a0564732189fb71a31f",
@@ -156,6 +160,7 @@
     "bbc2cfe1a6c99786e7b8",
     "bc33732ed3c67f694976",
     "bc7bca9135a37c46fc57",
+    "bd0dc49316cce08d63f0",
     "bdb92aa1e8b6eb03082e",
     "be7393cc3de4d7b6f388",
     "be788422bb4f57d9e220",
@@ -192,6 +197,7 @@
     "e24f6a68e0e371fbf8f1",
     "e888f03601d4d451b6f8",
     "ebd8cec9f12bbb441965",
+    "eeffd18a8674888ed6fb",
     "ef2705607b26634ec0ea",
     "f05833358b69679fcb5e",
     "f0e2b06991af5f3b00b8",
@@ -208,7 +214,7 @@
     "fe65a7515cd21619e0a9",
     "ff2f6b28a4f64edaf2e7"
   ],
-  "content_hash": "a0d3abd3784919087dcc4468775bdc68a175b43510467b30c90416cc59dfa367",
+  "content_hash": "cb104b87d92f04e3048ef3109ed1fe0b3f1db713d32e59506556b8fe0f94d8e5",
   "dependencies": [],
   "description": "Diagnose and mitigate Salesforce data skew \u2014 ownership skew (single user owns >10,000 records) and parent-child skew (>10,000 children under one parent) \u2014 that cause sharing recalculation slowness, group membership lock errors, and record-level locking failures. Covers lookup skew and UNABLE_TO_LOCK_ROW, Defer Sharing Calculation (deferGroupMembership / deferSharingRules in Sharing.settings), ownership bucket groups, Controlled by Parent OWD, Bulk API serial vs parallel concurrency for skewed loads, and the documented load ordering for roles, groups and sharing rules. NOT for planning and batching a recalculation job \u2014 use data/sharing-recalculation-performance. NOT for designing the sharing model itself \u2014 use admin/sharing-and-visibility.",
   "file_location": "skills/admin/data-skew-and-sharing-performance",
@@ -259,7 +265,7 @@
   "templates": [
     "skills/admin/data-skew-and-sharing-performance/templates/data-skew-and-sharing-performance-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-09-11",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

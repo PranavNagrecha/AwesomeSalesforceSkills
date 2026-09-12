@@ -39,9 +39,9 @@ outputs:
   - "Mitigation recommendations per skew type with trade-off notes"
   - "Review checklist for ongoing data health"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-11
 ---
 
 # Data Skew and Sharing Performance
@@ -186,7 +186,7 @@ Salesforce uses table-level locks to protect the integrity of group membership d
 
 4. **Write the metadata, not just the advice.** Build the `Sharing.settings` suspend/resume pair, bucket `Group` files, per-bucket `SharingRules`, `sharingModel` changes and External Id load keys from `references/metadata-examples.md` §§ 1–5. Every bucket group needs a paired `GroupMember` load step — group membership does not travel with the metadata.
 
-5. **Lint the package and the plans.** Run `python3 scripts/check_data_skew_and_sharing_performance.py --manifest-dir <dir> --skew-plan skew-plan.json --job-plan bulk-job-plan.json`. It flags parents and owners over the guide's ceiling, bucket groups with no membership step, criteria rules filtering on fields that carry no index, and Bulk jobs set to parallel against a skewed target.
+5. **Lint the package and the plans.** Run `python3 scripts/check_data_skew_and_sharing_performance.py --manifest-dir <dir> --skew-plan skew-plan.json --job-plan bulk-job-plan.json`. It flags parents and owners over the guide's ceiling, bucket groups with no membership step (whether the group is used by a sharing rule or by a queue's `queueMembers`), criteria rules filtering on fields that carry no index, and Bulk jobs set to parallel against a skewed target. Exit code reflects severity, not raw finding count: it exits 1 only on an ERROR-class finding (unparseable metadata, a named `--skew-plan`/`--job-plan` file that is missing, or a Bulk API 2.0 job pinned to `concurrencyMode=Serial`) or when `--manifest-dir` does not exist; a clean run that is all INFO/WARN — e.g. every bucket group already referenced by a queue — prints its findings and exits 0. Pass `--strict` in a gate that should also fail on WARN.
 
 6. **Sequence the execution in the documented order.** Follow the load-ordering table in `references/metadata-examples.md` § 7 — roles, then record data, then groups and queues, then sharing rules one at a time — with deferral suspended around it and the resume as its own deploy.
 
@@ -210,7 +210,7 @@ Run through these before marking work in this area complete:
 - [ ] Every bucket `Group` deployed has a paired `GroupMember` load step, and the post-deploy membership count query returns non-zero for each bucket.
 - [ ] `includeRecordsOwnedByAll` is set explicitly on every new criteria-based sharing rule — it cannot be edited after creation.
 - [ ] Any load needing serial concurrency is a Bulk API v1 job; the file is sorted by parent id; and no Bulk API 2.0 job in the plan claims `concurrencyMode: Serial`.
-- [ ] `python3 scripts/check_data_skew_and_sharing_performance.py --manifest-dir <dir> --skew-plan skew-plan.json --job-plan bulk-job-plan.json` has been run and every finding is either fixed or recorded with a reason.
+- [ ] `python3 scripts/check_data_skew_and_sharing_performance.py --manifest-dir <dir> --skew-plan skew-plan.json --job-plan bulk-job-plan.json` has been run (add `--strict` where WARN-class findings must also block) and every finding is either fixed or recorded with a reason.
 
 ---
 
@@ -246,7 +246,7 @@ The three that catch practitioners most often. `references/gotchas.md` carries e
 | `references/well-architected.md` | Justifying a tradeoff (ownership distribution vs integration simplicity, Controlled by Parent vs independent child sharing) or locating the official source behind a claim in this skill |
 | `references/llm-anti-patterns.md` | Reviewing skew advice an AI assistant produced, especially "just reassign the records" or a diagnosis that names only two skew types |
 | `templates/data-skew-and-sharing-performance-template.md` | Running workflow steps 1–2 — the ownership, parent, and lookup measurement tables and the mitigation plan |
-| `scripts/check_data_skew_and_sharing_performance.py` | Workflow step 5, before every deploy and before every skewed load |
+| `scripts/check_data_skew_and_sharing_performance.py` | Workflow step 5, before every deploy and before every skewed load. Exits 1 on ERROR-class findings only (parse failures, a missing named `--skew-plan`/`--job-plan`, Bulk API 2.0 + `concurrencyMode=Serial`) or a missing `--manifest-dir`; INFO/WARN print but exit 0 — pass `--strict` to fail on WARN too |
 
 ---
 
