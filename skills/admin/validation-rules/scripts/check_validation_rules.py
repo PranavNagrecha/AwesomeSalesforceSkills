@@ -512,7 +512,10 @@ def main() -> int:
             "inventory and checks standard and custom fields alike. Run over the "
             "whole build/package tree, not one step's "
             "directory, or those references come back as an advisory INFO instead of "
-            "a real answer."
+            "a real answer. A --manifest-dir that does not exist is a HIGH finding "
+            "(exit 1). One that exists but contains no validation-rule metadata is a "
+            "REVIEW advisory (exit 0; --strict promotes it to exit 1) -- an empty "
+            "scan is a scope note, not a defect."
         )
     )
     parser.add_argument(
@@ -550,9 +553,21 @@ def main() -> int:
 
     files = iter_metadata_files(targets)
     if not files:
+        # Every supplied path exists (the missing-path branch above already
+        # returned) but none of it is validation-rule metadata -- e.g. a
+        # freshly scaffolded object with no rules yet, or a build step that
+        # has not authored one. That is a scope note, not a defect: it does
+        # not fail the build on its own (REVIEW is not in BLOCKING_SEVERITIES),
+        # but --strict may still promote it (REVIEW is strict-eligible, unlike
+        # INFO -- see NEVER_STRICT_SEVERITIES).
         return emit_result(
-            ["HIGH no validation rule metadata files found"],
+            [
+                "REVIEW no validation rule metadata files found in the "
+                "supplied path(s) -- an empty manifest dir is not itself a "
+                "defect; pass --strict to fail the build on this"
+            ],
             "Scanned 0 validation rule metadata file(s); no files matched the provided paths.",
+            strict=args.strict,
         )
 
     findings: list[str] = []

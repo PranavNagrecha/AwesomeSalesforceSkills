@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "f35f4da05530fc1857b27e47a9a257df5e152bb8c9f38ea733f6b9637daf19a3",
+  "generated_from_hash": "047071cb866dfd4a5ca1f8c21330cc88b3e3cf0fb18d9437375ecf3debcbb65f",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -48078,6 +48078,7 @@
         "650a9badf999c0d91f7f",
         "665c13949a6e6d48422b",
         "67310ee734ba6b06a7fe",
+        "67c92551eb6a42ef27d6",
         "6aaf2e25cccaf27a8ba5",
         "6bda771d021eb74b82a5",
         "6c710f0011985e629482",
@@ -48150,6 +48151,7 @@
         "ce5bcc88592924279ee4",
         "d1700dbf9454c3b8c7b7",
         "d1f0c81ca378328143ca",
+        "d28d31864aa8e230bd2a",
         "d39e7de8e6a8fbaa30c9",
         "d426b9b9bd773475845a",
         "d46c33da88acc283ba5b",
@@ -48177,7 +48179,7 @@
         "fd70dd14ea3fe93ed579",
         "fe250dc56e05828960dd"
       ],
-      "content_hash": "2ab18e9e40cc3fc8d4fe9231922da76507e88b199c1755a034ed15cd71121059",
+      "content_hash": "4ad93a2e218513c3c4cc15f055fd7614c65a339686b4b71715a394f0de5de64a",
       "dependencies": [],
       "description": "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality', 'errorConditionFormula', 'errorDisplayField', 'errorMessage 255 characters', 'ValidationRule metadata', 'validationRule-meta.xml', 'deploy validation rule inactive', 'bypass custom permission', 'FIELD_CUSTOM_VALIDATION_EXCEPTION', 'validation rule on custom metadata type', 'compound field validation rule'. NOT for Flow-based validation \u2014 use admin/flow-for-admins for that.",
       "file_location": "skills/admin/validation-rules",
@@ -48233,7 +48235,7 @@
       ],
       "updated": "2026-09-12",
       "vector_embedding": null,
-      "version": "1.1.3"
+      "version": "1.1.4"
     },
     {
       "category": "admin",

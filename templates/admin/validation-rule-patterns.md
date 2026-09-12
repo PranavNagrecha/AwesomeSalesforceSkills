@@ -41,7 +41,11 @@ AND(
   NOT($Permission.Bypass_Validation_<Domain>),
 
   /* 2. Relevance gate — when does this rule even apply? */
-  ISPICKVAL(RecordType.DeveloperName, "..."),
+  RecordType.DeveloperName = "...",
+  /* UNVERIFIED (2026-09-12): a dry-run probe could not settle ISPICKVAL on
+     RecordType.DeveloperName because the probe org's Opportunity has no
+     record types ("Field RecordType does not exist"); the equality form is
+     the one the skill's examples use and compiles on a text field. */
   NOT(ISNEW()),  /* or ISNEW(), or AND(...), depending on intent */
 
   /* 3. The actual business rule — what is invalid? */
