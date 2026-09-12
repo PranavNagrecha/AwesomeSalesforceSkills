@@ -32,9 +32,9 @@ outputs:
   - "review findings for test hygiene and coverage quality"
   - "test class scaffold with factory, assertions, and mocks"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-09-12
 ---
 
 Use this skill when Apex tests need to prove behavior instead of merely satisfying deployment coverage. The objective is deterministic, isolated tests that verify positive paths, negative paths, bulk behavior, async execution, and callout behavior without depending on org data.
@@ -44,6 +44,22 @@ Use this skill when Apex tests need to prove behavior instead of merely satisfyi
 - What business behavior must this test prove beyond "method executes without exception"?
 - What data relationships and user context does the code require?
 - Does the code under test enqueue async work, run in sharing-sensitive contexts, or make HTTP callouts?
+
+## Questions to Ask Before Configuring
+
+Every row below exists because a gotcha in `references/gotchas.md` bit someone who skipped it.
+
+| Ask the requester | Why it matters | What a good answer adds | Traces to |
+|---|---|---|---|
+| What must be true after this runs that is not true before? | A test that only proves "no exception" passes forever while the behaviour rots. | One observable outcome per entry point, which becomes one test method name and one assertion. | Gotcha 4 |
+| Which records must exist first, and is every one of them creatable inside a test transaction? | Some standard objects are not creatable, and history and feed-tracking records need committed parents that a test never commits. | A fixture plan that fails at design time instead of at run time, plus an explicit note where a stub replaces a record. | Gotcha 12 |
+| Does any step read data the test did not create — record types, custom settings, queues, reports? | That is the pressure that produces `SeeAllData=true`, which then removes `@TestSetup` from the class and bars it from parallel execution. | Either a factory method for the missing data, or a written justification narrow enough to sit on one class. | Gotchas 2, 7 |
+| Does the path enqueue async work or publish a platform event, and who consumes it? | Queueable, Batch and future work runs at `Test.stopTest()`; a published event does nothing until the test delivers it. | The correct boundary placement, and a `Test.getEventBus().deliver()` call per subscriber hop. | Gotchas 1, 10 |
+| Does the path make an HTTP callout, and does DML have to run before it? | DML leaves uncommitted work that blocks callouts unless `Test.startTest()` is called before `Test.setMock(...)`. | The exact statement order, plus the failure status codes the mock must also return. | Gotcha 9 |
+| Whose access does the behaviour depend on, and which permission set grants it? | Sharing and field-level bugs are invisible to a test that runs as the deploying admin, and every `runAs` call spends a DML statement. | A named profile plus permission set for the `runAs` user, and a bounded number of `runAs` blocks. | Gotchas 3, 11 |
+| Does the code rely on static state or cached configuration between invocations? | Statics reinitialise for every test method, so state seeded in `@TestSetup` is gone by the time a test method reads it. | State passed through records rather than statics, and an explicit cache reset where the code under test caches. | Gotcha 8 |
+
+A proper test design differs from "just write a test" in what it buys you later: the suite tells you *which* contract broke and *for whom*, rather than telling you that something somewhere in a 400-line class no longer compiles or no longer passes.
 
 ## Core Concepts
 
@@ -115,13 +131,15 @@ Callouts never belong in real tests. Use `Test.setMock(HttpCalloutMock.class, mo
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
+1. **Name the contracts before the fixture.** Work through the questions above and write one observable outcome per entry point. Each becomes a test method name; anything you cannot state as an outcome is not yet testable.
+2. **Choose the fixture source.** `templates/apex/tests/TestDataFactory.cls` covers Account, Contact, Opportunity, Case and Lead through `createXxx(count, overrides)`; `templates/apex/tests/TestRecordBuilder.cls` covers everything the factory does not; `templates/apex/tests/TestUserFactory.cls` mints the `System.runAs` user with its permission sets. Put the shared baseline in `@TestSetup` — unless the class needs `SeeAllData=true`, which forbids it.
+3. **Write the four mandatory methods:** a bulk-200 method modelled on `templates/apex/tests/BulkTestPattern.cls`, a negative method that names the expected exception, an access method wrapped in `System.runAs`, and — whenever the path calls out — a mock method built on `templates/apex/tests/MockHttpResponseGenerator.cls`, ordered DML, `Test.startTest()`, `Test.setMock(...)`, action, `Test.stopTest()`.
+4. **Ship every template class the test names.** A test that references `TestDataFactory` and deploys without `TestDataFactory.cls` fails with `Variable does not exist`. Copy each template verbatim with its `-meta.xml` and record it in the deploy order.
+5. **Run the checker** — `python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir <class directory>`. Exit 1 means an ERROR rule fired (missing assertion, unjustified `SeeAllData=true`, unmocked callout); add `--strict` in CI to fail on WARN findings too.
+6. **Deploy dry.** `sf project deploy start --manifest package.xml --dry-run --test-level RunSpecifiedTests --tests <TestClass>` compiles the package and runs the tests without persisting metadata — the last check that the provenance set is complete. UNVERIFIED (2026-09-12): the `sf` CLI flag spellings are not corpus-grounded — check `sf project deploy start --help` before using this command in a runbook.
+7. **Record what you could not prove.** Any behaviour left untested because the record is not creatable, or the member is not stubbable, belongs in a comment beside the test, not in the commit message.
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+A full worked package — service, Queueable, test class, `-meta.xml`, `package.xml`, deploy order and checker run — is in `references/code-examples.md`.
 
 ---
 
