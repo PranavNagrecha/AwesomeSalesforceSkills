@@ -144,7 +144,7 @@ For a production target the command is `sf project deploy validate` with the sam
 
 The overall verdict is one of three, and it is a recommendation to the human, not a decision: `ready-for-gate` (no unresolved references, no ordering contradiction, no failing acceptance test, no blocked step), `ready-with-findings` (findings the human may accept), or `not-ready` (at least one unresolved reference, ordering contradiction, failing test, or blocked step).
 
-**scale: ask** — `MILESTONE-M1-REPORT.md` is one page: the single step's artefacts, its reference resolution, its deployment-order check, its acceptance-test result, and its manual checklist if any — no cross-milestone rollup, because there is exactly one milestone. That one page is the evidence the `accept` gate alias rests on (§ 3.1 CLI deltas: `accept` writes the `milestone:M1` record in one invocation). Skipped: a multi-milestone rollup section. Invariant unchanged (§ 3.1 "What never changes"): the gate is still written only by `gate` — `accept` is a CLI alias for it, not a new decider — and decided only by a human; this agent still only prints the command.
+**scale: ask** — `MILESTONE-M1-REPORT.md` is one page: the single step's artefacts, its reference resolution, its deployment-order check, its acceptance-test result, and its manual checklist if any — no cross-milestone rollup, because there is exactly one milestone. "One page" names the evidence page the `accept` gate rests on, not a hard cap on how many findings the step turned up: a single step that ships a primary artefact plus its supporting ones (§ 3.1's tightened D — a `$Permission` bypass's CustomPermission + PermissionSet, say) can legitimately surface a double-digit finding list. When it does, keep `MILESTONE-M1-REPORT.md` to the one page — verdict, finding counts by severity, and the handful the human must weigh before approving — and put the full per-finding detail in this run's own envelope markdown twin (`envelopes/M1/<run_id>.md`), cited by path from the report rather than inlined into it. That one page is the evidence the `accept` gate alias rests on (§ 3.1 CLI deltas: `accept` writes the `milestone:M1` record in one invocation). Skipped: a multi-milestone rollup section. Invariant unchanged (§ 3.1 "What never changes"): the gate is still written only by `gate` — `accept` is a CLI alias for it, not a new decider — and decided only by a human; this agent still only prints the command.
 
 Then record the verdict and the report path — this is the one plan write this agent makes, and it is a subcommand, never a hand edit:
 
@@ -175,12 +175,15 @@ Overrides the default rubric:
 | MEDIUM | some references were unclassifiable, or the merged manifest had a member collision that was reported rather than resolved |
 | LOW | a declared milestone checker was missing, an artefact directory was empty, a step was blocked, or the earlier-milestone inventory could not be built |
 
+**scale: ask** — "every declared acceptance test ran" is unreachable when the single step legitimately declares only a `manual` test: there is no automatic test left to run, so the literal condition above can never be satisfied and HIGH would be permanently out of reach. At this scale, HIGH requires instead that every **runnable** test ran — a milestone whose only declared test is `manual` counts the step's own declared tests as its full runnable set, so collecting that manual test into the Step 7 checklist (not silently dropping it) satisfies this leg — and that every cross-step check (Steps 2–5: reference resolution, deployment order, manifest merge) resolved clean. The MEDIUM and LOW triggers above are unchanged.
+
 ### Step 11 — Self-validate the envelope before returning
 
-The acceptance report is written, the verdict recorded and the gate line printed. Assemble the envelope with the Step 3–9 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/M2/<run_id>.json` and `…/<run_id>.md` — segment is the milestone id, not a step id — then check it:
+The acceptance report is written, the verdict recorded and the gate line printed. Assemble the envelope with the Step 3–9 results under `extensions`, write it and its markdown twin to `.sfskills/builds/<build-id>/envelopes/<milestone-id>/<run_id>.json` and `…/<run_id>.md` — segment is the milestone id, not a step id — then check it:
 
 ```bash
-python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/M2/<run_id>.json
+# <milestone-id> is this run's milestone_id — e.g. M1 at scale: ask, M2 or later otherwise
+python3 scripts/validate_envelope.py .sfskills/builds/<build-id>/envelopes/<milestone-id>/<run_id>.json
 ```
 
 `OK <path>` ends the run. The failure to watch for here is the doubled `report_path`: the envelope's own top-level field is this agent's markdown report under `envelopes/M2/`, and the acceptance report path belongs under `extensions`. Writing the acceptance report into the top-level field will still validate — the pattern accepts it — and will still be wrong, so check the value, not just the exit code.

@@ -2673,6 +2673,24 @@ def cmd_set_clarifications(args: argparse.Namespace) -> int:
     return 0
 
 
+def _next_gate_hint(plan: dict, plan_path: Path, *, milestone_id: str | None = None) -> str:
+    """The gate command to print as a 'next' hint once a status change makes a
+    human gate legal to record. Scale-aware per section 3.1's `go`/`accept`
+    aliases (`GATE_ALIASES`): at `scale: ask` the `plan` gate is folded into
+    `go` and the ask-scale milestone's gate is folded into `accept`, so the
+    printed command names the alias a human can actually run rather than the
+    real gate name that `gate go`/`gate accept` write underneath it. At every
+    other scale — or for a milestone other than the one `accept` covers — the
+    stored gate name is printed unchanged.
+    """
+    ask = plan.get("scale") == "ask"
+    if milestone_id is None:
+        alias = "go" if ask else "plan"
+        return f"`build_plan.py gate {plan_path} {alias} approve --by <who>`"
+    alias = "accept" if ask and milestone_id == ASK_MILESTONE_ID else f"milestone:{milestone_id}"
+    return f"`build_plan.py gate {plan_path} {alias} approve --by <who>`"
+
+
 def cmd_set_verification(args: argparse.Namespace) -> int:
     plan_path = Path(args.plan)
     plan = read_plan(plan_path)
@@ -2712,6 +2730,8 @@ def cmd_set_verification(args: argparse.Namespace) -> int:
     tail = (f" (v{archived} archived in history[]; the planner's next `set-plan` "
             f"becomes v{archived + 1})") if archived else ""
     print(f"verification written ({lenses}); build status -> {args.outcome}{tail}")
+    if args.outcome == "verified":
+        print(f"next: the human decides — {_next_gate_hint(plan, plan_path)}")
     return 0
 
 
@@ -2749,8 +2769,8 @@ def cmd_set_milestone(args: argparse.Namespace) -> int:
         return rc
     print(f"milestone {args.milestone}: status -> {args.status}, report -> {args.report_path}")
     if args.status == "verified":
-        print(f"next: the human decides — `build_plan.py gate {plan_path} "
-              f"milestone:{args.milestone} approve --by <who>`")
+        print(f"next: the human decides — "
+              f"{_next_gate_hint(plan, plan_path, milestone_id=args.milestone)}")
     return 0
 
 

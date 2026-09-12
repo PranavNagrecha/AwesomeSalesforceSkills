@@ -1568,6 +1568,34 @@ def test_set_verification_records_both_outcomes(tmp_path, fixture_repo):
     assert json.loads(path.read_text())["status"] == "verified"
 
 
+def test_set_verification_next_hint_is_scale_aware(tmp_path, fixture_repo, capsys):
+    """standards/build-orchestration.md section 3.1: at `scale: ask` the plan
+    gate is folded into the `go` alias (GATE_ALIASES), so the printed 'next'
+    hint after a 'verified' outcome must name `go`, not the real `plan` gate a
+    human can't legally call standalone at this scale. Absent scale keeps
+    printing the real gate name unchanged (dry-run friction item 20)."""
+    good = write_json(tmp_path / "verification-ok.json",
+                      {"lenses": [{"lens": "executability", "verdict": "pass"}]})
+
+    project_plan = plan_dict([step("M1-S01", "M1")])
+    project_path = write_plan_file(tmp_path / "project", project_plan)
+    capsys.readouterr()
+    assert run("set-verification", str(project_path), "--file", str(good),
+               "--outcome", "verified", "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert f"gate {project_path} plan approve --by <who>" in out
+    assert " go " not in out
+
+    ask_plan = plan_dict([step("M1-S01", "M1")], scale="ask")
+    ask_path = write_plan_file(tmp_path / "ask", ask_plan)
+    capsys.readouterr()
+    assert run("set-verification", str(ask_path), "--file", str(good),
+               "--outcome", "verified", "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert f"gate {ask_path} go approve --by <who>" in out
+    assert "plan approve" not in out
+
+
 def test_set_milestone_records_the_verifier_verdict(tmp_path, fixture_repo, capsys):
     plan = plan_dict([step("M1-S01", "M1", status="documented")])
     path = write_plan_file(tmp_path / "b", plan)
@@ -1592,6 +1620,41 @@ def test_set_milestone_records_the_verifier_verdict(tmp_path, fixture_repo, caps
 
     assert run("set-milestone", str(path), "M9", "--status", "verified",
                "--report-path", "reports/x.md", "--repo-root", str(fixture_repo)) == 1
+
+
+def test_set_milestone_next_hint_is_scale_aware(tmp_path, fixture_repo, capsys):
+    """standards/build-orchestration.md section 3.1 / GATE_ALIASES: at
+    `scale: ask` the M1 milestone gate is folded into the `accept` alias, so
+    the printed 'next' hint after a 'verified' verdict must say `gate <plan>
+    accept approve`, matching what RUN.md and the CLI actually accept — not
+    the literal `milestone:M1 approve` the un-aliased gate name would suggest
+    (dry-run friction item 20: this was the hint that used to be wrong)."""
+    report = tmp_path / "b" / "reports" / "MILESTONE-M1-REPORT.md"
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text("# M1 acceptance\n", encoding="utf-8")
+
+    project_plan = plan_dict([step("M1-S01", "M1", status="documented")])
+    project_path = write_plan_file(tmp_path / "b", project_plan)
+    capsys.readouterr()
+    assert run("set-milestone", str(project_path), "M1", "--status", "verified",
+               "--report-path", "reports/MILESTONE-M1-REPORT.md",
+               "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert f"gate {project_path} milestone:M1 approve --by <who>" in out
+    assert "accept approve" not in out
+
+    ask_plan = plan_dict([step("M1-S01", "M1", status="documented")], scale="ask")
+    ask_path = write_plan_file(tmp_path / "ask-b", ask_plan)
+    ask_report = ask_path.parent / "reports" / "MILESTONE-M1-REPORT.md"
+    ask_report.parent.mkdir(parents=True, exist_ok=True)
+    ask_report.write_text("# M1 acceptance\n", encoding="utf-8")
+    capsys.readouterr()
+    assert run("set-milestone", str(ask_path), "M1", "--status", "verified",
+               "--report-path", "reports/MILESTONE-M1-REPORT.md",
+               "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert f"gate {ask_path} accept approve --by <who>" in out
+    assert "milestone:M1 approve" not in out
 
 
 # --------------------------------------------------------------------------

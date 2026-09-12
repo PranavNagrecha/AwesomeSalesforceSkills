@@ -185,11 +185,21 @@ as it did.
 ### The sizing rule — deterministic, and printed
 
 `requirements-clarifier` takes four counts from `requirement.md` and its Step 2
-searches, before it harvests a question: **D** distinct metadata types implied,
-**S** cited skills carrying a `## Questions to Ask Before Configuring` table
-(after dedupe), **O** distinct objects named, **X** whether an integration or a
-data migration is implied (an external system, an inbound or outbound API, a
-bulk load).
+searches, before it harvests a question: **D** distinct metadata types that
+need **their own step** — their own agent, their own tests, or their own
+position in deploy order — **not** every metadata type the finished build will
+touch. A supporting artefact a single step legitimately ships alongside its
+primary type never raises D: a `$Permission` bypass's CustomPermission +
+PermissionSet riding along with the validation rule that reads them, a field's
+list-view entry, a flow's custom label. **S** cited skills carrying a
+`## Questions to Ask Before Configuring` table (after dedupe), **O** distinct
+objects named, **X** whether an integration or a data migration is implied (an
+external system, an inbound or outbound API, a bulk load). The clarifier
+re-checks the tier exactly **once**, after the answers land, against what the
+answers actually require rather than what Step 2 guessed — re-tiering upward
+only when an answer requires a genuinely new step (its own agent, tests, or
+deploy-order position), never for a supporting artefact an existing step
+absorbs — and prints the recount in the same sizing-line format.
 
 | Signal | `ask` | `feature` | `project` |
 |---|---|---|---|
@@ -264,7 +274,7 @@ at the `go` gate for the human to weigh.
 
 ### Agent deltas
 
-- `requirements-clarifier` — **Inputs** (accept `scale`); **Step 1** (compute, print, pass to `init`); **Step 4** (`ask`: informational rows pre-filled from their defaults, plus the eight-blocking tier test); **Step 5** (one round); **Step 6** (`ask`: print the single `gate go` command instead of G1-then-`/plan-build`).
+- `requirements-clarifier` — **Inputs** (accept `scale`); **Step 1** (compute, print, pass to `init`); **Step 4** (`ask`: informational rows pre-filled from their defaults, plus the eight-blocking tier test, plus the one-time post-answer recount once `ingest-answers` runs); **Step 5** (one round, same one-time recount noted against the write-the-plan flow); **Step 6** (`ask`: print the single `gate go` command instead of G1-then-`/plan-build`).
 - `build-planner` — **Step 5** ("between two and six" becomes exactly 1 at `ask` and at `feature`); **Step 6** (`ask`: one step, `human_gate: false`); **Step 7** (`ask`: `render` also writes `RUN.md`).
 - `plan-verifier` — **Step 1** (a one-step plan is a plan); **Step 6** (`ask`: one round, refutation-only, the CRITICAL list above, no second pass).
 - `build-doc-keeper` — **Step 4** (`ask`: `RUN.md` rows instead of workbook sections; `decisions.md` is still appended, exactly as at every other scale; leave the `traceability.md` stub alone).
