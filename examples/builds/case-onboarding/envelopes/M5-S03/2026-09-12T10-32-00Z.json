@@ -1,0 +1,344 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T10-32-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S03/2026-09-12T10-32-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S03/2026-09-12T10-32-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M5-S03",
+    "reason": null
+  },
+  "summary": "Ran step M5-S03 (docs, owner story-drafter) of build case-onboarding. The step was returned by `build_plan.py next --milestone M5`, was claimed running at 2026-09-12T10-21-24Z, and is now built. story-drafter is a borrowed Tier-2 roster agent with no build-layer clause in its contract (the Step 4 grep scored 0), so its Plan was executed inline under the artefact-path constraint and it wrote straight to the declared output rather than to its own default_output_dir; no relocation was needed and none was performed. One declared output, artefacts/M5-S03/story-backlog.md, exists and is non-empty; check-outputs reports ok with empty missing/empty/malformed. The step's declared checker, check_invest.py --manifest-dir artefacts/M5-S03, exits 0 from the build directory with 11/11 stories passed, 0 ERROR and 10 word-count WARNs. No file was written anywhere outside the build directory.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 HIGH row is met on every mechanical count — the step was in next, all three required inputs resolved from plan.json alone, both envelopes validate, check-outputs exited 0 and nothing landed outside artefacts/M5-S03. Held at MEDIUM by the Step 9 optional-input row: three optional inputs of the owning agent (target_org_alias, release_capacity_points, priority_overrides) had no value in any of the three Step 5 sources, and the owning agent degraded rather than defaulting silently — it recorded each as a skipped dimension and capped its own confidence at MEDIUM.",
+  "dimensions_skipped": [
+    {
+      "dimension": "owning-agent-wave-10-persistence",
+      "state": "not-run",
+      "reason": "story-drafter's Persistence section requires a docs/reports/story-drafter/<run_id>.{md,json} pair, but AGENT.md Step 6 clause 1 and the invocation both constrain every write to the build directory; the pair was therefore not written and the envelope lives under envelopes/M5-S03/ instead.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Resolve the contract tension in agents/story-drafter/AGENT.md or in the runner's Step 6 clause 1; do not write outside the build dir to satisfy it."
+    },
+    {
+      "dimension": "deploy-order-note",
+      "state": "not-run",
+      "reason": "Every metadata-builder step in this build wrote an artefacts/<step>/deploy-order.md, but story-drafter's Output Contract names no such file and the step declares one output; standards/build-orchestration.md section 4 condition 2 forbids an output the owning agent does not produce. UNVERIFIED items were recorded inline in the backlog's Process Observations instead.",
+      "confidence_impact": "NONE",
+      "retry_hint": "If the build wants a per-step deploy-order note on docs steps, re-own the step or add the file to a metadata-builder step."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "Borrowing a non-Tier-4 roster agent worked exactly as standards/build-orchestration.md section 4 describes: all three of story-drafter's required inputs were bound by the planner in inputs{}, so nothing had to be inferred and no blocked exit was needed.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S03].inputs",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "planning",
+      "observation": "The step's inputs.note pre-resolved three defects this run would otherwise have hit — it moved uat-test-cases.yaml and acceptance-criteria.md to M5-S04 (B11/W09), dropped check_ac_format.py because it exits 2 over a prose backlog, and wrote discovery_artifact_path as the repo-relative path the runner actually passes (W07).",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S03].inputs.note"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "tooling",
+      "observation": "check_invest.py's rebuilt story-heading detection behaved as its docstring promises on a real seven-section backlog: the Summary, Persona anchors, RTM, MoSCoW check, Process Observations and Citations sections were skipped and exactly the 11 story sections were linted.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py",
+        "count": 11
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "citations",
+      "observation": "Three skill paths the owning agent first wrote into recommended_skills[] did not resolve on disk (admin/web-to-case-and-email-to-case, admin/queue-design, apex/trigger-handler-pattern) and were corrected against the registry before the document was finalised; a run that skipped that check would have shipped a backlog pointing three build agents at nothing.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "orchestration",
+      "observation": "story-drafter's Wave 10 persistence contract and the runner's write constraint disagree for every borrowed build-unaware agent: one requires a docs/reports/<agent-id>/ pair, the other forbids writing outside the build directory, and nothing in either contract says which wins.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/story-drafter/AGENT.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "orchestration",
+      "observation": "AGENT.md Step 7's relocation machinery did not engage because the owner was executed inline and wrote straight to the declared path; the relocation table assumes a host that can invoke the owner as a subagent with its own persistence, so an inline run produces a clean result the table cannot distinguish from a host-invoked one.",
+      "evidence": {
+        "source": "heuristic"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "traceability",
+      "observation": "The owning agent minted seven requirement ids (REQ-052 to REQ-058) as part of its Step 1 parse; that is inside its contract, but no agent in this loop owns the build-wide REQ- sequence, so M5-S04's compile could mint colliding ids from the same clarification group.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "count": 7
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S03 is now built and its acceptance tests have not been executed by the tester.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S03].status"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because built is not tested: step-tester runs the declared checker and the manual line and writes tests/M5-S03/results.json, which set-status tested requires."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S04 depends on M5-S03 and cannot enter next until this step reaches documented.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S04].depends_on"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because it documents this step and then owns the compiled UAT pack and acceptance-criteria document the backlog feeds."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "sections 2, 3, 4, 5 and 8 — build_mode, the gate rules, the step status machine, the borrowed-roster-agent conditions, and the rule that build_plan.py is the only writer of plan state"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic md+json pair, the run_id form, and the redaction requirement on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical enum checked against before concluding no refusal condition applied"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by, including the prohibition on writing to an org and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step record fields this agent reads and the ones it may write"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the envelope shape, and the rule that agent-specific keys hang off extensions because the envelope is additionalProperties false"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "judging the artefact layout — a docs step producing one markdown document under artefacts/<step-id>/ needs no source-format tree"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming the declared output is a documentation artefact rather than a deployable component type, so no manifest membership is owed by this step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the planned step derives from, so the owning agent's Inputs were mapped from those cells rather than paraphrased from the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ-XXX / US-XXX id conventions echoed into the envelope so the doc keeper can join step to requirement without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "checking every value in the input map against a credential shape before echoing it into a build-directory envelope; none matched"
+    },
+    {
+      "type": "skill",
+      "id": "admin/user-story-writing-for-salesforce",
+      "path": "skills/admin/user-story-writing-for-salesforce/SKILL.md",
+      "used_for": "the step's first declared skill, read in full including its checker, so the declared acceptance test's exit policy and argument form were understood before the run"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the step's second declared skill — the Given/When/Then and negative-path discipline the produced criteria follow"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the step's third declared skill — the pre-UAT environment questions and the Fail-versus-Blocked distinction the backlog carries"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "built is not tested; it runs the declared checker and writes tests/M5-S03/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "it documents the step once tested, and M5-S04 is blocked until M5-S03 is documented."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S03",
+    "step_type": "docs",
+    "milestone": "M5",
+    "owning_agent": "story-drafter",
+    "owning_agent_build_aware": false,
+    "build_aware_grep": {
+      "command": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/story-drafter/AGENT.md",
+      "result": 0
+    },
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S03/2026-09-12T10-25-00Z.json",
+    "owning_envelope_validation": "OK",
+    "invocation_mode": "inline — the owning agent's Plan was executed in-process per AGENT.md Step 6 'in any other host', as this build has done throughout",
+    "artefacts": [
+      {
+        "path": "artefacts/M5-S03/story-backlog.md",
+        "declared": true,
+        "bytes": null
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "relocations": [],
+    "relocation_note": "None. The owner was executed inline under the Step 6 clause-1 path constraint and wrote directly to the declared output, so no file existed at its default_output_dir to move or copy.",
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "declared_checkers": [
+      {
+        "type": "checker",
+        "command": "python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --manifest-dir artefacts/M5-S03",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "stdout_summary": "11/11 stories passed (0 ERROR, 10 WARN)",
+        "note": "Run by the runner as evidence only; step-tester owns the authoritative execution and results.json. The test declares no --strict, so the 10 body-word-count WARNs do not fail it."
+      }
+    ],
+    "manual_acceptance_test": {
+      "satisfied_by": "story-backlog.md — email (US-CASE-001, US-CASE-002), web (US-CASE-003) and manual UI (US-CASE-004) each have a story; all 11 stories name a Profile+PSG persona and none names the admin; every story carries 3-5 GWT criteria with at least one permission-denial or restriction criterion",
+      "verdict": "ticked at the milestone gate by a human, not by this agent"
+    },
+    "inputs_resolved": {
+      "discovery_artifact_path": {
+        "value": ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+        "source": "step inputs{}",
+        "required": true
+      },
+      "discovery_artifact_kind": {
+        "value": "requirements-list",
+        "source": "step inputs{}",
+        "required": true
+      },
+      "feature_scope": {
+        "value": "Acme Software case intake on Service Cloud: email, web and manual Case creation with routing, first-response SLA and escalation for Tier 1, Tier 2 and Billing.",
+        "source": "step inputs{}",
+        "required": true
+      },
+      "personas_supplied": {
+        "value": [
+          "Tier 1 agent (PSG: PSG_Tier1_Prod)",
+          "Tier 2 engineer (PSG: PSG_Tier2_Prod)",
+          "Billing specialist (PSG: PSG_Billing_Prod)"
+        ],
+        "source": "step inputs{}",
+        "required": false
+      },
+      "target_org_alias": {
+        "value": null,
+        "source": "absent in all three sources; plan.build_mode is design-only and plan.org is null",
+        "required": false
+      },
+      "release_capacity_points": {
+        "value": null,
+        "source": "absent in all three sources",
+        "required": false
+      },
+      "priority_overrides": {
+        "value": null,
+        "source": "absent in all three sources",
+        "required": false
+      }
+    },
+    "upstream_outputs_available": {
+      "M5-S01": [
+        "artefacts/M5-S01/objects/Case/listViews/*.listView-meta.xml",
+        "artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml"
+      ],
+      "note": "M5-S01 is the only depends_on. story-drafter's Inputs table has no row an upstream artefact path binds to, so the paths were supplied as reading context rather than as an input value."
+    },
+    "secrets_redacted": 0,
+    "writes_outside_artefact_dir": [],
+    "repo_write_scan": {
+      "command": "find . -newermt '2026-09-12 10:20' -type f excluding .git/.sfskills/vector_index",
+      "result": "empty"
+    },
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S03 running --started 2026-09-12T10-21-24Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S03 built --run-agent story-drafter --envelope envelopes/M5-S03/2026-09-12T10-25-00Z.json --result \"11 INVEST stories in 4 epics; check_invest.py --manifest-dir artefacts/M5-S03 exit 0 (11/11 passed, 0 ERROR, 10 word-count WARN); check-outputs ok; G4 completion-proxy, Q24 training line and deploy prerequisites P1-P6 carried\" --started 2026-09-12T10-21-24Z"
+    ],
+    "terminal_status": "built",
+    "next_command": "python3 scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json --milestone M5  # then /test-build-step for M5-S03",
+    "not_touched": [
+      "M5-S02 (blocked on sandbox-strategy inputs)",
+      "plan.json outside the two set-status transitions",
+      "skills/, agents/, standards/, scripts/",
+      "any org — no sf command was run, no deploy, no mock_deploy.py",
+      "human_gates[] — milestone:M5 remains pending"
+    ]
+  }
+}

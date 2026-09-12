@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Priority_Required_On_Agent_Save</fullName>
+    <active>true</active>
+    <description>Priority drives the first-response SLA and the 8-business-hour escalation, so no agent saves a Case without one. Bypass: Bypass_Case_Intake_Validation (M2-S01). Rationale: deploy-order.md.</description>
+    <errorConditionFormula>AND(
+  NOT($Permission.Bypass_Case_Intake_Validation),
+  ISBLANK(TEXT(Priority))
+)</errorConditionFormula>
+    <errorDisplayField>Priority</errorDisplayField>
+    <errorMessage>Set a Priority before saving this case. The first-response SLA and the escalation clock both read Priority, so a case saved without one is not picked up on time. Choose the Priority this report warrants and save again.</errorMessage>
+</ValidationRule>

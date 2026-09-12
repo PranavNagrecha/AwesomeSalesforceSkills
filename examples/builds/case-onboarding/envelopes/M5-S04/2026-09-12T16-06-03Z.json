@@ -1,0 +1,85 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T16-06-03Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T16-06-03Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T16-06-03Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S04",
+    "re_run_of": "envelopes/M5-S04/2026-09-12T13-15-00Z.json — build-doc-keeper's re-compile closing MILESTONE-M5-REPORT.md § 8 findings F-52/53/54/56/57",
+    "precondition": "step status was 'built' at read time"
+  },
+  "summary": "Ran M5-S04's four declared checker acceptance tests verbatim from the build directory plus the always-on xml and manifest checks against the artefacts produced by the 2026-09-12T13-15-00Z re-compile. All four checkers exited 0 and check-outputs reported ok:true on every run; xml found zero files (step type docs, all outputs .md/.yaml, recorded ran-with-zero-files rather than pass/fail); manifest was recorded skipped-not-applicable because a docs step that is not the build-level manifest step (M5-S05) declares no package.xml and none exists in M5-S04's own or M5-S03's artefacts. The two milestone-scoped manual tests both pass the Given/When/Then shape check and are carried into skipped_manual[] verbatim for milestone-verifier, each with a note flagging where the re-compile's own content (28 assumptions, not 25; a structural phase/blocked_on marker rather than case removal) may need a human's attention when ticking. tests/M5-S04/results.json was written with passed:true and the step was moved built -> tested via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (Step 7 HIGH condition, agents/step-tester/AGENT.md).",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All four declared checkers exited 0 against the re-compiled documents, and the two checker tests carrying non-standard argument forms (check_workbook.py's --workbook/--file alias, and check_rtm.py's declared scope:build agreeing with its --manifest-dir artefacts) both ran verbatim exactly as declared, with no rewriting.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M5-S04/check_workbook.out"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The results.json this run replaces (timestamped 2026-09-12 07:51-07:52, prior to the 13:15:00Z re-compile) had already recorded passed:true against a stale version of the artefacts; a step-tester run against pre-recompile artefacts and one against post-recompile artefacts produce the same 'passed:true, failed 0, manual 2' shape even though the underlying documents materially changed (e.g. 36->43 Other-configuration rows, +1 Assumptions Register section, +1 traceability addendum). Nothing in results.json itself records which compile pass it tested.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M5-S04/results.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Manual test 1's literal text says 'all 25 appear as named rows with an owner', but the re-compile envelope (2026-09-12T13-15-00Z.json) states the Assumptions Register now renders 28 rows (all of plan.json's assumptions[], not only the 25 deferred at G1) and that 'owner' is a compile-time join rather than a plan.json field 0 of 28 assumptions carry natively. This agent cannot resolve whether that satisfies the test's literal wording -- ticking it is a human judgment call flagged in tests/M5-S04/summary.md rather than decided here.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T13-15-00Z.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "M5-S04 is now tested; the standard next step in the loop is documenting it.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "to record the tested step in PLAN.md, decisions.md and traceability.md before milestone-verifier re-checks M5."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S04",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M5-S04/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "always-on (ElementTree parse)", "exit_code": null, "verdict": "ran, 0 files"},
+      {"name": "manifest", "type": "manifest", "runner": "always-on (file/manifest cross-check)", "exit_code": null, "verdict": "skipped-not-applicable (docs step, no package.xml declared or present)"},
+      {"name": "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py", "type": "checker", "runner": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M5-S04/configuration-workbook.md", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py", "type": "checker", "runner": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/admin/uat-test-case-design/scripts/check_uat_case.py", "type": "checker", "runner": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M5-S04", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py", "type": "checker", "runner": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md", "exit_code": 0, "verdict": "pass"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given 25 clarifications were deferred at G1, when the workbook's assumptions section is read, then all 25 appear as named rows with an owner who can close each one, and each names the steps it constrains — compiled from assumptions[].steps[] rather than from step-note prose, which is why every step recording a deferral now also carries a structured \"assumptions\" key in its inputs{}.",
+      "Given two steps ship nothing in this phase, when the compiled documents are read, then M3-S05 and M5-S02 each appear with their blocked reason verbatim — 'deferred: Q32, Q33, Q34, Q35' and 'borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity' — and the UAT pack carries no case that depends on either."
+    ],
+    "tests_run": 6
+  },
+  "citations": [
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 4 step-type/manifest rule for a docs step, § 5 checker scope/argument-form/exit-policy rules and the deny-list this run cleared before executing each command verbatim"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "confirming check_workbook.py's --workbook/--file non-standard argument form before running it as declared"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "confirming check_rtm.py's --file plus --manifest-dir combination and its scope:build declaration agree with the command as written"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "confirming check_uat_case.py's --manifest-dir reading of the case pack + criteria file together"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then shape check applied to both milestone-scoped manual tests before carrying them into skipped_manual[]"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what a manual test line must contain to be tickable by a human rather than re-interpreted"},
+    {"type": "standard", "id": "reports/MILESTONE-M5-REPORT.md", "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-REPORT.md", "used_for": "§ 8 findings F-52/53/54/56/57 that motivated the re-compile this run tests"}
+  ],
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "M5-S04 is now tested and the standard next stage is documenting it into PLAN.md, decisions.md and traceability.md."}
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T09-50-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T09-50-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T09-50-00Z.json",
+  "summary": "Ran M5-S01's declared molecular tests: both always-on checks (xml, manifest) plus the two declared checker acceptance tests, from the build directory. All 6 XML files parsed; the manifest was structurally consistent (5 members across ListView and Report, each covered by a file, each file mapping to a member, no wildcards); check_list_views_and_compact_layouts.py at build scope exited 0 ('No issues found.'); check_report_inventory.py at step scope exited 0 (score 100, 'Scanned 1 report/dashboard file(s); 0 finding(s) detected.'); check-outputs returned ok with no missing/empty/malformed paths. The one declared manual test (Given/When/Then, queue-name cross-check plus the Tier 1 interim-view claim) names observable outcomes and was recorded verbatim for the milestone gate rather than ticked. 0 failures; step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (two checkers, both always-on checks) or was correctly classified as manual; both checkers exist and were invoked verbatim with no flag rewritten; every exit code and check-outputs result was observed directly by this run rather than assumed from the prior envelopes.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both declared checkers passed cleanly on the first invocation this run, with no repairs or re-runs needed, and check-outputs confirmed all 6 declared outputs present, non-empty and well-formed.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M5-S01/test1_list_views.txt"}
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The step reaches tested with its report shipping without the Escalated criterion that gives it its purpose (Q91): no cited skill carries a report column code for Case.IsEscalated, so the report as written returns open Cases from the last 30 days rather than escalated open Cases, and neither declared checker can detect a missing filter criterion.",
+      "domain": "reporting",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M5-S01/deploy-order.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The declared folder filename reports/Support_Operations-meta.xml does not match the .reportFolder-meta.xml form check_report_inventory.py's FOLDER_SUFFIXES recognises, so acceptance_tests[1]'s folder-sharing assertion never executes inside that checker even though the test exits 0; this run's own manifest check treated the file as consistent with package.xml based on its <ReportFolder> content rather than its filename, which is a judgment call for the milestone gate to affirm or overturn.",
+      "domain": "metadata-naming",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M5-S01/reports/Support_Operations-meta.xml", "count": 1}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The manual acceptance test bundles two distinct observable outcomes (each view's <queue> resolving under artefacts/M2-S04/queues/, and the Tier 1 General view's presence as an interim surface) into one Given/When/Then line, which a human ticks as a single unit even though the second clause is a standing policy note rather than a per-file check.",
+      "domain": "test-design",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/plan.json"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S01 is now tested with two findings the M5 gate has not yet adjudicated (the absent Escalated criterion, the folder filename/checker mismatch); build-doc-keeper should carry both into decisions.md before the gate.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M5-S01/deploy-order.md"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because it is the agent that records step findings into decisions.md ahead of a milestone gate, and both findings currently exist only in the prior envelopes and deploy-order.md."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "Section 5's acceptance-test types, runner/pass conditions, checker-scope rule, and the always-on manifest fail-vs-skip rule for metadata step types."},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "Section shape, Process Observations schema, and this agent's confidence-rubric override."},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "Envelope persistence shape and the atomic-write rule for the two mandatory deliverables."},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "Canonical refusal enum, not triggered this run."},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "package.xml grammar (one <types> block per type, <members> vs wildcard) used to judge the manifest check."},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "Source-format filename-to-metadata-type mapping used to derive each artefact's manifest member."},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "Checked whether ReportFolder is a documented no-standalone-file exclusion type; it is not — it has a file, just a non-conforming name, which is why the manifest check treated it as consistent rather than excluded."},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "What a manual test line must contain (a named observable outcome) before it is carried to the milestone gate rather than reported unusable."},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "Given/When/Then shape used to check the step's one manual test before recording it as tickable."}
+  ],
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the two findings recorded in the prior envelopes (missing Escalated criterion; folder filename/checker mismatch) need decisions.md entries before the M5 gate."}
+  ],
+  "extensions": {
+    "step_id": "M5-S01",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M5-S01/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "ElementTree parse, this agent", "exit_code": null, "verdict": "pass — 6/6 files parsed"},
+      {"name": "manifest", "type": "manifest", "runner": "file<->package.xml cross-check, this agent", "exit_code": null, "verdict": "pass — consistent, 5/5 members covered, 5/5 files mapped"},
+      {"name": "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts", "type": "checker", "runner": "python3, build scope", "exit_code": 0, "verdict": "pass — No issues found."},
+      {"name": "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M5-S01", "type": "checker", "runner": "python3, step scope", "exit_code": 0, "verdict": "pass — score 100, Scanned 1 report/dashboard file(s); 0 finding(s) detected."}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given the three views are Queue-scoped, when each listView file is read, then its <queue> names a queue developer name that exists under artefacts/M2-S04/queues/, and the Tier 1 General view is present as Tier 1's interim pull surface while M3-S05 is blocked."
+    ],
+    "tests_run": 4
+  }
+}

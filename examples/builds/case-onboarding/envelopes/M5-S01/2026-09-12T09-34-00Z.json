@@ -1,0 +1,429 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T09-34-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T09-34-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T09-34-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S01",
+    "api_version": "67.0 (from human_gates[milestone:M3] decision 6 / finding F-31; the plan carries no plan-level api_version key - planner v6 item)",
+    "step_inputs.answers": [
+      "Q31",
+      "Q91",
+      "Q65 (DEFERRED)"
+    ],
+    "step_inputs.assumptions": [
+      "A14",
+      "A7"
+    ],
+    "upstream_artefacts": [
+      "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+      "artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+      "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+      "artefacts/M2-S04/groups/Support_Tier_1.group-meta.xml",
+      "artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml",
+      "artefacts/M2-S04/groups/Billing_Team.group-meta.xml",
+      "artefacts/M4-S04/escalation-monitoring-note.md",
+      "artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml",
+      "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+      "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+      "artefacts/M1-S01/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml"
+    ],
+    "credentials_present": false
+  },
+  "summary": "M5-S01 (type ui) built: three Queue-scoped Case list views, the Escalated Open Cases report and its Support Operations report folder, plus package.xml at 67.0 and an undeclared deploy-order.md. Both declared checkers exit 0 at the scopes the plan declares, all 6 XML files parse, and check-outputs is ok. One substantive gap is recorded rather than guessed: the report ships WITHOUT its Escalated criterion, because no cited skill documents the report column code for Case.IsEscalated, so as written the report returns open Cases from the last 30 days rather than escalated open Cases. A second finding: the plan's declared folder filename (reports/Support_Operations-meta.xml) is not a filename check_report_inventory.py recognises, so the folder half of the step's own report test never executes.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: every element name and enum value is quoted from the two cited skills' metadata references, both checkers exited 0 on the first pass and check-outputs is ok - but the report's column codes, reportType value and relative-date operator pairing are all marked UNVERIFIED by the cited skill itself (it requires an org retrieve this design-only build cannot perform), and one criterion the upstream monitoring note specifies is absent for that reason. Not HIGH because the report is incomplete against Q91; not LOW because check-outputs is ok, nothing landed outside artefacts/M5-S01/, and the gap is named rather than filled.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Report column codes are report-type specific and skills/admin/reports-and-dashboards marks every code it prints UNVERIFIED pending an org retrieve; no code exists anywhere in the library for Case.IsEscalated, so that criterion is absent rather than invented. reportType `Cases` is prose-sourced, and the LAST_N_DAYS:30 + equals pairing is undocumented.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Retrieve one existing Case report from the target org, read the Escalated / Case Number / Last Modified / Business Hours / Severity codes off it, add the third criteriaItems block and change booleanFilter to `1 AND 2 AND 3`."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "The reports skill's Questions-to-Ask row on folder access has no answer for the Manage share: Q91 names a role (the Tier 2 lead), not a person, and no admin or ops group exists in this build to hold one. Q65 is deferred (A14), so no reporting backlog was attempted.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Name the group or user that administers the Support Operations folder at the M5 gate; it is one folderShares block."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "Tier 1 General queue list view (interim pull surface, assumption A7)",
+      "target_path": "artefacts/M5-S01/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml",
+      "content": "ListView > fullName Tier_1_General_Queue; six standard columns (CASES.CASE_NUMBER, CASES.SUBJECT, CASES.PRIORITY, CASES.STATUS, ACCOUNT.NAME, LAST_UPDATE); filterScope Queue; filters CASES.STATUS notEqual Closed; label 'Tier 1 General Queue'; queue Tier_1_General (developer name, M2-S04); sharedTo group Support_Tier_1."
+    },
+    {
+      "kind": "xml",
+      "title": "Tier 2 queue list view",
+      "target_path": "artefacts/M5-S01/objects/Case/listViews/Tier_2_Queue.listView-meta.xml",
+      "content": "ListView > fullName Tier_2_Queue; the six standard columns plus Severity__c in custom-field API-name form; filterScope Queue; filters CASES.STATUS notEqual Closed; label 'Tier 2 Queue'; queue Tier_2_Engineering; sharedTo group Support_Tier_2."
+    },
+    {
+      "kind": "xml",
+      "title": "Billing queue list view",
+      "target_path": "artefacts/M5-S01/objects/Case/listViews/Billing_Queue.listView-meta.xml",
+      "content": "ListView > fullName Billing_Queue; the six standard columns; filterScope Queue; filters CASES.STATUS notEqual Closed; label 'Billing Queue'; queue Billing; sharedTo group Billing_Team."
+    },
+    {
+      "kind": "xml",
+      "title": "Support Operations report folder (declared filename, see the SS 3 finding)",
+      "target_path": "artefacts/M5-S01/reports/Support_Operations-meta.xml",
+      "content": "ReportFolder > accessType Shared; name 'Support Operations'; one folderShares (accessLevel View, sharedTo Support_Tier_2, sharedToType Group). No Manage share: Q91 names a role, and no admin group exists in this build."
+    },
+    {
+      "kind": "xml",
+      "title": "Escalated Open Cases report - INCOMPLETE, the Escalated criterion is absent",
+      "target_path": "artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml",
+      "content": "Report > columns STATUS, PRIORITY, CREATED_DATE; filter booleanFilter '1 AND 2' over criteriaItems STATUS notEqual Closed and CREATED_DATE equals LAST_N_DAYS:30; format Summary; groupingsDown USERS.NAME then PRIORITY, both Asc; name 'Escalated Open Cases'; reportType Cases; showDetails/showGrandTotal/showSubTotals true. No scope element. An XML comment above the filter carries the two UNVERIFIED facts, the first of which is that IsEscalated is NOT filtered, so the report returns open Cases rather than escalated open Cases until the code is harvested."
+    },
+    {
+      "kind": "xml",
+      "title": "package.xml fragment",
+      "target_path": "artefacts/M5-S01/package.xml",
+      "content": "ListView / members Case.Billing_Queue, Case.Tier_1_General_Queue, Case.Tier_2_Queue; Report / members Support_Operations (the folder, bare) and Support_Operations/Escalated_Open_Cases; version 67.0. No wildcard: neither type accepts one."
+    },
+    {
+      "kind": "markdown",
+      "title": "Deploy-order note (undeclared output, written on every run)",
+      "target_path": "artefacts/M5-S01/deploy-order.md",
+      "content": "Six sections: what the step produces; SS 2 the seven UNVERIFIED items with U1 (absent Escalated criterion) raised first and its one-retrieve remedy; SS 3 the declared-folder-filename finding with both measured checker runs; SS 4 order (groups, then queues, then the object and its field, then the standard Cases report type; folder before report inside the step); SS 5 eight decisions including the Tier 1 pull-view/A7 position, the auto-created rival view, the sharedTo-not-public choice and the subscription warning; SS 6 two validate-only commands (source-dir and manifest) as text for a human."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every queue this step's views point at was already built with a matching public group, so each view could be given an explicit sharedTo audience instead of defaulting to a public view nobody signed off.",
+      "domain": "list-view-governance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S04/queues",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "M4-S04's escalation-monitoring-note.md specified the report's filters, grouping, columns, owner and cadence in a table, so the report's design came from an upstream artefact rather than from this agent's reading of the requirement.",
+      "domain": "build-traceability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S04/escalation-monitoring-note.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The report ships without the Escalated criterion its own name and Q91 promise, because the report column code for Case.IsEscalated is in no cited file; as written it over-reports, and the over-reporting is silent.",
+      "domain": "reporting-accuracy",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The folder filename the plan declares is not one check_report_inventory.py recognises, so the folder's accessType and folderShares are never checked: measured this run, the declared name scans 1 file and the skill-documented .reportFolder-meta.xml name scans 2, both exit 0.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S01/reports/Support_Operations-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Deploying these three views leaves two list views per queue in the org, because every queue auto-creates one; the build has no record of which of the pair is authoritative beyond this step's deploy-order note.",
+      "domain": "list-view-governance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/list-views-and-compact-layouts/SKILL.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Tier 1 gets a pull list view although Q31 answers that Tier 1 has work pushed to it, which is correct only while M3-S05 stays blocked on Q32-Q35; nothing in the plan says what happens to this view when Omni-Channel ships.",
+      "domain": "scope-drift",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S01].inputs.note"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's acceptance_tests[0] description states that at step scope the checker exits 1 because main() returns 1 on any finding including INFO; measured this run it prints exactly the predicted INFO line and exits 0, since main() returns 1 only on ERROR or under --strict.",
+      "domain": "plan-prose",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py",
+        "count": 0
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The four declared acceptance tests plus the always-on xml and manifest checks are the tester's to execute and record, not this agent's.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "step-tester",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S01].acceptance_tests"
+      },
+      "followup_reason": "The four declared acceptance tests plus the always-on xml and manifest checks are the tester's to execute and record, not this agent's."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Two findings need decisions.md entries before the M5 gate: the absent Escalated criterion and the folder filename that defeats its own checker.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "build-doc-keeper",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S01/deploy-order.md"
+      },
+      "followup_reason": "Two findings need decisions.md entries before the M5 gate: the absent Escalated criterion and the folder filename that defeats its own checker."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/SKILL.md",
+      "used_for": "ListView element set, the filterScope enumeration, the Queue/queue pairing rule, sharedTo semantics and the Questions-to-Ask rows that decided audience and filters"
+    },
+    {
+      "type": "skill",
+      "id": "admin/list-views-and-compact-layouts",
+      "path": "skills/admin/list-views-and-compact-layouts/references/metadata-examples.md",
+      "used_for": "the queue-scoped view and the filters/sharedTo view as the two shapes adapted, the standard-field column tokens, and the object-qualified ListView member form"
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/SKILL.md",
+      "used_for": "the folder-access-is-not-record-access rule, the subscription warning, and the retrieve-before-you-write instruction that made every column code UNVERIFIED here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+      "used_for": "the Report and ReportFolder element sets, accessType and folderShares enums, the no-wildcard package.xml member form and the folder-before-report order"
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/examples.md",
+      "used_for": "the Cases-report filter shape (STATUS notEqual Closed, CREATED_DATE with LAST_N_DAYS:30) and the standard Cases report type named in prose"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the deploy-order note's framing - intentionally ordered scope, and validating in lower environments in the order production will use"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "SS 4 step-type table (ui owns list views, reports and folders in a design-only build), SS 5 the declare-a-manifest rule on every metadata-builder step, SS 8 the skill-gap rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step record fields this agent reads and the ones it must leave alone"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step's declared checkers, xml, manifest and manual tests are its to run and record in tests/M5-S01/"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the absent Escalated criterion and the folder-filename finding both need decisions.md entries before the M5 gate"
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S01",
+    "step_type": "ui",
+    "invocation": "run inline by agents/build-step-runner (this build's convention); no status transition written by this agent",
+    "api_version": "67.0",
+    "artefacts": [
+      {
+        "path": "artefacts/M5-S01/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml",
+        "type": "ListView",
+        "declared": true,
+        "source": "list-views-and-compact-layouts/references/metadata-examples.md SS 1"
+      },
+      {
+        "path": "artefacts/M5-S01/objects/Case/listViews/Tier_2_Queue.listView-meta.xml",
+        "type": "ListView",
+        "declared": true,
+        "source": "same, plus SS 2 for filters and sharedTo"
+      },
+      {
+        "path": "artefacts/M5-S01/objects/Case/listViews/Billing_Queue.listView-meta.xml",
+        "type": "ListView",
+        "declared": true,
+        "source": "same"
+      },
+      {
+        "path": "artefacts/M5-S01/reports/Support_Operations-meta.xml",
+        "type": "ReportFolder",
+        "declared": true,
+        "source": "reports-and-dashboards/references/metadata-examples.md SS 4"
+      },
+      {
+        "path": "artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml",
+        "type": "Report",
+        "declared": true,
+        "source": "reports-and-dashboards/references/metadata-examples.md SS 2 + references/examples.md"
+      },
+      {
+        "path": "artefacts/M5-S01/package.xml",
+        "type": "manifest",
+        "declared": true,
+        "source": "written on every run per AGENT.md Step 6"
+      },
+      {
+        "path": "artefacts/M5-S01/deploy-order.md",
+        "type": "note",
+        "declared": false,
+        "source": "written on every run per AGENT.md Step 7; undeclared, same pattern as O-M3S02-03 and every M4 step"
+      }
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Who is the audience for this view, and did anyone decide it should be public?",
+        "answer": "The queue-member public group per view: Support_Tier_1, Support_Tier_2, Billing_Team",
+        "source": "upstream artefacts (M2-S04 groups) + Q31",
+        "element": "sharedTo/group on all three views"
+      },
+      {
+        "question": "Is this view meant to follow a queue?",
+        "answer": "Yes - all three are Queue-scoped, naming the queue developer name",
+        "source": "step inputs (Q31)",
+        "element": "filterScope Queue + queue"
+      },
+      {
+        "question": "What are the exact column tokens on this object?",
+        "answer": "The six standard tokens the skill's own example carries, plus Severity__c on the Tier 2 view in custom-field API-name form",
+        "source": "skill default (documented, marked UNVERIFIED by the skill)",
+        "element": "columns"
+      },
+      {
+        "question": "Are these views migrating between orgs, and by what mechanism?",
+        "answer": "Object-qualified enumerated members, no wildcard - ListView rejects it",
+        "source": "skill default (documented)",
+        "element": "package.xml ListView members"
+      },
+      {
+        "question": "Who owns list-view creation on this object after go-live?",
+        "answer": "UNANSWERED - no clarification covers it; recorded in deploy-order.md SS 5.2 with the auto-created-view governance note",
+        "source": "none",
+        "element": "none (governance, not metadata)"
+      },
+      {
+        "question": "Who is allowed to see these rows, and who is allowed to open the folder?",
+        "answer": "View to Support_Tier_2; no Manage share, because Q91 names a role and no admin group exists in this build",
+        "source": "step inputs (Q91) + upstream artefacts",
+        "element": "ReportFolder accessType Shared + one folderShares"
+      },
+      {
+        "question": "Is anyone going to email, export, or subscribe to this?",
+        "answer": "No - Q91 asks for a saved report reviewed weekly, so no subscription is written and the subscription risk is recorded instead",
+        "source": "step inputs (Q91)",
+        "element": "none written"
+      },
+      {
+        "question": "Should a parent record with zero child records still appear? / Does this report type already back other reports?",
+        "answer": "Not applicable - a single-object Cases report on the standard report type; no ReportType is authored",
+        "source": "step inputs (Q91) + M4-S04 note",
+        "element": "reportType"
+      },
+      {
+        "question": "Does every viewer need to see the same numbers, or their own?",
+        "answer": "Not applicable - no dashboard is in this step's outputs",
+        "source": "step outputs",
+        "element": "none"
+      },
+      {
+        "question": "How far back does the answer need to go?",
+        "answer": "Last 30 days, from M4-S04's note; no historical trending",
+        "source": "upstream artefact",
+        "element": "filter criteriaItems CREATED_DATE"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts",
+        "cwd": "build dir",
+        "exit": 0,
+        "repair_passes": 0,
+        "stdout": "No issues found."
+      },
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M5-S01",
+        "cwd": "build dir",
+        "exit": 0,
+        "repair_passes": 0,
+        "stdout": "score 100, 0 findings, Scanned 1 report/dashboard file(s)"
+      },
+      {
+        "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts/M5-S01",
+        "cwd": "build dir",
+        "exit": 0,
+        "repair_passes": 0,
+        "stdout": "1 INFO (3 list views, no compact layout at this scope) - evidence run, not the declared test; contradicts the step's own exit-1 prose"
+      },
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir <scratchpad>/folderprobe",
+        "cwd": "build dir",
+        "exit": 0,
+        "repair_passes": 0,
+        "stdout": "Scanned 2 report/dashboard file(s) - evidence run on a renamed copy outside the build dir, proving the declared folder filename is not scanned"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "Two types, five members, every member backed by a file and every metadata file covered: ListView Case.Billing_Queue / Case.Tier_1_General_Queue / Case.Tier_2_Queue; Report Support_Operations (the folder, listed bare under <name>Report</name> because describeMetadata has no ReportFolder entry) and Support_Operations/Escalated_Open_Cases. No wildcard - neither type accepts one.",
+    "ungrounded": [
+      "U1 the report column code for Case.IsEscalated - ABSENT from the filter rather than guessed; the report over-reports until it is harvested",
+      "U2 every report column code written (STATUS, PRIORITY, CREATED_DATE, USERS.NAME) - quoted from the skill's examples, which mark the whole code list UNVERIFIED",
+      "U3 the equals + LAST_N_DAYS:30 pairing for a within-30-days window",
+      "U4 <reportType>Cases</reportType> - named in prose only; the checker cannot catch a wrong value for a standard report type",
+      "U5 <scope> omitted - report-type-dependent and undocumented for Cases",
+      "U6 list-view standard column tokens - legacy tokens, no per-object list published; a wrong token renders blank rather than failing",
+      "U7 <field> vs <filter> inside <filters> - the guide contradicts itself; the sample's form is used"
+    ],
+    "plan_findings_for_the_gate": [
+      "The declared folder path reports/Support_Operations-meta.xml is not scanned by check_report_inventory.py, so acceptance_tests[1]'s folder assertion does not execute (measured both ways this run).",
+      "acceptance_tests[0]'s description claims a step-scope exit of 1 on an INFO finding; the checker exits 0 on INFO unless --strict. The declared build-scope command is still the correct one.",
+      "decisions.md W02 already records that the check_queues.py does-not-recurse reason quoted in acceptance_tests[0] is stale; the conclusion stands on other grounds.",
+      "The plan carries no plan-level api_version; 67.0 is read from the M3 gate's decision 6."
+    ]
+  }
+}

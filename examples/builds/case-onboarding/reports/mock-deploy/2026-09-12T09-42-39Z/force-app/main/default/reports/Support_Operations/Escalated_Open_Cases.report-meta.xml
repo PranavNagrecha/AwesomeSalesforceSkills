@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>STATUS</field>
+    </columns>
+    <columns>
+        <field>PRIORITY</field>
+    </columns>
+    <columns>
+        <field>CREATED_DATE</field>
+    </columns>
+    <description>Escalated, still-open Cases, reviewed weekly by the Tier 2 lead (Q91). Shape from artefacts/M4-S04/escalation-monitoring-note.md section 2. INCOMPLETE AS WRITTEN: the Escalated criterion is absent because no cited skill documents the report column code for Case.IsEscalated - see artefacts/M5-S01/deploy-order.md section 2 before this report is deployed or scheduled.</description>
+    <!-- UNVERIFIED (2026-09-12). Two facts this build cannot ground, both of which change the
+         rows this report returns. Neither is guessed here; both are listed in deploy-order.md
+         section 2 as harvest-before-deploy items.
+         1. The Escalated criterion (IsEscalated = true) is NOT in this filter. The report column
+            code for that field is report-type specific and appears in no file of
+            skills/admin/reports-and-dashboards. As written this report returns OPEN cases from
+            the last 30 days, not ESCALATED open cases, so it does not yet answer Q91.
+         2. The operator/value pairing below for a "last 30 days" window is unconfirmed: the
+            skill's own example pairs LAST_N_DAYS:30 with lessOrEqual to mean "older than 30
+            days", and documents no pairing for "within the last 30 days". -->
+    <filter>
+        <booleanFilter>1 AND 2</booleanFilter>
+        <criteriaItems>
+            <column>STATUS</column>
+            <operator>notEqual</operator>
+            <value>Closed</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>CREATED_DATE</column>
+            <operator>equals</operator>
+            <value>LAST_N_DAYS:30</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <field>USERS.NAME</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <field>PRIORITY</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Escalated Open Cases</name>
+    <reportType>Cases</reportType>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+</Report>

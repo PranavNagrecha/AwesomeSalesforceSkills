@@ -1,0 +1,5 @@
+WARN: row 56: coverage gap: REQ-055 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 57: coverage gap: REQ-056 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 58: coverage gap: REQ-057 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 59: coverage gap: REQ-058 has no artefact and no test id (status 'Draft') — waived by decision NONE
+traceability.md: 58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)

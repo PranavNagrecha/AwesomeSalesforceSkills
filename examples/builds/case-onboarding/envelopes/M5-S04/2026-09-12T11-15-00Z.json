@@ -1,0 +1,156 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "compile",
+  "run_id": "2026-09-12T11-15-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-15-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-15-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S04",
+    "mode": "compile",
+    "workbook_sections": 10,
+    "assumptions": [
+      "A16"
+    ],
+    "answers": [
+      "Q94",
+      "Q87",
+      "Q89",
+      "Q90",
+      "Q67 (DEFERRED)"
+    ]
+  },
+  "summary": "Compiled the five M5-S04 outputs from sources already on disk: configuration-workbook.md (104 rows across the ten canonical sections plus Other configuration, collated from workbook/*.md, with all 103 pending:M5-S03 source_story_id cells resolved against artefacts/M5-S03/story-backlog.md's own RTM and the three CWB-OTHER-001..003 backslash-pipe source_req_id cells re-delimited with ';' as workbook/99-other-configuration.md's own note anticipated); traceability.md (58 requirement rows copied verbatim from the build's traceability.md Matrix, plus a coverage line: 0 requirements with no step, 4 steps with no requirement row (M3-S05, M5-S02 blocked; M5-S03/M5-S04 documentation steps), 24 of 26 manual tests outstanding); deploy-order.md (build-wide ten-slot sequence assembled from every workbook row's own 'Deploy position' citation, 103 of 104 rows accounted for); acceptance-criteria.md (67 Given/When/Then records collated from the M5 story backlog's 11 stories, plus 39 more from every `manual` acceptance test the plan declares on a step or milestone, to give uat-test-cases.yaml something to resolve `ac_id` against); and uat-test-cases.yaml (39 cases, one per plan-declared manual test, given/when/then text taken verbatim from each test's own description). Four declared checkers were run verbatim: check_rtm.py exits 0 (4 pre-existing WARNs); check_workbook.py, check_ac_format.py and check_uat_case.py all exit 1 on genuine, pre-existing or newly-surfaced gaps named in full below \u2014 none papered over by inventing content this run has no source for.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "check-outputs exits 0 (every declared output present, non-empty, parseable) and the coverage line reports no requirement without a step, which is the HIGH bar per Step 11 \u2014 but three of the four declared acceptance checkers exit 1 on real gaps this compile run surfaced rather than caused (missing automation-selection.md decision-tree citations on every Section 6 row; nine/three rule-type requirements with no negative UAT criterion; a fourth instance of the checker's un-escaped-pipe parsing defect in CWB-AUT-029), which caps this run at MEDIUM rather than HIGH.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check-outputs exits 0 on all five declared outputs and check_rtm.py exits 0 on the compiled traceability.md, confirming the per-step rows this build wrote all the way back to M1-S01 collate cleanly into one build-wide document without a single orphan or missing-requirement gap.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S04/traceability.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_workbook.py fails 30 of 30 Section 6 (Automation) rows for missing an `automation-selection.md Q<n>` citation, even though plan.json declares `decision_trees: [\"standards/decision-trees/automation-selection.md\"]` on M3-S04, M3-S05, M4-S03 and M4-S05 \u2014 the citation was never written into the workbook row's notes cell at any of those four steps' own documentation runs, so this is a pre-existing gap across four steps' worth of rows, not something this compile run introduced or can safely invent (the specific Q-branch that resolved each choice is not recorded anywhere this run may read).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/06-automation.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "CWB-AUT-029's target_value cell quotes a naming-pattern regex containing two backslash-escaped pipes (`BeforeSave\\|AfterSave\\|...`) \u2014 check_workbook.py's parser splits on every literal `|` with no escape handling, so this one row's columns shift under check_workbook.py exactly as workbook/99-other-configuration.md already documented for CWB-OTHER-001..003, but this occurrence was not previously named anywhere. Left verbatim rather than rewritten, because the pipe is a regex alternation operator here, not a multi-value delimiter \u2014 converting it to ';' would change what the regex means, unlike the CWB-OTHER-001..003 fix.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/06-automation.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_ac_format.py and check_uat_case.py both fail on rule-type requirements (assignment/auto-response/escalation rule, entitlement process) whose only UAT-phase criteria are the happy-path ones the M5 story backlog and the plan's own manual tests carry \u2014 REQ-005, REQ-023, REQ-033, REQ-034, REQ-036, REQ-037, REQ-040, REQ-041, REQ-053 (acceptance-criteria.md) and REQ-013, REQ-025, REQ-038, REQ-040, REQ-043, REQ-053 (uat-test-cases.yaml) carry no criterion or case marked negative. This is a genuine sandbox-UAT coverage gap the compile run surfaces rather than invents: the corresponding fall-through/deny behaviour for these requirements was proven only at the metadata-checker level during the build (e.g. M3-S04's own acceptance tests), never restated as a UAT-phase negative case.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S04/acceptance-criteria.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Six of the story backlog's 43 raw criteria (US-CASE-002 AC-3/AC-4, US-CASE-003 AC-4, US-CASE-009 AC-3/AC-4, US-CASE-011 AC-3) carry no req_id in story-backlog.md's own Requirements Traceability Matrix. They are reproduced in acceptance-criteria.md's narrative section for completeness but were not given a lintable YAML row, because minting a req_id for them would be this run deciding a linkage the story backlog itself never made \u2014 a human should confirm whether that's an oversight in the backlog or a deliberate omission.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S03/story-backlog.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "39 build-wide manual-test AC/UAT records had no req_id anywhere in traceability.md for five steps or milestones (M3-S05, M5-S02, M5-S03, M5-S04, M5-S05, plus three M5 milestone-level tests). Each was assigned the closest-fit already-existing req_id with the reasoning recorded in the compiled documents (e.g. M5-S02 -> REQ-058, whose own text is literally about the sandbox-owner gap M5-S02 is blocked on) rather than a fabricated id \u2014 a human should confirm these five approximations are acceptable rather than assuming they are load-bearing links.",
+      "evidence": {
+        "source": "heuristic",
+        "path": "artefacts/M5-S04/uat-test-cases.yaml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "step-tester has not yet run this step's declared acceptance tests; this compile run's own verbatim runs of all four checkers (for diligence, at the invoking orchestrator's explicit request) are not a substitute for that step.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "to run M5-S04's declared acceptance tests formally and record tests/M5-S04/results.json."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "milestone-verifier has not yet been run for M5; this compile step is one of its own dependencies once tested and documented.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "to cross-check M5's steps against the same ten-slot sequence and gate decisions once M5-S04 and M5-S05 are both documented."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the ten canonical sections, the row schema, and check_workbook.py's own validation rules"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column order and check_rtm.py's coverage-gap semantics"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a test result becomes acceptance evidence rather than a bare pass/fail"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the uat-test-cases.yaml record shape and check_uat_case.py's per-group negative rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape and check_ac_format.py's rule-type negative-pairing rule"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Step 10's compile-run definition \u2014 sources allowed, what is and is not re-derived"
+    },
+    {
+      "type": "standard",
+      "id": "agents/build-doc-keeper/AGENT.md",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the compile-run plan step (Step 10) this run executed, and the Step 4 section-mapping table workbook/*.md already applied"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M5-S04's declared acceptance tests have not yet been run formally against tests/M5-S04/results.json."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M5 cannot be verified until every M5 step (including this one) is documented."
+    }
+  ]
+}

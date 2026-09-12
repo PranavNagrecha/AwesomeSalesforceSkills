@@ -1,0 +1,388 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T12-16-22Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-16-22Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-16-22Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S05",
+    "api_version": "67.0 - not a plan field. Derived from human_gates[milestone:M3] decision 6 ('build API version = 67.0 accepted') and carried by the milestone:M4 note. plan.json still has no plan-level api_version key (planner v6 item).",
+    "step_inputs.answers": [
+      "Q47",
+      "Q58",
+      "Q68",
+      "Q74"
+    ],
+    "step_inputs.note": "carried verbatim from plan.json steps[M5-S05].inputs.note; B09 (Apex members belong here), S3 (Settings:Flow explicit), B12 (the SharingRules WARN is the expected outcome), and the requirements-source note on admin/case-management-setup",
+    "upstream_artefacts": [
+      "artefacts/M5-S04/deploy-order.md",
+      "artefacts/M4-S05/classes/CaseMilestoneService.cls",
+      "artefacts/M4-S05/classes/CaseMilestoneServiceTest.cls",
+      "artefacts/M4-S05/classes/TestDataFactory.cls",
+      "artefacts/M4-S05/triggers/CaseMilestoneTrigger.trigger",
+      "artefacts/M1-S01/package.xml",
+      "artefacts/M1-S02/package.xml",
+      "artefacts/M2-S01/package.xml",
+      "artefacts/M2-S02/package.xml",
+      "artefacts/M2-S03/package.xml",
+      "artefacts/M2-S04/package.xml",
+      "artefacts/M2-S05/package.xml",
+      "artefacts/M3-S01/package.xml",
+      "artefacts/M3-S02/package.xml",
+      "artefacts/M3-S03/package.xml",
+      "artefacts/M3-S04/package.xml",
+      "artefacts/M4-S01/package.xml",
+      "artefacts/M4-S02/package.xml",
+      "artefacts/M4-S03/package.xml",
+      "artefacts/M4-S04/package.xml",
+      "artefacts/M5-S01/package.xml"
+    ],
+    "credentials_present": false
+  },
+  "summary": "M5-S05 (type docs) built: the build-level package.xml aggregating 56 members across 29 types at <version>67.0</version>, and deploy-order.md, the build-wide deploy-order note. The manifest unions the 16 step manifests under artefacts/*/package.xml and adds the four ApexClass/ApexTrigger members of M4-S05, which declares no manifest of its own per the build-orchestration Apex exception. No wildcards; Settings named explicitly as Case, BusinessHours and Flow; CompactLayout, ValidationRule, RecordType, BusinessProcess, CustomField and ListView object-qualified; EmailTemplate and Report folder-qualified. Both directions of the manifest/file check pass over the whole tree: every one of the 56 members resolves to a file and every one of the 62 deployable files is covered by a member. The blocked steps M3-S05 and M5-S02 are named with their blocked reasons verbatim in both files rather than being silently absent. The declared checker exits 0 with the one documented SharingRules WARN, the manifest parses, and check-outputs is ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: every member form is copied from a step manifest or from the cited skill's metadata-examples (object-qualified CustomField/ListView, the Layout hyphen form, the feature-settings wildcard rule), the checker exited 0 on the first pass, check-outputs is ok and both declared outputs were written with nothing else - but four of the seven Questions-to-Ask rows (rollbackOnError, testLevel, validation timing, backout path) are answered from the skill's documented behaviour and left as release-owner decisions rather than bound by the plan, which is the MEDIUM row exactly. Not LOW: nothing is missing, malformed or outside artefacts/M5-S05/.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Three of the seven admin/change-management-and-deployment Questions-to-Ask rows are bound by the plan (what ships inactive - Q47/Q58; what the pre-go-live tests are - Q68; what a refresh must re-point - Q74). Four are not: rollbackOnError, testLevel, when validation runs relative to the window, and the backout path. None of them changes an element in package.xml, so none blocks; all four are written into deploy-order.md section 6 as decisions the release owner makes before the window.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer the four release-option questions at the M5 gate, or record them on the deploy runbook with an owner."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "Build-level package.xml (29 types, 56 members, version 67.0)",
+      "target_path": "artefacts/M5-S05/package.xml",
+      "content": "Union of the 16 step manifests plus M4-S05's ApexClass/ApexTrigger members. No wildcards; Settings named explicitly as Case, BusinessHours and Flow; CompactLayout, ValidationRule, RecordType, BusinessProcess, CustomField and ListView object-qualified; EmailTemplate and Report folder-qualified. Types and members sorted alphabetically to match scripts/mock_deploy.py merge_package_xml, so a manifest-mode re-merge produces no drift. See the file itself for the full text."
+    },
+    {
+      "kind": "markdown",
+      "title": "deploy-order.md - the build-wide deploy-order note",
+      "target_path": "artefacts/M5-S05/deploy-order.md",
+      "content": "Eight sections: what the manifest contains and the member forms that are not the obvious one; the 62.0/67.0 version split and why 67.0; what is deliberately absent (M3-S05 and M5-S02 with their blocked reasons verbatim, the document-only steps, the absence of deletions); the 17-slot deploy order, what the order is for in a one-request deploy, and where it differs from artefacts/M5-S04/deploy-order.md; what ships inactive (Q47) and what needs a switch flipped; the six org prerequisites no manifest can carry; the release options still to decide; and one validate-only command. No deploy command anywhere in the file."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both directions of the manifest/file consistency check pass over the whole build tree, not just this step: 56 members all resolve to files and all 62 deployable files under artefacts/ are covered by a member, counting the six -meta.xml siblings that travel with their bodies.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts",
+        "count": 62
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The CompactLayout member form that manifest-mode validation rejected at M1 (F-13, bare Case_Intake) is the object-qualified Case.Case_Intake in M1-S01's rebuilt step manifest, so the union inherits the fix rather than reintroducing it. The stale bare form still sits in reports/MILESTONE-M1-package.xml, which predates the rebuild.",
+      "domain": "deployability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S01/package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This manifest is the first in the build to carry the Apex, so nothing has ever validated the Apex members through a merged manifest - G4's F-43 note says so explicitly. Source-mode run 4 of MOCK-DEPLOY-M4 compiled the classes; manifest mode reads a different document, and the one time it ran in this build it found a defect source mode had missed.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M4.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Six org prerequisites now travel with this manifest and not one of them is a metadata file any step could ship: the verified org-wide email address, the Entitlement settings switch, two queue mailboxes, per-Account entitlement records, the report's Escalated criterion, and an active SlaProcess for the Apex test. A release owner reading only package.xml would see none of them.",
+      "domain": "release-readiness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S05/deploy-order.md",
+        "count": 6
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "settings/Entitlement.settings-meta.xml is declared in no step's outputs anywhere in the plan, so the one switch three of M4's five steps depend on cannot appear in this manifest even though Settings is already a type in it with three other members. G4 decision 2 accepted this as a Setup prerequisite rather than a plan amendment.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[].outputs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Two cited sources disagree on whether manifest order determines deploy order inside one request: admin/case-management-setup's deploy command comment says the manifest preserves the order, while admin/change-management-and-deployment quotes the guide only on membership and is silent on intra-request ordering. Reported in deploy-order.md section 3.2 rather than resolved; the ordering table is written to be useful either way, as the split order if the window is broken into more than one deploy.",
+      "domain": "source-conflict",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The build-wide order in artefacts/M5-S04/deploy-order.md puts Settings:Case ahead of the assignment and auto-response rules, following plan step order, while artefacts/M3-S03/deploy-order.md section 3 states the reverse as the safe sequence for any org that will receive real mail. This file follows M3-S03 and names the divergence rather than re-ordering M5-S04's table.",
+      "domain": "deploy-order",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S04/deploy-order.md"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the Questions-to-Ask rows recorded as release options in deploy-order.md section 6"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "the package.xml element shape, member forms (CustomField/ListView object-qualified, the Layout hyphen form), the ValidationRule no-wildcard rule and its UNVERIFIED member-form note, the validate/quick-deploy sequence, the test-level table and the rollback table"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/gotchas.md",
+      "used_for": "rollbackOnError and SucceededPartial, the test-level defaults by environment and package content, the ten-day quick-deploy clock, and the companion-package.xml rule behind the no-deletions note"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "the six-row deploy order behind slots 1-11 and the feature-settings no-wildcard rule (read as requirements guidance per the step note; this skill supplies no shape this manifest copies)"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4's docs-row split (metadata-builder owns package.xml and the per-step note) and section 5's Apex exception, which puts M4-S05's members here"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement and the citation schema"
+    },
+    {
+      "type": "probe",
+      "id": "check_deployment_manifest",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "the step's declared checker, run verbatim from the build directory"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M5-S05's declared acceptance tests are the tester's to run and record; the checker run here is a build-time self-check, not the tester's result."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once M5-S05 is tested, the manifest and the six org prerequisites need carrying into the workbook, decisions.md and the traceability rows."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S05",
+    "step_type": "docs",
+    "invocation": "run inline by build-step-runner under the same artefact-path constraint; Step 9's set-status commands were therefore skipped, per the agent's own rule that two writers of one transition is how a run record disagrees with itself",
+    "api_version": "67.0",
+    "artefacts": [
+      {
+        "path": "artefacts/M5-S05/package.xml",
+        "declared": true,
+        "type": "Package manifest"
+      },
+      {
+        "path": "artefacts/M5-S05/deploy-order.md",
+        "declared": true,
+        "type": "deploy-order note"
+      }
+    ],
+    "blocked_reason": null,
+    "member_counts": {
+      "ApexClass": 3,
+      "ApexTrigger": 1,
+      "AssignmentRules": 1,
+      "AutoResponseRules": 1,
+      "BusinessProcess": 2,
+      "CompactLayout": 1,
+      "CustomField": 3,
+      "CustomObject": 1,
+      "CustomPermission": 1,
+      "EmailFolder": 1,
+      "EmailTemplate": 2,
+      "EntitlementProcess": 2,
+      "EscalationRules": 1,
+      "Flow": 1,
+      "FlowTest": 1,
+      "Group": 3,
+      "Layout": 2,
+      "ListView": 3,
+      "MilestoneType": 1,
+      "PermissionSet": 5,
+      "PermissionSetGroup": 3,
+      "Profile": 3,
+      "Queue": 3,
+      "RecordType": 2,
+      "Report": 2,
+      "Settings": 3,
+      "SharingRules": 1,
+      "StandardValueSet": 1,
+      "ValidationRule": 2
+    },
+    "member_total": 56,
+    "type_total": 29,
+    "decision_record": [
+      {
+        "question": "Which environment are we deploying to, and is rollbackOnError set explicitly?",
+        "answer": "Not bound by the plan. deploy-order.md section 6 states the rule (production must be true; the guide contradicts itself on the default; treat SucceededPartial as a failure) and leaves the value to the release owner.",
+        "source": "skill default (documented, not decided)",
+        "element": "none - no manifest element"
+      },
+      {
+        "question": "What test level are we asking for, and how long does it take?",
+        "answer": "Not bound by the plan. Recorded: this manifest carries one trigger and three classes, so a production deploy defaults to RunLocalTests.",
+        "source": "skill default (documented, not decided)",
+        "element": "none"
+      },
+      {
+        "question": "When will validation run relative to the window?",
+        "answer": "Not bound. Recorded: the ten-day quick-deploy clock.",
+        "source": "skill default (documented, not decided)",
+        "element": "none"
+      },
+      {
+        "question": "Is anything being deleted or retired in this release?",
+        "answer": "No. No step retires a component, so no destructiveChanges*.xml is written and the companion-manifest rule is satisfied trivially.",
+        "source": "upstream artefacts (all 16 step manifests)",
+        "element": "absence of destructiveChanges*.xml"
+      },
+      {
+        "question": "Which components arrive in a state a user can see, and which need a switch flipped?",
+        "answer": "EscalationRules:Case ships active=false (Q47). Both validation rules ship active=true because Q58 reports no existing Case data; the Account/Contact caveat is carried forward. Post-deploy: permission-set assignment, enableEntitlements, mail forwarding and form publication, escalation activation.",
+        "source": "step inputs (Q47, Q58) + upstream artefacts",
+        "element": "deploy-order.md section 4"
+      },
+      {
+        "question": "If this behaves badly at 09:00, what exactly do we do?",
+        "answer": "Not bound. Recorded: deactivate-don't-delete first (the two validation rules, the assignment rule, the flow's active version); the escalation rule is already inactive.",
+        "source": "skill default (documented, not decided)",
+        "element": "none"
+      },
+      {
+        "question": "Did this release change records, not just metadata?",
+        "answer": "No data load in this build, but the before-save flow and the Apex trigger write to Cases from activation, so a backout after real traffic needs a data decision. Q68's three sandbox tests gate go-live; Q74 governs every refresh after it.",
+        "source": "step inputs (Q68, Q74) + upstream artefacts",
+        "element": "deploy-order.md sections 6 and 5.2"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "score": 95,
+        "findings": [
+          {
+            "severity": "WARN",
+            "location": "artefacts/M5-S05/package.xml",
+            "message": "manifest includes SharingRules; require explicit review and smoke tests"
+          }
+        ],
+        "note": "The documented expected outcome per the step's own acceptance_tests[0] (B12): the plan does deploy a sharing rule and the release owner is meant to see the line. --strict is deliberately not passed."
+      },
+      {
+        "command": "python3 -c ElementTree parse over artefacts/M5-S05/**/*.xml",
+        "exit_code": 0,
+        "files": 1,
+        "note": "package.xml parses, XML comment header included"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": {
+      "members_total": 56,
+      "members_with_a_file": 56,
+      "members_without_a_file": [],
+      "deployable_files_total": 62,
+      "files_covered_by_a_member": 62,
+      "files_without_a_member": [],
+      "note": "Checked across the whole artefacts/ tree, because this is the build-level manifest: its members' files live under sixteen sibling step directories, not under artefacts/M5-S05/. The step-tester's always-on manifest check reads the step's OWN artefact directory in both directions (agents/step-tester/AGENT.md Step 3 rules 2 and 3), which for this step contains only package.xml and deploy-order.md; that reading is expected to need the whole-tree interpretation the step's acceptance_tests[2] describes."
+    },
+    "excluded_steps": [
+      {
+        "step": "M3-S05",
+        "status": "blocked",
+        "blocked_reason": "deferred: Q32, Q33, Q34, Q35",
+        "members_contributed": 0,
+        "note": "No Omni-Channel component appears in the manifest or on disk."
+      },
+      {
+        "step": "M5-S02",
+        "status": "blocked",
+        "blocked_reason": "borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity",
+        "members_contributed": 0,
+        "note": "Its declared output was a markdown plan, never metadata; the build therefore carries no sandbox strategy document."
+      }
+    ],
+    "version_split": {
+      "62.0": [
+        "M1-S01",
+        "M1-S02",
+        "M2-S01",
+        "M2-S02",
+        "M2-S03",
+        "M2-S04",
+        "M2-S05",
+        "M3-S01",
+        "M3-S02"
+      ],
+      "67.0": [
+        "M3-S03",
+        "M3-S04",
+        "M4-S01",
+        "M4-S02",
+        "M4-S03",
+        "M4-S04",
+        "M5-S01"
+      ],
+      "written": "67.0",
+      "authority": "human_gates[milestone:M3] decision 6 and the milestone:M4 note; MOCK-DEPLOY-M3.md run 4 probes a-c prove 62.0/63.0 reject newEntityRecordType"
+    },
+    "org_prerequisites": [
+      "F-28: support-noreply@acme.example provisioned and verified as an OrgWideEmailAddress before AutoResponseRules:Case deploys",
+      "F-39: enableEntitlements (and enableMilestoneStoppedTime) in settings/Entitlement.settings-meta.xml, which no step declares",
+      "F-44: non-routing mailboxes on the Billing and Tier_2_Engineering queues before the escalation rule is activated",
+      "F-41: an Entitlement record per Account pointing at the right process",
+      "F-51: the report's Escalated = True criterion added in the report builder after deploy",
+      "G4 decision 9: an active SlaProcess with a First Response milestone for M4-S05's SeeAllData test"
+    ],
+    "ungrounded": []
+  }
+}

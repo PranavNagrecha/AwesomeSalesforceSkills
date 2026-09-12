@@ -1,0 +1,72 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "per-step",
+  "run_id": "2026-09-12T12-05-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T12-05-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T12-05-00Z.json",
+  "summary": "Documented M5-S04 (the compile step itself: configuration-workbook.md, traceability.md, deploy-order.md, acceptance-criteria.md, uat-test-cases.yaml) after it reached `tested`. This is the per-step documentation pass (Steps 1-9), distinct from the compile run (Step 10) M5-S04 already executed earlier as a step owner. Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json; appended 4 decisions.md entries covering the compile's own diligence findings and repair pass (D-M5S04-01), the check_workbook.py automation-citation rule closed at the skill via commit 65ec5b82f (D-M5S04-02, the flywheel record), the REQ-055..058 Draft-row 'waived by decision NONE' WARNs named for the M5 gate rather than fabricated (O-M5S04-03), and the 111 check_ac_format.py persona WARNs on build-process meta-criteria accepted as expected, not a gap (O-M5S04-04); wrote 5 workbook rows (CWB-OTHER-037..041 in Other Configuration, one per compiled document, since a docs step's own documentation-of-itself covers the whole build rather than one canonical section); wrote 0 traceability rows (M5-S04 mints and serves no requirement of its own -- confirmed, not assumed, by running check_rtm.py against the build's own traceability.md from the build root: 58 rows, 0 orphans, 4 pre-existing Draft-row WARNs, matching the compile run's own coverage line); ran a staged, disposable diligence assembly of workbook/*.md through check_workbook.py per the agent's per-step contract note, confirming the 5 new rows introduce no new finding; set the step to `documented`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact (the five compiled documents) produced a workbook row with a real source_req_id and a verification cell, and re-running produced no duplicates -- HIGH conditions per Step 11. Held to MEDIUM because M5-S04 mints no requirement id and inferring an appropriate source_req_id required judgment (REQ-001-REQ-058, the whole build, rather than a single id) -- explicitly one of Step 11's MEDIUM triggers ('a requirement id had to be inferred ... rather than read from the step') -- and because this run also had to reconcile a self-referential timing gap (these five rows cannot appear in the compiled workbook they describe, since the compile already ran) rather than a mechanical write.",
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Re-running check_rtm.py against the build's own traceability.md from the build root reproduced the exact result the M5-S04 compile run's own coverage line already predicted for this step (0 orphans, 4 pre-existing Draft-row WARNs) -- two independently-run checks, same numbers, so the traceability picture this run inherited was not stale.",
+      "evidence": {"source": "repo_scan", "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo root>"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The staged full-workbook diligence assembly (workbook/01-*.md through 06-*.md plus 99-other-configuration.md with this run's 5 new rows, built the same way the real M5-S04 compile assembles its own document) reproduced check_workbook.py's exact pre-existing 8 INFO-level findings and no new one -- the new rows introduce no regression.",
+      "evidence": {"source": "repo_scan", "query": "staged workbook assembly in the session scratchpad, discarded after the check; check_workbook.py exit 0"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The 5 rows this run wrote to document M5-S04's own compiled documents (CWB-OTHER-037..041) are themselves absent from artefacts/M5-S04/configuration-workbook.md, because the compile run that produced that file (Step 10, envelope 2026-09-12T11-15-00Z.json onward) necessarily preceded this per-step documentation pass (Steps 1-9), and no further compile step exists in this plan to pick them up. Named in workbook/99-other-configuration.md's own explanatory paragraph rather than left for a reader to discover.",
+      "evidence": {"source": "repo_scan", "path": "workbook/99-other-configuration.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "REQ-055-REQ-058's Draft-row coverage-gap WARNs read 'waived by decision NONE' literally, which could look like an unfinished waiver at a quick read; recorded in decisions.md O-M5S04-03 as the checker naming a status-based waiver condition accurately, not a missing citation -- but a human should still confirm the three named gaps (P6 deploy prerequisite, the UAT Background controls, the blocked sandbox owner) before the M5 gate.",
+      "evidence": {"source": "repo_scan", "query": "tests/M5-S04/check_rtm.out; decisions.md O-M5S04-03"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "milestone-verifier should run once M5-S05 is also documented, because the M5-S04 compile's own residual gap (check_workbook.py's 8 Queue/Group/BusinessHours rows, closed at the skill per D-M5S04-02) and the REQ-055..058 Draft rows are both M5-gate items rather than settled by this step alone.",
+      "evidence": {"source": "input", "query": "decisions.md D-M5S04-02, O-M5S04-03"},
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because the residual checker-policy history and the four Draft-status requirements are M5-gate items, not settled by this step alone."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation, including the file-scope prohibition"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations schema, confidence rubric"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence and atomic-write rule"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum (not triggered this run)"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "section 2 (rendered-view/plan-state rules), section 4 (docs step maps to the section the document covers, otherwise Other configuration), section 6 (this agent's per-step job, distinct from its compile-run job), section 8 (skill-gap-to-decisions.md rule)"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "fields read from and left alone in plan.json"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "ten canonical sections and row schema for the 5 new workbook rows; check_workbook.py's SECTION_HEADING_RE behaviour that the staged diligence assembly had to reproduce"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "canonical column set and the check_rtm.py verification run confirming M5-S04 adds no traceability row"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "decision-entry shape (date, alternative rejected, source grounded in) for the 4 new decisions.md entries"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how the step's two milestone-scoped manual tests are recorded as acceptance evidence rather than a plain pass/fail"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "mandatory read for a per-step pass; verifying the compiled uat-test-cases.yaml row's own check_uat_case.py citation is accurate"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "mandatory read for a per-step pass; verifying the compiled acceptance-criteria.md row's own check_ac_format.py citation is accurate"}
+  ],
+  "extensions": {
+    "step_id": "M5-S04",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": ["CWB-OTHER-037", "CWB-OTHER-038", "CWB-OTHER-039", "CWB-OTHER-040", "CWB-OTHER-041"],
+    "traceability_rows": [],
+    "decisions_appended": ["D-M5S04-01", "D-M5S04-02", "O-M5S04-03", "O-M5S04-04"],
+    "rows_replaced": []
+  }
+}

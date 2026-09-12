@@ -1,0 +1,137 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T11-45-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-45-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-45-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S04",
+    "repair_pass": true
+  },
+  "summary": "Repair pass on M5-S04 after the operator reset it built -> failed -> pending -> running, naming check_workbook.py, check_uat_case.py and check_ac_format.py as the three failing checkers. Re-invoked build-doc-keeper's compile logic inline to fix at the source: appended automation-selection.md decision-tree citations to 22 of 30 Section-6 workbook rows (from plan.json's own decisions[] array \u2014 D1, D3, D6, D7, D10 \u2014 quoting the tree's actual branch text), rewrote CWB-AUT-029's target_value to avoid the parser-breaking literal pipe, added 6 derived negative UAT cases and 12 derived negative AC records, and rephrased 2 mechanism-naming `then` clauses. Re-ran all four declared checkers verbatim: check_rtm.py, check_uat_case.py and check_ac_format.py now exit 0; check_workbook.py exits 1 on 8 rows (M2-S04's Queue/Group rows, M4-S01's BusinessHours rows) for which no automation-selection.md decision exists anywhere in the plan \u2014 reported rather than fabricated. check-outputs still exits 0. Set the step back to `built`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "check-outputs exits 0, the owning agent's envelope validates, and 3 of 4 declared checkers now exit 0 \u2014 a substantial repair over the prior run \u2014 but check_workbook.py's residual 8 issues are a genuine, sourced gap this run could not close within its own authority (no decision to cite), which per this runner's Step 9 rubric keeps confidence at MEDIUM rather than HIGH: an artefact the human still has to act on (add a decision at the next planner touch, or accept the gap) remains.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Three of the four checkers moved from exit 1 to exit 0 in this single repair pass, and the fourth's remaining 8 findings are the same ones this run's own diligence pass first surfaced \u2014 nothing new broke in the repair.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S04/"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_workbook.py's remaining 8-row gap will recur on every future compile of this workbook until a decision is recorded for M2-S04 and M4-S01, or the workbook's own Step-4 routing convention for Queue/Group/BusinessHours artefacts is revisited \u2014 flagging for the human rather than leaving it to be rediscovered.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/06-automation.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "step-tester has not yet run this step's declared acceptance tests as its own formal job.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "to run this step's acceptance tests formally now that three of the four have been repaired to exit 0."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "the compile-run's authority boundary \u2014 why 8 rows were reported rather than force-cited"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2, Q13, Q14, Q15",
+      "used_for": "verifying each repaired row's citation quotes the tree's actual leaf text"
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S04",
+    "owning_agent": "build-doc-keeper",
+    "owning_agent_build_aware": true,
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-40-00Z.json",
+    "repair_of_run": "2026-09-12T11-25-00Z",
+    "artefacts": [
+      {
+        "path": "artefacts/M5-S04/configuration-workbook.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S04/traceability.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S04/deploy-order.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S04/acceptance-criteria.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S04/uat-test-cases.yaml",
+        "declared": true
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "declared_acceptance_checks": [
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M5-S04/configuration-workbook.md",
+        "exit_code": 1,
+        "summary": "8 issue(s), down from 33: CWB-AUT-001..006 (M2-S04, Queue/Group) and CWB-AUT-013/014 (M4-S01, BusinessHours) still lack an automation-selection.md citation \u2014 no decision anywhere in plan.json's decisions[], PLAN.md's decision table or decisions.md resolves an automation-engine choice for either step, and Queue/Group/BusinessHours creation is not itself a leaf of that tree. Not cleared: fabricating one would be this run deciding a routed choice with no source. The other 22 rows and CWB-AUT-029's parser-breaking regex are fixed."
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts",
+        "exit_code": 0,
+        "summary": "Unchanged: 58 row(s), build schema, 4 pre-existing coverage-gap WARNs, 0 errors."
+      },
+      {
+        "command": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M5-S04",
+        "exit_code": 0,
+        "summary": "Fixed: OK \u2014 45 case(s) (39 + 6 new negatives), 0 run-sheet row(s), 118 criterion id(s) cross-checked."
+      },
+      {
+        "command": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md",
+        "exit_code": 0,
+        "summary": "Fixed: 2 document(s) checked \u2014 0 error(s), 111 warning(s) (all WARN-level artefact/persona-genericity signals already accepted in the original run)."
+      }
+    ],
+    "unresolved_findings": [
+      {
+        "checker": "check_workbook.py",
+        "rows": [
+          "CWB-AUT-001",
+          "CWB-AUT-002",
+          "CWB-AUT-003",
+          "CWB-AUT-004",
+          "CWB-AUT-005",
+          "CWB-AUT-006",
+          "CWB-AUT-013",
+          "CWB-AUT-014"
+        ],
+        "reason": "No decision in plan.json's decisions[] array, PLAN.md's rendered decision table, or decisions.md names an automation-selection.md branch for M2-S04 (Queue/Group) or M4-S01 (BusinessHours). Both steps' artefacts are filed under Section 6 by agents/build-doc-keeper/AGENT.md Step 4's own routing convention (routing/SLA artefacts), not because either step made an automation-engine choice the tree resolves. Citing a branch would require this compile run to decide which leaf applies \u2014 the exact kind of fresh decision Step 10 forbids."
+      }
+    ],
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S04 built --run-agent build-doc-keeper --envelope envelopes/M5-S04/2026-09-12T11-40-00Z.json --result \"Repair pass: check_rtm/check_uat_case/check_ac_format now exit 0; check_workbook.py exits 1 on 8 rows with no sourced decision-tree citation (reported, not fabricated); check-outputs ok\" --started 2026-09-12T11:30:00Z"
+  }
+}

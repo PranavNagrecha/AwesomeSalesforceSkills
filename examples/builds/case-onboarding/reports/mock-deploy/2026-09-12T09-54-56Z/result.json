@@ -1,0 +1,1117 @@
+{
+  "status": 1,
+  "result": {
+    "checkOnly": true,
+    "completedDate": "2026-09-12T09:55:31.000Z",
+    "createdBy": "005dL00001j3fsD",
+    "createdByName": "Pranav Nagrecha",
+    "createdDate": "2026-09-12T09:54:58.000Z",
+    "details": {
+      "componentFailures": [
+        {
+          "changed": false,
+          "columnNumber": 23,
+          "componentType": "AutoResponseRule",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:18.000Z",
+          "deleted": false,
+          "fileName": "autoResponseRules/Case.autoResponseRules",
+          "fullName": "Case.Case_Acknowledgement",
+          "lineNumber": 3,
+          "problem": "support-noreply@acme.example is an invalid From email address.: Email Address",
+          "problemType": "Error",
+          "success": false
+        }
+      ],
+      "componentSuccesses": [
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Account.object",
+          "fullName": "Account.Region__c",
+          "id": "00NdL00002ePdBtUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Account.object",
+          "fullName": "Account.Support_Tier__c",
+          "id": "00NdL00002ePdBuUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Severity__c",
+          "id": "00NdL00002ePdBvUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:19.000Z",
+          "deleted": false,
+          "fileName": "classes/CaseMilestoneService.cls",
+          "fullName": "CaseMilestoneService",
+          "id": "01pdL00000a2nr7QAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:19.000Z",
+          "deleted": false,
+          "fileName": "classes/CaseMilestoneServiceTest.cls",
+          "fullName": "CaseMilestoneServiceTest",
+          "id": "01pdL00000a2nr8QAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:19.000Z",
+          "deleted": false,
+          "fileName": "classes/TestDataFactory.cls",
+          "fullName": "TestDataFactory",
+          "id": "01pdL00000a2nr9QAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexTrigger",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:19.000Z",
+          "deleted": false,
+          "fileName": "triggers/CaseMilestoneTrigger.trigger",
+          "fullName": "CaseMilestoneTrigger",
+          "id": "01qdL00000CWmIjQAL",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Queue",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:29.000Z",
+          "deleted": false,
+          "fileName": "queues/Billing.queue",
+          "fullName": "Billing",
+          "id": "00GdL00000W4VA9UAN",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Queue",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "queues/Tier_1_General.queue",
+          "fullName": "Tier_1_General",
+          "id": "00GdL00000W4VAAUA3",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Queue",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "queues/Tier_2_Engineering.queue",
+          "fullName": "Tier_2_Engineering",
+          "id": "00GdL00000W4VABUA3",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Group",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "groups/Billing_Team.group",
+          "fullName": "Billing_Team",
+          "id": "00GdL00000W4VACUA3",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Group",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "groups/Support_Tier_1.group",
+          "fullName": "Support_Tier_1",
+          "id": "00GdL00000W4VADUA3",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Group",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "groups/Support_Tier_2.group",
+          "fullName": "Support_Tier_2",
+          "id": "00GdL00000W4VAEUA3",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "StandardValueSet",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "standardValueSets/CaseOrigin.standardValueSet",
+          "fullName": "CaseOrigin",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomPermission",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "customPermissions/Bypass_Case_Intake_Validation.customPermission",
+          "fullName": "Bypass_Case_Intake_Validation",
+          "id": "0CPdL000000dvcjWAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomObject",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Billing_Process",
+          "id": "019dL000009heD7QAI",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Support_Process",
+          "id": "019dL000009heD8QAI",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Billing",
+          "id": "012dL00000FPu6TQAT",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Support",
+          "id": "012dL00000FPu6UQAT",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CompactLayout",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Case_Intake",
+          "id": "0AHdL000006MyvpWAC",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ValidationRule",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Origin_Must_Be_Known",
+          "id": "03ddL00000C18mDQAR",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ValidationRule",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Priority_Required_On_Agent_Save",
+          "id": "03ddL00000C18mEQAR",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ListView",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Billing_Queue",
+          "id": "00BdL00001KeR0WUAV",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ListView",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Tier_1_General_Queue",
+          "id": "00BdL00001KeR0XUAV",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ListView",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Tier_2_Queue",
+          "id": "00BdL00001KeR0YUAV",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ReportFolder",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "reports/Support_Operations-meta.xml",
+          "fullName": "Support_Operations",
+          "id": "00ldL00000Qq8VZQAZ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Report",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "reports/Support_Operations/Escalated_Open_Cases.report",
+          "fullName": "Support_Operations/Escalated_Open_Cases",
+          "id": "00OdL00000Sr3IIUAZ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Layout",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "layouts/Case-Case Billing Layout.layout",
+          "fullName": "Case-Case Billing Layout",
+          "id": "00hdL00000hkigPQAQ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Layout",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "layouts/Case-Case Support Layout.layout",
+          "fullName": "Case-Case Support Layout",
+          "id": "00hdL00000hkigQQAQ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EmailFolder",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "email/case_intake-meta.xml",
+          "fullName": "case_intake",
+          "id": "00ldL00000Qq8VaQAJ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EmailTemplate",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "email/case_intake/Case_Acknowledgement.email",
+          "fullName": "case_intake/Case_Acknowledgement",
+          "id": "00XdL00000Zloz0UAB",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EmailTemplate",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "email/case_intake/Case_Escalated_To_Tier2.email",
+          "fullName": "case_intake/Case_Escalated_To_Tier2",
+          "id": "00XdL00000Zloz1UAB",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Flow",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "flows/Case_BeforeSave_StampEntitlementAndCalendar.flow",
+          "fullName": "Case_BeforeSave_StampEntitlementAndCalendar",
+          "id": "301dL00002W1wp4QAB",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "FlowTest",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest",
+          "fullName": "Case_BeforeSave_StampEntitlementAndCalendar_Test",
+          "id": "320dL000000Kg41QAC",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "AssignmentRules",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "assignmentRules/Case.assignmentRules",
+          "fullName": "Case",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "AssignmentRule",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "assignmentRules/Case.assignmentRules",
+          "fullName": "Case.Case_Intake_Routing",
+          "id": "01QdL0000094InZUAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "AutoResponseRules",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "autoResponseRules/Case.autoResponseRules",
+          "fullName": "Case",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EscalationRules",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "escalationRules/Case.escalationRules",
+          "fullName": "Case",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EscalationRule",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "escalationRules/Case.escalationRules",
+          "fullName": "Case.Case_SLA_Escalation",
+          "id": "01QdL0000094InbUAE",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Profile",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "profiles/Acme Billing.profile",
+          "fullName": "Acme Billing",
+          "id": "00edL00000WphjdQAB",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Profile",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "profiles/Acme Support Tier 1.profile",
+          "fullName": "Acme Support Tier 1",
+          "id": "00edL00000WphjeQAB",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Profile",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "profiles/Acme Support Tier 2.profile",
+          "fullName": "Acme Support Tier 2",
+          "id": "00edL00000WphjfQAB",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Case_Agent_Core.permissionset",
+          "fullName": "Case_Agent_Core",
+          "id": "0PSdL00000cr1FYWAY",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Case_Billing.permissionset",
+          "fullName": "Case_Billing",
+          "id": "0PSdL00000cr1FZWAY",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Case_Intake_Integration.permissionset",
+          "fullName": "Case_Intake_Integration",
+          "id": "0PSdL00000cr1FaWAI",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Case_Tier1.permissionset",
+          "fullName": "Case_Tier1",
+          "id": "0PSdL00000cr1FbWAI",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Case_Tier2.permissionset",
+          "fullName": "Case_Tier2",
+          "id": "0PSdL00000cr1FcWAI",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSetGroup",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsetgroups/PSG_Billing_Prod.permissionsetgroup",
+          "fullName": "PSG_Billing_Prod",
+          "id": "0PGdL000005nFPdWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSetGroup",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup",
+          "fullName": "PSG_Tier1_Prod",
+          "id": "0PGdL000005nFPeWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSetGroup",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup",
+          "fullName": "PSG_Tier2_Prod",
+          "id": "0PGdL000005nFPfWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CaseSettings",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "settings/Case.settings",
+          "fullName": "Case",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessHoursSettings",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "settings/BusinessHours.settings",
+          "fullName": "BusinessHours",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "SharingRules",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "sharingRules/Case.sharingRules",
+          "fullName": "Case",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "SharingCriteriaRule",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "sharingRules/Case.sharingRules",
+          "fullName": "Case.Support_Cases_To_Tier_2",
+          "id": "03IdL0000009iHxUAI",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "FlowSettings",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "settings/Flow.settings",
+          "fullName": "Flow",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "MilestoneType",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "milestoneTypes/First Response.milestoneType",
+          "fullName": "First Response",
+          "id": "557dL00000irwmzQAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EntitlementProcess",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "entitlementProcesses/First_Response_Premier.entitlementProcess",
+          "fullName": "First_Response_Premier",
+          "id": "552dL00000sZ0hFQAS",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EntitlementProcess",
+          "created": true,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "entitlementProcesses/First_Response_Standard.entitlementProcess",
+          "fullName": "First_Response_Standard",
+          "id": "552dL00000sZ0hGQAS",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-12T09:55:30.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "package.xml",
+          "success": true
+        }
+      ],
+      "runTestResult": {
+        "numFailures": 0,
+        "numTestsRun": 0,
+        "totalTime": 0,
+        "codeCoverage": [],
+        "codeCoverageWarnings": [],
+        "failures": [],
+        "flowCoverage": [],
+        "flowCoverageWarnings": [],
+        "successes": []
+      }
+    },
+    "done": true,
+    "id": "0AfdL00000gIWm2SAG",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2026-09-12T09:55:31.000Z",
+    "numberComponentErrors": 1,
+    "numberComponentsDeployed": 59,
+    "numberComponentsTotal": 60,
+    "numberFiles": "75",
+    "numberTestErrors": 0,
+    "numberTestsCompleted": 0,
+    "numberTestsTotal": 0,
+    "rollbackOnError": true,
+    "runTestsEnabled": false,
+    "startDate": "2026-09-12T09:54:59.000Z",
+    "status": "Failed",
+    "success": false,
+    "zipSize": 42077,
+    "files": [
+      {
+        "fullName": "CaseMilestoneService",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/classes/CaseMilestoneService.cls"
+      },
+      {
+        "fullName": "CaseMilestoneService",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/classes/CaseMilestoneService.cls-meta.xml"
+      },
+      {
+        "fullName": "CaseMilestoneServiceTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/classes/CaseMilestoneServiceTest.cls"
+      },
+      {
+        "fullName": "CaseMilestoneServiceTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/classes/CaseMilestoneServiceTest.cls-meta.xml"
+      },
+      {
+        "fullName": "TestDataFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/classes/TestDataFactory.cls"
+      },
+      {
+        "fullName": "TestDataFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/classes/TestDataFactory.cls-meta.xml"
+      },
+      {
+        "fullName": "CaseMilestoneTrigger",
+        "type": "ApexTrigger",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/triggers/CaseMilestoneTrigger.trigger"
+      },
+      {
+        "fullName": "CaseMilestoneTrigger",
+        "type": "ApexTrigger",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/triggers/CaseMilestoneTrigger.trigger-meta.xml"
+      },
+      {
+        "fullName": "Case.Case_Intake_Routing",
+        "type": "AssignmentRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/assignmentRules/Case.assignmentRules-meta.xml"
+      },
+      {
+        "fullName": "Case",
+        "type": "AssignmentRules",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/assignmentRules/Case.assignmentRules-meta.xml"
+      },
+      {
+        "fullName": "Case.Case_Acknowledgement",
+        "type": "AutoResponseRule",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/autoResponseRules/Case.autoResponseRules-meta.xml",
+        "lineNumber": 3,
+        "columnNumber": 23,
+        "error": "support-noreply@acme.example is an invalid From email address.: Email Address (3:23)"
+      },
+      {
+        "fullName": "Case",
+        "type": "AutoResponseRules",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/autoResponseRules/Case.autoResponseRules-meta.xml"
+      },
+      {
+        "fullName": "Case.Billing_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Case.Support_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Case.Case_Intake",
+        "type": "CompactLayout",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/compactLayouts/Case_Intake.compactLayout-meta.xml"
+      },
+      {
+        "fullName": "Account.Region__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Account/fields/Region__c.field-meta.xml"
+      },
+      {
+        "fullName": "Account.Support_Tier__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Account/fields/Support_Tier__c.field-meta.xml"
+      },
+      {
+        "fullName": "Case.Severity__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/fields/Severity__c.field-meta.xml"
+      },
+      {
+        "fullName": "Case",
+        "type": "CustomObject",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/Case.object-meta.xml"
+      },
+      {
+        "fullName": "Bypass_Case_Intake_Validation",
+        "type": "CustomPermission",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml"
+      },
+      {
+        "fullName": "case_intake",
+        "type": "EmailFolder",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/email/case_intake.emailFolder-meta.xml"
+      },
+      {
+        "fullName": "case_intake/Case_Acknowledgement",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/email/case_intake/Case_Acknowledgement.email"
+      },
+      {
+        "fullName": "case_intake/Case_Acknowledgement",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/email/case_intake/Case_Acknowledgement.email-meta.xml"
+      },
+      {
+        "fullName": "case_intake/Case_Escalated_To_Tier2",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/email/case_intake/Case_Escalated_To_Tier2.email"
+      },
+      {
+        "fullName": "case_intake/Case_Escalated_To_Tier2",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml"
+      },
+      {
+        "fullName": "First_Response_Premier",
+        "type": "EntitlementProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/entitlementProcesses/First_Response_Premier.entitlementProcess-meta.xml"
+      },
+      {
+        "fullName": "First_Response_Standard",
+        "type": "EntitlementProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/entitlementProcesses/First_Response_Standard.entitlementProcess-meta.xml"
+      },
+      {
+        "fullName": "Case.Case_SLA_Escalation",
+        "type": "EscalationRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/escalationRules/Case.escalationRules-meta.xml"
+      },
+      {
+        "fullName": "Case",
+        "type": "EscalationRules",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/escalationRules/Case.escalationRules-meta.xml"
+      },
+      {
+        "fullName": "Case_BeforeSave_StampEntitlementAndCalendar",
+        "type": "Flow",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml"
+      },
+      {
+        "fullName": "Case_BeforeSave_StampEntitlementAndCalendar_Test",
+        "type": "FlowTest",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml"
+      },
+      {
+        "fullName": "Billing_Team",
+        "type": "Group",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/groups/Billing_Team.group-meta.xml"
+      },
+      {
+        "fullName": "Support_Tier_1",
+        "type": "Group",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/groups/Support_Tier_1.group-meta.xml"
+      },
+      {
+        "fullName": "Support_Tier_2",
+        "type": "Group",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/groups/Support_Tier_2.group-meta.xml"
+      },
+      {
+        "fullName": "Case-Case Billing Layout",
+        "type": "Layout",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/layouts/Case-Case Billing Layout.layout-meta.xml"
+      },
+      {
+        "fullName": "Case-Case Support Layout",
+        "type": "Layout",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/layouts/Case-Case Support Layout.layout-meta.xml"
+      },
+      {
+        "fullName": "Case.Billing_Queue",
+        "type": "ListView",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/listViews/Billing_Queue.listView-meta.xml"
+      },
+      {
+        "fullName": "Case.Tier_1_General_Queue",
+        "type": "ListView",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml"
+      },
+      {
+        "fullName": "Case.Tier_2_Queue",
+        "type": "ListView",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/listViews/Tier_2_Queue.listView-meta.xml"
+      },
+      {
+        "fullName": "First Response",
+        "type": "MilestoneType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/milestoneTypes/First Response.milestoneType-meta.xml"
+      },
+      {
+        "fullName": "Case_Agent_Core",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsets/Case_Agent_Core.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Case_Billing",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsets/Case_Billing.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Case_Intake_Integration",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsets/Case_Intake_Integration.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Case_Tier1",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsets/Case_Tier1.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Case_Tier2",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsets/Case_Tier2.permissionset-meta.xml"
+      },
+      {
+        "fullName": "PSG_Billing_Prod",
+        "type": "PermissionSetGroup",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml"
+      },
+      {
+        "fullName": "PSG_Tier1_Prod",
+        "type": "PermissionSetGroup",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml"
+      },
+      {
+        "fullName": "PSG_Tier2_Prod",
+        "type": "PermissionSetGroup",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml"
+      },
+      {
+        "fullName": "Acme Billing",
+        "type": "Profile",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/profiles/Acme Billing.profile-meta.xml"
+      },
+      {
+        "fullName": "Acme Support Tier 1",
+        "type": "Profile",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/profiles/Acme Support Tier 1.profile-meta.xml"
+      },
+      {
+        "fullName": "Acme Support Tier 2",
+        "type": "Profile",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/profiles/Acme Support Tier 2.profile-meta.xml"
+      },
+      {
+        "fullName": "Billing",
+        "type": "Queue",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/queues/Billing.queue-meta.xml"
+      },
+      {
+        "fullName": "Tier_1_General",
+        "type": "Queue",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/queues/Tier_1_General.queue-meta.xml"
+      },
+      {
+        "fullName": "Tier_2_Engineering",
+        "type": "Queue",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/queues/Tier_2_Engineering.queue-meta.xml"
+      },
+      {
+        "fullName": "Case.Billing",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/recordTypes/Billing.recordType-meta.xml"
+      },
+      {
+        "fullName": "Case.Support",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/recordTypes/Support.recordType-meta.xml"
+      },
+      {
+        "fullName": "Support_Operations/Escalated_Open_Cases",
+        "type": "Report",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml"
+      },
+      {
+        "fullName": "Support_Operations",
+        "type": "ReportFolder",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/reports/Support_Operations-meta.xml"
+      },
+      {
+        "fullName": "BusinessHours",
+        "type": "Settings",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/settings/BusinessHours.settings-meta.xml"
+      },
+      {
+        "fullName": "Case",
+        "type": "Settings",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/settings/Case.settings-meta.xml"
+      },
+      {
+        "fullName": "Flow",
+        "type": "Settings",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/settings/Flow.settings-meta.xml"
+      },
+      {
+        "fullName": "Case.Support_Cases_To_Tier_2",
+        "type": "SharingCriteriaRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/sharingRules/Case.sharingRules-meta.xml"
+      },
+      {
+        "fullName": "Case",
+        "type": "SharingRules",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/sharingRules/Case.sharingRules-meta.xml"
+      },
+      {
+        "fullName": "CaseOrigin",
+        "type": "StandardValueSet",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/standardValueSets/CaseOrigin.standardValueSet-meta.xml"
+      },
+      {
+        "fullName": "Case.Origin_Must_Be_Known",
+        "type": "ValidationRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml"
+      },
+      {
+        "fullName": "Case.Priority_Required_On_Agent_Save",
+        "type": "ValidationRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/reports/mock-deploy/2026-09-12T09-54-56Z/force-app/main/default/objects/Case/validationRules/Priority_Required_On_Agent_Save.validationRule-meta.xml"
+      }
+    ],
+    "zipFileCount": 51,
+    "deployUrl": "https://orgfarm-76c95d6f7f-dev-ed.develop.my.salesforce.com/lightning/setup/DeployStatus/page?address=%2Fchangemgmt%2FmonitorDeploymentsDetails.apexp%3FasyncId%3D0AfdL00000gIWm2SAG%26retURL%3D%252Fchangemgmt%252FmonitorDeployment.apexp"
+  },
+  "warnings": [],
+  "api_version": {
+    "value": "67.0",
+    "source": "highest of: M1-S01=62.0, M1-S02=62.0, M2-S01=62.0, M2-S02=62.0, M2-S03=62.0, M2-S04=62.0, M2-S05=62.0, M3-S01=62.0, M3-S02=62.0, M3-S03=67.0, M3-S04=67.0, M4-S01=67.0, M4-S02=67.0, M4-S03=67.0, M4-S04=67.0, M5-S01=67.0"
+  }
+}

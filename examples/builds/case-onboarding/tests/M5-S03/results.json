@@ -1,0 +1,53 @@
+{
+  "step_id": "M5-S03",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q77 and Q84, when story-backlog.md is read, then each of the three intake channels — email, web and manual UI — has its own story, every story names a tester persona holding the real profile plus permission set group (PSG_Tier1_Prod, PSG_Tier2_Prod, PSG_Billing_Prod) rather than the admin profile, and every story carries at least three Given/When/Then criteria including a permission-denial path (Q80)."
+  ],
+  "detail": {
+    "xml": {
+      "type": "xml",
+      "files_found": 0,
+      "result": "ran-zero-files",
+      "note": "No *.xml or *-meta.xml files exist under artefacts/M5-S03/. This is a docs step whose sole declared output is a markdown story backlog, so zero XML is expected rather than a gap."
+    },
+    "manifest": {
+      "type": "manifest",
+      "result": "skipped-not-applicable",
+      "reason": "Step type is 'docs' and the step declares no package.xml in outputs[] (outputs = [\"artefacts/M5-S03/story-backlog.md\"] only). story-drafter's Output Contract produces one markdown document and no metadata, so this falls under the 'docs that produces no manifest' bucket in standards/build-orchestration.md § 4/§5, which records skipped-not-applicable rather than failing. A package.xml exists under the dependency M5-S01 (artefacts/M5-S01/package.xml), but it belongs to M5-S01's own object-model metadata; story-backlog.md is not source-format metadata and derives no member under skills/devops/salesforce-dx-project-structure, so there is nothing in this step's own artefacts for that manifest to be checked against."
+    },
+    "checker": {
+      "name": "skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py",
+      "command": "python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --manifest-dir artefacts/M5-S03",
+      "run_from": ".sfskills/builds/case-onboarding",
+      "exit_code": 0,
+      "stdout_summary": "Summary: 11/11 stories passed (0 ERROR, 10 WARN).",
+      "verdict": "pass",
+      "stdout_file": "tests/M5-S03/check_invest.stdout.txt",
+      "stderr_file": "tests/M5-S03/check_invest.stderr.txt"
+    },
+    "check_outputs": {
+      "command": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M5-S03",
+      "run_from": "/Users/pranavnagrecha/VS Code/Personal/SfSkills",
+      "result": {
+        "ok": true,
+        "step": "M5-S03",
+        "missing": [],
+        "empty": [],
+        "malformed": []
+      },
+      "output_file": "tests/M5-S03/check-outputs.json"
+    },
+    "manual": {
+      "shape_check": "given-when-then",
+      "verdict": "usable",
+      "note": "Names three observable outcomes a human can tick: (1) each of the three intake channels has its own story, (2) every story names a tester persona by the real profile + named PSG rather than admin, (3) every story carries >=3 Given/When/Then criteria including a permission-denial path. Not ticked here — deferred to the milestone gate per skills/admin/acceptance-criteria-given-when-then and skills/admin/uat-and-acceptance-criteria."
+    }
+  }
+}

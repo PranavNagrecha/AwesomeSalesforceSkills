@@ -1,0 +1,15 @@
+{
+  "step_id": "M5-S05",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "W12 (1 of 3): a release owner confirms the deploy-order note contains no deploy command, only a validate-only command they may choose to run themselves.",
+    "W12 (2 of 3): given two steps ship nothing in this phase, when deploy-order.md and package.xml are read, then M3-S05 and M5-S02 are listed as excluded with their blocked reasons verbatim rather than silently absent, and no Omni-Channel or sandbox component appears as a manifest member.",
+    "W12 (3 of 3): given the build-level manifest aggregates every step's members, when package.xml is read, then the order in deploy-order.md follows admin/case-management-setup/references/metadata-examples.md § 5 — StandardValueSet before the business processes and record types, queues and groups before the assignment and escalation rules that name them, Settings named explicitly as Case and Flow because feature settings do not accept the wildcard — and ApexClass and ApexTrigger members from M4-S05 are present here, because that step declares no manifest of its own (B09)."
+  ]
+}

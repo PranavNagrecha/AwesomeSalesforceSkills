@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Case.Billing_Queue</members>
+        <members>Case.Tier_1_General_Queue</members>
+        <members>Case.Tier_2_Queue</members>
+        <name>ListView</name>
+    </types>
+    <types>
+        <members>Support_Operations</members>
+        <members>Support_Operations/Escalated_Open_Cases</members>
+        <name>Report</name>
+    </types>
+    <version>67.0</version>
+</Package>

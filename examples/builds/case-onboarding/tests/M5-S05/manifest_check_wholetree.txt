@@ -1,0 +1,121 @@
+=== Manifest types/members ===
+  ApexClass: ['CaseMilestoneService', 'CaseMilestoneServiceTest', 'TestDataFactory']
+  ApexTrigger: ['CaseMilestoneTrigger']
+  AssignmentRules: ['Case']
+  AutoResponseRules: ['Case']
+  BusinessProcess: ['Case.Billing_Process', 'Case.Support_Process']
+  CompactLayout: ['Case.Case_Intake']
+  CustomField: ['Account.Region__c', 'Account.Support_Tier__c', 'Case.Severity__c']
+  CustomObject: ['Case']
+  CustomPermission: ['Bypass_Case_Intake_Validation']
+  EmailFolder: ['case_intake']
+  EmailTemplate: ['case_intake/Case_Acknowledgement', 'case_intake/Case_Escalated_To_Tier2']
+  EntitlementProcess: ['First_Response_Premier', 'First_Response_Standard']
+  EscalationRules: ['Case']
+  Flow: ['Case_BeforeSave_StampEntitlementAndCalendar']
+  FlowTest: ['Case_BeforeSave_StampEntitlementAndCalendar_Test']
+  Group: ['Billing_Team', 'Support_Tier_1', 'Support_Tier_2']
+  Layout: ['Case-Case Billing Layout', 'Case-Case Support Layout']
+  ListView: ['Case.Billing_Queue', 'Case.Tier_1_General_Queue', 'Case.Tier_2_Queue']
+  MilestoneType: ['First Response']
+  PermissionSet: ['Case_Agent_Core', 'Case_Billing', 'Case_Intake_Integration', 'Case_Tier1', 'Case_Tier2']
+  PermissionSetGroup: ['PSG_Billing_Prod', 'PSG_Tier1_Prod', 'PSG_Tier2_Prod']
+  Profile: ['Acme Billing', 'Acme Support Tier 1', 'Acme Support Tier 2']
+  Queue: ['Billing', 'Tier_1_General', 'Tier_2_Engineering']
+  RecordType: ['Case.Billing', 'Case.Support']
+  Report: ['Support_Operations', 'Support_Operations/Escalated_Open_Cases']
+  Settings: ['BusinessHours', 'Case', 'Flow']
+  SharingRules: ['Case']
+  StandardValueSet: ['CaseOrigin']
+  ValidationRule: ['Case.Origin_Must_Be_Known', 'Case.Priority_Required_On_Agent_Save']
+types: 29 members: 56
+
+total files: 117, excluded: 55, deployable: 62
+
+=== Unclassified files (need manual rule) ===
+
+=== File-derived types/members ===
+  ApexClass: ['CaseMilestoneService', 'CaseMilestoneServiceTest', 'TestDataFactory']
+  ApexTrigger: ['CaseMilestoneTrigger']
+  AssignmentRules: ['Case']
+  AutoResponseRules: ['Case']
+  BusinessProcess: ['Case.Billing_Process', 'Case.Support_Process']
+  CompactLayout: ['Case.Case_Intake']
+  CustomField: ['Account.Region__c', 'Account.Support_Tier__c', 'Case.Severity__c']
+  CustomObject: ['Case']
+  CustomPermission: ['Bypass_Case_Intake_Validation']
+  EmailFolder: ['case_intake']
+  EmailTemplate: ['case_intake/Case_Acknowledgement', 'case_intake/Case_Escalated_To_Tier2']
+  EntitlementProcess: ['First_Response_Premier', 'First_Response_Standard']
+  EscalationRules: ['Case']
+  Flow: ['Case_BeforeSave_StampEntitlementAndCalendar']
+  FlowTest: ['Case_BeforeSave_StampEntitlementAndCalendar_Test']
+  Group: ['Billing_Team', 'Support_Tier_1', 'Support_Tier_2']
+  Layout: ['Case-Case Billing Layout', 'Case-Case Support Layout']
+  ListView: ['Case.Billing_Queue', 'Case.Tier_1_General_Queue', 'Case.Tier_2_Queue']
+  MilestoneType: ['First Response']
+  PermissionSet: ['Case_Agent_Core', 'Case_Billing', 'Case_Intake_Integration', 'Case_Tier1', 'Case_Tier2']
+  PermissionSetGroup: ['PSG_Billing_Prod', 'PSG_Tier1_Prod', 'PSG_Tier2_Prod']
+  Profile: ['Acme Billing', 'Acme Support Tier 1', 'Acme Support Tier 2']
+  Queue: ['Billing', 'Tier_1_General', 'Tier_2_Engineering']
+  RecordType: ['Case.Billing', 'Case.Support']
+  Report: ['Support_Operations', 'Support_Operations/Escalated_Open_Cases']
+  Settings: ['BusinessHours', 'Case', 'Flow']
+  SharingRules: ['Case']
+  StandardValueSet: ['CaseOrigin']
+  ValidationRule: ['Case.Origin_Must_Be_Known', 'Case.Priority_Required_On_Agent_Save']
+
+=== File -> Manifest direction (every derived member must appear in manifest) ===
+  OK: every derived member appears in the manifest
+
+=== Manifest -> File direction (every named, non-wildcard member must have a file) ===
+  OK: every named manifest member has a backing file
+
+=== Excluded files (not deployable / notes) ===
+  M1-S01/record-type-decision.md -- note/doc, not deployable
+  M1-S01/deploy-order.md -- note/doc, not deployable
+  M3-S01/deploy-order.md -- note/doc, not deployable
+  M3-S01/validation-bypass-note.md -- note/doc, not deployable
+  M2-S01/deploy-order.md -- note/doc, not deployable
+  M5-S01/deploy-order.md -- note/doc, not deployable
+  M4-S01/deploy-order.md -- note/doc, not deployable
+  M4-S01/holiday-maintenance-runbook.md -- note/doc, not deployable
+  M1-S02/deploy-order.md -- note/doc, not deployable
+  M2-S03/deploy-order.md -- note/doc, not deployable
+  M2-S04/queue-retirement-runbook.md -- note/doc, not deployable
+  M2-S04/deploy-order.md -- note/doc, not deployable
+  M3-S04/owner-writer-map.md -- note/doc, not deployable
+  M3-S04/deploy-order.md -- note/doc, not deployable
+  M3-S03/web-to-case-form-contract.md -- note/doc, not deployable
+  M3-S03/deploy-order.md -- note/doc, not deployable
+  M3-S03/email-to-case-routing-addresses.md -- note/doc, not deployable
+  M2-S05/deploy-order.md -- note/doc, not deployable
+  M2-S05/case-visibility-model.md -- note/doc, not deployable
+  M2-S02/deploy-order.md -- note/doc, not deployable
+  M3-S02/sender-identity-note.md -- note/doc, not deployable
+  M3-S02/deploy-order.md -- note/doc, not deployable
+  M4-S03/deploy-order.md -- note/doc, not deployable
+  M4-S03/no-account-fallback-note.md -- note/doc, not deployable
+  M4-S03/flow-governance-policy.yaml -- note/doc, not deployable
+  M4-S04/escalation-monitoring-note.md -- note/doc, not deployable
+  M4-S04/deploy-order.md -- note/doc, not deployable
+  M4-S04/escalation-activation-runbook.md -- note/doc, not deployable
+  M5-S04/configuration-workbook.md -- note/doc, not deployable
+  M5-S04/uat-test-cases.yaml -- note/doc, not deployable
+  M5-S04/acceptance-criteria.md -- note/doc, not deployable
+  M5-S04/traceability.md -- note/doc, not deployable
+  M5-S04/deploy-order.md -- note/doc, not deployable
+  M5-S03/story-backlog.md -- note/doc, not deployable
+  M4-S05/deploy-order.md -- note/doc, not deployable
+  M4-S02/milestone-completion-decision.md -- note/doc, not deployable
+  M4-S02/deploy-order.md -- note/doc, not deployable
+  M5-S05/deploy-order.md -- note/doc, not deployable
+
+=== Sibling meta-xml files travelling with their bodies ===
+  M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml
+  M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml
+  M4-S05/classes/CaseMilestoneServiceTest.cls-meta.xml
+  M4-S05/classes/TestDataFactory.cls-meta.xml
+  M4-S05/classes/CaseMilestoneService.cls-meta.xml
+  M4-S05/triggers/CaseMilestoneTrigger.trigger-meta.xml
+count: 6

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Build-level manifest for .sfskills/builds/case-onboarding (M5-S05, agent metadata-builder).
+     Aggregates every member declared by the sixteen step manifests under artefacts/*/package.xml,
+     plus the ApexClass / ApexTrigger members of M4-S05, which declares no manifest of its own
+     (standards/build-orchestration.md § 5, "The Apex exception"; plan.json M5-S05 inputs.note B09).
+     VERSION: the step manifests disagree - nine declare 62.0 (M1-S01, M1-S02, M2-S01..M2-S05,
+     M3-S01, M3-S02) and seven declare 67.0 (M3-S03, M3-S04, M4-S01..M4-S04, M5-S01). 67.0 is
+     written here per G3 decision 6 ("build API version = 67.0 accepted; accepted M1/M2 manifests
+     are not rewritten") and the G4 gate note; M3-S03's CaseSettings does not validate below 64.0
+     (MOCK-DEPLOY-M3.md run 4, probes a-c).
+     EXCLUDED, not absent: M3-S05 (blocked - "deferred: Q32, Q33, Q34, Q35") contributes no
+     Omni-Channel member; M5-S02 (blocked - "borrowed agent requires team_size,
+     concurrent_workstreams, release_cadence, data_sensitivity") contributes no member at all.
+     No wildcards. Settings members are named explicitly (feature settings take no '*').
+     See deploy-order.md beside this file for the sequence, the components that ship inactive,
+     and the org prerequisites no manifest can carry. Nothing here deploys. -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CaseMilestoneService</members>
+        <members>CaseMilestoneServiceTest</members>
+        <members>TestDataFactory</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>CaseMilestoneTrigger</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>AssignmentRules</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>AutoResponseRules</name>
+    </types>
+    <types>
+        <members>Case.Billing_Process</members>
+        <members>Case.Support_Process</members>
+        <name>BusinessProcess</name>
+    </types>
+    <types>
+        <members>Case.Case_Intake</members>
+        <name>CompactLayout</name>
+    </types>
+    <types>
+        <members>Account.Region__c</members>
+        <members>Account.Support_Tier__c</members>
+        <members>Case.Severity__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Bypass_Case_Intake_Validation</members>
+        <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>case_intake</members>
+        <name>EmailFolder</name>
+    </types>
+    <types>
+        <members>case_intake/Case_Acknowledgement</members>
+        <members>case_intake/Case_Escalated_To_Tier2</members>
+        <name>EmailTemplate</name>
+    </types>
+    <types>
+        <members>First_Response_Premier</members>
+        <members>First_Response_Standard</members>
+        <name>EntitlementProcess</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>EscalationRules</name>
+    </types>
+    <types>
+        <members>Case_BeforeSave_StampEntitlementAndCalendar</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>Case_BeforeSave_StampEntitlementAndCalendar_Test</members>
+        <name>FlowTest</name>
+    </types>
+    <types>
+        <members>Billing_Team</members>
+        <members>Support_Tier_1</members>
+        <members>Support_Tier_2</members>
+        <name>Group</name>
+    </types>
+    <types>
+        <members>Case-Case Billing Layout</members>
+        <members>Case-Case Support Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Case.Billing_Queue</members>
+        <members>Case.Tier_1_General_Queue</members>
+        <members>Case.Tier_2_Queue</members>
+        <name>ListView</name>
+    </types>
+    <types>
+        <members>First Response</members>
+        <name>MilestoneType</name>
+    </types>
+    <types>
+        <members>Case_Agent_Core</members>
+        <members>Case_Billing</members>
+        <members>Case_Intake_Integration</members>
+        <members>Case_Tier1</members>
+        <members>Case_Tier2</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>PSG_Billing_Prod</members>
+        <members>PSG_Tier1_Prod</members>
+        <members>PSG_Tier2_Prod</members>
+        <name>PermissionSetGroup</name>
+    </types>
+    <types>
+        <members>Acme Billing</members>
+        <members>Acme Support Tier 1</members>
+        <members>Acme Support Tier 2</members>
+        <name>Profile</name>
+    </types>
+    <types>
+        <members>Billing</members>
+        <members>Tier_1_General</members>
+        <members>Tier_2_Engineering</members>
+        <name>Queue</name>
+    </types>
+    <types>
+        <members>Case.Billing</members>
+        <members>Case.Support</members>
+        <name>RecordType</name>
+    </types>
+    <types>
+        <members>Support_Operations</members>
+        <members>Support_Operations/Escalated_Open_Cases</members>
+        <name>Report</name>
+    </types>
+    <types>
+        <members>BusinessHours</members>
+        <members>Case</members>
+        <members>Flow</members>
+        <name>Settings</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>SharingRules</name>
+    </types>
+    <types>
+        <members>CaseOrigin</members>
+        <name>StandardValueSet</name>
+    </types>
+    <types>
+        <members>Case.Origin_Must_Be_Known</members>
+        <members>Case.Priority_Required_On_Agent_Save</members>
+        <name>ValidationRule</name>
+    </types>
+    <version>67.0</version>
+</Package>

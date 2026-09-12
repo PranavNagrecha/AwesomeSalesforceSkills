@@ -1,0 +1,95 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "compile",
+  "run_id": "2026-09-12T11-40-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-40-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-40-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S04",
+    "mode": "compile",
+    "repair_pass_of": "2026-09-12T11-15-00Z",
+    "repair_directive": "operator reset built -> failed -> pending -> running, naming check_workbook.py, check_uat_case.py and check_ac_format.py as the three failing checkers to repair at the source."
+  },
+  "summary": "Repair pass on the prior compile run (envelope 2026-09-12T11-15-00Z), per the coordinator's explicit direction to fix at the source and recollate. (1) check_workbook.py: appended a decision-tree citation to 22 of the 30 Section-6 rows in workbook/06-automation.md, each citing the specific plan.json decisions[] entry (D1, D3, D6, D7, D10) and the exact automation-selection.md Q-branch it resolved, quoted from the tree; rewrote CWB-AUT-029's target_value to describe its naming-pattern regex in prose (an 'OR-glyph' placeholder for the alternation operator) rather than embed a literal pipe, since check_workbook.py's table parser is not escape-aware and no backslash form survives it \u2014 the real regex is untouched in its actual home, artefacts/M4-S03/flow-governance-policy.yaml. Re-collated artefacts/M5-S04/configuration-workbook.md from the now-updated source. The remaining 8 rows (M2-S04's six Queue/Group rows, M4-S01's two BusinessHours rows) are NOT cited: no decision anywhere in plan.json's decisions[] array, PLAN.md's rendered decision table, or decisions.md names an automation-selection.md branch for either step, and Queue/Group/BusinessHours creation is not itself a leaf of that tree \u2014 inventing one would be this compile run deciding a routed choice it has no source for, which Step 10 forbids. check_workbook.py now exits 1 on exactly these 8 rows, down from 33 issues across 30 rows plus CWB-AUT-029's cascading column-shift. (2) check_uat_case.py: added one negative UAT case each for REQ-013, REQ-025, REQ-038, REQ-040, REQ-043 and REQ-053 to uat-test-cases.yaml, every one derived from an already-existing story-backlog criterion or workbook row (`derived_from` names it on each case) rather than invented behaviour \u2014 now exits 0 (45 cases, 118 criterion ids cross-checked). (3) check_ac_format.py: added matching negative Given/When/Then records for the 12 (req_id, block) rule-type gaps to acceptance-criteria.md, same derivation discipline, and rephrased AC-032.61's and AC-057.63's `then` clauses to name the observable outcome (one acknowledgement per case; CompletionDate non-null) instead of the mechanism (\"the rule fires\", \"the trigger runs\") \u2014 now exits 0.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "check-outputs exits 0 and three of the four declared checkers now exit 0 clean \u2014 but check_workbook.py still exits 1 on 8 rows this compile run could not clear without fabricating a decision-tree resolution the sources do not contain, which caps confidence below HIGH per Step 11's own rule (a compiled document short of what the sources actually support).",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every negative case and AC record added in this repair pass traces to a `derived_from` citation naming a real story-backlog criterion or workbook row \u2014 none was invented to satisfy a checker, matching the coordinator's explicit instruction to derive from the artefacts.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S04/uat-test-cases.yaml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_workbook.py still exits 1: M2-S04 (6 rows: three Groups, three Queues/Settings:Case-adjacent) and M4-S01 (2 rows: BusinessHours settings, the holiday-maintenance runbook) have no automation-selection.md decision anywhere in the plan. This is a structural gap between the workbook's own Section-6 filing convention (which routes Queue/Group/BusinessHours artefacts there per agents/build-doc-keeper/AGENT.md Step 4's routing table) and check_workbook.py's blanket rule that every Section-6 row cites the tree \u2014 the artefacts these 8 rows describe were never routed technology CHOICES in the first place, so no branch was ever going to exist for them. A human should decide whether to add a decision record for these two steps at the next planner touch, or to accept the gap as a known checker/convention mismatch.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/06-automation.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The 22 citations that were addable all resolved to a real, already-recorded plan.json decision (D1, D3, D6, D7, D10) \u2014 none required guessing which branch applied; D1's own rationale text even named M4-S02 explicitly (\"the SLA engine itself is the entitlement process in M4-S02 (Q15)\") even though D1's formal `steps` field lists only M4-S03, which is what made the M4-S02 citation possible without inventing anything.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "step-tester has not yet run this step's declared acceptance tests formally.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "to run M5-S04's declared acceptance tests formally and record tests/M5-S04/results.json \u2014 this repair pass's own checker runs were diligence, not the formal test."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the Section 4/6 decision-tree citation rule check_workbook.py enforces"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q2, Q13, Q14, Q15",
+      "used_for": "the exact leaf text quoted verbatim into workbook/06-automation.md's repaired rows"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Step 10's compile-run definition and its 'nothing new is decided here' boundary, which is why 8 rows were left uncited rather than force-cited"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the negative-case record shape used for the 6 added UAT cases"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the negative Given/When/Then shape and the observable-outcome rephrasing rule (gotcha 3)"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M5-S04's declared acceptance tests have not yet been run formally into tests/M5-S04/results.json."
+    }
+  ]
+}

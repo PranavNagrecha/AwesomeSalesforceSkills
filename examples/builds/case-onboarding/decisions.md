@@ -3613,3 +3613,892 @@ blocks the step — `M3-S01` passed every executable test it declares.
   metadata-examples.md` §§ 1, 8 row 2; `api_meta.txt` L116824–116826, L116877.
 - **Evidence:** `artefacts/M4-S03/settings/Flow.settings-meta.xml`
   (`enableFlowDeployAsActiveEnabled` `true`).
+
+## D-M5S01-01 — F-49/F-50: the report's `<description>` length cap and the worked example's `reportType`/grouping values, closed in the artefact by two org round-trips; the skill fix stays pending — the fifth flywheel-adjacent record in this build, and the first left open at the skill
+
+- **Date:** 2026-09-12 · **Step:** `M5-S01` (`ui`) · **Agent:** `metadata-builder` (rebuild run
+  `2026-09-12T10-08-00Z`, following `build-step-runner`'s F-49/F-50 finding on run
+  `2026-09-12T09-46-00Z`); recorded here by `build-doc-keeper`
+- **Kind:** skill gap — the gap the owning agent recorded on the rebuild's own envelope, not yet
+  acted on at the skill
+- **What was recorded:** `reports/MOCK-DEPLOY-M5.md` run 1 rejected the `09-34-00Z` build's report
+  file on one field: `Value too long for field: Description maximum length is:255` (**F-49**) — the
+  build had put its UNVERIFIED note inside `<description>`, which is capped at 255 characters and
+  which `skills/admin/reports-and-dashboards` documents no length rule for (the library's DESC rule
+  family covers `PermissionSet` / `Profile` / `CustomPermission` / `CustomObject`; `Report` is
+  absent from it). With the description shortened, the operator's scratch-copy probes (never
+  applied to the artefact until proven) then rejected the skill's own worked-example values for
+  `<reportType>` (`Cases` → `invalid report type`) and the owner grouping column (`USERS.NAME` →
+  `Grouping: Invalid value specified`), and surfaced a structural rule neither cited skill states:
+  a field cannot be both a `<columns>` entry and a `groupingsDown` field (`PRIORITY`, rejected as
+  both) (**F-50**). All three facts trace to one worked example in
+  `skills/admin/reports-and-dashboards/references/metadata-examples.md` — one deepening closes all
+  three, not three separate ones.
+- **Closed in the artefact, not yet at the skill.** The rebuild (`2026-09-12T10-08-00Z`) applied
+  the org's own answers — `<description>` cut to 219 characters, `<reportType>CaseList</reportType>`,
+  grouping `OWNER`, `PRIORITY` moved out of `<columns>` and kept as the second grouping — and
+  `reports/MOCK-DEPLOY-M5.md` run 2 validated the file with only F-28 (the unrelated, already-known
+  org prerequisite) remaining. Unlike `D-M4S01-01` and `D-M4S04-01`, the skill itself has **not**
+  been patched in this build: `skills/admin/reports-and-dashboards` still carries the wrong
+  `reportType`/grouping values in its worked example and still has no `Report` description-length
+  rule, so the next build to use this skill hits the same two org round-trips this one did.
+- **Alternative rejected:** leaving the file at its rejected values and treating F-49/F-50 as
+  pending-only, with no rebuild — rejected because a report the org refuses to deploy is not a
+  "built" artefact regardless of what the declared checkers say (see **O-M5S01-01** below).
+  Waiting for the skill fix before rebuilding was also rejected: the two facts were already proven
+  live by the org's own probes, and holding a known-good file back for a skill edit this agent
+  cannot make would cost the milestone for no reason.
+- **Grounded in:** `reports/MOCK-DEPLOY-M5.md` runs 1–2; `envelopes/M5-S01/2026-09-12T10-08-00Z.md`
+  §§ 1–3; `envelopes/M5-S01/2026-09-12T09-46-00Z.md` § 5 (F-49); `artefacts/M5-S01/deploy-order.md`
+  § 0.
+- **Evidence:** `artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml`
+  (`<description>` 219 chars, `<reportType>CaseList</reportType>`, `OWNER` grouping);
+  `skills/admin/reports-and-dashboards/references/metadata-examples.md` § 2 (unchanged, still
+  `Cases`/`USERS.NAME`).
+
+## D-M5S01-02 — F-51: the `Case.IsEscalated` report column code is unresolvable by probing; the Escalated criterion stays out of the file and becomes an M5 gate item and a post-deploy runbook step, not a rebuild
+
+- **Date:** 2026-09-12 · **Step:** `M5-S01` (`ui`) · **Agent:** `metadata-builder` (probed at
+  rebuild run `2026-09-12T10-08-00Z`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an unresolvable gap recorded rather than guessed, carried to the
+  gate as a runbook step
+- **What was recorded:** `artefacts/M4-S04/escalation-monitoring-note.md` § 2 specifies the
+  report's filter as `Escalated = True` **AND** `Closed = False` **AND**
+  `Date/Time Opened = LAST 30 DAYS`. Report column codes are report-type specific and are not
+  derivable from field API names (`reports-and-dashboards/SKILL.md` workflow step 3: "Retrieve
+  before you write … cannot be derived from field API names"). Five candidate codes were probed
+  against the org on the scratch copy — `ESCALATED`, `IS_ESCALATED`, `CASES.ESCALATED`,
+  `ISESCALATED`, `CASE_ESCALATED` — and all five were rejected with
+  `filters-criteriaItems-column: Invalid value specified`. No file in
+  `skills/admin/reports-and-dashboards` carries a code for `Case.IsEscalated`, and inventing a
+  sixth is refused under `agents/metadata-builder/AGENT.md` Step 5 rule 1. As shipped, the report
+  returns open Cases from the last 30 days, not escalated open Cases — it over-reports, and the gap
+  is stated in the file's own 219-character `<description>`, in an XML comment above the filter,
+  and in `deploy-order.md` §§ 0 and 2 U1, so a reader in Setup sees it too.
+- **Alternative rejected:** substituting `Status = Escalated` for the missing checkbox criterion —
+  rejected because the Case status ladder's `Escalated` value and the `IsEscalated` checkbox the
+  escalation engine sets are different things, and `M4-S04`'s note is explicit that `IsEscalated`
+  is the signal being monitored. Blocking the step until the code is found was also rejected: this
+  design-only build has no org to retrieve an existing report from, so no amount of additional
+  probing inside this build closes the gap, and holding the milestone for it converts an honestly
+  unresolvable item into an artificial delay.
+- **Remedy (M5 gate + post-deploy runbook):** deploy the report as written, then either (1) add the
+  filter `Escalated equals True` in the report builder and re-export via
+  `sf project retrieve start --metadata "Report:Support_Operations/Escalated_Open_Cases"`,
+  committing the retrieved file so source and org stop disagreeing and the harvested code enters
+  the repo; or (2) retrieve any existing saved Case report from the target org, read the Escalated
+  column code off it, add it as a third `<criteriaItems>` block and change
+  `<booleanFilter>1 AND 2</booleanFilter>` to `1 AND 2 AND 3`. **Owner:** the role Q91 names — "the
+  Tier 2 lead" — not a named person (`workbook/02-page-layouts-and-lightning-pages.md`
+  `CWB-LAYOUT-011` records the same gap against the workbook row).
+- **Grounded in:** `artefacts/M4-S04/escalation-monitoring-note.md` § 2;
+  `artefacts/M5-S01/deploy-order.md` § 2 U1; `reports/MOCK-DEPLOY-M5.md` (probe table);
+  `agents/metadata-builder/AGENT.md` Step 5 rule 1; `plan.json` clarification `Q91`.
+- **Evidence:** `artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml`
+  (`<description>`, the XML comment above `<filters>`); `envelopes/M5-S01/2026-09-12T10-08-00Z.md`
+  §§ 2, 5.
+
+## D-M5S01-03 — A Tier 1 General queue list view is built even though Q31 answers that Tier 1's work is pushed, not pulled — an interim surface under assumption A7 while `M3-S05` stays blocked, not a reversal of D4
+
+- **Date:** 2026-09-12 · **Step:** `M5-S01` (`ui`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T09-34-00Z`, unchanged by the F-49/F-50 rebuild); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an assumption-driven interim surface, recorded against the decision
+  it appears to contradict
+- **What was recorded:** `Q31`'s answer is explicit — "Tier 1 should get work pushed to them when
+  they are available (Omni-Channel push); Billing and Tier 2 pick from a list" — and `D4`
+  (`plan.json` `decisions[]`) resolves the mechanism: Tier 1 gets queue-based Omni-Channel push,
+  Tier 2 and Billing pull from queue list views. `M3-S05`, the step that would configure that push,
+  is blocked on `Q32`–`Q35` (objects pushed and capacity release, capacity model and weight, routing
+  model and tie-breaker, push timeout — none defaulted by any cited skill), so no push routing
+  ships this phase. `M5-S01` builds `Tier_1_General_Queue.listView-meta.xml` anyway, under
+  assumption `A7`, as Tier 1's interim working surface: without it, Tier 1 has no way to see its
+  own queue's cases at all until `M3-S05` unblocks.
+- **Alternative rejected:** omitting the Tier 1 view and leaving Tier 1 with no working surface
+  until `M3-S05` ships — rejected because a support team with no way to see its own queue is a
+  worse gap than a pull view that is provisionally the wrong shape. Building the Tier 1 view as the
+  intended long-term mechanism, rather than an explicit interim one, was also rejected: it would
+  misrepresent `D4`'s own resolution and give a future reader no signal to retire or repurpose the
+  view once Omni-Channel ships.
+- **Remedy:** carried to the M5 gate. When `Q32`–`Q35` are answered and `M3-S05` ships, a human
+  decides deliberately whether this view stays as a supervisor/overflow surface or is retired — it
+  is not automatically obsolete, but it is no longer the intended Tier 1 workflow once push routing
+  exists.
+- **Grounded in:** `plan.json` clarification `Q31` (answered); `plan.json` `decisions[D4]`;
+  `artefacts/M5-S01/deploy-order.md` § 5 decision 1; `steps[M5-S01].inputs.assumptions` (`A7`).
+- **Evidence:** `artefacts/M5-S01/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml`;
+  `plan.json` `steps[M3-S05].status` = `blocked`.
+
+## O-M5S01-01 — Skill-depth signal: both declared checkers score the org-rejected report and the fixed report identically, so this step's automated gates carried no signal on the fields F-49/F-50 actually changed
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `tests/M5-S01/summary.md` and
+  both `metadata-builder` envelopes
+- **What was recorded:** `check_list_views_and_compact_layouts.py` (build scope, `No issues
+  found.`) and `check_report_inventory.py` (step scope, score 100 / 0 findings) returned the
+  identical verdict on the pre-rebuild report that `reports/MOCK-DEPLOY-M5.md` run 1 rejected —
+  a `>255`-character `<description>`, an invalid `<reportType>`, an invalid grouping — and on the
+  rebuilt report that fixed all three. Neither checker asserts anything about a `Report`'s
+  `<description>` length, `<reportType>` value, or the columns/`groupingsDown` exclusivity the org
+  enforces; both cover only structural well-formedness, the checkers' own narrower assertions
+  (list-view filter/column shape, the compact-layout cross-reference, report-file presence in an
+  inventoried folder), and the always-on `xml`/`manifest` checks. The org, not this test harness,
+  caught F-49 and F-50 the first time, and would be what catches an equivalent regression the next
+  time.
+- **Why this is worth a gate line rather than a defect:** this is not a bug in either checker —
+  neither one claims to validate report-body semantics the Metadata API itself enforces only at
+  deploy time — but it means this step reached `tested` twice (once before the rebuild, once after)
+  with identical automated signal both times, and a reviewer reading only the checker output would
+  see no difference between the rejected file and the fixed one.
+- **Remedy:** carried to the M5 gate, and filed as a skill-depth signal for
+  `admin/reports-and-dashboards`: a description-length rule (mirroring the existing DESC rule
+  family on `PermissionSet`/`Profile`/`CustomPermission`/`CustomObject`) and a
+  `reportType`/grouping-token sanity check would close the gap the org currently closes alone.
+  `standards/build-orchestration.md` § 8's deepen-a-skill signal applies here even though the step
+  was never `blocked` — the gap surfaced through a mock-deploy rejection, not a checker-policy
+  block.
+- **Grounded in:** `tests/M5-S01/test2_report_inventory.txt`;
+  `envelopes/M5-S01/2026-09-12T10-15-00Z.md` § 4; `envelopes/M5-S01/2026-09-12T10-08-00Z.md` § 4
+  (checker results table).
+- **Evidence:** identical checker output recorded in both the `09-34-00Z` and `10-08-00Z`
+  `metadata-builder` envelopes' § 4 tables (`check_report_inventory.py` — score 100, 0 findings,
+  both runs).
+
+## O-M5S01-02 — F-B downgraded: the declared folder filename `Support_Operations-meta.xml` validated against the org at deploy time; what remains is a checker-recognition gap, not a deploy defect
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from
+  `artefacts/M5-S01/deploy-order.md` § 3 and `reports/MOCK-DEPLOY-M5.md` run 1
+- **What was recorded:** `check_report_inventory.py` recognises a report/dashboard folder only by
+  the suffixes `.reportFolder-meta.xml` / `.dashboardFolder-meta.xml` (`FOLDER_SUFFIXES`). The step
+  declares the folder at `reports/Support_Operations-meta.xml`, which that check does not scan —
+  measured from the build directory, the declared filename scans 1 file with 0 findings while a
+  scratchpad copy renamed to the `.reportFolder-meta.xml` form scans 2, both exiting 0 — so
+  `acceptance_tests[1]`'s folder-sharing assertion (`accessType`/`folderShares`/not-a-personal-
+  folder) never executes at the declared filename, and the W09 empty-directory guard does not catch
+  it either, because the report file alone keeps `scanned` above zero. `reports/MOCK-DEPLOY-M5.md`
+  run 1 then validated `ReportFolder Support_Operations` against the org at exactly this declared
+  filename, alongside all three list views — so the artefact is deployable and correct; only the
+  checker's own recognition list is narrower than what the Metadata API accepts.
+- **Why this is worth a gate line rather than a defect:** the earlier reading (this step's own
+  first envelope, `envelopes/M5-S01/2026-09-12T09-34-00Z.md` § 3) treated the mismatch as a
+  possible deploy problem. The org's own validation settles that it is not — this entry corrects
+  the record rather than leaving the earlier, more alarming reading standing.
+- **Remedy:** two options, neither urgent now that the deploy question is answered. (1) Deepen
+  `admin/reports-and-dashboards` so `check_report_inventory.py` recognises the bare
+  `<Folder>-meta.xml` form the org accepts, alongside the suffixed forms it already knows — the
+  better fix, since it keeps the plan's declared path and closes the gap for every future build.
+  (2) Or the M5 gate accepts the folder's `accessType Shared` + one `folderShares` entry on a human
+  read of the file rather than on a checker result, and says so in the gate notes, since no
+  automated evidence for it exists today.
+- **Grounded in:** `artefacts/M5-S01/deploy-order.md` § 3; `reports/MOCK-DEPLOY-M5.md` run 1;
+  `envelopes/M5-S01/2026-09-12T10-08-00Z.md` § 1 (run 1 also validated the folder at its declared
+  filename).
+- **Evidence:** `check_report_inventory.py --manifest-dir artefacts/M5-S01` —
+  `Scanned 1 report/dashboard file(s); 0 finding(s)`, exit 0; the same command against a
+  `.reportFolder-meta.xml`-renamed scratch copy — `Scanned 2`, exit 0; `reports/MOCK-DEPLOY-M5.md`
+  run 1 (folder validated at declared filename).
+
+## O-M5S03-01 — No writer owns the `REQ-` sequence for this build; `story-drafter` minted `REQ-052`-`REQ-058` continuing from `REQ-051`, and `build-doc-keeper` adopts them unchanged rather than re-minting
+
+- **Date:** 2026-09-12 · **Step:** `M5-S03` (`docs`) · **Agent:** `story-drafter` (envelope
+  `2026-09-12T10-25-00Z`); recorded here by `build-doc-keeper`
+- **Kind:** ambiguity recorded as a contract gap — a requirement-id ownership question with no
+  designated owner, carried forward rather than silently resolved either way
+- **What was recorded:** `story-backlog.md`'s own internal Requirements Traceability Matrix mints
+  seven new ids, `REQ-052`–`REQ-058`, for the testing-and-environment requirements the Q77–Q97
+  clarification group contributes, continuing from `REQ-051` — the highest id already in
+  `traceability.md` at the time `story-drafter` ran. Nothing in `agents/build-planner/AGENT.md`,
+  `agents/story-drafter/AGENT.md` or `agents/build-doc-keeper/AGENT.md` assigns ownership of the
+  `REQ-` sequence to one agent; both `story-drafter` (when a step needs a requirement id no earlier
+  step minted) and `build-doc-keeper` (at every step's own documentation pass) are capable of
+  minting the next id, and neither AGENT.md tells the other it has already done so. `story-drafter`
+  flagged the resulting risk itself, as an `ambiguous` process observation
+  (`envelopes/M5-S03/2026-09-12T10-25-00Z.json` → `process_observations[9]`): "if
+  `build-doc-keeper` mints its own ids at `M5-S04` from the same clarification group the two spaces
+  will collide, because no writer owns the `REQ-` sequence for this build." This run confirms the
+  fear did not materialize this time — `REQ-051` was and remains the highest id `traceability.md`
+  carried before this step, so `REQ-052`–`REQ-058` collide with nothing — but the absence of an
+  owner is a standing contract gap, not something this one non-collision closes.
+- **Alternative rejected:** re-minting `REQ-052`–`REQ-058` under a fresh `build-doc-keeper`-owned
+  sequence (e.g. restarting from `REQ-052` under a different prefix, or renumbering) — rejected
+  because the ids do not collide, `story-backlog.md`'s own RTM, its `rtm_req_ids` per story and its
+  `dependencies[]` cells all already cite `REQ-052`–`REQ-058` by these exact numbers, and
+  renumbering here would make that document disagree with `traceability.md` for no benefit; `REQ-`
+  ids are immutable and never reused once minted (`skills/admin/requirements-traceability-matrix`
+  § ID Conventions), so a working, non-colliding id space is exactly the case that convention exists
+  to protect. Leaving the gap unrecorded and simply adopting the ids silently was also rejected —
+  that would make the next collision (should one occur at a future build's `M5-S04`-equivalent step)
+  look like a fresh discovery rather than a known, named risk.
+- **Remedy:** carried to `planner v6` as a contract item — the planner should either designate one
+  agent as the sole minter of `REQ-` ids (most naturally `build-doc-keeper`, since it is the agent
+  that already owns `traceability.md`) or add an explicit handoff field a borrowed roster agent like
+  `story-drafter` checks before minting, the same shape `plan.json`'s per-milestone gate notes
+  already use for other cross-step contract gaps (e.g. `enableEntitlements` owned by no step,
+  `O-M4S02-01`). Until then, any step that mints a `REQ-` id must read `traceability.md`'s current
+  highest id first, exactly as `story-drafter` did here, and this file is where the resulting
+  non-collision (or a future collision) gets recorded.
+- **Grounded in:** `agents/story-drafter/AGENT.md` (no `REQ-`-sequence ownership clause);
+  `agents/build-doc-keeper/AGENT.md` Step 7 (this agent's own minting authority is likewise
+  undocumented as exclusive); `skills/admin/requirements-traceability-matrix` § ID Conventions
+  (immutability, never reused).
+- **Evidence:** `envelopes/M5-S03/2026-09-12T10-25-00Z.json` → `process_observations[9]`,
+  `extensions.req_ids_minted`; `traceability.md` `REQ-052`–`REQ-058` (adopted unchanged, no
+  collision with `REQ-051` or earlier); `artefacts/M5-S03/story-backlog.md` § Requirements
+  Traceability Matrix.
+
+## O-M5S03-02 — `M5-S03` declares no `deploy-order.md`: `story-drafter`'s Output Contract names no such file, and § 4 condition 2 forbids declaring an output the owning agent does not produce
+
+- **Date:** 2026-09-12 · **Step:** `M5-S03` (`docs`) · **Agent:** `build-step-runner` (envelope
+  `2026-09-12T10-32-00Z`, `dimensions_skipped[1]`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a contract rule applied correctly, recorded so the resulting
+  asymmetry with every other `metadata-builder` step in this build reads as a rule followed, not a
+  gap missed
+- **What was recorded:** every `metadata-builder` step in this build writes an
+  `artefacts/<step>/deploy-order.md`, whether or not that file is declared in the step's
+  `outputs[]` (the undeclared-artefact pattern `decisions.md` **O-M3S02-03** tracks separately).
+  `M5-S03` writes none, and this is not an instance of that same pattern: `story-drafter` is a
+  Tier-2 roster agent borrowed for this step, and `standards/build-orchestration.md` § 4
+  "Borrowing a roster agent from outside Tier 4" condition 2 is explicit — "declare only outputs the
+  agent's Output Contract names… a path in `outputs[]` with no counterpart there is an artefact
+  nobody writes." `agents/story-drafter/AGENT.md`'s Output Contract names one markdown document
+  (the story backlog itself) and nothing else; it has no notion of a per-step deploy order, because
+  a story backlog is not deployable metadata with an internal deploy sequence. `M5-S03`'s
+  `outputs[]` therefore names exactly one path, and `check-outputs` confirms exactly that one path,
+  with nothing missing.
+- **Alternative rejected:** declaring `artefacts/M5-S03/deploy-order.md` in `outputs[]` anyway, for
+  consistency with every metadata-producing step — rejected because `story-drafter` would then never
+  write it (its contract has no step for a deploy-order file), `check-outputs` would report it
+  `missing` on every run, and the step could never reach `built`. Asking `story-drafter` to invent a
+  deploy-order note outside its Output Contract was also rejected, per § 4 condition 2's own
+  wording and per `agents/_shared/AGENT_CONTRACT.md` rule 1 (skill-first, never freestyle a format a
+  cited skill does not define).
+- **Remedy:** none needed — this is the contract working as specified, not a gap to close. If a
+  future build wants a deploy-order-equivalent note for a story backlog (e.g. "which milestone's
+  UAT session should run these stories first"), that belongs in `story-backlog.md`'s own body or in
+  a new field on `story-drafter`'s Output Contract, decided by a human, not manufactured here to
+  match an unrelated step type's shape.
+- **Grounded in:** `standards/build-orchestration.md` § 4 "Borrowing a roster agent from outside
+  Tier 4," condition 2; `agents/story-drafter/AGENT.md` Output Contract (one markdown document,
+  no deploy-order file).
+- **Evidence:** `plan.json` `steps[M5-S03].outputs` = `["artefacts/M5-S03/story-backlog.md"]`;
+  `envelopes/M5-S03/2026-09-12T10-32-00Z.json` → `dimensions_skipped[1]`
+  (`dimension: "deploy-order-note"`, `state: "not-run"`).
+
+## O-M5S03-03 — Skill-depth signal: `check_invest.py`'s 250-word body heuristic cannot distinguish an oversized story from a story correctly carrying a G4-mandated handoff note, so all 10 WARNs on this backlog are the same false signal
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `tests/M5-S03/summary.md` and
+  `step-tester`'s envelope
+- **Kind:** skill gap — a checker limitation surfaced by real output, not a step ever marked
+  `blocked`; recorded under the same `standards/build-orchestration.md` § 8 deepen-a-skill signal
+  `decisions.md` **O-M5S01-01** already establishes for a checker that scores two materially
+  different artefacts identically
+- **What was recorded:** `check_invest.py --manifest-dir artefacts/M5-S03` exits 0 with
+  `11/11 stories passed (0 ERROR, 10 WARN)`. All 10 WARNs are the same 250-word story-body rule, and
+  the three heaviest overflows (`US-CASE-007` at 193 handoff words, `US-CASE-009` at 169,
+  `US-CASE-004` at 155) are exactly the three stories carrying the F-40 regional-calendar note, the
+  completion-proxy note and the Q24 training note the M4 gate required be written down
+  (`story-backlog.md` § Process Observations, "What was concerning"). Measured per story, the
+  As-a/I-want/So-that stem plus every acceptance criterion alone runs 143–235 words on all eleven
+  stories — under the 250 threshold in every case. The checker counts everything between one story
+  heading and the next as body, so `Complexity` / `Fit tier` / `Recommended agents` /
+  `Recommended skills` / `Dependencies` / `Notes` are all counted alongside the stem and criteria,
+  with no way to separate "this story is too long" from "this story correctly carries a required
+  handoff note." Trimming the notes to clear the heuristic would delete the content the M4 gate
+  asked for; the notes stand, and the checker's own WARN passes at exit 0 because it does not run
+  under `--strict`.
+- **Why this is worth a gate line rather than a defect:** identical to `O-M5S01-01`'s framing — this
+  is not a bug in the checker (it does not claim to distinguish stem-length from handoff-note
+  length), but a reviewer reading only `check_invest.py`'s WARN count would see "10 warnings" and
+  not know that every one of them is the same false signal repeating, nor that three specific WARNs
+  are the price of carrying forward exactly the notes the M4 gate mandated.
+- **Remedy:** carried to the M5 gate, and filed as a skill-depth signal for
+  `admin/user-story-writing-for-salesforce`: either a `--max-words` flag scoped to the stem plus
+  acceptance criteria only (excluding the handoff fields), or a documented convention that
+  gate-mandated notes live in a separate "Handoff" block the word count does not scan. Either fix
+  is a future skill-fix session's job, not this run's — this run records the gap where the checker
+  output actually surfaced it, per `standards/build-orchestration.md` § 8.
+- **Grounded in:** `tests/M5-S03/check_invest.stdout.txt`; `story-backlog.md` § Process
+  Observations, "What was concerning," bullet 4; `standards/build-orchestration.md` § 8
+  (deepen-a-skill signal).
+- **Evidence:** `tests/M5-S03/results.json` → `detail.checker.stdout_summary`
+  ("11/11 stories passed (0 ERROR, 10 WARN)"); `envelopes/M5-S03/2026-09-12T10-39-56Z.json` →
+  `process_observations[2]` (category `concerning`, domain `checker-signal-quality`).
+
+## D-M5S03-04 — Three skill-path citations in the drafted backlog did not resolve on disk; `story-drafter` corrected all three before finalising the document rather than shipping a dangling citation
+
+- **Date:** 2026-09-12 · **Step:** `M5-S03` (`docs`) · **Agent:** `story-drafter` (envelope
+  `2026-09-12T10-25-00Z.md` § 10 Citations)
+- **Kind:** deviation — a self-caught correction to the document's own content before handoff, not
+  a change to what the step's `inputs{}` asked for
+- **What was recorded:** while compiling the Citations section, `story-drafter` checked every
+  `skills/…` path named anywhere in the drafted backlog against the skill registry on disk. Three
+  did not resolve: `admin/web-to-case-and-email-to-case`, `admin/queue-design` and
+  `apex/trigger-handler-pattern` — plausible-sounding names that do not exist as skill packages in
+  this repo. Before the document was finalised, all three were corrected to the skills that do
+  exist and cover the same ground: `admin/case-management-setup`, `admin/queues-and-public-groups`
+  and `apex/case-trigger-patterns` respectively. The corrected names are what appear in the
+  finished `story-backlog.md`'s `Recommended skills` cells (`US-CASE-003`'s
+  `admin/case-management-setup`; `US-CASE-006`/`US-CASE-010`'s `admin/queues-and-public-groups`;
+  `US-CASE-009`'s `apex/case-trigger-patterns`) and in its Citations table.
+- **Alternative rejected:** shipping the three uncorrected names and flagging them as a gap for a
+  human to fix later — rejected because the correct skills were identifiable by name-similarity
+  search against the registry in the same pass, so leaving a known-wrong citation in a document a
+  human or another agent will read as ground truth would have been worse than the ten extra seconds
+  the correction cost. Silently correcting them with no record at all was also rejected: a citation
+  correction is exactly the kind of self-check `agents/_shared/AGENT_CONTRACT.md` rule 1
+  ("skill-first, never freestyle") and the anti-pattern list ("citing skills to clear the orphan
+  gate") exist to make visible, not to hide once it has already happened correctly.
+- **Remedy:** none needed on this document — the correction already landed before this step
+  reached `tested`. Filed here as a process note: an agent drafting from clarification text alone
+  (no org, no prior skill-search step in its own Plan) is exactly the condition under which a
+  plausible-but-nonexistent skill path is most likely to be typed from memory, and this is evidence
+  the self-check step in `story-drafter`'s own Plan catches it before it reaches a document another
+  agent will cite as fact.
+- **Grounded in:** `agents/_shared/AGENT_CONTRACT.md` rule 1 (skill-first, never freestyle) and
+  the Anti-patterns list ("citing skills to clear the orphan gate" — the adjacent failure mode this
+  correction avoided by fixing rather than padding).
+- **Evidence:** `envelopes/M5-S03/2026-09-12T10-25-00Z.md` § 10 ("Every `skills/…` path named
+  anywhere in the backlog was checked to resolve on disk; three that did not… were corrected…
+  before the document was finalised."); `artefacts/M5-S03/story-backlog.md` `Recommended skills`
+  cells on `US-CASE-003`, `US-CASE-006`, `US-CASE-009`, `US-CASE-010`, and § Citations.
+
+## O-M5S03-05 — The email intake channel is split into two stories, not one, because Billing gets its own named tester (Q77) and a story cannot carry two `As a` clauses
+
+- **Date:** 2026-09-12 · **Step:** `M5-S03` (`docs`) · **Agent:** `story-drafter` (envelope
+  `2026-09-12T10-25-00Z.json` → `process_observations[11]`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off (backlog-shape) — an INVEST split decision that appears to read
+  against a literal count in the step's own manual acceptance test, recorded so a reviewer checks
+  the split deliberately rather than assuming it is a miscount
+- **What was recorded:** the M5 milestone's manual acceptance test
+  (`plan.json` `steps[M5-S03].acceptance_tests[1]`) reads "each of the three intake channels — email,
+  web and manual UI — has its own story." `story-backlog.md` ships four stories across those three
+  channels: `US-CASE-001` (email, support@, Tier 1 tester), `US-CASE-002` (email, billing@, Billing
+  tester), `US-CASE-003` (web) and `US-CASE-004` (manual UI). The email channel is split by data
+  variation rather than given one story, because Q77's answer gives Billing its own named tester
+  (distinct from Tier 1's), and `admin/user-story-writing-for-salesforce` gotcha 3 (persona drift)
+  is explicit that a single story cannot carry two `As a` clauses without losing INVEST's
+  Independent and Testable properties — a story written "as a Tier 1 agent or a Billing specialist"
+  is two stories wearing one story_id. `check_invest.py` does not check channel count at all, so
+  this split was never at risk of failing the checker; it is a reading of the manual test's intent,
+  not its literal wording, and `story-drafter` flagged the reading as `ambiguous` rather than
+  asserting it as obviously correct (`story-backlog.md` § Process Observations, "What was
+  ambiguous," bullet 3).
+- **Alternative rejected:** forcing one story for the whole email channel with two persona
+  bullets or a parametrised "As a Tier 1 agent or Billing specialist" stem — rejected as the exact
+  persona-drift shape gotcha 3 warns against, and as something that would have made the acceptance
+  criteria unreadable (which queue, which tester, for which of the two `As a` halves does each
+  criterion apply). Renaming `US-CASE-002` as a sub-bullet of `US-CASE-001` rather than a full
+  story was also rejected: it carries its own MoSCoW priority, its own dependencies (`REQ-024`, the
+  Billing queue mailbox prerequisite P2) and its own tester, all of which a sub-bullet cannot hold
+  without duplicating the parent story's structure anyway.
+- **Remedy:** carried to the M5 gate as a named reading to confirm, not a defect to fix. If the
+  gate reads "three channels, three stories" literally and rejects the four-story shape, the fix is
+  to merge `US-CASE-001`/`US-CASE-002` back into one story and accept the persona-drift cost the
+  gotcha warns against, which this decision recommends against unless the gate says otherwise.
+- **Grounded in:** `plan.json` `steps[M5-S03].acceptance_tests[1].description`; `plan.json`
+  clarification `Q77` (Billing's own named tester); `skills/admin/user-story-writing-for-salesforce`
+  `references/gotchas.md` gotcha 3 (persona drift).
+- **Evidence:** `artefacts/M5-S03/story-backlog.md` `US-CASE-001`, `US-CASE-002` (notes: "split from
+  `US-CASE-001` by data variation because the persona differs"); `envelopes/M5-S03/2026-09-12T10-25-00Z.json`
+  → `process_observations[11]` (category `ambiguous`, domain `backlog-shape`).
+
+## D-M5S04-01 — The compile's own diligence run surfaced 30 uncited Section 6 rows, one parser-breaking regex cell and 18 UAT/AC negative-coverage gaps; a repair pass closed all but 8 citations, the 8 closed separately at the skill
+
+- **Date:** 2026-09-12 · **Step:** `M5-S04` (`docs`, compile run) · **Agent:** `build-doc-keeper`
+  (compile envelope `2026-09-12T11-15-00Z.json`; repair-pass envelope `2026-09-12T11-40-00Z.json`),
+  invoked inline both times by `build-step-runner` (envelopes `2026-09-12T11-25-00Z.json` and
+  `2026-09-12T11-45-00Z.json`)
+- **Kind:** deviation — the coordinator's explicit instruction to run all four declared
+  acceptance-test checkers as diligence at compile time (beyond this agent's own Step 10 job, which
+  is collation only) surfaced genuine, pre-existing gaps spanning four earlier milestones' own
+  documentation runs, which were then repaired at the source rather than left standing or papered
+  over in the compiled document alone
+- **What was recorded:** the first compile run (`2026-09-12T11-15-00Z`) ran `check_workbook.py`,
+  `check_rtm.py`, `check_uat_case.py` and `check_ac_format.py` verbatim against the freshly
+  compiled documents. `check_rtm.py` exited 0. The other three did not: `check_workbook.py` found
+  30 of 30 Section 6 rows missing a `standards/decision-trees/automation-selection.md` citation — a
+  gap in four earlier steps' own documentation runs (`M2-S04`/`M3-S03`/`M3-S04`/`M4-S01`/`M4-S02`/
+  `M4-S04`/`M4-S03`), never introduced by this compile run's own writing — plus a fourth,
+  previously-unnamed instance of the un-escaped-pipe parser collision on `CWB-AUT-029`'s
+  naming-pattern regex (the same defect `workbook/99-other-configuration.md` already documents for
+  `CWB-OTHER-001`–`003`); `check_uat_case.py` found 6 `req_id` groups (`REQ-013`, `REQ-025`,
+  `REQ-038`, `REQ-040`, `REQ-043`, `REQ-053`) with exactly one manual test and no negative case;
+  `check_ac_format.py` found 12 rule-type-requirement negative-coverage gaps and 2 `then` clauses
+  naming an implementation mechanism instead of an observable outcome. The repair pass
+  (`2026-09-12T11-40-00Z`, after the operator reset the step `built → failed → pending → running`
+  naming these three checkers explicitly) fixed at the source rather than the compiled artefact:
+  appended a decision-tree citation — quoting the tree's actual branch text — to 22 of the 30
+  Section 6 rows in `workbook/06-automation.md`, each traced to a real, already-recorded
+  `plan.json` `decisions[]` entry (D1, D3, D6, D7, D10); rewrote `CWB-AUT-029`'s `target_value` to
+  describe its regex in prose rather than embed a literal pipe (the real regex is untouched in its
+  actual home, `artefacts/M4-S03/flow-governance-policy.yaml`); added 6 derived negative UAT cases
+  and 12 derived negative AC records, each carrying a `derived_from` citation to a real
+  story-backlog criterion or workbook row; and rephrased the 2 mechanism-naming `then` clauses to
+  name the observable outcome. `check_uat_case.py` and `check_ac_format.py` exited 0 after the
+  repair; `check_workbook.py` still exited 1 on the remaining 8 rows (`M2-S04`'s three Queue and
+  three Group rows; `M4-S01`'s `BusinessHours` settings row and holiday-maintenance-runbook row)
+  because no `automation-selection.md` decision exists anywhere in the plan for either step, and
+  Queue/Group/BusinessHours creation is not itself a leaf of that tree — closed instead at the
+  skill, not the artefact (see **D-M5S04-02**).
+- **Alternative rejected:** leaving the 30 missing citations and the regex-parser collision
+  unrepaired and reporting them only in Process Observations — rejected by the coordinator's
+  explicit direction to fix at the source; inventing a decision-tree citation for the 8 remaining
+  Queue/Group/BusinessHours rows to force `check_workbook.py` to exit 0 at the compile — rejected
+  because `standards/build-orchestration.md` Step 10's "nothing new is decided here" boundary
+  forbids a compile run from resolving a routed choice it has no source for, the same reasoning
+  `agents/build-doc-keeper/AGENT.md` gives for not compiling from the metadata artefacts directly.
+- **Remedy:** the 8 remaining `check_workbook.py` findings were closed by amending the checker
+  itself — see **D-M5S04-02**. `step-tester`'s formal run (`envelopes/M5-S04/2026-09-12T11-52-23Z.json`)
+  confirms all four declared checkers exit 0 after that fix, with no further artefact change.
+- **Grounded in:** `standards/build-orchestration.md` § 10 "nothing new is decided here"; `plan.json`
+  `decisions[]` D1/D3/D6/D7/D10.
+- **Evidence:** `envelopes/M5-S04/2026-09-12T11-15-00Z.json` → `process_observations[1..3]`;
+  `envelopes/M5-S04/2026-09-12T11-25-00Z.json` → `extensions.declared_acceptance_checks`;
+  `envelopes/M5-S04/2026-09-12T11-40-00Z.json` → `summary`, `process_observations`;
+  `envelopes/M5-S04/2026-09-12T11-45-00Z.json` → `extensions.declared_acceptance_checks`,
+  `extensions.unresolved_findings`; `workbook/06-automation.md` rows `CWB-AUT-001`–`006`,
+  `CWB-AUT-013`/`014`, `CWB-AUT-029`.
+
+## D-M5S04-02 — `check_workbook.py`'s blanket Section 6 decision-tree-citation rule closed at the skill, not the artefact, once the residual 8-row gap showed the rule was over-broad — the flywheel record
+
+- **Date:** 2026-09-12 · **Step:** `M5-S04` · **Checker:**
+  `skills/admin/configuration-workbook-authoring/scripts/check_workbook.py`, commit `65ec5b82f` ·
+  **Recorded by:** `build-doc-keeper`, from `step-tester`'s envelope
+- **Kind:** skill gap — the same flywheel shape **D-M4S01-01** names as the first instance in this
+  build: an over-broad checker rule closed by amending the skill, not by inventing an
+  artefact-level fix
+- **What was recorded:** after the repair pass in **D-M5S04-01**, `check_workbook.py` still exited
+  1 on 8 Section 6 rows (`M2-S04`'s three Queue and three Group rows; `M4-S01`'s `BusinessHours`
+  settings row and holiday-maintenance-runbook row) for lacking an `automation-selection.md`
+  citation. Both `build-doc-keeper` (`envelopes/M5-S04/2026-09-12T11-40-00Z.json`) and
+  `build-step-runner` (`envelopes/M5-S04/2026-09-12T11-45-00Z.json`) independently confirmed no
+  decision anywhere in `plan.json`'s `decisions[]`, `PLAN.md`'s rendered decision table, or
+  `decisions.md` names an automation-engine branch for either step, and that Queue/Group/
+  BusinessHours creation is not itself a leaf of that tree — the checker's rule assumed every
+  Section 6 row represents a routed automation-engine choice, which is false for configuration
+  artefacts filed there only because `agents/build-doc-keeper/AGENT.md` Step 4 routes
+  `routing`/`sla`-type steps' non-choice artefacts to that section too. `step-tester`'s formal run
+  (`envelopes/M5-S04/2026-09-12T11-52-23Z.json` → `process_observations[0]`) confirms the checker
+  itself was fixed at commit `65ec5b82f`: the 8 rows now read as INFO ("no automation choice to
+  cite — artefact is configuration, not an automation-engine pick",
+  `references/gotchas.md` Gotcha 12) rather than ERROR, and `check_workbook.py` exits 0 on the
+  byte-identical rows with no artefact edit between the two runs.
+- **Alternative rejected:** inventing a decision-tree citation for the 8 rows to force the pre-fix
+  checker to exit 0 — rejected in **D-M5S04-01** on the same "nothing new is decided here" grounds;
+  backfilling an `automation-selection.md`-shaped decision retroactively into `plan.json` for
+  `M2-S04`/`M4-S01` — rejected because neither step's own build run made an automation-engine
+  choice, so inventing one would misrepresent the build's own history to satisfy a linter.
+- **Remedy:** none needed on the artefact — the gap closed at the skill. A future Section 6 row
+  that genuinely is a routed automation-engine choice still must carry the citation; Gotcha 12 in
+  the skill's `references/gotchas.md` now names the Queue/Group/BusinessHours exception explicitly
+  so the distinction is documented rather than re-discovered on the next build.
+- **Grounded in:** the flywheel pattern **D-M4S01-01** establishes (skill gap closed at the skill,
+  not the artefact); `skills/admin/configuration-workbook-authoring/references/gotchas.md`
+  Gotcha 12.
+- **Evidence:** `envelopes/M5-S04/2026-09-12T11-45-00Z.json` → `extensions.unresolved_findings`;
+  `envelopes/M5-S04/2026-09-12T11-52-23Z.json` → `process_observations[0]` (category `healthy`,
+  domain `checker-quality`); `tests/M5-S04/check_workbook.out`.
+
+## O-M5S04-03 — REQ-055–REQ-058's `Draft`-row coverage-gap WARNs read "waived by decision NONE": no `D<n>` names the waiver because `Draft` status is itself `check_rtm.py`'s waiver condition, not a citation — carried to the M5 gate, not fabricated
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `step-tester`'s envelope and
+  `check_rtm.py`'s own output
+- **Kind:** observation — a checker message read literally could look like an unfinished waiver;
+  the build's own `traceability.md` already explains the mechanism, so this entry names it in
+  `decisions.md` rather than leaving it to be rediscovered at the gate
+- **What was recorded:** `step-tester`'s formal run (`envelopes/M5-S04/2026-09-12T11-52-23Z.json`
+  → `process_observations[2]`) flags that `check_rtm.py` prints 4 coverage-gap WARNs — `REQ-055`,
+  `REQ-056`, `REQ-057`, `REQ-058`, each "waived by decision NONE" — and that "a human should
+  confirm ... is the intended state before the milestone gate rather than an unfinished waiver."
+  Re-running the same command from the build root
+  (`python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file
+  traceability.md --manifest-dir artefacts --repo-root <repo root>`) reproduces the identical 4
+  WARNs and `0 orphan(s), 0 error(s)`. No `D<n>` decision anywhere in `decisions.md` or `plan.json`'s
+  `decisions[]` waives these four rows by id — but `traceability.md`'s own coverage narrative (§
+  "Coverage gaps (new at this step)", written by `M5-S03`'s own documentation run) already states
+  the mechanism: `check_rtm.py`'s waiver rule reads a row's `Draft` **status** as the waiver
+  condition for missing test coverage, not a cited decision id, and all four rows are `Draft`
+  because `REQ-055` is an environment precondition raised outside any plan step, `REQ-056`/
+  `REQ-057` are UAT-programme controls carried in the story backlog's shared Background rather than
+  as their own story (`decisions.md` **O-M5S03-01**), and `REQ-058` names a sandbox owner/approver
+  that cannot exist while `M5-S02` stays `blocked`. "Decision NONE" is the checker naming the true
+  state accurately, not a gap in citation.
+- **Remedy:** none needed in the artefacts — the four rows are correctly `Draft` and correctly
+  uncited. Carried to the M5 gate as an explicit item, not silently accepted: a human should
+  confirm before sign-off that (a) `REQ-055` is raised as a deploy prerequisite (P6) rather than
+  lost, (b) `REQ-056`/`REQ-057` are read at each UAT session from the shared Background rather than
+  forgotten for having no story, and (c) `REQ-058` remains blocked on `M5-S02`, not silently
+  dropped — the same three items `story-backlog.md`'s own Process Observations already name,
+  restated here because a gate reviewer reads `decisions.md` and `traceability.md`, not necessarily
+  the backlog.
+- **Grounded in:** `skills/admin/requirements-traceability-matrix` — the `Draft`-status waiver rule
+  `check_rtm.py` implements; `decisions.md` **O-M5S03-01**.
+- **Evidence:** `envelopes/M5-S04/2026-09-12T11-52-23Z.json` → `process_observations[2]`;
+  `tests/M5-S04/check_rtm.out` (4 WARN lines, "waived by decision NONE"); `traceability.md` §
+  "Coverage gaps (new at this step)" and the `REQ-055`–`REQ-058` rows.
+
+## O-M5S04-04 — 111 `check_ac_format.py` WARNs on the compiled acceptance-criteria document, almost all naming a "Build/milestone-gate reviewer" persona with no permission construct, are accepted as expected for build-process meta-criteria rather than a genuine gap
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `step-tester`'s envelope
+- **Kind:** observation — a checker-signal-quality note, the same shape **O-M5S03-03** already
+  records for `check_invest.py`'s body-length heuristic: a WARN that fires correctly on the letter
+  of the rule while missing that the criterion it is checking was never meant to satisfy that
+  rule's premise
+- **What was recorded:** `step-tester`'s formal run (`envelopes/M5-S04/2026-09-12T11-52-23Z.json`
+  → `process_observations[3]`; `tests/M5-S04/check_ac_format.out`) reports
+  `check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md` exits 0 with 111 WARNs, 0
+  errors. Gotcha 5's rule fires whenever a criterion's `persona` field "names a job title but no
+  permission construct" — a Profile, Permission Set or PSG — because an end-user acceptance
+  criterion whose persona has no named access grant is usually unverifiable. The large majority of
+  the 111 name a `Build/milestone-gate reviewer (M#-S##)` persona: these are the 39 build-wide
+  manual-test records `acceptance-criteria.md`'s own preamble names as compiled "so `ac_id`
+  references have something to resolve against" (Step 10's cross-check requirement) — criteria that
+  audit the build's own artefacts (a file exists, a checker exits 0, a decision was recorded)
+  rather than what a Salesforce end user can do in the org. A reviewer persona correctly has no
+  Profile or PSG, because the criterion is not about Salesforce access at all.
+- **Alternative rejected:** inventing a Profile/PSG for the "Build/milestone-gate reviewer" persona
+  to clear the WARN — rejected as fabrication with no source, the same reasoning
+  **D-M5S04-01**/**D-M5S04-02** give for not inventing a decision-tree citation; suppressing or
+  filtering the 111 WARNs before returning the checker's own output — rejected because
+  `agents/build-doc-keeper/AGENT.md` names verbatim checker output as the record, and a filtered
+  result would hide the one-in-111 case that might genuinely be a missed end-user criterion.
+- **Remedy:** none needed on the 39 build-process records — accepted as correctly WARN-level, not
+  ERROR-level, exactly as the checker classifies them. Carried to the M5 gate as `step-tester`
+  itself frames it: "worth a human's confirmation that none of the 111 hide a genuine end-user
+  criterion that still needs a named profile or PSG" — a spot-check item, not a blocking gap,
+  because `check_ac_format.py` exits 0 and no ERROR-level finding stands against this document.
+- **Grounded in:** `skills/admin/acceptance-criteria-given-when-then/references/gotchas.md`
+  gotcha 5 (persona-without-permission-construct); `decisions.md` **O-M5S03-03** (the adjacent
+  checker-signal-quality shape).
+- **Evidence:** `envelopes/M5-S04/2026-09-12T11-52-23Z.json` → `process_observations[3]`;
+  `tests/M5-S04/check_ac_format.out` ("111 warning(s)"; sample lines `AC-040.90`, `AC-043.90`
+  naming the reviewer persona).
+
+## D-M5S04-05 — The Assumptions Register renders all 28 `plan.json` assumptions, not only the 25 deferred at G1, with `owner` disclosed as a compile-time join rather than a native field — closes F-54
+
+- **Date:** 2026-09-12 · **Step:** `M5-S04` (`docs`, compile run) · **Agent:** `build-doc-keeper`
+  (re-compile envelope `2026-09-12T13-15-00Z.json`), invoked by `build-step-runner` after the
+  operator moved the step `documented → running` for this re-run (`re_run_of`: `reports/
+  MILESTONE-M5-REPORT.md` § 8, findings F-52/53/54/56/57)
+- **Kind:** design trade-off
+- **What was recorded:** `reports/MILESTONE-M5-REPORT.md` § 8 F-54 (HIGH) found the compiled
+  `configuration-workbook.md` carried no assumptions section at all, so `M5-S04`'s own manual test
+  [4] ("all 25 [deferred clarifications] appear as named rows with an owner ... compiled from
+  `assumptions[].steps[]`") was not tickable — 16 of 28 assumptions appeared in none of the five
+  compiled documents, and 0 of 28 carried an `owner` field natively in `plan.json`. This re-compile
+  adds a new **Assumptions Register** section rendering all 28 rows of `plan.json`'s
+  `assumptions[]` (not filtered to the 25 deferred at G1 — F-54 names the missing 16 as
+  disproportionately `M5-S02`'s/`M5-S03`'s/`M5-S04`'s own still-open assumptions, A15–A23 among
+  them, exactly the set a phase-2 owner most needs handed to them), each naming the steps it
+  constrains (`assumptions[].steps[]`) verbatim, and an owner column populated by a compile-time
+  join: `assumptions[].because` points at a clarification id, and that clarification's own
+  `owner_role`/`owner_hint` field supplies the value shown. The join is disclosed in the register's
+  own preamble as a compile-time convenience, not a `plan.json`-native `owner` field — the
+  finding's root cause (0 of 28 assumptions carry one) is unchanged by this row; only how it
+  surfaces changes.
+- **Alternative rejected:** rendering only the 25 deferred-at-G1 assumptions, matching the manual
+  test's literal count — rejected because narrowing to 25 would repeat exactly the omission F-54
+  names; inventing a native `owner` field on `plan.json`'s `assumptions[]` to answer the test's
+  "with an owner" clause literally — rejected because `agents/build-doc-keeper/AGENT.md`'s compile
+  run invents no row that is not already in a source file, and `plan.json` is the source of record
+  for this build, not this agent's to amend.
+- **Remedy:** none needed on the artefact beyond the new section. Carried to the M5 gate as a named
+  reading, not a settled tick: `step-tester`'s manual-test note (`tests/M5-S04/summary.md`) already
+  flags that a human must confirm 28-not-25 and a joined-not-native owner still satisfy the test's
+  literal wording. A planner v6 item stands — `assumptions[]` needs a native `owner` field, per
+  F-54's own recommendation.
+- **Grounded in:** `reports/MILESTONE-M5-REPORT.md` § 8 F-54; `skills/admin/
+  configuration-workbook-authoring` (row/section schema the register follows); `plan.json`
+  `assumptions[]`/`clarifications[]`.
+- **Evidence:** `envelopes/M5-S04/2026-09-12T13-15-00Z.json` → `summary`,
+  `compiled_documents[0]`, `process_observations[0]`; `artefacts/M5-S04/configuration-workbook.md`
+  § Assumptions Register; `tests/M5-S04/summary.md` (manual test 1 note).
+
+## D-M5S04-06 — Two blocked-step UAT cases kept, not deleted, and marked `phase: 2` / `blocked_on: <step>` instead — structurally closes F-53
+
+- **Date:** 2026-09-12 · **Step:** `M5-S04` · **Agent:** `build-doc-keeper`
+  (`envelopes/M5-S04/2026-09-12T13-15-00Z.json`)
+- **Kind:** deviation — `M5-S04`'s manual test [5] literally asserts the UAT pack "carries no case
+  that depends on" `M3-S05` or `M5-S02`, and the pack in fact carries two cases (`TC-M3-S05-2`,
+  `TC-M5-S02-2`) whose `evidence.of` paths (`artefacts/M3-S05/`, `artefacts/M5-S02/`) do not exist
+  because both steps are `blocked`
+- **What was recorded:** `reports/MILESTONE-M5-REPORT.md` § 8 F-53 (MEDIUM) recommends reading the
+  test as "carries no case that can be mistaken for runnable" rather than literally, and names the
+  fix as a structural marker rather than deletion, because both cases are exactly what should run
+  once their steps unblock. This re-compile adds `phase: 2` and `blocked_on: <step>` keys to both
+  cases in `uat-test-cases.yaml`, distinguishing them from the 43 runnable cases without removing
+  them or their `pass_fail: "Not Run"` state. `check_uat_case.py`'s record shape
+  (`skills/admin/uat-test-case-design`) tolerates the added keys without a schema change; the case
+  count (45) is unchanged.
+- **Alternative rejected:** deleting the two cases to satisfy the test's literal wording —
+  rejected per the finding's own recommendation ("Do not delete the two cases: when the steps
+  unblock, these are exactly the cases that should run"); leaving the cases unmarked and relying on
+  prose alone (each already carries "Given this step is unblocked in a later phase" as its first
+  step) — rejected because F-53 itself names the gap as the absence of a structural marker, not the
+  absence of prose.
+- **Remedy:** none needed beyond the two added keys. Carried to the M5 gate as a human judgment
+  call, not decided here: `step-tester`'s own ambiguous observation
+  (`envelopes/M5-S04/2026-09-12T16-06-03Z.json`) flags that whether a `phase`/`blocked_on` marker
+  satisfies the test's literal "carries no case that depends on" wording is for a human to tick,
+  not this agent to assert.
+- **Grounded in:** `reports/MILESTONE-M5-REPORT.md` § 8 F-53; `skills/admin/uat-test-case-design`
+  (case record shape); `skills/admin/uat-and-acceptance-criteria` (recording a blocked-step manual
+  test as evidence rather than deleting it).
+- **Evidence:** `envelopes/M5-S04/2026-09-12T13-15-00Z.json` → `summary` point (3),
+  `compiled_documents[3]`; `artefacts/M5-S04/uat-test-cases.yaml` `TC-M3-S05-2`, `TC-M5-S02-2`;
+  `tests/M5-S04/summary.md` (manual test 2 note).
+
+## D-M5S04-07 — A ten-member traceability addendum added inside the compiled copy only; the canonical fix (real rows in the build's own `traceability.md`) is named and deferred, not made here — partially closes F-52
+
+- **Date:** 2026-09-12 · **Step:** `M5-S04` · **Agent:** `build-doc-keeper`
+  (`envelopes/M5-S04/2026-09-12T13-15-00Z.json`)
+- **Kind:** design trade-off
+- **What was recorded:** `reports/MILESTONE-M5-REPORT.md` § 8 F-52 (MEDIUM) found 10 of 56
+  `M5-S05` manifest members reach no row in `traceability.md` — not even inside an
+  `artefact_paths` cell — because `check_rtm.py`'s orphan rule runs step → row only, never
+  member → row. This re-compile adds a new addendum section to the compiled
+  `artefacts/M5-S04/traceability.md` cross-referencing all 10 members (3 `ApexClass`, 3 `Group`,
+  3 `PermissionSetGroup`, 1 `Report` folder) against the `req_id` each already implies via an
+  existing row's `artefact_paths` cell (`REQ-018`/`019`/`020`/`022`/`023`/`024`/`044`, plus
+  `REQ-032` by analogy for the bare `Report:Support_Operations` folder member — flagged
+  ambiguous, not asserted, per this envelope's own `process_observations[2]`). The Matrix table
+  itself — copied verbatim from the build's root `traceability.md`, per `CWB-OTHER-038`'s own
+  documented promise — is untouched.
+- **Alternative rejected:** writing the ten implied rows directly into the build's own
+  `traceability.md` at this compile run — rejected because `agents/build-doc-keeper/AGENT.md`'s
+  compile run reads `workbook/*.md` and `traceability.md` as sources, not targets, on a compile
+  run, and the canonical fix belongs to the four owning steps' own per-step documentation passes
+  (`M2-S01`/`M2-S02`/`M2-S04`/`M4-S05`), which alone can touch `traceability.md`'s real rows under
+  Step 7 — a compile run adding rows there would blur which run wrote what; silently absorbing the
+  ten members into the existing coverage line without naming them — rejected because a gap named is
+  worth more at the gate than a coverage count that quietly changed meaning.
+- **Remedy:** none on the artefact beyond the addendum. Follow-up named to `build-doc-keeper`'s own
+  next per-step touches on the four owning steps (not scheduled by this plan — see this run's own
+  `followups[]`); F-52's second half (deepening `skills/admin/requirements-traceability-matrix` so
+  `check_rtm.py` gains a manifest-member coverage direction) is a skill-authoring item, not an
+  artefact fix.
+- **Grounded in:** `reports/MILESTONE-M5-REPORT.md` § 8 F-52; `skills/admin/
+  requirements-traceability-matrix` (pipe-delimited multi-value convention; the addendum's framing
+  against the verbatim Matrix).
+- **Evidence:** `envelopes/M5-S04/2026-09-12T13-15-00Z.json` → `summary` point (5),
+  `compiled_documents[1]`, `process_observations[2]` (ambiguous, the analogized tenth member);
+  `artefacts/M5-S04/traceability.md` § addendum; `artefacts/M5-S05/package.xml`.
+
+## D-M5S04-08 — `M5-S05` § 5.2's six-item numbering adopted as canonical over the story backlog's independent P-labels, with P6 added as a seventh item and the Entitlement-record prerequisite (F-41) now in the compiled workbook — partially closes F-56
+
+- **Date:** 2026-09-12 · **Step:** `M5-S04` · **Agent:** `build-doc-keeper`
+  (`envelopes/M5-S04/2026-09-12T13-15-00Z.json`)
+- **Kind:** design trade-off
+- **What was recorded:** `reports/MILESTONE-M5-REPORT.md` § 8 F-56 (MEDIUM) found two
+  independently numbered prerequisite lists (`M5-S05` § 5.2's six items vs. the story backlog's
+  P1–P6) that do not cross-reference each other and do not hold the same items, and that the F-41
+  Entitlement-per-Account prerequisite appeared in neither the compiled workbook nor the story
+  backlog. This re-compile follows the finding's own recommendation: adds a reconciled seven-item
+  org-prerequisites table to `deploy-order.md` adopting `M5-S05` § 5.2's numbering as canonical (it
+  is the document a release owner deploys from), cross-referencing the backlog's P-labels against
+  it, and adding the sandbox-deliverability prerequisite (backlog P6, absent from § 5.2) as item 7;
+  and adds `CWB-DATA-001` to the compiled workbook's Section 10, naming the
+  Entitlement-record-per-Account prerequisite for the first time in any compiled document.
+- **Alternative rejected:** renumbering `story-backlog.md`'s own P-labels to match, and adding the
+  F-41 dependency to `US-CASE-007`'s Dependencies — both are the finding's own recommended remedy,
+  and both are rejected for this run specifically because they require a write to
+  `artefacts/M5-S03/story-backlog.md`, outside a compile run's Scope Guardrails (writes permitted
+  only under `artefacts/M5-S04/`); adopting the backlog's P-numbering as canonical instead of
+  § 5.2's — rejected because § 5.2 is the document the finding itself names as the one a release
+  owner actually deploys from.
+- **Remedy:** none on the artefact beyond the two additions above. `story-backlog.md`'s P-label
+  renumbering and its `US-CASE-007` dependency addition are named as an explicit follow-up to
+  `story-drafter` (this run's own `followups[]`), not silently left for a future reader to notice
+  missing.
+- **Grounded in:** `reports/MILESTONE-M5-REPORT.md` § 8 F-56; `skills/admin/
+  configuration-workbook-authoring` (Section 10 row schema); `artefacts/M5-S05/deploy-order.md`
+  § 5.2; `artefacts/M5-S03/story-backlog.md` (P-labels, read only).
+- **Evidence:** `envelopes/M5-S04/2026-09-12T13-15-00Z.json` → `summary` point (4),
+  `compiled_documents[0]`, `compiled_documents[2]`, `followups[0]`;
+  `artefacts/M5-S04/configuration-workbook.md` § Section 10 `CWB-DATA-001`;
+  `artefacts/M5-S04/deploy-order.md` § org-prerequisites addendum.
+
+## D-M5S05-01 — F-43 closed: the Apex now travels in a manifest; flywheel record for the manifest-step tester carve-out the playbook does not yet name
+
+- **Date:** 2026-09-12 · **Step:** `M5-S05` (`docs`) · **Agent:** `metadata-builder` (build run
+  `2026-09-12T12-16-22Z`); tested by `step-tester` (`2026-09-12T12-28-47Z`); recorded here by
+  `build-doc-keeper`
+- **Kind:** two-part — (a) a finding closure, the same shape **D-M4S05-01**/**D-M5S01-01** give a
+  flywheel record; (b) a playbook gap, the flywheel's shape applied to an agent's own `AGENT.md`
+  rather than to a skill
+- **What was recorded (a):** **F-43**, raised at the M4 gate (`envelopes/M4/2026-09-12T09-08-11Z.json`
+  → finding `F-43`; `reports/MILESTONE-M4-REPORT.md` § F-43): *"no manifest in the build carries the
+  Apex until M5-S05 is built — manifest-mode validation of M4 must wait for M5-S05; source-mode run 4
+  is the evidence today."* `M5-S05`'s own envelope names the same gap explicitly before closing it
+  (`envelopes/M5-S05/2026-09-12T12-16-22Z.json` → `process_observations`: *"This manifest is the
+  first in the build to carry the Apex, so nothing has ever validated the Apex members through a
+  merged manifest."*). `reports/MOCK-DEPLOY-M5.md` Run 3 — manifest mode, every built step through
+  `M5-S05`, the merged `package.xml` including the four `ApexClass`/`ApexTrigger` members — ran next
+  and recorded *"This is the first validation in the build that reads a manifest carrying the Apex
+  (M4-S05's trigger and classes) — F-43 closed"*: 60 components, 60 ok, 1 error (`F-28`, the
+  unprovisioned `OrgWideEmailAddress`, unchanged and expected). **F-43 is CLOSED.**
+- **What was recorded (b):** `step-tester`'s formal run on this same step
+  (`envelopes/M5-S05/2026-09-12T12-28-47Z.json` → `process_observations`, category `ambiguous`,
+  domain `playbook-gap`) flags that `agents/step-tester/AGENT.md` Step 3's file↔manifest rules are
+  written as *"for every artefact file [under the step's artefact directory]"*, with no explicit
+  carve-out for a build-level manifest step whose own artefact directory holds no component files at
+  all (`M5-S05`'s directory holds only `package.xml` and `deploy-order.md`). The tester widened the
+  check to the whole `artefacts/` tree by inference from the step's own `acceptance_tests[2]` wording
+  and from `deploy-order.md` § 5.1's self-described method, not from a branch the playbook names —
+  and said so rather than silently picking a reading.
+- **The gap is NOT yet closed at the source, unlike D-M4S01-01/D-M5S04-02.** This build has exactly
+  one build-level manifest step, so there is no second run to prove a fix against; the entry is
+  recorded now as the signal for the next build's `agents/step-tester/AGENT.md` revision to add the
+  carve-out explicitly, the same flywheel discipline `standards/build-orchestration.md` § 8 applies
+  to a skill gap.
+- **Alternative rejected:** leaving F-43 open pending a human's own manifest-mode run — rejected
+  because `reports/MOCK-DEPLOY-M5.md` Run 3 is that run, already executed and already dry-run-only
+  (`checkOnly: true`, nothing deployed); re-deriving the tester's whole-tree reading from scratch on
+  a future build rather than naming the playbook gap now — rejected because a future step-tester run
+  would face the identical ambiguity with no record of how this one resolved it.
+- **Grounded in:** `standards/build-orchestration.md` § 5 "The Apex exception"; § 8 (a skill/playbook
+  gap is the signal to deepen the source, never to freestyle around it).
+- **Evidence:** `reports/MILESTONE-M4-REPORT.md` § F-43; `envelopes/M5-S05/2026-09-12T12-16-22Z.json`
+  → `process_observations`; `reports/MOCK-DEPLOY-M5.md` Run 3; `tests/M5-S05/summary.md` §
+  "ambiguous, medium, playbook-gap"; `envelopes/M5-S05/2026-09-12T12-28-47Z.json` →
+  `process_observations` (category `ambiguous`, domain `playbook-gap`).
+
+## D-M5S05-02 — This manifest follows `M3-S03`'s safe sequence (rules before `Settings:Case`), diverging from `M5-S04`'s compiled ten-slot order by one position — named, not silently re-ordered
+
+- **Date:** 2026-09-12 · **Step:** `M5-S05` (`docs`) · **Agent:** `metadata-builder`; recorded here
+  by `build-doc-keeper`
+- **Kind:** design trade-off — a plan-level ordering conflict named rather than silently absorbed,
+  the same shape **D-M2S04-05** gives an earlier cross-step ordering question
+- **What was recorded:** `artefacts/M5-S05/deploy-order.md` § 3.3 states that its own § 3.1 table
+  places `AssignmentRules:Case`/`AutoResponseRules:Case` (slot 10) **before** `Settings:Case`
+  (slot 11), while `artefacts/M5-S04/deploy-order.md`'s compiled ten-slot table lists
+  `Settings:Case` (`CWB-AUT-007`) ahead of the two rule rows (`CWB-AUT-010`/`CWB-AUT-011`),
+  following plan step order (`M3-S03` before `M3-S04`). `artefacts/M3-S03/deploy-order.md` § 3
+  itself states the opposite is required for any org that will receive real mail: assignment and
+  auto-response rules must be active **before** `Settings:Case` turns the channel on, or live
+  traffic lands unrouted at `defaultCaseOwner` with no acknowledgement sent. `M5-S05` follows
+  `M3-S03`'s safe sequence rather than `M5-S04`'s compiled one. The failure mode this avoids is not
+  a deploy error — both orders deploy cleanly, because Metadata API resolves component dependencies
+  within one request regardless of `<types>` block order (§ 3.2) — it is a live-traffic gap between
+  activation and the human step (mail-server forwarding, form publication) that actually turns the
+  channel on.
+- **Alternative rejected:** silently adopting `M5-S04`'s order to make the two files agree —
+  rejected because it would ship the less safe sequence with no record that a safer one was known;
+  editing `M5-S04`'s already-`documented` compiled table to match — rejected for the same reason
+  `agents/build-doc-keeper/AGENT.md` Step 8 leaves another step's rows byte-identical, and because
+  `M5-S04`'s table is itself a correct compilation of plan step order, not an error in transcription.
+- **Remedy:** none needed in either artefact — both orders are internally consistent and both are
+  named. Carried to the M5 gate as an explicit item: a release owner sequencing the actual deploy
+  should follow `M5-S05`'s order (slot 10 before slot 11), and the real safety margin is the human
+  step after slot 11 (§ 3.3), not the manifest's own `<types>` order.
+- **Grounded in:** `artefacts/M3-S03/deploy-order.md` § 3; `artefacts/M5-S04/deploy-order.md`
+  (ten-slot table); `admin/case-management-setup/references/metadata-examples.md` § 5.
+- **Evidence:** `artefacts/M5-S05/deploy-order.md` §§ 3.1, 3.2, 3.3; `artefacts/M5-S04/deploy-order.md`
+  hazard list (M3-S03/M3-S04 entry); `envelopes/M5-S05/2026-09-12T12-16-22Z.json` →
+  `extensions.decision_record`.
+
+## D-M5S05-03 — Six org prerequisites carried forward from four milestone gates are compiled into one release checklist; none is expressible as a manifest member or a molecular test
+
+- **Date:** 2026-09-12 · **Step:** `M5-S05` (`docs`) · **Agent:** `metadata-builder`; recorded here
+  by `build-doc-keeper`
+- **Kind:** design trade-off, held open as a release checklist — the same shape **D-M3S04-03**/
+  **D-M3S04-04** hold F-28 open as a milestone-gate prerequisite, extended here to all six
+- **What was recorded:** `artefacts/M5-S05/deploy-order.md` § 5.2 compiles six org prerequisites,
+  each already raised at an earlier milestone gate and none closable by metadata in this build:
+  (1) **F-28** — `support-noreply@acme.example` provisioned and verified as an `OrgWideEmailAddress`
+  before `AutoResponseRules:Case` deploys (G3 decision 4); (2) **F-39** — Entitlement Management
+  (`enableEntitlements`) plus `enableMilestoneStoppedTime` (G4 decision 2); (3) **F-44** —
+  non-routing mailboxes on the `Billing` and `Tier_2_Engineering` queues before the escalation rule
+  is activated (G4 decision 1); (4) **F-41** — an `Entitlement` record per Account pointing at the
+  right process; (5) **F-51** — the report's "Escalated = True" criterion, added in the report
+  builder after deploy, because no column code could be probed; (6) **G4 decision 9** — an active
+  `SlaProcess` carrying a First Response milestone, for `M4-S05`'s `SeeAllData=true` test. `M5-S05`'s
+  own envelope (`extensions.org_prerequisites`) lists the same six verbatim. `step-tester`'s formal
+  run (`process_observations`, category `concerning`, domain `release-readiness`) confirms none of
+  the six is expressible as a manifest member, a declared checker, or a molecular test — *"a tested
+  build-level manifest carries no signal on any of them."*
+- **Alternative rejected:** inventing a manifest member or a checker assertion for one of the six to
+  make the step's test suite "cover" them — rejected as fabrication with no metadata type to carry
+  it (an org-wide email address, a feature-settings switch already on in the dev org, a data record,
+  a report-builder criterion and a test-fixture record are none of them retrievable/deployable
+  components); silently omitting the compiled list because no test can assert it — rejected because
+  an omitted prerequisite is a prerequisite nobody is warned about.
+- **Remedy:** none needed in the artefact. Carried to the M5 gate as the release checklist verbatim
+  — six items, none defaulted, none silently dropped.
+- **Grounded in:** `admin/change-management-and-deployment` (Questions-to-Ask, § 6); G3 decision 4;
+  G4 decisions 1, 2, 9; `reports/MOCK-DEPLOY-M3.md` run 6 (F-28); `reports/MILESTONE-M4-REPORT.md`
+  (F-39, F-41, F-44).
+- **Evidence:** `artefacts/M5-S05/deploy-order.md` § 5.2; `envelopes/M5-S05/2026-09-12T12-16-22Z.json`
+  → `extensions.org_prerequisites`; `tests/M5-S05/summary.md` § "concerning, medium,
+  release-readiness".
+
+## D-M5S05-04 — Four release-owner decisions (`rollbackOnError`, `testLevel`, validation timing, the backout plan) are left open by design; this build defaults none of them
+
+- **Date:** 2026-09-12 · **Step:** `M5-S05` (`docs`) · **Agent:** `metadata-builder`; recorded here
+  by `build-doc-keeper`
+- **Kind:** design trade-off, held open as release-owner decisions — the skill's own Questions-to-Ask
+  table, reproduced rather than answered
+- **What was recorded:** `artefacts/M5-S05/deploy-order.md` § 6 and the owning agent's own
+  `extensions.decision_record` (`envelopes/M5-S05/2026-09-12T12-16-22Z.json`) both record four of
+  the skill's release-options questions as **"Not bound by the plan"** rather than defaulted: (1)
+  whether `rollbackOnError` is set explicitly — the skill documents production *must* set it `true`
+  and that the guide's own `DeployOptions`/`DeployResult` pages disagree on the default, so an
+  unstated value is a real ambiguity, not a formality; (2) which `testLevel` applies — recorded that
+  this manifest's one trigger and three classes mean a production deploy defaults to
+  `RunLocalTests`, but the release owner still chooses the window that absorbs a full local-test
+  run; (3) validation timing relative to the deploy window — the ten-day quick-deploy clock is
+  named, the actual date is not; (4) the backout plan if the release "behaves badly at 09:00" — the
+  skill's deactivate-don't-delete answer is recorded (the two validation rules, the assignment rule,
+  the flow's active version; the escalation rule already ships inactive) but nobody has agreed to
+  execute it. The fifth and sixth questions in the same table **are** answered by this build's own
+  artefacts, not left open: nothing is deleted (§ 2.3), and components arriving needing a switch
+  flipped are named in full (§ 4).
+- **Alternative rejected:** defaulting `rollbackOnError: true` and `RunLocalTests` into the manifest
+  or the deploy-order note as though decided — rejected because neither is a manifest element
+  Metadata API deploy options carry in `package.xml` itself, and stating a default as though chosen
+  would misrepresent an unmade decision as a made one; silently omitting the four from the compiled
+  note because this agent cannot decide them — rejected because an admin running the validate-only
+  command in § 7 needs to know these are still open before choosing `--test-level` on the command
+  line.
+- **Remedy:** none needed in the artefact. Carried to the M5 gate as four named release-owner
+  decisions, each with the skill's own default/contradiction stated so the human is not deciding
+  from a blank page.
+- **Grounded in:** `admin/change-management-and-deployment` (Questions-to-Ask, § 6, `rollbackOnError`
+  api_meta L4256–L4260, the ten-day quick-deploy clock, the deactivate-don't-delete guidance).
+- **Evidence:** `artefacts/M5-S05/deploy-order.md` § 6; `envelopes/M5-S05/2026-09-12T12-16-22Z.json`
+  → `extensions.decision_record` (six question/answer pairs, four marked "Not bound by the plan").
+
+## D-M5S05-05 — The `<version>` split is recorded, not reconciled: nine step manifests stay at `62.0`, the build manifest ships at `67.0` per G3 decision 6; a plan-level `api_version` remains a planner v6 item
+
+- **Date:** 2026-09-12 · **Step:** `M5-S05` (`docs`) · **Agent:** `metadata-builder`; recorded here
+  by `build-doc-keeper`
+- **Kind:** design trade-off, version-gated — the same shape **D-M2S02-04**/**D-M4S03-04** give an
+  earlier API-version choice, here applied to the build-wide aggregate rather than one step
+- **What was recorded:** `artefacts/M5-S05/deploy-order.md` § 1.2 and `envelopes/M5-S05/2026-09-12T12-16-22Z.json`
+  → `extensions.version_split` both record the same split: nine step manifests —
+  `M1-S01`, `M1-S02`, `M2-S01`, `M2-S02`, `M2-S03`, `M2-S04`, `M2-S05`, `M3-S01`, `M3-S02` — still
+  declare `<version>62.0</version>`; seven — `M3-S03`, `M3-S04`, `M4-S01`, `M4-S02`, `M4-S03`,
+  `M4-S04`, `M5-S01` — declare `67.0`. The build-level `package.xml` this step wrote is stamped
+  `67.0` on two independent grounds: (1) **G3 decision 6** (`plan.json.human_gates`,
+  `milestone:M3`) — *"build API version = 67.0 accepted; accepted M1/M2 manifests are not
+  rewritten; `scripts/mock_deploy.py` deploys at the highest step version; planner v6 adds a
+  plan-level `api_version`"* — carried forward unchanged by the `milestone:M4` gate note; (2) **the
+  org proved the floor**: `MOCK-DEPLOY-M3.md` run 4 probes a–c show `newEntityRecordType` on the
+  Email-to-Case routing addresses is *"not valid in version 62.0"* and *"not valid in version
+  63.0,"* resolving only from `64.0`, so `M3-S03`'s `Settings:Case` cannot deploy at all below that
+  floor. The nine `62.0` step manifests are **left as they are**, per the same gate decision — a
+  merged manifest at `67.0` and a step manifest at `62.0` record two different facts (what the step
+  was built and accepted at, versus what the build deploys at) and are not in conflict with each
+  other.
+- **Alternative rejected:** rewriting the nine `62.0` step manifests to `67.0` to make every file in
+  the build agree — rejected explicitly by G3 decision 6 ("accepted M1/M2 manifests are not
+  rewritten"), because each step's own manifest is a record of what was built and accepted at the
+  time, and rewriting it after the fact would misstate that history; leaving the build-level
+  manifest at a mixed or unstated version — not possible, because `package.xml` carries exactly one
+  `<version>` element for the whole file.
+- **Remedy:** none needed in this build's artefacts. The still-open planner item is a `plan.json`-level
+  `api_version` field (`build-planner` v6), so a future build does not have to reconstruct this split
+  from nine individual step manifests and a human gate note the way this step did.
+- **Grounded in:** `plan.json.human_gates` (`milestone:M3` decision 6, `milestone:M4` note);
+  `reports/MOCK-DEPLOY-M3.md` run 4, probes a–c; the build-wide API-version drift `decisions.md`
+  **O-M3S03-01** first named as a `build-planner` v6 backlog item.
+- **Evidence:** `artefacts/M5-S05/deploy-order.md` § 1.2; `envelopes/M5-S05/2026-09-12T12-16-22Z.json`
+  → `extensions.version_split`; `plan.json.human_gates[milestone:M3].notes` (decision 6).

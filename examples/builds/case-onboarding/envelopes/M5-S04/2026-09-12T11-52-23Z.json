@@ -1,0 +1,165 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T11-52-23Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-52-23Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T11-52-23Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S04"
+  },
+  "summary": "Ran the molecular tests for M5-S04 (the build-doc-keeper compile: configuration-workbook.md, traceability.md, deploy-order.md, acceptance-criteria.md, uat-test-cases.yaml). Both always-on checks completed: xml ran with zero files (the step's outputs are .md/.yaml only), and manifest recorded skipped-not-applicable because M5-S04 is a docs step whose outputs[] names no package.xml. All four declared checkers were run exactly as the plan declared them, from the build directory, with no flag added, removed or reordered: check_workbook.py --workbook (exit 0, 8 Section-6 rows now INFO rather than ERROR under commit 65ec5b82f, landed after the prior build-step-runner repair pass left them unresolved at exit 1), check_rtm.py --file --manifest-dir artefacts (exit 0, 4 pre-existing coverage-gap WARNs), check_uat_case.py --manifest-dir (exit 0, 45 cases / 118 criterion ids cross-checked), and check_ac_format.py --file (exit 0, 111 WARN-level findings, 0 errors). check-outputs confirmed all five declared outputs exist, are non-empty and parse. Both milestone-scoped manual tests were checked against the Given/When/Then shape and both name an observable outcome, so both are carried into skipped_manual[] rather than ticked here. results.json and summary.md are written under tests/M5-S04/; the step's status was moved built -> tested via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this run observed directly (no checker was missing, no command was refused, and check-outputs reported ok) — the HIGH row of this agent's Step 7 rubric.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_workbook.py moved from exit 1 (8 unresolved Section-6 rows, per the prior build-step-runner repair-pass envelope at 2026-09-12T11-45-00Z) to exit 0 in this run with no artefact change, confirming the checker fix in commit 65ec5b82f (Queue/Group/BusinessHours rows are not automation-engine picks and now read as INFO) rather than a silent artefact edit closing the gap.",
+      "domain": "checker-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S04/check_workbook.out"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All five declared outputs exist, are non-empty and parse on the first check-outputs run this step has had — no relocation or repair was needed at the testing stage.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S04/check-outputs.out"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "check_rtm.py reports 4 coverage-gap WARNs (REQ-055 through REQ-058, all status 'Draft', waived by decision NONE) — not a test failure, since the checker's own exit policy treats these as warnings, but a human should confirm 'waived by decision NONE' is the intended state before the milestone gate rather than an unfinished waiver.",
+      "domain": "traceability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S04/check_rtm.out"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "check_ac_format.py reports 111 WARNs, the large majority naming a 'Build/milestone-gate reviewer (M#-S##)' persona as a job title with no permission construct — expected for build-process meta-criteria that audit the build itself rather than an end-user behaviour, but worth a human's confirmation that none of the 111 hide a genuine end-user criterion that still needs a named profile or PSG.",
+      "domain": "acceptance-criteria",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S04/check_ac_format.out"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "M5-S04 is now tested; the next stage this build's loop names is documentation and milestone verification.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "to move the step from tested to documented now that all four declared checkers exit 0."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§4 step-type table (docs step manifest handling) and §5 acceptance-test types, runners, pass conditions, the checker-verbatim rule and the always-on manifest fail/skip rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming what a manual UAT-programme line must state before it is carried into the milestone checklist rather than re-interpreted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "checking both declared manual acceptance tests against the Given/When/Then shape before carrying them into skipped_manual[]"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "ruling out a manifest-exclusion carve-out for this step, since the step declares no package.xml at all rather than a partial one"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the artefact directory holds no source-format metadata file the manifest check would need to map to a member"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar the manifest check would be judged against, confirming none applies here"
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S04",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M5-S04/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree parse of every *.xml/*-meta.xml under artefacts/M5-S04/",
+        "exit_code": null,
+        "verdict": "ran, 0 files found — not a pass, not a failure, recorded per Step 2"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "package.xml two-way consistency check",
+        "exit_code": null,
+        "verdict": "skipped-not-applicable — docs step, outputs[] declares no package.xml"
+      },
+      {
+        "name": "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M5-S04/configuration-workbook.md",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/uat-test-case-design/scripts/check_uat_case.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M5-S04",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --file artefacts/M5-S04/acceptance-criteria.md",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "failed": [],
+    "skipped_manual": [
+      "Given 25 clarifications were deferred at G1, when the workbook's assumptions section is read, then all 25 appear as named rows with an owner who can close each one, and each names the steps it constrains — compiled from assumptions[].steps[] rather than from step-note prose, which is why every step recording a deferral now also carries a structured \"assumptions\" key in its inputs{}.",
+      "Given two steps ship nothing in this phase, when the compiled documents are read, then M3-S05 and M5-S02 each appear with their blocked reason verbatim — 'deferred: Q32, Q33, Q34, Q35' and 'borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity' — and the UAT pack carries no case that depends on either."
+    ],
+    "tests_run": 4,
+    "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S04 tested --run-agent step-tester --envelope envelopes/M5-S04/2026-09-12T11-52-23Z.json --result \"ran 4 checkers + xml + manifest, failed 0, manual 2\" --started 2026-09-12T11:52:23Z"
+  }
+}

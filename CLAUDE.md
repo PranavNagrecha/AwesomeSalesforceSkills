@@ -293,8 +293,9 @@ hand-edited. The contract is `standards/build-orchestration.md` — read it
 before touching any of these agents. No agent in this layer deploys to an org
 or approves a gate; each stops and prints the next command for a human to run.
 A complete worked example — requirement → 97 clarifications → plan v5 (verified
-after five rounds) → milestones M1–M4 built, tested, documented, verified, and
-mock-deployed with `--dry-run` (every org finding fed back into a skill) — is committed under
+after five rounds) → all five milestones built, tested, documented, verified, and
+mock-deployed with `--dry-run` (every org finding fed back into a skill), thirteen
+gates signed, build status `done` — is committed under
 `examples/builds/case-onboarding/` (start with its `README.md`). The same loop at
 its smallest tier — a one-line ask → 13 clarifications → 1 step → `RUN.md` → two
 gates (`scale: ask`, § 3.1) — is `examples/builds/opp-amount-lock/`, with a driver's log; the middle tier —

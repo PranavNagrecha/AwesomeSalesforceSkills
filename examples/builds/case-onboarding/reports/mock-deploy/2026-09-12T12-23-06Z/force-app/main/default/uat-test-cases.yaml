@@ -1,0 +1,1137 @@
+# UAT test-case pack — Acme Software Case Onboarding on Service Cloud
+# Compiled by agents/build-doc-keeper's M5-S04 compile run.
+# One case per `manual` acceptance test plan.json declares on a step or a
+# milestone (skills/admin/uat-test-case-design/references/worked-examples.md
+# § 4 record shape). given/when/then/expected text is the plan's own manual
+# acceptance-test description, split on its own Given/.../when/.../then
+# wording -- nothing paraphrased or invented. Where a description did not
+# split cleanly the gap is named in `pass_rule`/`expected_final` verbatim
+# rather than padded out.
+project: "Acme Software Case Onboarding on Service Cloud"
+sandbox: UNVERIFIED — design-only build, no sandbox named (Q75 deferred, M5-S02 blocked)
+test_cases:
+  - case_id: TC-M1-S01-1
+    ac_id: AC-003.61
+    req_id: REQ-003
+    persona: "Build reviewer confirming step M1-S01's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M1-S01`"
+    steps:
+      - step: "Given B01"
+        expected: "the precondition holds as stated"
+      - step: "When artefacts/M1-S01/ is listed"
+        expected: "the action or read completes"
+    expected_final: "two businessProcess-meta.xml files exist beside the two recordType-meta.xml files, each record type's <businessProcess> carries the BARE process name (not Case.Support Process), and package.xml lists BusinessProcess with object-qualified members."
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S01/ (or the milestone's compiled report)"
+    pass_rule: "two businessProcess-meta.xml files exist beside the two recordType-meta.xml files, each record type's <businessProcess> carries the BARE process name (not Case.Support Process), and package.xml lists BusinessProcess with object-qualified members."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M1-S01-2
+    ac_id: AC-004.61
+    req_id: REQ-004
+    persona: "Build reviewer confirming step M1-S01's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "B01:"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M1-S01`"
+    steps:
+      - step: "Given the Case org-wide default is what makes 'a Tier 1 agent cannot open a Billing case' true"
+        expected: "the precondition holds as stated"
+      - step: "When artefacts/M1-S01/objects/Case/Case.object-meta.xml is read"
+        expected: "the action or read completes"
+    expected_final: "it carries <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel> as direct children of <CustomObject>, and no separate settings file anywhere in the build claims to carry the OWD. Tickable from this step's own artefacts at the M1 gate; the machine assertion that the OWD is not looser than the sharing rule's grant is M2-S05's build-scoped check_sharing_model.py test, which needs both files."
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S01/ (or the milestone's compiled report)"
+    pass_rule: "it carries <sharingModel>Private</sharingModel> and <externalSharingModel>Private</externalSharingModel> as direct children of <CustomObject>, and no separate settings file anywhere in the build claims to carry the OWD. Tickable from this step's own artefacts at the M1 gate; the machine assertion that the OWD is not looser than the sharing rule's grant is M2-S05's build-scoped check_sharing_model.py test, which needs both files."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M1-S02-1
+    ac_id: AC-013.61
+    req_id: REQ-013
+    persona: "Build reviewer confirming step M1-S02's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M1-S02`"
+    steps:
+      - step: "Given Q24"
+        expected: "the precondition holds as stated"
+      - step: "When each layout file is read"
+        expected: "the action or read completes"
+    expected_final: "<layoutSections> is preceded by the assignment-rule checkbox default set on, and every field a validation rule attaches an error to (assumption A13) is present on both layouts."
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S02/ (or the milestone's compiled report)"
+    pass_rule: "<layoutSections> is preceded by the assignment-rule checkbox default set on, and every field a validation rule attaches an error to (assumption A13) is present on both layouts."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S01-1
+    ac_id: AC-016.61
+    req_id: REQ-016
+    persona: "Build reviewer confirming step M2-S01's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "B01: rewritten as an assertion over an artefact this design-only build actually produces. PermissionSetAssignment is record data, not metadata, so no artefact here can record who holds the permission."
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M2-S01`"
+    steps:
+      - step: "Given the bypass exists to let API-created cases skip the Case validation rules"
+        expected: "the precondition holds as stated"
+      - step: "When permissionsets/Case_Intake_Integration.permissionset-meta.xml is read"
+        expected: "the action or read completes"
+    expected_final: "it grants Bypass_Case_Intake_Validation and nothing else — no objectPermissions, no fieldPermissions, no userPermissions — and deploy-order.md carries the post-deploy instruction that this permission set is assigned to the integration/automated-process identity only and to no human user, with a named owner for that assignment."
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S01/ (or the milestone's compiled report)"
+    pass_rule: "it grants Bypass_Case_Intake_Validation and nothing else — no objectPermissions, no fieldPermissions, no userPermissions — and deploy-order.md carries the post-deploy instruction that this permission set is assigned to the integration/automated-process identity only and to no human user, with a named owner for that assignment."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S04-1
+    ac_id: AC-022.61
+    req_id: REQ-022
+    persona: "Build reviewer confirming step M2-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M2-S04`"
+    steps:
+      - step: "Given the step claims to have built the work pools"
+        expected: "the precondition holds as stated"
+      - step: "When artefacts/M2-S04/ is listed"
+        expected: "the action or read completes"
+    expected_final: "all six components are present and named: queues Tier_1_General, Tier_2_Engineering and Billing, and groups Support_Tier_1, Support_Tier_2 and Billing_Team, and every queue's <queueSobject><sobjectType> is Case (Q30)."
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S04/ (or the milestone's compiled report)"
+    pass_rule: "all six components are present and named: queues Tier_1_General, Tier_2_Engineering and Billing, and groups Support_Tier_1, Support_Tier_2 and Billing_Team, and every queue's <queueSobject><sobjectType> is Case (Q30)."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S04-2
+    ac_id: AC-023.61
+    req_id: REQ-023
+    persona: "Build reviewer confirming step M2-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W02 (1 of 3):"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M2-S04`"
+    steps:
+      - step: "Given Q88 fixes the per-queue email posture"
+        expected: "the precondition holds as stated"
+      - step: "When the three queue files are read"
+        expected: "the action or read completes"
+    expected_final: "Tier_1_General carries no <email> (work is pushed by Omni-Channel, not emailed), Billing carries the billing@ queue address, and Tier_2_Engineering carries the Tier 2 shared mailbox."
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S04/ (or the milestone's compiled report)"
+    pass_rule: "Tier_1_General carries no <email> (work is pushed by Omni-Channel, not emailed), Billing carries the billing@ queue address, and Tier_2_Engineering carries the Tier 2 shared mailbox."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S04-3
+    ac_id: AC-024.61
+    req_id: REQ-024
+    persona: "Build reviewer confirming step M2-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W02 (2 of 3):"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M2-S04`"
+    steps:
+      - step: "Given Q29 says membership changes monthly and must not require a deploy"
+        expected: "the precondition holds as stated"
+      - step: "When the three group files are read"
+        expected: "the action or read completes"
+    expected_final: "no <users> element names an individual username in any queue or group file — membership is expressed by public group and role only — and a support manager confirms the three public-group memberships match the current rosters."
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S04/ (or the milestone's compiled report)"
+    pass_rule: "no <users> element names an individual username in any queue or group file — membership is expressed by public group and role only — and a support manager confirms the three public-group memberships match the current rosters."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S04-4
+    ac_id: AC-025.61
+    req_id: REQ-025
+    persona: "Build reviewer confirming step M2-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W02 (3 of 3) and S4:"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M2-S04`"
+    steps:
+      - step: "Given skills/admin/data-skew-and-sharing-performance SKILL.md:88 defines ownership data skew as a single user or queue owning more than 10,000 records of one object, and this build routes roughly 480 cases a day to Tier_1_General as the catch-all"
+        expected: "the precondition holds as stated"
+      - step: "When queue-retirement-runbook.md is read"
+        expected: "the action or read completes"
+    expected_final: "it records that 10,000-record threshold, names who monitors the open-case count owned by each queue, and states the split-into-buckets remedy that skill documents."
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S04/ (or the milestone's compiled report)"
+    pass_rule: "it records that 10,000-record threshold, names who monitors the open-case count owned by each queue, and states the split-into-buckets remedy that skill documents."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S05-1
+    ac_id: AC-029.61
+    req_id: REQ-029
+    persona: "Build reviewer confirming step M2-S05's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "B01 + B04. B04 (v3): rewritten so it is tickable at the M2 gate from artefacts on disk rather than deferred to M5, which had stopped this step reaching 'documented' and deadlocked M2; the live-user denial check lives in M5's acceptance_tests, where a sandbox exists. B01 (v4): the org-wide default is read from the object file, not from a settings file that cannot carry it."
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M2-S05`"
+    steps:
+      - step: "Given assumption A1 reads deferred Q13 as a record-level restriction"
+        expected: "the precondition holds as stated"
+      - step: "When artefacts/M1-S01/objects/Case/Case.object-meta.xml and artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml are read together"
+        expected: "the action or read completes"
+    expected_final: "Case.object-meta.xml carries <sharingModel>Private</sharingModel>, the only criteria-based rule shares Support-record-type cases to the Support_Tier_2 public group, no rule names the Billing record type or the Billing_Team group as a target, and case-visibility-model.md states in one sentence why a Tier 1 agent therefore cannot open a Billing case and names Case.object-meta.xml as the file the default lives on."
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S05/ (or the milestone's compiled report)"
+    pass_rule: "Case.object-meta.xml carries <sharingModel>Private</sharingModel>, the only criteria-based rule shares Support-record-type cases to the Support_Tier_2 public group, no rule names the Billing record type or the Billing_Team group as a target, and case-visibility-model.md states in one sentence why a Tier 1 agent therefore cannot open a Billing case and names Case.object-meta.xml as the file the default lives on."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S01-1
+    ac_id: AC-030.61
+    req_id: REQ-030
+    persona: "Build reviewer confirming step M3-S01's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W01:"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S01`"
+    steps:
+      - step: "Given the checker fails the step on a REVIEW finding ONLY because --strict is declared on its command"
+        expected: "the precondition holds as stated"
+      - step: "When the two validationRule files are read"
+        expected: "the action or read completes"
+    expected_final: "each errorConditionFormula opens with NOT($Permission.Bypass_Case_Intake_Validation) (Q56), tests emptiness with ISBLANK(TEXT(<picklist>)) rather than ISPICKVAL(<picklist>, \"\") alone, names only component fields and never a compound address field (Q59), and carries a final error message a customer-facing agent can act on rather than a placeholder (Q93)."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S01/ (or the milestone's compiled report)"
+    pass_rule: "each errorConditionFormula opens with NOT($Permission.Bypass_Case_Intake_Validation) (Q56), tests emptiness with ISBLANK(TEXT(<picklist>)) rather than ISPICKVAL(<picklist>, \"\") alone, names only component fields and never a compound address field (Q59), and carries a final error message a customer-facing agent can act on rather than a placeholder (Q93)."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S02-1
+    ac_id: AC-032.61
+    req_id: REQ-032
+    persona: "Build reviewer confirming step M3-S02's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "B06: rewritten so it is tickable at the M3 gate from the artefacts on disk. The v3 version deferred its tick to the M5 gate, which stopped this step reaching 'tested' and therefore 'documented', deadlocking milestone M3 under standards/build-orchestration.md § 3. The live loop test moved to M5's acceptance_tests, where the proof sandbox exists. Here:"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S02`"
+    steps:
+      - step: "Given the acknowledgement is sent from support@ — the same address Email-to-Case listens on (Q22) —"
+        expected: "the precondition holds as stated"
+      - step: "When sender-identity-note.md and the two .email bodies are read"
+        expected: "the action or read completes"
+    expected_final: "the note names the org-wide address each template sends from (support@ for Case_Acknowledgement, billing@ for finance replies), states the self-addressed-loop risk that arises because support@ is both sender and inbound routing address, and names the control (the auto-response rule fires once per case and the routing address rejects its own sender), and neither body hardcodes a recipient address."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S02/ (or the milestone's compiled report)"
+    pass_rule: "the note names the org-wide address each template sends from (support@ for Case_Acknowledgement, billing@ for finance replies), states the self-addressed-loop risk that arises because support@ is both sender and inbound routing address, and names the control (the auto-response rule fires once per case and the routing address rejects its own sender), and neither body hardcodes a recipient address."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S03-1
+    ac_id: AC-034.61
+    req_id: REQ-034
+    persona: "Build reviewer confirming step M3-S03's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S03`"
+    steps:
+      - step: "Given check_email_to_case_configuration.py is not declared here (see the step note)"
+        expected: "the precondition holds as stated"
+      - step: "When settings/Case.settings-meta.xml is read"
+        expected: "the action or read completes"
+    expected_final: "both routing addresses carry their own caseOrigin (Email-Support, Email-Billing) and no caseOwner, unauthorizedSenderAction is Bounce, overEmailLimitAction is Requeue, saveEmailHeaders is true on both, and the webToCase block carries exactly its three documented children — enableWebToCase true and a caseOrigin that is a live CaseOrigin value from M1-S01, with defaultResponseTemplate deliberately unset because the guide scopes it to Self-Service portal responses rather than to the customer acknowledgement, which is M3-S04's auto-response rule."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S03/ (or the milestone's compiled report)"
+    pass_rule: "both routing addresses carry their own caseOrigin (Email-Support, Email-Billing) and no caseOwner, unauthorizedSenderAction is Bounce, overEmailLimitAction is Requeue, saveEmailHeaders is true on both, and the webToCase block carries exactly its three documented children — enableWebToCase true and a caseOrigin that is a live CaseOrigin value from M1-S01, with defaultResponseTemplate deliberately unset because the guide scopes it to Self-Service portal responses rather than to the customer acknowledgement, which is M3-S04's auto-response rule."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S03-2
+    ac_id: AC-035.61
+    req_id: REQ-035
+    persona: "Build reviewer confirming step M3-S03's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S03`"
+    steps:
+      - step: "Given Q66's answer itself says to confirm how the website form posts"
+        expected: "the precondition holds as stated"
+      - step: "When web-to-case-form-contract.md is read"
+        expected: "the action or read completes"
+    expected_final: "it states whether the form posts directly to Web-to-Case or through middleware, the Origin value each path stamps, and — per case-management-setup § 4 — that the HTML form itself is not metadata and has no metadata type, so it is authored and hosted outside this build."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S03/ (or the milestone's compiled report)"
+    pass_rule: "it states whether the form posts directly to Web-to-Case or through middleware, the Origin value each path stamps, and — per case-management-setup § 4 — that the HTML form itself is not metadata and has no metadata type, so it is authored and hosted outside this build."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S04-1
+    ac_id: AC-036.61
+    req_id: REQ-036
+    persona: "Build reviewer confirming step M3-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W02:"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S04`"
+    steps:
+      - step: "Given the checker above now proves that exactly one rule is active, this test carries what the exit code cannot see. Given Q25 and Q26"
+        expected: "the precondition holds as stated"
+      - step: "When Case.assignmentRules-meta.xml is read"
+        expected: "the action or read completes"
+    expected_final: "the active rule's entries route on Case.Origin (Origin only this phase — Premier gets a faster SLA in M4-S02, not a different owner; G3 decision 3, decisions.md D-M3S04-02) only (both present at save); the last entry is a catch-all with no criteriaItems and no booleanFilter, assigned to the Tier_1_General queue built in M2-S04; and every assignedTo names a queue developer name that exists under artefacts/M2-S04/queues/."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S04/ (or the milestone's compiled report)"
+    pass_rule: "the active rule's entries route on Case.Origin (Origin only this phase — Premier gets a faster SLA in M4-S02, not a different owner; G3 decision 3, decisions.md D-M3S04-02) only (both present at save); the last entry is a catch-all with no criteriaItems and no booleanFilter, assigned to the Tier_1_General queue built in M2-S04; and every assignedTo names a queue developer name that exists under artefacts/M2-S04/queues/."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S04-2
+    ac_id: AC-037.61
+    req_id: REQ-037
+    persona: "Build reviewer confirming step M3-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S04`"
+    steps:
+      - step: "Given Q28 and Q63"
+        expected: "the precondition holds as stated"
+      - step: "When Case.autoResponseRules-meta.xml is read"
+        expected: "the action or read completes"
+    expected_final: "exactly one acknowledgement entry can match any given case — no second entry and no parallel Flow email alert on the same event — and its template names the Classic template M3-S02 built, folder-qualified."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S04/ (or the milestone's compiled report)"
+    pass_rule: "exactly one acknowledgement entry can match any given case — no second entry and no parallel Flow email alert on the same event — and its template names the Classic template M3-S02 built, folder-qualified."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S05-1
+    ac_id: AC-022.62
+    req_id: REQ-022
+    persona: "Build reviewer confirming step M3-S05's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S05`"
+    steps:
+      - step: "Given Q32-Q35 were deferred at G1 and this step is blocked on them (assumptions A4-A7)"
+        expected: "the precondition holds as stated"
+      - step: "When the M3 gate is reached"
+        expected: "the action or read completes"
+    expected_final: "each of the four carries a named owner and a due date on the record, and the gate is signed knowing M3-S05 ships nothing in this phase and Tier 1 works the Tier 1 General queue list view (M5-S01) in the interim."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S05/ (or the milestone's compiled report)"
+    pass_rule: "each of the four carries a named owner and a due date on the record, and the gate is signed knowing M3-S05 ships nothing in this phase and Tier 1 works the Tier 1 General queue list view (M5-S01) in the interim."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S05-2
+    ac_id: AC-022.63
+    req_id: REQ-022
+    persona: "Build reviewer confirming step M3-S05's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3-S05`"
+    steps:
+      - step: "Given this step is unblocked in a later phase"
+        expected: "the precondition holds as stated"
+      - step: "When the five metadata artefacts are read together"
+        expected: "the action or read completes"
+    expected_final: "Case_Channel names the routing configuration Tier_1_Push, Tier_1_Push names the Tier 1 General queue developer name built in M2-S04, Available_For_Cases names Case_Channel under <channels>, and Tier_1_Presence names Available_For_Cases in both presenceStatusOnDecline and presenceStatusOnPushTimeout — the queue-name half being the assertion no checker in the library can make at any scope."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S05/ (or the milestone's compiled report)"
+    pass_rule: "Case_Channel names the routing configuration Tier_1_Push, Tier_1_Push names the Tier 1 General queue developer name built in M2-S04, Available_For_Cases names Case_Channel under <channels>, and Tier_1_Presence names Available_For_Cases in both presenceStatusOnDecline and presenceStatusOnPushTimeout — the queue-name half being the assertion no checker in the library can make at any scope."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S01-1
+    ac_id: AC-038.61
+    req_id: REQ-038
+    persona: "Build reviewer confirming step M4-S01's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M4-S01`"
+    steps:
+      - step: "Given the step claims to have built the calendars"
+        expected: "the precondition holds as stated"
+      - step: "When artefacts/M4-S01/settings/BusinessHours.settings-meta.xml is read"
+        expected: "the action or read completes"
+    expected_final: "all three are present and named: EMEA Support (Europe/London 08:00-18:00 Mon-Fri), US Support (America/New_York 08:00-20:00 Mon-Fri, the org default) and Severity 1 24x7."
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S01/ (or the milestone's compiled report)"
+    pass_rule: "all three are present and named: EMEA Support (Europe/London 08:00-18:00 Mon-Fri), US Support (America/New_York 08:00-20:00 Mon-Fri, the org default) and Severity 1 24x7."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S02-1
+    ac_id: AC-040.61
+    req_id: REQ-040
+    persona: "Build reviewer confirming step M4-S02's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M4-S02`"
+    steps:
+      - step: "Given assumption A27"
+        expected: "the precondition holds as stated"
+      - step: "When artefacts/M4-S02/ is listed"
+        expected: "the action or read completes"
+    expected_final: "it holds exactly two entitlementProcesses files (First_Response_Premier, First_Response_Standard) and exactly one milestoneTypes file (First Response), the Premier process carries minutesToComplete 240, and both processes name a <businessHours> that is a <name> in M4-S01's BusinessHours settings file."
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S02/ (or the milestone's compiled report)"
+    pass_rule: "it holds exactly two entitlementProcesses files (First_Response_Premier, First_Response_Standard) and exactly one milestoneTypes file (First Response), the Premier process carries minutesToComplete 240, and both processes name a <businessHours> that is a <name> in M4-S01's BusinessHours settings file."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S03-1
+    ac_id: AC-045.61
+    req_id: REQ-045
+    persona: "Build reviewer confirming step M4-S03's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M4-S03`"
+    steps:
+      - step: "Given the flow claims to stamp three fields"
+        expected: "the precondition holds as stated"
+      - step: "When the flow XML is read"
+        expected: "the action or read completes"
+    expected_final: "it sets Case.EntitlementId, Case.BusinessHoursId and Case.Priority, each guarded so it writes only into a null value (assumption A2), and the no-matching-account path is the documented fallback rather than a fault. The entitlement-to-process cross-reference is NOT asserted here: check_entitlements_and_milestones.py is carried by M4-S02 at build scope. S3: the flow's <description> carries the 'Owner:' marker and at least 60 characters, its <interviewLabel> is present, its <apiVersion> is 59 or higher and its <runInMode> is DefaultMode — all four are policy requirements check_flow_governance.py enforces, and the reviewer confirms them here as well because the checker reports them by file rather than by field."
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S03/ (or the milestone's compiled report)"
+    pass_rule: "it sets Case.EntitlementId, Case.BusinessHoursId and Case.Priority, each guarded so it writes only into a null value (assumption A2), and the no-matching-account path is the documented fallback rather than a fault. The entitlement-to-process cross-reference is NOT asserted here: check_entitlements_and_milestones.py is carried by M4-S02 at build scope. S3: the flow's <description> carries the 'Owner:' marker and at least 60 characters, its <interviewLabel> is present, its <apiVersion> is 59 or higher and its <runInMode> is DefaultMode — all four are policy requirements check_flow_governance.py enforces, and the reviewer confirms them here as well because the checker reports them by file rather than by field."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-1
+    ac_id: AC-057.61
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M4-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M4-S04`"
+    steps:
+      - step: "Given the rule ships inactive (Q47)"
+        expected: "the precondition holds as stated"
+      - step: "When the sandbox proof is signed off"
+        expected: "the action or read completes"
+    expected_final: "a named owner activates it inside an agreed comparison window and records the first hour's escalation count. The checker's W1 finding ('no rule in this file is active') is the expected state here, not a defect."
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/ (or the milestone's compiled report)"
+    pass_rule: "a named owner activates it inside an agreed comparison window and records the first hour's escalation count. The checker's W1 finding ('no rule in this file is active') is the expected state here, not a defect."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-2
+    ac_id: AC-057.62
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M4-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M4-S04`"
+    steps:
+      - step: "Given Q46 measures 8 business hours"
+        expected: "the precondition holds as stated"
+      - step: "When Case.escalationRules-meta.xml is read"
+        expected: "the action or read completes"
+    expected_final: "the Tier 2 entry's minutesToEscalation is 480 (8 x 60), not 8; its businessHoursSource is Case with no <businessHours> child; it reassigns to the queue developer name Tier_2_Engineering built in M2-S04; and the Severity 1 entry's businessHoursSource is None. check_business_hours_and_holidays.py is not declared on this step — at artefacts/M4-S04 it prints 'No BusinessHours settings file found' and exits 0 vacuously, because the calendars are M4-S01's artefacts; M4's milestone test runs it at --manifest-dir artefacts, which is where the 24/7 calendar assertion lives."
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/ (or the milestone's compiled report)"
+    pass_rule: "the Tier 2 entry's minutesToEscalation is 480 (8 x 60), not 8; its businessHoursSource is Case with no <businessHours> child; it reassigns to the queue developer name Tier_2_Engineering built in M2-S04; and the Severity 1 entry's businessHoursSource is None. check_business_hours_and_holidays.py is not declared on this step — at artefacts/M4-S04 it prints 'No BusinessHours settings file found' and exits 0 vacuously, because the calendars are M4-S01's artefacts; M4's milestone test runs it at --manifest-dir artefacts, which is where the 24/7 calendar assertion lives."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S01-1
+    ac_id: AC-048.61
+    req_id: REQ-048
+    persona: "Build reviewer confirming step M5-S01's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S01`"
+    steps:
+      - step: "Given the three views are Queue-scoped"
+        expected: "the precondition holds as stated"
+      - step: "When each listView file is read"
+        expected: "the action or read completes"
+    expected_final: "its <queue> names a queue developer name that exists under artefacts/M2-S04/queues/, and the Tier 1 General view is present as Tier 1's interim pull surface while M3-S05 is blocked."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S01/ (or the milestone's compiled report)"
+    pass_rule: "its <queue> names a queue developer name that exists under artefacts/M2-S04/queues/, and the Tier 1 General view is present as Tier 1's interim pull surface while M3-S05 is blocked."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S05-1
+    ac_id: AC-057.63
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M4-S05's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M4-S05`"
+    steps:
+      - step: "Given no offline Apex compiler exists in the sf CLI"
+        expected: "the precondition holds as stated"
+      - step: "When the step is accepted"
+        expected: "the action or read completes"
+    expected_final: "the reviewer confirms every non-platform identifier in the emitted code is quoted from skills/apex/entitlement-apex-hooks/references/examples.md or from the cited template, and that CaseMilestoneServiceTest asserts CompletionDate is non-null after the trigger runs."
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S05/ (or the milestone's compiled report)"
+    pass_rule: "the reviewer confirms every non-platform identifier in the emitted code is quoted from skills/apex/entitlement-apex-hooks/references/examples.md or from the cited template, and that CaseMilestoneServiceTest asserts CompletionDate is non-null after the trigger runs."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S02-1
+    ac_id: AC-058.61
+    req_id: REQ-058
+    persona: "Build reviewer confirming step M5-S02's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S02`"
+    steps:
+      - step: "Given B08"
+        expected: "the precondition holds as stated"
+      - step: "When the M5 gate is reached"
+        expected: "the action or read completes"
+    expected_final: "team_size, concurrent_workstreams, release_cadence and data_sensitivity each have a named owner and a due date, and the gate is signed knowing M5-S02 ships nothing until they are answered — sandbox-strategy-designer refuses the run at its own first step without them."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S02/ (or the milestone's compiled report)"
+    pass_rule: "team_size, concurrent_workstreams, release_cadence and data_sensitivity each have a named owner and a due date, and the gate is signed knowing M5-S02 ships nothing until they are answered — sandbox-strategy-designer refuses the run at its own first step without them."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S02-2
+    ac_id: AC-058.62
+    req_id: REQ-058
+    persona: "Build reviewer confirming step M5-S02's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S02`"
+    steps:
+      - step: "Given this step is unblocked in a later phase"
+        expected: "the precondition holds as stated"
+      - step: "When sandbox-proof-plan.md is read"
+        expected: "the action or read completes"
+    expected_final: "its Post-Refresh Tasks section names both Email-to-Case routing addresses and the website form endpoint as things that must be re-pointed before any test runs (Q74), and states that no refresh is booked inside the UAT window (assumption A21)."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S02/ (or the milestone's compiled report)"
+    pass_rule: "its Post-Refresh Tasks section names both Email-to-Case routing addresses and the website form endpoint as things that must be re-pointed before any test runs (Q74), and states that no refresh is booked inside the UAT window (assumption A21)."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S03-1
+    ac_id: AC-053.61
+    req_id: REQ-053
+    persona: "Build reviewer confirming step M5-S03's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S03`"
+    steps:
+      - step: "Given Q77 and Q84"
+        expected: "the precondition holds as stated"
+      - step: "When story-backlog.md is read"
+        expected: "the action or read completes"
+    expected_final: "each of the three intake channels — email, web and manual UI — has its own story, every story names a tester persona holding the real profile plus permission set group (PSG_Tier1_Prod, PSG_Tier2_Prod, PSG_Billing_Prod) rather than the admin profile, and every story carries at least three Given/When/Then criteria including a permission-denial path (Q80)."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S03/ (or the milestone's compiled report)"
+    pass_rule: "each of the three intake channels — email, web and manual UI — has its own story, every story names a tester persona holding the real profile plus permission set group (PSG_Tier1_Prod, PSG_Tier2_Prod, PSG_Billing_Prod) rather than the admin profile, and every story carries at least three Given/When/Then criteria including a permission-denial path (Q80)."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S04-1
+    ac_id: AC-057.64
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M5-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S04`"
+    steps:
+      - step: "Given 25 clarifications were deferred at G1"
+        expected: "the precondition holds as stated"
+      - step: "When the workbook's assumptions section is read"
+        expected: "the action or read completes"
+    expected_final: "all 25 appear as named rows with an owner who can close each one, and each names the steps it constrains — compiled from assumptions[].steps[] rather than from step-note prose, which is why every step recording a deferral now also carries a structured \"assumptions\" key in its inputs{}."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S04/ (or the milestone's compiled report)"
+    pass_rule: "all 25 appear as named rows with an owner who can close each one, and each names the steps it constrains — compiled from assumptions[].steps[] rather than from step-note prose, which is why every step recording a deferral now also carries a structured \"assumptions\" key in its inputs{}."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S04-2
+    ac_id: AC-057.65
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M5-S04's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S04`"
+    steps:
+      - step: "Given two steps ship nothing in this phase"
+        expected: "the precondition holds as stated"
+      - step: "When the compiled documents are read"
+        expected: "the action or read completes"
+    expected_final: "M3-S05 and M5-S02 each appear with their blocked reason verbatim — 'deferred: Q32, Q33, Q34, Q35' and 'borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity' — and the UAT pack carries no case that depends on either."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S04/ (or the milestone's compiled report)"
+    pass_rule: "M3-S05 and M5-S02 each appear with their blocked reason verbatim — 'deferred: Q32, Q33, Q34, Q35' and 'borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity' — and the UAT pack carries no case that depends on either."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S05-1
+    ac_id: AC-057.66
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M5-S05's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S05`"
+    steps:
+      - step: "Given (not stated in this plan's acceptance-test wording)"
+        expected: "the precondition holds as stated"
+      - step: "When (not stated in this plan's acceptance-test wording)"
+        expected: "the action or read completes"
+    expected_final: "W12 (1 of 3): a release owner confirms the deploy-order note contains no deploy command, only a validate-only command they may choose to run themselves."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S05/ (or the milestone's compiled report)"
+    pass_rule: "W12 (1 of 3): a release owner confirms the deploy-order note contains no deploy command, only a validate-only command they may choose to run themselves."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S05-2
+    ac_id: AC-057.67
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M5-S05's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W12 (2 of 3):"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S05`"
+    steps:
+      - step: "Given two steps ship nothing in this phase"
+        expected: "the precondition holds as stated"
+      - step: "When deploy-order.md and package.xml are read"
+        expected: "the action or read completes"
+    expected_final: "M3-S05 and M5-S02 are listed as excluded with their blocked reasons verbatim rather than silently absent, and no Omni-Channel or sandbox component appears as a manifest member."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S05/ (or the milestone's compiled report)"
+    pass_rule: "M3-S05 and M5-S02 are listed as excluded with their blocked reasons verbatim rather than silently absent, and no Omni-Channel or sandbox component appears as a manifest member."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M5-S05-3
+    ac_id: AC-057.68
+    req_id: REQ-057
+    persona: "Build reviewer confirming step M5-S05's own manual acceptance test"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W12 (3 of 3):"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-S05`"
+    steps:
+      - step: "Given the build-level manifest aggregates every step's members"
+        expected: "the precondition holds as stated"
+      - step: "When package.xml is read"
+        expected: "the action or read completes"
+    expected_final: "the order in deploy-order.md follows admin/case-management-setup/references/metadata-examples.md § 5 — StandardValueSet before the business processes and record types, queues and groups before the assignment and escalation rules that name them, Settings named explicitly as Case and Flow because feature settings do not accept the wildcard — and ApexClass and ApexTrigger members from M4-S05 are present here, because that step declares no manifest of its own (B09)."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-S05/ (or the milestone's compiled report)"
+    pass_rule: "the order in deploy-order.md follows admin/case-management-setup/references/metadata-examples.md § 5 — StandardValueSet before the business processes and record types, queues and groups before the assignment and escalation rules that name them, Settings named explicitly as Case and Flow because feature settings do not accept the wildcard — and ApexClass and ApexTrigger members from M4-S05 are present here, because that step declares no manifest of its own (B09)."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-GATE-M1-1
+    ac_id: AC-001.61
+    req_id: REQ-001
+    persona: "Milestone gate reviewer for M1"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M1`"
+    steps:
+      - step: "Given assumption A26 fixed the record-type count at two"
+        expected: "the precondition holds as stated"
+      - step: "When record-type-decision.md is read"
+        expected: "the action or read completes"
+    expected_final: "it states that the count was decided in the plan (not by the builder), names D5's criteria-based sharing rule on RecordTypeId as what settled Q1's conditional, and shows the Status and Reason value sets for each of the two processes."
+    evidence:
+      - type: artefact
+        of: "artefacts/M1/ (or the milestone's compiled report)"
+    pass_rule: "it states that the count was decided in the plan (not by the builder), names D5's criteria-based sharing rule on RecordTypeId as what settled Q1's conditional, and shows the Status and Reason value sets for each of the two processes."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-GATE-M2-1
+    ac_id: AC-021.61
+    req_id: REQ-021
+    persona: "Milestone gate reviewer for M2"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M2`"
+    steps:
+      - step: "Given (not stated in this plan's acceptance-test wording)"
+        expected: "the precondition holds as stated"
+      - step: "When (not stated in this plan's acceptance-test wording)"
+        expected: "the action or read completes"
+    expected_final: "The support manager and the admin lead jointly confirm that no named user is hard-coded in any queue or group and that the Billing visibility reading taken from deferred Q13 (assumption A1) is the one they want."
+    evidence:
+      - type: artefact
+        of: "artefacts/M2/ (or the milestone's compiled report)"
+    pass_rule: "The support manager and the admin lead jointly confirm that no named user is hard-coded in any queue or group and that the Billing visibility reading taken from deferred Q13 (assumption A1) is the one they want."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-GATE-M3-1
+    ac_id: AC-022.64
+    req_id: REQ-022
+    persona: "Milestone gate reviewer for M3"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M3`"
+    steps:
+      - step: "Given M3-S05 is blocked on deferred Q32-Q35"
+        expected: "the precondition holds as stated"
+      - step: "When the milestone gate is reached"
+        expected: "the action or read completes"
+    expected_final: "the support manager acknowledges that no Omni-Channel push is built in this phase, that Tier 1 works the Tier 1 General queue list view (M5-S01) in the interim, and that Q32-Q35 have a named owner and a due date."
+    evidence:
+      - type: artefact
+        of: "artefacts/M3/ (or the milestone's compiled report)"
+    pass_rule: "the support manager acknowledges that no Omni-Channel push is built in this phase, that Tier 1 works the Tier 1 General queue list view (M5-S01) in the interim, and that Q32-Q35 have a named owner and a due date."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-GATE-M4-1
+    ac_id: AC-043.61
+    req_id: REQ-043
+    persona: "Milestone gate reviewer for M4"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: false
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "N/A"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M4`"
+    steps:
+      - step: "Given Q27 flagged two by-design post-save OwnerId writers (Omni-Channel and the escalation rule)"
+        expected: "the precondition holds as stated"
+      - step: "When owner-writer-map.md is read alongside the escalation runbook"
+        expected: "the action or read completes"
+    expected_final: "both handoffs are described and neither contradicts the assignment rule."
+    evidence:
+      - type: artefact
+        of: "artefacts/M4/ (or the milestone's compiled report)"
+    pass_rule: "both handoffs are described and neither contradicts the assignment rule."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-GATE-M5-1
+    ac_id: AC-022.65
+    req_id: REQ-022
+    persona: "Milestone gate reviewer for M5"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "W03 (v4 verification): reworded so the tick does not rest on an artefact this phase does not produce. M5-S02 is blocked on four sandbox-strategy inputs, so sandbox-proof-plan.md is not written and there are no signed proof results to attach."
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-W03`"
+    steps:
+      - step: "Given the requirement's 'we must be able to prove it works in a sandbox before customers see it'"
+        expected: "the precondition holds as stated"
+      - step: "When the M5 gate is reached"
+        expected: "the action or read completes"
+    expected_final: "the release owner records that the sandbox proof plan is OUTSTANDING because M5-S02 is blocked, names the owner and due date for team_size, concurrent_workstreams, release_cadence and data_sensitivity, and every one of the 25 deferred clarifications has a named owner and a due date. standards/build-orchestration.md section 3 allows the gate over a step blocked with a recorded reason; what it does not allow is a tick against a document nobody wrote."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-W03/ (or the milestone's compiled report)"
+    pass_rule: "the release owner records that the sandbox proof plan is OUTSTANDING because M5-S02 is blocked, names the owner and due date for team_size, concurrent_workstreams, release_cadence and data_sensitivity, and every one of the 25 deferred clarifications has a named owner and a due date. standards/build-orchestration.md section 3 allows the gate over a step blocked with a recorded reason; what it does not allow is a tick against a document nobody wrote."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-GATE-M5-2
+    ac_id: AC-029.62
+    req_id: REQ-029
+    persona: "Milestone gate reviewer for M5"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "B04 + W03. B04 (v3): moved here from M2-S05, where its tick was deferred to this gate and deadlocked milestone M2. W03 (v4): it no longer names M5-S02's proof sandbox, which does not exist while that step is blocked."
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-B04`"
+    steps:
+      - step: "Given a Billing case owned by the Billing queue in the sandbox the release owner stands up for UAT"
+        expected: "the precondition holds as stated"
+      - step: "When a Tier 1 agent opens its record URL"
+        expected: "the action or read completes"
+    expected_final: "access is denied - confirmed by the admin lead against a real user, not inferred from the sharing metadata. If no such sandbox exists when the gate is reached, the gate is signed recording this check as outstanding rather than ticked; the metadata half of the assertion is carried by M2-S05's build-scoped check_sharing_model.py test and its manual test, both of which pass on artefacts alone."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-B04/ (or the milestone's compiled report)"
+    pass_rule: "access is denied - confirmed by the admin lead against a real user, not inferred from the sharing metadata. If no such sandbox exists when the gate is reached, the gate is signed recording this check as outstanding rather than ticked; the metadata half of the assertion is carried by M2-S05's build-scoped check_sharing_model.py test and its manual test, both of which pass on artefacts alone."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-GATE-M5-3
+    ac_id: AC-032.62
+    req_id: REQ-032
+    persona: "Milestone gate reviewer for M5"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact, not a live-org grant"
+    data_setup:
+      - "B06 + W03. B06 (v3): moved here from M3-S02, where its tick was deferred to this gate and deadlocked milestone M3. W03 (v4): it no longer names M5-S02's proof sandbox."
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, step `M5-B06`"
+    steps:
+      - step: "Given the acknowledgement is sent from support@, which is also a live inbound Email-to-Case routing address (Q22)"
+        expected: "the precondition holds as stated"
+      - step: "When the loop test runs in the sandbox the release owner stands up for UAT - a case created by email from an external address"
+        expected: "the action or read completes"
+    expected_final: "the acknowledgement observed - then no second case is created from the acknowledgement itself and no acknowledgement-to-itself loop appears in the email log. If no such sandbox exists when the gate is reached, the gate is signed recording this check as outstanding rather than ticked."
+    evidence:
+      - type: artefact
+        of: "artefacts/M5-B06/ (or the milestone's compiled report)"
+    pass_rule: "the acknowledgement observed - then no second case is created from the acknowledgement itself and no acknowledgement-to-itself loop appears in the email log. If no such sandbox exists when the gate is reached, the gate is signed recording this check as outstanding rather than ticked."
+    automation_candidate: none
+    automation_rationale: "This is a build-record/plan-gate check, not an in-org behaviour — the oracle is a document, ticked by a human at the milestone gate."
+    pass_fail: "Not Run"
+
+  - case_id: TC-NEG-REQ013-1
+    ac_id: AC-013.90
+    req_id: REQ-013
+    persona: "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact / documented behaviour, not a live-org grant"
+    data_setup:
+      - "an agent creates a case by hand and leaves "Assign using active assignment rule" unticked"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, derived from US-CASE-004 AC-2 (artefacts/M5-S03/story-backlog.md)"
+    steps:
+      - step: "Given an agent creates a case by hand and leaves "Assign using active assignment rule" unticked"
+        expected: "the precondition holds as stated"
+      - step: "When the agent saves the case"
+        expected: "the action or read completes"
+    expected_final: "the Case remains owned by the agent and no acknowledgement is sent"
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S02/layouts/ (showRunAssignmentRulesCheckbox)"
+    pass_rule: "the Case remains owned by the agent and no acknowledgement is sent"
+    automation_candidate: none
+    automation_rationale: "Derived negative case reproducing an already-documented deny/exclusion path; the oracle is the cited artefact or story-backlog criterion, not an in-transaction assertion."
+    pass_fail: "Not Run"
+    derived_from: "US-CASE-004 AC-2 (artefacts/M5-S03/story-backlog.md)"
+  - case_id: TC-NEG-REQ025-1
+    ac_id: AC-025.61
+    req_id: REQ-025
+    persona: "CRM admin lead (queue retirement owner, Q29/Q89)"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact / documented behaviour, not a live-org grant"
+    data_setup:
+      - "a queue is retired WITHOUT first reassigning its open Cases to the surviving queue (skipping the runbook's own remedy)"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, derived from workbook/99-other-configuration.md CWB-OTHER-012 (queue-retirement-runbook.md's own reassign-before-delete order)"
+    steps:
+      - step: "Given a queue is retired WITHOUT first reassigning its open Cases to the surviving queue (skipping the runbook's own remedy)"
+        expected: "the precondition holds as stated"
+      - step: "When the queue is deleted"
+        expected: "the action or read completes"
+    expected_final: "those Cases are left ownerless/orphaned — exactly the failure the runbook's reassign-before-delete retirement order exists to prevent"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S04/queue-retirement-runbook.md § 4 (retirement order)"
+    pass_rule: "those Cases are left ownerless/orphaned — exactly the failure the runbook's reassign-before-delete retirement order exists to prevent"
+    automation_candidate: none
+    automation_rationale: "Derived negative case reproducing an already-documented deny/exclusion path; the oracle is the cited artefact or story-backlog criterion, not an in-transaction assertion."
+    pass_fail: "Not Run"
+    derived_from: "workbook/99-other-configuration.md CWB-OTHER-012 (queue-retirement-runbook.md's own reassign-before-delete order)"
+  - case_id: TC-NEG-REQ038-1
+    ac_id: AC-038.61
+    req_id: REQ-038
+    persona: "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact / documented behaviour, not a live-org grant"
+    data_setup:
+      - "a case is created at 17:00 London time on a Friday on the calendar its account's region implies"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, derived from US-CASE-007 AC-3 (artefacts/M5-S03/story-backlog.md)"
+    steps:
+      - step: "Given a case is created at 17:00 London time on a Friday on the calendar its account's region implies"
+        expected: "the precondition holds as stated"
+      - step: "When the clock is read on Saturday and again Monday morning"
+        expected: "the action or read completes"
+    expected_final: "it has not ticked over the weekend and the remaining time is unchanged — business hours do not advance the clock outside the calendar's open hours"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S01/settings/BusinessHours.settings-meta.xml"
+    pass_rule: "it has not ticked over the weekend and the remaining time is unchanged — business hours do not advance the clock outside the calendar's open hours"
+    automation_candidate: none
+    automation_rationale: "Derived negative case reproducing an already-documented deny/exclusion path; the oracle is the cited artefact or story-backlog criterion, not an in-transaction assertion."
+    pass_fail: "Not Run"
+    derived_from: "US-CASE-007 AC-3 (artefacts/M5-S03/story-backlog.md)"
+  - case_id: TC-NEG-REQ040-1
+    ac_id: AC-040.90
+    req_id: REQ-040
+    persona: "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact / documented behaviour, not a live-org grant"
+    data_setup:
+      - "an account holds no Premier entitlement (Support_Tier__c is Standard or blank)"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, derived from workbook/06-automation.md CWB-AUT-015/016 notes (the two entitlement processes)"
+    steps:
+      - step: "Given an account holds no Premier entitlement (Support_Tier__c is Standard or blank)"
+        expected: "the precondition holds as stated"
+      - step: "When a case is created against it"
+        expected: "the action or read completes"
+    expected_final: "the case is not tracked by First_Response_Premier — First_Response_Standard's 1-business-day target applies instead"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S02/entitlementProcesses/"
+    pass_rule: "the case is not tracked by First_Response_Premier — First_Response_Standard's 1-business-day target applies instead"
+    automation_candidate: none
+    automation_rationale: "Derived negative case reproducing an already-documented deny/exclusion path; the oracle is the cited artefact or story-backlog criterion, not an in-transaction assertion."
+    pass_fail: "Not Run"
+    derived_from: "workbook/06-automation.md CWB-AUT-015/016 notes (the two entitlement processes)"
+  - case_id: TC-NEG-REQ043-1
+    ac_id: AC-043.90
+    req_id: REQ-043
+    persona: "Tier 2 support engineer on the Acme Support Tier 2 profile holding PSG_Tier2_Prod"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact / documented behaviour, not a live-org grant"
+    data_setup:
+      - "a Support case was closed before the 8-business-hour window elapsed"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, derived from US-CASE-008 AC-3 (artefacts/M5-S03/story-backlog.md)"
+    steps:
+      - step: "Given a Support case was closed before the 8-business-hour window elapsed"
+        expected: "the precondition holds as stated"
+      - step: "When the escalation rule evaluates it"
+        expected: "the action or read completes"
+    expected_final: "no escalation or reassignment fires — closed cases are excluded by an explicit criterion, not by assumption"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml"
+    pass_rule: "no escalation or reassignment fires — closed cases are excluded by an explicit criterion, not by assumption"
+    automation_candidate: none
+    automation_rationale: "Derived negative case reproducing an already-documented deny/exclusion path; the oracle is the cited artefact or story-backlog criterion, not an in-transaction assertion."
+    pass_fail: "Not Run"
+    derived_from: "US-CASE-008 AC-3 (artefacts/M5-S03/story-backlog.md)"
+  - case_id: TC-NEG-REQ053-1
+    ac_id: AC-053.90
+    req_id: REQ-053
+    persona: "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod"
+    sandbox: "design-only build — no sandbox exists yet (Q75 deferred, M5-S02 blocked)"
+    negative_path: true
+    permission_setup:
+      - "N/A — this case checks a build artefact / documented behaviour, not a live-org grant"
+    data_setup:
+      - "a case's Origin is blank or unrecognised"
+    precondition: "Build directory `.sfskills/builds/case-onboarding/`, derived from workbook/05-validation-rules.md CWB-VR-002; US-CASE-001 AC-4 (artefacts/M5-S03/story-backlog.md)"
+    steps:
+      - step: "Given a case's Origin is blank or unrecognised"
+        expected: "the precondition holds as stated"
+      - step: "When the case is evaluated for channel-specific UAT proof (Q84)"
+        expected: "the action or read completes"
+    expected_final: "it cannot be attributed to any of the three defined intake channels and the validation rule blocks its save before it can be tested as a channel case"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S01/objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml"
+    pass_rule: "it cannot be attributed to any of the three defined intake channels and the validation rule blocks its save before it can be tested as a channel case"
+    automation_candidate: none
+    automation_rationale: "Derived negative case reproducing an already-documented deny/exclusion path; the oracle is the cited artefact or story-backlog criterion, not an in-transaction assertion."
+    pass_fail: "Not Run"
+    derived_from: "workbook/05-validation-rules.md CWB-VR-002; US-CASE-001 AC-4 (artefacts/M5-S03/story-backlog.md)"

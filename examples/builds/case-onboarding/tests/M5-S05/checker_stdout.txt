@@ -1,0 +1,11 @@
+{
+  "score": 95,
+  "findings": [
+    {
+      "severity": "WARN",
+      "location": "artefacts/M5-S05/package.xml",
+      "message": "manifest includes SharingRules; require explicit review and smoke tests"
+    }
+  ],
+  "summary": "Scanned 2 manifest or metadata file(s); 1 finding(s) detected."
+}

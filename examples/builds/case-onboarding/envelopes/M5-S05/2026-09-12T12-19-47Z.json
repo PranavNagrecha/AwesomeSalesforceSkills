@@ -1,0 +1,241 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T12-19-47Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-19-47Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-19-47Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S05",
+    "reason": "not supplied - the step was pending and appeared in `next --milestone M5`, so no Step 2 carve-out was needed",
+    "credentials_present": false
+  },
+  "summary": "Ran M5-S05 end to end and set it built. The step was the only entry `build_plan.py next --milestone M5` returned, at status pending with human_gate false, so no carve-out applied. Claimed it running, mapped the step's four bound clarification answers (Q47, Q58, Q68, Q74) and the sixteen upstream step manifests plus M4-S05's Apex files onto metadata-builder's Inputs, and executed that agent's Plan inline under the artefact-path constraint. `metadata-builder` IS available as a subagent type on this host; the caller's invocation explicitly directed an inline run, which is the Step 6 in-any-other-host form - the whole AGENT.md including its Mandatory Reads was read and its Plan executed here. It produced both declared outputs and nothing else: package.xml (29 types, 56 members, version 67.0) and deploy-order.md. The declared checker exits 0 with the one documented SharingRules WARN, the manifest parses, check-outputs is ok, and both envelopes validate. Nothing written outside artefacts/M5-S05/ and envelopes/M5-S05/; no gate approved, no org touched, no sf or mock_deploy.py command run, no acceptance test run, no file under skills/, agents/, standards/ or scripts/ edited.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM: the step was in `next`, both declared outputs exist, check-outputs exited 0, both envelopes validate and nothing landed outside artefacts/M5-S05/ - but metadata-builder's optional `api_version` input resolved from none of the three Step 5 sources (plan.json carries no plan-level api_version key), so the value 67.0 was taken from the milestone:M3 gate decision the owning agent reads itself, and the owning agent returned MEDIUM on its own rubric. Not HIGH on the defaulted-optional-input row; not LOW because no output is missing, empty or malformed and no file landed outside the step's artefact directory.",
+  "outcome": "completed",
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The step's six declared acceptance tests (one checker, one xml, one manifest, three manual) belong to step-tester. The checker and the XML parse were run here as the owning agent's build-time self-checks per metadata-builder Step 8, which is not the tester's record; the three manual tests are ticked at the M5 milestone gate by a human.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run /test-build-step on M5-S05."
+    },
+    {
+      "dimension": "org-validation",
+      "state": "not-run",
+      "reason": "This manifest is the first in the build to carry the Apex members (G4's F-43 note), and manifest-mode validation is the only check that reads a merged package.xml. This agent may not run mock_deploy.py or any sf command; the run is the operator's.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Operator: python3 scripts/mock_deploy.py .sfskills/builds/case-onboarding/plan.json --org-alias <alias> --mode manifest"
+    },
+    {
+      "dimension": "wave-10-report-pair",
+      "state": "not-run",
+      "reason": "docs/reports/build-step-runner/<run_id>.{md,json} was not written: the invocation constrains writes to the build directory. The build-scoped envelope pair under envelopes/M5-S05/ carries the same content.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-run without the build-dir-only write constraint if the repo-tracked pair is wanted."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's acceptance_tests[0] description predicted the checker's exact output before the artefact existed - score 95, one SharingRules WARN, 0 blocking, exit 0 - and the run matched it line for line. A test description that names the expected non-zero-severity finding is what stopped a correct artefact reading as a failure.",
+      "domain": "test-design",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S05].acceptance_tests[0]"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every fact the manifest needed was already written down somewhere in the build - the version decision in the milestone:M3 gate note, the Apex exception in the contract, the blocked reasons on the two blocked steps, the ordering hazards collated by M5-S04. This step was a join across existing records rather than a new decision, which is the shape the last step of a build should have.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding",
+        "count": 16
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The step-tester's always-on manifest check reads the step's OWN artefact directory in both directions, and this step's directory holds only package.xml and deploy-order.md while its 56 members' files live under sixteen sibling step directories. Read literally, every member is a member-without-a-file. The step's acceptance_tests[2] describes the whole-tree reading the check actually needs; nothing in agents/step-tester/AGENT.md Step 3 carves out the build-level manifest the way rule 1 carves out the apex-builder step.",
+      "domain": "test-harness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/step-tester/AGENT.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "This run claimed the step running after the owning agent's reads and writes rather than before them, which inverts build-step-runner Step 3's ordering. Nothing was lost - the step was pending, in next, and un-gated throughout, and the claim was written before the terminal transition - but a crash between the first write and the claim would have left artefacts on disk under a step still reading pending. Recorded rather than glossed.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S05].runs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "set-status ... running printed three unrelated WARNs about non-standard checker argument forms on M5-S02 and M5-S04 before doing its own work. They are the documented library backlog in standards/build-orchestration.md section 5 and not about this step, but they arrive on every plan write and are easy to read as this step's problem.",
+      "domain": "tooling",
+      "evidence": {
+        "source": "input",
+        "path": "scripts/build_plan.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "M5 now has one step left un-run (M5-S02, blocked) and one gate pending. The M5 milestone's manual acceptance lines on this step - W12 1 through 3 of 3 - cannot be ticked by any agent, and two of them assert properties of the two files this step just wrote, so the gate reader has to open both files rather than read a verdict.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json human_gates"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4's step record fields, agent eligibility and the status machine; section 5's Apex exception and the check-outputs precondition on built; section 8's plan-CLI-is-the-only-writer rule"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, Process Observations and the citation schema"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope pair, the atomic-write rule and redaction of echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum (none fired this run)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time prohibitions on org writes and on auto-chaining into the tester"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields of steps[] this agent reads and the ones it must leave alone"
+    },
+    {
+      "type": "standard",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the owning agent's Inputs table and Output Contract, and its Plan executed inline"
+    },
+    {
+      "type": "standard",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "the always-on manifest check whose two-directional reading this step's artefacts sit awkwardly against"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the step's one cited skill, read through the owning agent"
+    },
+    {
+      "type": "probe",
+      "id": "check_deployment_manifest",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "the declared checker, run verbatim from the build directory"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M5-S05 is built and its six declared acceptance tests have not been run by the agent that owns them."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once M5-S05 is tested, the manifest, the deploy order and the six org prerequisites need carrying into the workbook, decisions.md and traceability."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M5-S05 is the last buildable step in M5, so once it is documented the milestone can be verified and the M5 gate put to a human."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S05",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md returns a non-zero count; the agent's Inputs take build_dir and step_id and its Output Contract writes under artefacts/<step-id>/. No relocation was needed.",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-16-22Z.json",
+    "owning_envelope_validation": "OK .sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-16-22Z.json",
+    "artefacts": [
+      {
+        "path": "artefacts/M5-S05/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S05/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "relocations": [],
+    "files_outside_artefact_dir": [],
+    "input_map": {
+      "build_dir": "supplied by the caller",
+      "step_id": "supplied by the caller",
+      "api_version": "67.0 - resolved from none of the three Step 5 sources; plan.json has no plan-level api_version key. Taken from human_gates[milestone:M3] decision 6, which the owning agent reads itself. Recorded as a defaulted optional input."
+    },
+    "carve_out_applied": null,
+    "next_output_quoted": "[{\"id\": \"M5-S05\", ...}] - M5-S05 was the only runnable step returned by `python3 scripts/build_plan.py next --milestone M5 .sfskills/builds/case-onboarding/plan.json` (exit 0)",
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M5-S05",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "score": 95,
+        "stdout_summary": "1 finding(s) detected (0 blocking); WARN artefacts/M5-S05/package.xml: manifest includes SharingRules; require explicit review and smoke tests",
+        "note": "Run by the owning agent as its Step 8 self-check, from the build directory so the skills symlink and artefacts/ both resolve as written. This is not the tester's record of acceptance_tests[0]."
+      }
+    ],
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S05 running --started 2026-09-12T12:16:22Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S05 built --run-agent metadata-builder --envelope envelopes/M5-S05/2026-09-12T12-16-22Z.json --result \"build-level package.xml: 29 types, 56 members, version 67.0; deploy-order.md written; checker exit 0 (score 95, SharingRules WARN as documented); check-outputs ok\" --started 2026-09-12T12:16:22Z"
+    ],
+    "prohibitions_observed": [
+      "no org contacted; no sf command run",
+      "no mock_deploy.py invocation",
+      "no human gate approved or requested",
+      "no file written outside .sfskills/builds/case-onboarding/artefacts/M5-S05/ and .../envelopes/M5-S05/",
+      "no edit to skills/, agents/, standards/ or scripts/",
+      "plan.json touched only through scripts/build_plan.py",
+      "the step's acceptance tests were not run",
+      "no other agent invoked"
+    ],
+    "invocation_form": "inline. The caller directed 'Follow agents/build-step-runner/AGENT.md and agents/metadata-builder/AGENT.md (run inline)'. A metadata-builder subagent type does exist on this host, so the Agent-tool form of Step 6 was available and was not used; the substitute is Step 6's other branch - read agents/metadata-builder/AGENT.md end to end, including its Mandatory Reads, and execute its Plan here. The three clauses Step 6 requires were honoured as constraints on this run rather than as text handed to a subagent: write only under artefacts/M5-S05/, return the schema envelope (stored at envelopes/M5-S05/2026-09-12T12-16-22Z.json), and do not deploy or invoke another agent."
+  }
+}

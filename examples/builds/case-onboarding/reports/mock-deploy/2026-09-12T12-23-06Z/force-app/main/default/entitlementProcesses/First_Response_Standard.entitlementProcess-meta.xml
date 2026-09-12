@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntitlementProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <description>Standard tier first response: 720 business minutes (one full US Support open day, 08:00-20:00) on the US Support calendar. The 720 is DERIVED, not answered - see deploy-order.md section 3.</description>
+    <SObjectType>Case</SObjectType>
+    <businessHours>US Support</businessHours>
+    <entryStartDateField>SlaStartDate</entryStartDateField>
+    <exitCriteriaFilterItems>
+        <field>Case.Status</field>
+        <operation>equals</operation>
+        <value>Closed</value>
+    </exitCriteriaFilterItems>
+    <name>First_Response_Standard</name>
+    <milestones>
+        <milestoneName>First Response</milestoneName>
+        <minutesToComplete>720</minutesToComplete>
+        <businessHours>US Support</businessHours>
+        <useCriteriaStartTime>false</useCriteriaStartTime>
+    </milestones>
+</EntitlementProcess>

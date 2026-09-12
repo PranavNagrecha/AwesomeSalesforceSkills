@@ -1,0 +1,6 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 1 report/dashboard file(s); 0 finding(s) detected."
+}
+exit 0

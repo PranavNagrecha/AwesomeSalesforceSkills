@@ -1,0 +1,23 @@
+[PASS] US-CASE-001 — Tier 1 agent receives a support email as a routed, acknowledged case
+    - WARN: Story body is 339 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-002 — Billing specialist receives a finance email in the Billing queue
+    - WARN: Story body is 292 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-003 — Tier 1 agent receives a web-form case through the fall-through entry
+    - WARN: Story body is 318 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-004 — Tier 1 agent logs a case by hand and it routes like the other two channels
+    - WARN: Story body is 345 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-005 — Tier 1 agent is refused a Billing case, and can prove it
+    - WARN: Story body is 337 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-006 — Tier 2 engineer works an escalated Support case they do not own
+    - WARN: Story body is 281 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-007 — Tier 1 agent sees a first-response clock on the right calendar
+    - WARN: Story body is 407 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-008 — Tier 2 engineer receives a case that went untouched for 8 business hours
+    - WARN: Story body is 351 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-009 — Tier 1 agent's first reply stops the first-response clock
+    - WARN: Story body is 328 words (max 250) — likely too large; consider splitting.
+[PASS] US-CASE-010 — Billing specialist works from the Billing queue list view
+[PASS] US-CASE-011 — Tier 2 lead reviews escalated open cases weekly
+    - WARN: Story body is 303 words (max 250) — likely too large; consider splitting.
+
+Summary: 11/11 stories passed (0 ERROR, 10 WARN).

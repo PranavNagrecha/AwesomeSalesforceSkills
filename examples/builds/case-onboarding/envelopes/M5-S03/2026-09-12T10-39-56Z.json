@@ -1,0 +1,188 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T10-39-56Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S03/2026-09-12T10-39-56Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S03/2026-09-12T10-39-56Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M5-S03"
+  },
+  "summary": "Ran the molecular tests for M5-S03 (docs step, owner story-drafter, status was `built`). Zero XML files under the step's artefacts, recorded as ran-with-zero-files rather than skipped. The manifest check is skipped-not-applicable: the step's type is `docs` and its Output Contract and declared `outputs[]` produce a single markdown document (`story-backlog.md`), no `package.xml`. The one declared `checker` acceptance test, `check_invest.py --manifest-dir artefacts/M5-S03`, was run verbatim from the build directory and exited 0 (11/11 stories passed, 0 ERROR, 10 WARN on the 250-word heuristic, matching the plan's declared expectation), and `check-outputs` reported ok with no missing/empty/malformed paths. The one declared `manual` test names three observable outcomes and is deferred to the milestone gate, never counted as a failure. `results.json` records `passed: true` with an empty `failed[]`, and `set-status M5-S03 tested` succeeded.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test either ran to an observed exit code (checker: 0; check-outputs: ok) or was correctly classified (xml: ran-zero-files; manifest: skipped-not-applicable for a non-metadata docs step; manual: shape-checked and deferred). No command test was refused, no manifest exclusion for a coverage-gap type was needed, and check-outputs reported nothing missing, empty or malformed.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's declared checker command matches its own description exactly: `check_invest.py --manifest-dir artefacts/M5-S03` exited 0 with `Summary: 11/11 stories passed (0 ERROR, 10 WARN)`, the same figure the plan's acceptance-test description and the owning agent's envelope both predicted before this run.",
+      "domain": "test-fidelity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S03/check_invest.stdout.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check-outputs confirmed the step's single declared output exists, is non-empty and is not malformed, so `set-status tested` proceeded without a manual override.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S03/check-outputs.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "All 10 WARNs on the checker are the same 250-word story-body heuristic, and three of the eleven stories (US-CASE-004, US-CASE-007, US-CASE-009) carry the heaviest overflow because their bodies embed the Q24 training note, the F-40 calendar-pin note and the completion-proxy note the M4 gate required. The checker has no way to separate 'story is too long' from 'story correctly carries a required handoff note', so every run of this checker on this backlog will show the same 10 WARNs until the notes are relocated out of the story body.",
+      "domain": "checker-signal-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M5-S03/check_invest.stdout.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "A `package.xml` exists under the dependency M5-S01's artefacts, but M5-S03 declares no package.xml and produces no metadata, so this run treated the manifest check as not-applicable to M5-S03 rather than checking story-backlog.md against M5-S01's manifest. standards/build-orchestration.md § 5's type-based branch (\"docs that produces no manifest\") supports this reading, but the § 5 step-1 text (\"or under the artefacts of a step this one depends_on\") does not explicitly say a found dependency manifest is irrelevant once the step's own type is in the non-metadata bucket — a human should confirm this reading holds for future non-metadata docs steps that depend on a metadata step.",
+      "domain": "manifest-check-scope",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S01/package.xml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S03 is now `tested`; build-doc-keeper can compile the workbook, traceability and the M5-S04 UAT/acceptance-criteria pack from it.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because M5-S04 depends_on M5-S03 and cannot enter `next` until M5-S03 is `documented`, which is build-doc-keeper's transition to make.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S03",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M5-S03/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree parse (always-on)",
+        "exit_code": null,
+        "verdict": "ran-zero-files"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "package.xml consistency (always-on)",
+        "exit_code": null,
+        "verdict": "skipped-not-applicable"
+      },
+      {
+        "name": "skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --manifest-dir artefacts/M5-S03",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M5-S03",
+        "exit_code": 0,
+        "verdict": "ok"
+      },
+      {
+        "name": "manual: channel/persona/GWT check (Q77/Q84/Q80)",
+        "type": "manual",
+        "runner": "human at milestone gate",
+        "exit_code": null,
+        "verdict": "deferred"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q77 and Q84, when story-backlog.md is read, then each of the three intake channels — email, web and manual UI — has its own story, every story names a tester persona holding the real profile plus permission set group (PSG_Tier1_Prod, PSG_Tier2_Prod, PSG_Billing_Prod) rather than the admin profile, and every story carries at least three Given/When/Then criteria including a permission-denial path (Q80)."
+    ],
+    "tests_run": 4
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4 step-type table (docs is not a metadata type) and § 5 acceptance-test types, the manifest fail/skip rule by step type, the Apex-exception carve-out, and the check-outputs precondition on built/tested"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape and the Process Observations requirement this envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic md+json pair and the run_id form used for this run"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against before concluding no refusal condition applied (step status was already `built`, no ambiguous or missing input)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the ban on org writes and on auto-chaining into build-doc-keeper, both honored (no `sf` command run, no chaining performed)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptance_tests[] and outputs[] shapes read directly from plan.json for this step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar the manifest check would be judged against, confirming story-backlog.md derives no <types>/<members> entry"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the filename-to-metadata-type mapping confirming a markdown story backlog maps to no source-format component"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming no component-type exclusion applied here since the step carries no metadata at all"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate rather than re-interpreted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape check applied to the step's declared manual test before carrying it into skipped_manual[]"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M5-S03 is now tested; the doc keeper can compile the workbook, traceability rows and the M5-S04 UAT/acceptance-criteria pack from it."
+    }
+  ]
+}

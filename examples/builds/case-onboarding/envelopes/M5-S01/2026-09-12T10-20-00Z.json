@@ -1,0 +1,188 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "per-step",
+  "run_id": "2026-09-12T10-20-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T10-20-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T10-20-00Z.json",
+  "summary": "Documented M5-S01 (three Case queue list views, the Support Operations report folder and the Escalated Open Cases report) after it reached `tested` for the second time, post-F-49/F-50 rebuild. Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json; appended 5 decisions.md entries covering the F-49/F-50 report-description-length and worked-example closure (closed in the artefact, still open at the skill: D-M5S01-01, the fifth flywheel-adjacent record in this build); F-51's unresolvable Escalated column code, carried to the M5 gate as a post-deploy runbook step with the owner gap named against Q91's role rather than a person (D-M5S01-02); the Tier 1 pull-view-vs-Q31-push interim under assumption A7 (D-M5S01-03); the checker test-coverage gap where both declared checkers score the org-rejected and fixed report files identically (O-M5S01-01); and the folder-filename checker-recognition gap now downgraded after the org validated the declared filename (O-M5S01-02). Wrote 7 workbook rows: CWB-LAYOUT-007..011 in Section 2 (the three list views, the report folder and the report, the last two carrying owner 'Tier 2 lead' per Q91 with the no-named-person gap recorded on the row) and CWB-OTHER-034..035 in Other Configuration (package.xml, deploy-order.md). Added 4 traceability rows (REQ-048/REQ-049 for the Tier 2 and Billing pull working surfaces under D4, REQ-050 for the Tier 1 interim view under A7, REQ-051 bundling the report and its folder as one Q91 mechanism) plus their Requirement-id-derivation entries, a 'What M5-S01 rests on' section and a 'Coverage, as far as M5-S01' section. Ran check_rtm.py from the build dir both at build scope (51 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings) and at step scope (0 orphans, 111 warnings — every other row's artefact correctly unresolved at this narrower scope plus one artefact_paths warning per build-root-relative path, the same shape every prior step's narrower-scope run shows); set the step to `documented`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact produced a workbook row with a real source_req_id and a stated verification cell, all four new requirements have a traceability row, and re-running the RTM checker at build scope produced 0 orphans and 0 warnings. Held to MEDIUM rather than HIGH for three judgment calls this agent made rather than merely recorded: (1) REQ-050 was minted as a requirement distinct from REQ-048/REQ-049 even though no requirement.md line asks for a Tier 1 pull view — the opposite line does — so the id rests on this agent's reading of assumption A7 rather than on an answered clarification naming that artefact directly; (2) REQ-051 bundles the report and its folder as one requirement by analogy to REQ-032's EmailFolder treatment, a judgment call rather than a rule the AGENT.md states in those terms; (3) the workbook owner for CWB-LAYOUT-010/011 was set to 'Tier 2 lead' (Q91's own wording) rather than the section's usual 'CRM admin lead' default, which is this agent's reading of where Q91's named role belongs, not an instruction the workbook skill states explicitly for this case.",
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_rtm.py reported 0 orphans at build scope both before and after this step's four rows were added — every manifest member under artefacts/ already resolved or was cleanly absorbed, with no RULE_CONTAINERS-style container/member split to reconcile this time, unlike M4-S04's escalation rule row.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo root> (0 orphans, 0 warnings, 51 rows)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The F-49/F-50 rebuild's fixed values are confirmed independently twice: metadata-builder's own before/after checker run (identical exit 0 on both files, which is itself O-M5S01-01's finding) and reports/MOCK-DEPLOY-M5.md run 2's org validation (60/60 components ok except the pre-existing F-28) — the documented-status green this pass records rests on the org's own evidence, not on the checkers alone.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "reports/MOCK-DEPLOY-M5.md run 2; envelopes/M5-S01/2026-09-12T10-15-00Z.md section 2"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The report ships without its Escalated criterion and reaches `documented` that way — the gap is stated in the artefact's own description and in an XML comment, and is now recorded as a decisions.md gate item and a workbook owner gap (D-M5S01-02), but no automated gate in this build's loop would have caught its absence on its own.",
+      "evidence": {
+        "source": "input",
+        "query": "artefacts/M5-S01/deploy-order.md section 2 U1; decisions.md D-M5S01-02"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "deploy-order.md is undeclared in M5-S01's outputs[], extending the same undeclared-artefact pattern (decisions.md O-M3S02-03) into a ninth consecutive step — accepted explicitly at the G4 gate note for M4 and extended here by inspection rather than by a fresh gate decision.",
+      "evidence": {
+        "source": "input",
+        "query": "plan.json steps[M5-S01].outputs[]; human_gates[milestone:M4].notes"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Whether REQ-050 (the Tier 1 interim view) should have been folded into REQ-048/REQ-049 instead of minted separately, and whether the report-folder bundling into REQ-051 is the right precedent to follow versus giving the folder its own row, are both this agent's calls rather than settled rules — a human reviewing the RTM at the M5 gate should confirm both readings.",
+      "evidence": {
+        "source": "input",
+        "query": "traceability.md 'What M5-S01 rests on'"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "milestone-verifier should run once every M5 step through this milestone's scope is documented, because the Escalated-criterion runbook step, the Tier 1 pull-view disposition and the folder-filename checker gap are all M5-gate items no single step's own tests settle.",
+      "evidence": {
+        "source": "input",
+        "query": "decisions.md D-M5S01-02, D-M5S01-03, O-M5S01-02"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because the Escalated-criterion runbook ownership, the Tier 1 pull-view disposition and the folder-filename gap are gate-level adjudications, not something this step's own documentation pass can settle."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "config-workbook-author is the eventual compiler of this build's ten-section workbook once M5-S04 runs, and the Section 2 rows this run adds (CWB-LAYOUT-007..011) — including the first departure from the section's default owner role — are among the sources it will collate.",
+      "evidence": {
+        "source": "input",
+        "query": "workbook/02-page-layouts-and-lightning-pages.md CWB-LAYOUT-007..011"
+      },
+      "suggested_followup_agent": "config-workbook-author",
+      "followup_reason": "because it is the agent that compiles this step's per-step workbook rows into the release-level document once the build's design phase is complete."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation, including the file-scope prohibition"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, confidence rubric"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum (not triggered this run)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (rendered-view/plan-state rules), section 4 (step-type to workbook-section map — ui maps to Section 2, with list views/reports named in target_value), section 6 (this agent's per-step job), section 8 (skill-gap-to-decisions.md rule)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "fields read from and left alone in plan.json, including the human_gates note format"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "ten canonical sections, the row schema, and the owner-is-a-named-human rule this build records as a standing gap rather than fabricates"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "build-layer RTM column set, REQ-XXX id conventions, pipe-delimited multi-value convention"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "what makes a decision entry reviewable months later — a date, the decision, the alternative rejected, the source it was grounded in"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how the step's manual test is recorded as acceptance evidence rather than as a ticked assertion"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "read per AGENT.md Mandatory Reads; not exercised this run — this is a per-step run, not the compile run that writes uat-test-cases.yaml"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirmed the step's manual test (M5-S01-T5) is in an observable Given/When/Then shape before citing it as outstanding rather than as a wish"
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S01",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/02-page-layouts-and-lightning-pages.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": [
+      "CWB-LAYOUT-007",
+      "CWB-LAYOUT-008",
+      "CWB-LAYOUT-009",
+      "CWB-LAYOUT-010",
+      "CWB-LAYOUT-011",
+      "CWB-OTHER-034",
+      "CWB-OTHER-035"
+    ],
+    "traceability_rows": [
+      "REQ-048",
+      "REQ-049",
+      "REQ-050",
+      "REQ-051"
+    ],
+    "decisions_appended": [
+      "D-M5S01-01",
+      "D-M5S01-02",
+      "D-M5S01-03",
+      "O-M5S01-01",
+      "O-M5S01-02"
+    ],
+    "rows_replaced": []
+  }
+}

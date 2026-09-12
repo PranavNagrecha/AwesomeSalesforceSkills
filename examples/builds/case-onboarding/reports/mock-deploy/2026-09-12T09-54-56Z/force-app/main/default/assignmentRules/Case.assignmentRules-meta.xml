@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AssignmentRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <assignmentRule>
+        <fullName>Case_Intake_Routing</fullName>
+        <active>true</active>
+        <!-- Entry 1: most specific first. Q18 — billing@acme.example is worked by
+             Finance. Origin is stamped by the routing address (M3-S03,
+             caseOrigin Email-Billing), so it is present at save. -->
+        <ruleEntry>
+            <assignedTo>Billing</assignedTo>
+            <assignedToType>Queue</assignedToType>
+            <criteriaItems>
+                <field>Case.Origin</field>
+                <operation>equals</operation>
+                <value>Email-Billing</value>
+            </criteriaItems>
+        </ruleEntry>
+        <!-- Entry 2: Q18 — support@acme.example is worked by Tier 1 (general
+             support). Origin Email-Support is stamped by that routing address. -->
+        <ruleEntry>
+            <assignedTo>Tier_1_General</assignedTo>
+            <assignedToType>Queue</assignedToType>
+            <criteriaItems>
+                <field>Case.Origin</field>
+                <operation>equals</operation>
+                <value>Email-Support</value>
+            </criteriaItems>
+        </ruleEntry>
+        <!-- Entry 3: catch-all, no criteriaItems and no booleanFilter, always
+             last. Q26 — unmatched cases go to the Tier 1 General queue. This is
+             the entry that routes Web-to-Case (Origin Web) and any manually
+             created case whose author ticked "Run assignment rules" (Q24). -->
+        <ruleEntry>
+            <assignedTo>Tier_1_General</assignedTo>
+            <assignedToType>Queue</assignedToType>
+        </ruleEntry>
+    </assignmentRule>
+</AssignmentRules>

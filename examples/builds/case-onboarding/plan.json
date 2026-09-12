@@ -2,7 +2,7 @@
   "build_id": "case-onboarding",
   "title": "Acme case intake",
   "version": 5,
-  "status": "building",
+  "status": "done",
   "created": "2026-09-05T13:30:00Z",
   "build_mode": "design-only",
   "requirement": {
@@ -2509,7 +2509,8 @@
           "expected": "ticked at the M5 milestone gate"
         }
       ],
-      "status": "pending"
+      "status": "accepted",
+      "report_path": "reports/MILESTONE-M5-REPORT.md"
     }
   ],
   "steps": [
@@ -4725,8 +4726,54 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T09:32:07Z",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T09:32:07Z",
+          "envelope_path": "envelopes/M5-S01/2026-09-12T09-34-00Z.json",
+          "result": "Three Queue-scoped Case list views (Tier_1_General_Queue, Tier_2_Queue, Billing_Queue), each filterScope Queue naming a M2-S04 queue developer name, filtered Status notEqual Closed and shared to the matching M2-S04 public group rather than left public; the Escalated Open Cases report in the Support Operations folder (accessType Shared, one View share to Support_Tier_2); package.xml at 67.0 with object-qualified ListView members and no wildcard; plus the undeclared deploy-order.md. Both declared checkers exit 0 first pass (build-scope list-view checker 'No issues found.'; report inventory score 100), 6/6 XML parse, check-outputs ok. TWO FINDINGS for the M5 gate: (1) the report ships WITHOUT its Escalated criterion - no cited skill carries a report column code for Case.IsEscalated, so as written it returns open Cases from the last 30 days rather than escalated open Cases, recorded in deploy-order.md section 2 U1, in an XML comment and in the report description rather than guessed; (2) the declared folder filename reports/Support_Operations-meta.xml is not scanned by check_report_inventory.py (measured: 1 file scanned as declared vs 2 under the skill-documented .reportFolder-meta.xml), so acceptance_tests[1]'s folder assertion never executes. Seven UNVERIFIED items recorded; assumption A7's Tier 1 interim pull view built and its post-M3-S05 disposition left open."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T09:48:00Z",
+          "envelope_path": "envelopes/M5-S01/2026-09-12T09-50-00Z.json",
+          "result": "ran 4, failed 0, manual 1"
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T09:47:29Z",
+          "result": "Dry-run validation run 1 (reports/MOCK-DEPLOY-M5.md): Report Support_Operations/Escalated_Open_Cases — 'Value too long for field: Description maximum length is:255' (F-49). Operator probes then proved: reportType must be CaseList not Cases; owner grouping column is OWNER not USERS.NAME; a field cannot be both a column and a grouping (F-50); the IsEscalated column code is unresolvable by probing (F-51, deferred to the deploy runbook). List views and the report folder validated."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T10:05:00Z",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T10:05:00Z",
+          "envelope_path": "envelopes/M5-S01/2026-09-12T10-08-00Z.json",
+          "result": "F-49/F-50 rebuild after reports/MOCK-DEPLOY-M5.md run 1 rejected the report ('Value too long for field: Description maximum length is:255'). Four edits, all in Escalated_Open_Cases.report-meta.xml: description 268 -> 219 chars with its notes moved to deploy-order.md; reportType Cases -> CaseList; grouping USERS.NAME -> OWNER; PRIORITY removed from <columns> and kept as the second grouping (the org rejects a field that is both, and M4-S04's note asks for the Owner-then-Priority grouping). The three list views, the report folder and package.xml are byte-identical, sha256 verified 5/5 - run 1 validated all of them, including the folder AT ITS DECLARED FILENAME, so the earlier F-B is a checker-recognition gap rather than a deploy defect. F-51 carried, not closed: the Case.IsEscalated column code was rejected in all five probed forms, so the criterion stays out and becomes a post-deploy runbook step (add Escalated = True in the report builder then re-export, or harvest the code from a retrieved Case report) - stated in deploy-order.md sections 0 and 2 U1, in the XML comment and in the 219-char description. Both declared checkers exit 0 first pass (build-scope 'No issues found.'; report inventory score 100 - unchanged from the run that the org rejected, which is itself recorded as a test-coverage finding), 6/6 XML parse, check-outputs ok. Report body still unvalidated end to end: STATUS/CREATED_DATE codes and the equals + LAST_N_DAYS:30 pairing need run 2. Skill deepening filed for the doc keeper, not done here: Report description-length rule (F-49) and the worked example's reportType and owner grouping column (F-50)."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T10:13:00Z",
+          "envelope_path": "envelopes/M5-S01/2026-09-12T10-15-00Z.json",
+          "result": "ran 4, failed 0, manual 1"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T10:18:00Z",
+          "envelope_path": "envelopes/M5-S01/2026-09-12T10-20-00Z.json",
+          "result": "workbook rows 7; traceability rows 4; decisions appended 5"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -5014,8 +5061,32 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "story-drafter",
+          "started": "2026-09-12T10-21-24Z",
+          "result": "running"
+        },
+        {
+          "agent": "story-drafter",
+          "started": "2026-09-12T10-21-24Z",
+          "envelope_path": "envelopes/M5-S03/2026-09-12T10-25-00Z.json",
+          "result": "11 INVEST stories in 4 epics; check_invest.py --manifest-dir artefacts/M5-S03 exit 0 (11/11 passed, 0 ERROR, 10 word-count WARN); check-outputs ok; G4 completion-proxy, Q24 training line and deploy prerequisites P1-P6 carried"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T10-39-56Z",
+          "envelope_path": "envelopes/M5-S03/2026-09-12T10-39-56Z.json",
+          "result": "ran 3 (xml 0-files, manifest skipped-not-applicable, check_invest.py exit 0 11/11 0 ERROR 10 WARN); check-outputs ok; manual 1 deferred to milestone gate"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T10:45:00Z",
+          "envelope_path": "envelopes/M5-S03/2026-09-12T10-45-00Z.json",
+          "result": "workbook rows 1; traceability rows 7; decisions appended 5"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -5095,8 +5166,66 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T10:59:44Z",
+          "result": "running"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T10:59:44Z",
+          "envelope_path": "envelopes/M5-S04/2026-09-12T11-15-00Z.json",
+          "result": "configuration-workbook.md (104 rows), traceability.md (58 rows), deploy-order.md, acceptance-criteria.md (106 AC records), uat-test-cases.yaml (39 cases); check-outputs ok"
+        },
+        {
+          "agent": "dry-run-operator",
+          "started": "2026-09-12T11:24:18Z",
+          "result": "Runner's diligence run of the declared checkers: check_workbook.py exit 1 (30 Section-6 rows lack the automation-selection.md branch citation; CWB-AUT-029 target_value has an unescaped \\| regex), check_uat_case.py exit 1 (REQ-013/025/038/040/043/053 have only a positive manual test), check_ac_format.py exit 1 (12 negative-coverage gaps, 2 then-clauses naming a mechanism); only check_rtm.py exit 0. Repair pass at the compile: cite the branch on each Section-6 row at its source (workbook/06-automation.md — the compile run may reconcile across steps), escape the regex, add negative UAT cases + AC records for those requirements, rephrase the two then-clauses."
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T11:30:00Z",
+          "result": "running"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T11:30:00Z",
+          "envelope_path": "envelopes/M5-S04/2026-09-12T11-40-00Z.json",
+          "result": "Repair pass: check_rtm/check_uat_case/check_ac_format now exit 0; check_workbook.py exits 1 on 8 rows with no sourced decision-tree citation (reported, not fabricated); check-outputs ok"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T11:52:23Z",
+          "envelope_path": "envelopes/M5-S04/2026-09-12T11-52-23Z.json",
+          "result": "ran 4 checkers + xml + manifest, failed 0, manual 2"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T12:00:00Z",
+          "envelope_path": "envelopes/M5-S04/2026-09-12T12-05-00Z.json",
+          "result": "workbook rows 5; traceability rows 0; decisions appended 4"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T13-15-00Z",
+          "envelope_path": "envelopes/M5-S04/2026-09-12T13-15-00Z.json",
+          "result": "Re-compile closing F-52 (partial), F-53 (structural), F-54 (closed), F-56 (partial), F-57 (closed); all 4 declared checkers exit 0"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T16:06:03Z",
+          "envelope_path": "envelopes/M5-S04/2026-09-12T16-06-03Z.json",
+          "result": "ran 4 checkers + xml + manifest(skip), failed 0, manual 2"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T16:17:21Z",
+          "envelope_path": "envelopes/M5-S04/2026-09-12T16-17-21Z.json",
+          "result": "workbook rows 4 replaced (CWB-OTHER-037/038/039/041); traceability rows 0; decisions appended 4 (D-M5S04-05..08)"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -5161,8 +5290,32 @@
           "expected": "ticked at the M5 milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T12:16:22Z",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T12:16:22Z",
+          "envelope_path": "envelopes/M5-S05/2026-09-12T12-16-22Z.json",
+          "result": "build-level package.xml: 29 types, 56 members, version 67.0; deploy-order.md written; checker exit 0 (score 95, SharingRules WARN as documented); check-outputs ok"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T12:28:47Z",
+          "envelope_path": "envelopes/M5-S05/2026-09-12T12-28-47Z.json",
+          "result": "ran 3, failed 0, manual 3 (whole-tree manifest check across artefacts/: 117 files, 62 deployable, 56 members, 0 missing either direction)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T12:38:43Z",
+          "envelope_path": "envelopes/M5-S05/2026-09-12T12-38-43Z.json",
+          "result": "workbook rows 2; traceability rows 0 (coverage note added); decisions appended 5"
+        }
+      ],
       "human_gate": false
     }
   ],
@@ -5253,7 +5406,10 @@
     },
     {
       "name": "milestone:M5",
-      "status": "pending"
+      "status": "approved",
+      "by": "requester (Pranav, on the standing 'choose the path' instruction) via dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T16:19:33Z",
+      "notes": "G5 (milestone:M5, the last) approved by the dry-run operator (Fable; design-only, nothing deploys) on reports/MILESTONE-M5-REPORT.md. Org evidence: reports/MOCK-DEPLOY-M5.md run 3 — MANIFEST mode over the whole build (M1-S01 … M5-S05): 60/60 components validate at API 67.0 except F-28 (the auto-response sender must exist as a verified org-wide address in the target org — a named deploy prerequisite). Accepted knowingly: (1) M5-S02 (sandbox strategy) stays blocked on four inputs the requester never supplied (team_size, concurrent_workstreams, release_cadence, data_sensitivity) and M3-S05 (Omni-Channel) on Q32–Q35 — both recorded as phase-2 items with owners; (2) F-28 due date: before the production window, owner the admin lead (the M3-S02 sender-identity note still says support@ — F-30 open until the note is corrected in phase 2); (3) F-51: the escalation report ships without its Escalated filter — a post-deploy runbook step (add the filter in the report builder or harvest the column code from a retrieved Case report); (4) REQ-055..058 remain Draft (waived by status, the M5 gate names them); (5) the seven self-referential compile rows (F-57) are present in the live workbook slices and re-compiled in the M5-S04 re-run (planner v6: compile last); F-54 (assumptions register) was NOT accepted — M5-S04 was re-run against F-52/53/54/56/57 before this gate, so the register, the member→row traceability and the UAT pack's independence from the blocked steps are in the artefacts; what remains open from F-54 is that assumptions[] carries no owner field — the release owner assigns owners as an obligation of this gate; (6) deploy-order divergence: M5-S05's order is the release order (rules at slot 10 before Settings:Case at slot 11, the verifier's four grounds); neither order is a deploy error and the real margin is the human step after slot 11 (mail forwarding); F-55: the M1 per-milestone manifest still carries the bare Case_Intake CompactLayout the org rejected (F-13) — a split release must cut from the build manifest, never from the per-milestone ones; (7) four release-owner decisions, decided at this gate on the verifier's recommendation: rollbackOnError explicitly true; the RunLocalTests window measured in a sandbox before the production window; validation inside the ten-day quick-deploy clock; the backout assigned to the admin lead, noting a post-traffic backout needs a data decision, not just metadata; (8) org prerequisites list from M5-S05 deploy-order.md § 6 (verified sender, enableEntitlements, queue mailboxes, the SlaProcess/First Response milestone for the Apex test, the 140-record reassignment is scenario 3's — n/a here). Build status after this gate: done. Design-only; nothing deploys. Verifier confidence LOW by its one-trigger rule (the blocked step); every other trigger clear. Manual lines 9, 11, 12 recorded outstanding with their written fallbacks; F-56 reconciled in the re-compile; F-58 is a wording fix for planner v6. Gate signed after M5-S04 was re-compiled, re-tested (4/4 checkers) and re-documented (D-M5S04-05..08) against the verifier's F-52/53/54/56/57; the verifier report predates that re-compile and was not re-run (design-only, budget) — the gate notes carry what changed."
     }
   ],
   "artefacts_root": "artefacts",

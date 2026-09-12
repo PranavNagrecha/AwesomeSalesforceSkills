@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EscalationRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Built by agents/metadata-builder for step M4-S04. Shape adapted from
+         skills/admin/escalation-rules/references/metadata-examples.md
+         § "Three-tier escalation with mixed clocks, plus a rule staged for cutover".
+
+         Q47: this rule ships INACTIVE. Activation is a separate one-line deploy
+         inside an agreed comparison window - see escalation-activation-runbook.md.
+         The checker's W1 ("no rule in this file is active") is the intended state
+         on this deploy, not a defect.
+
+         One file holds EVERY escalation rule for Case, active and inactive.
+         Retrieving EscalationRules:Case and deploying it back overwrites the whole
+         file, so never hand-write a partial file over a retrieved one. -->
+    <escalationRule>
+        <fullName>Case_SLA_Escalation</fullName>
+        <active>false</active>
+
+        <!-- Entry 1: Severity 1 runs on the wall clock, 24/7.
+             requirement.md L18: "Severity 1 outages are 24/7 and never pause."
+             Q43: businessHoursSource None for the 24/7 promise. None ignores every
+             calendar, including any calendar on the Case itself, and observes no
+             holidays (gotchas.md #10).
+             MOST SPECIFIC ENTRY FIRST - a case matches ONE entry only, and entry 2
+             below would otherwise catch Severity 1 cases and run them on the Case's
+             regional calendar. -->
+        <ruleEntry>
+            <businessHoursSource>None</businessHoursSource>
+            <booleanFilter>1 AND 2</booleanFilter>
+            <criteriaItems>
+                <field>Case.Severity__c</field>
+                <operation>equals</operation>
+                <value>Severity 1</value>
+            </criteriaItems>
+            <!-- Closed cases are excluded explicitly rather than assumed out:
+                 gotchas.md #12 records that neither belief about the engine's
+                 closed-case behaviour is grounded in a fetchable official source. -->
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Closed</value>
+            </criteriaItems>
+            <!-- Q42: the requirement measures from creation, not from last touch. -->
+            <escalationStartTime>CaseCreation</escalationStartTime>
+            <disableEscalationWhenModified>false</disableEscalationWhenModified>
+            <!-- 8 hours = 480 minutes (8 x 60). Q46: minutesToEscalation is stored
+                 in minutes while Setup shows hours - 8 would escalate after eight
+                 MINUTES (gotchas.md #8). Same threshold as entry 2; the difference
+                 between the two entries is the clock, not the number, because
+                 requirement.md L16 states one threshold and L18 states only that
+                 Severity 1 never pauses. -->
+            <escalationAction>
+                <minutesToEscalation>480</minutesToEscalation>
+                <assignedTo>Tier_2_Engineering</assignedTo>
+                <assignedToType>Queue</assignedToType>
+                <assignedToTemplate>case_intake/Case_Escalated_To_Tier2</assignedToTemplate>
+                <notifyCaseOwner>true</notifyCaseOwner>
+                <!-- F-36: notifyCaseOwner true requires notifyToTemplate. The org
+                     rejects the action without it ("EscalationRules Case:
+                     notifyToTemplate is required") even though the Metadata API
+                     guide marks it optional - gotchas.md #13, checker E10.
+                     This build holds ONE escalation template (M3-S02), so the same
+                     folder-qualified Classic template serves both elements; the
+                     skill's example uses two, and deploy-order.md section 3 U6
+                     records the divergence. -->
+                <notifyToTemplate>case_intake/Case_Escalated_To_Tier2</notifyToTemplate>
+            </escalationAction>
+        </ruleEntry>
+
+        <!-- Entry 2: every other open case, on the calendar named on the Case record.
+             requirement.md L16: "Anything untouched for 8 business hours escalates to
+             Tier 2." Q43: businessHoursSource Case, so the clock follows
+             Case.BusinessHoursId and pauses on that calendar's weekends and holidays.
+             NO <businessHours> child: the guide specifies businessHours "only if
+             businessHoursSource is set to Static", and the checker errors (E2) on a
+             named calendar the source would ignore. -->
+        <ruleEntry>
+            <businessHoursSource>Case</businessHoursSource>
+            <criteriaItems>
+                <field>Case.Status</field>
+                <operation>notEqual</operation>
+                <value>Closed</value>
+            </criteriaItems>
+            <escalationStartTime>CaseCreation</escalationStartTime>
+            <disableEscalationWhenModified>false</disableEscalationWhenModified>
+            <!-- 8 business hours = 480 minutes (8 x 60). -->
+            <escalationAction>
+                <minutesToEscalation>480</minutesToEscalation>
+                <assignedTo>Tier_2_Engineering</assignedTo>
+                <assignedToType>Queue</assignedToType>
+                <assignedToTemplate>case_intake/Case_Escalated_To_Tier2</assignedToTemplate>
+                <notifyCaseOwner>true</notifyCaseOwner>
+                <!-- F-36: notifyCaseOwner true requires notifyToTemplate. The org
+                     rejects the action without it ("EscalationRules Case:
+                     notifyToTemplate is required") even though the Metadata API
+                     guide marks it optional - gotchas.md #13, checker E10.
+                     This build holds ONE escalation template (M3-S02), so the same
+                     folder-qualified Classic template serves both elements; the
+                     skill's example uses two, and deploy-order.md section 3 U6
+                     records the divergence. -->
+                <notifyToTemplate>case_intake/Case_Escalated_To_Tier2</notifyToTemplate>
+            </escalationAction>
+        </ruleEntry>
+    </escalationRule>
+</EscalationRules>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sharingCriteriaRules>
+        <fullName>Support_Cases_To_Tier_2</fullName>
+        <accessLevel>Edit</accessLevel>
+        <description>Tier 2 engineers edit every Support-record-type case, whoever owns it. Case OWD is Private on M1-S01. No equivalent rule extends Billing cases to anyone (assumption A1).</description>
+        <label>Support Cases to Tier 2</label>
+        <criteriaItems>
+            <field>RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Support</value>
+        </criteriaItems>
+        <includeRecordsOwnedByAll>true</includeRecordsOwnedByAll>
+        <sharedTo>
+            <group>Support_Tier_2</group>
+        </sharedTo>
+    </sharingCriteriaRules>
+</SharingRules>

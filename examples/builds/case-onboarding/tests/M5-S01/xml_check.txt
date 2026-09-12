@@ -1,0 +1,11 @@
+step-tester M5-S01 — always-on xml check, run 2026-09-12T10-15-00Z
+ElementTree parse of every *.xml / *-meta.xml under artefacts/M5-S01/, recursive.
+
+{'path': 'artefacts/M5-S01/objects/Case/listViews/Billing_Queue.listView-meta.xml', 'parsed': True}
+{'path': 'artefacts/M5-S01/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml', 'parsed': True}
+{'path': 'artefacts/M5-S01/objects/Case/listViews/Tier_2_Queue.listView-meta.xml', 'parsed': True}
+{'path': 'artefacts/M5-S01/package.xml', 'parsed': True}
+{'path': 'artefacts/M5-S01/reports/Support_Operations-meta.xml', 'parsed': True}
+{'path': 'artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml', 'parsed': True}
+
+Total: 6  Parsed OK: 6  Failed: 0

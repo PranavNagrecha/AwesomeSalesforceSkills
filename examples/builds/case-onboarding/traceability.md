@@ -67,6 +67,17 @@ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py \
 | REQ-045 | Q48 | Within the first minute, a Case's SLA clock and (where resolvable) its Entitlement are attached automatically before save, and Priority is derived where the intake channel supplies no structured value (`requirement.md` L9–11) | M4-S03 | `Flow:Case_BeforeSave_StampEntitlementAndCalendar` | metadata-builder | D2 | M4-S03-T6 | manual | In UAT | `artefacts/M4-S03/flows/Case_BeforeSave_StampEntitlementAndCalendar.flow-meta.xml` \| `artefacts/M4-S03/no-account-fallback-note.md` | machine half **pass across three builds**, manual half **outstanding, deferred to the M4 gate**. Machine: declared `check_record_triggered_flow_patterns.py --manifest-dir artefacts/M4-S03` exit 0, "No issues found." — unchanged across all three builds; the rule-3 entry-criteria check now scopes to `RecordAfterSave` only, which is what clears the v2 blocker for this create-context flow. `check_flow_decision_element_patterns.py` (not a declared test, run anyway per `metadata-builder` Step 8) exit 0 with five WARNs, all design-not-defect (`artefacts/M4-S03/deploy-order.md` § 5). `xml` parsed; `manifest` two-way, `Flow` named explicitly. **Priority mechanism:** `Decision_Derive_Priority` overwrites the Email-to-Case intake default on `Email-Support`/`Email-Billing` per G3 gate decision (2); assumption A2's null guard holds everywhere else (`decisions.md` **D-M4S03-02**). **Priority VALUES** (Severity 1/Premier → `High`, else `Medium`) are derived, not answered — carried to the M4 gate (`decisions.md` **D-M4S03-03**). **Fault paths:** four `faultConnector`s route to the next `Decision` rather than to a `LogFault_<Parent>` target, because neither cited skill documents a before-save fault-path shape and a `RecordBeforeSave` flow may carry no `recordCreates` at all — a library gap, not a defect (`decisions.md` **O-M4S03-01**). **Manual test deferred to the M4 gate:** the three-field stamp, the no-match fallback, and the four `check_flow_governance.py` policy fields on the flow's own `<description>`/`<interviewLabel>`/`<apiVersion>`/`<runInMode>`. |
 | REQ-046 | Q48 | The `FlowTest` proving the before-save stamp supplies exactly the test-point parameters a `Create`-triggered flow accepts | M4-S03 | `FlowTest:Case_BeforeSave_StampEntitlementAndCalendar_Test` | metadata-builder | — | M4-S03-T5 | manifest | In UAT | `artefacts/M4-S03/flowtests/Case_BeforeSave_StampEntitlementAndCalendar_Test.flowtest-meta.xml` | machine half **pass, over two rebuilds and two org rejections**, no manual half touches this file directly. Machine: `manifest` two-way, `FlowTest` named explicitly; `xml` parsed; `check_flow_governance.py --manifest-dir artefacts/M4-S03` exit 0 confirms an `<status>Active</status>` flow has a `FlowTest` naming it in the manifest (a checker ERROR otherwise). **This is the one file that changed across all three builds** — build 1 shipped `InputTriggeringRecordUpdated` only and was org-rejected (*"missing … InputTriggeringRecordInitial"*); rebuild 1 added `Initial` alongside `Updated` and was rejected again, the mirror error (*"contains the incompatible parameter value … InputTriggeringRecordUpdated. Remove the parameter or change the record trigger type"*); rebuild 2 removed `Updated`, leaving `Initial` alone, and validated. Settled rule: `recordTriggerType Create` → `Initial` only; `Update`/`CreateAndUpdate` → both — proven live by the org, not by any skill file, which is still unedited (`decisions.md` **D-M4S03-01**, the fourth flywheel-adjacent record in this build and the first the skill fix has not yet closed). No declared checker inspects `FlowTest` parameters directly; the org's own two rejections are the only assertion this file has ever had. |
 | REQ-047 | Q40 | `Settings:Flow`'s `enableFlowDeployAsActiveEnabled` is the org-level switch that decides whether the before-save flow deploys `Active` or silently lands `Draft` | M4-S03 | `Settings:Flow` | metadata-builder | — | M4-S03-T3 | checker | In UAT | `artefacts/M4-S03/settings/Flow.settings-meta.xml` | machine half **pass with one documented advisory**, no manual half touches this file directly. Machine: declared `check_flow_governance.py --manifest-dir artefacts/M4-S03` exit 0, "0 error(s), 2 advisory" — one of the two advisories is this file's own naming gap: the checker globs the metadata-format name `Flow.settings`, this build uses DX `-meta.xml` naming throughout, so it reports the settings file missing even though it is present — a documented, expected outcome, not a defect (`artefacts/M4-S03/deploy-order.md` § 4). `xml` parsed; `manifest` two-way, `Settings:Flow` named explicitly (feature settings reject the `package.xml` wildcard). **Production-deploy risk, not resolved by this row:** `enableFlowDeployAsActiveEnabled true` means a production deploy of this step runs the org's Apex tests and can be rolled back for a reason unrelated to this flow if the required active-automation launch percentage is not met — this build's only Apex is `M4-S05`, sequenced separately (`decisions.md` **O-M4S03-02**). UNVERIFIED: whether this one-field file resets the org's other twelve `FlowSettings` values or leaves them untouched. |
+| REQ-048 | Q31 | Billing and Tier 2 pick their cases from a list, so their queue list views are the working surface Q31's answer promises, not a nicety | M5-S01 | `ListView:Case.Tier_2_Queue` | metadata-builder | D4 | M5-S01-T5 | manual | In UAT | `artefacts/M5-S01/objects/Case/listViews/Tier_2_Queue.listView-meta.xml` | machine half **pass**, manual half **outstanding, deferred to the M5 gate**. Machine: declared build-scope `check_list_views_and_compact_layouts.py --manifest-dir artefacts` exit 0, `No issues found.` — proves the filter/column shape well-formed AND that `Case`'s compact layout (`M1-S01`) is assigned, the cross-reference this checker exists for (run at step scope alone it fires one INFO and exits 1, because the compact layout is out of view — the build-scope command is the one the plan declares and the one that passes); `xml` parsed; `manifest` two-way (`ListView:Case.Tier_2_Queue` named explicitly, part of the 5-member build-scope check). **Manual `M5-S01-T5`** (`tests/M5-S01/results.json` `skipped_manual[0]`): given the three views are Queue-scoped, when each `listView` file is read, then its `<queue>` names a queue developer name that exists under `artefacts/M2-S04/queues/` — `Tier_2_Engineering` confirmed present on disk, not ticked, deferred to the milestone gate per the test's own wording. **Every queue already auto-creates a list view** (`decisions.md` reference: `artefacts/M5-S01/deploy-order.md` § 5 decision 2) — expect two views per queue in the org after deploy. **Status is `In UAT`, not `In Build`:** `M5-S01` is now `documented` and both `depends_on` steps (`M2-S04`, `M4-S04`) are `documented` too, so the machine half is complete; the manual test above is outstanding at the M5 gate. |
+| REQ-049 | Q31 | Billing picks its cases from a list, the same working-surface requirement as `REQ-048`, for a different queue and a different team (2 finance staff, `requirement.md` L12–L14) | M5-S01 | `ListView:Case.Billing_Queue` | metadata-builder | D4 | M5-S01-T5 | manual | In UAT | `artefacts/M5-S01/objects/Case/listViews/Billing_Queue.listView-meta.xml` | machine half **pass**, manual half **outstanding, deferred to the M5 gate**, same shape as `REQ-048`. Machine: same declared build-scope checker run as `REQ-048` (one command scans all three views), exit 0; `xml` parsed; `manifest` two-way (`ListView:Case.Billing_Queue` named explicitly). **Manual `M5-S01-T5`** (same test as `REQ-048`, covering all three views in one Given/When/Then): `Billing` queue developer name confirmed present under `artefacts/M2-S04/queues/`, not ticked. **Status is `In UAT`, not `In Build`:** same dependency reasoning as `REQ-048` — both `depends_on` steps documented, manual test outstanding at the M5 gate. |
+| REQ-050 | A7 | Tier 1 needs a working surface to see its own queue's cases while `M3-S05` (the step that would configure Q31's Omni-Channel push for Tier 1) stays blocked on Q32–Q35 | M5-S01 | `ListView:Case.Tier_1_General_Queue` | metadata-builder | D4 | M5-S01-T5 | manual | In UAT | `artefacts/M5-S01/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml` | machine half **pass**, manual half **outstanding, deferred to the M5 gate**. Machine: same declared build-scope checker run as `REQ-048`/`REQ-049`, exit 0; `xml` parsed; `manifest` two-way (`ListView:Case.Tier_1_General_Queue` named explicitly). **Manual `M5-S01-T5`** (the same Given/When/Then as `REQ-048`/`REQ-049`, whose second clause names this row specifically): `Tier_1_General` queue developer name confirmed present under `artefacts/M2-S04/queues/` **and** this view confirmed present as Tier 1's interim pull surface while `M3-S05` is blocked, not ticked. **This row is deliberately NOT `REQ-048`/`REQ-049`'s requirement restated a third time** — `Q31`'s own answer says Tier 1's work is *pushed*, not pulled; this view exists under assumption `A7` as an interim substitute for the push `M3-S05` has not yet built, which is a different requirement from the one `REQ-048`/`REQ-049` satisfy directly (`decisions.md` **D-M5S01-03**, carried to the M5 gate: when `M3-S05` ships, a human decides whether this view stays as an overflow surface or is retired). **Status is `In UAT`, not `In Build`:** same dependency reasoning as `REQ-048`. |
+| REQ-051 | Q91 | A saved report on escalated, still-open Cases, reviewed weekly by the Tier 2 lead, so the escalation rule's `IsEscalated` write can be confirmed still firing next month | M5-S01 | `Report:Support_Operations/Escalated_Open_Cases` | metadata-builder | — | M5-S01-T2 | checker | In Build | `artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml` \| `artefacts/M5-S01/reports/Support_Operations-meta.xml` | machine half **pass, but proves less than it looks like**, no manual test targets this row. Machine: declared step-scope `check_report_inventory.py --manifest-dir artefacts/M5-S01` exit 0, score 100, `Scanned 1 report/dashboard file(s); 0 finding(s) detected.` — scored **identically** on the pre-rebuild file `reports/MOCK-DEPLOY-M5.md` run 1 rejected (`>255`-char `<description>`, invalid `reportType`, an invalid grouping) and on the rebuilt, org-validated file; the checker asserts nothing about any of the three fields that changed (`decisions.md` **O-M5S01-01**); `xml` parsed (both files); `manifest` two-way — the bare `Support_Operations` member (filed under `<name>Report</name>`, no separate `ReportFolder` entry in `describeMetadata()`) and `Support_Operations/Escalated_Open_Cases` both present, both with a matching member. **The folder is bundled into this row's `artefact_paths` rather than minted its own requirement** — one report-and-its-folder mechanism, the same one-mechanism shape `REQ-032` gives the acknowledgement template and its `EmailFolder`. **`<description>` length and the `reportType`/grouping values (F-49/F-50) were proven live by two org round-trips, not by any declared test** (`decisions.md` **D-M5S01-01**); the folder's declared filename is invisible to `check_report_inventory.py`'s recognition list even though the org accepts it (`decisions.md` **O-M5S01-02**). **What this row does NOT prove:** the report ships without its `Escalated = True` criterion — no cited skill carries the `Case.IsEscalated` column code, five probed candidates were all rejected, and the gap is now a post-deploy runbook step rather than a rebuild target (`decisions.md` **D-M5S01-02**, finding F-51). **No manual test targets this row** — `acceptance_tests[4]` covers the three list views only — so, per `skills/admin/requirements-traceability-matrix`, the status stays `In Build`, the same shape `REQ-001`/`REQ-033` already establish for a checker-only row whose step is nonetheless `documented`. |
+| REQ-052 | Q77 | Every tester persona named in the M5 sandbox proof holds the real Profile plus Permission Set Group for their team, never the administrator | M5-S03 | `setup-only: story-backlog.md` | story-drafter | — | M5-S03-T1 | checker | In UAT | `artefacts/M5-S03/story-backlog.md` | pass — `check_invest.py --manifest-dir artefacts/M5-S03` exit 0 (`Summary: 11/11 stories passed`) enforces a persona that is not "user" or "admin" on all 11 stories (`plan.json` `steps[M5-S03].acceptance_tests[0].description`). Every `As a` stem additionally names the real profile (`Acme Support Tier 1` / `Acme Support Tier 2` / `Acme Billing`) and PSG (`PSG_Tier1_Prod` / `PSG_Tier2_Prod` / `PSG_Billing_Prod`), each resolving to a file this build wrote (`artefacts/M2-S03/profiles/`, `artefacts/M2-S02/permissionsetgroups/`) per `story-backlog.md` § Persona anchors. **Minted here, not inherited:** `decisions.md` **O-M5S03-01** records that no writer owns the `REQ-` sequence for this build; `REQ-052`–`REQ-058` continue from `REQ-051`, the highest id on file before this step, so no collision exists. Manual `M5-S03-T2` (below) also touches this requirement's channel-and-persona clause and is outstanding at the M5 gate. |
+| REQ-053 | Q84 | Each of the three intake channels — email, web and manual UI — is tested separately, by its own story, rather than proving the easy half once | M5-S03 | `setup-only: story-backlog.md` | story-drafter | — | M5-S03-T2 | manual | In UAT | `artefacts/M5-S03/story-backlog.md` | outstanding — manual, deferred to the M5 gate (`tests/M5-S03/results.json` `skipped_manual[0]`). Epic A carries one story per channel (`US-CASE-001` email/support, `US-CASE-003` web, `US-CASE-004` manual), plus `US-CASE-002` as a fourth story splitting the email channel by data variation — Billing gets its own named tester (Q77) and a story cannot carry two `As a` clauses — not a fourth channel. That split is recorded as an ambiguous backlog-shape call rather than assumed acceptable: `decisions.md` **O-M5S03-05**. `check_invest.py` does not itself assert one-story-per-channel; that is this manual test's own clause, not the checker's. |
+| REQ-054 | Q80 | Every story carries at least one criterion that is a restriction rather than a capability — the deny cases (an unauthorised sender's mail bounces; a Tier 1 agent cannot open a Billing case) are first-class, not an afterthought | M5-S03 | `setup-only: story-backlog.md` | story-drafter | — | M5-S03-T1 | checker | In UAT | `artefacts/M5-S03/story-backlog.md` | pass — `check_invest.py` exit 0 enforces at least one sad-path criterion per story (same acceptance-test description as `REQ-052`), named explicitly in: `US-CASE-001` AC-3 (bounce), `US-CASE-002` AC-3, `US-CASE-003` AC-3/AC-4, `US-CASE-005` (the whole story), `US-CASE-006` AC-3, `US-CASE-010` AC-2. Manual `M5-S03-T2`'s third clause (a permission-denial path) also targets this requirement and is outstanding at the M5 gate, the same test named on `REQ-053`. |
+| REQ-055 | Q78 | Sandbox deliverability is raised above System Email Only, with Contact emails scrubbed first, before any email-channel story can be run | M5-S03 | `setup-only: story-backlog.md` | story-drafter | — | — | — | Draft | `artefacts/M5-S03/story-backlog.md` | no test, machine or manual, evidences this requirement directly — it is carried as a named deploy prerequisite (**P6**) in the `dependencies[]` of `US-CASE-001`, `US-CASE-002` and `US-CASE-003`, and as a Background bullet ("the sandbox is UNVERIFIED", `story-backlog.md` § Persona anchors). The gap is waived under `check_rtm.py`'s `Draft`-status coverage rule rather than hidden behind a fabricated test id: raising deliverability is an environment action no plan step performs, tracked at the M5 gate instead. |
+| REQ-056 | Q96 | Before every UAT session, the triager confirms each Permission Set Group's recalculation is finished, so a stale group reports as Blocked rather than as a build defect | M5-S03 | `setup-only: story-backlog.md` | story-drafter | — | — | — | Draft | `artefacts/M5-S03/story-backlog.md` | no dedicated story or test — Q96's answer is a recurring pre-session gate query, not a one-time acceptance criterion, so it is carried in the shared Background block (`story-backlog.md` § Persona anchors, bullet 6) rather than written as its own story. `story-backlog.md` § Process Observations names this as one of three requirements deliberately carrying no story; recorded here as `decisions.md` **O-M5S03-01** and waived under `Draft`, not treated as an oversight. |
+| REQ-057 | Q97 | When a UAT criterion's precondition has not been met (an inactive escalation rule, an unmet deploy prerequisite), the named triager records it as Blocked, not Failed | M5-S03 | `setup-only: story-backlog.md` | story-drafter | — | — | — | Draft | `artefacts/M5-S03/story-backlog.md` | no dedicated story or test — illustrated in `US-CASE-008`'s notes ("that distinction is Q97's whole point and the triager decides it") rather than asserted as its own criterion. Same deliberate-no-story treatment as `REQ-056`, same `decisions.md` **O-M5S03-01** entry, waived under `Draft`. |
+| REQ-058 | Q94 | The sandbox this backlog is proven in has a named environment owner and a named refresh approver | M5-S03 | — | story-drafter | — | — | — | Draft | — | outstanding, unbuilt — `M5-S02` (the sandbox-strategy design step that would name an owner and approver) is `blocked` on four inputs (`team_size`, `concurrent_workstreams`, `release_cadence`, `data_sensitivity`); no story in this backlog can name a sandbox at all, because Q75 is deferred. This row is a placeholder a future step must satisfy, not evidence of anything delivered — `story-backlog.md`'s own internal matrix names the same three ids (`REQ-056`–`REQ-058`) as having no story, and this is the one of the three with no artefact at all. Waived under `Draft`; not an orphan, because no manifest component and no artefact exist for `check_rtm.py` to flag as unlinked. |
 
 ---
 
@@ -127,6 +138,17 @@ key is auditable rather than invented. Ids are stable and are never reused.
 | REQ-045 | L9–L11 — "Within the first minute of a case being created … the SLA clock must be running on the right calendar, and priority must be set from what the form or email tells us" | Q48 (answered — per-channel entitlement automation + no-account fallback); Q16, Q40 (answered, cited in prose); Q14 (DEFERRED — assumption A2, the null-guard default); D1, D2 (the before-save Flow choice) |
 | REQ-046 | — (no requirement line naming test metadata directly; the `FlowTest` is a deploy-time consequence of `REQ-045`'s `<status>Active</status>` flow, not its own requirement bullet) | Q48 (answered, cited in prose — same source as `REQ-045`) |
 | REQ-047 | L15–L18 — "SLA: Premier accounts get a first response within 4 business hours … Severity 1 outages are 24/7 and never pause" (the org-level switch that lets `REQ-045`'s flow deploy `Active` rather than `Draft`, the same shape `REQ-039` already carries for a non-functional-requirement enabler) | Q40 (answered, cited in prose — same source as `REQ-045`) |
+| REQ-048 | L12–L14 — "Billing and Tier 2 pick from a list" | Q31 (answered — the working-surface half, for Tier 2); D4 (the decision resolving the mechanism) |
+| REQ-049 | L12–L14 — "Billing and Tier 2 pick from a list" (the same requirement line as `REQ-048`, for Billing's own queue and team) | Q31 (answered, same citation as `REQ-048`); D4 |
+| REQ-050 | — (no requirement line naming a Tier 1 pull view; `requirement.md` L12–L13 says the opposite — work pushed to Tier 1 — this row exists because the step `M3-S05` would build is blocked) | Q31 (answered — cited in prose only, as the requirement this row is deliberately NOT satisfying); A7 (the assumption that licenses the interim view); D4 (cited in prose — the decision this row's own existence appears to contradict and does not) |
+| REQ-051 | — (no requirement line; `admin/escalation-rules`'s own monitoring gap is what asks for this report, not a `requirement.md` bullet, the same shape `REQ-042`/`REQ-044` already carry for a plan-level need) | Q91 (answered — a saved report, reviewed weekly by the Tier 2 lead) |
+| REQ-052 | — (no requirement line; a UAT-discipline requirement about tester identity, not a business rule — the same "no requirement line" shape `REQ-006`/`REQ-025`/`REQ-039`/`REQ-042`/`REQ-044`/`REQ-046`/`REQ-047`/`REQ-050`/`REQ-051` already carry) | Q77 (answered — one named tester per team, real profile + PSG, never admin) |
+| REQ-053 | — (no requirement line; Q84 governs *how* the existing channel requirements are proven, not what they are) | Q84 (answered — each of the three channels tested separately) |
+| REQ-054 | — (no requirement line; a testing-discipline requirement that the deny requirements already on file — `REQ-010`, `REQ-015`, `REQ-020`, `REQ-029` — must each be demonstrated by a testable restriction criterion, not itself a new restriction) | Q80 (answered — restriction criteria are first-class) |
+| REQ-055 | — (no requirement line; an environment precondition, not a business requirement) | Q78 (answered — raise sandbox deliverability, scrub Contact emails first) |
+| REQ-056 | — (no requirement line; a UAT programme control) | Q96 (answered — pre-session PSG recalculation gate) |
+| REQ-057 | — (no requirement line; a UAT programme control) | Q97 (answered — named triager, Fail vs Blocked) |
+| REQ-058 | — (no requirement line; an environment-ownership control) | Q94 (answered — named owner + named refresh approver); blocked on `M5-S02` |
 
 ---
 
@@ -1594,3 +1616,242 @@ initially written as the multi-value `D1; D2` and the linter correctly rejected 
 'D1; D2' is not the build-plan shape D<n>`); it now carries `D2` alone (the flow-pattern-selector
 branch this step actually implements), and `D1` (the Flow-over-Apex automation-selection branch) is
 carried in the coverage table's prose instead, where it is not schema-validated.
+
+## What M5-S01 rests on — Q31 for the two pull working surfaces, A7 for the Tier 1 interim, D4 for the mechanism, Q91 for the report, one bundled requirement
+
+Four new rows, minted after re-reading this file immediately before writing:
+
+- **`REQ-048`/`REQ-049`, Q31 answered.** "Billing and Tier 2 pick from a list" is one requirement
+  line (`requirement.md` L12–L14) serving two teams and two queues, the same one-line-two-rows shape
+  `REQ-001`/`REQ-002` already establish for the two business processes on one requirement bullet.
+  `D4` (`plan.json` `decisions[]`) is cited on both — it is the decision-tree branch (`Q13`,
+  `standards/decision-trees/automation-selection.md`) that resolves *how* Tier 2 and Billing reach
+  their cases (queue list view, not Assignment-Rules-only or Omni-Channel), the same mechanism
+  `REQ-042`'s two rows already share `D10` for.
+- **`REQ-050`, a harder case: cited against the requirement it does NOT satisfy.** `Q31`'s answer
+  is that Tier 1's work is *pushed*; `M3-S05`, the step that would configure that push, is
+  `blocked` on `Q32`–`Q35`. `M5-S01` still builds a Tier 1 queue list view, under assumption `A7`,
+  so Tier 1 has some way to work its queue in the interim. This is not `REQ-048`/`REQ-049` restated
+  a third time — it is a distinct, assumption-grounded need — so it gets its own id rather than
+  being folded into either. `decisions.md` **D-M5S01-03** is the full record of why this does not
+  contradict `D4`.
+- **`Q91`, informational, answered — one new requirement, two files.** "A saved report on
+  escalated, still-open Cases, reviewed weekly by the Tier 2 lead" has no `requirement.md` line of
+  its own — like `REQ-042`/`REQ-044`, it is a need the plan derived from a skill's own monitoring
+  guidance (`admin/escalation-rules`), not a bullet in the intake document. `REQ-051` bundles the
+  report and its folder as one mechanism, the same one-mechanism treatment `REQ-032` gives the
+  acknowledgement template and its `EmailFolder`.
+- **Backward, not reused:** `REQ-021`–`REQ-025` (`M2-S04`'s queues and groups) are what every
+  `<queue>`/`<sharedTo>` element in this step's three list views names by developer name; none are
+  reused here for the same layering reason every prior step's "rests on" section gives — the queue
+  layer is its own artefact, minted at the step that actually built it. `REQ-043` (`M4-S04`'s
+  escalation rule) is the mechanism this step's report exists to monitor, cited in prose only.
+
+**A real org caught what no local check could, twice.** The first build (`09-34-00Z`) passed both
+declared checkers and `check-outputs` cleanly, then failed `reports/MOCK-DEPLOY-M5.md` run 1 on a
+field neither declared checker asserts anything about (F-49), and the operator's follow-on probes
+then disproved two values straight out of the cited skill's own worked example (F-50).
+`decisions.md` **D-M5S01-01** records the closure — in the artefact, not yet at the skill;
+**D-M5S01-02** records F-51, the one fact the org could not settle by probing, as a post-deploy
+runbook step rather than a rebuild target; **O-M5S01-01** records that both declared checkers score
+the rejected file and the fixed file identically; **O-M5S01-02** downgrades the folder-filename
+finding from a possible deploy defect to a checker-recognition gap, now that run 1 has validated
+the folder at its declared filename. Every field in `REQ-048`–`REQ-051`'s rows traces to the plan,
+the two builder envelopes, the two step-tester envelopes, or `reports/MOCK-DEPLOY-M5.md` — nothing
+here restates the narrative of the rebuild itself.
+
+## Coverage, as far as M5-S01
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M5-S01` —
+seventeen of twenty-three documented steps (every M1–M4 step through `M4-S03`, plus `M5-S01`):
+
+- **Requirements with no step:** not yet computable, same reasoning as every prior "Coverage"
+  section — ids are minted when a step delivers them. Fifty-one `REQ-XXX` ids exist and all
+  fifty-one have a step.
+- **Steps with no requirement:** 0 of the documented set. `M5-S01`'s six `outputs[]` paths (three
+  list views, the report, the folder, `package.xml`) are named across `REQ-048`–`REQ-051` above
+  and `workbook/99-other-configuration.md` `CWB-OTHER-034` (the manifest); the deploy-order note
+  is `CWB-OTHER-035`, not a traceability row, the same convention every prior step's non-manifest
+  artefact has followed.
+- **Manual tests outstanding:** 18 — the 15 already outstanding after `M4-S05` plus this step's one
+  manual test (`M5-S01-T5`), which covers all three list views' queue-name existence and the Tier 1
+  interim-surface disposition in one Given/When/Then; not ticked, deferred to the M5 gate. No manual
+  test targets `REQ-051` (the report) directly.
+- **Orphan artefacts, build scope:** 0. `check_rtm.py` reported 0 orphans both before and after this
+  step's rows were added — every manifest member in `artefacts/` currently resolves to some row's
+  `artefact` cell or is bundled into a row's `artefact_paths` and not independently orphaned; the
+  report's folder is the one component in this step that follows the bundled-not-orphaned shape
+  (inside `REQ-051`, per the same treatment `REQ-032` gives `EmailFolder:case_intake`).
+
+## Linter result — after M5-S01
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+traceability.md: 51 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 0 warning(s)
+```
+
+Zero errors, zero coverage gaps, zero orphans, zero warnings at build scope: `REQ-048`–`REQ-051`
+above each carry an artefact and a test, every other row is unchanged, and every manifest member
+under `artefacts/` resolves to some row.
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts/M5-S01 --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+traceability.md: 51 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 111 warning(s)
+```
+
+`REQ-048`–`REQ-051` resolve their own `artefact` cell cleanly at this narrower scope, with no
+"artefact not found" warning of their own — the same clean-resolution shape every prior step's own
+rows get at their own step scope. The 111 warnings are two per unresolved row rather than one: each
+of the other 47 rows' `artefact` column is (correctly) not found under `artefacts/M5-S01/`, **and**
+this checker's `artefact_paths` existence check also fires per path, because every row's
+`artefact_paths` entries are written build-root-relative (`artefacts/M4-S05/classes/...`) rather
+than relative to the narrower `--manifest-dir` passed here — a path-resolution shape that applies
+to every row in this file alike at any scope narrower than the full build, not something this
+step's own four new rows introduced (`REQ-048`–`REQ-051`'s own `artefact_paths` entries show the
+identical pattern in the raw output). Unresolved-at-this-scope, not a defect, per the same reading
+every prior "Linter result" section in this file gives the narrower-scope run.
+
+## What M5-S03 rests on — Q77 for the persona convention, Q84 for the per-channel split, Q80 for the deny-case discipline; three requirements carry no story at all
+
+`M5-S03` is the first `docs`-type step in this build owned by a borrowed Tier-2 agent
+(`story-drafter`) rather than by `metadata-builder`, and it produces one markdown document —
+`artefacts/M5-S03/story-backlog.md` — carrying 11 INVEST stories across 4 epics, not a metadata
+component. Seven new requirement ids are minted here (`REQ-052`–`REQ-058`), continuing from
+`REQ-051`, because the testing-and-environment questions Q77–Q97 answer are their own layer of
+requirement, not a restatement of `REQ-001`–`REQ-051`'s configuration requirements.
+
+**No collision, so the ids are adopted as minted.** `story-backlog.md`'s own internal
+Requirements Traceability Matrix minted `REQ-052`–`REQ-058` itself, without a build-wide owner of
+the `REQ-` sequence — recorded as an ambiguous gap in the story-drafter envelope
+(`envelopes/M5-S03/2026-09-12T10-25-00Z.json` → `process_observations[9]`, category `ambiguous`,
+domain `traceability`) and carried into `decisions.md` **O-M5S03-01**. `REQ-051` was the highest
+id in this file before this step ran, so `REQ-052`–`REQ-058` collide with nothing already on file
+and are adopted here unchanged rather than re-minted — a re-map would have discarded a working,
+non-colliding id space for no benefit and would have left `story-backlog.md`'s own matrix
+disagreeing with this file's ids.
+
+**Four of the seven serve a story directly; three do not, deliberately.** `REQ-052` (Q77),
+`REQ-053` (Q84) and `REQ-054` (Q80) are each evidenced by the declared checker, the declared
+manual test, or both, across the story set. `REQ-055` (Q78) is a named deploy prerequisite (P6)
+with no dedicated test. `REQ-056` (Q96) and `REQ-057` (Q97) are UAT programme controls —
+carried in the shared Background block and in `US-CASE-008`'s notes rather than as their own
+story — because a story that dramatizes "confirm the PSG finished recalculating" or "the triager
+decides Fail vs Blocked" is exactly the undemoable-story shape
+`admin/user-story-writing-for-salesforce` LLM anti-pattern 5 warns against. `REQ-058` (Q94) has no
+artefact at all: `M5-S02`, the sandbox-strategy step that would name an environment owner and
+refresh approver, is `blocked` on four inputs, and no story here can name a sandbox in its stead.
+
+**Why `Draft`, not `In Build`, for the four requirements with no test.** `REQ-055`–`REQ-058` are
+not steps this plan will revisit — `M5-S03` is `documented` and no other pending step is scoped to
+close any of the four — so `In Build`'s "a step remains" reading does not fit. `Draft` is the
+closest enum member to "recorded, not yet actioned or testable by a plan step," and
+`check_rtm.py`'s own rule treats a `Draft` row's missing artefact/test as a waived gap (WARN) once
+`Draft` itself does not require a `decision_ref` (`check_rtm.py` line ~855: only `Deferred` and
+`Dropped` require one). Marking these `In UAT` instead would have manufactured a coverage
+appearance neither test suite provides — the choice a fabricated `test_id` would have made falsely.
+
+**The three-way `docs` distinction for this step.** `standards/build-orchestration.md` § 4's
+"docs" row names three different owners for three different documents in a design-only build:
+`metadata-builder` for `package.xml`, `story-drafter` for the story backlog, `build-doc-keeper`
+for the workbook/traceability/deploy-order/UAT-pack/acceptance-criteria set. `M5-S03` is the
+`story-drafter` instance — it has no `package.xml` and no `deploy-order.md`, because that agent's
+Output Contract names neither (§ 4 "Borrowing a roster agent" condition 2, `decisions.md`
+**O-M5S03-02**) — so this run's traceability contribution is the seven rows above and nothing in
+`workbook/99-other-configuration.md` beyond the single row for the story backlog itself.
+
+## Coverage, as far as M5-S03
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M5-S03` —
+eighteen of twenty-four documented steps (every M1–M4 step through `M4-S03`, plus `M5-S01` and
+now `M5-S03`; `M5-S02` remains `blocked`):
+
+- **Requirements with no step:** 0. Fifty-eight `REQ-XXX` ids now exist (`REQ-001`–`REQ-058`) and
+  every one has a `step_id`, including the four (`REQ-055`–`REQ-058`) whose row carries no
+  artefact or test — a `step_id` is not the same claim as delivered coverage, and the four
+  `Draft` rows say so in their own `test_result` cells rather than by omission here.
+- **Steps with no requirement:** 0 of the documented set. `M5-S03`'s one declared output
+  (`artefacts/M5-S03/story-backlog.md`) is named across `REQ-052`–`REQ-058` above and
+  `workbook/99-other-configuration.md` `CWB-OTHER-036`.
+- **Manual tests outstanding:** 19 — the 18 already outstanding after `M5-S01` plus this step's
+  one manual test (`M5-S03-T2`), which covers the channel/persona/deny-path clause named on
+  `REQ-052`–`REQ-054`; not ticked, deferred to the M5 gate.
+- **Coverage gaps (new at this step):** 4 — `REQ-055`, `REQ-056`, `REQ-057`, `REQ-058`, all
+  `Draft`, all **WAIVED** rather than **BLOCKER** per `check_rtm.py`'s disposition rule (missing
+  artefact and/or test while status is in `{Draft, Deferred, Dropped}` is a WARN, not an ERROR).
+  None of the fifty-four prior requirements carried a coverage gap; this is the first step in the
+  build to record one, and it is recorded as a gap rather than closed with an invented test.
+- **Orphan artefacts, build scope:** 0 expected. `story-backlog.md` is a markdown document, not
+  source-format metadata — it derives no `<types>`/`<members>` entry and defines no component
+  the Metadata API could deploy, so `--manifest-dir artefacts` finds nothing under
+  `artefacts/M5-S03/` for the orphan check to reconcile against any row, the same
+  "docs that produces no manifest" treatment `standards/build-orchestration.md` § 4/§ 5 gives
+  `M1-S01`'s and every prior step's `deploy-order.md` note, and the same reading `step-tester`
+  already applied when it marked this step's own `manifest` acceptance test
+  skipped-not-applicable (`tests/M5-S03/results.json`).
+
+## Linter result — after M5-S03
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+WARN: row 56: coverage gap: REQ-055 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 57: coverage gap: REQ-056 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 58: coverage gap: REQ-057 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 59: coverage gap: REQ-058 has no artefact and no test id (status 'Draft') — waived by decision NONE
+traceability.md: 58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)
+```
+
+Zero errors, zero orphans. The four `WARN`s are the four `Draft` rows named in "Coverage, as far as
+M5-S03" above (`REQ-055`–`REQ-058`) — each one **WAIVED**, not **BLOCKER**, because `Draft` is a
+terminal status under `check_rtm.py`'s coverage rule; "waived by decision NONE" is the checker's own
+wording for a `Draft` row that carries no `decision_ref`, which is correct here — only `Deferred` and
+`Dropped` require one, per the same rule that let `REQ-055`–`REQ-058` skip a `D<n>` citation that
+would otherwise have to be invented. This is the first run in the build to report a non-zero
+`coverage gap(s)` count; every prior step's run reported zero, because every prior row either carried
+a test or was never written until it did. Reporting four rather than hiding them behind a fabricated
+`test_id` or a status this step did not earn is the point of the `Draft` convention this run
+introduces to the file.
+
+## Coverage note — `M5-S05` mints no requirement; every REQ artefact is now carried by a member of `M5-S05`
+
+`M5-S05` (`docs`, `metadata-builder`, `depends_on` `M5-S04` and `M4-S05`) is the second step in this
+build's own `traceability.md` to add no new `req_id` row, the same treatment `M5-S04` received: a
+build-level `package.xml` and its deploy-order note aggregate what every other step already built,
+so they satisfy no requirement of their own to add here — the same "mints no requirement" reading
+`workbook/99-other-configuration.md`'s `CWB-OTHER-042`/`-043` give the pair. What changed at this
+step, and what the fifty-eight existing rows above do not otherwise say: every one of the fifty-four
+requirements whose row names an `artefact` (`REQ-001`–`REQ-054`, excluding the four `Draft` rows
+`REQ-055`–`REQ-058` that name no artefact by design) is now, for the first time, carried by a
+**named member of one build-level manifest** — `artefacts/M5-S05/package.xml`, 29 types, 56
+members — rather than only by its own step's manifest under `artefacts/<step-id>/package.xml`. The
+two-way check `step-tester` ran over the whole `artefacts/` tree (`tests/M5-S05/manifest_check_wholetree.txt`)
+confirms both directions: all 56 members resolve to a file, and all 62 deployable files (56 named
+members plus 6 `-meta.xml` siblings that travel with a body file and name no member of their own)
+are covered by a member — 0 missing either direction. This is not a new coverage claim this file's
+own rows did not already carry (every artefact cell above already names the file the member
+resolves to); it is the first point in the build where a single manifest, rather than seventeen
+separate ones, can be checked against the whole tree in one pass — which is what closes **F-43**
+(`decisions.md` **D-M5S05-01**) and is what `reports/MOCK-DEPLOY-M5.md` Run 3's manifest-mode dry
+run validated end to end. `M3-S05` and `M5-S02` (both `blocked`) contribute no member, matching
+their rows' own `artefact` cells above, which already name no component for either.
+
+## Linter result — after M5-S05
+
+```
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md \
+    --manifest-dir artefacts --repo-root "/Users/pranavnagrecha/VS Code/Personal/SfSkills"
+WARN: row 56: coverage gap: REQ-055 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 57: coverage gap: REQ-056 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 58: coverage gap: REQ-057 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 59: coverage gap: REQ-058 has no artefact and no test id (status 'Draft') — waived by decision NONE
+traceability.md: 58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)
+```
+
+Unchanged from the "Linter result — after `M5-S03`" run: still 58 rows, still 0 orphans, still the
+same 4 `Draft`-row coverage-gap `WARN`s on `REQ-055`–`REQ-058`. `M5-S05` adds no row and closes no
+`Draft`, so an identical result is the correct outcome, not a stale re-run — `--manifest-dir
+artefacts` now also sees `artefacts/M5-S05/package.xml` on disk, and the orphan check still reports
+zero, confirming the new build-level manifest introduces no member this file's fifty-eight rows do
+not already account for.

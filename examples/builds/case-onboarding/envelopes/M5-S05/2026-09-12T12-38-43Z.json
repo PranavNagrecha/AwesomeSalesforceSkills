@@ -1,0 +1,209 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T12-38-43Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-38-43Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S05/2026-09-12T12-38-43Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "step_id": "M5-S05"
+  },
+  "summary": "Documented the tested M5-S05 step (docs, owner metadata-builder, agent for this step is not build-doc-keeper, so Steps 1-9 apply, not the Step 10 compile run) -- the build-level package.xml (29 types, 56 members, version 67.0) and its deploy-order.md, the last step of this build (M3-S05 and M5-S02 stay blocked). Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json before and after the status transition. Appended five decisions.md entries sourced from the step's own envelope (2026-09-12T12-16-22Z), step-tester's envelope (2026-09-12T12-28-47Z) and reports/MOCK-DEPLOY-M5.md Run 3: D-M5S05-01 (F-43 closed -- the Apex now travels in a manifest, proven by a real manifest-mode dry run; plus the flywheel record for a step-tester playbook gap that is named, not yet closed, because this build has only one build-level manifest step), D-M5S05-02 (this manifest follows M3-S03's safe deploy sequence, one position off M5-S04's compiled order -- both named, neither silently picked), D-M5S05-03 (six org prerequisites from four milestone gates compiled into one release checklist, none expressible as a manifest member or a molecular test), D-M5S05-04 (four release-owner decisions -- rollbackOnError, testLevel, validation timing, the backout plan -- left open by design per the skill's own Questions-to-Ask table), D-M5S05-05 (the <version> split recorded, not reconciled: nine step manifests stay at 62.0, the build manifest ships at 67.0 per G3 decision 6, a plan-level api_version remains a planner v6 item). Wrote two workbook rows (workbook/99-other-configuration.md CWB-OTHER-042 for package.xml, CWB-OTHER-043 for deploy-order.md), both owned by metadata-builder, both source_req_id REQ-001-REQ-058 because the manifest and its note aggregate across the whole build rather than serving one requirement -- the same reading M5-S04's five compiled-document rows already use. Added no new traceability.md row -- the manifest mints no requirement, the same treatment M5-S04 received -- and instead added a 'Coverage note' section stating that every REQ artefact with a named artefact cell (REQ-001-REQ-054) is now, for the first time, carried by a named member of one build-level manifest rather than only by its own step's manifest, grounded in step-tester's whole-artefacts/-tree two-way check (56/56 members resolved, 62/62 deployable files covered, 0 missing either direction). Re-ran check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo> from the build directory: unchanged at 58 rows, 0 orphans, 0 errors, 4 warnings (the same four Draft-row coverage gaps on REQ-055-REQ-058). Set M5-S05 to documented via build_plan.py set-status.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Both artefacts this step produced (package.xml, deploy-order.md) got exactly one workbook row each, both rows carry a real (if aggregate) source_req_id and a stated verification path, and decisions.md now carries every item the runner asked to be recorded. Held at MEDIUM rather than HIGH on the Step 11 trigger 'an artefact could not be placed in a section without judgment': Step 7 reads 'one row per requirement the step serves', and a build-level manifest that aggregates every prior step's members serves no single requirement of its own -- the same reading M5-S04's compile run needed for its five documents, applied here to an ordinary per-step docs step by analogy rather than by an explicit AGENT.md branch for this shape. Secondarily, step-tester's own formal run on this same step flagged an ambiguous, playbook-gap finding (agents/step-tester/AGENT.md Step 3 has no carve-out for a build-level manifest step whose own directory holds no component files) that this run could name in decisions.md (D-M5S05-01) but could not close at the source, because this build has only one such step to prove a fix against.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "release-readiness",
+      "observation": "F-43, open since the M4 gate ('no manifest in the build carries the Apex until M5-S05 is built'), is now closed by a real manifest-mode dry run over the whole build (reports/MOCK-DEPLOY-M5.md Run 3: 60/60 components, 0 errors except the pre-existing F-28) rather than by a source-mode run that happens to include the same files.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-integrity",
+      "observation": "The whole-artefacts/-tree two-way manifest check step-tester ran found zero inconsistencies over the entire build: all 56 named members resolve to a file and all 62 non-sibling deployable files resolve to exactly one member, with no wildcards anywhere in the build to mask a gap in either direction.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/tests/M5-S05/manifest_check_wholetree.txt"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "release-readiness",
+      "observation": "Six org prerequisites (F-28, F-39, F-44, F-41, F-51, G4 decision 9) and four release-owner decisions (rollbackOnError, testLevel, validation timing, the backout plan) are all compiled into deploy-order.md but remain open by design -- a tested, documented, build-level manifest carries no automated signal on any of the ten, and every one needs a named human to close it before a real deploy.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M5-S05/deploy-order.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "playbook-gap",
+      "observation": "agents/step-tester/AGENT.md Step 3 has no explicit carve-out for a build-level manifest step whose own artefact directory holds no component files -- step-tester inferred the whole-tree reading from this step's own acceptance_tests[2] wording and from deploy-order.md's self-described method, and named the gap rather than let the inference pass silently. Recorded as D-M5S05-01, but not closed at the source: this build has exactly one build-level manifest step, so there is no second run to prove a playbook fix against.",
+      "evidence": {"source": "input", "path": "agents/step-tester/AGENT.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deploy-sequencing",
+      "observation": "deploy-order.md follows M3-S03's safe sequence (assignment/auto-response rules before Settings:Case) rather than M5-S04's compiled ten-slot order, which follows plan step order instead. Both are internally consistent and both are named (D-M5S05-02); neither this step's own molecular tests nor check_rtm.py adjudicates which a real deploy should follow.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M5-S05/deploy-order.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Every M5 step is now documented or blocked (M3-S05, M5-S02 blocked by design; every other step documented) -- milestone-verifier can now run the M5 acceptance report.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because M5-S05 was the last step blocking M5's own gate, and milestone-verifier is the agent that writes the milestone acceptance report and requests the G5 gate.",
+      "evidence": {"source": "input", "path": ".sfskills/builds/case-onboarding/plan.json"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The six org prerequisites and four release-owner decisions compiled at this step are exactly the release-readiness surface a dedicated review would score before a real deploy window.",
+      "domain": "release-readiness",
+      "suggested_followup_agent": "release-readiness-reviewer",
+      "followup_reason": "because it consumes exactly this compiled checklist (deploy-order.md §§ 5.2, 6) and the milestone verifier's own report once both exist.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/case-onboarding/artefacts/M5-S05/deploy-order.md"}
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time-agent prohibition on writing to an org or mutating files outside the paths the user supplied -- honored: only PLAN.md/CLARIFICATIONS.md, decisions.md, traceability.md, one workbook file, plan.json's status transition, and this envelope pair were touched"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and structure, and the confidence rubric this envelope overrides per build-doc-keeper's own Step 11 table"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the run_id convention (ISO-8601, colons replaced with dashes) and the md+json pair requirement this envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against before proceeding -- the step's status was tested (not built/failed/blocked), so no REFUSAL_OUT_OF_SCOPE condition applied; no other refusal condition matched"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 (plan.json as sole shared state; PLAN.md rendered, never hand-edited), § 4 (the docs step-type row's three-way owner split naming metadata-builder for the build-level package.xml and its deploy-order note; the Apex exception), § 6 (this agent's per-step job in the Tier-4 table), § 8 (the deepen-a-skill/deepen-a-playbook signal applied to the step-tester carve-out gap)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step type enum (docs) and the depends_on/outputs fields read directly from plan.json for this step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the ten canonical sections (neither artefact covers one, hence Other configuration) and the row schema CWB-OTHER-042/043 follow"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the rule that a build-level aggregation step mints no requirement of its own, and the check_rtm.py invocation and coverage-gap/orphan reading applied to the unchanged re-run"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the general documentation-accuracy discipline (a claim traces to what it documents, not to a plausible restatement) applied to every decisions.md entry appended this run"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a test result is recorded as acceptance evidence -- applied when reading the step's three declared manual tests (W12 1-3) as already-recorded, not this run's to tick"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the per-persona UAT case record shape; read here as a Mandatory Reads entry though this per-step run does not itself compile the pack (that was M5-S04's job)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape used to judge that the step's three declared manual tests already name an observable outcome, per step-tester's own check"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the step's own declared skill -- read to judge the package.xml/deploy-order.md content (member forms, wildcard rules, rollbackOnError/testLevel/backout guidance) while writing the two workbook rows and the four decisions that quote deploy-order.md directly"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M5-S05 was the last step blocking M5's own gate; every M5 step is now documented or blocked by design, so the M5 acceptance report can now be written."
+    },
+    {
+      "agent": "release-readiness-reviewer",
+      "because": "the six org prerequisites and four release-owner decisions compiled at this step are exactly the surface a release-readiness review scores before a real deploy window."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S05",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/plan.json"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-OTHER-042",
+        "section": "Other configuration",
+        "file": "workbook/99-other-configuration.md",
+        "target_value": "artefacts/M5-S05/package.xml",
+        "source_req_id": "REQ-001-REQ-058",
+        "recommended_agent": "metadata-builder"
+      },
+      {
+        "row_id": "CWB-OTHER-043",
+        "section": "Other configuration",
+        "file": "workbook/99-other-configuration.md",
+        "target_value": "artefacts/M5-S05/deploy-order.md",
+        "source_req_id": "REQ-001-REQ-058",
+        "recommended_agent": "metadata-builder"
+      }
+    ],
+    "traceability_rows": [],
+    "traceability_narrative": "No new req_id row -- the manifest mints no requirement, the same treatment M5-S04 received. Added a 'Coverage note' section stating every REQ artefact with a named artefact cell (REQ-001-REQ-054) is now carried by a named member of the one build-level manifest, grounded in the whole-tree two-way manifest check.",
+    "decisions_appended": [
+      "D-M5S05-01",
+      "D-M5S05-02",
+      "D-M5S05-03",
+      "D-M5S05-04",
+      "D-M5S05-05"
+    ],
+    "rows_replaced": [],
+    "rtm_lint": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root \"/Users/pranavnagrecha/VS Code/Personal/SfSkills\"",
+      "run_from": ".sfskills/builds/case-onboarding",
+      "result": "58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)",
+      "unchanged_from": "Linter result -- after M5-S03"
+    },
+    "set_status": {
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S05 documented --run-agent build-doc-keeper --envelope envelopes/M5-S05/2026-09-12T12-38-43Z.json --result \"workbook rows 2; traceability rows 0 (coverage note added); decisions appended 5\" --started 2026-09-12T12:38:43Z",
+      "result": "M5-S05: tested -> documented (run appended: build-doc-keeper)"
+    }
+  }
+}

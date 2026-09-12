@@ -1,0 +1,365 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T10-12-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T10-12-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S01/2026-09-12T10-12-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S01",
+    "reason": "Rebuild. reports/MOCK-DEPLOY-M5.md run 1 rejected the report (F-49) and operator probes settled F-50 and left F-51 open; the operator reset the step tested -> failed -> pending and re-claimed it running before this run began."
+  },
+  "summary": "Ran the M5-S01 REBUILD end to end and set it built again. The step was already `running` when this agent picked it up - the operator had claimed it after the tested -> failed -> pending reset - so no running transition was written here (standards/build-orchestration.md SS 4 documented-to-running rebuild path; the carve-out reason is recorded above). The owning agent was re-run inline under the same artefact-path constraint, its envelope stored verbatim, check-outputs returned ok and the step moved running -> built. One file changed besides the deploy-order note; the other five artefacts verify byte-identical by sha256. Six declared outputs exist, one undeclared artefact (deploy-order.md) as before. Nothing written outside artefacts/M5-S01/ and envelopes/M5-S01/; no gate approved, no org touched, no sf or mock_deploy command run, no acceptance test run, no skill edited.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM: the step was legitimately running under the operator's rebuild claim, every required input resolved from the plan and the operator's evidence file, both envelopes validate, check-outputs exited 0, both declared checkers exit 0 and nothing landed outside artefacts/M5-S01/ - but the undeclared deploy-order.md is still present, and the report the step ships is knowingly incomplete pending F-51. Not HIGH on the undeclared-artefact row; not LOW because no output is missing, empty or malformed.",
+  "outcome": "completed",
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The step's declared tests belong to step-tester, and the prior tested record (09-50-00Z, ran 4 failed 0) is now stale because the report file changed. This agent must not run them and did not; the owning agent's two verbatim checker runs are build-time self-checks, not the tester's.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run /test-build-step on M5-S01 again."
+    },
+    {
+      "dimension": "org-validation",
+      "state": "partial",
+      "reason": "Run 1 validated the list views and the folder but stopped at the report's description; the rebuilt report body has not been validated end to end. This agent may not run mock_deploy.py, so run 2 is the operator's.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Operator: mock_deploy.py run 2 over M5-S01 after step-tester re-runs."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuild was confined to one artefact because the org validated the other five untouched, and the claim was verified by hash rather than asserted - shasum -a 256 -c returned 5/5 OK against a snapshot taken before the edit.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S01",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Three items this step had carried as UNVERIFIED were closed by org evidence rather than by re-reading the skill, which is the loop working as intended: the design-only build could not have resolved them from the library.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M5.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The step reaches built for the second time with a report that does not filter on Escalated; after five rejected candidate codes this is no longer closable by a rebuild and now depends on a post-deploy human action.",
+      "domain": "reporting-accuracy",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Both declared checkers scored the org-rejected report 100 with zero findings and score it identically after the rebuild, so no automated gate in this step distinguishes a deployable report from one the org refuses on three grounds.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M5-S01].acceptance_tests",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Three of this step's UNVERIFIED items traced to one worked example in admin/reports-and-dashboards and all three were wrong, so the example is a single source of repeated build failures rather than three separate gaps.",
+      "domain": "skill-accuracy",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's prior tested record and the M5 manual checklist line are stale after this rebuild, and nothing in plan.json marks them so - the tester and the gate reader have to notice the run order themselves.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S01].runs"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The Wave 10 repo-tracked report pair under docs/reports/ was again not written because the invocation constrains writes to the build directory; an earlier runner run in this build did write one.",
+      "domain": "deliverable-contract",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "docs/reports/build-step-runner",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S01 is rebuilt and its prior test record is stale.",
+      "followup_reason": "step-tester must re-run the two declared checkers and the always-on xml and manifest checks against the changed report file.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "step-tester",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S01].acceptance_tests"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "F-49, F-50 and F-51 need decisions.md entries, and the post-deploy Escalated action needs a workbook row with an owner before the M5 gate.",
+      "followup_reason": "build-doc-keeper is the only writer of decisions.md, traceability.md and the workbook.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "build-doc-keeper",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S01/deploy-order.md"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by, including the ban on org writes and the exit-code-is-the-contract rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence pair, the atomic-write rule, dimensions_skipped states and the redaction requirement on echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum - none was raised on this run"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "SS 2 build_mode and the no-hand-edit rule, SS 3 the gate names and the set-status refusals, SS 4 the step record and status machine, SS 5 the check-outputs precondition on built and who owns the tests, SS 8 the plan CLI as sole writer"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{}, outputs[], depends_on[] and runs[] so only the owned fields were read and written"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format layout the artefacts had to obey - objects/<Object>/listViews/ and reports/<Folder>/ - so the tester's manifest derivation and any later deploy can read the tree"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming ListView, Report and ReportFolder are Metadata-API-carried types with explicit members, so the step's declared outputs are deployable metadata"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema (target_value, recommended_agent, recommended_skills, source_req_id) the planned step derives from, so the owning agent was handed the step's own cells rather than a paraphrase of its title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ-XXX / FG-XXX id conventions echoed into the envelope so the doc keeper can join step to requirement without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes (force:// auth URLs, JWT keys, base64 CI secrets) checked for before any input was echoed - none present in this step's inputs"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step is built and its declared tests have not run"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the two findings and the decision record need decisions.md, traceability and workbook rows before the M5 gate"
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S01",
+    "step_title": "Pull list views for Tier 2 and Billing plus the escalation monitoring report and its folder",
+    "step_type": "ui",
+    "milestone": "M5",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md = 39; its Inputs table takes build_dir and step_id and its Output Contract declares artefacts/<step-id>/",
+    "owning_envelope_path": "envelopes/M5-S01/2026-09-12T10-08-00Z.json",
+    "invocation_mode": "inline - the owning agent's AGENT.md was read end to end and its Plan executed in this session, as every step of this build has been run",
+    "terminal_status": "built",
+    "blocked_reason": null,
+    "relocations": [],
+    "relocations_note": "None needed. The owning agent is build-aware and wrote every declared path directly under artefacts/M5-S01/; nothing appeared under docs/reports/metadata-builder/.",
+    "artefacts": [
+      {
+        "path": "artefacts/M5-S01/objects/Case/listViews/Tier_1_General_Queue.listView-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S01/objects/Case/listViews/Tier_2_Queue.listView-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S01/objects/Case/listViews/Billing_Queue.listView-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S01/reports/Support_Operations-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S01/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M5-S01/deploy-order.md",
+        "declared": false
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M5-S01/deploy-order.md - metadata-builder writes it on every run (its AGENT.md Step 7) and the step does not declare it. The same pattern is recorded for M3-S01..M3-S04 (decisions.md O-M3S02-03) and every M4 step, and the G4 gate note accepted it with 'planner v6 declares it'. Confidence drops to MEDIUM on the Step 9 table regardless."
+    ],
+    "missing_outputs": [],
+    "files_outside_step_dir": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M5-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "input_map": {
+      "build_dir": "invocation",
+      "step_id": "invocation",
+      "api_version": "67.0 - optional input; no plan-level api_version key exists, so it was resolved from plan.json human_gates[milestone:M3].notes decision 6 (finding F-31), consistent with the six package.xml files M3-S03..M4-S04 already carry at 67.0",
+      "step_inputs.answers": "plan.json steps[M5-S01].inputs.answers = [Q31, Q91, Q65 (DEFERRED)], matched to plan.json.clarifications by recorded id",
+      "step_inputs.assumptions": "plan.json steps[M5-S01].inputs.assumptions = [A14, A7], read from plan.json.assumptions",
+      "step_inputs.note": "plan.json steps[M5-S01].inputs.note - carries the Q31 pull-vs-push split and the A7 interim-Tier-1-view commitment",
+      "upstream_outputs": "resolved to real paths for both depends_on steps: M2-S04 (three queues, three public groups) and M4-S04 (escalation-monitoring-note.md, which specifies the report's filters, grouping, columns, owner and cadence)",
+      "invocation_overrides": "None. The launch instruction restated the package.xml version as 67.0; that is the same value the plan's own M3 gate note binds, so no divergence arose. No value was taken from the instruction over the plan.",
+      "credentials_present": false,
+      "redactions": [],
+      "operator_evidence": "reports/MOCK-DEPLOY-M5.md - run 1 error text and the operator probe table. Read as a build-directory artefact, the same way M4-S04's monitoring note was; the coordinator's message restated it and no value was taken from the message beyond what that file records."
+    },
+    "step_gate": "steps[M5-S01].human_gate is false; gate milestone:M4 is approved and milestone:M5 is pending. No gate was approved, requested or recorded by this agent.",
+    "next_output_quoted": "build_plan.py next returned exactly [M5-S01]; stderr carried 'reason: milestone M3 skipped - its gate is approved and its only undocumented step(s) are blocked (M3-S05)'. M5-S02 stays blocked on its four sandbox-strategy inputs and was not touched.",
+    "declared_checkers_observed": [
+      {
+        "command": "python3 skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts",
+        "declared_scope": "build",
+        "exit": 0,
+        "note": "re-run verbatim from the build directory after the rebuild; step-tester owns the acceptance run"
+      },
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M5-S01",
+        "declared_scope": "step (default)",
+        "exit": 0,
+        "note": "same; identical score to the pre-rebuild run of the file the org rejected"
+      }
+    ],
+    "findings_for_the_m5_gate": [
+      "F-A (HIGH, carried and now permanent until acted on): the report ships without its Escalated criterion. Five candidate column codes were rejected by the org (F-51) and no cited skill documents one, so it is a post-deploy runbook step - add 'Escalated = True' in the report builder and re-export, or harvest the code from a retrieved Case report. Written in deploy-order.md sections 0 and 2 U1, in an XML comment and in the report's 219-character description.",
+      "F-49 (HIGH, closed in the artefact, open at the skill): a Report <description> over 255 characters passes every checker and fails only at the org. admin/reports-and-dashboards has no Report description-length rule; the library's DESC family covers PermissionSet, Profile, CustomPermission and CustomObject.",
+      "F-50 (HIGH, closed in the artefact, open at the skill): the skill's worked report example gives reportType 'Cases' (rejected; CaseList is correct) and the owner grouping column 'USERS.NAME' (rejected; OWNER is correct), and nothing in it says a field may not be both a column and a grouping. All three are now proven live.",
+      "F-B (DOWNGRADED): the folder validated at its declared filename, so this is a checker-recognition gap in check_report_inventory.py, not a deploy defect. Deepening the checker to accept the bare <Folder>-meta.xml form is the better remedy; the alternative is a human read of the folder file at the gate.",
+      "Test-coverage finding: both declared checkers scored the org-rejected report 100 with zero findings and score it identically now - this step's automated gates say nothing about report correctness.",
+      "F-C (LOW, prose): acceptance_tests[0]'s step-scope exit-code claim is still wrong; the declared build-scope command is correct. F-D: decisions.md W02's stale check_queues.py reason, unchanged. F-E: no plan-level api_version; 67.0 read from the M3 gate's decision 6."
+    ],
+    "envelope_validation": [
+      {
+        "path": "envelopes/M5-S01/2026-09-12T10-08-00Z.json",
+        "result": "OK"
+      },
+      {
+        "path": "envelopes/M5-S01/2026-09-12T10-12-00Z.json",
+        "result": "OK"
+      }
+    ],
+    "set_status_commands": [
+      "(no running transition - the operator had already claimed the step for the rebuild)",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M5-S01 built --run-agent metadata-builder --envelope envelopes/M5-S01/2026-09-12T10-08-00Z.json --result \"<the one-line rebuild outcome recorded on the run>\" --started 2026-09-12T10:05:00Z"
+    ],
+    "persistence_deviation": "The Wave 10 repo-tracked pair under docs/reports/build-step-runner/ and docs/reports/metadata-builder/ was not written: the invocation constrained writes to the build directory. Both build-scoped envelope pairs were written inside it and both validate.",
+    "carried_from_owning_envelope": {
+      "confidence": "MEDIUM",
+      "ungrounded_count": 7,
+      "resolved_this_rebuild": [
+        "U4 reportType = CaseList",
+        "U2 owner grouping column = OWNER",
+        "U2 no column/grouping overlap"
+      ],
+      "still_open": [
+        "U1 IsEscalated column code (F-51)",
+        "U2 STATUS/CREATED_DATE codes",
+        "U3 LAST_N_DAYS:30 pairing",
+        "U5 scope",
+        "U6 list-view tokens render",
+        "U7 field vs filter"
+      ]
+    },
+    "traceability_hint": {
+      "answers": [
+        "Q31",
+        "Q91"
+      ],
+      "deferred_answers": [
+        "Q65"
+      ],
+      "assumptions": [
+        "A14",
+        "A7"
+      ],
+      "note": "The step's inputs carry no source_req_id; the requirement link runs through the clarification ids above and through M4-S04's monitoring note, which Q91 also drives. build-doc-keeper joins them to REQ ids from the rows it already wrote."
+    },
+    "concurrency": "Single step, single run. plan.json touched only through build_plan.py set-status and check-outputs. No sf command, no mock_deploy.py, no gate write, no skill edit.",
+    "rebuild": {
+      "trigger": "reports/MOCK-DEPLOY-M5.md run 1 - Report Support_Operations/Escalated_Open_Cases: 'Value too long for field: Description maximum length is:255' (F-49)",
+      "prior_runner_envelope": "envelopes/M5-S01/2026-09-12T09-46-00Z.json",
+      "prior_builder_envelope": "envelopes/M5-S01/2026-09-12T09-34-00Z.json",
+      "status_path": "built -> tested -> failed -> pending -> running (all operator-written) -> built (this run)",
+      "claim": "The step was already `running` when this agent began; no running transition was written here, and none was needed.",
+      "stale_records": "The step's tested record (envelopes/M5-S01/2026-09-12T09-50-00Z.json, 'ran 4, failed 0, manual 1') and any M5 milestone reading above it are now stale - the report file changed. step-tester must run again.",
+      "files_changed": [
+        "artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml",
+        "artefacts/M5-S01/deploy-order.md"
+      ],
+      "files_byte_identical_verified": "shasum -a 256 -c, 5/5 OK: three listView files, Support_Operations-meta.xml, package.xml"
+    }
+  }
+}

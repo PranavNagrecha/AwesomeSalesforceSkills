@@ -1,0 +1,1017 @@
+{
+  "agent": "story-drafter",
+  "mode": "single",
+  "run_id": "2026-09-12T10-25-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S03/2026-09-12T10-25-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S03/2026-09-12T10-25-00Z.json",
+  "inputs_received": {
+    "discovery_artifact_path": ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+    "discovery_artifact_kind": "requirements-list",
+    "feature_scope": "Acme Software case intake on Service Cloud: email, web and manual Case creation with routing, first-response SLA and escalation for Tier 1, Tier 2 and Billing.",
+    "personas_supplied": [
+      "Tier 1 agent (PSG: PSG_Tier1_Prod)",
+      "Tier 2 engineer (PSG: PSG_Tier2_Prod)",
+      "Billing specialist (PSG: PSG_Billing_Prod)"
+    ],
+    "target_org_alias": null,
+    "release_capacity_points": null,
+    "priority_overrides": null
+  },
+  "summary": "11 INVEST-conformant stories across 4 epics, drafted from the 97 answered and deferred clarifications in CLARIFICATIONS.md and bounded by the supplied feature scope. Each of the three intake channels has its own story (email is split by data variation into support@ and billing@ because Q77 gives Billing its own named tester); every story names a tester persona holding the real Profile plus PSG rather than the administrator, carries 3-5 Given/When/Then criteria, and carries at least one criterion that is a restriction rather than a capability per Q80. Sizing is 3 S, 6 M, 2 L, 0 XL, so nothing needs splitting. MoSCoW is 9 Must / 2 Should, with one override recorded. Three G4 gate obligations are carried explicitly: the completion-proxy line on US-CASE-009, the Q24 agent-training line on US-CASE-004, and deploy prerequisites P1-P6 in the affected stories' dependencies. Every persona, queue, calendar, template and validation error string is quoted from an artefact this build already wrote.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "All three required inputs resolved and every persona anchored to a real file, but no target_org_alias was supplied so every fit tier is a library-only reading with no license probe; no release_capacity_points so the MoSCoW 60% rule could not be evaluated; and gotcha 14's named sandbox is unavailable because Q75 is deferred and M5-S02 is blocked.",
+  "dimensions_compared": [
+    "persona-anchoring",
+    "acceptance-criteria-completeness",
+    "sizing-discipline",
+    "nfr-coverage",
+    "training-impact-tag",
+    "rtm-coverage",
+    "handoff-routing",
+    "cross-cloud-flag"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "fit-tier-confidence",
+      "state": "partial",
+      "reason": "No target_org_alias was supplied (build_mode is design-only and plan.org is null), so no license check and no closest-existing-object search ran; every fit tier is the skill's MEDIUM-confidence library reading.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Re-run with target_org_alias once the build moves to org-connected."
+    },
+    {
+      "dimension": "license-fit-check",
+      "state": "not-run",
+      "reason": "Requires a live org probe; this build is design-only and no org alias is on file.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Supply target_org_alias."
+    },
+    {
+      "dimension": "moscow-capacity-check",
+      "state": "not-run",
+      "reason": "release_capacity_points was not supplied, so the 60% rule has no denominator; the backlog-by-count shape (82% Must) is reported instead and the descope order is named.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Supply release_capacity_points to evaluate the 60% rule."
+    },
+    {
+      "dimension": "wsjf-scoring",
+      "state": "not-run",
+      "reason": "WSJF needs value, time-criticality, risk-reduction and job-size inputs that no clarification supplies; scoring them would have been invention rather than prioritisation.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Supply the four WSJF components per story, or accept MoSCoW alone."
+    },
+    {
+      "dimension": "sandbox-precondition-naming",
+      "state": "partial",
+      "reason": "gotcha 14 requires each story to name the sandbox it is proven in; Q75 is deferred and M5-S02 (sandbox proof plan) is blocked, so the preconditions are named but the environment is not.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Unblock M5-S02 by supplying team_size, concurrent_workstreams, release_cadence and data_sensitivity."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "requirements",
+      "observation": "All three tester personas resolved to a Profile and a Permission Set Group this build actually wrote, so no persona in the backlog was inferred.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S03/profiles/",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "testability",
+      "observation": "Both validation-rule criteria quote the errorMessage string byte-for-byte from the artefact, so the failure a tester sees and the failure the story names are one fact rather than two descriptions that can drift.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S01/objects/Case/validationRules/",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "security",
+      "observation": "The deny cases were already designed rather than retrofitted: case-visibility-model.md opens by naming the three files that make a Tier 1 agent unable to open a Billing case, so writing US-CASE-005 was transcription.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M2-S05/case-visibility-model.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "documentation",
+      "observation": "The build states its own gaps inside the artefacts a reader opens in Setup — the escalation rule's active=false, the report's own description, the assignment rule's catch-all comment — which is why three stories could assert shipped behaviour rather than intended behaviour.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S04/escalationRules/Case.escalationRules-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "deployment",
+      "observation": "Three of eleven stories cannot be run at all until an org prerequisite is met: US-CASE-007 and US-CASE-009 need enableEntitlements, which G4 decision 2 records as owned by no step in this plan, and US-CASE-008 needs the escalation rule activated with both queue mailboxes created first.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json human_gates[milestone:M4].notes",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "requirements",
+      "observation": "Q24 remains half-built after four steps — recorded at M1-S02 (D-M1S02-03), again at M3-S04 (O-M3S04-01) with the routing consequence made concrete, and a third time here as a training obligation; roughly 20 cases a day depend on a human remembering a checkbox.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sla",
+      "observation": "Finding F-40 is not closed and this backlog inherits it: both entitlement processes pin US Support business hours while the M4 goal promises a Premier EMEA clock, so US-CASE-007's weekend criterion proves the pause but not the regional calendar.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M4-S02/entitlementProcesses/",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "testing",
+      "observation": "No story can name the sandbox it will be proven in, which admin/user-story-writing-for-salesforce gotcha 14 requires, because Q75 is deferred and M5-S02 is blocked on four sandbox-strategy inputs.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S02].status"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "traceability",
+      "observation": "Seven requirement ids (REQ-052 to REQ-058) were minted here continuing from REQ-051, the highest already in traceability.md; if build-doc-keeper mints its own ids at M5-S04 from the same clarification group the two spaces will collide, because no writer owns the REQ- sequence for this build.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "count": 7
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "traceability",
+      "observation": "Three requirements in the matrix deliberately have no story — REQ-056 (Q96 PSG recalculation gate), REQ-057 (Q97 Fail-versus-Blocked triage) and REQ-058 (Q94 environment owner) are controls on how UAT is run rather than behaviours a persona can demo; a human should confirm build-doc-keeper picks all three up in the M5-S04 UAT pack.",
+      "evidence": {
+        "source": "heuristic",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "backlog-shape",
+      "observation": "The email channel is given two stories rather than one, split by data variation, because Q77 gives Billing its own named tester and a single story cannot carry two As-a clauses; a reviewer reading the M5 manual test as \"three channels, three stories\" should confirm the split before M5-S04 compiles it.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S03].acceptance_tests[1].description"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "tooling",
+      "observation": "Ten of eleven stories trip check_invest.py's 250-word body WARN, but measured per story the stem plus acceptance criteria alone run 143-235 words and every one is under the threshold; the overflow is the handoff block (73-193 words), which on three stories is the F-40, completion-proxy and Q24 notes the M4 gate required be written down.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S03/story-backlog.md",
+        "count": 10
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M5-S04 is the next step and compiles these criteria into acceptance-criteria.md and uat-test-cases.yaml, where the ac_id and TC- ids this matrix left empty get assigned.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S04]"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because it owns the compiled UAT case pack and the canonical acceptance-criteria document that these per-story criteria feed."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "US-CASE-005 and US-CASE-006 both turn on a record-level refusal, and a tester who sees the refusal cannot say which layer produced it.",
+      "evidence": {
+        "source": "heuristic",
+        "count": 2
+      },
+      "suggested_followup_agent": "access-path-explainer",
+      "followup_reason": "Because it names the layer that produced a record-access denial, turning evidence of an outcome into evidence of a design."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The four inputs blocking M5-S02 are the same four that leave every story here without a named sandbox.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M5-S02].blocked_reason"
+      },
+      "suggested_followup_agent": "sandbox-strategy-designer",
+      "followup_reason": "Because unblocking it supplies the environment every story's INVEST-Testable claim currently lacks."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/user-story-writing-for-salesforce",
+      "path": "skills/admin/user-story-writing-for-salesforce/SKILL.md",
+      "used_for": "INVEST checklist, As-A/I-Want/So-That stem, S/M/L/XL sizing heuristic, split techniques, handoff field rules"
+    },
+    {
+      "type": "template",
+      "id": "admin/user-story-writing-for-salesforce/story-shape",
+      "path": "skills/admin/user-story-writing-for-salesforce/templates/story-shape.md",
+      "used_for": "the canonical markdown story shape and the INVEST self-check run before handoff"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then anatomy, the negative-path pairing rule, the permission-precondition Background block, and the requirement-id convention"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the pre-UAT environment questions behind the shared Background, and the Fail-versus-Blocked distinction carried into US-CASE-008"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ-XXX immutability rule and the 1 requirement : N stories cardinality the matrix follows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/moscow-prioritization-for-sf-backlog",
+      "path": "skills/admin/moscow-prioritization-for-sf-backlog/SKILL.md",
+      "used_for": "the Must/Should/Could/Won't definitions and the 60% capacity rule that could not be evaluated"
+    },
+    {
+      "type": "skill",
+      "id": "admin/persona-and-journey-mapping-sf",
+      "path": "skills/admin/persona-and-journey-mapping-sf/SKILL.md",
+      "used_for": "anchoring each persona to a concrete PSG, profile, record type and list view"
+    },
+    {
+      "type": "skill",
+      "id": "admin/fit-gap-analysis-against-org",
+      "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+      "used_for": "the Standard/Config/Low-Code/Custom fit tiers, marked MEDIUM confidence because no org was probed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-training",
+      "path": "skills/admin/change-management-and-training/SKILL.md",
+      "used_for": "the per-story training-impact tag, and why US-CASE-004 is enablement-session rather than email-blast"
+    },
+    {
+      "type": "skill",
+      "id": "architect/nfr-definition-for-salesforce",
+      "path": "skills/architect/nfr-definition-for-salesforce/SKILL.md",
+      "used_for": "naming the NFR class on the two L stories and on US-CASE-009"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4's borrowed-roster-agent rule: declare only outputs the owning agent's Output Contract names"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M5-S04 compiles these criteria into the UAT case pack and the canonical acceptance-criteria document."
+    },
+    {
+      "agent": "access-path-explainer",
+      "because": "the two deny-case stories assert a record-level refusal whose producing layer a tester cannot name."
+    },
+    {
+      "agent": "sandbox-strategy-designer",
+      "because": "unblocking M5-S02 supplies the named environment gotcha 14 requires of every story here."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S03",
+    "artefact_path": "artefacts/M5-S03/story-backlog.md",
+    "story_count": 11,
+    "epics": 4,
+    "sizing": {
+      "S": 3,
+      "M": 6,
+      "L": 2,
+      "XL": 0
+    },
+    "moscow": {
+      "Must": 9,
+      "Should": 2,
+      "Could": 0,
+      "Won't": 0
+    },
+    "req_ids_minted": [
+      "REQ-052",
+      "REQ-053",
+      "REQ-054",
+      "REQ-055",
+      "REQ-056",
+      "REQ-057",
+      "REQ-058"
+    ],
+    "req_ids_unmapped": [
+      "REQ-056",
+      "REQ-057",
+      "REQ-058"
+    ],
+    "deploy_prerequisites": {
+      "P1": "enableEntitlements is owned by no step in this plan (G4 decision 2)",
+      "P2": "non-routing queue mailboxes tier2-queue@acme.example and billing-queue@acme.example before escalation activation (G4 decision 1, F-44)",
+      "P3": "the escalation rule ships inactive (Q47); activation per artefacts/M4-S04/escalation-activation-runbook.md",
+      "P4": "support-noreply@acme.example verified as an org-wide address (F-28)",
+      "P5": "an active SlaProcess carrying a First Response milestone; the M4-S05 test class runs SeeAllData=true (G4 decision 9)",
+      "P6": "sandbox deliverability raised above System Email Only with Contact emails scrubbed first (Q78)"
+    },
+    "g4_obligations_carried": {
+      "completion_proxy_line": "US-CASE-009 notes + criterion 1 (G4 decision 7, D-M4S05-02)",
+      "q24_agent_training_line": "US-CASE-004 notes + criterion 2, training_impact enablement-session (D-M1S02-03, O-M3S04-01)",
+      "deploy_prerequisites": "P1-P6 carried in the dependencies of US-CASE-001, 002, 003, 007, 008, 009"
+    },
+    "unverified_items": [
+      "US-CASE-007: both entitlement processes pin US Support business hours while the M4 goal promises a Premier EMEA clock (F-40, accepted at the M4 gate) — the regional-calendar behaviour is UNVERIFIED and the tester records which calendar was used",
+      "US-CASE-007: the 14 seeded holidays and the Q90 owner are UNCONFIRMED (G4 decision 5)",
+      "US-CASE-011: the Case.IsEscalated report column code is unresolvable (D-M5S01-02) — the report over-reports and criterion 2 asserts that rather than the intended filter",
+      "Every story: the sandbox is UNVERIFIED — Q75 deferred, M5-S02 blocked; preconditions are named, the environment is not"
+    ],
+    "assumptions_applied": {
+      "A15": "US-CASE-005 — the deny persona is set up without the granting permission set and nothing else is assumed to be blocking the path (Q82 deferred)",
+      "A23": "every story — evidence is a screen the tester can point at plus the case record; no query or file evidence is designed this phase (Q81 deferred)"
+    },
+    "checker": {
+      "command": "python3 skills/admin/user-story-writing-for-salesforce/scripts/check_invest.py --manifest-dir artefacts/M5-S03",
+      "cwd": ".sfskills/builds/case-onboarding",
+      "exit_code": 0,
+      "summary": "11/11 stories passed (0 ERROR, 10 WARN)",
+      "warns": "10 x body-word-count; stem+AC alone is 143-235 words per story, all under the 250 threshold"
+    },
+    "stories": [
+      {
+        "story_id": "US-CASE-001",
+        "epic": "A — The three intake channels, proven separately",
+        "title": "Tier 1 agent receives a support email as a routed, acknowledged case",
+        "body": {
+          "as_a": "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod",
+          "i_want": "a customer email arriving at support@acme.example to become a Case that is already owned by my queue and already acknowledged when I first see it",
+          "so_that": "the requirement's one-minute promise is met on the channel that carries roughly 400 of the 460 cases a day and no customer waits on a human to press send"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given the support@acme.example routing address is live and I hold PSG_Tier1_Prod, When a customer sends mail to that address, Then a Case exists with Origin Email-Support, Owner the Tier_1_General queue, and it appears in my Tier_1_General_Queue list view."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given that same Case has just been created, When I read the customer's mailbox, Then one acknowledgement has arrived from support-noreply@acme.example with sender name Acme Support, carrying the case number, and exactly one — not two."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given mail arrives from a sender the org does not authorise, When the routing address processes it, Then no Case is created and the mail bounces rather than becoming work (Q80)."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given a Case whose Origin is blank or carries a value outside the three known ones, When a save is attempted without the Bypass_Case_Intake_Validation permission, Then the save fails on Origin with \"Set Origin to Email-Support, Email-Billing or Web before saving this case.\""
+          }
+        ],
+        "size": "M",
+        "fit_tier": "Standard",
+        "nfr_class": [],
+        "training_impact": "email-blast",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "assignment-and-auto-response-rules-designer",
+          "email-template-modernizer"
+        ],
+        "recommended_skills": [
+          "admin/email-to-case-configuration",
+          "admin/assignment-rules",
+          "admin/email-templates-and-alerts"
+        ],
+        "rtm_req_ids": [
+          "REQ-005",
+          "REQ-031",
+          "REQ-032",
+          "REQ-034",
+          "REQ-036",
+          "REQ-037",
+          "REQ-050",
+          "REQ-052",
+          "REQ-053",
+          "REQ-054",
+          "REQ-055"
+        ],
+        "dependencies": [
+          "REQ-034 routing address live",
+          "support-noreply@acme.example verified as an org-wide address (F-28)",
+          "sandbox deliverability raised above System Email Only with Contact emails scrubbed first (Q78)"
+        ],
+        "notes": "Criterion 3 is the deny case this channel owes Q80. ~400 cases/day, so prove with real inbound mail, not a Data Loader insert."
+      },
+      {
+        "story_id": "US-CASE-002",
+        "epic": "A — The three intake channels, proven separately",
+        "title": "Billing specialist receives a finance email in the Billing queue",
+        "body": {
+          "as_a": "Billing specialist on the Acme Billing profile holding PSG_Billing_Prod",
+          "i_want": "a customer email arriving at billing@acme.example to land in the Billing queue rather than in general support",
+          "so_that": "finance queries are worked by the two finance staff who can answer them instead of being triaged twice and answered late"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given the billing@acme.example routing address is live and I hold PSG_Billing_Prod, When a customer sends mail to that address, Then a Case exists with Origin Email-Billing and Owner the Billing queue, and it appears in my Billing_Queue list view."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given that Case is open in the Billing queue, When I open it, Then it carries the Billing record type and its page shows no severity concept."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given the same Case, When a Tier 1 support agent opens its record id directly, Then access is denied — Case OWD is Private and no sharing rule targets Billing_Team or the Billing record type."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given a finance case whose Origin was never stamped, When a save is attempted without the bypass permission, Then the save fails on Origin with the Origin error message and the case is not routed."
+          }
+        ],
+        "size": "M",
+        "fit_tier": "Standard",
+        "nfr_class": [],
+        "training_impact": "email-blast",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "assignment-and-auto-response-rules-designer",
+          "permission-set-architect"
+        ],
+        "recommended_skills": [
+          "admin/email-to-case-configuration",
+          "admin/assignment-rules",
+          "admin/sharing-and-visibility"
+        ],
+        "rtm_req_ids": [
+          "REQ-005",
+          "REQ-024",
+          "REQ-034",
+          "REQ-036",
+          "REQ-052",
+          "REQ-053",
+          "REQ-055"
+        ],
+        "dependencies": [
+          "REQ-024 Billing queue with Billing_Team membership",
+          "non-routing queue mailboxes tier2-queue@acme.example and billing-queue@acme.example before escalation activation (G4 decision 1, F-44)"
+        ],
+        "notes": "Split from US-CASE-001 by data variation because the persona differs — Q77 gives Billing its own named tester and a story cannot carry two As-a clauses."
+      },
+      {
+        "story_id": "US-CASE-003",
+        "epic": "A — The three intake channels, proven separately",
+        "title": "Tier 1 agent receives a web-form case through the fall-through entry",
+        "body": {
+          "as_a": "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod",
+          "i_want": "a case submitted on the public website form to reach my queue with an acknowledgement already sent",
+          "so_that": "the roughly 60 web submissions a day are worked on the same one-minute promise as email and none of them sits unowned"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given Web-to-Case is enabled and the website form posts the contract M3-S03 defines, When a visitor submits the form, Then a Case exists with Origin Web and Owner the Tier_1_General queue, reached through the assignment rule's catch-all entry rather than through a criteria match."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given that Case has just been created, When the submitter reads their mailbox, Then one acknowledgement carrying the case number has arrived from support-noreply@acme.example."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given the website form omits a field the Case validation rules read, When the submission is processed, Then the save is blocked and the case never appears in the queue — the web channel holds no bypass permission."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given a web case is in the queue, When a Billing specialist opens its record id directly, Then access is denied: the Support record type is shared only to Support_Tier_2."
+          }
+        ],
+        "size": "M",
+        "fit_tier": "Standard",
+        "nfr_class": [],
+        "training_impact": "email-blast",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "assignment-and-auto-response-rules-designer",
+          "object-designer"
+        ],
+        "recommended_skills": [
+          "admin/case-management-setup",
+          "admin/assignment-rules",
+          "admin/validation-rules"
+        ],
+        "rtm_req_ids": [
+          "REQ-005",
+          "REQ-032",
+          "REQ-035",
+          "REQ-036",
+          "REQ-037",
+          "REQ-052",
+          "REQ-053",
+          "REQ-055"
+        ],
+        "dependencies": [
+          "REQ-035; the HTML form is authored outside this build (artefacts/M3-S03/web-to-case-form-contract.md)",
+          "sandbox form endpoint re-pointed away from production on every refresh (Q74)",
+          "sandbox deliverability raised above System Email Only with Contact emails scrubbed first (Q78)"
+        ],
+        "notes": "Criterion 3 is the channel's deny case and is why the form's required fields are a contract: an omitted field is a silently lost request, not a visible error."
+      },
+      {
+        "story_id": "US-CASE-004",
+        "epic": "A — The three intake channels, proven separately",
+        "title": "Tier 1 agent logs a case by hand and it routes like the other two channels",
+        "body": {
+          "as_a": "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod",
+          "i_want": "a case I type in myself to route and acknowledge exactly as an emailed one does",
+          "so_that": "the roughly 20 cases a day we log by hand are not the ones that quietly get no owner, no clock and no acknowledgement"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given I am on a Case page and the layout shows \"Assign using active assignment rule\", When I tick that box and save, Then Owner becomes the Tier_1_General queue and one acknowledgement is sent."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given the same new Case, When I leave that box unticked and save, Then the Case remains owned by me and no acknowledgement is sent — the box is shown but is not pre-ticked, and nothing in this build pre-ticks it."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given I am creating a Case and have left Priority empty, When I save, Then the save fails on Priority with \"Set a Priority before saving this case.\""
+          },
+          {
+            "id": "AC-4",
+            "text": "Given I am creating a Case and have left Origin empty, When I save, Then the save fails on Origin with the Origin error message."
+          }
+        ],
+        "size": "M",
+        "fit_tier": "Config",
+        "nfr_class": [],
+        "training_impact": "enablement-session",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "object-designer",
+          "assignment-and-auto-response-rules-designer"
+        ],
+        "recommended_skills": [
+          "admin/record-types-and-page-layouts",
+          "admin/assignment-rules",
+          "admin/validation-rules"
+        ],
+        "rtm_req_ids": [
+          "REQ-013",
+          "REQ-030",
+          "REQ-031",
+          "REQ-036",
+          "REQ-052",
+          "REQ-053"
+        ],
+        "dependencies": [
+          "REQ-013; both layouts carry showRunAssignmentRulesCheckbox (M1-S02)"
+        ],
+        "notes": "Q24 AGENT-TRAINING LINE — carry into the UAT script. Q24 asks for the checkbox defaulted on; decisions.md D-M1S02-03 and O-M3S04-01 record that no metadata element in the cited skill pre-ticks it, so half of Q24 is unbuilt and unbuildable here. Criterion 2 states the consequence as an observable outcome: without the tick, ~20 cases a day are owned by their creator and get no acknowledgement (artefacts/M3-S04/owner-writer-map.md section 5). Training impact is enablement-session, not email-blast."
+      },
+      {
+        "story_id": "US-CASE-005",
+        "epic": "B — The deny cases fail closed",
+        "title": "Tier 1 agent is refused a Billing case, and can prove it",
+        "body": {
+          "as_a": "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod",
+          "i_want": "a Billing case to be genuinely unreachable for me rather than merely absent from my list views",
+          "so_that": "finance data is confined to the two staff who are meant to see it and the restriction survives someone pasting a record id into a URL"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given a Case of the Billing record type owned by the Billing queue, When I open its record id directly in Lightning desktop, Then access is denied at the record, not merely hidden — I am not the owner, not a Billing queue member, and no sharing rule names Billing_Team or the Billing type."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given the same Billing case, When I search for it and when I open every Case list view available to me, Then no row is shown for it in any of them."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given my PSG_Tier1_Prod assignment, When the assignment is inspected, Then it grants the Billing record type neither as default nor as visible, and grants no View All or Modify All on Case."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given a Support case I do not own, When I open it, Then I can work it — proving the refusal above is record-scoped and has not broken the access this persona does need."
+          }
+        ],
+        "size": "S",
+        "fit_tier": "Standard",
+        "nfr_class": [
+          "security"
+        ],
+        "training_impact": "none",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "access-path-explainer",
+          "permission-set-architect"
+        ],
+        "recommended_skills": [
+          "admin/sharing-and-visibility",
+          "admin/permission-set-architecture"
+        ],
+        "rtm_req_ids": [
+          "REQ-010",
+          "REQ-020",
+          "REQ-028",
+          "REQ-029",
+          "REQ-052",
+          "REQ-054"
+        ],
+        "dependencies": [
+          "REQ-010",
+          "REQ-020",
+          "REQ-028",
+          "REQ-029"
+        ],
+        "notes": "Assumption A15 governs this story — the persona is set up without the granting permission set and nothing else is assumed to be blocking the path, because Q82 is deferred. Per assumption A23 the tester records the screen they saw plus the case record, which is the evidence this phase designs for. Criterion 4 exists because a deny case that passes because the tester's access is broken generally is the failure mode A15 was written against."
+      },
+      {
+        "story_id": "US-CASE-006",
+        "epic": "B — The deny cases fail closed",
+        "title": "Tier 2 engineer works an escalated Support case they do not own",
+        "body": {
+          "as_a": "Tier 2 support engineer on the Acme Support Tier 2 profile holding PSG_Tier2_Prod",
+          "i_want": "to open and edit any Support case whoever owns it, and to pick my work from a list",
+          "so_that": "an escalation reaches an engineer who can act on it immediately instead of waiting for a manual share"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given a Support case owned by the Tier_1_General queue, When I open it, Then I can edit it — the Support_Cases_To_Tier_2 criteria rule shares every Support case to the Support_Tier_2 group at Edit, including records owned by others."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given I am starting my shift, When I open the Tier_2_Queue list view, Then it lists the cases waiting in Tier_2_Engineering and is the surface I work from."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given a Case of the Billing record type, When I open its record id directly, Then access is denied — the sharing rule filters on RecordTypeId equals Support and nothing extends Billing cases to this group."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given a Support case owned by the Automated Process identity at intake, When I open it before any assignment has landed, Then I can still edit it, because the rule includes records owned by all users."
+          }
+        ],
+        "size": "M",
+        "fit_tier": "Config",
+        "nfr_class": [
+          "security"
+        ],
+        "training_impact": "none",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "access-path-explainer",
+          "audit-router"
+        ],
+        "recommended_skills": [
+          "admin/sharing-and-visibility",
+          "admin/list-views-and-compact-layouts"
+        ],
+        "rtm_req_ids": [
+          "REQ-019",
+          "REQ-023",
+          "REQ-029",
+          "REQ-048",
+          "REQ-052",
+          "REQ-054"
+        ],
+        "dependencies": [
+          "REQ-019",
+          "REQ-023",
+          "REQ-029",
+          "REQ-048"
+        ],
+        "notes": "Criterion 3 is this persona's deny case. Criterion 4 is the one worth running first: intake creates cases under the integration identity, so a rule that did not include records owned by all would be useless for the first minute of every case's life."
+      },
+      {
+        "story_id": "US-CASE-007",
+        "epic": "C — The clock, the escalation and the completion signal",
+        "title": "Tier 1 agent sees a first-response clock on the right calendar",
+        "body": {
+          "as_a": "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod",
+          "i_want": "a new case to arrive with its SLA clock already running against the calendar its account's region implies",
+          "so_that": "a Premier customer in London is measured on London hours rather than on New York hours and we do not report a breach that never happened"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given an account whose contracted tier is Premier, When a case is created against it, Then the first-response target is 4 business hours, on the First_Response_Premier process."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given an account on the standard tier, When a case is created against it, Then the first-response target is 1 business day, on the First_Response_Standard process."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given a case created at 17:00 London time on a Friday, When the clock is read on Saturday and again on Monday morning, Then it has not ticked over the weekend and the remaining time is unchanged."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given a case created on a date the calendar lists as a holiday, When the clock is read the next working morning, Then the holiday did not consume any of the target."
+          },
+          {
+            "id": "AC-5",
+            "text": "Given a case created against no account at all, When it saves, Then it saves — the stamp falls back rather than blocking intake."
+          }
+        ],
+        "size": "L",
+        "fit_tier": "Config",
+        "nfr_class": [
+          "reliability"
+        ],
+        "training_impact": "email-blast",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "entitlement-and-milestone-designer",
+          "business-hours-and-holidays-configurator"
+        ],
+        "recommended_skills": [
+          "admin/entitlements-and-milestones",
+          "admin/business-hours-and-holidays"
+        ],
+        "rtm_req_ids": [
+          "REQ-008",
+          "REQ-038",
+          "REQ-040",
+          "REQ-041",
+          "REQ-045",
+          "REQ-052"
+        ],
+        "dependencies": [
+          "REQ-038",
+          "REQ-040",
+          "REQ-041",
+          "REQ-045",
+          "REQ-008",
+          "enableEntitlements is owned by no step in this plan (G4 decision 2)"
+        ],
+        "notes": "UNVERIFIED — both entitlement processes pin US Support business hours while the M4 goal promises a Premier EMEA clock (finding F-40, HIGH, accepted at the M4 gate). Criterion 3 therefore proves the pause behaviour, not the regional behaviour, and the tester records which calendar the clock actually used. The three calendars are US Support (default, America/New_York), EMEA Support (Europe/London) and Severity 1 24x7. The 14 seeded holidays and their owner are themselves UNCONFIRMED (G4 decision 5)."
+      },
+      {
+        "story_id": "US-CASE-008",
+        "epic": "C — The clock, the escalation and the completion signal",
+        "title": "Tier 2 engineer receives a case that went untouched for 8 business hours",
+        "body": {
+          "as_a": "Tier 2 support engineer on the Acme Support Tier 2 profile holding PSG_Tier2_Prod",
+          "i_want": "an untouched support case to arrive in my queue with a handover notice of its own",
+          "so_that": "nothing sits unworked for a day and the handover is visible to a human rather than inferred from a changed owner field"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given an open Support case created 8 business hours ago and not touched since, When the escalation rule is active and evaluates it, Then it is reassigned to Tier_2_Engineering and the Tier 2 handover notice is sent — a notice distinct from the customer acknowledgement."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given an open case flagged Severity 1, When 8 elapsed hours pass across a weekend, Then it escalates anyway, because that entry runs on no calendar and observes no holidays."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given a case that was closed inside the window, When the rule evaluates, Then no escalation fires and no reassignment is made — closed cases are excluded by an explicit criterion, not by assumption."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given the rule as this build ships it, When a tester looks for an escalation at all, Then none occurs, because the rule is deliberately inactive and activation is a separate deploy inside an agreed comparison window."
+          }
+        ],
+        "size": "L",
+        "fit_tier": "Config",
+        "nfr_class": [
+          "reliability"
+        ],
+        "training_impact": "enablement-session",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "audit-router",
+          "entitlement-and-milestone-designer"
+        ],
+        "recommended_skills": [
+          "admin/escalation-rules",
+          "admin/business-hours-and-holidays"
+        ],
+        "rtm_req_ids": [
+          "REQ-023",
+          "REQ-033",
+          "REQ-043",
+          "REQ-052"
+        ],
+        "dependencies": [
+          "REQ-043",
+          "REQ-023",
+          "REQ-033",
+          "non-routing queue mailboxes tier2-queue@acme.example and billing-queue@acme.example before escalation activation (G4 decision 1, F-44)",
+          "the escalation rule ships inactive (Q47); activation per artefacts/M4-S04/escalation-activation-runbook.md"
+        ],
+        "notes": "Criterion 4 is not a defect. Q47 chose deploy-inactive-then-activate to avoid a wave of instant escalations on cutover, so \"nothing escalated\" is the correct result on the deployed build and criteria 1-3 are Blocked, not Failed, until activation. That distinction is Q97's point and the named triager decides it."
+      },
+      {
+        "story_id": "US-CASE-009",
+        "epic": "C — The clock, the escalation and the completion signal",
+        "title": "Tier 1 agent's first reply stops the first-response clock",
+        "body": {
+          "as_a": "Tier 1 support agent on the Acme Support Tier 1 profile holding PSG_Tier1_Prod",
+          "i_want": "the First Response milestone to close when I actually start work on a case",
+          "so_that": "our SLA reporting measures response rather than measuring whether someone remembered to close a milestone by hand"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given an open case with a running First Response milestone and Status New, When I move Status off New, Then the milestone's completion date is stamped and the clock stops."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given a case whose Status is already off New, When I edit any other field, Then no second completion is stamped and the existing completion date is unchanged."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given a case with no entitlement attached and therefore no running milestone, When I move Status off New, Then the edit saves and nothing errors."
+          },
+          {
+            "id": "AC-4",
+            "text": "Given 200 cases updated at once, When Status moves off New on all of them, Then every one completes without a limit error."
+          }
+        ],
+        "size": "M",
+        "fit_tier": "Custom",
+        "nfr_class": [
+          "performance",
+          "reliability"
+        ],
+        "training_impact": "enablement-session",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "apex-builder",
+          "test-class-generator"
+        ],
+        "recommended_skills": [
+          "admin/entitlements-and-milestones",
+          "apex/case-trigger-patterns"
+        ],
+        "rtm_req_ids": [
+          "REQ-042",
+          "REQ-044",
+          "REQ-052"
+        ],
+        "dependencies": [
+          "REQ-042",
+          "REQ-044",
+          "enableEntitlements is owned by no step in this plan (G4 decision 2)",
+          "an active SlaProcess carrying a First Response milestone; the M4-S05 test class runs SeeAllData=true (G4 decision 9)"
+        ],
+        "notes": "COMPLETION-PROXY LINE — carry verbatim into the UAT script. Q50's own answer named the first outbound EmailMessage as the completion signal. This delivery implements a narrower proxy: the Case leaving Status New (decisions.md D-M4S05-02, REQ-044, accepted at the M4 gate as decision 7). Criterion 1 proves the proxy, NOT Q50's requirement. A case where the agent replies to the customer without moving Status off New will show an un-stopped clock, and that is the shipped behaviour, not a defect. An EmailMessage-triggered completion is a named backlog item."
+      },
+      {
+        "story_id": "US-CASE-010",
+        "epic": "D — The working surfaces and the monitoring report",
+        "title": "Billing specialist works from the Billing queue list view",
+        "body": {
+          "as_a": "Billing specialist on the Acme Billing profile holding PSG_Billing_Prod",
+          "i_want": "one list that shows the finance cases waiting to be picked up",
+          "so_that": "two people can cover the queue without asking each other what is outstanding"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given I hold PSG_Billing_Prod, When I open the Billing_Queue list view on Case, Then it lists the open cases owned by the Billing queue and is the surface I pick work from — Billing pulls, it is not pushed to."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given a Support case is open in another queue, When I look at that same list view, Then no row is shown for it, and opening its record id is denied."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given I take a case from the list, When ownership moves from the queue to me, Then it leaves the queue list view, so the list shows what is genuinely unclaimed."
+          }
+        ],
+        "size": "S",
+        "fit_tier": "Standard",
+        "nfr_class": [],
+        "training_impact": "email-blast",
+        "moscow": "Must",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": false,
+        "recommended_agents": [
+          "audit-router",
+          "permission-set-architect"
+        ],
+        "recommended_skills": [
+          "admin/list-views-and-compact-layouts",
+          "admin/queues-and-public-groups"
+        ],
+        "rtm_req_ids": [
+          "REQ-048",
+          "REQ-049",
+          "REQ-052",
+          "REQ-054"
+        ],
+        "dependencies": [
+          "REQ-049",
+          "REQ-048",
+          "the Billing queue and Billing_Team group (M2-S04)"
+        ],
+        "notes": "Criterion 2 is the deny case — the same denial US-CASE-005 proves from the other side: Private OWD with no sharing rule reaching across the record types."
+      },
+      {
+        "story_id": "US-CASE-011",
+        "epic": "D — The working surfaces and the monitoring report",
+        "title": "Tier 2 lead reviews escalated open cases weekly",
+        "body": {
+          "as_a": "Tier 2 support engineer acting as the Tier 2 lead, on the Acme Support Tier 2 profile holding PSG_Tier2_Prod",
+          "i_want": "a saved report I can open every week without rebuilding it",
+          "so_that": "we can confirm next month that the escalation path is still firing, rather than discovering months later that it silently stopped"
+        },
+        "acceptance_criteria": [
+          {
+            "id": "AC-1",
+            "text": "Given I hold PSG_Tier2_Prod, When I open Escalated_Open_Cases in the Support_Operations folder, Then it runs and returns open Cases opened in the last 30 days."
+          },
+          {
+            "id": "AC-2",
+            "text": "Given the report as this build ships it, When I compare its rows against the cases the escalation engine actually flagged, Then it over-reports — the Escalated criterion is absent from the file and its own description says so."
+          },
+          {
+            "id": "AC-3",
+            "text": "Given a Tier 1 support agent, When they open the same report folder, Then folder access governs what they see, and Billing cases remain unreachable to them through a report exactly as they are through a list view."
+          }
+        ],
+        "size": "S",
+        "fit_tier": "Standard",
+        "nfr_class": [],
+        "training_impact": "email-blast",
+        "moscow": "Should",
+        "moscow_algorithmic": "Must",
+        "moscow_overridden": true,
+        "recommended_agents": [
+          "audit-router",
+          "object-designer"
+        ],
+        "recommended_skills": [
+          "admin/reports-and-dashboards",
+          "admin/sharing-and-visibility"
+        ],
+        "rtm_req_ids": [
+          "REQ-051",
+          "REQ-052"
+        ],
+        "dependencies": [
+          "REQ-051",
+          "the post-deploy runbook step in decisions.md D-M5S01-02"
+        ],
+        "notes": "UNVERIFIED — the Escalated column code. D-M5S01-02 records that report column codes are report-type specific and are not derivable from field API names; five candidates for Case.IsEscalated were rejected by the org and no skill carries a sixth. The report ships filtering on open plus last-30-days only. Criterion 2 asserts the shipped behaviour rather than the intended one. Delivered as Should rather than the algorithmic Must because a Must that cannot pass its own second criterion is a Must in name only."
+      }
+    ]
+  }
+}

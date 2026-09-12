@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Membership source for the Billing case queue (2 finance staff, Q8). Q29 - membership is expressed by group, not by named users. Owner: CRM admin lead.</description>
+    <doesIncludeBosses>true</doesIncludeBosses>
+    <name>Billing Team</name>
+</Group>

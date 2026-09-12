@@ -1,0 +1,17 @@
+{
+  "step_id": "M5-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py",
+    "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+    "skills/admin/uat-test-case-design/scripts/check_uat_case.py",
+    "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given 25 clarifications were deferred at G1, when the workbook's assumptions section is read, then all 25 appear as named rows with an owner who can close each one, and each names the steps it constrains — compiled from assumptions[].steps[] rather than from step-note prose, which is why every step recording a deferral now also carries a structured \"assumptions\" key in its inputs{}.",
+    "Given two steps ship nothing in this phase, when the compiled documents are read, then M3-S05 and M5-S02 each appear with their blocked reason verbatim — 'deferred: Q32, Q33, Q34, Q35' and 'borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity' — and the UAT pack carries no case that depends on either."
+  ]
+}

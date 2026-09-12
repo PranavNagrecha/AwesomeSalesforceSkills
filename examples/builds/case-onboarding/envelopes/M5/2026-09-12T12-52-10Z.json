@@ -1,0 +1,811 @@
+{
+ "agent": "milestone-verifier",
+ "mode": "single",
+ "run_id": "2026-09-12T12-52-10Z",
+ "report_path": ".sfskills/builds/case-onboarding/envelopes/M5/2026-09-12T12-52-10Z.md",
+ "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5/2026-09-12T12-52-10Z.json",
+ "inputs_received": {
+  "build_dir": ".sfskills/builds/case-onboarding",
+  "milestone_id": "M5",
+  "approver_name": null,
+  "note": "approver_name absent; the gate line is rendered with a <name> placeholder"
+ },
+ "summary": "Verified milestone M5 (Agent surfaces, sandbox proof and the deploy package), the last milestone of the build. Verdict not-ready, on the single ground that M5-S02 is blocked with a recorded reason (borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity) - agents/milestone-verifier/AGENT.md Step 9 makes any blocked step a not-ready trigger and Step 1 requires it listed first. Every other Step 9 trigger is clear: zero unresolved references, no ordering contradiction, and 3/3 runnable milestone acceptance tests pass (check_rtm.py exit 0 with 4 expected Draft-status coverage WARNs; check_deployment_manifest.py exit 0 score 90 with 2 SharingRules WARNs; the always-on manifest check 56/56 members backed and 62/62 deployable files covered). The merged manifest reports/MILESTONE-M5-package.xml is byte-equivalent in content to artefacts/M5-S05/package.xml - 29 types, 56 members, version 67.0, zero drift, zero version conflict. Seven new findings F-52..F-58 (1 HIGH, 4 MEDIUM, 2 LOW). The deploy-order divergence is resolved in favour of M5-S05 (rules at slot 10 before Settings:Case at slot 11) on four grounds. Confidence LOW, on Step 10's LOW branch: a step was blocked. The G5 gate command is printed unrun; the decision is the human's, and approving takes the build to done.",
+ "confidence": "LOW",
+ "outcome": "completed",
+ "confidence_rationale": "Step 10 rubric, LOW branch, on exactly one of its named triggers: a step was blocked (M5-S02). No other LOW trigger fired - no declared milestone checker was missing (both exist on disk and both ran), no artefact directory of a documented step was empty, and the earlier-milestone symbol inventory built completely from M1-S01 through M4-S05. MEDIUM's triggers were also examined and are mixed: the merged manifest had no member collision requiring report-rather-than-resolve (the five overlapping ListView/Report members are M5-S05 aggregating M5-S01 by design, identical on both sides), but ten references were unclassifiable - the platform list-view and report column codes, which resolve against a target org's schema and which skills/admin/reports-and-dashboards states cannot be derived from field API names. Six of those ten were settled by the org in MOCK-DEPLOY-M5.md run 2; four were not, and F-51 is the residue. HIGH was unreachable on two legs independently. The blocked step is the binding constraint and it cannot be cleared by this agent: the four sandbox-strategy inputs exist nowhere in requirement.md, the 97 clarifications, or either depends_on step.",
+ "dimensions_compared": [
+  "reference-resolution",
+  "deploy-order",
+  "merged-manifest",
+  "milestone-acceptance-tests",
+  "manual-checklist",
+  "requirement-closure"
+ ],
+ "dimensions_skipped": [
+  {
+   "dimension": "reference-resolution",
+   "state": "partial",
+   "reason": "16 references were classified in M5's five metadata artefacts. Six resolved against the build's symbol inventory (three queue names to M2-S04, three group names to M2-S04, and Case.Severity__c to M1-S01 - seven grants over six distinct symbols, Support_Tier_2 being named by both a list view and the report folder's folderShares). Ten are unclassifiable rather than unresolved: the list-view column codes (CASES.CASE_NUMBER, CASES.SUBJECT, CASES.PRIORITY, CASES.STATUS, ACCOUNT.NAME, LAST_UPDATE) and the report column codes (STATUS, CREATED_DATE, OWNER, PRIORITY) are report-type- and object-scoped platform tokens that resolve against the target org's schema, not against anything this build declares. Zero unresolved.",
+   "confidence_impact": "MEDIUM",
+   "retry_hint": "Retrieve one saved Case report from the target org to harvest its column codes into the repo; that also closes F-51's missing Case.IsEscalated code, which five probes could not find."
+  },
+  {
+   "dimension": "manual-checklist",
+   "state": "partial",
+   "reason": "Twelve lines collected, but three state an outcome the artefacts do not currently satisfy and one is un-runnable by design. Line 3 (the assumptions register) is not tickable - F-54. Line 4's second half fails - F-53. Line 10's last clause has no artefact behind it - F-54. Line 9 is a phase-2 test whose own first clause says so. Lines 11 and 12 depend on a sandbox that does not exist and each carries a written outstanding-not-ticked fallback. This agent ticks none of them.",
+   "confidence_impact": "MEDIUM",
+   "retry_hint": "One build-doc-keeper render of plan.json.assumptions[] into an assumptions section with an owner column makes line 3 tickable; the data is already structured on file."
+  },
+  {
+   "dimension": "requirement-closure",
+   "state": "partial",
+   "reason": "58 RTM rows, 0 orphans, 0 errors, and the compiled matrix is byte-consistent with the build-root one on all 58 ids. But no requirement in the build reaches a terminal status - 35 In UAT, 19 In Build, 4 Draft - because UAT has not run and cannot while M5-S02 is blocked and no sandbox exists. REQ-022's push half stays undelivered (M3-S05 blocked) and REQ-058 stays Draft on M5-S02.",
+   "confidence_impact": "NONE",
+   "retry_hint": "Closure past In UAT requires the sandbox proof M5-S02 would have planned; it is a phase-2 dependency, not a data gap."
+  }
+ ],
+ "findings": [
+  {
+   "id": "F-52",
+   "severity": "P2",
+   "title": "Ten manifest members reach no traceability row, and check_rtm.py's 0 orphans does not cover it",
+   "detail": "All 49 REQ rows naming a metadata artefact resolve to an M5-S05 member - that direction is clean. The reverse is not: ten of the 56 members are named by no row in traceability.md, not even inside an artefact_paths cell - ApexClass CaseMilestoneService/CaseMilestoneServiceTest/TestDataFactory, Group Billing_Team/Support_Tier_1/Support_Tier_2, PermissionSetGroup PSG_Billing_Prod/PSG_Tier1_Prod/PSG_Tier2_Prod, and the Report folder Support_Operations. The eleventh candidate, EmailFolder case_intake, IS covered - it appears in REQ-032's paths cell. check_rtm.py reports 0 orphans correctly: its orphan rule runs step-to-row, never member-to-row, so no declared test in this build asserts this direction and it survived to the last gate. The three PSGs are the access constructs the whole M2 milestone rests on and the grant every M5-S03 story names for its tester. Adjacent rows imply coverage - REQ-017..020 name the permission sets the PSGs compose, REQ-021..024 the queues whose membership names the groups, REQ-044 the trigger the three classes serve - but implication is not traceability. Not a deploy risk: all ten are in the manifest with a file behind them.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/traceability.md",
+    "count": 10,
+    "grounded_in": "member-by-member cross-check of artefacts/M5-S05/package.xml against all 58 rows' artefact and artefact_paths cells, this run; tests/M5-S04/check_rtm.out (0 orphan(s))"
+   },
+   "recommendation": "Accept at G5 as a known RTM-coverage gap and file two items: add member-level rows at the next doc-keeper touch, and deepen skills/admin/requirements-traceability-matrix so check_rtm.py gains a manifest-member coverage direction when --manifest-dir is supplied. The second is what stops this recurring."
+  },
+  {
+   "id": "F-53",
+   "severity": "P2",
+   "title": "The UAT pack carries two cases on the blocked steps, contradicting the manual test that certifies it",
+   "detail": "M5-S04's manual test [5] asserts the UAT pack carries no case that depends on M3-S05 or M5-S02. The pack carries four cases on those two steps and two of the four do depend on artefacts nobody wrote: TC-M3-S05-2 (evidence.of artefacts/M3-S05/, which does not exist; pass rule reads five Omni-Channel files never built) and TC-M5-S02-2 (evidence.of artefacts/M5-S02/, which does not exist; pass rule reads sandbox-proof-plan.md's Post-Refresh Tasks section). TC-M3-S05-1 and TC-M5-S02-1 are gate acknowledgements and are tickable now. Mitigation is present but only in prose: each of the two carries 'Given this step is unblocked in a later phase' as its literal first step and names the block in its sandbox field. What is missing is a structural marker - both sit at pass_fail 'Not Run' alongside 43 runnable cases with no phase or blocked_on key, so a tester working the pack in order meets two cases they cannot run.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/uat-test-cases.yaml",
+    "count": 2,
+    "grounded_in": "45 cases enumerated this run and mapped 1:1 against the 39 manual acceptance tests plan.json declares (32 step-level + 7 milestone-level), plus 6 derived negative cases; plan.json steps[M5-S04].acceptance_tests[5]"
+   },
+   "recommendation": "Accept with the narrowing stated - read M5-S04[5] as 'carries no case that can be mistaken for runnable', tick on that basis, and file a planner v6 item that the compile stamps phase: 2 / blocked_on: <step> on any case derived from a blocked step's manual test. Do not delete the two cases: when the steps unblock, these are exactly the cases that should run."
+  },
+  {
+   "id": "F-54",
+   "severity": "P1",
+   "title": "M5-S04's assumptions manual test is not tickable; 16 of 28 assumptions appear in no compiled document and none carries an owner",
+   "detail": "M5-S04's manual test [4] requires that the workbook's assumptions section carry all 25 deferred clarifications as named rows with an owner who can close each one and the steps each constrains, compiled from assumptions[].steps[]. Measured this run: artefacts/M5-S04/configuration-workbook.md has no assumptions section at all (its headings are Compile-time normalizations, Sections 1-10, Other configuration); 10 assumption ids appear anywhere in it; 12 appear across all five compiled documents; 16 appear in none of them - A5, A6, A8, A10, A11, A12, A14, A15, A16, A17, A18, A19, A20, A22, A23, A25; and 0 of the 28 assumptions in plan.json carry an owner field. check_workbook.py exits 0 because its SECTION_HEADING_RE validates the ten canonical sections and nothing asserts an eleventh, so no automated gate ever looked for this. Graded P1 rather than P2 because of which sixteen are missing: A17-A22 are M5-S02's own sandbox-strategy assumptions, A15 and A23 are M5-S03's, A16 is M5-S04's own - the assumptions with no owner and no compiled row are disproportionately those attached to the work this build did not do, which is precisely the set a phase-2 owner needs handed to them. Nothing is lost: all 28 carry text, because, risk and steps[] in plan.json. It is unpublished, not missing.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/configuration-workbook.md",
+    "count": 16,
+    "grounded_in": "assumption-id extraction across configuration-workbook.md, traceability.md, deploy-order.md, acceptance-criteria.md and uat-test-cases.yaml, this run; plan.json assumptions[] (28, zero with an owner key); plan.json clarifications[] (25 deferred); tests/M5-S04/check_workbook.out (exit 0)"
+   },
+   "recommendation": "Do not tick checklist line 3. Preferred: hold G5 for one build-doc-keeper render of plan.json.assumptions[] into an assumptions section with an owner column - a cheap fix against a P1, since the data is already structured and on file and only the render is missing. Fallback: sign the gate recording the assumptions register as outstanding with a named owner, the same treatment the sandbox proof plan gets. Planner v6 item either way: assumptions[] needs an owner field for the column to have anything in it."
+  },
+  {
+   "id": "F-55",
+   "severity": "P2",
+   "title": "reports/MILESTONE-M1-package.xml still carries the CompactLayout member the org rejected",
+   "detail": "reports/MILESTONE-M1-package.xml declares <members>Case_Intake</members> under CompactLayout. artefacts/M1-S01/package.xml and artefacts/M5-S05/package.xml both declare the corrected object-qualified form Case.Case_Intake, and so does reports/MILESTONE-M5-package.xml written by this run. The bare form is what MOCK-DEPLOY-M1.md mock deploy #3 rejected - 'An object Case_Intake of type CompactLayout was named in package.xml, but was not found in zipped directory' (F-13) - and it is the only defect in this build that manifest-mode validation alone has ever caught. F-18 flagged the M1 merged manifest as stale at the M2 gate; this names the specific defect still in it. The exposure is narrow and real: artefacts/M5-S05/deploy-order.md section 3.2 names splitting the release as what its order table is for, and a release owner splitting the deploy would reach for the per-milestone merged manifests under reports/, where the M1 one fails on a known-rejected member.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M1-package.xml",
+    "count": 1,
+    "grounded_in": "direct comparison of the CompactLayout member across reports/MILESTONE-M1-package.xml, artefacts/M1-S01/package.xml and artefacts/M5-S05/package.xml, this run; reports/MOCK-DEPLOY-M1.md mock deploy #3 (F-13); plan.json human_gates[milestone:M1].notes and [milestone:M2].notes (F-18)"
+   },
+   "recommendation": "Accept at G5 with the hazard named, and either delete reports/MILESTONE-M1-package.xml and -M2-package.xml (superseded by MILESTONE-M5-package.xml, which covers the whole build) or re-merge them. Deleting is cleaner - a stale manifest that still parses is more dangerous than an absent one. Add a line to artefacts/M5-S05/deploy-order.md section 3.2 saying a split release is cut from the build-level manifest's table, not from the per-milestone merged files."
+  },
+  {
+   "id": "F-56",
+   "severity": "P2",
+   "title": "Two independently numbered prerequisite lists, and F-41 appears in neither compiled document",
+   "detail": "artefacts/M5-S05/deploy-order.md section 5.2 numbers six org prerequisites 1-6; story-backlog.md numbers prerequisites P1-P6 inline in its stories' Dependencies. The two lists cross-reference each other nowhere and do not hold the same items. Mapping: support-noreply@ verified OrgWideEmailAddress (F-28) is #1 / P4; enableEntitlements + enableMilestoneStoppedTime (F-39) is #2 / P1; non-routing queue mailboxes (F-44) is #3 / P2; an Entitlement record per Account (F-41) is #4 / ABSENT from the backlog; the report's Escalated=True criterion (F-51) is #5 / present as prose with no P-number; an active SlaProcess with a First Response milestone (G4 decision 9) is #6 / P5; escalation-rule activation is P3 in the backlog but sits in M5-S05 section 4, not section 5.2; and sandbox deliverability above System Email Only plus scrubbed Contact emails (Q78) is P6 in the backlog and absent from M5-S05's six. Two consequences: 'P1' means enableEntitlements in one document while '#1' means support-noreply@ in the other, so a release owner working from both meets the same label on different things; and F-41 appears in the story backlog not at all and in the compiled configuration workbook not at all (zero occurrences of 'Entitlement record'). F-41 is the prerequisite without which Support_Tier__c's Premier-vs-Standard promise binds to nothing - the flow's Get_Active_Entitlement filters on AccountId and Status = 'Active' with no tier filter.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/artefacts/M5-S05/deploy-order.md",
+    "count": 8,
+    "grounded_in": "P-label extraction from artefacts/M5-S03/story-backlog.md against artefacts/M5-S05/deploy-order.md section 5.2, this run; zero matches for 'Entitlement record' in artefacts/M5-S04/configuration-workbook.md and artefacts/M5-S03/story-backlog.md; decisions.md D-M5S05-03"
+   },
+   "recommendation": "At G5, adopt M5-S05 section 5.2's numbering as canonical - it is the document the release owner deploys from - add P6 (sandbox deliverability) as a seventh item, and add F-41 to the compiled workbook and to US-CASE-007's dependencies at the next doc-keeper touch. Renumber the backlog's P-labels to match, or drop them for explicit names."
+  },
+  {
+   "id": "F-57",
+   "severity": "INFO",
+   "title": "The self-referential compile gap, quantified: exactly seven workbook rows",
+   "detail": "workbook/99-other-configuration.md carries rows CWB-OTHER-037 through CWB-OTHER-043; the compiled artefacts/M5-S04/configuration-workbook.md stops at CWB-OTHER-036. The seven are M5-S04's own five outputs (configuration-workbook.md, traceability.md, deploy-order.md, acceptance-criteria.md, uat-test-cases.yaml) and M5-S05's two (package.xml, deploy-order.md). The cause is structural rather than an omission: the compile ran at M5-S04, and the rows describing M5-S04's own outputs and M5-S05's were written by doc-keeper passes that ran after it, with no second compile step to pick them up. reports/drivers-log.md named this; the count is new. Practical effect is small: the compiled workbook documents 43 of the build's non-component artefacts and not the seven most recent, including itself. Nothing is lost - the live workbook/ slices carry all seven and M5-S05's note describes its own two.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+    "count": 7,
+    "grounded_in": "CWB-OTHER row-id extraction from workbook/99-other-configuration.md (\u2026043) versus artefacts/M5-S04/configuration-workbook.md (\u2026036), this run; reports/drivers-log.md summary block"
+   },
+   "recommendation": "Accept as-is for this build and file the planner v6 item the drivers log already proposes - place the compile step last in the plan, after the manifest step, so it can include its own rows. Do not hand-edit the compiled document: M5-S04 is documented and agents/build-doc-keeper/AGENT.md Step 8 leaves another step's rows byte-identical. Note that this does NOT also close F-54: the compile never rendered plan.json.assumptions[] at all, so placing it last fixes the seven late rows and not the missing register."
+  },
+  {
+   "id": "F-58",
+   "severity": "INFO",
+   "title": "Milestone test 1's declared outcome undercounts the SharingRules WARNs by one",
+   "detail": "The test declares 'exit 0, with the SharingRules WARN as the documented outcome' - singular. Run verbatim at --manifest-dir artefacts, check_deployment_manifest.py recurses over every package.xml in the tree and prints two, one for artefacts/M2-S05/package.xml and one for artefacts/M5-S05/package.xml, for score 90 rather than the 95 the step-level fixture recorded. Exit 0 either way and the '(0 blocking)' reading is unchanged, so nothing about the verdict turns on it. The description was written from the step-scoped fixture (--manifest-dir artefacts/M5-S05, one manifest, one WARN) and carried to the milestone-scoped command unchanged, where the tree also holds the sharing rule's own step manifest.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-REPORT.md",
+    "count": 2,
+    "grounded_in": "verbatim run of the declared milestone acceptance test from the build directory, this run: exit 0, score 90, 2 finding(s) detected (0 blocking); plan.json milestones[M5].acceptance_tests[1]"
+   },
+   "recommendation": "No action on the artefacts. If M5's test description is ever touched, correct it with amend-step --prose-only - the structural fields are right and only the narrated outcome is off by one."
+  }
+ ],
+ "process_observations": [
+  {
+   "category": "healthy",
+   "severity": "info",
+   "domain": "skill-flywheel",
+   "observation": "The org was the last reviewer in this milestone as in every one before it, and the loop responded correctly. M5-S01 took eight runs because the org rejected the report on a 255-character description and then rejected the skill's own worked-example reportType and grouping values - three facts no checker in this library encodes. The rebuild applied the org's own answers and run 2 validated 60/60.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md",
+    "count": 8,
+    "detail": "F-49 (Description maximum length is:255), F-50 (reportType Cases -> CaseList, grouping USERS.NAME -> OWNER, PRIORITY cannot be both column and grouping), F-51 (five Case.IsEscalated column codes probed, all rejected); decisions.md D-M5S01-01/02"
+   }
+  },
+  {
+   "category": "healthy",
+   "severity": "info",
+   "domain": "checker-quality",
+   "observation": "decisions.md O-M5S01-01 records that both declared checkers scored the org-rejected report and the fixed report identically, so a reviewer reading only checker output would have seen no difference between them. Recording that rather than quietly banking the pass is the behaviour that makes the rest of this build's evidence trustworthy.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/decisions.md",
+    "count": 2,
+    "detail": "check_list_views_and_compact_layouts.py 'No issues found.' and check_report_inventory.py score 100 / 0 findings, identical across the 09-34-00Z and 10-08-00Z envelopes' section 4 tables"
+   }
+  },
+  {
+   "category": "healthy",
+   "severity": "info",
+   "domain": "citation-integrity",
+   "observation": "D-M5S03-04 records story-drafter checking every skills/ path it had written against the registry before finalising, finding three plausible-but-nonexistent names and correcting all three. That is the exact fabrication class AGENT_CONTRACT.md rule 12 exists to stop, caught by the agent itself at the one moment it is cheapest to fix.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/decisions.md",
+    "count": 3,
+    "detail": "admin/web-to-case-and-email-to-case -> admin/case-management-setup; admin/queue-design -> admin/queues-and-public-groups; apex/trigger-handler-pattern -> apex/case-trigger-patterns"
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "medium",
+   "domain": "plan-sizing",
+   "observation": "plan.json carries no scale field at all. standards/build-orchestration.md section 3.1 says an absent scale means project, so the ceremony applied was correct and reports/drivers-log.md records the intent in prose, but no sizing line was ever recorded - no D/S/O/X counts from the clarifier, no override note. This agent's Output Contract asks it to flag scale disagreeing with those counts; here there is nothing to compare against. This build would have measured D >= 7, S >= 9, O >= 4 and integration implied, so project is unambiguously right - which is exactly why the missing line costs nothing here and would cost a great deal on a build near a tier boundary. M5 is the last milestone, so this is the last chance to say it.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/plan.json",
+    "count": 0,
+    "detail": "plan.json top-level keys carry no 'scale'; reports/drivers-log.md heading reads 'scenario 1: an entire project at scale: project'"
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "medium",
+   "domain": "documentation-compile",
+   "observation": "The compile ran before the build finished, twice over and in two different severities. F-54 and F-57 share one structural cause: M5-S04 compiles, M5-S05 then runs, then doc-keeper writes rows the compile can never see. F-57 is cosmetic. F-54 is not, and the reason generalises: the compile also never rendered plan.json.assumptions[] at all, so the gap is not only 'seven rows arrived late' but 'one whole register was never in scope'. A compile step placed last fixes the first and not the second.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/configuration-workbook.md",
+    "count": 23,
+    "detail": "7 late CWB-OTHER rows (037-043) plus 16 assumption ids appearing in no compiled document"
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "low",
+   "domain": "plan-declared-surface",
+   "observation": "Nine consecutive steps from M3-S02 through M5-S01 produced a deploy-order.md their outputs[] never declared. check-outputs reads the filesystem, so no step ever failed on it, and the G4 gate accepted the pattern explicitly. The cost is that the plan's declared surface understates what the build produced - which matters here because these are the files a release owner actually reads.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/decisions.md",
+    "count": 9,
+    "detail": "decisions.md O-M3S02-03 and the running count workbook/99-other-configuration.md keeps in each step's row notes; plan.json human_gates[milestone:M4].notes ('deploy-order.md undeclared on every M4 step (planner v6 declares it)')"
+   }
+  },
+  {
+   "category": "ambiguous",
+   "severity": "low",
+   "domain": "checker-signal-quality",
+   "observation": "The four Draft rows read as an unfinished waiver and are not one. 'Waived by decision NONE' is check_rtm.py naming its Draft-status waiver rule accurately, but a gate reviewer reading the checker output alone would reasonably conclude someone forgot to cite a decision. The build anticipated this in O-M5S04-03, which is the right response; the underlying checker message is what invites the misreading.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/tests/M5-S04/check_rtm.out",
+    "count": 4,
+    "detail": "REQ-055, REQ-056, REQ-057, REQ-058, each 'waived by decision NONE'; reproduced verbatim by this run's own milestone test 0"
+   }
+  },
+  {
+   "category": "ambiguous",
+   "severity": "low",
+   "domain": "acceptance-criteria-quality",
+   "observation": "111 check_ac_format.py WARNs stand on the compiled acceptance-criteria document, almost all on a 'Build/milestone-gate reviewer' persona that correctly has no permission construct because the criterion audits a build artefact rather than org access. O-M5S04-04 accepts them as expected and refuses to invent a Profile to clear the WARN, which is right. The residual ask stands: someone should spot-check that none of the 111 hides a genuine end-user criterion still missing a named PSG.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/tests/M5-S04/check_ac_format.out",
+    "count": 111,
+    "detail": "exit 0, 111 warning(s), 0 errors; 39 of the criteria are the build-wide manual-test records compiled so ac_id references resolve"
+   }
+  },
+  {
+   "category": "ambiguous",
+   "severity": "low",
+   "domain": "backlog-shape",
+   "observation": "M5-S03's manual test says each of the three intake channels has its own story; the backlog ships four, splitting email because Q77 gives Billing its own named tester and one story cannot carry two As-a clauses. story-drafter flagged its own reading as ambiguous rather than asserting it. Checklist line 2 is where a human settles it; this agent's reading is that the split is right - merging them would produce the persona drift gotcha 3 warns against.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/case-onboarding/artefacts/M5-S03/story-backlog.md",
+    "count": 4,
+    "detail": "US-CASE-001 (email, support@, Tier 1 tester), US-CASE-002 (email, billing@, Billing tester), US-CASE-003 (web), US-CASE-004 (manual UI); decisions.md O-M5S03-05"
+   }
+  }
+ ],
+ "extensions": {
+  "milestone": "M5",
+  "milestone_title": "Agent surfaces, sandbox proof and the deploy package",
+  "report_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-REPORT.md",
+  "report_path_disambiguation": "The top-level report_path of this envelope is THIS agent's markdown twin under envelopes/M5/. The acceptance report at reports/MILESTONE-M5-REPORT.md is a different document and its path is the one here under extensions.",
+  "merged_manifest_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-package.xml",
+  "verdict": "not-ready",
+  "passed": false,
+  "passed_note": "false for not-ready per the AGENT.md Output Contract: true only for ready-for-gate. Not a recommendation to reject - section 3 permits gate milestone:M5 approve over a step blocked with a recorded reason, and M5-S02 has one.",
+  "verdict_grounds": [
+   "M5-S02 is blocked with a recorded reason - the single Step 9 trigger that fired",
+   "zero unresolved references",
+   "no ordering contradiction (one divergence, resolved in favour of M5-S05)",
+   "3/3 runnable milestone acceptance tests pass"
+  ],
+  "blocked_steps": [
+   {
+    "step_id": "M5-S02",
+    "milestone": "M5",
+    "reason": "borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity",
+    "artefacts": 0,
+    "runs": 0,
+    "cost": "no sandbox strategy document exists, so Q68's proof plan has nothing behind it, Q74's refresh rule has no operational home, and two of M5's three milestone manual tests are signed outstanding rather than ticked"
+   },
+   {
+    "step_id": "M3-S05",
+    "milestone": "M3",
+    "reason": "deferred: Q32, Q33, Q34, Q35",
+    "artefacts": 0,
+    "cost": "REQ-022's push half undelivered; no Omni-Channel member anywhere in the build; M5-S01's Tier 1 list view is the interim pull surface under assumption A7",
+    "note": "in an accepted earlier milestone, carried here because M5 is the last report a human reads"
+   }
+  ],
+  "preceding_gate": {
+   "name": "milestone:M4",
+   "status": "approved",
+   "at": "2026-09-12T09:23:14Z"
+  },
+  "steps": [
+   {
+    "id": "M5-S01",
+    "type": "ui",
+    "agent": "metadata-builder",
+    "status": "documented",
+    "runs": 8,
+    "artefacts": 6
+   },
+   {
+    "id": "M5-S02",
+    "type": "custom",
+    "agent": "sandbox-strategy-designer",
+    "status": "blocked",
+    "runs": 0,
+    "artefacts": 0
+   },
+   {
+    "id": "M5-S03",
+    "type": "docs",
+    "agent": "story-drafter",
+    "status": "documented",
+    "runs": 4,
+    "artefacts": 1
+   },
+   {
+    "id": "M5-S04",
+    "type": "docs",
+    "agent": "build-doc-keeper",
+    "status": "documented",
+    "runs": 7,
+    "artefacts": 5
+   },
+   {
+    "id": "M5-S05",
+    "type": "docs",
+    "agent": "metadata-builder",
+    "status": "documented",
+    "runs": 4,
+    "artefacts": 2
+   }
+  ],
+  "reference_totals": {
+   "classified": 16,
+   "resolved_this_milestone": 0,
+   "resolved_earlier_milestone": 6,
+   "unresolved": 0,
+   "unclassifiable": 10
+  },
+  "reference_resolution": [
+   {
+    "class": "Validation rule field references",
+    "instances": 0,
+    "note": "M3-S01's, already accepted"
+   },
+   {
+    "class": "Assignment rule criteria and assignedTo",
+    "instances": 0,
+    "note": "M3-S04's"
+   },
+   {
+    "class": "Permission set grants",
+    "instances": 0,
+    "note": "M2's"
+   },
+   {
+    "class": "Flow field references",
+    "instances": 0,
+    "note": "M4-S03's"
+   },
+   {
+    "class": "Entitlement process milestones and business hours",
+    "instances": 0,
+    "note": "M4-S02's"
+   },
+   {
+    "class": "Layout / list-view / path field and picklist references",
+    "instances": 16,
+    "resolved_earlier": 6,
+    "unresolved": 0,
+    "unclassifiable": 10,
+    "resolved": [
+     "<queue>Billing -> artefacts/M2-S04/queues/Billing.queue-meta.xml",
+     "<queue>Tier_1_General -> artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+     "<queue>Tier_2_Engineering -> artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+     "<sharedTo><group>Billing_Team -> artefacts/M2-S04/groups/Billing_Team.group-meta.xml",
+     "<sharedTo><group>Support_Tier_1 -> artefacts/M2-S04/groups/Support_Tier_1.group-meta.xml",
+     "<sharedTo><group>Support_Tier_2 (list view + report folder folderShares) -> artefacts/M2-S04/groups/Support_Tier_2.group-meta.xml",
+     "<columns>Severity__c -> artefacts/M1-S01/objects/Case/fields/Severity__c.field-meta.xml"
+    ],
+    "unclassifiable_detail": "CASES.CASE_NUMBER, CASES.SUBJECT, CASES.PRIORITY, CASES.STATUS, ACCOUNT.NAME, LAST_UPDATE (list-view column codes); STATUS, CREATED_DATE, OWNER, PRIORITY (CaseList report column codes). Six settled by the org in MOCK-DEPLOY-M5.md run 2; F-51 is the residue of the other four."
+   }
+  ],
+  "operator_cross_checks": [
+   {
+    "check": "every REQ row's artefact is carried by an M5-S05 member",
+    "result": "PASS - 49/49 rows naming a metadata artefact resolve; 9 rows are setup-only documents or have no artefact",
+    "caveat": "the reverse direction fails - F-52"
+   },
+   {
+    "check": "compiled deploy order vs M5-S05's note",
+    "result": "DIVERGENT BY ONE POSITION - resolved in favour of M5-S05 (rules slot 10 before Settings:Case slot 11)",
+    "grounds": [
+     "M3-S03/deploy-order.md section 3 states the rules-first sequence without qualification",
+     "CWB-AUT-007's own note gives as its reason an argument against its own stated position",
+     "the compiled table is plan-step order (a record of assembly), not dependency order (a deploy instruction)",
+     "the downside is asymmetric and one-way: Email-to-Case, once enabled, cannot be disabled"
+    ],
+    "qualifications": [
+     "neither order is a deploy error - all 56 members land in one deploy() call and the platform resolves dependencies within a request",
+     "the real safety margin is the human step after slot 11 (mail forwarding, form publication), outside the deploy",
+     "on a greenfield org with no forwarding, neither order can produce unrouted traffic; the divergence matters for a split release or where forwarding is already live"
+    ]
+   },
+   {
+    "check": "UAT pack covers every plan-declared manual test incl. milestone-level",
+    "result": "PASS on coverage - 39/39 mapped 1:1 (32 step-level + 7 milestone-level), plus 6 derived negative cases, 45 total",
+    "caveat": "two of the 45 depend on blocked steps' artefacts - F-53"
+   },
+   {
+    "check": "story backlog carries the G4 obligations",
+    "result": "PASS - all three",
+    "detail": "completion proxy verbatim in US-CASE-009's notes with the RTM row marked 'AC-1 (proxy only)'; Q24 agent-training line in US-CASE-004's notes plus a Training impact field and an observation counting three recordings of the same gap; deploy prerequisites P1-P6 in the affected stories' Dependencies plus an observation that three stories are Blocked on day one",
+    "caveat": "F-56 on the numbering and on F-41's absence"
+   },
+   {
+    "check": "the six org prerequisites",
+    "result": "PASS as a list - M5-S05 section 5.2 carries all six with source, gate and open status",
+    "caveat": "F-56 on their propagation into the backlog and the compiled workbook"
+   },
+   {
+    "check": "the version split",
+    "result": "PASS - recorded exactly as claimed and independently re-measured: 9 step manifests at 62.0, 7 at 67.0, the build manifest and this merge at 67.0",
+    "detail": "the nine 62.0 manifests carry no latent risk - their contents validated at 62.0 in MOCK-DEPLOY-M1.md and MOCK-DEPLOY-M2.md run 3 (32 components, 0 errors)"
+   }
+  ],
+  "deploy_order": [
+   "M5-S01",
+   "M5-S03",
+   "M5-S04",
+   "M5-S05"
+  ],
+  "deploy_order_verdict": "no contradiction - one documented divergence, resolved in favour of artefacts/M5-S05/deploy-order.md",
+  "deploy_order_checks": [
+   {
+    "shape": "a permission set granting a field defined later in the order",
+    "found": false,
+    "detail": "all five PermissionSet members sit at slot 5/6, after CustomField at slot 1 and CustomObject at slot 3; the one field they grant, Case.Severity__c, is the first row of the build-wide order"
+   },
+   {
+    "shape": "automation arriving before the routing it triggers",
+    "found": false,
+    "detail": "the before-save flow is at slot 14 after the entitlement processes it reads at slot 13; the escalation rule is at slot 16 after every symbol it names, and ships <active>false</active> per Q47 with its own activation runbook"
+   }
+  ],
+  "merged_manifest": {
+   "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-package.xml",
+   "types": 29,
+   "members": 56,
+   "version": "67.0",
+   "version_conflict": false,
+   "version_conflict_note": "both contributing M5 step manifests declare 67.0; REFUSAL_NEEDS_HUMAN_REVIEW does not fire",
+   "contributing_manifests": [
+    "artefacts/M5-S01/package.xml",
+    "artefacts/M5-S05/package.xml"
+   ],
+   "steps_contributing_none": [
+    {
+     "step": "M5-S02",
+     "why": "blocked, produced no artefacts"
+    },
+    {
+     "step": "M5-S03",
+     "why": "docs step, markdown output derives no member"
+    },
+    {
+     "step": "M5-S04",
+     "why": "docs step, markdown/YAML outputs derive no member"
+    }
+   ],
+   "members_in_two_steps": 5,
+   "members_in_two_steps_detail": "ListView Case.Billing_Queue / Case.Tier_1_General_Queue / Case.Tier_2_Queue and Report Support_Operations / Support_Operations/Escalated_Open_Cases - identical on both sides; M5-S05 aggregates M5-S01 by design, so overlap not collision",
+   "drift_vs_M5_S05_package_xml": "none - 29 types, 56 members, version 67.0 on both sides, verified member-by-member",
+   "manifest_to_file": "56/56",
+   "file_to_manifest": "62/62",
+   "files_excluded_as_non_metadata": [
+    "artefacts/M4-S03/flow-governance-policy.yaml",
+    "artefacts/M5-S04/uat-test-cases.yaml"
+   ],
+   "artefacts_reaching_no_types_block": "none that should - the story backlog, M5-S04's five documents and M5-S05's two derive no member, correctly"
+  },
+  "acceptance_tests": [
+   {
+    "index": 0,
+    "type": "checker",
+    "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts",
+    "expected": "exit 0",
+    "exit_code": 0,
+    "verdict": "pass",
+    "stdout": "4 coverage-gap WARNs (REQ-055..REQ-058, each 'waived by decision NONE'); 'traceability.md: 58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)'",
+    "note": "the four WARNs are expected: check_rtm.py's waiver condition is the row's Draft status, not a cited decision id (decisions.md O-M5S04-03)"
+   },
+   {
+    "index": 1,
+    "type": "checker",
+    "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+    "expected": "exit 0, with the SharingRules WARN as the documented outcome",
+    "exit_code": 0,
+    "verdict": "pass",
+    "stdout": "score 90; 2 finding(s) detected (0 blocking) - SharingRules WARN on artefacts/M2-S05/package.xml and on artefacts/M5-S05/package.xml; 'Scanned 117 manifest or metadata file(s)'",
+    "note": "two WARNs where the description says one - F-58; exit code and the (0 blocking) reading are unaffected"
+   },
+   {
+    "index": 2,
+    "type": "manifest",
+    "expected": "consistent",
+    "verdict": "pass",
+    "note": "56/56 members backed by a file and 62/62 deployable files covered by a member, verified this run"
+   },
+   {
+    "index": 3,
+    "type": "manual",
+    "verdict": "deferred to the gate checklist, line 10"
+   },
+   {
+    "index": 4,
+    "type": "manual",
+    "verdict": "deferred to the gate checklist, line 11"
+   },
+   {
+    "index": 5,
+    "type": "manual",
+    "verdict": "deferred to the gate checklist, line 12"
+   }
+  ],
+  "acceptance_test_summary": "3/3 runnable tests pass. No declared checker was missing; both exist on disk and both ran verbatim from the build directory with the skills symlink present.",
+  "org_facing_evidence": {
+   "source": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md",
+   "run_by": "the operator, before this run - this agent ran no sf command and no mock_deploy.py invocation",
+   "runs": [
+    {
+     "run": 1,
+     "mode": "source",
+     "result": "60 components, 2 errors - F-28 plus F-49 (Description maximum length is:255); operator probes then proved F-50 and left F-51 unresolvable"
+    },
+    {
+     "run": 2,
+     "mode": "source",
+     "result": "60/60, one error - F-28 only, after the F-49/F-50 rebuild"
+    },
+    {
+     "run": 3,
+     "mode": "manifest",
+     "result": "60/60, one error - F-28 only, over the merged package.xml across the whole build"
+    }
+   ],
+   "significance": "run 3 is the first validation in this build that reads a manifest carrying the Apex, closing G4's F-43, and it exercises the one failure class source mode is blind to - a member named in package.xml with no file behind it, which is how F-13 was caught in M1"
+  },
+  "manual_checklist": [
+   "M5-S01 - Read each of the three listView-meta.xml files: each <queue> names a developer name present under artefacts/M2-S04/queues/, and the Tier 1 General view is present as Tier 1's interim pull surface while M3-S05 is blocked. Pre-checked: all three resolve; the reading left to the human is whether the interim framing is accepted.",
+   "M5-S03 - Read story-backlog.md: each of the three intake channels has its own story; every story names a tester persona by real profile + PSG_Tier1_Prod / PSG_Tier2_Prod / PSG_Billing_Prod, never the admin; every story carries >= 3 Given/When/Then criteria including a permission-denial path. Read against decisions.md O-M5S03-05 - the backlog ships four stories over three channels, splitting email because Q77 gives Billing its own named tester.",
+   "M5-S04 - Read the workbook's assumptions section: all 25 deferred clarifications appear as named rows with an owner and the steps they constrain. NOT TICKABLE AS WRITTEN - F-54.",
+   "M5-S04 - Read the compiled documents: M3-S05 and M5-S02 each appear with their blocked reason verbatim, and the UAT pack carries no case that depends on either. First half PASSES; second half FAILS - F-53.",
+   "M5-S05 - Read deploy-order.md: it contains no deploy command, only a validate-only command the human may choose to run. Pre-checked: holds.",
+   "M5-S05 - Read deploy-order.md and package.xml: M3-S05 and M5-S02 are listed as excluded with their reasons verbatim, and no Omni-Channel or sandbox component appears as a member. Pre-checked: holds.",
+   "M5-S05 - Read package.xml against the order: StandardValueSet before business processes and record types; queues and groups before the rules naming them; Settings named explicitly as Case, BusinessHours and Flow with no wildcard; ApexClass/ApexTrigger from M4-S05 present. Pre-checked: all four hold.",
+   "M5-S02 (blocked step) - team_size, concurrent_workstreams, release_cadence and data_sensitivity each have a named owner and a due date, and the gate is signed knowing M5-S02 ships nothing until they are answered.",
+   "M5-S02 (blocked step) - PHASE 2, not tickable now by design: the test's own first clause is 'Given this step is unblocked in a later phase.'",
+   "M5 milestone - The release owner records that the sandbox proof plan is OUTSTANDING because M5-S02 is blocked; names owner and due date for the four inputs; and confirms all 25 deferred clarifications have a named owner and a due date. The last clause has no artefact behind it - F-54.",
+   "M5 milestone - A Tier 1 agent opening a Billing case's record URL is denied, confirmed by the admin lead against a real user rather than inferred from the sharing metadata. If no sandbox exists at the gate, sign recording this outstanding rather than ticked. The metadata half is carried by M2-S05's build-scoped check_sharing_model.py and passes on artefacts alone.",
+   "M5 milestone - A case created by external email, the acknowledgement observed, then no second case created from the acknowledgement itself and no self-loop in the email log. Same sandbox fallback."
+  ],
+  "manual_checklist_accounting": {
+   "total": 12,
+   "from_step_results_json": 9,
+   "from_blocked_step_declarations": 2,
+   "from_milestone_tests": 3,
+   "note": "9 + 2 + 3 = 14 sources collapse to 12 lines because M5-S02's two declared manual tests have no results.json (the step is blocked) and are carried directly. Every line states an observable outcome. Three state an outcome the artefacts do not currently satisfy (lines 3, 4-second-half, 10-last-clause) and each is called out inline. Lines 9, 11 and 12 are honestly un-tickable today and each carries its own written fallback. This agent ticked none."
+  },
+  "g5_decision_items": [
+   {
+    "n": 1,
+    "item": "M5-S02 and M3-S05 blocked - accept as phase 2 with owners",
+    "recommendation": "ACCEPT, on three conditions",
+    "why": "there is nothing to be gained by holding - the four inputs do not exist and no amount of further building creates them",
+    "conditions": [
+     "name an owner and a due date for the four sandbox-strategy inputs and record that sandbox-strategy-designer refuses at its own first step without them",
+     "record that Q68's proof has no plan behind it and that checklist lines 11 and 12 are signed outstanding, not ticked",
+     "record that Q74's refresh rule is held only in M5-S05 section 6 and has no home in the document read at refresh time"
+    ],
+    "m3_s05_note": "the gap was accepted at G3 and nothing has changed, except that M5-S01 has now shipped the interim Tier 1 list view; confirm a human decides at phase 2 whether it is retired or repurposed (D-M5S01-03) rather than letting it become permanent by default"
+   },
+   {
+    "n": 2,
+    "item": "F-28 sender prerequisite",
+    "recommendation": "ACCEPT as a named deploy prerequisite, already G3 decision 4 - and add a due date, which is the one thing not yet recorded",
+    "why": "the org validates senderEmail against its verified addresses at deploy time, not at send time, so this fails the whole deploy rather than one email; and there is no metadata type for an org-wide address, so no build can ship one",
+    "open_beside_it": "artefacts/M3-S02/sender-identity-note.md still says support@ where D-M3S04-01 settled support-noreply@ (F-30, accepted at G3 as a fix at the next M3-S02 touch, which has not happened)"
+   },
+   {
+    "n": 3,
+    "item": "F-51 report filter runbook step",
+    "recommendation": "ACCEPT",
+    "why": "five candidate column codes were probed against a real org and all five rejected; the skill says column codes are harvested from an org retrieve and cannot be derived from field API names; this design-only build has no org to retrieve from; inventing a sixth is refused under metadata-builder Step 5 rule 1",
+    "fix_at_the_gate": "the owner is 'the Tier 2 lead' - the role Q91 names, not a person. Name the person: a runbook step with a role and no name is how post-deploy work is not done.",
+    "disclosure_verified_at": [
+     "the report's 219-character <description>",
+     "an XML comment directly above <filters>",
+     "M5-S01/deploy-order.md sections 0 and 2 U1",
+     "M5-S05/deploy-order.md section 5.2 item 5",
+     "workbook CWB-LAYOUT-011",
+     "story-backlog.md"
+    ]
+   },
+   {
+    "n": 4,
+    "item": "REQ-055..REQ-058 Draft waivers",
+    "recommendation": "ACCEPT all four, and confirm three specific onward obligations rather than ticking the block as a whole",
+    "why": "'waived by decision NONE' is check_rtm.py naming the true state accurately - its waiver condition is the Draft status itself, not a cited decision id (O-M5S04-03) - and each row's Draft is separately justified",
+    "confirm": [
+     "REQ-055 is raised as a deploy prerequisite rather than forgotten",
+     "REQ-056/REQ-057 are read at EACH UAT session from the shared Background, which is the failure mode of a control with no story to carry it",
+     "REQ-058 remains blocked on M5-S02 and is not silently dropped when item 1 is accepted"
+    ]
+   },
+   {
+    "n": 5,
+    "item": "the self-referential compile gap",
+    "recommendation": "ACCEPT - F-57 quantifies it at exactly seven rows, all seven present in the live workbook/ slices, none lost; file the planner v6 item to place the compile step last",
+    "caution": "do not accept F-54 in the same breath - the two look alike and are not the same severity. F-57 costs seven rows of provenance about documents the reader is already holding; F-54 costs the assumptions register, and sixteen of the missing assumptions are those attached to the work this build did not do."
+   },
+   {
+    "n": 6,
+    "item": "the deploy-order divergence",
+    "recommendation": "M5-S05's order - rules at slot 10, Settings:Case at slot 11",
+    "why": "M3-S03's own note says so without qualification; CWB-AUT-007's note gives a reason that argues against its own stated position; the compiled table is plan-step order rather than dependency order; and the downside is asymmetric and one-way",
+    "record_also": [
+     "both orders deploy cleanly in a single request",
+     "the real safety margin is the human step after slot 11",
+     "Email-to-Case, once enabled, cannot be disabled"
+    ],
+    "follow_up": "add one line to M5-S04's hazard list at the next doc-keeper touch recording that the conflict was resolved here and in which direction - the doc keeper was right to report rather than resolve it, and the resolution should not now live only in this report"
+   },
+   {
+    "n": 7,
+    "item": "the four release-owner decisions",
+    "recommendation": "decide all four before the window, not at it",
+    "positions": {
+     "rollbackOnError": "set it explicitly true in every environment - the guide contradicts itself on the default, so an unstated value is a real ambiguity; treat SucceededPartial as a failure in the release gate",
+     "testLevel": "this manifest carries Apex (one trigger, three classes), so a production deploy defaults to RunLocalTests - every local test, serially, inside the window; measure that duration in the sandbox first",
+     "validation_timing": "quick deploy is licensed by a validation against that target within 10 days - validate close to the window, not early",
+     "backout": "deactivate-don't-delete: the two validation rules, the assignment rule, the flow's active version; the escalation rule already ships inactive. Nobody has agreed to execute this - assign it. And the before-save flow and the trigger write to Cases from the moment they are active, so a backout after real traffic needs a data decision, not only a metadata one."
+    },
+    "already_answered": "two of the six questions in the skill's table need no decision - nothing is deleted (no destructive manifest, and none wanted) and every component arriving needing a switch is named in M5-S05 section 4"
+   },
+   {
+    "n": 8,
+    "item": "the version split (planner v6 api_version)",
+    "recommendation": "ACCEPT, with no rewrite - already G3 decision 6 and it was right",
+    "why": "a merged manifest at 67.0 and a step manifest at 62.0 record two different facts - what the step was built and accepted at, versus what the build deploys at - and rewriting the nine would misstate that history; 67.0 is not a preference, MOCK-DEPLOY-M3.md run 4 proved newEntityRecordType invalid at 62.0 and 63.0",
+    "added_by_this_report": "the nine 62.0 manifests were checked rather than assumed - their contents validated at 62.0 in MOCK-DEPLOY-M1.md and MOCK-DEPLOY-M2.md run 3 (32 components, 0 errors), so a split deploy per step carries no latent version risk",
+    "open_item": "a plan-level api_version field (build-planner v6), so a future build does not reconstruct this from nine step manifests and a gate note the way M5-S05 did"
+   }
+  ],
+  "requirement_closure": {
+   "rows": 58,
+   "orphans": 0,
+   "errors": 0,
+   "in_uat": 35,
+   "in_build": 19,
+   "draft": 4,
+   "compiled_vs_build_root": "byte-consistent - same 58 ids, same step/artefact/status on every one, independently diffed this run",
+   "m5_contributes": [
+    "REQ-048 In UAT",
+    "REQ-049 In UAT",
+    "REQ-050 In UAT",
+    "REQ-051 In Build",
+    "REQ-052 In UAT",
+    "REQ-053 In UAT",
+    "REQ-054 In UAT",
+    "REQ-055 Draft",
+    "REQ-056 Draft",
+    "REQ-057 Draft",
+    "REQ-058 Draft"
+   ],
+   "terminal_status_note": "no requirement in this build reaches a terminal status, and that is correct rather than a gap - the ladder tops out at In UAT because UAT has not run, M5-S02 being blocked and no sandbox existing. What M5 closes is the build of every requirement it owns, not their acceptance.",
+   "materially_open": [
+    "REQ-022 - push half undelivered, M3-S05 blocked; the queue exists, the Omni-Channel routing that pushes from it does not",
+    "REQ-058 - names a sandbox owner and approver that cannot exist while M5-S02 is blocked"
+   ],
+   "standing_contract_gap": "no writer owns the REQ- sequence for a build (O-M5S03-01) - story-drafter minted REQ-052..058 continuing from REQ-051 and build-doc-keeper adopted them unchanged; they collide with nothing, but the absence of an owner is a planner v6 item"
+  },
+  "optional_validate_only_command": "python3 scripts/mock_deploy.py .sfskills/builds/case-onboarding/plan.json --org-alias <your-alias> --mode manifest",
+  "optional_sandbox_cli_command": "sf project deploy start --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M5-package.xml --dry-run --target-org <sandbox-alias>",
+  "optional_production_command": "sf project deploy validate --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M5-package.xml --test-level RunLocalTests --target-org <production-alias> --wait 60",
+  "optional_command_note": "OPTIONAL and HUMAN-RUN. This agent ran none of these and ran no sf command or mock_deploy.py invocation at all. The build is design-only - plan.json carries no org, so no alias is on file. deploy validate is documented as production-only, requires Apex tests and returns a job id for a later quick deploy inside a ten-day clock; against a sandbox the validation form is deploy start --dry-run. Expect exactly one failure on any org without a verified support-noreply@acme.example: AutoResponseRule Case.Case_Acknowledgement (F-28), and nothing else.",
+  "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/case-onboarding/plan.json M5 --status rejected --report-path reports/MILESTONE-M5-REPORT.md",
+  "set_milestone_result": "milestone M5: status -> rejected, report -> reports/MILESTONE-M5-REPORT.md (plus three pre-existing non-standard-argument-form WARNs on M5-S02[0], M5-S04[0] and M5-S04[3], unchanged by this write)",
+  "set_milestone_note": "rejected is Step 9's mapping for a not-ready verdict and is plan bookkeeping, not a gate decision. No gate record was written, and gate milestone:M5 approve is not blocked by it - section 3's preconditions read the preceding gate and the step statuses, both satisfied.",
+  "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M5 approve --by \"<name>\"",
+  "gate_reject_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M5 reject --by \"<name>\"",
+  "gate_command_note": "UNRUN. Printed for a human. Returning it is not approving it. This is the thirteenth and last gate; approving it takes the build to done.",
+  "gate_conditions": [
+   {
+    "condition": "plan gate approved",
+    "state": "satisfied - 2026-09-05T19:35:19Z"
+   },
+   {
+    "condition": "milestone:M4 approved",
+    "state": "satisfied - 2026-09-12T09:23:14Z"
+   },
+   {
+    "condition": "every step in M5 documented, or blocked with a recorded reason",
+    "state": "satisfied - four documented; M5-S02 blocked with a reason, which the command will print"
+   }
+  ],
+  "approving_anyway_accepts": [
+   "that this build ships no sandbox strategy document and Q68's proof has no plan behind it",
+   "F-54, unless the release owner takes the recommended doc-keeper render first"
+  ],
+  "files_written_by_this_run": [
+   ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-REPORT.md",
+   ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-package.xml",
+   ".sfskills/builds/case-onboarding/envelopes/M5/2026-09-12T12-52-10Z.json",
+   ".sfskills/builds/case-onboarding/envelopes/M5/2026-09-12T12-52-10Z.md",
+   "plan.json milestones[M5].status and .report_path, via set-milestone only"
+  ],
+  "nothing_else_touched": "No artefact, test result, workbook slice, decision record or envelope written by another agent was edited, moved or deleted. No org was contacted. No gate was written. reports/drivers-log.md was read only.",
+  "persistence_deviation": "Per the deliverable contract's persistence-path override, this run's own report pair lives under the build directory rather than docs/reports/milestone-verifier/, at the caller's explicit instruction to write only under the build dir.",
+  "severity_mapping_note": "findings[].severity uses the envelope schema's P0/P1/P2/INFO enum (the schema carries no P3). P1 = HIGH (F-54), P2 = MEDIUM (F-52, F-53, F-55, F-56), INFO = LOW (F-57, F-58). The report prose uses HIGH/MEDIUM/LOW. INFO here means low-severity, not no-severity: F-57 and F-58 are real findings with recommendations, not observations.",
+  "run_kind": "milestone verification, final milestone of the build"
+ },
+ "citations": [
+  {
+   "type": "standard",
+   "id": "AGENT_RULES.md",
+   "path": "AGENT_RULES.md",
+   "used_for": "run-time rules for this invocation: never write to an org, never chain into another agent"
+  },
+  {
+   "type": "standard",
+   "id": "agents/_shared/AGENT_CONTRACT.md",
+   "path": "agents/_shared/AGENT_CONTRACT.md",
+   "used_for": "8-section shape, the Process Observations requirement, the confidence rubric this run's Step 10 override sits on"
+  },
+  {
+   "type": "standard",
+   "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+   "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+   "used_for": "the atomic-write rule and the persistence-path override applied in extensions.persistence_deviation"
+  },
+  {
+   "type": "standard",
+   "id": "agents/_shared/REFUSAL_CODES.md",
+   "path": "agents/_shared/REFUSAL_CODES.md",
+   "used_for": "the refusal enum - checked and not triggered: no REFUSAL_OUT_OF_SCOPE (the blocked step carries a reason) and no REFUSAL_NEEDS_HUMAN_REVIEW (the two M5 manifests agree on 67.0)"
+  },
+  {
+   "type": "standard",
+   "id": "standards/build-orchestration.md",
+   "path": "standards/build-orchestration.md",
+   "used_for": "section 2 (the report is written not rendered; set-milestone takes --report-path), section 3 (the G5 preconditions and blocked-with-a-reason), section 3.1 (an absent scale means project), section 4 (the borrowed-agent rule behind M5-S02's block), section 5 (milestone scope is always build; the deploy deny-list; the Apex exception carrying M4-S05's members), section 7"
+  },
+  {
+   "type": "standard",
+   "id": "agents/_shared/schemas/build-plan.schema.json",
+   "path": "agents/_shared/schemas/build-plan.schema.json",
+   "used_for": "the milestone, gate and step fields this run read"
+  },
+  {
+   "type": "skill",
+   "id": "admin/requirements-traceability-matrix",
+   "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+   "used_for": "how closure is stated in section 10; the Draft-status waiver rule behind G5 item 4; the id-immutability convention behind REQ-052..058; the checker whose orphan direction F-52 identifies as one-way"
+  },
+  {
+   "type": "skill",
+   "id": "admin/uat-and-acceptance-criteria",
+   "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+   "used_for": "the form a manual test must take to be tickable by someone who was not in the build loop - the standard against which checklist line 3 fails (F-54) and line 4's second half fails (F-53)"
+  },
+  {
+   "type": "skill",
+   "id": "devops/metadata-api-retrieve-deploy",
+   "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+   "used_for": "the manifest grammar, the single <version> element, and the object-qualified and folder-qualified member forms checked in section 5"
+  },
+  {
+   "type": "skill",
+   "id": "devops/permission-set-deployment-ordering",
+   "path": "skills/devops/permission-set-deployment-ordering/SKILL.md",
+   "used_for": "the fieldPermissions-before-the-field ordering failure, checked for in section 4.1 and not found"
+  },
+  {
+   "type": "skill",
+   "id": "devops/flow-deployment-activation-ordering",
+   "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md",
+   "used_for": "where automation sits in the order and what a component's active state means on arrival - the flow at slot 14 and the escalation rule shipping inactive at slot 16"
+  },
+  {
+   "type": "skill",
+   "id": "devops/deployment-error-diagnosis",
+   "path": "skills/devops/deployment-error-diagnosis/SKILL.md",
+   "used_for": "the deploy-time error an unresolved reference produces, and the 'not found in zipped directory' shape that makes F-55 actionable rather than a name in a list"
+  },
+  {
+   "type": "skill",
+   "id": "devops/pre-deployment-checklist",
+   "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+   "used_for": "the go/no-go items G5 decision items 2, 3 and 7 and the optional-command section must cover, so 'verified' means checked rather than merely quiet"
+  }
+ ],
+ "followups": [
+  {
+   "agent": "deployment-risk-scorer",
+   "because": "once the human has an org, it would put a number on the six org prerequisites F-56 names and on the RunLocalTests window G5 item 7 asks a human to measure - this agent can name them but cannot weigh them without a target."
+  },
+  {
+   "agent": "release-readiness-reviewer",
+   "because": "M5 is the last milestone before a release, which is the condition that agent exists for, and the four undecided release options in G5 item 7 are its subject matter."
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+{
+  "step_id": "M5-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/list-views-and-compact-layouts/scripts/check_list_views_and_compact_layouts.py --manifest-dir artefacts",
+    "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M5-S01"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given the three views are Queue-scoped, when each listView file is read, then its <queue> names a queue developer name that exists under artefacts/M2-S04/queues/, and the Tier 1 General view is present as Tier 1's interim pull surface while M3-S05 is blocked."
+  ]
+}

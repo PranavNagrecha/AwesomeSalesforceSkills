@@ -1,0 +1,175 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "compile",
+  "run_id": "2026-09-12T13-15-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T13-15-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5-S04/2026-09-12T13-15-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M5-S04",
+    "mode": "compile",
+    "re_run_of": "reports/MILESTONE-M5-REPORT.md § 8, findings F-52, F-53, F-54, F-56, F-57",
+    "operator_transition": "documented -> running, via build_plan.py set-status, before this run started"
+  },
+  "summary": "Re-compile of M5-S04's five documents to close five milestone-verifier findings. (1) F-57 (LOW, closed): recompiled configuration-workbook.md's Other configuration section from the current workbook/99-other-configuration.md, which now carries CWB-OTHER-037-043 (the seven self-referential rows describing M5-S04's own five outputs and M5-S05's two, written by doc-keeper passes that ran after the first compile) -- 36 rows -> 43 rows, no other change to that section. (2) F-54 (HIGH, closed): added an Assumptions Register section rendering all 28 plan.json assumptions[] rows (not only the 25 deferred), each naming the steps it constrains (assumptions[].steps[]) and an owner role + recommended closing agent joined from the linked clarification's own owner_role/owner_hint fields -- disclosed explicitly as a compile-time join, not a plan.json 'owner' field (0 of 28 assumptions carry one), so closing each one remains a named open obligation rather than a scheduled task. (3) F-53 (MEDIUM, structurally addressed): added phase: 2 and blocked_on: <step> keys to TC-M3-S05-2 and TC-M5-S02-2 in uat-test-cases.yaml, per the report's recommended narrowing -- cases kept, not deleted, now structurally distinguishable from the 43 runnable cases. (4) F-56 (MEDIUM, partially closed): added CWB-DATA-001 to the compiled workbook's Section 10 (the Entitlement-record-per-Account prerequisite, finding F-41, previously in zero compiled documents), and a reconciled seven-item org-prerequisites table to deploy-order.md adopting M5-S05 § 5.2's numbering as canonical with the backlog's P-labels cross-referenced and P6 added as item 7. NOT done, by design: renumbering story-backlog.md's P-labels and adding the F-41 dependency to US-CASE-007 -- both touch artefacts/M5-S03/story-backlog.md, outside this compile run's Scope Guardrails (writes permitted only under artefacts/M5-S04/). (5) F-52 (MEDIUM, partially closed): added a compile-time addendum section to traceability.md listing the 10 manifest members (of 56) that reach no row via an exact artefact-column Type:Name match, with the req_id each already implies via an existing row's artefact_paths cell -- the Matrix table itself is untouched (stays copied verbatim from the build's traceability.md, per this document's own header promise), and the canonical fix (real rows in the root traceability.md) is named as a follow-up per-step touch this compile run has no authority to make. All four declared checkers re-run clean: check_workbook.py exit 0, check_rtm.py (--file + --manifest-dir artefacts) exit 0 (58 rows, 4 pre-existing Draft warnings, 0 orphans -- unchanged), check_uat_case.py exit 0 (45 cases, 118 criterion ids cross-checked -- unchanged), check_ac_format.py exit 0 (0 errors, 111 warnings -- unchanged, file untouched).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Two findings close cleanly (F-54, F-57) and one is structurally addressed (F-53), but two remain partially closed by design: F-56's numbering reconciliation and F-41 dependency still need a story-drafter/human touch to artefacts/M5-S03/story-backlog.md, and F-52's real fix still needs per-step doc-keeper touches to the four owning steps before a future recompile can drop the addendum. Per Step 11, this matches the compile-run MEDIUM condition: 'two per-step deploy-order notes disagreed and the conflict was reported rather than resolved' (F-56), and a documented gap named rather than invented (F-52).",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Every addition this run traces to data already on file in plan.json, workbook/99-other-configuration.md or artefacts/M5-S05/package.xml -- none was invented to close a finding. The Assumptions Register's owner-role join in particular reused an existing, structured plan.json linkage (assumptions[].because -> clarifications[].id -> owner_role/owner_hint) that no prior compile had rendered.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This is the second consecutive re-run of M5-S04 driven by findings the milestone verifier caught only at the M5 gate, after check_workbook.py/check_rtm.py/check_uat_case.py/check_ac_format.py all exited 0 on the version those findings describe. All five findings (F-52 through F-57) are shapes no declared checker asserts: a missing section (F-54), a missing manifest-member direction (F-52), a structural marker absent from a schema-valid case (F-53), cross-document numbering agreement (F-56), and compile-step ordering (F-57). The pattern repeats the first repair pass's own lesson (envelope 2026-09-12T11-40-00Z): the declared checkers test row-shape, not document-completeness against the plan or against each other.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MILESTONE-M5-REPORT.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "F-52's addendum uses REQ-018/019/020/022/023/024/044/051 as the 'implied' req_id for the ten uncovered manifest members, read from each row's own artefact_paths cell. This is unambiguous for nine of the ten (the file basename matches exactly); the tenth (the bare Report:Support_Operations folder member) is inferred by analogy to REQ-032's EmailFolder pattern rather than by a literal path match, since no row's artefact_paths cell names the bare folder member string on its own. A human should confirm that analogy before the addendum is promoted into a real traceability row.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M5-S05/package.xml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "F-56's story-backlog reconciliation and F-52's canonical traceability rows both need writes outside artefacts/M5-S04/.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "story-drafter",
+      "followup_reason": "to renumber story-backlog.md's P-labels against M5-S05 § 5.2's canonical numbering and add the F-41 Entitlement-record dependency to US-CASE-007, closing the remainder of F-56."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "step-tester has not yet re-run this step's declared acceptance tests formally against the re-compiled documents.",
+      "evidence": {
+        "source": "input"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "to record a fresh tests/M5-S04/results.json against the documents this re-run produced, before the step is documented again."
+    }
+  ],
+  "extensions": {
+    "step_id": "M5-S04",
+    "mode": "compile",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/artefacts/M5-S04/configuration-workbook.md",
+      ".sfskills/builds/case-onboarding/artefacts/M5-S04/traceability.md",
+      ".sfskills/builds/case-onboarding/artefacts/M5-S04/deploy-order.md",
+      ".sfskills/builds/case-onboarding/artefacts/M5-S04/uat-test-cases.yaml"
+    ],
+    "compiled_documents": [
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/configuration-workbook.md",
+        "sources": [
+          "workbook/*.md",
+          "plan.json (assumptions[], clarifications[])"
+        ],
+        "change": "Other configuration 36 -> 43 rows (F-57); +1 Section 10 row CWB-DATA-001 (F-56/F-41); +1 new Assumptions Register section, 28 rows (F-54)."
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/traceability.md",
+        "sources": [
+          "traceability.md (root, Matrix table, unchanged/verbatim)",
+          "artefacts/M5-S05/package.xml"
+        ],
+        "change": "+1 new addendum section, 10-row manifest-member cross-reference (F-52). Matrix table and coverage line unchanged."
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/deploy-order.md",
+        "sources": [
+          "artefacts/M5-S05/deploy-order.md § 5.2",
+          "artefacts/M5-S03/story-backlog.md (P-labels, read only)"
+        ],
+        "change": "+1 new reconciled org-prerequisites section, 7 rows (F-56)."
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/uat-test-cases.yaml",
+        "sources": [
+          ".sfskills/builds/case-onboarding/artefacts/M5-S04/uat-test-cases.yaml (prior compile)"
+        ],
+        "change": "2 cases (TC-M3-S05-2, TC-M5-S02-2) gained phase: 2 / blocked_on: <step> keys (F-53). No case added or removed; 45 cases unchanged."
+      }
+    ],
+    "coverage": {
+      "requirements_with_no_step": 0,
+      "steps_with_no_requirement_row": 4,
+      "manual_tests_outstanding": "24 of 26 (unchanged by this run)"
+    },
+    "findings_addressed": {
+      "F-52": "partially closed -- addendum added, canonical fix deferred",
+      "F-53": "structurally addressed -- markers added, cases kept",
+      "F-54": "closed -- all 28 assumptions now render",
+      "F-56": "partially closed -- workbook + deploy-order updated, story-backlog untouched",
+      "F-57": "closed -- recompile picked up the 7 rows"
+    }
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "row schema and the ten-canonical-sections rule for the Section 10 and Assumptions Register additions"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the pipe-delimited multi-value convention and the addendum's framing against the verbatim Matrix"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "confirming phase/blocked_on additions do not violate the canonical case record shape"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "re-checking acceptance-criteria.md was untouched and still lints clean"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a blocked-step manual test is recorded as evidence rather than deleted (F-53)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4 state machine (documented -> running re-run), § 5 test scope/argument-form rules, envelope rules"
+    },
+    {
+      "type": "standard",
+      "id": "reports/MILESTONE-M5-REPORT.md",
+      "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-REPORT.md",
+      "used_for": "§ 8 findings F-52, F-53, F-54, F-56, F-57 -- the reason for this re-run"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "story-drafter",
+      "because": "story-backlog.md's P-label renumbering and the F-41 dependency on US-CASE-007 are outside this compile run's writable scope."
+    },
+    {
+      "agent": "step-tester",
+      "because": "the re-compiled documents have not yet been re-tested formally into tests/M5-S04/results.json."
+    }
+  ]
+}
