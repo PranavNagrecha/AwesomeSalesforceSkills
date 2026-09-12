@@ -48,6 +48,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import NamedTuple
 from xml.sax.saxutils import escape
 
 METADATA_NS = "{http://soap.sforce.com/2006/04/metadata}"
@@ -145,6 +146,33 @@ def write_sfdx_project(out_dir: Path, api_version: str) -> Path:
 # Manifest assembly (mode: manifest)
 # --------------------------------------------------------------------------
 
+def _types_from_root(root: ET.Element) -> dict[str, set[str]]:
+    """Extract a {type name: {member, ...}} map from a parsed <Package> root."""
+    types: dict[str, set[str]] = {}
+    for t in root.findall(f"{METADATA_NS}types"):
+        name_el = t.find(f"{METADATA_NS}name")
+        if name_el is None or not (name_el.text and name_el.text.strip()):
+            continue
+        name = name_el.text.strip()
+        bucket = types.setdefault(name, set())
+        for m in t.findall(f"{METADATA_NS}members"):
+            if m.text and m.text.strip():
+                bucket.add(m.text.strip())
+    return types
+
+
+def _types_from_text(xml_text: str) -> dict[str, set[str]]:
+    """Same as `_types_from_root` but from an in-memory package.xml string.
+    An unparseable document contributes no types rather than raising, matching
+    `merge_package_xml`'s tolerance of malformed/missing input files.
+    """
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError:
+        return {}
+    return _types_from_root(root)
+
+
 def merge_package_xml(paths: list[Path], version: str) -> str:
     """Merge one or more package.xml files by <name> type, union-ing and
     sorting <members>, and sort the <types> blocks themselves by type name —
@@ -160,15 +188,8 @@ def merge_package_xml(paths: list[Path], version: str) -> str:
             root = ET.parse(p).getroot()
         except ET.ParseError:
             continue
-        for t in root.findall(f"{METADATA_NS}types"):
-            name_el = t.find(f"{METADATA_NS}name")
-            if name_el is None or not (name_el.text and name_el.text.strip()):
-                continue
-            name = name_el.text.strip()
-            bucket = types.setdefault(name, set())
-            for m in t.findall(f"{METADATA_NS}members"):
-                if m.text and m.text.strip():
-                    bucket.add(m.text.strip())
+        for name, members in _types_from_root(root).items():
+            types.setdefault(name, set()).update(members)
 
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
@@ -185,6 +206,48 @@ def merge_package_xml(paths: list[Path], version: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def diff_manifest_types(
+    report_types: dict[str, set[str]], merged_types: dict[str, set[str]]
+) -> list[tuple[str, str, str]]:
+    """Compare two {type: {member, ...}} maps produced by `_types_from_*`.
+
+    Returns a sorted list of (type, member, side) triples for every member
+    present on only one side — side is "report-only" or "steps-only". An
+    empty list means the two manifests are equivalent (same types, same
+    members per type; ordering/whitespace in the source files is irrelevant).
+    """
+    diffs: list[tuple[str, str, str]] = []
+    for type_name in sorted(set(report_types) | set(merged_types)):
+        report_members = report_types.get(type_name, set())
+        merged_members = merged_types.get(type_name, set())
+        for member in sorted(report_members - merged_members):
+            diffs.append((type_name, member, "report-only"))
+        for member in sorted(merged_members - report_members):
+            diffs.append((type_name, member, "steps-only"))
+    return diffs
+
+
+MAX_DRIFT_ITEMS_SHOWN = 10
+
+
+class ManifestResolution(NamedTuple):
+    """Result of `resolve_manifest_text`.
+
+    * source — description of what `xml_text` came from ("merged:<ids>" or
+      the milestone report path when --prefer-report-manifest was honoured).
+    * xml_text — the manifest text to write to package.xml.
+    * warning — a one-line WARN string to print to stderr, or None when there
+      was nothing to warn about (no report to compare, or no drift found).
+    * drift_note — markdown body for summary.md's "Manifest drift" heading,
+      or "" when there is nothing to say (no milestone report was found).
+    """
+
+    source: str
+    xml_text: str
+    warning: str | None = None
+    drift_note: str = ""
+
+
 def resolve_manifest_text(
     build_dir: Path,
     artefacts_root: str,
@@ -192,19 +255,85 @@ def resolve_manifest_text(
     step_ids_arg: list[str],
     selected_ids: list[str],
     version: str,
-) -> tuple[str, str]:
-    """Manifest mode's source of truth: the milestone's own
-    reports/MILESTONE-<id>-package.xml when exactly one milestone was named
-    (and no --step was mixed in) and that file exists; otherwise the selected
-    steps' package.xml files merged by type. Returns (source-description, xml).
-    """
-    if milestone_ids and len(milestone_ids) == 1 and not step_ids_arg:
-        report_path = build_dir / "reports" / f"MILESTONE-{milestone_ids[0]}-package.xml"
-        if report_path.is_file():
-            return str(report_path), report_path.read_text(encoding="utf-8")
+    prefer_report_manifest: bool = False,
+) -> ManifestResolution:
+    """Manifest mode's source of truth is always the type-merged manifest
+    freshly built from the selected steps' package.xml files (F-18: the
+    milestone verifier's report can go stale the moment a step's own
+    package.xml is rebuilt after the report was written).
 
+    When exactly one milestone was named (and no --step mixed in) and the
+    milestone verifier's own reports/MILESTONE-<id>-package.xml exists on
+    disk, that file is additionally compared against the fresh merge:
+
+    * identical (same types, same members per type) — the merge is used;
+      summary.md notes the match under "Manifest drift" and nothing is
+      printed to stderr.
+    * different — a WARN is printed naming up to MAX_DRIFT_ITEMS_SHOWN of the
+      differing members, summary.md records the full drift, and the steps'
+      merge is used UNLESS `prefer_report_manifest` is set, in which case the
+      report's own text is used instead (the WARN is still printed either
+      way — this flag reproduces the old, stale-prone behaviour on purpose).
+
+    When no milestone report exists on disk, the merge is used silently: no
+    warning, no drift note (there's nothing to compare against).
+    """
     package_paths = [build_dir / artefacts_root / sid / "package.xml" for sid in selected_ids]
-    return "merged:" + ",".join(selected_ids), merge_package_xml(package_paths, version)
+    merged_xml = merge_package_xml(package_paths, version)
+    merged_source = "merged:" + ",".join(selected_ids)
+
+    single_milestone = bool(milestone_ids) and len(milestone_ids) == 1 and not step_ids_arg
+    if not single_milestone:
+        return ManifestResolution(source=merged_source, xml_text=merged_xml)
+
+    report_path = build_dir / "reports" / f"MILESTONE-{milestone_ids[0]}-package.xml"
+    if not report_path.is_file():
+        return ManifestResolution(source=merged_source, xml_text=merged_xml)
+
+    report_xml = report_path.read_text(encoding="utf-8")
+    report_rel = report_path.relative_to(build_dir)
+
+    diff = diff_manifest_types(_types_from_text(report_xml), _types_from_text(merged_xml))
+    if not diff:
+        drift_note = f"None — the steps' merge matches `{report_rel}`.\n"
+        return ManifestResolution(
+            source=merged_source, xml_text=merged_xml, warning=None, drift_note=drift_note
+        )
+
+    milestone_id = milestone_ids[0]
+    shown = diff[:MAX_DRIFT_ITEMS_SHOWN]
+    shown_text = ", ".join(f"{t}:{m} ({side})" for t, m, side in shown)
+    if len(diff) > MAX_DRIFT_ITEMS_SHOWN:
+        shown_text += f", … ({len(diff) - MAX_DRIFT_ITEMS_SHOWN} more)"
+
+    if prefer_report_manifest:
+        action = "using the milestone report (--prefer-report-manifest)"
+        used_source = str(report_path)
+        used_xml = report_xml
+    else:
+        action = "using the steps' merge"
+        used_source = merged_source
+        used_xml = merged_xml
+
+    warning = (
+        f"WARN: milestone manifest {report_rel} differs from the steps' "
+        f"package.xml files — {len(diff)} member(s) differ: {shown_text}; "
+        f"{action}. Re-run milestone-verifier {milestone_id} to refresh the report."
+    )
+
+    drift_lines = "\n".join(f"- {t}:{m} ({side})" for t, m, side in shown)
+    shown_suffix = f" (showing first {MAX_DRIFT_ITEMS_SHOWN})" if len(diff) > MAX_DRIFT_ITEMS_SHOWN else ""
+    used_label = "milestone report (--prefer-report-manifest)" if prefer_report_manifest else "steps' merge"
+    drift_note = (
+        f"`{report_rel}` differs from the steps' merge — {len(diff)} member(s) differ"
+        f"{shown_suffix}:\n\n"
+        f"{drift_lines}\n\n"
+        f"Used: {used_label}.\n"
+    )
+
+    return ManifestResolution(
+        source=used_source, xml_text=used_xml, warning=warning, drift_note=drift_note
+    )
 
 
 # --------------------------------------------------------------------------
@@ -244,40 +373,51 @@ def exit_code_for_status(status: str | None) -> int:
     return 2
 
 
-def render_summary(parsed: dict, mode: str, org_alias: str) -> str:
-    result = parsed.get("result") if isinstance(parsed, dict) else None
-    result = result if isinstance(result, dict) else {}
+def render_summary(
+    parsed: dict | None,
+    mode: str,
+    org_alias: str,
+    manifest_resolution: ManifestResolution | None = None,
+    plan_only: bool = False,
+) -> str:
+    lines = ["# Mock deploy result", "", f"- org: `{org_alias}`", f"- mode: `{mode}`"]
 
-    status = result.get("status", "Unknown")
-    check_only = result.get("checkOnly", True)
-    details = result.get("details") if isinstance(result.get("details"), dict) else {}
-    successes = details.get("componentSuccesses") or []
-    failures = details.get("componentFailures") or []
-    total = result.get("numberComponentsTotal", len(successes) + len(failures))
-    errors = result.get("numberComponentErrors", len(failures))
+    if plan_only:
+        lines.append("- status: **not run (--plan-only)**")
+    else:
+        result = parsed.get("result") if isinstance(parsed, dict) else None
+        result = result if isinstance(result, dict) else {}
 
-    rows: list[tuple[str, str, str]] = []
-    for c in successes:
-        rows.append((c.get("componentType", ""), c.get("fullName", ""), "ok"))
-    for c in failures:
-        problem = c.get("problem", "unknown error")
-        rows.append((c.get("componentType", ""), c.get("fullName", ""), f"FAIL — {problem}"))
-    rows.sort(key=lambda r: (r[0], r[1]))
+        status = result.get("status", "Unknown")
+        check_only = result.get("checkOnly", True)
+        details = result.get("details") if isinstance(result.get("details"), dict) else {}
+        successes = details.get("componentSuccesses") or []
+        failures = details.get("componentFailures") or []
+        total = result.get("numberComponentsTotal", len(successes) + len(failures))
+        errors = result.get("numberComponentErrors", len(failures))
 
-    lines = [
-        "# Mock deploy result",
-        "",
-        f"- org: `{org_alias}`",
-        f"- mode: `{mode}`",
-        f"- status: **{status}**",
-        f"- checkOnly: `{check_only}`",
-        f"- components: {total} total, {len(successes)} ok, {errors} error(s)",
-        "",
-        "| Type | Component | Result |",
-        "|---|---|---|",
-    ]
-    for component_type, name, outcome in rows:
-        lines.append(f"| {component_type} | {name} | {outcome} |")
+        rows: list[tuple[str, str, str]] = []
+        for c in successes:
+            rows.append((c.get("componentType", ""), c.get("fullName", ""), "ok"))
+        for c in failures:
+            problem = c.get("problem", "unknown error")
+            rows.append((c.get("componentType", ""), c.get("fullName", ""), f"FAIL — {problem}"))
+        rows.sort(key=lambda r: (r[0], r[1]))
+
+        lines += [
+            f"- status: **{status}**",
+            f"- checkOnly: `{check_only}`",
+            f"- components: {total} total, {len(successes)} ok, {errors} error(s)",
+            "",
+            "| Type | Component | Result |",
+            "|---|---|---|",
+        ]
+        for component_type, name, outcome in rows:
+            lines.append(f"| {component_type} | {name} | {outcome} |")
+
+    if manifest_resolution is not None and manifest_resolution.drift_note:
+        lines += ["", "## Manifest drift", "", manifest_resolution.drift_note.rstrip("\n")]
+
     return "\n".join(lines) + "\n"
 
 
@@ -312,14 +452,32 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--mode", choices=["source", "manifest"], default="source",
         help="source (default) = --source-dir force-app. manifest = --manifest "
-             "package.xml, built from the milestone's reports/MILESTONE-<id>-"
-             "package.xml when exactly one milestone is given, else merged from "
-             "the selected steps' package.xml files by type.",
+             "package.xml, always freshly merged from the selected steps' "
+             "package.xml files by type; when exactly one milestone is given "
+             "and reports/MILESTONE-<id>-package.xml exists, it is compared "
+             "against that merge and a WARN is printed on drift (see "
+             "--prefer-report-manifest).",
+    )
+    parser.add_argument(
+        "--prefer-report-manifest", action="store_true",
+        help="--mode manifest only. On drift between the milestone verifier's "
+             "reports/MILESTONE-<id>-package.xml and the steps' package.xml "
+             "files, use the report's text anyway (to reproduce a report "
+             "exactly) instead of the steps' merge. The drift WARN is still "
+             "printed either way. Has no effect when the two already match "
+             "or when no milestone report exists.",
     )
     parser.add_argument(
         "--out", default=None,
         help="Output directory. Default: <build_dir>/reports/mock-deploy/<UTC "
              "timestamp>/. Nothing is ever written outside this directory.",
+    )
+    parser.add_argument(
+        "--plan-only", action="store_true",
+        help="Do everything except invoke the `sf` CLI: assemble the source "
+             "tree, write the manifest (--mode manifest), and write "
+             "summary.md with 'status: not run (--plan-only)'. Useful to "
+             "inspect manifest drift without contacting an org.",
     )
     return parser
 
@@ -366,14 +524,27 @@ def main(argv: list[str] | None = None) -> int:
     write_sfdx_project(out_dir, api_version)
 
     manifest_name = "package.xml"
+    manifest_resolution: ManifestResolution | None = None
     if args.mode == "manifest":
-        _source, xml_text = resolve_manifest_text(
-            build_dir, artefacts_root, args.milestone, args.step, step_ids, api_version
+        manifest_resolution = resolve_manifest_text(
+            build_dir, artefacts_root, args.milestone, args.step, step_ids, api_version,
+            prefer_report_manifest=args.prefer_report_manifest,
         )
-        (out_dir / manifest_name).write_text(xml_text, encoding="utf-8")
+        (out_dir / manifest_name).write_text(manifest_resolution.xml_text, encoding="utf-8")
+        if manifest_resolution.warning:
+            print(manifest_resolution.warning, file=sys.stderr)
 
     cmd = build_sf_command(args.mode, args.org_alias, manifest_name)
     assert "--dry-run" in cmd  # hard invariant: this script never deploys
+
+    if args.plan_only:
+        summary = render_summary(
+            None, args.mode, args.org_alias, manifest_resolution, plan_only=True
+        )
+        (out_dir / "summary.md").write_text(summary, encoding="utf-8")
+        print(summary)
+        print(f"output: {out_dir}")
+        return 0
 
     try:
         proc = subprocess.run(cmd, cwd=str(out_dir), capture_output=True, text=True)
@@ -404,7 +575,7 @@ def main(argv: list[str] | None = None) -> int:
     result = parsed.get("result") if isinstance(parsed, dict) else None
     status = result.get("status") if isinstance(result, dict) else None
 
-    summary = render_summary(parsed, args.mode, args.org_alias)
+    summary = render_summary(parsed, args.mode, args.org_alias, manifest_resolution)
     (out_dir / "summary.md").write_text(summary, encoding="utf-8")
     print(summary)
     print(f"output: {out_dir}")

@@ -233,27 +233,40 @@ def test_merge_package_xml_ignores_missing_files(tmp_path):
     assert "<version>62.0</version>" in merged
 
 
-def test_resolve_manifest_uses_milestone_report_when_single_milestone(tmp_path):
+def test_resolve_manifest_always_uses_steps_merge_when_report_matches(tmp_path):
+    # F-18 fix: the manifest is always the fresh steps' merge. When a
+    # single-milestone report exists and agrees with it, that merge is what
+    # gets used (the report's identical text would do just as well) and no
+    # warning is raised.
     build_dir = make_build(tmp_path)
-    report_xml = PACKAGE_XML_TEMPLATE.format(members="Case", type_name="CustomObject", version="62.0")
+    report_xml = mock_deploy.merge_package_xml(
+        [build_dir / "artefacts" / "M1-S01" / "package.xml",
+         build_dir / "artefacts" / "M1-S02" / "package.xml"],
+        "62.0",
+    )
     _write(build_dir / "reports" / "MILESTONE-M1-package.xml", report_xml)
 
-    source, xml_text = mock_deploy.resolve_manifest_text(
+    resolution = mock_deploy.resolve_manifest_text(
         build_dir, "artefacts", ["M1"], [], ["M1-S01", "M1-S02"], "62.0"
     )
-    assert source.endswith("MILESTONE-M1-package.xml")
-    assert xml_text == report_xml
+    assert resolution.source.startswith("merged:")
+    assert resolution.warning is None
+    assert "matches" in resolution.drift_note
+    assert "CustomField" in resolution.xml_text
+    assert "Layout" in resolution.xml_text
 
 
 def test_resolve_manifest_merges_when_report_missing(tmp_path):
     build_dir = make_build(tmp_path)
-    # No MILESTONE-M1-package.xml on disk -> falls back to merging step manifests.
-    source, xml_text = mock_deploy.resolve_manifest_text(
+    # No MILESTONE-M1-package.xml on disk -> merge is used silently.
+    resolution = mock_deploy.resolve_manifest_text(
         build_dir, "artefacts", ["M1"], [], ["M1-S01", "M1-S02"], "62.0"
     )
-    assert source.startswith("merged:")
-    assert "CustomField" in xml_text
-    assert "Layout" in xml_text
+    assert resolution.source.startswith("merged:")
+    assert resolution.warning is None
+    assert resolution.drift_note == ""
+    assert "CustomField" in resolution.xml_text
+    assert "Layout" in resolution.xml_text
 
 
 def test_resolve_manifest_merges_when_step_filter_used(tmp_path):
@@ -262,11 +275,83 @@ def test_resolve_manifest_merges_when_step_filter_used(tmp_path):
         build_dir / "reports" / "MILESTONE-M1-package.xml",
         PACKAGE_XML_TEMPLATE.format(members="Case", type_name="CustomObject", version="62.0"),
     )
-    # --step was used alongside --milestone -> report shortcut does not apply.
-    source, _xml_text = mock_deploy.resolve_manifest_text(
+    # --step was used alongside --milestone -> the report is not even
+    # consulted (the single-milestone shortcut requires no --step).
+    resolution = mock_deploy.resolve_manifest_text(
         build_dir, "artefacts", ["M1"], ["M1-S01"], ["M1-S01"], "62.0"
     )
-    assert source.startswith("merged:")
+    assert resolution.source.startswith("merged:")
+    assert resolution.warning is None
+    assert resolution.drift_note == ""
+
+
+# --------------------------------------------------------------------------
+# F-18: stale milestone-report manifest drift
+# --------------------------------------------------------------------------
+
+def test_diff_manifest_types_identical_is_empty():
+    types = {"CustomField": {"Case.Severity__c"}}
+    assert mock_deploy.diff_manifest_types(types, dict(types)) == []
+
+
+def test_diff_manifest_types_reports_both_sides():
+    report_types = {"CompactLayout": {"Case_Intake"}}
+    merged_types = {"CustomField": {"Case.Case_Intake"}}
+    diff = mock_deploy.diff_manifest_types(report_types, merged_types)
+    assert ("CompactLayout", "Case_Intake", "report-only") in diff
+    assert ("CustomField", "Case.Case_Intake", "steps-only") in diff
+
+
+def test_resolve_manifest_drift_warns_and_uses_steps_merge(tmp_path):
+    build_dir = make_build(tmp_path)
+    # Stale report: still names the old CompactLayout member that step
+    # M1-S01's own package.xml no longer has (it now has CustomField
+    # Case.Case_Intake instead) — the exact F-18 scenario.
+    stale_report = PACKAGE_XML_TEMPLATE.format(
+        members="Case_Intake", type_name="CompactLayout", version="62.0"
+    )
+    _write(build_dir / "reports" / "MILESTONE-M1-package.xml", stale_report)
+
+    resolution = mock_deploy.resolve_manifest_text(
+        build_dir, "artefacts", ["M1"], [], ["M1-S01", "M1-S02"], "62.0"
+    )
+
+    # Merge is used, not the stale report.
+    assert resolution.source.startswith("merged:")
+    assert "CompactLayout" not in resolution.xml_text
+    assert "Case.Severity__c" in resolution.xml_text  # from the steps' merge
+
+    assert resolution.warning is not None
+    assert resolution.warning.startswith("WARN:")
+    assert "MILESTONE-M1-package.xml" in resolution.warning
+    assert "Case_Intake" in resolution.warning
+    assert "using the steps' merge" in resolution.warning
+    assert "milestone-verifier M1" in resolution.warning
+
+    assert "CompactLayout:Case_Intake (report-only)" in resolution.drift_note
+    assert "steps-only" in resolution.drift_note
+
+
+def test_resolve_manifest_prefer_report_manifest_uses_report_but_still_warns(tmp_path):
+    build_dir = make_build(tmp_path)
+    stale_report = PACKAGE_XML_TEMPLATE.format(
+        members="Case_Intake", type_name="CompactLayout", version="62.0"
+    )
+    _write(build_dir / "reports" / "MILESTONE-M1-package.xml", stale_report)
+
+    resolution = mock_deploy.resolve_manifest_text(
+        build_dir, "artefacts", ["M1"], [], ["M1-S01", "M1-S02"], "62.0",
+        prefer_report_manifest=True,
+    )
+
+    # The report's own (stale) text is what gets used this time.
+    assert resolution.xml_text == stale_report
+    assert resolution.source.endswith("MILESTONE-M1-package.xml")
+
+    assert resolution.warning is not None
+    assert resolution.warning.startswith("WARN:")
+    assert "Case_Intake" in resolution.warning
+    assert "--prefer-report-manifest" in resolution.warning
 
 
 # --------------------------------------------------------------------------
@@ -466,6 +551,62 @@ def test_main_no_steps_selected_returns_two(tmp_path, monkeypatch):
         [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "NO-SUCH-MILESTONE"]
     )
     assert rc == 2
+
+
+def test_main_plan_only_never_invokes_subprocess(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+
+    out_dir = tmp_path / "plan-only-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--plan-only", "--out", str(out_dir)]
+    )
+    assert rc == 0
+    assert not (out_dir / "result.json").exists()
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "status: **not run (--plan-only)**" in summary
+    # Source-mode tree assembly still happens.
+    assert (out_dir / "force-app" / "main" / "default" / "objects" / "Case" / "fields"
+            / "Severity__c.field-meta.xml").is_file()
+
+
+def test_main_plan_only_manifest_mode_shows_drift_without_org(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    stale_report = PACKAGE_XML_TEMPLATE.format(
+        members="Case_Intake", type_name="CompactLayout", version="62.0"
+    )
+    _write(build_dir / "reports" / "MILESTONE-M1-package.xml", stale_report)
+
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+
+    out_dir = tmp_path / "plan-only-drift-out"
+    printed = []
+    monkeypatch.setattr("builtins.print", lambda *a, **k: printed.append(" ".join(str(x) for x in a)))
+
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "none", "--milestone", "M1",
+         "--mode", "manifest", "--plan-only", "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    manifest_text = (out_dir / "package.xml").read_text(encoding="utf-8")
+    assert "CompactLayout" not in manifest_text  # steps' merge used, not the stale report
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "not run (--plan-only)" in summary
+    assert "## Manifest drift" in summary
+    assert "Case_Intake" in summary
+
+    warn_lines = [line for line in printed if line.startswith("WARN:")]
+    assert warn_lines, "expected a WARN line naming the manifest drift"
+    assert "Case_Intake" in warn_lines[0]
 
 
 def test_main_manifest_mode_writes_manifest_file(tmp_path, monkeypatch):
