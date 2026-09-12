@@ -1,0 +1,256 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T18-05-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T18-05-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T18-05-00Z.json",
+  "summary": "Run 8 of M1-S03 — the fifth § 4 test-only repair, after reports/MOCK-DEPLOY-M1.md run 11 (S2-F-16). Run 11 showed 35/35 tests passing and 86.2% aggregate coverage, yet still failed validation on a per-class floor: Tier2EscalationService individually at 53.659%, under the 75% RunSpecifiedTests enforces per class. reports/mock-deploy/2026-09-12T17-17-07Z/result.json's codeCoverage array (recorded at run 9) named the 19 uncovered lines out of 41; read against the class body they resolve to exactly two branches — the empty/null-input early return (line 44) and the EventBus.publish() rejection path (building an Integration_Failure__c row, the conditional insert, and the whole errorText() helper: lines 84-96, 106, 119-127) — neither reachable from the trigger-driven path every existing test in Tier2EscalationServiceTest uses. Added two methods that call Tier2EscalationService.escalate(List<Case>) directly: escalateWithNoCasesReturnsImmediately (line 44) and escalateWithAMissingCaseNumberWritesAPublishFailureRowAndStillEnqueuesTheJob, which forces a deterministic publish rejection via Tier2_Escalation__e.Case_Number__c's required=true constraint (M1-S01) rather than the FLS-based mechanism S2-F-13 used, since this build's current permission sets bundle both grants together and can no longer construct that asymmetry. Both new methods register a 2xx MockHttpResponseGenerator before calling escalate(), applying § 0e's lesson (S2-F-15) proactively, since escalate() unconditionally enqueues a Tier2WebhookQueueable regardless of publish outcome. No shipped class, no other test method, and no other file changed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM. Gate B: 0 unresolved symbols — both new methods call only Tier2EscalationService's own public/@TestVisible members (escalate, STATUS_NEW, SEVERITY_ERROR) and the required=true constraint on Tier2_Escalation__e.Case_Number__c is read directly from artefacts/M1-S01's own object metadata, not recalled. Gate C check 3 (compile) did not run in this agent — design-only, no target_org_alias — but this run applies a now twice-confirmed-by-the-org lesson (§ 0e/S2-F-15: an enqueued job runs to completion regardless of Test.startTest()/Test.stopTest() wrapping) proactively rather than reactively, which is why this is not capped lower. What keeps this at MEDIUM rather than HIGH: no agent in this loop can confirm Tier2EscalationService's coverage actually clears 75% after this run, or that EventBus.publish() truly returns a rejected (not thrown) SaveResult for a required-field violation the same way it does for the FLS violation S2-F-13 already confirmed — that specific claim is inferred from the class's own header comment and Q11's answer (EventBus.publish never throws), not independently re-verified against an org for this exact failure mode.",
+  "outcome": "completed",
+  "inputs_received": {
+    "kind": "trigger",
+    "primary_sobject": "Case",
+    "api_version": "67.0",
+    "source": "plan.json steps[M1-S03].inputs, unchanged. This run's scope, sources and constraints were given directly by the coordinator's message: reports/MOCK-DEPLOY-M1.md run 11 (S2-F-16), the codeCoverageWarnings line the run's summary did not print, reports/mock-deploy/2026-09-12T17-17-07Z/result.json's per-class table (19 of 41 lines uncovered for Tier2EscalationService), and deploy-order.md's own contract sections for the class.",
+    "org_evidence": "reports/MOCK-DEPLOY-M1.md run 11: tests run 35, passed 35, failed 0, coverage_pct 86.2 (aggregate) — status still Failed, on codeCoverageWarnings: 'Tier2EscalationService — Test coverage of selected Apex Class is 53.659%, at least 75% test coverage is required'.",
+    "credentials": "[REDACTED] — none present in the step inputs, none touched by this run."
+  },
+  "findings": [
+    {
+      "id": "S8-F-01",
+      "severity": "P1",
+      "title": "S2-F-16 addressed: Tier2EscalationService's two uncovered branches now have direct tests",
+      "detail": "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls gained escalateWithNoCasesReturnsImmediately (covers line 44, the null/empty-list guard) and escalateWithAMissingCaseNumberWritesAPublishFailureRowAndStillEnqueuesTheJob (covers lines 84-96, 106 and all of 119-127, the publish-rejection path and errorText()). Between them every one of the 19 lines reports/mock-deploy/2026-09-12T17-17-07Z/result.json named as uncovered for this class is now exercised by at least one assertion.",
+      "evidence": {
+        "path": "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls",
+        "source": "repo_scan"
+      },
+      "recommendation": "Re-run the dry run with --test-level RunSpecifiedTests to confirm Tier2EscalationService individually clears 75%. No agent in this loop can do this."
+    },
+    {
+      "id": "S8-F-02",
+      "severity": "P2",
+      "title": "The publish-rejection test uses a different trigger mechanism than S2-F-13's, because the current permission sets can no longer reproduce that one",
+      "detail": "S2-F-13's rejection (mock-deploy run 8) came from a user lacking Tier2_Escalation__e Create while still holding Integration_Failure__c Create — an asymmetry that existed only because the two grants were added to Tier2_Webhook_Admin at different times. Now that both live in the same permission set (the S2-F-13 fix), no shipped permission set can reproduce that specific asymmetry without a bespoke, test-local PermissionSet built via DML — not attempted here. This run instead uses Tier2_Escalation__e.Case_Number__c's required=true constraint, a different and arguably more robust trigger for the same sr.isSuccess()==false branch, since it needs no second user or permission grant at all.",
+      "evidence": {
+        "path": "artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "source": "repo_scan"
+      },
+      "recommendation": "None needed for this step — recorded so a future reader does not wonder why this test doesn't mirror S2-F-13's exact mechanism."
+    },
+    {
+      "id": "S8-F-03",
+      "severity": "INFO",
+      "title": "Per-class coverage floors were invisible to every prior run of this step until this one",
+      "detail": "reports/mock-deploy/2026-09-12T17-17-07Z/result.json (run 9) already recorded Tier2EscalationService's 19-of-41 uncovered lines, but every finding on this step through S2-F-14 (run 9) and S2-F-15 (run 10) was read off the aggregate coverage_pct, which stayed at or above the aggregate floor's failure threshold for a different reason each time. The per-class enforcement only became visible once the aggregate genuinely cleared 75% (run 11) and the platform's per-class floor was the only thing left to fail on.",
+      "evidence": {
+        "path": "reports/mock-deploy/2026-09-12T17-17-07Z/result.json codeCoverage array",
+        "source": "input"
+      },
+      "recommendation": "A future dry-run summary tool item: print the full codeCoverageWarnings array (per-class floor violations) alongside the aggregate number on every run, not only when the aggregate itself fails — mirrors the tool item already named for coverage-under-75% in run 9's own note."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "S2-F-15's lesson (an enqueued job runs to completion regardless of Test.startTest()/Test.stopTest() wrapping) was applied proactively here — both new methods register a mock before calling escalate() without needing a second failing dry run to discover the necessity first.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls, both new methods"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The exact uncovered-line list was already on file (result.json's codeCoverage array from run 9) rather than needing to be re-derived or guessed — reading it against the class body directly produced a precise map from line numbers to branches, with no ambiguity about what to test.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "reports/mock-deploy/2026-09-12T17-17-07Z/result.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "This is the third distinct coverage/test-only finding on this one step in a row (S2-F-14, S2-F-15, S2-F-16), each surfaced only after the previous one was fixed and a fresh dry run ran. The pattern suggests dry runs against this step have been finding issues serially rather than exhaustively — each run reveals the next problem the previous one was masking (aggregate coverage masked the per-class floor; the per-class floor was itself invisible until aggregate cleared).",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M1.md runs 9, 10, 11"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether EventBus.publish() treats a required-field violation on a platform event exactly like the FLS violation S2-F-13 already confirmed — returning a rejected SaveResult rather than throwing — is inferred from Tier2EscalationService's own header comment and Q11's answer, not independently confirmed by this run against an org for this specific failure mode.",
+      "domain": "integration-contract",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M1-S03/classes/Tier2EscalationService.cls header comment"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "A fresh dry run with --test-level RunSpecifiedTests is the only way to confirm Tier2EscalationService now individually clears 75% and that 37/37 tests pass.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "step-tester runs this step's declared acceptance tests next; the org confirmation itself is the operator's mock_deploy.py run.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json steps[M1-S03].acceptance_tests"
+      }
+    }
+  ],
+  "dimensions_compared": [
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "No production class touched this run.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "not-run",
+      "reason": "Two new test methods add no production SOQL/DML path.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "security-posture",
+      "state": "count-only",
+      "reason": "Verified by inspection that both new methods run inside System.runAs(agent()) exactly as every other method in the file does; not a dedicated posture re-scan.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "not-run",
+      "reason": "The added mock body is the same fixture literal already used elsewhere in this file; no credential involved.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No Id literal introduced; the one Id used is queried, not hardcoded.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "bulk-safety",
+      "state": "not-run",
+      "reason": "Both new methods test single-Case shapes deliberately — the branches they cover are edge-case guards, not bulk paths, which are already covered by bulkOwnerChangeStillEnqueuesExactlyOneJob.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "include_logger is false for this build; unchanged.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "Escalation Rules confirming a test-only, two-method repair with no shipped-class edit stays in scope"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's step-status machine — built -> failed -> pending -> running is the legal recovery path"
+    },
+    {
+      "type": "standard",
+      "id": "reports/MOCK-DEPLOY-M1.md",
+      "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "run 11 / S2-F-16 — the per-class coverage floor finding this repair closes"
+    },
+    {
+      "type": "standard",
+      "id": "reports/mock-deploy/2026-09-12T17-17-07Z/result.json",
+      "path": ".sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-17-07Z/result.json",
+      "used_for": "the codeCoverage array naming the exact 19 uncovered line numbers for Tier2EscalationService"
+    },
+    {
+      "type": "standard",
+      "id": "artefacts/M1-S01/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml",
+      "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S01/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml",
+      "used_for": "Case_Number__c's required=true — the exact mechanism the publish-rejection test relies on"
+    },
+    {
+      "type": "standard",
+      "id": "artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+      "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+      "used_for": "confirming both grants (Integration_Failure__c CRUD, Tier2_Escalation__e Create) are bundled in one permission set, ruling out reproducing S2-F-13's exact FLS-asymmetry mechanism"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/MockHttpResponseGenerator.cls",
+      "path": "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "used_for": "withResponse(200, body) registered before both new methods' escalate() call, per § 0e's lesson"
+    },
+    {
+      "type": "standard",
+      "id": "plan.json steps[M1-S03]",
+      "path": ".sfskills/builds/tier2-webhook/plan.json",
+      "used_for": "the step's declared acceptance_tests[], re-run verbatim after the fix; read, never hand-edited"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "run": 8,
+    "repair_number_under_section_4": 5,
+    "previous_runs": [
+      "envelopes/M1-S03/2026-09-12T10-57-25Z.json (refused, REFUSAL_INPUT_AMBIGUOUS)",
+      "envelopes/M1-S03/2026-09-12T11-23-31Z.json (run 2, built, later rejected by the org)",
+      "envelopes/M1-S03/2026-09-12T11-40-10Z.json (run 3, fixed S2-F-04/S2-F-05)",
+      "envelopes/M1-S03/2026-09-12T16-13-43Z.json (run 4, § 4 repair 1, fixed S2-F-11)",
+      "envelopes/M1-S03/2026-09-12T17-05-00Z.json (run 5, § 4 repair 2, fixed S2-F-12)",
+      "envelopes/M1-S03/2026-09-12T17-40-00Z.json (run 6, § 4 repair 3, fixed S2-F-14, added Tier2WebhookFinalizerTest.cls)",
+      "envelopes/M1-S03/2026-09-12T17-50-00Z.json (run 7, § 4 repair 4, fixed S2-F-15)"
+    ],
+    "org_evidence": {
+      "report": "reports/MOCK-DEPLOY-M1.md, run 11",
+      "mode": "--test-level RunSpecifiedTests, API 67.0",
+      "tests": "run 35, passed 35, failed 0, coverage_pct 86.2 (aggregate)",
+      "finding": "S2-F-16 — codeCoverageWarnings: Tier2EscalationService 53.659% individually"
+    },
+    "changes_this_run": [
+      {
+        "file": "artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls",
+        "change": "added escalateWithNoCasesReturnsImmediately and escalateWithAMissingCaseNumberWritesAPublishFailureRowAndStillEnqueuesTheJob, plus a new comment section explaining the direct-call deviation from the rest of the file",
+        "fixes": "S2-F-16"
+      },
+      {
+        "file": "artefacts/M1-S03/deploy-order.md",
+        "change": "new § 0f recording the repair, S2-F-16, the line-to-branch mapping table, and why S2-F-13's exact FLS mechanism could not be reused",
+        "fixes": "n/a — documentation of the above"
+      }
+    ],
+    "files_unchanged": "Every production class, both triggers, Tier2WebhookFinalizerTest.cls, Tier2WebhookQueueableTest.cls, IntegrationFailureResendTest.cls, TestUserFactory.cls, MockHttpResponseGenerator.cls, TestDataFactory.cls, and every -meta.xml.",
+    "classes_emitted_or_modified": 1,
+    "test_methods_added": 2,
+    "test_methods_unchanged": 32,
+    "gate_b": "passed — 0 unresolved symbols.",
+    "gate_c": "check 1 (symbol grounding) and check 2 (identifier provenance) passed — escalate(), STATUS_NEW and SEVERITY_ERROR are all quoted from Tier2EscalationService.cls itself; Case_Number__c's required=true is quoted from the object's own -meta.xml. Check 3 (compile) did not run — design-only, no target_org_alias. What ran offline: the three step-declared checkers (0 findings, one pre-existing unrelated WARN) plus check_test_class_standards.py (0 findings across 7 @IsTest artifacts), a brace/paren/bracket/quote-parity check on the edited file, and check-outputs (ok, 20/20).",
+    "checker_output": {
+      "check_apex_queueable_patterns": "Scanned 14 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY. Exit 0.",
+      "check_callouts_and_http_integrations": "Scanned 14 Apex file(s); 0 callout finding(s). Exit 0.",
+      "check_platform_events_apex": "Scanned 14 Apex file(s) and 0 object file(s); 1 platform-event finding(s) (WARN, R9, Tier2EscalationService.cls, pre-existing since § 0d, untouched this run). Exit 0.",
+      "check_test_class_standards": "Scanned 12 Apex class file(s); audited 7 @IsTest artifact(s); 0 finding(s). Exit 0."
+    }
+  }
+}

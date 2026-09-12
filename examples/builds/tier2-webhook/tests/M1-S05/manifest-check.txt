@@ -1,17 +1,9 @@
-Manifest member counts: {'CustomObject': 2, 'CustomField': 13, 'ExternalCredential': 1, 'NamedCredential': 1, 'ApexClass': 13, 'ApexTrigger': 2, 'PermissionSet': 1} total 33
+Derived 35 distinct members across files.
+Total backing files counted: 54
+Manifest declares 35 non-wildcard members, wildcard types: set()
 
-Derived member counts: {'CustomField': 13, 'CustomObject': 2, 'ExternalCredential': 1, 'NamedCredential': 1, 'PermissionSet': 1, 'ApexClass': 13, 'ApexTrigger': 2} total 33
+Direction 1 (file->manifest) failures: 0
+Direction 2 (manifest->file) failures: 0
 
---- Direction 1: file -> manifest ---
-  OK: every derived (file-backed) member is covered by the manifest.
-
---- Direction 2: manifest -> file ---
-  OK: every non-wildcard manifest member has a backing file.
-
---- Special case: TestDataFactory dedup ---
-  files: ['artefacts/M1-S03/classes/TestDataFactory.cls', 'artefacts/M1-S03/classes/TestDataFactory.cls-meta.xml', 'artefacts/M1-S04/classes/TestDataFactory.cls', 'artefacts/M1-S04/classes/TestDataFactory.cls-meta.xml']
-  manifest count for this member: 1 (member names are a set, not multiset) -> consistent by construction
-
---- Totals ---
-  manifest total members: 33
-  derived total members (deduped): 33
+Totals: manifest=35 derived=35
+CONSISTENT

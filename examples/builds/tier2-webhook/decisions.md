@@ -1278,3 +1278,628 @@ a new entry naming the one it supersedes.
   it as evidence for the M1 acceptance report rather than re-deriving it.
 - **Evidence:** `reports/MOCK-DEPLOY-M1.md` runs 4–5; `tests/M1-S05/manifest-check.txt`;
   `envelopes/M1-S05/2026-09-12T12-25-04Z.json`.
+
+## D-M1S03-09 — Deviation (repair): all three test classes now run their assertions as a permissioned `TestUserFactory` user, closing S2-F-11
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S03` (`automation`), run 4 — a § 4 test-only repair (`documented` → `running` → `built`)
+- **Agent:** `apex-builder` (run 4, `2026-09-12T16-13-43Z`, finding `S4-F-01`); confirmed by
+  `step-tester` (`2026-09-12T16-30-00Z`, `built → tested`)
+- **Kind:** Deviation, per `agents/build-doc-keeper/AGENT.md` Step 3 — the tests as originally shipped
+  (runs 2–3) ran as the deploying user; the repair changes them to run as a provisioned permissioned
+  user, a real change from what was built before, with its reason stated in the finding it closes.
+- **What was recorded:** `reports/MOCK-DEPLOY-M1.md` run 6 (`--test-level RunSpecifiedTests`)
+  compiled this step's package clean (39/39 `ok`) and then failed all 28 test methods at execution
+  (`S2-F-11`): none of `Tier2EscalationServiceTest`, `Tier2WebhookQueueableTest` or
+  `IntegrationFailureResendTest` carried a `System.runAs` block for a permissioned user, while
+  `Tier2WebhookQueueable` and `CaseTriggerHandler` correctly enforce the running user's FLS with
+  `WITH USER_MODE` at API 67.0 — the tests were the first user-mode caller and were written as if the
+  running user were omnipotent. The repair adds `classes/TestUserFactory.cls` (+ `-meta.xml`, a
+  verbatim copy of `templates/apex/tests/TestUserFactory.cls`, diff empty) and, in each of the three
+  test classes, folds `TestUserFactory.createUser('Standard User', new List<String>{
+  'Tier2_Webhook_Admin' })` into the existing mixed-DML setup-object fence, then wraps every one of
+  the 19 pre-existing `@IsTest` method bodies in `System.runAs(agent())` — same statements, same
+  assertions, same messages, nothing added or removed. `check_test_class_standards.py`'s
+  `user-mode-test-without-runas` rule now reports 0 findings against `artefacts/M1-S03/classes`, down
+  from a finding per test class before this run.
+- **Alternative rejected:** relaxing the production classes' `WITH USER_MODE` enforcement so the tests
+  would pass without a permissioned running user. Rejected because the org's own diagnosis is explicit
+  that the enforcement is correct and the tests were the defect — `Tier2WebhookQueueable` and
+  `CaseTriggerHandler` are unchanged by this repair, and the fix is confined to the tests' own running
+  user and setup, per the finding's own scoping.
+- **Grounded in:** `skills/apex/test-class-standards/references/gotchas.md` Gotcha 13;
+  `skills/apex/test-class-standards/references/examples.md` Example 5 (this exact class, worked
+  through in full — `Tier2EscalationServiceTest` / `Tier2_Webhook_Admin` / `Tier2_Notified_At__c`);
+  `skills/apex/mixed-dml-and-setup-objects` (why the user-provisioning call sits inside the existing
+  setup-object `runAs` fence, ahead of any `Case` DML in the same transaction).
+- **Evidence:** `envelopes/M1-S03/2026-09-12T16-13-43Z.json` → `findings[0]` (`S4-F-01`, P0);
+  `envelopes/M1-S03/2026-09-12T16-30-00Z.json` (step-tester retest, confidence HIGH);
+  `reports/MOCK-DEPLOY-M1.md` run 6 (`S2-F-11`); `artefacts/M1-S03/deploy-order.md` § 0b.
+
+## D-M1S03-10 — UNVERIFIED, plan-bound: `PROFILE = 'Standard User'` is the library's own worked-example default, not a value any clarification names (S4-F-03)
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S03` (`automation`), run 4 repair
+- **Agent:** `apex-builder` (run 4, `2026-09-12T16-13-43Z`, finding `S4-F-03`)
+- **Kind:** skill gap surfaced as a plan-bound UNVERIFIED, the same shape `D-M1S03-05` and `D-M1S04-05`
+  already record from this build — a real ambiguity the plan's own clarifications never settle,
+  written down rather than guessed past.
+- **What was recorded:** each of the three repaired test classes now carries `PROFILE = 'Standard
+  User'`, passed to `TestUserFactory.createUser(PROFILE, ...)`. No clarification in this build's 45
+  names a Profile for the users who can escalate a Case — `Q19` names three admins by role ("Support
+  Engineering admins"), not by profile. `'Standard User'` is used because it is a real, standard
+  Salesforce profile present in every org and is the exact value
+  `skills/apex/test-class-standards/references/examples.md` Example 5 uses for this same class — the
+  narrowest legal default rather than a grounded fact.
+- **Alternative rejected:** leaving `PROFILE` unset or inventing an org-specific-sounding profile name
+  to make the value look grounded. Rejected on `AGENT_CONTRACT.md` rule 12 — a plausible-sounding name
+  that is not attested is worse than a real, generic one flagged as a default; `TestUserFactory`
+  requires a real profile name to compile against any org, so a default was unavoidable, and the one
+  chosen is at least attested against a worked example rather than invented.
+- **Grounded in:** `skills/apex/test-class-standards/references/examples.md` Example 5; `plan.json` →
+  `clarifications` `Q19` (verbatim: three admin roles, no profile named).
+- **Open item:** confirm the actual profile(s) of the users `Tier2_Webhook_Admin` is assigned to
+  (`artefacts/M1-S03/deploy-order.md` § 10 item 2) and update `PROFILE` in all three test classes if it
+  differs from `'Standard User'`, before UAT. Does not block this repair or the retest: the checker and
+  the pattern do not depend on which real profile is named, only that one exists in the target org.
+- **Evidence:** `envelopes/M1-S03/2026-09-12T16-13-43Z.json` → `findings[2]` (`S4-F-03`, INFO) and
+  `process_observations` (`ambiguous`, `low`, domain `integration-contract`);
+  `artefacts/M1-S03/deploy-order.md` § 9.
+
+## D-M1S03-11 — Accepted: `TestUserFactory` is a new `ApexClass` member `M1-S05`'s manifest must add (S4-F-02) — an `M1-S05` obligation, not `M1-S03`'s
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S03` (`automation`), run 4 repair; the resolution is `M1-S05`'s (`docs`) to apply
+- **Agent:** `apex-builder` (run 4, `2026-09-12T16-13-43Z`, finding `S4-F-02`)
+- **Kind:** design trade-off / obligation, the same shape `D-M1S03-06` already records for
+  `TestDataFactory` from this same step — a new file this step ships that another step's manifest must
+  learn about, recorded on the producing step because that is the artefact a reader of this step
+  consults first.
+- **What was recorded:** the repair's own task asked for `TestUserFactory` to be added to "the step's
+  `package.xml`." This `apex-builder`-owned `automation` step has never declared one of its own —
+  `standards/build-orchestration.md` § 5 **The Apex exception** assigns every `ApexClass`/`ApexTrigger`
+  member this step produces to the build-level manifest step **M1-S05** (`depends_on` this step)
+  instead, and this step's own `manifest` acceptance test already records skipped-not-applicable,
+  naming M1-S05. Declaring a local `package.xml` here would contradict that recorded exception and
+  § 4 condition 2 (an agent may not declare an output its own Output Contract does not produce —
+  `apex-builder`'s names none). `artefacts/M1-S05/package.xml` and `reports/MILESTONE-M1-package.xml`
+  still list only the pre-run-4 twelve `ApexClass` members from this step; `TestUserFactory` is a
+  thirteenth, not yet in either file.
+- **Alternative rejected:** writing a local `package.xml` under `artefacts/M1-S03/` anyway, so the new
+  class would have manifest coverage immediately. Rejected because it would contradict this step's own
+  recorded Apex exception and duplicate what `M1-S05` exists to aggregate — the fix belongs at M1-S05,
+  not as a second, competing manifest.
+- **Grounded in:** `standards/build-orchestration.md` § 4 condition 2, § 5 **The Apex exception**;
+  `D-M1S03-06` (the same pattern already applied to `TestDataFactory` from this step).
+- **Open item:** re-run `M1-S05` (`metadata-builder`) once this step is `documented`, to add the
+  `TestUserFactory` `ApexClass` member to the build-level `package.xml` — out of scope for this
+  M1-S03-only repair and documentation pass. `milestone:M1` was approved on evidence (dry runs 1–5)
+  that predates both `S2-F-06` (tests never executed) and `S2-F-11` (tests failed once they did); a
+  fresh `M1-S05` build plus `/verify-milestone` against a dry run that actually executes tests is what
+  re-signs the M1 acceptance this repair puts back in question.
+- **Evidence:** `envelopes/M1-S03/2026-09-12T16-13-43Z.json` → `findings[1]` (`S4-F-02`, P2) and
+  `process_observations` (`suggested_followup`, `medium`, domain `build-loop`,
+  `suggested_followup_agent: milestone-verifier`); `artefacts/M1-S03/deploy-order.md` §§ 0b, 2.
+
+## D-M1S04-08 — Deviation: the § 0c test-only repair closes `S2-F-11` for `M1-S04` by running every `Tier2ChannelHealthTest` method as a `TestUserFactory`-provisioned user holding `Tier2_Webhook_Admin`
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S04` (`automation`), run 3 — a § 4 test-only repair (`documented` → `running` → `built` → `tested`)
+- **Agent:** `apex-builder` (run 3, `2026-09-12T16-30-00Z`, finding `S5-F-01`); confirmed by
+  `step-tester` (`2026-09-12T16-45-00Z`, `built → tested`)
+- **Kind:** Deviation, per `agents/build-doc-keeper/AGENT.md` Step 3 — the tests as originally shipped
+  (runs 1–2) ran as the deploying user; the repair changes them to run as a provisioned permissioned
+  user, the same shape M1-S03's own accepted repair (`D-M1S03-09`) applied to its three test classes.
+- **What was recorded:** `reports/MOCK-DEPLOY-M1.md` run 6 (`--test-level RunSpecifiedTests`) is the
+  finding source for both steps' repairs (`S2-F-11`): `Tier2ChannelHealthQueueable`'s three aggregate
+  `COUNT()` queries enforce the running user's FLS with no keyword at all under API 67.0 default user
+  mode, and `Tier2ChannelHealthTest` carried no `System.runAs` block for a permissioned user — every
+  method ran as the deploying user. The repair adds `PERM_SET`/`PROFILE` constants, a new setup-object
+  `System.runAs` fence in `@TestSetup` around `TestUserFactory.createUser('Standard User', new
+  List<String>{ 'Tier2_Webhook_Admin' })`, a re-queried `agent()` helper, and wraps all 11
+  pre-existing `@IsTest` method bodies in `System.runAs(testUser)` — same statements, same assertions,
+  same messages, same order, confirmed by a whitespace-insensitive diff showing only inserted lines.
+  `check_test_class_standards.py`'s `user-mode-test-without-runas` rule now reports 0 findings against
+  `artefacts/M1-S04/classes` (down from 1, confirmed against the pre-repair file in isolation).
+  `Tier2ChannelHealthSchedulable.cls` and `Tier2ChannelHealthQueueable.cls` are untouched.
+- **Alternative rejected:** relaxing the Queueable's default-user-mode enforcement so the tests would
+  pass under the deploying user. Rejected for the same reason `D-M1S03-09` rejects it: the org's own
+  diagnosis is that the enforcement is correct and the test fixture was the defect.
+- **Grounded in:** `skills/apex/test-class-standards/references/gotchas.md` Gotcha 13;
+  `skills/apex/test-class-standards/references/examples.md` Example 5;
+  `skills/apex/mixed-dml-and-setup-objects` (why the user-provisioning call sits in its own new
+  `runAs` fence — unlike M1-S03, this class had no pre-existing setup-object fence to fold into);
+  `D-M1S03-09` (the identical pattern already accepted for this build's other Apex step).
+- **Evidence:** `envelopes/M1-S04/2026-09-12T16-30-00Z.json` → `findings[0]` (`S5-F-01`, P0);
+  `envelopes/M1-S04/2026-09-12T16-45-00Z.json` (step-tester retest, confidence HIGH);
+  `reports/MOCK-DEPLOY-M1.md` run 6 (`S2-F-11`); `artefacts/M1-S04/deploy-order.md` § 0c.
+
+## D-M1S04-09 — Accepted: `Tier2ChannelHealthTest` now depends on `M1-S03`'s `TestUserFactory` copy, recorded in prose because `amend-step` could not add it to `depends_on`
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S04` (`automation`), run 3 repair
+- **Agent:** `apex-builder` (run 3, `2026-09-12T16-30-00Z`, finding `S5-F-02`)
+- **Kind:** Design trade-off / obligation, the same shape `D-M1S03-11` records for the mirror-image
+  gap on `M1-S03`'s side — a new cross-step dependency the plan's machine-readable state cannot yet
+  carry, recorded where a reader of this step consults first.
+- **What was recorded:** the § 0c repair's `TestUserFactory.createUser(...)` call references a class
+  this step does not ship — `templates/apex/tests/TestUserFactory.cls` is already shipped verbatim by
+  `M1-S03`'s own `S2-F-11` repair (`artefacts/M1-S03/classes/TestUserFactory.cls` + `-meta.xml`), and
+  this step depends on that copy rather than shipping a second one. `plan.json`'s
+  `steps[M1-S04].depends_on` is still `["M1-S01"]` only: `amend-step` is refused once a step has left
+  `pending` (this step was `running`), the same limitation `M1-S03`'s own repair recorded for its
+  `package.xml` request (`D-M1S03-11`). `scripts/mock_deploy.py:copy_artefacts` rebases every step's
+  files onto one assembled path, so the single shipped copy is sufficient at deploy time regardless of
+  what `depends_on` says — the gap is in the plan's own dependency record, not in what would actually
+  be assembled.
+- **Alternative rejected:** shipping a second, redundant copy of `TestUserFactory.cls` under
+  `artefacts/M1-S04/` so the step's own manifest directory would be self-contained. Rejected because
+  it would produce two identical `ApexClass` members for `M1-S05`'s build-level manifest to
+  deduplicate — the same problem this build's `TestDataFactory` dependency already causes and already
+  has an open recommendation for (`artefacts/M1-S04/deploy-order.md` § 2, Apex-foundations step).
+- **Grounded in:** `standards/build-orchestration.md` § 2 (`amend-step` refused once a step leaves
+  `pending`), § 4 Apex row note (the Apex-foundations recommendation for a shared
+  `templates/apex/**` dependency shared by more than one Apex step); `D-M1S03-11` (the same
+  limitation recorded from the producing step's side).
+- **Open item:** whoever next re-plans this build should add `M1-S03` to `steps[M1-S04].depends_on`,
+  and should consider the Apex-foundations step `standards/build-orchestration.md` § 4 already
+  recommends for the shared `TestDataFactory` dependency — `TestUserFactory` is now a second,
+  independent reason for it.
+- **Evidence:** `envelopes/M1-S04/2026-09-12T16-30-00Z.json` → `findings[1]` (`S5-F-02`, P1) and
+  `extensions.not_carried_out[0]`; `artefacts/M1-S04/deploy-order.md` § 0c, § 2.
+
+## D-M1S04-10 — UNVERIFIED, plan-bound: two of the eleven `runAs`-wrapped test methods now depend on the `Standard User` profile's ability to read `PermissionSetAssignment`/`CronTrigger`/`AsyncApexJob`, which `Tier2_Webhook_Admin` does not grant
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S04` (`automation`), run 3 repair
+- **Agent:** `apex-builder` (run 3, `2026-09-12T16-30-00Z`, finding `S5-F-03`)
+- **Kind:** skill gap surfaced as a plan-bound UNVERIFIED, the same shape `D-M1S04-05` (the
+  `WITH USER_MODE`-on-aggregate question) and `D-M1S03-10` already record from this build — a real
+  ambiguity the plan's own clarifications never settle, written down rather than guessed past.
+- **What was recorded:** `Tier2_Webhook_Admin` (confirmed via
+  `artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml`) grants object/field
+  permissions only on `Integration_Failure__c` and `Case.Tier2_Notified_At__c` — nothing on
+  `PermissionSetAssignment`, `CronTrigger` or `AsyncApexJob`. Since the § 0c repair,
+  `rosterResolutionReturnsTheDistinctActiveAssigneeEmails` (queries `PermissionSetAssignment`
+  directly) and `scheduleCreatesAWaitingCronTriggerAndDispatchesTheQueueable` (calls
+  `System.schedule` and queries `CronTrigger`/`AsyncApexJob`) both run as the `Standard
+  User`-profile permissioned agent under API 67.0's default user mode instead of the deploying user.
+  Whether that profile can read those objects or schedule Apex is stated in no cited skill. This
+  mirrors the same open question `artefacts/M1-S04/deploy-order.md` § 4 item 1 already raises for the
+  production scheduling user — the repair surfaces it in the test fixture too, rather than resolving
+  it, because resolving it means changing `Tier2_Webhook_Admin` (`M1-S02`, a different step, out of
+  scope for a test-only repair).
+- **Alternative rejected:** widening `Tier2_Webhook_Admin`'s grants to cover
+  `PermissionSetAssignment`/`CronTrigger`/`AsyncApexJob` as part of this repair. Rejected because that
+  permission set belongs to `M1-S02`, which is `documented`; changing it is outside a test-only
+  repair's scope and outside this step's own artefacts.
+- **Grounded in:** `artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml`;
+  `artefacts/M1-S04/deploy-order.md` §§ 0c, 4 item 1, 8.
+- **Open item:** the org's own answer is pending a dry run that actually executes these two methods
+  under the permissioned agent (dry run 7 in the mock-deploy sequence, following run 6's
+  `reports/mock-deploy/2026-09-12T13-08-43Z/`); until that result lands and is reconciled into
+  `reports/MOCK-DEPLOY-M1.md`, whether the two methods pass, throw, or read empty under a `Standard
+  User` profile is not established either way by this pass. Does not block this repair or the retest:
+  the checker and the repair pattern do not depend on the answer, only on a permissioned user
+  existing.
+- **Evidence:** `envelopes/M1-S04/2026-09-12T16-30-00Z.json` → `findings[2]` (`S5-F-03`, P2) and
+  `process_observations` (`ambiguous`, `low`, domain `integration-contract`);
+  `artefacts/M1-S04/deploy-order.md` §§ 0c, 4, 8.
+
+## D-M1S03-12 — Deviation (repair): `TestDataFactory` refreshed to the corrected template — a lookup is populated only when the caller supplies it — closing S2-F-12 for this step
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S03` (`automation`), run 5 — a second, narrower § 4 test-only repair
+  (`documented` → `running` → `built` → `tested`), after run 4's `S2-F-11` repair (`D-M1S03-09`)
+- **Agent:** `apex-builder` (run 5, `2026-09-12T17-05-00Z`, finding `S5-F-01`); confirmed by
+  `step-tester` (`2026-09-12T16-51-00Z`, `built → tested`)
+- **Kind:** Deviation, per `agents/build-doc-keeper/AGENT.md` Step 3 — the shared test factory as
+  shipped through run 4 assigned a lookup field unconditionally; the repair changes it to assign the
+  field only when the caller supplies a non-null Id, a real change from what was built before, with
+  its reason stated in the finding it closes.
+- **What was recorded:** `reports/MOCK-DEPLOY-M1.md` run 7 — after the § 0b (`S2-F-11`) fix put every
+  test method inside `System.runAs(agent)` as the `Tier2_Webhook_Admin`-permissioned user — failed
+  all 30 test methods across `M1-S01`…`M1-S04` at the same `@TestSetup` seed insert:
+  `System.DmlException: Operation failed due to fields being inaccessible on Sobject Case ...
+  fieldNames: AccountId`. `TestDataFactory.createCases(count, accountId, overrides)` assigned
+  `AccountId = accountId` directly inside the constructor's field list, so a `null` argument still
+  marked the field populated once Apex's default user-mode DML (API 67.0+) checked FLS on every
+  populated field at insert, and the `Standard User`-profile agent holds no create access on
+  `Case.AccountId` — a field this deployment's permission set was never asked to grant, because no
+  test needed it. All three of this step's test classes call the factory as `createCases(<n>, null,
+  null)` (`IntegrationFailureResendTest.cls:57`, `Tier2EscalationServiceTest.cls:61`,
+  `Tier2WebhookQueueableTest.cls:64`) and none references `Case.AccountId` anywhere — verified by
+  grep before and after this run. `classes/TestDataFactory.cls` was replaced with a verbatim copy of
+  the corrected `templates/apex/tests/TestDataFactory.cls` (`diff` empty, commit `5edcb3281`):
+  `createContacts`, `createOpportunities` and `createCases` now construct the record without the
+  lookup field and set it only inside `if (accountId != null) { record.AccountId = accountId; }`.
+  No test-class call site needed a change — the corrected factory leaves the field genuinely unset
+  for a `null` argument, which is the intent `skills/apex/test-class-standards/references/gotchas.md`
+  Gotcha 14 describes, not a regression. The three previously-declared checkers plus the undeclared
+  `check_test_class_standards.py --manifest-dir artefacts/M1-S03/classes` were re-run verbatim: 0
+  findings across all four; `check-outputs` is `ok` on all 20 declared paths.
+- **Alternative rejected:** granting `Tier2_Webhook_Admin` create-FLS on `Case.AccountId` so the
+  unconditional assignment would deploy clean instead of correcting the factory. Rejected because no
+  call site in this step needs the field and no clarification asks for `AccountId` access on this
+  permission set — granting it here would reopen, from the other direction, the same widening
+  `D-M1S02-04` already rejected for `Case` access on `Tier2_Webhook_Admin`.
+- **Grounded in:** `skills/apex/test-class-standards/references/gotchas.md` Gotcha 14 (names this
+  exact org message and this build as its source); `templates/apex/tests/TestDataFactory.cls`
+  (commit `5edcb3281`); `reports/MOCK-DEPLOY-M1.md` run 7.
+- **Consequences for `M1-S04`:** `M1-S04` ships an independent copy of `TestDataFactory.cls` under
+  its own artefacts and carried the identical defect; this run's scope was `M1-S03` alone
+  (`envelopes/M1-S03/2026-09-12T17-05-00Z.json` → `findings[1]`, `S5-F-02`, flagged `M1-S04` as
+  needing the same repair). **That gap is closed, not open:** `M1-S04` was repaired in parallel by
+  its own run 3 — `artefacts/M1-S04/deploy-order.md` § 0d records the identical verbatim-template
+  replacement, closing the same `S2-F-12` finding for that step's copy — so a reader of `S5-F-02` or
+  of `tests/M1-S03/summary.md`'s "concerning" note about `M1-S04` shipping "a byte-identical
+  (pre-fix) copy" should treat that specific observation as superseded by `M1-S04`'s own
+  documentation pass, not as a standing gap.
+- **Evidence:** `envelopes/M1-S03/2026-09-12T17-05-00Z.json` → `findings[0]` (`S5-F-01`) and
+  `findings[1]` (`S5-F-02`); `envelopes/M1-S03/2026-09-12T16-51-00Z.json` (step-tester retest,
+  confidence HIGH, `built → tested`); `artefacts/M1-S03/deploy-order.md` § 0c;
+  `tests/M1-S03/results.json`; `artefacts/M1-S04/deploy-order.md` § 0d (the parallel repair that
+  closes `S5-F-02`).
+
+## D-M1S04-11 — Deviation (repair): `TestDataFactory.cls` replaced with the corrected canonical template, closing `S2-F-12` for `M1-S04`
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S04` (`automation`), run 4 repair (§ 0d)
+- **Agent:** `apex-builder` (run 4, `2026-09-12T16-45-51Z`, finding `S6-F-01`); confirmed by
+  `step-tester` (`2026-09-12T16-49-37Z`, re-test after run 4)
+- **Kind:** Deviation, per `agents/build-doc-keeper/AGENT.md` Step 3 — the shared test-data factory
+  this step ships (a verbatim `templates/apex/tests/TestDataFactory.cls` copy) is replaced wholesale
+  with a newer verbatim copy of the same template, corrected upstream; no production or test class in
+  this step's own artefacts changed.
+- **What was recorded:** `reports/MOCK-DEPLOY-M1.md` run 7 is the finding source (`S2-F-12`, HIGH,
+  library): `TestDataFactory.createCases(count, accountId, overrides)` assigned `AccountId =
+  accountId` unconditionally, so `Tier2ChannelHealthTest.seed()`'s call with a null `accountId`
+  argument still left the field marked populated on the constructed sObject. Under API 67.0's default
+  user mode, the plain `insert` inside `System.runAs(agent)` (the § 0c repair's permissioned test
+  user) checked FLS on that populated-but-null field, and the `Standard User`-profile agent this
+  build's `Tier2_Webhook_Admin` grants no create access to `Case.AccountId` — confirmed by the
+  operator's run-7 probe (`createable=true Subject=true Status=true Origin=true AccountId=false
+  Tier2_Notified_At__c=true profile=Standard User psa=1 | fields=AccountId |
+  code=CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY`). The same defect failed all 30 test methods across both
+  this step and `M1-S03` at the identical `@TestSetup` seed-insert line.
+  `skills/apex/test-class-standards/references/gotchas.md` Gotcha 14 names this exact failure mode and
+  its two-part fix. `classes/TestDataFactory.cls` is replaced with a verbatim copy of the corrected
+  `templates/apex/tests/TestDataFactory.cls` (commit `5edcb3281`) — `diff` against the template is
+  empty, confirmed this run. `Tier2ChannelHealthSchedulable.cls`, `Tier2ChannelHealthQueueable.cls`
+  and `Tier2ChannelHealthTest.cls` are all unchanged: the existing seed already called
+  `createCases(1, null, overrides)` and no test method reads or asserts on `Case.AccountId`, so no
+  compensating test edit was needed. All three declared checkers, plus the due-diligence
+  `check_test_class_standards.py` run, re-ran at exit 0 (`tests/M1-S04/results.json`, `step-tester`
+  run `2026-09-12T16-49-37Z`).
+- **Alternative rejected:** patching `Tier2ChannelHealthTest.seed()` to pass a non-null placeholder
+  `accountId` instead of fixing the factory. Rejected because the defect is in the shared template,
+  not the caller — the same unconditional assignment would still fail the identical `M1-S03` seed call
+  and any future caller passing `null`, and the library's own canonical fix (Gotcha 14) is at the
+  factory, not at each call site.
+- **Grounded in:** `skills/apex/test-class-standards/references/gotchas.md` Gotcha 14;
+  `templates/apex/tests/TestDataFactory.cls` (corrected, commit `5edcb3281`);
+  `standards/build-orchestration.md` § 4 (`documented → running` test-only repair transition);
+  `D-M1S04-08` (the identical repair shape this build already accepted for `S2-F-11`).
+- **Evidence:** `envelopes/M1-S04/2026-09-12T16-45-51Z.json` → `findings[0]` (`S6-F-01`, P0);
+  `envelopes/M1-S04/2026-09-12T16-49-37Z.json` (step-tester retest, confidence HIGH);
+  `reports/MOCK-DEPLOY-M1.md` run 7 (`S2-F-12`); `artefacts/M1-S04/deploy-order.md` § 0d.
+
+## D-M1S05-06 — Accepted: `TestUserFactory` added as a fourteenth `ApexClass` member (33→34), closing `S2-F-11`; the re-run brief's finding-id citation corrected, not propagated
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S05` (`docs`), run 2 (`documented` → `running` → `built` → `tested`, a § 4 test-only-
+  adjacent rebuild)
+- **Agent:** `metadata-builder` (run 2, `2026-09-12T17-03-58Z`); confirmed by `step-tester`
+  (`2026-09-12T17-09-17Z`)
+- **Kind:** Deviation, paired with a skill gap (plan-hygiene) citation correction — the same
+  generalisation `D-M1S02-06` and `D-M1S04-07` apply to a re-run instruction's own wording, recorded
+  without blocking the step.
+- **What was recorded:** `artefacts/M1-S05/package.xml` (the build-level manifest) was regenerated to
+  add `classes/TestUserFactory.cls` as a new `ApexClass` member — 13 → **14** `ApexClass` members, 33
+  → **34** total. This closes the obligation `D-M1S03-11` already recorded (that `M1-S05`'s manifest
+  must add `TestUserFactory` once `M1-S03` shipped it) and traces to the underlying root cause named in
+  finding **S2-F-11** (`reports/MOCK-DEPLOY-M1.md` run 6): the deploying user held no FLS on the
+  `M1-S01` fields, so every `M1-S03` test method failed as that user, and `M1-S03`'s repair added
+  `TestUserFactory` to provision a permissioned `@TestSetup` user. Verified this run by SHA-256 against
+  `templates/apex/tests/TestUserFactory.cls` (verbatim copy) and by a bidirectional 34-member/34-file
+  manifest check over the whole `artefacts/M1-S0[1-4]/` tree — no member without a file, no file
+  without a member, no duplicate, no wildcard. No other member type changed; `TestDataFactory`'s
+  backing bytes changed under the unrelated `S2-F-12` repair, re-verified by SHA-256 as still one
+  unambiguous member with no member-count effect.
+- **Finding-id correction — recorded, not propagated:** the operator's re-run brief cited "finding
+  `S4-F-02`" as the reason to add `TestUserFactory`. `metadata-builder`'s own investigation
+  (`artefacts/M1-S05/deploy-order.md` § 0; `envelopes/M1-S05/2026-09-12T17-03-58Z.json` →
+  `process_observations`, `concerning`/`medium`) reports finding no id `S4-F-02` in
+  `reports/MOCK-DEPLOY-M1.md` or either Apex step's `deploy-order.md`, and names **S2-F-11** as the
+  actual grounding finding instead. This entry cites S2-F-11 as the grounding fact, per that
+  determination, and does not carry `S4-F-02` forward as if it were the reason `TestUserFactory`
+  exists.
+  **Caveat this pass adds, from re-reading this file before appending:** `D-M1S03-11` (above, this
+  file) is itself titled with a finding literally labelled `S4-F-02` — `apex-builder`'s own run-4
+  finding on `M1-S03`, recording the *obligation* that `M1-S05` must add `TestUserFactory` to its
+  manifest, which is a different fact from S2-F-11's role as the *root cause* that made
+  `TestUserFactory` necessary in the first place. So "no finding of that id exists in this build's
+  records," as `metadata-builder`'s envelope puts it, is not quite exact: a differently-scoped
+  `S4-F-02` does exist, in this very file. Recorded as a citation-quality observation about the
+  re-run brief and about the search that produced `metadata-builder`'s envelope text — not resolved in
+  either direction here, and this pass does not amend `metadata-builder`'s envelope or `D-M1S03-11`
+  (append-only).
+- **Alternative rejected:** silently accepting the brief's `S4-F-02` citation as authoritative, or
+  omitting the discrepancy from the record now that the member itself is correctly added. Rejected
+  because Step 3 of `agents/build-doc-keeper/AGENT.md` records a citation mismatch rather than adopting
+  it as fact, and because omitting the caveat above would have hidden that decisions.md already
+  contains a real, if differently-scoped, `S4-F-02` entry — exactly the kind of thing a reader
+  reconciling the two would need.
+- **Grounded in:** `envelopes/M1-S05/2026-09-12T17-03-58Z.json` (`metadata-builder`, § 0 rebuild
+  record and `process_observations`); `artefacts/M1-S05/deploy-order.md` § 0;
+  `envelopes/M1-S05/2026-09-12T17-09-17Z.json` (`step-tester`); `tests/M1-S05/results.json`;
+  `D-M1S03-11` and `D-M1S05-01` (this file).
+- **Why this agent does not resolve the citation question further:** per "What This Agent Does NOT
+  Do" — it does not touch `plan.json` beyond the single status transition it owns for `M1-S05`, and it
+  does not amend another agent's envelope or an earlier `decisions.md` entry, which is append-only.
+  Which finding the operator's brief actually intended is left for a human or `milestone-verifier` to
+  adjudicate against `reports/MOCK-DEPLOY-M1.md`.
+- **Open item:** none blocking. A human reading this entry should treat **S2-F-11** as the grounding
+  fact for why `TestUserFactory` exists, and treat `D-M1S03-11`'s `S4-F-02` label as a separate,
+  narrower "obligation recorded" finding — not as evidence that the re-run brief's citation was
+  correct.
+- **Evidence:** `envelopes/M1-S05/2026-09-12T17-03-58Z.json`; `envelopes/M1-S05/2026-09-12T17-09-17Z.json`;
+  `artefacts/M1-S05/deploy-order.md` § 0; `tests/M1-S05/results.json`; `decisions.md` `D-M1S03-11`,
+  `D-M1S05-01`.
+
+## D-M1S02-07 — Deviation (repair): `Tier2_Webhook_Admin` gains Create/Read on `Tier2_Escalation__e`, closing S2-F-13 — grounded in D10/D14; the checker-coverage gap the tester named is now a WARN rule in `platform-events-apex`'s checker
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S02` (`access`), run 3 — a repair after the whole-build mock deploy surfaced a
+  finding no step-scoped or build-scoped checker of this step's own could see (`standards/build-
+  orchestration.md` § 4 `documented` → `running` recovery transition, the same shape as `D-M1S02-01`'s
+  rebuild and `D-M1S03-12`'s)
+- **Agent:** `metadata-builder` (run 3, `2026-09-12T17-20-00Z`); confirmed by `step-tester`
+  (`2026-09-12T17-21-00Z`, `built → tested`)
+- **Kind:** Deviation (repair) — a real change to the shipped permission set, with the persona
+  question it turned on recorded as a design-trade-off choice between two ways to grant it.
+- **What was recorded:** `reports/MOCK-DEPLOY-M1.md` run 8 —
+  `Tier2EscalationServiceTest.ownerChangeToTier2QueueEscalatesAndStamps` passed its webhook-stamp
+  assertion but failed its failure-row assertion ("Expected 0, Actual 2"); the operator's
+  scratch-copy probe showed both rows carrying `Severity Error — "Tier2_Escalation__e publish
+  rejected: Access to entity 'Tier2_Escalation__e' denied"`. Root cause: `Tier2EscalationService`
+  (`M1-S03`, decision **D10** — publish-after-commit from the service layer, before the Queueable
+  runs) calls `EventBus.publish` as the same async-context user decision **D14** already reasons
+  about for this whole step; at API 67.0, `EventBus.publish` runs in user mode by default and
+  requires Create on the event object (`skills/apex/platform-events-apex/references/gotchas.md`,
+  "API 67.0 Silently Moves Publishing Into User Mode"). No permission set this build ships granted
+  anything on `Tier2_Escalation__e`. **The fix:** one new `objectPermissions` row added to the
+  existing `Tier2_Webhook_Admin` set — `allowCreate`/`allowRead` both `true`,
+  `allowEdit`/`allowDelete`/`viewAllRecords`/`modifyAllRecords` all `false`. `allowRead` rides
+  along only because `check_permission_set_architecture.py`'s dependency-chain rule ERRORs
+  `allowCreate` without it, not because a publisher needs to query the event back. **Persona
+  reasoning — why the existing set, not a new one:** the population that needs to publish is not a
+  new persona; it is exactly decision **D14**'s existing assignee set (every user who can escalate a
+  Case to `Tier_2_Engineering`, plus the M1-S04 scheduling user), because the publish call and the
+  Named-Credential-authenticated webhook call decision **D10** sequences immediately after it both
+  run as the same async-context user in the same escalating transaction — the same user `D14`
+  already reasons the Named Credential principal access and the `Integration_Failure__c` CRUD in
+  this same set must be assigned to. Both cited checkers exited 0 on the repaired set;
+  `check-outputs` returned `ok`; `package.xml` and the External Credential / Named Credential files
+  are unchanged, so no new manifest member and no change to `M1-S05`.
+- **Checker-coverage gap named by the tester, and its status now:** at the time of this repair,
+  neither declared checker (`check_apex_named_credentials_patterns.py`,
+  `check_permission_set_architecture.py --manifest-dir artefacts`) asserted that a permission set
+  granting `EventBus.publish` access actually names the platform event it publishes — the same
+  shape of gap `D-M1S02-01` already recorded for the `AuthHeader` `parameterValue` element:
+  `step-tester`'s own retest envelope (`2026-09-12T17-21-00Z`) flagged it "Concerning (medium)":
+  "S2-F-13 was found only by mock-deploy exercising the Apex test end to end, after three prior
+  tester runs had both checkers green on the pre-repair set. A second Apex publish added later with
+  no matching `objectPermissions` row would again pass both checkers silently." **This gap is now
+  closed at the skill level, verified by reading the checker's current source rather than assumed:**
+  `skills/apex/platform-events-apex/scripts/check_platform_events_apex.py` carries rule **R9** —
+  "`EventBus.publish(...)` of a `<Name>__e` with no `*.permissionset-meta.xml` or
+  `*.profile-meta.xml` under the scanned tree granting `<allowCreate>true` on that `<Name>__e` via
+  `<objectPermissions>`" — deliberately `WARN`, not `ERROR`, because a build may grant the
+  permission by other means or bypass deliberately with `EventBus.publishWithAccessLevel` (the
+  checker's own docstring, and its `--strict` flag to escalate the WARN to a failing exit). This
+  checker is cited in this step's `skills[]` as `apex/platform-events-apex` for a different purpose
+  (the gotcha, not the rule); the rule itself was not run against this step's artefacts as an
+  acceptance test, because the step's declared `acceptance_tests[]` does not name it — recorded here
+  as an observation for `milestone-verifier` or a future plan amendment, not acted on by this agent.
+- **Alternative rejected:** a new, narrowly-scoped `Tier2_Escalation_Publisher` permission set
+  granting only Create on the event. Not chosen: the population is identical to `Tier2_Webhook_Admin`'s
+  existing D14 assignees, the publish and the webhook callout run in the same transaction as the same
+  user, and a second set would add an assignment operation with no least-privilege benefit — there is
+  no user who should hold one grant without the other. Recorded in `artefacts/M1-S02/deploy-order.md`
+  § 0b so a future reviewer sees the option was considered, not missed.
+- **Grounded in:** `skills/apex/platform-events-apex/references/gotchas.md` ("API 67.0 Silently
+  Moves Publishing Into User Mode"); `skills/apex/platform-events-apex/scripts/check_platform_events_apex.py`
+  (rule R9, read this pass to confirm it exists before citing it); `skills/admin/permission-set-
+  architecture/scripts/check_permission_set_architecture.py` (dependency-chain rule requiring
+  `allowRead` alongside `allowCreate`); decisions **D10** and **D14** (`plan.json` → `decisions[]`);
+  `artefacts/M1-S02/deploy-order.md` §§ 0b, 4, 6(g).
+- **Open item:** none blocking this step. `milestone-verifier` should confirm whether R9 ought to be
+  added to this step's or the M1 milestone's declared `acceptance_tests[]` now that it exists, since
+  no acceptance test in this plan currently runs it.
+- **Evidence:** `envelopes/M1-S02/2026-09-12T17-20-00Z.json` (`metadata-builder` repair envelope,
+  `process_observations` "concerning"/"high"); `envelopes/M1-S02/2026-09-12T17-21-00Z.json`
+  (`step-tester` retest, `process_observations` "concerning"/"medium"); `reports/MOCK-DEPLOY-M1.md`
+  run 8; `tests/M1-S02/results.json` (`skipped_manual[0]` re-test note); `artefacts/M1-S02/deploy-
+  order.md` § 0b.
+
+## D-M1S03-13 — Deviation (repair): `Tier2WebhookFinalizer`'s retry/abandon/update branches now unit-tested via a customer-implemented `FinalizerContext` stub — UNVERIFIED at run 6, confirmed by the org at run 7
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S03` (`automation`), runs 6–7 — two consecutive § 4 test-only repairs
+  (`documented` → `running` → `built`, twice, then `tested` once at run 8's retest)
+- **Agent:** `apex-builder` (run 6, `2026-09-12T17-40-00Z`, findings `S6-F-01`/`S6-F-02`; run 7,
+  `2026-09-12T17-50-00Z`, findings `S7-F-01`/`S7-F-02`); confirmed by `step-tester`
+  (`2026-09-12T18-08-27Z`, `built → tested`)
+- **Kind:** Deviation, per `agents/build-doc-keeper/AGENT.md` Step 3 — `Tier2WebhookFinalizer` had no
+  direct unit test before run 6; the repair adds one via a technique (a hand-built class implementing
+  `System.FinalizerContext`) not previously used or confirmed anywhere in this repo's corpus, a real
+  change from what was built before, with its reason and its later confirmation both stated here.
+- **What was recorded:** `reports/MOCK-DEPLOY-M1.md` run 9 (`--test-level RunSpecifiedTests`) found
+  `Tier2WebhookFinalizer` under the 75% coverage floor (`S2-F-14`, 63 of 76 lines uncovered) after
+  run 5's repair. Run 6 added `artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls` (+
+  `-meta.xml`), 5 methods calling `Tier2WebhookFinalizer.execute(FinalizerContext)` directly against
+  a private inner `StubFinalizerContext` implementing `System.FinalizerContext` — a technique the
+  run's own envelope flagged P0/UNVERIFIED (`S6-F-02`) because no skill under `skills/apex/` states
+  whether a customer class may implement `System.FinalizerContext`, and
+  `skills/apex/apex-transaction-finalizers/references/code-examples.md` solves the identical
+  test-design problem with a different technique (a `@TestVisible` seam) that this run could not use
+  without editing the shipped class. Run 7's org evidence (`reports/MOCK-DEPLOY-M1.md` run 10)
+  settled the question: `Tier2WebhookFinalizerTest.cls` compiled and 33 of 34 methods passed at
+  86.8% coverage, confirming `System.FinalizerContext` is customer-implementable at API 67.0 in this
+  org (`S7-F-02`). The one failure
+  (`transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce`) was a separate, unrelated
+  defect: the Finalizer's own re-enqueued job ran to completion inside the test method regardless of
+  `Test.startTest()`/`Test.stopTest()` wrapping, and with no `HttpCalloutMock` registered anywhere in
+  that method its callout threw and was re-thrown. Run 7 fixed it with one line —
+  `Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator().withResponse(200, OK_BODY))`
+  immediately before the `finalizer.execute(...)` call, plus a new `OK_BODY` constant — no assertion
+  changed. `reports/MOCK-DEPLOY-M1.md` run 12 (SOURCE mode, `--test-level RunSpecifiedTests`) later
+  confirmed 37/37 tests passing at 89.9% coverage with no coverage warnings.
+- **Alternative rejected:** (run 6) driving the Finalizer's branches by letting a real Queueable throw
+  inside `Test.stopTest()`, which `artefacts/M1-S03/deploy-order.md` § 5 item 3 already recorded, from
+  this same build, fails the test method outright; (run 7) asserting the enqueue without forcing
+  execution, an option no longer available once the org's own run 10 result showed the re-enqueued job
+  runs to completion regardless of how the call is wrapped.
+- **Skill gap:** `skills/apex/apex-transaction-finalizers` does not document that a customer class may
+  implement `System.FinalizerContext` directly for isolated Finalizer unit tests, as an alternative to
+  the `@TestVisible` seam it currently shows exclusively — now org-confirmed here, per `S7-F-02`'s own
+  recommendation to record it there once known.
+- **Grounded in:** `skills/apex/apex-transaction-finalizers/references/code-examples.md` (the
+  identical test-design problem, solved there by a different, here-unusable technique — the
+  direct-implementation technique itself is not documented by any skill, hence the initial UNVERIFIED
+  tag); `skills/apex/apex-queueable-patterns/SKILL.md` (`FinalizerContext`'s four documented methods,
+  no `getJobId()`); `skills/apex/callouts-and-http-integrations` and `skills/apex/apex-mocking-and-
+  stubs` (the `Test.setMock` registration rule behind the run-7 fix);
+  `templates/apex/tests/MockHttpResponseGenerator.cls` (`withResponse(200, body)`).
+- **Evidence:** `envelopes/M1-S03/2026-09-12T17-40-00Z.json` → `findings[0]` (`S6-F-01`) and
+  `findings[1]` (`S6-F-02`); `envelopes/M1-S03/2026-09-12T17-50-00Z.json` → `findings[0]` (`S7-F-01`)
+  and `findings[1]` (`S7-F-02`); `envelopes/M1-S03/2026-09-12T18-08-27Z.json` (step-tester retest);
+  `reports/MOCK-DEPLOY-M1.md` runs 9, 10 and 12; `artefacts/M1-S03/deploy-order.md` §§ 0d–0e;
+  `tests/M1-S03/results.json`.
+
+## D-M1S03-14 — Deviation (repair): two branch tests close `Tier2EscalationService`'s per-class coverage gap the aggregate floor had been masking (`S2-F-16`)
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S03` (`automation`), run 8 — a third § 4 test-only repair
+  (`documented` → `running` → `built` → `tested`)
+- **Agent:** `apex-builder` (run 8, `2026-09-12T18-05-00Z`, finding `S8-F-01`); confirmed by
+  `step-tester` (`2026-09-12T18-08-27Z`, `built → tested`) and, at the build level, by
+  `reports/MOCK-DEPLOY-M1.md` run 12 (37/37 tests, 89.9% coverage, no coverage warnings)
+- **Kind:** Deviation, per `agents/build-doc-keeper/AGENT.md` Step 3 — Apex's `RunSpecifiedTests`
+  coverage floor is enforced **per class**, not only in aggregate; the repair adds branch coverage
+  the previous two repairs' aggregate-level view could not see was still missing, a real change from
+  what was built before, with its reason stated in the finding it closes.
+- **What was recorded:** run 11 (`reports/MOCK-DEPLOY-M1.md`) showed 35/35 tests passing at 86.2%
+  aggregate coverage yet still `Failed`, on a per-class floor: `Tier2EscalationService` individually
+  at 53.659%. The 19 uncovered lines (`reports/mock-deploy/2026-09-12T17-17-07Z/result.json`'s
+  `codeCoverage` array, recorded at run 9) resolved to exactly two branches unreachable from the
+  trigger-driven path every existing test in `Tier2EscalationServiceTest` used: the empty/null-input
+  early return (line 44) and the `EventBus.publish()` rejection path — building an
+  `Integration_Failure__c` row, the conditional insert, and the whole `errorText()` helper (lines
+  84–96, 106, 119–127). Two methods were added to `Tier2EscalationServiceTest.cls`, both calling
+  `Tier2EscalationService.escalate(List<Case>)` directly: `escalateWithNoCasesReturnsImmediately`
+  (line 44) and `escalateWithAMissingCaseNumberWritesAPublishFailureRowAndStillEnqueuesTheJob`, which
+  forces a deterministic publish rejection via `Tier2_Escalation__e.Case_Number__c`'s `required=true`
+  constraint (`M1-S01`) rather than `S2-F-13`'s FLS-based mechanism, which the current, merged
+  permission set can no longer reproduce. Both new methods register a 2xx
+  `MockHttpResponseGenerator` before calling `escalate()`, applying `D-M1S03-13`'s lesson
+  proactively rather than reactively. No shipped class, no other test method and no other file
+  changed.
+- **Alternative rejected:** reproducing `S2-F-13`'s exact FLS-based rejection mechanism (a user
+  lacking `Tier2_Escalation__e` Create while holding `Integration_Failure__c` Create). Rejected
+  because `Tier2_Webhook_Admin` now bundles both grants — that asymmetry existed only because the two
+  grants were added at different times, and `S2-F-13`'s own fix closed the gap — so only a bespoke,
+  test-local `PermissionSet` built via DML could still reproduce it, not attempted here; the
+  required-field mechanism is a different and, per the finding, arguably more robust trigger for the
+  identical `sr.isSuccess() == false` branch.
+- **Grounded in:**
+  `artefacts/M1-S01/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml`
+  (`Case_Number__c` `required=true`);
+  `artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml` (confirming both
+  grants are bundled in one permission set); `templates/apex/tests/MockHttpResponseGenerator.cls`
+  (`withResponse(200, body)`).
+- **Evidence:** `envelopes/M1-S03/2026-09-12T18-05-00Z.json` → `findings[0]` (`S8-F-01`) and
+  `findings[1]` (`S8-F-02`); `envelopes/M1-S03/2026-09-12T18-08-27Z.json` (step-tester retest);
+  `reports/MOCK-DEPLOY-M1.md` runs 11–12; `artefacts/M1-S03/deploy-order.md` § 0f;
+  `tests/M1-S03/results.json`.
+
+## D-M1S03-15 — Accepted: `Tier2WebhookFinalizerTest` is a new `ApexClass` member `M1-S05`'s manifest must add — handled in a parallel `M1-S05` re-run, not this pass
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S03` (`automation`), run 6 repair; the resolution is `M1-S05`'s (`docs`) to apply
+- **Agent:** `apex-builder` (run 6, `2026-09-12T17-40-00Z`, finding `S6-F-04`); `step-tester`
+  (`2026-09-12T18-08-27Z`) confirms the gap is still open as of the `tested` state this pass documents
+- **Kind:** Design trade-off / obligation, the same shape `D-M1S03-11` already records for
+  `TestUserFactory` from this same step — a new file this step ships that another step's manifest
+  must learn about, recorded on the producing step because that is the artefact a reader of this step
+  consults first.
+- **What was recorded:** `Tier2WebhookFinalizerTest` is a fourteenth `ApexClass` this build ships
+  from `M1-S03` (joining `TestUserFactory`, `D-M1S03-11`, already closed). `artefacts/M1-S05/
+  package.xml` does not name it as of the state this pass reads
+  (`envelopes/M1-S03/2026-09-12T18-08-27Z.json` → `extensions.unresolved_from_prior_runs`). Per
+  `standards/build-orchestration.md` § 5 **The Apex exception**, this step declares no `package.xml`
+  of its own — `M1-S05` (`metadata-builder`, `depends_on` this step) carries its
+  `ApexClass`/`ApexTrigger` members instead, and this step's own `manifest` acceptance test correctly
+  records skipped-not-applicable, naming `M1-S05`.
+- **Alternative rejected:** writing a local `package.xml` under `artefacts/M1-S03/` so the new class
+  would have manifest coverage immediately. Rejected for the same reason `D-M1S03-11` rejects it — it
+  would contradict this step's own recorded Apex exception and duplicate what `M1-S05` exists to
+  aggregate.
+- **Grounded in:** `standards/build-orchestration.md` § 4 condition 2, § 5 **The Apex exception**;
+  `D-M1S03-11` (the identical pattern already applied to `TestUserFactory` from this step).
+- **Open item:** a parallel `M1-S05` re-run (`metadata-builder`) is already in progress, outside this
+  pass, to add both `TestUserFactory` and `Tier2WebhookFinalizerTest` as `ApexClass` members — out of
+  scope for this `M1-S03`-only documentation pass. Per this pass's own instructions, no file under
+  `artefacts/M1-S05/` or any of `M1-S05`'s own workbook/traceability rows is touched here; a reader
+  should look to `M1-S05`'s own documentation pass for that resolution rather than to this entry.
+- **Evidence:** `envelopes/M1-S03/2026-09-12T17-40-00Z.json` → `findings[3]` (`S6-F-04`);
+  `envelopes/M1-S03/2026-09-12T18-08-27Z.json` → `process_observations` (`suggested_followup`,
+  `metadata-builder`) and `extensions.unresolved_from_prior_runs`; `artefacts/M1-S03/deploy-order.md`
+  § 0d; `D-M1S03-11`.
+
+## D-M1S05-07 — Accepted: `Tier2WebhookFinalizerTest` added as a fifteenth `ApexClass` member (34→35), closing `S2-F-14`, discharging `D-M1S03-15`
+
+- **Date:** 2026-09-12
+- **Step:** `M1-S05` (`docs`), run 3 (`documented` → `running` → `built` → `tested`, a § 4 test-only-
+  adjacent rebuild)
+- **Agent:** `metadata-builder` (run 3, `2026-09-12T18-18-48Z`); confirmed by `step-tester`
+  (`2026-09-12T18-26-05Z`)
+- **Kind:** Deviation, discharging the obligation `D-M1S03-15` already recorded — the same shape
+  `D-M1S05-06` applies to `TestUserFactory`'s addition one run earlier.
+- **What was recorded:** `artefacts/M1-S05/package.xml` (the build-level manifest) was regenerated to
+  add `classes/Tier2WebhookFinalizerTest.cls` as a new `ApexClass` member — 14 → **15** `ApexClass`
+  members, 34 → **35** total. This closes the obligation `D-M1S03-15` already recorded (that
+  `M1-S05`'s manifest must add `Tier2WebhookFinalizerTest` once `M1-S03`'s run-6 repair shipped it)
+  and traces to the underlying root cause named in finding **S2-F-14**
+  (`reports/MOCK-DEPLOY-M1.md` run 9): `Tier2WebhookFinalizer` sat under the platform's 75% coverage
+  floor (63 of 76 lines uncovered) because the finalizer's own retry/abandon/permanent-failure
+  branches were exercised only through the Queueable, never through `execute(FinalizerContext)`
+  directly; `M1-S03`'s repair (`artefacts/M1-S03/deploy-order.md` § 0d) added
+  `Tier2WebhookFinalizerTest.cls` to close the gap, a test-only addition with no shipped-code change.
+  Only the `ApexClass` `<types>` block changed — one `<members>Tier2WebhookFinalizerTest</members>`
+  line inserted alphabetically between `Tier2WebhookFinalizer` and `Tier2WebhookQueueable`; no other
+  block (`CustomObject`, `CustomField`, `ExternalCredential`, `NamedCredential`, `ApexTrigger`,
+  `PermissionSet`) changed. Verified this run by a bidirectional 35-member/54-file manifest check
+  over the whole `artefacts/M1-S0[1-4]/` tree — no member without a file, no file without a member,
+  no duplicate, no wildcard.
+- **Alternative rejected:** waiting for a later, combined manifest re-run to add both
+  `Tier2WebhookFinalizerTest` and any further test-repair members in one pass. Rejected because
+  `D-M1S03-15` already named this as a standing obligation on `M1-S05` once `M1-S03`'s run-6 repair
+  landed, and `standards/build-orchestration.md` § 4's `documented` → `running` recovery transition
+  exists precisely so a step is re-run as soon as the obligation it owes is known, rather than batched
+  against an unrelated future change.
+- **Grounded in:** `envelopes/M1-S05/2026-09-12T18-18-48Z.json` (`metadata-builder`, § 0a rebuild
+  record and `process_observations`); `artefacts/M1-S05/deploy-order.md` § 0a;
+  `envelopes/M1-S05/2026-09-12T18-26-05Z.json` (`step-tester`); `tests/M1-S05/results.json`;
+  `D-M1S03-15` and `D-M1S05-06` (this file); `reports/MOCK-DEPLOY-M1.md` runs 9–10.
+- **Open item:** none blocking for this step. `reports/MILESTONE-M1-package.xml` (the verifier's
+  merged milestone manifest) still carries 33 members and names neither `TestUserFactory` nor
+  `Tier2WebhookFinalizerTest`, so it is now stale against this step's own `artefacts/M1-S05/
+  package.xml` (35 members) by two rebuilds of this step (33→34, 34→35) — recorded as a Process
+  Observation on this run rather than as a decision, since it is `milestone-verifier`'s file to
+  regenerate, not this agent's to edit.
+- **Evidence:** `envelopes/M1-S05/2026-09-12T18-18-48Z.json`;
+  `envelopes/M1-S05/2026-09-12T18-26-05Z.json`; `artefacts/M1-S05/deploy-order.md` § 0a;
+  `tests/M1-S05/results.json`; `reports/MOCK-DEPLOY-M1.md` runs 9, 10, 13; `decisions.md`
+  `D-M1S03-15`, `D-M1S05-06`.

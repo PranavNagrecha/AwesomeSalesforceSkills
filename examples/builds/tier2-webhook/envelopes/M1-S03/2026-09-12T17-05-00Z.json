@@ -1,0 +1,289 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T17-05-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T17-05-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T17-05-00Z.json",
+  "summary": "Run 5 of M1-S03 — a § 4 test-only repair after reports/MOCK-DEPLOY-M1.md run 7 (S2-F-12), narrower than run 4's S2-F-11 repair: with the § 0b System.runAs fix landed, the @TestSetup seed insert in all three test classes still failed FLS, every time, on Case.AccountId — a field none of the three createCases(count, null, null) call sites in this step ever needed. TestDataFactory.createCases/createContacts/createOpportunities assigned the lookup Id unconditionally in the constructor, so a null argument still counted as a populated field once Apex's default user-mode DML (API 67.0+) checked FLS on the insert. artefacts/M1-S03/classes/TestDataFactory.cls was replaced with a verbatim copy of the corrected templates/apex/tests/TestDataFactory.cls (diff empty, verified this run), which assigns each lookup only when its argument is non-null. No other file in this step changed: all three test classes already call createCases with accountId=null and none references Case.AccountId, so the corrected factory leaves the field genuinely unset for every call site here — the intent Gotcha 14 describes, not a change any test needed to make. deploy-order.md gained § 0c recording the repair and S2-F-12. The three previously-declared checkers plus skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S03/classes were re-run verbatim: 0 findings across all four. check-outputs is ok on all 20 declared paths.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per GATES.md Gate D: Gate B resolved the one symbol this run touches (TestDataFactory's lookup-assignment idiom, copied verbatim from the corrected template; 0 unresolved) and Gate C check 3 (compile) did not run — build_mode is design-only, there is no target_org_alias, and there is no offline Apex compiler in the sf CLI. This is a narrower repair than run 4: one file changed, zero lines of test-class logic touched, and the fix is a byte-identical adoption of a template the library already corrected. What would raise this to HIGH is a green dry run with --test-level RunSpecifiedTests or RunLocalTests, which no agent in this loop may perform.",
+  "outcome": "completed",
+  "inputs_received": {
+    "kind": "trigger",
+    "primary_sobject": "Case",
+    "api_version": "67.0",
+    "source": "plan.json steps[M1-S03].inputs, unchanged since amendments[1] — no amendment accompanied this repair. The repair scope, sources and constraints were given directly in the task: agents/apex-builder/AGENT.md, standards/build-orchestration.md, plan.json step M1-S03, reports/MOCK-DEPLOY-M1.md run 7 (S2-F-12), skills/apex/test-class-standards/references/gotchas.md Gotcha 14, and templates/apex/tests/TestDataFactory.cls (commit 5edcb3281).",
+    "org_evidence": "reports/MOCK-DEPLOY-M1.md run 7 — SOURCE mode, M1-S01..M1-S04 after the S2-F-11 (§ 0b) fix, --test-level RunSpecifiedTests: 30 of 30 test methods failed, every one at the @TestSetup seed insert, on 'fieldNames: AccountId', inside System.runAs (the running-user context S2-F-11 fixed is correct; the field itself is the new problem).",
+    "credentials": "[REDACTED] — none present in the step inputs, none touched by this run; TestDataFactory reads no credential."
+  },
+  "findings": [
+    {
+      "id": "S5-F-01",
+      "severity": "P0",
+      "title": "S2-F-12 closed: TestDataFactory no longer volunteers a lookup field no caller asked for",
+      "detail": "artefacts/M1-S03/classes/TestDataFactory.cls is now a verbatim copy of templates/apex/tests/TestDataFactory.cls (diff empty). createContacts, createOpportunities and createCases each construct the record without the lookup field and set it only inside `if (accountId != null) { record.AccountId = accountId; }`, rather than assigning a possibly-null parameter directly in the constructor's field list. Every createCases call in this step's three test classes (IntegrationFailureResendTest.cls:57, Tier2EscalationServiceTest.cls:61, Tier2WebhookQueueableTest.cls:64) already passes null for accountId and none references Case.AccountId anywhere in this step — verified by grep before and after this run — so the fix required no change to any test class.",
+      "evidence": {
+        "diff_command": "diff templates/apex/tests/TestDataFactory.cls artefacts/M1-S03/classes/TestDataFactory.cls",
+        "diff_output": "(empty — exit 0)",
+        "org_message_being_fixed": "System.DmlException: Operation failed due to fields being inaccessible on Sobject Case, check errors on Exception or Result! ... fieldNames: AccountId",
+        "source": "reports/MOCK-DEPLOY-M1.md run 7; skills/apex/test-class-standards/references/gotchas.md Gotcha 14"
+      },
+      "recommendation": "None — this is the fix. The remaining step is org-side: a dry run with --test-level RunSpecifiedTests or RunLocalTests is the only thing that can confirm the 30 methods now pass."
+    },
+    {
+      "id": "S5-F-02",
+      "severity": "INFO",
+      "title": "M1-S04 ships the same TestDataFactory.cls and needed the same fix, but is out of scope for this M1-S03-only repair",
+      "detail": "deploy-order.md § 2 already records that M1-S04 ships a byte-identical TestDataFactory.cls under its own artefacts, and mock_deploy.py's copy_artefacts rebases both onto the same assembled path, so whichever step's copy lands last wins at assembly. This run replaced only artefacts/M1-S03/classes/TestDataFactory.cls, per the task's explicit scope (\"leave every other file in the step untouched\"). If M1-S04's own copy is not independently corrected, the two are no longer byte-identical, and mock_deploy.py's known behaviour of the later step overwriting the earlier one means the assembled tree's correctness depends on which of M1-S03/M1-S04 mock_deploy.py copies second — not a guarantee either step alone controls.",
+      "evidence": {
+        "recorded_at": "artefacts/M1-S03/deploy-order.md § 2, § 0c"
+      },
+      "recommendation": "Run the same repair against M1-S04's TestDataFactory.cls (or re-derive it once M1-S03's is corrected) before the next mock-deploy run with --test-level enabled, so the assembled tree does not depend on step-copy order."
+    },
+    {
+      "id": "S4-F-02",
+      "severity": "P2",
+      "title": "M1-S05's build-level package.xml is still stale (carried forward, unchanged by this run)",
+      "detail": "Unchanged since run 4: TestUserFactory's ApexClass member is not yet in artefacts/M1-S05/package.xml or reports/MILESTONE-M1-package.xml. This run's fix changes TestDataFactory's content, not its membership — TestDataFactory was already an undeclared-but-shipped member before this repair — so this specific finding is neither closed nor worsened by run 5, only re-surfaced because it is still open.",
+      "evidence": {
+        "recorded_at": "artefacts/M1-S03/deploy-order.md § 0b, § 2"
+      },
+      "recommendation": "Unchanged from run 4: re-run M1-S05 (metadata-builder) once this step and M1-S04 are both documented, to add the TestUserFactory ApexClass member to the build-level package.xml."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The fix is a single file, verbatim template adoption — zero lines of test-class logic changed, because every call site in this step already passed null for the lookup and asserted nothing about it. This is a narrower repair than run 4 (S2-F-11), which touched all three test classes; the library had already done the harder part (correcting the template) before this step needed the fix applied.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/classes/ — diff limited to one file, TestDataFactory.cls, byte-identical to the template"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Gotcha 13 (S2-F-11) and Gotcha 14 (S2-F-12) are the same category of defect — a fix that is offline-correct and only fails once a real permissioned user actually executes user-mode DML — discovered two mock-deploy runs apart because RunSpecifiedTests only started running in run 6. Every offline checker declared on this step, plus check_test_class_standards.py, was green through runs 2–6; neither gap was visible to any check that does not execute Apex as a real user. This is the second consecutive finding of this shape on this step, which suggests the library's test-data factory pattern itself — not just this build's use of it — was carrying the defect until the template was corrected.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M1.md runs 6 and 7; skills/apex/test-class-standards/references/gotchas.md Gotchas 13 and 14"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "M1-S04 ships an independent, byte-identical (pre-fix) copy of the same TestDataFactory.cls that was never in this run's scope to correct (S5-F-02). A build with two Apex steps sharing an undeclared template dependency now has two copies that must be corrected in lockstep by hand, exactly the coordination cost deploy-order.md § 2 already named as the reason an Apex-foundations step should exist.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether the target org's Tier2_Webhook_Admin permission set would have needed create-FLS on Case.AccountId if a future test legitimately needed the lookup is untested — this repair removes the unwanted field from the DML request rather than granting FLS for it, which is correct for every call site that exists today but is not itself a statement about what the permission set would need to grant if that changed.",
+      "domain": "integration-contract",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "M1-S04's own TestDataFactory.cls copy still carries the S2-F-12 defect and was out of this run's scope; a fresh dry run with --test-level RunSpecifiedTests over M1-S01..M1-S04 will re-surface the same AccountId failure for any M1-S04 test class that seeds Cases the same way, unless M1-S04 is repaired first.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "apex-builder",
+      "followup_reason": "apex-builder owns M1-S04 and is the agent that would apply the same verbatim-template-replacement repair to artefacts/M1-S04/classes/TestDataFactory.cls.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S04/classes/TestDataFactory.cls"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "M1-S05 needs a fresh build to add the TestUserFactory ApexClass member (carried from run 4, still open), and milestone-verifier needs to re-run against a dry run that actually executes tests — now against evidence that postdates S2-F-06, S2-F-11 and S2-F-12 — before the M1 gate's existing approval can be trusted.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "milestone-verifier is the agent that re-signs the M1 acceptance report once every step in the milestone is documented against evidence that postdates all three findings.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json human_gates -> milestone:M1"
+      }
+    }
+  ],
+  "dimensions_compared": [
+    "test-coverage",
+    "security-posture"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "No production class was added, removed or restructured this run; the decomposition is unchanged from run 4.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "not-run",
+      "reason": "No production class changed, so the per-class SOQL/DML/CPU estimate in deploy-order.md § 7 is unchanged and was not re-derived.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "count-only",
+      "reason": "TestDataFactory reads no credential and sets no header; verified by inspection against the shipped template (diff empty) rather than a dedicated secret scan.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No new hardcoded-Id surface was introduced; the fix removes a field assignment, it does not add any Id literal.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "include_logger is false for this build (Q16: no log object) and this run added no new failure path; unchanged from run 4.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "bulk-safety",
+      "state": "not-run",
+      "reason": "The corrected factory's bulk shape (loop, list return, no insert inside the factory) is unchanged from the template's prior version; only the per-record lookup-assignment idiom changed.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "run": 5,
+    "previous_runs": [
+      "envelopes/M1-S03/2026-09-12T10-57-25Z.json (refused, REFUSAL_INPUT_AMBIGUOUS)",
+      "envelopes/M1-S03/2026-09-12T11-23-31Z.json (run 2, built, later rejected by the org)",
+      "envelopes/M1-S03/2026-09-12T11-40-10Z.json (run 3, fixed S2-F-04/S2-F-05, passed the org's compile)",
+      "envelopes/M1-S03/2026-09-12T16-13-43Z.json (run 4, fixed S2-F-11, permissioned System.runAs)"
+    ],
+    "org_evidence": {
+      "report": "reports/MOCK-DEPLOY-M1.md, run 7",
+      "mode": "checkOnly, SOURCE mode, M1-S01..M1-S04, --test-level RunSpecifiedTests, API 67.0",
+      "tests": "passed 0, failed 30",
+      "finding": "S2-F-12"
+    },
+    "changes_this_run": [
+      {
+        "file": "artefacts/M1-S03/classes/TestDataFactory.cls",
+        "change": "replaced with a verbatim copy of templates/apex/tests/TestDataFactory.cls (diff empty) — lookup fields (AccountId on Contact/Opportunity/Case) now assigned only when the caller-supplied Id is non-null",
+        "fixes": "S2-F-12"
+      },
+      {
+        "file": "artefacts/M1-S03/deploy-order.md",
+        "change": "new § 0c recording the repair, S2-F-12, the per-call-site check of createCases/createContacts, and the checker re-run",
+        "fixes": "n/a — documentation of the above"
+      }
+    ],
+    "files_unchanged": "Both triggers, CaseTriggerHandler, IntegrationFailureTriggerHandler, Tier2EscalationService, Tier2WebhookQueueable, Tier2WebhookFinalizer, TestUserFactory, MockHttpResponseGenerator, all three test classes' bodies (Tier2EscalationServiceTest, Tier2WebhookQueueableTest, IntegrationFailureResendTest — only the factory they call changed), and every meta XML including TestDataFactory.cls-meta.xml (apiVersion unchanged at 67.0).",
+    "classes_emitted_or_modified": 1,
+    "test_methods": 19,
+    "test_methods_unchanged_in_body": 19,
+    "gate_b": "passed — the one symbol this run touches (the conditional-assignment idiom inside TestDataFactory) is copied verbatim from templates/apex/tests/TestDataFactory.cls; 0 unresolved.",
+    "gate_c": "check 1 (symbol grounding) and check 2 (identifier provenance) passed; check 3 (compile) did not run — design-only build_mode, no target_org_alias, no offline Apex compiler in the sf CLI (AGENT_CONTRACT.md § Gate C). What ran offline: the three previously-declared checkers (0 findings each, unchanged) plus check_test_class_standards.py --manifest-dir artefacts/M1-S03/classes (0 findings), an XML parse of all 13 meta files at apiVersion 67.0, and check-outputs (ok, 20/20 declared paths).",
+    "gate_d": "confidence computed, not self-declared: Gate B unresolved = 0 and Gate C compile not run is the MEDIUM row.",
+    "checkers_run": [
+      {
+        "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S03",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 13 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py --manifest-dir artefacts/M1-S03 --fail-on HIGH",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 13 Apex file(s); 0 callout finding(s)."
+      },
+      {
+        "command": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S03",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 13 Apex file(s) and 0 object file(s); 0 platform-event finding(s)."
+      },
+      {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S03/classes",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 11 Apex class file(s); audited 6 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0",
+        "note": "Not declared in this step's acceptance_tests (see run 4's process_observations, tooling-gap, still unresolved). Run per the task's explicit instruction with --manifest-dir artefacts/M1-S03/classes and reported verbatim."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "undeclared_artefacts": [
+      "artefacts/M1-S03/classes/TestDataFactory.cls",
+      "artefacts/M1-S03/classes/TestDataFactory.cls-meta.xml",
+      "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls",
+      "artefacts/M1-S03/classes/MockHttpResponseGenerator.cls-meta.xml",
+      "artefacts/M1-S03/classes/TestUserFactory.cls",
+      "artefacts/M1-S03/classes/TestUserFactory.cls-meta.xml",
+      "artefacts/M1-S03/deploy-order.md"
+    ],
+    "not_carried_out": [],
+    "unverified": [
+      "Whether the target org's Tier2_Webhook_Admin permission set would need create-FLS on Case.AccountId is now moot for every call site in this step, but was not independently confirmed either way against the org — the fix removes the field from the DML request rather than testing the permission set's grant.",
+      "M1-S04's own TestDataFactory.cls copy was not inspected for correction in this run (S5-F-02) — out of scope for an M1-S03-only repair.",
+      "No test was executed this run, design-only build_mode; run 5 (this repair) has not itself been compiled or executed by any org."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "the playbook this repair ran under: Step 6's template-provenance check (TestDataFactory remains a verbatim copy of the template, diff empty) and Step 7's Gate C, re-run over the one changed file"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's documented -> running rebuild transition this repair is an instance of (a second, narrower one after run 4's), and § 5 The Apex exception, which is why no package.xml change was made"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/gotchas.md",
+      "used_for": "Gotcha 14 — the exact failure this run closes, including the verbatim org error string and the probe that identified it"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "copied verbatim into artefacts/M1-S03/classes/TestDataFactory.cls; diff empty, verified this run (commit 5edcb3281)"
+    },
+    {
+      "type": "standard",
+      "id": "reports/MOCK-DEPLOY-M1.md",
+      "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "run 7 / S2-F-12 — the finding this repair closes, including the verbatim org error string"
+    },
+    {
+      "type": "standard",
+      "id": "plan.json steps[M1-S03]",
+      "path": ".sfskills/builds/tier2-webhook/plan.json",
+      "used_for": "the step's declared inputs, agent, templates[] and acceptance_tests[], read (never hand-edited) to confirm this run's scope and the three checkers to re-run verbatim"
+    }
+  ]
+}

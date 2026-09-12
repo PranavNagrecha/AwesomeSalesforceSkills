@@ -53,6 +53,55 @@ never asked either fact — driver's log 26:
 The permission set and manifest being untouched is the point: the fix belongs entirely to the
 credential, and re-running the access review against an unchanged file costs the reviewer nothing.
 
+## 0b. Rebuild record — run 3, after mock-deploy run 8 rejected the milestone-level manifest (S2-F-13)
+
+This step was `documented`, then stepped back to `running` (per `standards/build-orchestration.md`
+§ 4's `documented → running` recovery transition — a rebuild of a finished step after a finding
+that reached it late) for one finding surfaced by the whole-build mock deploy, not by anything
+this step's own checkers or dry-run runs 1–2 could see:
+
+**S2-F-13 (HIGH, design — `reports/MOCK-DEPLOY-M1.md` run 8).** `Tier2EscalationServiceTest
+.ownerChangeToTier2QueueEscalatesAndStamps` passed its webhook-stamp assertion but failed its
+failure-row assertion ("Expected 0, Actual 2"). The operator's scratch-copy probe (assertion
+replaced by a row dump) showed both rows carrying `Severity Error — "Tier2_Escalation__e publish
+rejected: Access to entity 'Tier2_Escalation__e' denied"`. Root cause: `Tier2EscalationService`
+(`M1-S03`, decision **D10**) publishes `Tier2_Escalation__e` from the escalating transaction's
+service layer, as the user whose Case save moved ownership to `Tier_2_Engineering` — the same
+async-context-user reasoning decision **D14** already applies to this whole step. At API 67.0,
+`EventBus.publish` runs in user mode by default and requires Create on the event object
+(`skills/apex/platform-events-apex/references/gotchas.md`, "API 67.0 Silently Moves Publishing
+Into User Mode": *"Under user mode the running user needs create access to the event; under
+system mode it did not... grant the publishing personas create access on the `__e` object, or
+decide deliberately to bypass with `EventBus.publishWithAccessLevel`"*). Neither
+`Tier2_Webhook_Admin` nor any other set this build ships granted anything on
+`Tier2_Escalation__e`. Consequence in production: every Tier 1 agent's escalation would still
+enqueue the webhook Queueable (unaffected), but would also write a spurious `Integration_Failure__c`
+Severity-Error row and the event would never reach the ops dashboard's Pub/Sub subscriber.
+
+**Decision: the grant is added to the existing `Tier2_Webhook_Admin` set, not a new permission
+set.** The population that needs to publish is not a new persona — it is exactly decision D14's
+existing assignee set (every user who can escalate a Case to `Tier_2_Engineering`), because the
+publish call and the Named-Credential-authenticated webhook call it precedes both run as the same
+async-context user in the same escalating transaction. `Tier2_Webhook_Admin`'s name and its
+existing `Integration_Failure__c` object-scoped bypass grant (`modifyAllRecords`/`viewAllRecords`,
+decision D12) already reflect a set assigned far wider than Q19's three named admins — D14's own
+consequence note records that in writing. A second, narrowly-named set granting only
+`Tier2_Escalation__e` Create/Read would require assigning an identical population a second time,
+for a capability this same transaction already depends on the first set to run at all (the
+Named Credential principal access this set already carries is exercised by the same code path,
+milliseconds later, in the same trigger context) — splitting the two would add an assignment
+operation with no least-privilege benefit, since there is no user who should hold one grant
+without the other. Rejected alternative: a new `Tier2_Escalation_Publisher` set scoped to Create
+only. Not chosen, for the reason above; recorded so a future reviewer sees the option was
+considered rather than missed.
+
+**What changed in run 3 — one file, one addition:**
+
+| File | Change |
+|---|---|
+| `permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml` | New `objectPermissions` block: `Tier2_Escalation__e` with `allowCreate` true, `allowRead` true, `allowEdit`/`allowDelete`/`viewAllRecords`/`modifyAllRecords` false. `allowRead` is written alongside `allowCreate` because `check_permission_set_architecture.py`'s dependency-chain rule ERRORs `allowCreate` without `allowRead` — not because a publisher needs to query the event back (`allowEdit`/`allowDelete` are inapplicable to an immutable event stream and are written explicitly `false`, following this file's own convention of always writing all six flags). `description` updated to name the new grant. |
+| `externalCredentials/…`, `namedCredentials/…`, `package.xml` | **Unchanged.** No new component: the fix is one `objectPermissions` row inside the permission set this step already ships, so no member is added to `package.xml`, `M1-S05`'s build-level manifest needs no change, and no new deploy-order entry is needed for a component that does not exist. |
+
 ## 1. What this step ships
 
 | # | Component | Type | Manifest member | File |
@@ -114,6 +163,7 @@ objects first.
 | `calloutStatus` | `Enabled` | Step input. `Disabled` is how you ship a credential that is not yet usable (API 59.0+, `api_meta` L90000–90007). |
 | `externalCredentialPrincipal` | `OnCall_Tool_EC-OnCallToolNamedPrincipal` | Built from the two authoritative sources, not from memory: the EC file stem, a **dash**, the principal's `parameterName` (`api_meta` L94995–94999; gotcha 7). An underscore here fails silently at run time. |
 | `objectPermissions` | `Integration_Failure__c`, all six flags `true` | Step input (Q19 CRUD) + decision **D12** / assumption **A3**. The chain holds: `modifyAllRecords` requires read, edit, delete and `viewAllRecords`, all present. The checker's sharing-bypass WARN on this row is **deliberate** per D12. |
+| `objectPermissions` | `Tier2_Escalation__e`, `allowCreate`/`allowRead` `true`, `allowEdit`/`allowDelete`/`viewAllRecords`/`modifyAllRecords` `false` | Finding **S2-F-13** (`reports/MOCK-DEPLOY-M1.md` run 8) + `skills/apex/platform-events-apex/references/gotchas.md` ("API 67.0 Silently Moves Publishing Into User Mode"). Added to this set rather than a new one — § 0b. `allowRead` rides along only because `check_permission_set_architecture.py`'s dependency chain ERRORs `allowCreate` without it. |
 | No `objectPermissions` row for `Case` | omitted | Assumption **A14**. Verified in the checker's source: the object-row rule is guarded by `if has_object_row and owner not in granted_objects`, so a `fieldPermissions` entry for a `Case` field with no `Case` object row cannot fire it. A `Case` CRUD row would grant more than any answer asked for. |
 | `fieldPermissions` | 11 `Integration_Failure__c` fields + `Case.Tier2_Notified_At__c`, all `readable` **and** `editable` true | Step input (Q19 FLS) + PV-001. `editable` never ships without `readable`: `PermissionsEdit` requires `PermissionsRead` and a row without it "will be deleted". |
 | `Status__c` **excluded** | omitted | Operator amendment F-S2-01 (`2026-09-12T09:41:08Z`) and decision **D-M1S01-02**. `Status__c` is `required true`, and "In API version 30.0 and later, permissions for required fields can't be retrieved or deployed" (`api_meta` L95020–95021). **Eleven fields, not twelve.** |
@@ -193,6 +243,12 @@ The step's `manual` acceptance test. A reviewer confirms, from `artefacts/M1-S02
   closed. The grammar itself is **proven on deploy at mock-deploy run 2** and its **runtime header
   behaviour confirmed at UAT** — § 5 item 1. A reviewer should read this clause as *narrowed*,
   not discharged.
+- **(g)** `objectPermissions` carries a `Tier2_Escalation__e` row with `allowCreate` and
+  `allowRead` both `true`, and no wider grant on that object. ✅ — added in run 3 for finding
+  **S2-F-13** (§ 0b): without it, `EventBus.publish` in `Tier2EscalationService` (API 67.0 user
+  mode) is denied for the same D14 assignee population this whole set is scoped to, and every
+  escalation writes a spurious `Integration_Failure__c` Severity-Error row instead of reaching the
+  ops dashboard.
 
 ## 7. What no deploy performs — the human steps, in order
 

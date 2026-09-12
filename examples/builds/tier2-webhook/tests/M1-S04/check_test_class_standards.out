@@ -1,0 +1,12 @@
+{
+  "score": 95,
+  "findings": [
+    {
+      "severity": "WARN",
+      "rule": "template-class-not-shipped",
+      "location": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+      "message": "references shared test class `TestUserFactory` but `TestUserFactory.cls` is not in the manifest directory"
+    }
+  ],
+  "summary": "Scanned 4 Apex class file(s); audited 2 @IsTest artifact(s); 1 finding(s)."
+}

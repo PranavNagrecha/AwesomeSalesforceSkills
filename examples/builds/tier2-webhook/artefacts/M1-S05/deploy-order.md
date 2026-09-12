@@ -4,11 +4,147 @@ Build `tier2-webhook` · step `M1-S05` · type `docs` · owner `metadata-builder
 (run under `build-step-runner`) · API version **67.0** (assumption A11) ·
 `build_mode: design-only` — **nothing here has been deployed, and this agent deploys nothing.**
 
+This is the step's **third** run. Run 1 is § 1 onward, unchanged in substance except where
+§ 0 and § 0a below say otherwise. Run 2 (§ 0) was the operator moving this step
+`documented` → `running` for a §4 test-only-adjacent rebuild: M1-S03's own run-4 repair
+(S2-F-11, `reports/MOCK-DEPLOY-M1.md` run 6) added `classes/TestUserFactory.cls` — a class
+this manifest did not carry — and M1-S03's run-5 repair plus M1-S04's run-4 repair (S2-F-12,
+`reports/MOCK-DEPLOY-M1.md` run 7) rewrote both steps' `TestDataFactory.cls` copies in place
+without adding or removing a member. Run 3 (§ 0a) is this run: M1-S03's run-6 repair
+(S2-F-14, `artefacts/M1-S03/deploy-order.md` § 0d) added `classes/Tier2WebhookFinalizerTest.cls`
+— a second class this manifest did not carry. This step re-declares no file: every member
+below is backed by a file another step already wrote, and this step writes no metadata of
+its own.
+
 This is the one place the whole build is addressable as a unit. `agents/apex-builder`'s Output
 Contract names no manifest, so the `ApexClass` and `ApexTrigger` members M1-S03 and M1-S04 emit
 exist in no `package.xml` until this step aggregates them — `standards/build-orchestration.md`
-§ 5 **The Apex exception**. This step re-declares no file: every member below is backed by a
-file another step already wrote, and this step writes no metadata of its own.
+§ 5 **The Apex exception**.
+
+---
+
+## 0. Rebuild record — run 2, after M1-S03's `TestUserFactory` addition and the S2-F-11/S2-F-12 test repairs
+
+**Trigger.** The operator's brief for this run cites "finding S4-F-02" for the `TestUserFactory`
+addition; no finding of that id exists anywhere in this build's records. The actual finding is
+**S2-F-11** (`reports/MOCK-DEPLOY-M1.md` run 6; carried into `artefacts/M1-S03/deploy-order.md`
+§ 0b): the deploying user held no FLS on the fields M1-S01 ships, so every test method run as
+that user failed, and M1-S03's repair added `classes/TestUserFactory.cls` (+ `-meta.xml`, a
+verbatim copy of `templates/apex/tests/TestUserFactory.cls`) to build a permissioned user per
+`@TestSetup`. That is a citation mismatch in the operator's brief, not a citation this note
+adopts — recorded here rather than silently substituted, since Process Observations is where a
+wrong id in an upstream instruction belongs. S2-F-12 (`reports/MOCK-DEPLOY-M1.md` run 7,
+carried into `artefacts/M1-S03/deploy-order.md` § 0c and `artefacts/M1-S04/deploy-order.md`
+§ 0d) is the second repair: `TestDataFactory.createCases` was rewritten to assign `AccountId`
+only when non-null, in both steps' byte-identical copies. Neither S2-F-11 nor S2-F-12 added or
+removed an `ApexTrigger`, `CustomObject`, `CustomField`, `ExternalCredential`, `NamedCredential`
+or `PermissionSet` member; S2-F-11 is the only one of the two that changes this step's member
+count.
+
+**What changed here.**
+
+| | Before (this step's run 1) | After (this run) |
+|---|---|---|
+| `ApexClass` members | 13 | **14** (+`TestUserFactory`) |
+| Total members | 33 | **34** |
+| `TestDataFactory` content | pre-S2-F-12 (`AccountId` always assigned) | post-S2-F-12 (`AccountId` assigned only when non-null) — a content change with no member-count effect, verified below |
+| Everything else (`CustomObject` ×2, `CustomField` ×13, `ExternalCredential` ×1, `NamedCredential` ×1, `ApexTrigger` ×2, `PermissionSet` ×1) | unchanged | unchanged |
+
+**Verification run this step performed**, over the live `artefacts/M1-S0[1-4]/` tree rather than
+by trusting the plan-input member list quoted in this step's `inputs.members.ApexClass` (which
+itself still reads the pre-`TestUserFactory` 11-name list — a second stale citation this run
+does not propagate):
+
+1. Enumerated every non-`.md`, non-`package.xml` file under `artefacts/M1-S01/` through
+   `artefacts/M1-S04/` and derived the metadata type + member name each represents from its
+   path and its own `-meta.xml` (object folder name for `CustomObject`, `object.field` for a
+   `CustomField` under `objects/<obj>/fields/`, file stem for `ApexClass`/`ApexTrigger`/
+   `PermissionSet`/`ExternalCredential`/`NamedCredential`). Result: 34 distinct members across
+   7 types, `TestDataFactory` counted once despite existing under both `M1-S03/classes/` and
+   `M1-S04/classes/` (byte-identical, confirmed by SHA-256 below).
+2. Confirmed every derived member has exactly one backing file (no member with zero or with
+   two non-identical files) and every file maps to exactly one declared member (no orphan
+   file). Both directions hold.
+3. `sha256sum` across the `TestDataFactory` pair and against
+   `templates/apex/tests/TestDataFactory.cls`: all three match
+   (`fda38fa1…823983` for the class, `a242f6e2…8ddea32` for the meta XML) — the S2-F-12 fix
+   landed identically in both steps, so the single `TestDataFactory` member still refers to one
+   unambiguous file content, not two files that happen to share a name.
+4. `sha256sum` on `artefacts/M1-S03/classes/TestUserFactory.cls` against
+   `templates/apex/tests/TestUserFactory.cls`: match (`7174479d…11f8f94`) — a verbatim
+   copy, confirming M1-S03's own § 0b provenance claim rather than re-trusting it uncited.
+
+**Member diff applied to `package.xml`.** One line added to the `ApexClass` `<types>` block:
+`<members>TestUserFactory</members>`, inserted alphabetically between `TestDataFactory` and
+`Tier2ChannelHealthQueueable`. No other block changed. No `<types>` block was added or removed;
+the file still carries exactly 7 blocks.
+
+---
+
+## 0a. Rebuild record — run 3, after M1-S03's `Tier2WebhookFinalizerTest` addition (S2-F-14)
+
+**Trigger.** The operator's brief for this run cites `artefacts/M1-S03/deploy-order.md` § 0d
+and finding **S2-F-14** for the `Tier2WebhookFinalizerTest` addition, and both resolve to the
+actual record: § 0d (M1-S03 run 6) is the repair that added `classes/Tier2WebhookFinalizerTest.cls`
+(+ `-meta.xml`, API 67.0) to close a coverage gap under the platform's 75% floor
+(`Tier2WebhookFinalizer` at 70.8% aggregate). § 0d's own text names this step directly: *"M1-S05
+needs a new member. `Tier2WebhookFinalizerTest` is an `ApexClass` this build now ships and
+`artefacts/M1-S05/package.xml` does not yet name it."* Unlike this step's run 2 (§ 0, which had
+to correct a wrong finding id — `S4-F-02` for what was actually `S2-F-11`), this run's citation
+is accurate on the first read; recorded because it is the same class of thing that went wrong
+last time and did not this time.
+
+Two later M1-S03 repairs post-date § 0d and were checked for a further member effect, and
+neither has one: § 0e (S2-F-15) edited one existing test method's body inside the already-added
+`Tier2WebhookFinalizerTest.cls` (registering an `HttpCalloutMock`) — content only, no file added
+or removed. § 0f (S2-F-16) added two new test *methods* inside the already-declared
+`Tier2EscalationServiceTest.cls` — again content only, no new file. Neither changes this step's
+member list.
+
+**Verification run this step performed**, over the live `artefacts/M1-S0[1-4]/` tree, the same
+method run 2 used and not by trusting the plan-input member list (`inputs.members.ApexClass`,
+which still names the pre-run-2 11-class set and has not been corrected across any of this
+step's three rebuilds):
+
+1. Enumerated every non-`.md`, non-`package.xml` file under `artefacts/M1-S01/` through
+   `artefacts/M1-S04/` and derived the metadata type + member name each represents from its
+   path, exactly as run 2 did. Result: **35** distinct members across the same 7 types, one new
+   `ApexClass` member (`Tier2WebhookFinalizerTest`) since run 2, `TestDataFactory` still counted
+   once despite two backing files.
+2. Confirmed both directions still hold: every derived member has exactly one backing-file
+   identity (`TestDataFactory`'s two files, both under it) and every one of the 54 files across
+   `artefacts/M1-S01/` … `artefacts/M1-S04/` (excluding `deploy-order.md` and per-step
+   `package.xml` fragments) maps to exactly one declared member. `54` files reconciles exactly
+   against the 35 members once the `ApexClass`/`ApexTrigger` `.cls`/`.trigger` + `-meta.xml`
+   pairing and `TestDataFactory`'s two-copy pairing are accounted for; no orphan file, no
+   member without a file.
+3. `Tier2WebhookFinalizerTest.cls-meta.xml` parses and carries `<apiVersion>67.0</apiVersion>`,
+   matching this manifest's `<version>`.
+
+**A finding independent of the member diff, surfaced by the same dedup check this run repeats
+for `TestDataFactory`, and not a member change:** `templates/apex/tests/TestDataFactory.cls`
+(current repo HEAD, commit `be09a7bff`) is **no longer byte-identical** to either step's shipped
+copy. The template gained an `insertAsSystem(List<SObject>)` helper (Gotcha 15, "seed fixtures in
+system mode") after both `artefacts/M1-S03/classes/TestDataFactory.cls` and
+`artefacts/M1-S04/classes/TestDataFactory.cls` were written; the two shipped copies remain
+byte-identical **to each other**
+(`fda38fa11728e1a264ab7f1beb9e2b61686df762a38f09962c9bd8e370823983`, unchanged from run 2), so the
+single `TestDataFactory` member still refers to one unambiguous file content and this manifest is
+unaffected. The three-way template match run 2's § 0 recorded (`fda38fa1…823983` for all three) no
+longer holds — the template moved, not the artefacts. This is a template-provenance question for
+`agents/apex-builder`, outside this step's Output Contract (this agent writes no Apex), and is
+recorded in Process Observations rather than acted on here.
+
+**Member diff applied to `package.xml`.** One line added to the `ApexClass` `<types>` block:
+`<members>Tier2WebhookFinalizerTest</members>`, inserted alphabetically between
+`Tier2WebhookFinalizer` and `Tier2WebhookQueueable`. No other block changed. No `<types>` block
+was added or removed; the file still carries exactly 7 blocks.
+
+| | Before (run 2) | After (this run) |
+|---|---|---|
+| `ApexClass` members | 14 | **15** (+`Tier2WebhookFinalizerTest`) |
+| Total members | 34 | **35** |
+| Everything else (`CustomObject` ×2, `CustomField` ×13, `ExternalCredential` ×1, `NamedCredential` ×1, `ApexTrigger` ×2, `PermissionSet` ×1) | unchanged | unchanged |
 
 ---
 
@@ -16,7 +152,7 @@ file another step already wrote, and this step writes no metadata of its own.
 
 | File | Role |
 |---|---|
-| `package.xml` | the build-level manifest — 7 `<types>` blocks, **33 members**, `<version>67.0</version>`, no wildcards |
+| `package.xml` | the build-level manifest — 7 `<types>` blocks, **35 members**, `<version>67.0</version>`, no wildcards |
 | `deploy-order.md` (this file) | the build-wide deploy sequence and the manual steps no deploy performs |
 
 Both are declared in the step's `outputs[]`. This step emits no `-meta.xml`.
@@ -29,7 +165,7 @@ Both are declared in the step's `outputs[]`. This step emits no `-meta.xml`.
 | `CustomField` | 13 — `Case.Tier2_Notified_At__c` + the twelve `Integration_Failure__c` fields | M1-S01 |
 | `ExternalCredential` | 1 — `OnCall_Tool_EC` | M1-S02 |
 | `NamedCredential` | 1 — `OnCall_Tool` | M1-S02 |
-| `ApexClass` | **13** — ten from M1-S03, four from M1-S04, `TestDataFactory` counted **once** | M1-S03 + M1-S04 |
+| `ApexClass` | **15** — twelve from M1-S03 (including `TestUserFactory`, added run 4 of that step to close S2-F-11, and `Tier2WebhookFinalizerTest`, added run 6 of that step to close S2-F-14), four from M1-S04, `TestDataFactory` counted **once** | M1-S03 + M1-S04 |
 | `ApexTrigger` | 2 — `CaseTrigger`, `IntegrationFailureTrigger` | M1-S03 |
 | `PermissionSet` | 1 — `Tier2_Webhook_Admin` | M1-S02 |
 
@@ -51,23 +187,28 @@ ship a copy under the template-provenance rule (`agents/apex-builder/AGENT.md` S
 are **identical bytes**:
 
 ```text
-2f87c8c320406e1c8381f26862cdcc17130a9fe2f8a133f098ab64a271de782c  M1-S03/classes/TestDataFactory.cls
-2f87c8c320406e1c8381f26862cdcc17130a9fe2f8a133f098ab64a271de782c  M1-S04/classes/TestDataFactory.cls
-2f87c8c320406e1c8381f26862cdcc17130a9fe2f8a133f098ab64a271de782c  templates/apex/tests/TestDataFactory.cls
+fda38fa11728e1a264ab7f1beb9e2b61686df762a38f09962c9bd8e370823983  M1-S03/classes/TestDataFactory.cls
+fda38fa11728e1a264ab7f1beb9e2b61686df762a38f09962c9bd8e370823983  M1-S04/classes/TestDataFactory.cls
+fda38fa11728e1a264ab7f1beb9e2b61686df762a38f09962c9bd8e370823983  templates/apex/tests/TestDataFactory.cls
 
 a242f6e22b472afffbd726be71165de394e417355cdf1edd81b5601278ddea32  M1-S03/classes/TestDataFactory.cls-meta.xml
 a242f6e22b472afffbd726be71165de394e417355cdf1edd81b5601278ddea32  M1-S04/classes/TestDataFactory.cls-meta.xml
 ```
 
-Both are also byte-identical to the template they were copied from, so there is no question of
-which copy the single member refers to. This is decision **D-M1S03-06**'s open item, discharged
-here: "`M1-S05` emits the `ApexClass:TestDataFactory` member exactly once when it aggregates."
-`D-M1S04-06` records the same fact from M1-S04's side. A `package.xml` listing it twice would be a
-manifest defect; the deploy tree itself was never at risk, because
-`scripts/mock_deploy.py:copy_artefacts` rebases both onto the same assembled path.
+**Re-verified this run, hashes changed from run 1.** Run 1's hashes for `TestDataFactory.cls`
+were `2f87c8c3…de782c` (pre-S2-F-12: `AccountId` assigned unconditionally); the S2-F-12 repair
+(§ 0) rewrote the template and both steps' verbatim copies, so the class-body hash above is a
+different value from run 1's, while the three-way equality it proves — both steps' copies and
+the template agree — still holds, and the `-meta.xml` hash is unchanged because that repair
+touched no meta file. Both class copies are also byte-identical to the template they were
+copied from, so there is no question of which copy the single member refers to. This is decision
+**D-M1S03-06**'s open item, discharged here: "`M1-S05` emits the `ApexClass:TestDataFactory`
+member exactly once when it aggregates." `D-M1S04-06` records the same fact from M1-S04's side.
+A `package.xml` listing it twice would be a manifest defect; the deploy tree itself was never at
+risk, because `scripts/mock_deploy.py:copy_artefacts` rebases both onto the same assembled path.
 
 **No wildcards anywhere.** Every member is named. The manifest and the files agree in both
-directions: 33 members, 33 components, no member without a file and no artefact file in
+directions: 35 members, 35 components, no member without a file and no artefact file in
 M1-S01…M1-S04 without a member. `deploy-order.md` files and the per-step `package.xml` fragments
 are notes and fragments, not components, and are correctly absent.
 
@@ -84,7 +225,7 @@ from each step's own `deploy-order.md`:
 |---|---|---|---|
 | 1 | `CustomObject` ×2, `CustomField` ×13 | M1-S01 | the data model. Nothing else compiles or resolves without it. `Integration_Failure__c` must precede its own twelve fields inside this group |
 | 2 | `ExternalCredential` `OnCall_Tool_EC`, then `NamedCredential` `OnCall_Tool` | M1-S02 | the Named Credential's Authentication parameter carries `<externalCredential>OnCall_Tool_EC</externalCredential>`; a reference to a credential that does not yet exist resolves to nothing (M1-S02 `deploy-order.md` § 2 item 1). Independent of group 1 |
-| 3 | `ApexClass` ×13, `ApexTrigger` ×2 | M1-S03, M1-S04 | code that references the model. Every custom symbol these classes name was grounded against M1-S01's artefacts (M1-S03 `deploy-order.md` § 9). Within the group the Metadata API resolves classes and triggers in one request; no internal ordering is required |
+| 3 | `ApexClass` ×15, `ApexTrigger` ×2 | M1-S03, M1-S04 | code that references the model. Every custom symbol these classes name was grounded against M1-S01's artefacts (M1-S03 `deploy-order.md` § 9). Within the group the Metadata API resolves classes and triggers in one request; no internal ordering is required |
 | 4 | `PermissionSet` `Tier2_Webhook_Admin` | M1-S02 | last, because it references all of the above: twelve `fieldPermissions` rows naming M1-S01 fields, an `objectPermissions` row on `Integration_Failure__c`, and an `externalCredentialPrincipalAccesses` grant naming the principal of the credential in group 2 |
 
 A **single** `sf project deploy start` over this manifest resolves all four groups in one request,
@@ -329,7 +470,7 @@ The raw equivalent, if the artefacts are assembled into a DX project by hand:
 sf project deploy start --manifest package.xml --target-org <alias> --dry-run
 ```
 
-**A clean manifest-mode run is not the end of the checks.** It proves the 33 components compile and
+**A clean manifest-mode run is not the end of the checks.** It proves the 35 components compile and
 resolve together. It does not prove the AuthHeader formula resolves to a non-empty header (§ 3 step
 1), does not execute a Queueable and so cannot close assumption **A2** (§ 3 step 3), and does not
 create the scheduled job (§ 3 step 4).

@@ -1,0 +1,208 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T17-09-17Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T17-09-17Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T17-09-17Z.json",
+  "summary": "Re-ran the molecular tests for M1-S05 (docs, metadata-builder) of build tier2-webhook after metadata-builder regenerated artefacts/M1-S05/package.xml at 2026-09-12T17-03-58Z to add the TestUserFactory ApexClass member (33 -> 34 members, closing M1-S03's S2-F-11 repair). Precondition verified: step status was built. Both always-on checks and the step's four declared acceptance tests ran fresh rather than reusing the prior (33-member) test run's captures. xml parsed the step's one file cleanly. The manifest check spanned artefacts/M1-S01 through M1-S04 (M1-S05 itself carries no component files, only package.xml and deploy-order.md) and independently re-derived 34 members from the file tree, bidirectionally consistent with the 34 members in artefacts/M1-S05/package.xml - no member without a file, no file without a member, including the new TestUserFactory entry. The declared checker (check_deployment_manifest.py --manifest-dir artefacts/M1-S05) exited 0 with exactly the two WARN findings the plan predicted (ExternalCredential, NamedCredential), unchanged in shape from the prior run since neither concerns ApexClass, and check-outputs reported ok:true. The manual test (deploy-order read at the M1 gate) was re-checked against deploy-order.md and is tickable - all five manual items and the mock_deploy.py-as-text confirmation are present - and is deferred to skipped_manual[] verbatim. Status moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH: every declared test ran or was correctly classified as manual, both always-on checks completed over the full cross-step scope the step's own test description requires, and every result (checker exit code, check-outputs JSON, xml parse, manifest derivation) came from an exit code or a parse this agent observed directly this run - the 34/34 member count was independently re-derived from the file tree rather than taken from the metadata-builder envelope's claim.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S05",
+    "precondition_status": "built (verified in plan.json before any test ran; step had been re-run by metadata-builder at 2026-09-12T17-03-58Z since the prior tested run)"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared checker's exit code and finding set matched the step's own acceptance-test description exactly - exit 0, exactly two WARN (ExternalCredential, NamedCredential), zero blocking - on this re-run too, unchanged in shape from the 33-member run despite the ApexClass member count and TestDataFactory content both changing since then.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/checker.stdout.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The build-wide manifest two-way check was independently re-derived from the file tree under artefacts/M1-S01..S04 (not copied from the metadata-builder envelope's member_counts) and agrees with that envelope exactly: 34 manifest members, 34 derived members, 0 missing in either direction, with TestUserFactory correctly appearing once as a new ApexClass member.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/manifest-check.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The step's re-run cycle (documented -> running -> built -> tested) left no orphaned test artefacts: the prior run's tests/M1-S05/ captures were fully superseded by fresh captures against the current 34-member manifest, and results.json/summary.md now describe the state actually on disk rather than the state at the prior tested run.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/results.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The AuthHeader clause inside steps[M1-S05].inputs.manual_steps_the_deploy_does_not_perform (item 1) is still pre-amendment prose, unchanged since the prior test run flagged it - it reads as a single fully-resolvable manual confirmation, while artefacts/M1-S05/deploy-order.md section 3 step 1 already documents the narrower, corrected reading (grammar-parses-on-deploy plus a separate UAT confirmation) under decision D-M1S02-06 / finding PV-007. Reported again because it remains open, not because it is new.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs.manual_steps_the_deploy_does_not_perform"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "metadata-builder's 2026-09-12T17-03-58Z re-run envelope records that the operator's brief for that re-run cited finding id S4-F-02, which does not exist anywhere in this build's records - the real finding is S2-F-11. This tester did not need to act on that citation (it only reads the resulting artefacts), but the mismatch stands as an upstream-instruction-quality signal for whoever briefs the next re-run.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T17-03-58Z.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The declared manual test's expected text is phrased as a checklist read rather than literal Given/When/Then, so it was checked against the testability bar (a boolean, observable outcome) rather than against Gherkin form. It clears that bar, but a human should confirm whether the shorthand 'confirming the AuthHeader formula grammar' is meant to already carry the D-M1S02-06 narrowing or is a stale summary of the original single-step framing; this agent does not resolve that judgment call.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].acceptance_tests[3].expected"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1-S05 is tested again after its re-run; every other M1 step remains documented from before. The doc keeper's record of M1-S05 (decisions.md, traceability.md) predates this member-count change and should be re-run to reflect 34 members before M1 is re-verified.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/results.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "M1-S05's documentation (decisions.md, traceability.md) was last written against the 33-member manifest and should be re-run against the current 34-member state before /verify-milestone re-checks M1."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 5 - the five acceptance-test types and their runners, the checker-command-run-verbatim rule, the check-outputs precondition on both checker and set-status built/tested, the always-on manifest fail-vs-skip rule for metadata step types, and the Apex exception; section 4 for the docs step-type ownership split and the documented -> running re-run transition this step went through before this test run"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope persistence and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical enum - no refusal was raised this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptance_tests[] and outputs[] shape this agent read from steps[M1-S05]"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one types block per type, members naming components, name naming the type) the manifest check judges artefacts/M1-S05/package.xml against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive members from the files under artefacts/M1-S01..S04 (objects/<Obj>/fields/*.field-meta.xml, classes/*.cls, triggers/*.trigger, externalCredentials/*, namedCredentials/*, permissionsets/*)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming none of the seven member types here (CustomObject, CustomField, ExternalCredential, NamedCredential, ApexClass, ApexTrigger, PermissionSet) is documented as lacking a standalone source file, so no exclusion was applied to either direction of the manifest check"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the testability bar (acceptance criteria must be boolean/observable before UAT begins) the declared manual test was re-checked against before being carried into skipped_manual[]"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check whether the manual test names an observable outcome; it does, though it is not phrased as literal Gherkin"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M1-S05 is tested again after the member-count change; decisions.md and traceability.md were last written against the 33-member state and should be refreshed before M1 is re-verified."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S05/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c ElementTree parse over artefacts/M1-S05/**/*.xml and *-meta.xml",
+        "exit_code": 0,
+        "verdict": "pass - 1 file, parses"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way consistency derivation over artefacts/M1-S01..S05 vs artefacts/M1-S05/package.xml",
+        "exit_code": 0,
+        "verdict": "pass - 34 manifest members, 34 derived members, 0 missing in either direction, TestUserFactory and TestDataFactory dedup both verified consistent"
+      },
+      {
+        "name": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S05",
+        "exit_code": 0,
+        "verdict": "pass - 2 WARN (ExternalCredential, NamedCredential), 0 blocking, matches predicted findings exactly"
+      },
+      {
+        "name": "check-outputs",
+        "type": "checker-precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/tier2-webhook/plan.json M1-S05 (run from repo root)",
+        "exit_code": 0,
+        "verdict": "pass - ok:true, missing/empty/malformed all empty"
+      },
+      {
+        "name": "Deploy-order read at the M1 gate",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred - tickable, carried to skipped_manual[] verbatim"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "A reviewer confirms deploy-order.md lists the five manual steps no deploy performs - confirming the AuthHeader formula grammar, entering the API key against the principal, assigning Tier2_Webhook_Admin to the D14 assignee set, scheduling the hourly job, and confirming the org-wide sender is verified - and that the mock_deploy.py command is written as text for a human to run rather than as anything an agent executes."
+    ],
+    "tests_run": 4,
+    "manifest_scope_note": "Scope spans artefacts/M1-S01 through M1-S04 in addition to M1-S05 itself, because M1-S05's own package.xml aggregates every prior step's members and its own artefact directory carries no component files - matching the step's own acceptance-test[2] description ('no artefact file in M1-S01 through M1-S04 lacks a member here').",
+    "coverage_gap_exclusions": [],
+    "checker_command_run_verbatim": true,
+    "no_command_rewritten": true,
+    "shell": "zsh - each declared command quoted and evaluated as written, no flags added, removed or reordered",
+    "member_diff_since_prior_test_run": {
+      "before": 33,
+      "after": 34,
+      "added": ["ApexClass.TestUserFactory"]
+    }
+  }
+}

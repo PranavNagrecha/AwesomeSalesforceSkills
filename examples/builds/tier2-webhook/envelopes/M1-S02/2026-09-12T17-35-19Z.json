@@ -1,0 +1,241 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T17-35-19Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T17-35-19Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T17-35-19Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S02",
+    "step_status_on_entry": "tested",
+    "pass": "repair documentation pass for M1-S02, after the S2-F-13 grant repair (run 3) and its re-test (per-step run)",
+    "scale": "feature"
+  },
+  "summary": "Documentation pass for M1-S02's S2-F-13 repair: Tier2_Webhook_Admin gained a new objectPermissions row (allowCreate/allowRead true on Tier2_Escalation__e) so Tier2EscalationService's EventBus.publish call (decision D10) does not run afoul of API 67.0's default user-mode publish requirement, for the same async-context assignee population decision D14 already reasons about for this step. Re-rendered PLAN.md/CLARIFICATIONS.md. Appended one decision, D-M1S02-07 (Deviation, repair), recording the grant, the persona reasoning (existing D14 assignees, not a new set, because the publish and the webhook callout run as the same user in the same transaction per D10), the rejected alternative (a new Tier2_Escalation_Publisher set), and the checker-coverage gap step-tester named in its retest envelope (2026-09-12T17-21-00Z) — confirmed this pass, by reading the file rather than assuming, that the gap is now closed: skills/apex/platform-events-apex/scripts/check_platform_events_apex.py carries rule R9, a WARN for an EventBus.publish of a __e with no permission set or profile granting allowCreate on it. Updated traceability.md: the three rows whose artefact_paths name the permission set file (REQ-005, REQ-006, REQ-009) each gained one sentence noting the file's content changed again (the new Tier2_Escalation__e grant) while its path stayed the same and none of the fields those requirements track were touched — a record-only note, not a new requirement or a re-verification claim. The workbook was not written this pass, continuing the scale:feature precedent the first M1-S02 documentation pass (2026-09-12T10-47-43Z) set: no workbook/ file exists for this build, and this repair changes one row inside a file already excluded from that deferral, so nothing about the repair changes the earlier deferral's reasoning. check_rtm.py: 16 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings. Step set to documented.",
+  "confidence": "HIGH",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 HIGH: every write this pass traces to a named source — the decision to D-M1S02-07 cites the metadata-builder repair envelope, the step-tester retest envelope, decisions D10/D14 already on file in plan.json, and the platform-events-apex checker's own source code (read this pass, not recalled); the three traceability rows amended carry a real source_req_id already established at the first M1-S02 pass and needed no new verification cell, since the note is scoped to say the artefact's path is unchanged rather than to claim new coverage; and check_rtm.py returned 0 errors and 0 warnings on the amended file. Not MEDIUM: nothing here required judgment about which section an artefact falls in (no workbook row was written), and no requirement id was inferred rather than read — REQ-005/006/009 were read directly from the existing rows this step's own artefact_paths already named.",
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook-rows",
+      "state": "not-run",
+      "reason": "Continuing the precedent the first M1-S02 documentation pass set (envelopes/M1-S02/2026-09-12T10-47-43Z.json): scale: feature makes the workbook optional (standards/build-orchestration.md § 'The three tiers', Documentation row: 'workbook optional, traceability required'), and no workbook/ file exists for this build from any prior step. This repair changes one objectPermissions row inside a permission-set file already excluded from that deferral; nothing about the repair reopens the earlier call.",
+      "confidence_impact": "NONE",
+      "retry_hint": "If the build's workbook is wanted before the end, start it at M1-S01 (section 1, object model) so sections populate in deploy order, then re-run build-doc-keeper on M1-S02 to backfill sections 3/4 including this repair's grant row."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The S2-F-13 repair stayed inside the file the finding named: one new objectPermissions row on the permission set already shipping the D14 persona's other grants, no new manifest member, and package.xml/the credential files byte-unchanged — so this documentation pass could note the traceability rows' file-path-unchanged fact without any ambiguity about which version of the file it describes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-coverage-gap",
+      "observation": "The checker-coverage gap step-tester named in its retest envelope (no checker asserts a publisher permission set names the event it publishes) is confirmed closed by reading skills/apex/platform-events-apex/scripts/check_platform_events_apex.py directly this pass, not assumed from the prior envelope's wording: rule R9 fires a WARN for exactly this shape.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "build-loop",
+      "observation": "R9 exists in the cited skill's checker but is not run as a declared acceptance_test on M1-S02, M1-S03, or the M1 milestone in plan.json — so the gap step-tester flagged is closed at the skill level but not yet wired into this build's own test surface. A future publish added with no matching grant would still not be caught by anything this plan actually runs.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "documentation-scope",
+      "observation": "REQ-005 and REQ-006 track Integration_Failure__c field grants and the Resend__c workflow respectively, not the Tier2_Escalation__e publish path — the note added to their rows this pass is a record-only fact about a shared artefact file's content changing, not a claim that the repair affects either requirement's own coverage. A reader skimming test_result without the 'record for the record only' framing could mistake it for new evidence about those requirements.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/traceability.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M1-S02 is documented again after a design-time repair no molecular checker caught pre-emptively (S2-F-13); the M1 milestone's cross-step acceptance tests should be re-confirmed against the repaired permission set.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Cross-step milestone acceptance for M1 is milestone-verifier's to run, and this is the second time M1-S02's documented artefacts changed after that step first reached documented."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "R9 in check_platform_events_apex.py is not named in any declared acceptance_tests[] for M1-S02, M1-S03, or the M1 milestone.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Deciding whether to amend the plan to run R9 explicitly is a milestone-scope judgment call, not this agent's to make or a plan.json field this agent may touch."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "mode": "per-step",
+    "pass": "repair documentation pass (S2-F-13)",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      ".sfskills/builds/tier2-webhook/decisions.md",
+      ".sfskills/builds/tier2-webhook/traceability.md"
+    ],
+    "workbook_rows": [],
+    "workbook_skipped": {
+      "reason": "scale: feature makes the workbook optional; no workbook/ file exists yet for this build, and the first M1-S02 documentation pass already made this same call for this step",
+      "citation": "standards/build-orchestration.md § 'The three tiers' (Documentation row: 'workbook optional, traceability required')"
+    },
+    "traceability_rows": [
+      {
+        "req_id": "REQ-005",
+        "action": "note appended, content changed / path unchanged",
+        "step_id_unchanged": "M1-S01",
+        "cells_amended": [
+          "test_result"
+        ],
+        "change": "one sentence added: Tier2_Webhook_Admin's content changed again (new Tier2_Escalation__e grant, D-M1S02-07) but its path and this requirement's own fieldPermissions rows are unaffected"
+      },
+      {
+        "req_id": "REQ-006",
+        "action": "note appended, content changed / path unchanged",
+        "step_id_unchanged": "M1-S01",
+        "cells_amended": [
+          "test_result"
+        ],
+        "change": "one sentence added: same permission-set content change, unrelated to the Resend__c grant this row tracks"
+      },
+      {
+        "req_id": "REQ-009",
+        "action": "note appended, content changed / path unchanged",
+        "step_id_unchanged": "M1-S02",
+        "cells_amended": [
+          "test_result"
+        ],
+        "change": "one sentence added: the new grant carries no credential value, so this requirement's no-literal-secret finding is unaffected"
+      }
+    ],
+    "decisions_appended": [
+      "D-M1S02-07"
+    ],
+    "rows_replaced": [],
+    "idempotence_note": "REQ-005/006/009 were amended by appending one sentence to an existing test_result cell keyed on req_id, not by row deletion and re-add; a second run over unchanged sources would need to detect the D-M1S02-07 citation already present in the sentence before appending again, which this pass confirmed absent before writing. decisions.md remains append-only; D-M1S02-07 does not duplicate any existing step+date+text combination in the file (checked before appending).",
+    "checker_results": [
+      {
+        "command": "python3 scripts/build_plan.py render .sfskills/builds/tier2-webhook/plan.json",
+        "exit": 0,
+        "result": "wrote PLAN.md and CLARIFICATIONS.md"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo-root>",
+        "exit": 0,
+        "result": "16 rows, build schema, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings"
+      }
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, Process Observations, and the confidence rubric this agent overrides at Step 11"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and the atomic-write rule for this agent's own deliverable pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the refusal enum (none raised this run — step status was tested on entry)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 (rendered views, no hand-edit; plan.json only via the CLI), § 4 (documented → running repair transition; step-type to workbook-section map), § 6 (this agent's Tier-4 row), § 8 (a decisions.md skill gap as the signal to deepen a skill)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the steps[] fields read this run (status, runs[], decisions[]) and the ones left untouched"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "confirming the workbook-skip precedent still applies to a row-level repair inside an already-deferred artefact"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+      "used_for": "the build-layer RTM shape and the checker invocation confirming the amended file still carries 0 errors/warnings"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decisions.md entry shape — date, step, agent, alternative rejected, source grounded in — followed for D-M1S02-07"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming the traceability note records what changed rather than asserting a re-verification that did not happen"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "confirming this per-step run correctly leaves uat-test-cases.yaml alone — compilation belongs to M1-S05's Step 10 run"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming no new Given/When/Then criterion was invented for a change that is a record-only note, not a new observable requirement"
+    },
+    {
+      "type": "skill",
+      "id": "apex/platform-events-apex",
+      "path": "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py",
+      "used_for": "reading rule R9's current source to verify the checker-coverage gap the tester named is now a WARN rule, rather than citing it from the prior envelope's wording alone"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1-S02's documented artefacts changed a second time after first reaching documented (S2-F-13); a milestone-scope pass can confirm M1's cross-step acceptance tests still hold against the repaired permission set."
+    }
+  ]
+}

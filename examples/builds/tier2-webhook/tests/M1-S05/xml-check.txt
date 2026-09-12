@@ -1,2 +1,1 @@
-PARSE_OK artefacts/M1-S05/package.xml
-TOTAL 1
+artefacts/M1-S05/package.xml: parses OK (1 file found, 1 parsed, 0 failed)

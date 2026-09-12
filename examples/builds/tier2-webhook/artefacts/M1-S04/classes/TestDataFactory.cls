@@ -8,6 +8,10 @@
  *    randomness.
  *  - Overrides map supports any field — not a closed list.
  *  - Always bulk. Never call `createAccount()` inside a loop.
+ *  - Lookup arguments (e.g. `accountId`) are assigned only when non-null: at
+ *    API 67.0+ Apex runs in user context by default, so a test's plain
+ *    `insert` checks FLS on every populated field, and a lookup assigned
+ *    from a null argument still counts as populated.
  */
 @IsTest
 public class TestDataFactory {
@@ -28,9 +32,11 @@ public class TestDataFactory {
             Contact c = new Contact(
                 FirstName = 'Test',
                 LastName  = 'Contact ' + i,
-                Email     = 'test.contact.' + i + '@example.com',
-                AccountId = accountId
+                Email     = 'test.contact.' + i + '@example.com'
             );
+            if (accountId != null) {
+                c.AccountId = accountId;
+            }
             applyOverrides(c, overrides);
             out.add(c);
         }
@@ -45,9 +51,11 @@ public class TestDataFactory {
                 Name      = 'Test Opp ' + i,
                 StageName = 'Prospecting',
                 CloseDate = closeDate,
-                AccountId = accountId,
                 Amount    = 1000
             );
+            if (accountId != null) {
+                o.AccountId = accountId;
+            }
             applyOverrides(o, overrides);
             out.add(o);
         }
@@ -60,9 +68,11 @@ public class TestDataFactory {
             Case c = new Case(
                 Subject = 'Test Case ' + i,
                 Status  = 'New',
-                Origin  = 'Email',
-                AccountId = accountId
+                Origin  = 'Email'
             );
+            if (accountId != null) {
+                c.AccountId = accountId;
+            }
             applyOverrides(c, overrides);
             out.add(c);
         }

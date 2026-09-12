@@ -1,0 +1,292 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T17-40-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T17-40-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T17-40-00Z.json",
+  "summary": "Run 6 of M1-S03 — the third § 4 test-only repair, after reports/MOCK-DEPLOY-M1.md run 9 (S2-F-14): 30/30 tests pass but coverage is 70.8% against the 75% floor, with Tier2WebhookFinalizer named as the gap (63 of 76 lines uncovered). Added artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls (+ -meta.xml, API 67.0), a new file rather than more methods on Tier2WebhookQueueableTest, because apex-builder's own Escalation Rules forbid modifying a shipped file in place. Five methods call Tier2WebhookFinalizer.execute(FinalizerContext) directly as a plain synchronous call against a hand-implemented System.FinalizerContext stub, deliberately avoiding System.enqueueJob/Test.startTest()/Test.stopTest() of the parent job — deploy-order.md § 5 item 3 already recorded, from this same build, that letting the Queueable throw for real inside Test.stopTest() fails the test method, and skills/apex/apex-transaction-finalizers/references/code-examples.md documents the identical finding for its own worked Finalizer (its fix, a @TestVisible seam, cannot be applied here without touching the shipped class). The five methods cover: the ctx==null guard, the SUCCESS no-op, the transient-retry insert-and-re-enqueue path, the abandon-at-ceiling insert-and-stop path, and the existing-row update path. No 'permanent-failure' Finalizer branch was added — a permanent HTTP status never makes the Queueable throw, so Tier2WebhookFinalizer.execute() only ever sees SUCCESS for that case; that path is already asserted at the Queueable level. Shipped classes and all three pre-existing test classes are unchanged.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per GATES.md Gate D, with one risk this run names explicitly beyond the usual design-only baseline. Gate B: 0 unresolved symbols — every custom object/field/class this run's assertions touch (Case, Integration_Failure__c and its fields, Tier2WebhookFinalizer, Tier2WebhookQueueable.Tier2WebhookException, Tier2WebhookQueueable.pendingEnvelope) is grounded against files already in this step's artefacts. Gate C check 3 (compile) did not run — design-only build_mode, no target_org_alias, no offline Apex compiler in the sf CLI. Beyond that standard gap, this run's central technique — a test class implementing System.FinalizerContext directly — is UNVERIFIED against any source in this repo's corpus: no skill confirms or denies that customer code may implement that interface, and the one skill most specific to this exact problem (apex-transaction-finalizers) uses a different technique (a @TestVisible seam) for its own worked example rather than this one. If Tier2WebhookFinalizerTest.cls does not compile for this reason, the coverage gain this run claims does not exist and the fallback — a @TestVisible seam added to the shipped Tier2WebhookFinalizer.cls — is a shipped-code change explicitly out of this run's scope. What would raise this to HIGH is a green dry run with --test-level RunSpecifiedTests confirming both that the new class compiles and that coverage clears 75%, which no agent in this loop may perform.",
+  "outcome": "completed",
+  "inputs_received": {
+    "kind": "trigger",
+    "primary_sobject": "Case",
+    "api_version": "67.0",
+    "source": "plan.json steps[M1-S03].inputs, unchanged since amendments[1] — no amendment accompanied this repair. Scope, sources and constraints were given directly in the task: agents/apex-builder/AGENT.md, standards/build-orchestration.md, plan.json step M1-S03, reports/MOCK-DEPLOY-M1.md run 9 (S2-F-14) and reports/mock-deploy/2026-09-12T17-17-07Z/result.json's test summary, skills/apex/test-class-standards (Gotchas 13-14, Example 5), and the step's own skills/citations in PLAN.md for Queueable/Finalizer patterns (apex/apex-queueable-patterns) — which this run also had to extend to apex/apex-transaction-finalizers, a skill the step's own skills[] list does not cite (see Process Observations).",
+    "org_evidence": "reports/MOCK-DEPLOY-M1.md run 9 — MANIFEST mode, whole build, --test-level RunSpecifiedTests: components 40/40 ok, tests run 30 · passed 30 · failed 0 · coverage 70.8%, status Failed on the 75% floor alone. Per-class detail (Tier2WebhookFinalizer 63/76 lines uncovered) is recorded against the run 8 predecessor in reports/MOCK-DEPLOY-M1.md and in reports/mock-deploy/2026-09-12T17-17-07Z/result.json's test summary (run 9 itself reports only the aggregate coverage_pct, not a per-class table).",
+    "credentials": "[REDACTED] — none present in the step inputs, none touched by this run; the new test class reads no credential and sets no header."
+  },
+  "findings": [
+    {
+      "id": "S6-F-01",
+      "severity": "P1",
+      "title": "S2-F-14 addressed: Tier2WebhookFinalizer's retry/abandon/update branches now have direct unit tests",
+      "detail": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls (new file) adds 5 test methods that call Tier2WebhookFinalizer.execute(FinalizerContext) directly against a hand-built System.FinalizerContext implementation, covering: the ctx==null guard, the SUCCESS no-op (asserting 0 rows and no enqueue), the transient-retry path (attempt=1, insert one Retrying row, exactly one re-enqueue), the abandon-at-ceiling path (attempt=MAX_ATTEMPTS, insert one Abandoned row, no re-enqueue), and the existing-row update path (attempt=2 with a pre-seeded row, update in place, Resend__c cleared, Request_Payload__c untouched). Whether this closes S2-F-14 in practice — i.e. whether coverage now clears 75% — is an org-side question; see S6-F-02.",
+      "evidence": {
+        "path": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls",
+        "source": "repo_scan"
+      },
+      "recommendation": "Run reports/mock-deploy/... again with --test-level RunSpecifiedTests including this class to get the real coverage_pct. If it still falls short, the remaining gap is almost certainly the AsyncOptions/back-off lines and the chained-tail lines already named as untestable in deploy-order.md § 5 item 3 (ignored during Apex testing) — those are not addressable by any test."
+    },
+    {
+      "id": "S6-F-02",
+      "severity": "P0",
+      "title": "The core technique — implementing System.FinalizerContext in test code — is UNVERIFIED against this repo's corpus and has not been compiled",
+      "detail": "No skill under skills/apex/ states whether a customer-authored class may implement System.FinalizerContext. skills/apex/apex-transaction-finalizers/references/code-examples.md, the most specific and most authoritative source in this repo on Finalizer testing, solves the identical problem (reaching UNHANDLED_EXCEPTION without letting a real Queueable throw inside Test.stopTest()) with a @TestVisible decision seam instead — a technique unavailable here because Tier2WebhookFinalizer.cls is a shipped class this run is scoped not to modify. This run's approach is a reasoned extension consistent with FinalizerContext's documented four-getter shape (matching QueueableContext/BatchableContext, which are also not known to be customer-implementable but are also not documented as forbidden), not a cited, proven pattern. Gate C check 3 (compile) cannot run in this design-only build with no target_org_alias, so this cannot be confirmed here.",
+      "evidence": {
+        "path": "skills/apex/apex-transaction-finalizers/references/code-examples.md lines 373-404",
+        "source": "input"
+      },
+      "recommendation": "Before trusting this file's contribution to the milestone's coverage number, deploy it to a scratch org (sf project deploy start --dry-run --test-level RunSpecifiedTests) and confirm it compiles. If StubFinalizerContext fails to compile because System.FinalizerContext cannot be implemented by customer code, the fallback is a @TestVisible handle(...) seam added to Tier2WebhookFinalizer.cls itself (the apex-transaction-finalizers shape) — a shipped-code change, out of this run's scope, and a candidate for a follow-up apex-builder or apex-refactorer invocation once the requester approves modifying the shipped class. Either way, skills/apex/apex-transaction-finalizers should record the answer once known, so the next Finalizer test in this library does not have to re-derive it."
+    },
+    {
+      "id": "S6-F-03",
+      "severity": "INFO",
+      "title": "No 'permanent-failure' branch exists inside Tier2WebhookFinalizer to test, and none was added",
+      "detail": "A permanent HTTP status (400/401/403/404/422) never makes Tier2WebhookQueueable.execute() throw (anyTransient stays false), so Tier2WebhookFinalizer.execute(ctx) only ever sees ParentJobResult.SUCCESS on that path — already covered by successResultTakesNoActionAndDoesNotConsumeTheEnqueueSlot in the new file and, at the level where the behaviour actually lives, by Tier2WebhookQueueableTest.permanentFailureRecordsTheAttemptAndDoesNotStamp and .authFailurePointsTheReaderAtThePrincipalGrant. The task's three named branches (transient-retry, abandon-after-last-attempt, permanent-failure) map to two real Finalizer branches plus one Queueable branch already covered elsewhere; adding a third Finalizer-level test under a 'permanent failure' name would have duplicated the SUCCESS test or asserted behaviour the shipped code does not have.",
+      "evidence": {
+        "path": "artefacts/M1-S03/classes/Tier2WebhookQueueable.cls lines 339-344 (the only throw site)",
+        "source": "repo_scan"
+      },
+      "recommendation": "None needed — this is a mapping clarification, not a gap."
+    },
+    {
+      "id": "S6-F-04",
+      "severity": "P2",
+      "title": "M1-S05's build-level package.xml needs a second member added",
+      "detail": "Tier2WebhookFinalizerTest is a new ApexClass this build ships. artefacts/M1-S05/package.xml does not name it, joining TestUserFactory (S4-F-02, open since run 4) as an undeclared-but-shipped ApexClass member the manifest step has not yet picked up.",
+      "evidence": {
+        "recorded_at": "artefacts/M1-S03/deploy-order.md § 0d"
+      },
+      "recommendation": "Re-run M1-S05 (metadata-builder) once this step and M1-S04 are both documented again, to add both TestUserFactory and Tier2WebhookFinalizerTest as ApexClass members."
+    },
+    {
+      "id": "S6-F-05",
+      "severity": "P2",
+      "title": "The step's own skills[] list does not cite apex/apex-transaction-finalizers, the skill this run relied on most",
+      "detail": "plan.json steps[M1-S03].skills lists apex/apex-queueable-patterns (which covers Finalizer basics at a summary level) but not apex/apex-transaction-finalizers, the skill that actually owns Finalizer design, its testing patterns, and the exact gotcha (a Queueable throwing inside Test.stopTest() fails the test) this run's whole design turns on. This run read and cited it anyway, because the correct answer required it, but a future re-run of this step from the plan's citations alone would not be pointed at it.",
+      "evidence": {
+        "path": ".sfskills/builds/tier2-webhook/plan.json steps[M1-S03].skills",
+        "source": "repo_scan"
+      },
+      "recommendation": "Add apex/apex-transaction-finalizers to steps[M1-S03].skills on the next planner pass over this step (build-planner's tool, not this agent's — plan.json is CLI-written only)."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "This build's own documentation had already named the exact gap this run closes: deploy-order.md § 5 item 3 recorded 'the throw → Finalizer → re-enqueue path itself is deliberately uncovered' back at run 2/3, with the correct reason attached (an unhandled exception in a Test.stopTest()-run job fails the test). Nothing about the S2-F-14 finding was a surprise — the prior run's honesty about what it left uncovered, and why, is exactly what let this run go straight to a real fix instead of re-discovering the constraint from scratch.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/deploy-order.md § 5 item 3 (pre-existing, written at run 2/3)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "skills/apex/apex-transaction-finalizers/references/code-examples.md documents its own worked Finalizer hitting the identical test-design problem this step's Finalizer has, with a full worked test class showing the @TestVisible-seam answer. Reading it end to end (not just the SKILL.md summary) is what surfaced both the exact risk to avoid and the shape of a safe alternative.",
+      "domain": "skill-quality",
+      "evidence": {
+        "source": "input",
+        "path": "skills/apex/apex-transaction-finalizers/references/code-examples.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This is the fourth distinct root cause found on this one step across five runs (S2-F-04/F-05 compile faults, S2-F-11 test-identity, S2-F-12 factory over-assignment, now S2-F-14 coverage) plus a fifth, S2-F-13, found at the milestone level but rooted in this step's design. Each was individually narrow and each fix was individually small, but the pattern — an org-executing dry run finding something no offline checker could see, five times on the same step — says the step type this library calls 'automation' (trigger + Queueable + Finalizer + tests, in one invocation) is under-checked by static tooling relative to its actual failure surface, not that this particular step was unusually troubled.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M1.md runs 3, 6, 7, 8, 9"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Whether System.FinalizerContext can be implemented by customer Apex is the load-bearing assumption of this entire run and it is not settled by anything in this repo. It reads as very likely correct by analogy to QueueableContext/BatchableContext, but 'very likely correct by analogy' is not the same bar this library otherwise holds itself to (a cited apexdev/apexrefguide line, or an UNVERIFIED tag with an org-confirmation recommendation — the second of which this run applied, both in the new file's header and in deploy-order.md § 0d).",
+      "domain": "integration-contract",
+      "evidence": {
+        "source": "input",
+        "path": "skills/apex/apex-transaction-finalizers/SKILL.md and references/*.md — searched in full, no statement either way"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "The next real dry run (--test-level RunSpecifiedTests) is the only thing that can confirm both (a) Tier2WebhookFinalizerTest compiles at all and (b) coverage now clears 75%. Until then this step's 'built' status rests on offline checks only, same as every prior run.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "step-tester is the agent that runs this step's declared acceptance tests next and would be the one to report the checker results into a fresh envelope once the operator re-runs the loop.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json steps[M1-S03].acceptance_tests"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Tier2WebhookQueueableTest itself has the same 'no existing-row test' gap this run closed for the Finalizer (S6-F-01's fifth method) — every method there passes an empty failureRowIdByCaseId, so persistOutcomes's own update branch (as opposed to recordAttempt's, now covered) is untested. Out of scope here because it touches an existing shipped-adjacent test file this run did not otherwise need to open.",
+      "domain": "test-coverage",
+      "suggested_followup_agent": "apex-builder",
+      "followup_reason": "apex-builder owns this step and would be the agent to add a persistOutcomes-update-path test to Tier2WebhookQueueableTest in a future, explicitly-scoped repair.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S03/classes/Tier2WebhookQueueableTest.cls"
+      }
+    }
+  ],
+  "dimensions_compared": [
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "No production class was added, removed or restructured this run.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "not-run",
+      "reason": "The new test-only class adds no production SOQL/DML path; deploy-order.md § 7's per-class estimates are unchanged.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "security-posture",
+      "state": "count-only",
+      "reason": "Verified by inspection that the new test class's SOQL/DML runs inside System.runAs(agent()) exactly as the existing test classes do, and sets no header, reads no credential; not a dedicated posture re-scan of the whole step.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "not-run",
+      "reason": "The new file reads no credential and sets no header; nothing in this run's scope touches secret handling.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No hardcoded Id literal introduced; the stub FinalizerContext passes null for the job Id, matching the canonical skill's own test pattern.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "bulk-safety",
+      "state": "not-run",
+      "reason": "This run tests Tier2WebhookFinalizer's single-batch decision logic directly; it does not add or change any bulk (200-record) path.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "include_logger is false for this build (Q16: no log object); unchanged from prior runs.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "Escalation Rules (REFUSAL_OUT_OF_SCOPE on modifying a shipped file in place) drove the new-file decision; Output Contract Step 6/7 (Gate C, run by hand since this run is not harness-driven)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's documented -> running rebuild transition this repair is an instance of, and the step-type/owning-agent table confirming apex-builder owns this automation step"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Gate C — no offline Apex compiler in the sf CLI, so confidence is capped at MEDIUM without a target_org_alias"
+    },
+    {
+      "type": "standard",
+      "id": "reports/MOCK-DEPLOY-M1.md",
+      "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "run 9 / S2-F-14 — the coverage-floor finding this repair closes, including the per-class uncovered-line count"
+    },
+    {
+      "type": "standard",
+      "id": "reports/mock-deploy/2026-09-12T17-17-07Z/result.json",
+      "path": ".sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-17-07Z/result.json",
+      "used_for": "the test summary (run 30, passed 30, failed 0, coverage_pct 70.8) behind run 9's Failed status"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/gotchas.md",
+      "used_for": "Gotchas 13-14 and references/examples.md Example 5 — the System.runAs/TestUserFactory harness this new test class's @TestSetup follows"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-queueable-patterns",
+      "path": "skills/apex/apex-queueable-patterns/SKILL.md",
+      "used_for": "FinalizerContext's four documented methods (no getJobId()) and the single-child enqueue limit cited in the Limits.getQueueableJobs() assertions"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-transaction-finalizers",
+      "path": "skills/apex/apex-transaction-finalizers/references/code-examples.md",
+      "used_for": "the canonical Finalizer-testing pattern (a @TestVisible decision seam) this run could not apply without touching the shipped class, and the exact documented finding (letting the Queueable throw inside Test.stopTest() fails the test) that ruled out driving failure via a real throw; not cited in plan.json step M1-S03's own skills[] (S6-F-05)"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "run": 6,
+    "repair_number_under_section_4": 3,
+    "previous_runs": [
+      "envelopes/M1-S03/2026-09-12T10-57-25Z.json (refused, REFUSAL_INPUT_AMBIGUOUS)",
+      "envelopes/M1-S03/2026-09-12T11-23-31Z.json (run 2, built, later rejected by the org)",
+      "envelopes/M1-S03/2026-09-12T11-40-10Z.json (run 3, fixed S2-F-04/S2-F-05, passed the org's compile)",
+      "envelopes/M1-S03/2026-09-12T16-13-43Z.json (run 4, § 4 repair 1, fixed S2-F-11, permissioned System.runAs)",
+      "envelopes/M1-S03/2026-09-12T17-05-00Z.json (run 5, § 4 repair 2, fixed S2-F-12, TestDataFactory template adoption)"
+    ],
+    "org_evidence": {
+      "report": "reports/MOCK-DEPLOY-M1.md, run 9",
+      "mode": "MANIFEST, whole build, --test-level RunSpecifiedTests, API 67.0",
+      "tests": "passed 30, failed 0, coverage_pct 70.8",
+      "finding": "S2-F-14"
+    },
+    "changes_this_run": [
+      {
+        "file": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls",
+        "change": "new file, @IsTest private class, 5 test methods plus a private StubFinalizerContext inner class implementing System.FinalizerContext",
+        "fixes": "S2-F-14 (pending org confirmation of both compile and coverage — S6-F-02)"
+      },
+      {
+        "file": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls-meta.xml",
+        "change": "new file, apiVersion 67.0, status Active",
+        "fixes": "n/a — required pair for the class above"
+      },
+      {
+        "file": "artefacts/M1-S03/deploy-order.md",
+        "change": "new § 0d recording the repair, S2-F-14, the branch-to-method mapping table, the FinalizerContext-implementation UNVERIFIED note, and the M1-S05 manifest gap",
+        "fixes": "n/a — documentation of the above"
+      }
+    ],
+    "files_unchanged": "Both triggers, CaseTriggerHandler, IntegrationFailureTriggerHandler, Tier2EscalationService, Tier2WebhookQueueable, Tier2WebhookFinalizer, TestUserFactory, MockHttpResponseGenerator, TestDataFactory, all three pre-existing test classes (Tier2EscalationServiceTest, Tier2WebhookQueueableTest, IntegrationFailureResendTest), and every meta XML that existed before this run.",
+    "classes_emitted_or_modified": 1,
+    "test_methods_added": 5,
+    "test_methods_unchanged": 19,
+    "gate_b": "passed — 0 unresolved symbols; every custom name this run's assertions reference is grounded against files already in this step's artefacts.",
+    "gate_c": "check 1 (symbol grounding) and check 2 (identifier provenance — every Tier2WebhookFinalizer/Tier2WebhookQueueable member this run calls is copied from the shipped .cls files, not recalled) passed. Check 3 (compile) did not run — design-only build_mode, no target_org_alias, no offline Apex compiler in the sf CLI. What ran offline: the three step-declared checkers (0 findings, save one pre-existing unrelated WARN — S6-F none, see checker output) plus check_test_class_standards.py --manifest-dir artefacts/M1-S03/classes (0 findings across 7 @IsTest artifacts), a brace/paren/bracket/quote balance check and an XML parse of all 14 meta files at apiVersion 67.0 (both passing), and check-outputs (ok, 20/20 declared paths — the new file is undeclared-but-shipped, the established pattern for this step's supporting files).",
+    "checker_output": {
+      "check_apex_queueable_patterns": "Scanned 14 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY. Exit 0.",
+      "check_callouts_and_http_integrations": "Scanned 14 Apex file(s); 0 callout finding(s). Exit 0.",
+      "check_platform_events_apex": "Scanned 14 Apex file(s) and 0 object file(s); 1 platform-event finding(s) (WARN, R9, Tier2EscalationService.cls, pre-existing and unrelated to this run — see deploy-order.md § 0d). Exit 0.",
+      "check_test_class_standards": "Scanned 12 Apex class file(s); audited 7 @IsTest artifact(s); 0 finding(s). Exit 0."
+    }
+  }
+}

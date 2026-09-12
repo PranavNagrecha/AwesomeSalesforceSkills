@@ -1,0 +1,202 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T17-21-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T17-21-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T17-21-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S02",
+    "note": "Step status was 'built' at invocation, following metadata-builder repair run 3 (envelopes/M1-S02/2026-09-12T17-20-00Z.json) for finding S2-F-13 (reports/MOCK-DEPLOY-M1.md run 8): a new objectPermissions row (Tier2_Escalation__e, allowCreate/allowRead true) was added to the existing Tier2_Webhook_Admin permission set. This run supersedes the stale step-tester result at envelopes/M1-S02/2026-09-12T10-32-00Z.json / tests/M1-S02/results.json, which tested the pre-repair permission set."
+  },
+  "summary": "Re-ran the molecular tests for M1-S02 (access, owner metadata-builder) against the S2-F-13 repair and set it tested. Both always-on checks passed: 4/4 XML files parsed, and package.xml remains two-way consistent with the three artefact files (ExternalCredential, NamedCredential, PermissionSet) - the repair added a permission grant inside the existing PermissionSet file, not a new component, so package.xml was correctly left unchanged and no manifest drift resulted. Both declared checker tests were run verbatim from the build directory and passed: check_apex_named_credentials_patterns.py (step scope, --manifest-dir artefacts/M1-S02) exited 0 with 'OK: no Named Credential findings' - unaffected by a permission-set-only change; check_permission_set_architecture.py (build scope, --manifest-dir artefacts, one of the four cross-referential checkers) exited 0 with the pre-existing D12 sharing-bypass WARN plus a new PSA-DESC-02 INFO (description now 224/255 characters after the S2-F-13 language was added) - neither is an ERROR, and the test was declared without --strict, so only ERROR fails it. check-outputs returned ok:true. The step's one manual test (the M1-gate access review) was re-checked against the Given/When/Then and UAT-tickability skills: every clause (a)-(f) still names an observable outcome, so it is recorded verbatim in skipped_manual[] with an added re-test note pointing clause (d) at the new Tier2_Escalation__e row; it is never ticked here. No deploy and no sf command were run.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH row: every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (checker1 exit 0, checker2 exit 0, check-outputs ok=true). No command test was refused, no manifest exclusion was needed, and check-outputs reported nothing missing, empty or malformed.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "Both declared checkers exited 0 on the repaired permission set, reproducing the same exit codes and WARN/INFO text the metadata-builder repair envelope reported, with no repair loop needed.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S02/checker2_stdout.txt",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "package.xml still names exactly the three components the step's artefact directory contains, in both directions; the S2-F-13 repair changed a grant inside the PermissionSet file rather than adding a manifest member, and the manifest test correctly saw no drift.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "checker-coverage-gap",
+      "observation": "Neither declared checker asserts that a permission set granting EventBus.publish access actually names the platform event object it publishes at run time (check_apex_named_credentials_patterns.py does not read PermissionSet files at all, and check_permission_set_architecture.py's dependency-chain rule only checks internal consistency of a declared objectPermissions row, not whether the row the Apex layer needs exists). S2-F-13 itself was found only by mock-deploy run 8 exercising the Apex test end to end, after both checkers had exited 0 on the pre-repair set for three prior tester runs - the same class of blind spot the M1-S02 10-32-00Z envelope already flagged for the AuthHeader parameterValue case. A second Apex publish added to this build with no matching objectPermissions row would again pass both checkers and only surface at mock-deploy or in production.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "The manual test's clause (d) is now implicitly broadened by the repair to also cover the new Tier2_Escalation__e grant, but the acceptance_tests[] text in plan.json itself was not edited to name it explicitly - this agent added a re-test note in skipped_manual[] pointing the reviewer at it, since editing the plan's own acceptance-test wording is outside this agent's remit.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step is now tested with results.json and summary.md rewritten under tests/M1-S02/ for the S2-F-13 repair, and its decisions/traceability rows still reflect only the prior (pre-S2-F-13) build-doc-keeper pass.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because compiling the workbook, decisions.md and traceability.md rows for the S2-F-13 repair, plus the manual checklist re-test note, into the human-facing UAT pack is the doc keeper's job, not the tester's."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "S2-F-13 was a design-time gap (missing platform-event Create/Read) that no molecular checker in this build's toolkit can catch pre-emptively; it was only found by a whole-build Apex test run inside mock-deploy.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because confirming the M1 milestone's cross-step acceptance tests still hold after this late repair, and that the repaired permission set is reflected in the milestone's own manifest and traceability rows, is milestone-verifier's job."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules binding this invocation, including the ban on org writes and on auto-chaining into the doc keeper."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, Process Observations schema, and the confidence rubric this agent overrides in its own Step 7."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence and the atomic-write rule for the markdown/JSON envelope pair."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Confirming REFUSAL_OUT_OF_SCOPE would apply if the step were not 'built'; not triggered since it was."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 step/status-machine rules and Section 5 acceptance-test types, runners, pass conditions, checker-scope rules and the manifest fail-vs-skip rule applied to this access-type step."
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "Shape of acceptance_tests[] and outputs[] read from plan.json for M1-S02."
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-named-credentials-patterns",
+      "path": "skills/apex/apex-named-credentials-patterns/SKILL.md",
+      "used_for": "Confirmed the checker command form declared by the step matches the skill's own script and the step's cited grammar for ExternalCredential/NamedCredential files."
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "Confirmed the build-scope checker command and read the WARN/INFO text it produced against the skill's own documented findings (D12 sharing-bypass WARN, PSA-DESC-02 description-length INFO)."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (one <types> block per metadata type, <members>/<name>) the manifest test judges artefacts/M1-S02/package.xml against."
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Source-format filename-to-metadata-type mapping used to derive manifest members from the four files under artefacts/M1-S02 (externalCredentials/, namedCredentials/, permissionsets/)."
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checked whether ExternalCredential, NamedCredential or PermissionSet are documented as lacking a standalone manifest member; none are, so no exclusion applied to the manifest test."
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "Confirmed the manual test's clauses are boolean/observable before carrying them into skipped_manual[] rather than re-interpreting them."
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Checked the manual test's implicit Given/When/Then shape (built artefacts / a reviewer inspects them / each clause names an observable outcome) before deferring it rather than passing or failing it."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S02/results.json",
+    "tests_run": 4,
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "always-on ElementTree parse",
+        "exit_code": null,
+        "verdict": "pass - 4/4 files parsed"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "always-on two-way consistency check",
+        "exit_code": null,
+        "verdict": "pass - consistent, no exclusions, unchanged by the S2-F-13 repair"
+      },
+      {
+        "name": "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py",
+        "type": "checker",
+        "runner": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+        "exit_code": 0,
+        "verdict": "pass - exit 0 and check-outputs ok"
+      },
+      {
+        "name": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass - exit 0 and check-outputs ok (WARN: D12 sharing-bypass, deliberate; INFO: PSA-DESC-02 description 224/255 chars)"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Access review at the M1 gate, before the permission set is ever assigned. This step carries human_gate: true, so a human also signs its step:M1-S02 gate before it runs. Expected: A reviewer confirms, from artefacts/M1-S02 alone: (a) externalCredentialPrincipal reads exactly OnCall_Tool_EC-OnCallToolNamedPrincipal, dash-joined, matching the External Credential file stem and the principal's parameterName; (b) no credential value appears anywhere in the three files; (c) generateAuthorizationHeader is explicitly false; (d) fieldPermissions carries Case.Tier2_Notified_At__c with readable and editable both true, and every Integration_Failure__c field from M1-S01 - this is the grant PV-001 found missing, and no checker fails on its absence, so the reviewer is the check; (e) the assignee set written in deploy-order.md is the one decision D14 defines - every user who can escalate a Case, plus the user who schedules the hourly job - and a named person accepts that wider list, or sends D14 back; (f) the X-API-Key AuthHeader parameterValue formula is flagged for confirmation against Salesforce Help before the credential is deployed, because assumption A5 records that grammar as UNVERIFIED in the cited skill. RE-TEST NOTE (repair run 3, S2-F-13): clause (d) now also covers the new Tier2_Escalation__e objectPermissions row (allowCreate/allowRead true); deploy-order.md section 0b and the updated PermissionSet description name it."
+    ]
+  }
+}

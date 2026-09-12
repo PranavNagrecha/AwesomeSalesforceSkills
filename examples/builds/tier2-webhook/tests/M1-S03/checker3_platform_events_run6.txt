@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 13 Apex file(s) and 0 object file(s); 0 platform-event finding(s)."
+}

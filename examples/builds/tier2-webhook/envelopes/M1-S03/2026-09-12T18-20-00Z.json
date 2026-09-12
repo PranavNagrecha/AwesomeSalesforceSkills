@@ -1,0 +1,198 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T18-20-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T18-20-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T18-20-00Z.json",
+  "summary": "Documented step M1-S03 (tested -> documented) in build tier2-webhook after three consecutive S 4 test-only repairs (runs 6-8, closing S2-F-14/15/16) and the org's whole-build validation at run 12 (37/37 tests, 89.9% coverage, no coverage warnings, reports/MOCK-DEPLOY-M1.md). Re-rendered PLAN.md and CLARIFICATIONS.md. Appended three decisions to decisions.md, one per repair: D-M1S03-13 (the Tier2WebhookFinalizer stub-testing technique, UNVERIFIED at run 6's S6-F-02, confirmed by the org at run 7's S7-F-02, plus the one-line mock fix run 7 needed for a method the re-enqueued job executed regardless of Test.startTest()/Test.stopTest() wrapping), D-M1S03-14 (the per-class 75% coverage floor Apex's RunSpecifiedTests enforces separately from the aggregate, and the two Tier2EscalationServiceTest branch methods that closed it for S2-F-16), and D-M1S03-15 (Tier2WebhookFinalizerTest as a new ApexClass member M1-S05's manifest must add -- recorded as an obligation being resolved in a parallel M1-S05 re-run this pass does not touch, per this pass's own instructions). Updated exactly one traceability.md row in place: REQ-013, the only row whose artefact_paths cell names Tier2WebhookFinalizer.cls, gains artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls and a test_result note correcting its prior 'deliberately uncovered' framing for the Finalizer's own retry/abandon/update decision logic, which is now directly unit-tested (the live throw -> Finalizer chain itself remains correctly described as undriveable by any test, for the reason that row already gave). Also refreshed the file's own 'Coverage notes' section: a new top note documents this pass and demotes the prior M1-S04 note to a superseded subsection, following this file's own established convention. check_rtm.py re-run after the edit: 16 rows, build schema, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings -- unchanged from before this pass's edit, confirming the row edit introduced no new gap or orphan. Workbook untouched: scale: feature keeps the ten-section workbook optional (standards/build-orchestration.md section 3.1), and this build has never populated one across eight prior documentation passes -- this pass keeps that precedent per its own explicit instruction. No file under artefacts/M1-S05/ or any of M1-S05's own workbook/traceability rows was touched.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per Step 11's per-step table: no artefact this pass wrote lacked a source_req_id or a verification step, and re-running check_rtm.py before and after the edit confirms no duplicate or orphan was introduced -- that alone would read HIGH. Held at MEDIUM for two reasons carried forward from this same step's prior documentation passes and one new to this pass: (1) M1-S05's build-level package.xml remains confirmed stale -- it still lists the pre-run-6 thirteen ApexClass members, not the fourteen this step now ships, an obligation D-M1S03-15 records but does not close, deliberately left to a parallel M1-S05 re-run per this pass's own instructions; (2) this design-only build still has no offline Apex compiler (agents/_shared/AGENT_CONTRACT.md, Gate C), so every fact this pass states about the three repairs' correctness rests on reports/MOCK-DEPLOY-M1.md's org evidence (runs 9-12), supplied as input to this pass rather than produced or independently re-verified by it; (3) scoping the traceability edit to REQ-013 alone -- the one row naming Tier2WebhookFinalizer.cls, the production class the new test class directly unit-tests -- rather than also touching REQ-011/REQ-012 (whose artefact_paths already name Tier2EscalationServiceTest.cls, which gained two new methods from a different repair, S2-F-16, not the new test class this pass's own instructions scoped it to) was a judgment call, recorded in this pass's Process Observations as ambiguous rather than settled by the task's own wording alone.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three repair envelopes (2026-09-12T17-40-00Z.json, .../17-50-00Z.json, .../18-05-00Z.json) and the step-tester retest (.../18-08-27Z.json) were fully self-contained with findings, evidence paths and org citations already in place -- this documentation pass required no re-derivation from the raw Apex or the raw org reports, only reading the four envelopes plus reports/MOCK-DEPLOY-M1.md runs 9-12 and artefacts/M1-S03/deploy-order.md 0d-0f.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T17-40-00Z.json"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The org's own run 12 (SOURCE mode, --test-level RunSpecifiedTests: 37/37 tests, 89.9% coverage, no coverage warnings) independently confirms the closure of all three findings this pass documents (S2-F-14, S2-F-15, S2-F-16), so the decisions and the traceability update rest on executed-test evidence rather than on the repairing agent's own reasoning alone.",
+      "domain": "test-coverage",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "M1-S05's build-level package.xml is now stale against two ApexClass members this milestone's Apex steps have shipped since it last ran -- TestUserFactory (D-M1S03-11, still open as of this pass) and Tier2WebhookFinalizerTest (D-M1S03-15, newly recorded this pass). milestone:M1 was approved on evidence that predates S2-F-06, S2-F-11, S2-F-12, S2-F-14, S2-F-15 and S2-F-16 alike.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S05/package.xml; reports/MOCK-DEPLOY-M1.md run 12's own next-steps line"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "This is the sixth distinct org-only finding on this one step across eight builder runs (S2-F-04/05 compile, S2-F-11 test identity, S2-F-12 factory over-assignment, S2-F-14/15/16 coverage and mocking) -- the same pattern this step's own run-6 envelope already named as concerning: an org-executing dry run keeps finding what no offline checker sees, on this step specifically, not as a one-off.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md runs 3, 6, 7, 8, 9, 10, 11"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Scoping the traceability edit to REQ-013 alone, rather than also touching REQ-011 (the publish-rejection requirement one of S2-F-16's two new Tier2EscalationServiceTest methods exercises) or REQ-012 (the enqueue-once requirement the other brushes past via its early-return guard), followed this pass's own instructions literally ('the traceability rows whose artefacts gained the new test class', singular, matching Tier2WebhookFinalizerTest.cls specifically) rather than a broader reading that would also update rows whose already-cited test classes gained new methods from a different repair. A human reviewing this pass should confirm that narrower reading was the intended one.",
+      "domain": "documentation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/traceability.md REQ-011, REQ-012 rows"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "M1-S05 needs its already-in-progress re-run to land (adding TestUserFactory and Tier2WebhookFinalizerTest as ApexClass members) and a manifest-mode dry run (run 13) to confirm the rebuilt package.xml deploys clean, before milestone-verifier can re-sign M1's acceptance on evidence that actually covers every finding closed since the milestone was first approved.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "milestone-verifier is the agent that re-signs the M1 acceptance report once every step in the milestone, including the M1-S05 re-run already under way, is documented against evidence that postdates all six findings this step accumulated.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json human_gates -> milestone:M1"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/build-doc-keeper/AGENT.md",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the per-step run's Steps 1-9 (precondition, re-render, decision-append rule and its four qualifying kinds, workbook/traceability scoping at scale: feature, idempotence -- replacing REQ-013's row in place rather than appending a duplicate, and the status transition) and the Step 11 confidence rubric this envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations categories and schema, and Gate C's statement that no offline Apex compiler exists in this design-only build, cited in the confidence rationale"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persisted markdown+JSON envelope pair and atomic-write rule this envelope and its twin report follow"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied -- step status was tested, the precondition for the ordinary per-step run"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (rendered vs hand-edited files, plan.json as the only shared state), section 3.1 (scale: feature -- workbook optional, traceability required), section 4 (the documented -> running test-only repair transition, repeated three times, and the step-type table), section 5 (The Apex exception, grounding D-M1S03-15), section 8 (a skill gap recorded in decisions.md is the signal to deepen a skill, grounding D-M1S03-13's skill-gap note)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "reading steps[M1-S03].status/agent/type directly to confirm this is a per-step run at its tested precondition, not a compile run"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decisions.md entry shape (date, step, agent, what was recorded, alternative rejected, source grounded in, evidence) applied to D-M1S03-13, D-M1S03-14 and D-M1S03-15, matching this build's own established convention"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set and the rule that a row is keyed on req_id and replaced in place rather than duplicated, applied to REQ-013's edit; check_rtm.py run before and after to confirm no coverage gap or orphan was introduced"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming the step's manual acceptance-test clauses are unaffected by three test-only repairs and remain correctly deferred to the M1 gate"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the testability bar already applied to the step's manual clauses (a)/(b) in a prior pass; unchanged by these repairs, which touched only test classes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "confirming the ten-section workbook stays optional at scale: feature and that no row schema applies when the workbook itself is not written"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the per-case evidence framing carried from prior documentation passes; unchanged relevance since this is not a compile run"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      ".sfskills/builds/tier2-webhook/decisions.md",
+      ".sfskills/builds/tier2-webhook/traceability.md"
+    ],
+    "workbook_rows": [],
+    "workbook_skipped_reason": "scale: feature makes the ten-section workbook optional (standards/build-orchestration.md section 3.1); this build has never written one across eight prior documentation passes -- this pass keeps that precedent, per the task's own explicit instruction to keep the workbook untouched.",
+    "traceability_rows": [
+      "REQ-013"
+    ],
+    "decisions_appended": [
+      "D-M1S03-13",
+      "D-M1S03-14",
+      "D-M1S03-15"
+    ],
+    "rows_replaced": [
+      "REQ-013"
+    ],
+    "rtm_check": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root \"/Users/pranavnagrecha/VS Code/Personal/SfSkills\"",
+      "before": { "rows": 16, "coverage_gaps": 0, "orphans": 0, "errors": 0, "warnings": 0 },
+      "after": { "rows": 16, "coverage_gaps": 0, "orphans": 0, "errors": 0, "warnings": 0 }
+    }
+  },
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook-rows",
+      "state": "not-run",
+      "reason": "scale: feature makes the ten-section workbook optional per standards/build-orchestration.md section 3.1, and no pass of this build (including this one) has written one; this pass's own task instructed keeping the workbook untouched per this precedent.",
+      "confidence_impact": "NONE",
+      "retry_hint": "run config-workbook-author at release time if the build's committed workbook is later required."
+    },
+    {
+      "dimension": "m1-s05-manifest-currency",
+      "state": "not-run",
+      "reason": "Tier2WebhookFinalizerTest and TestUserFactory are both new ApexClass members M1-S05's package.xml does not yet name; per this pass's own instructions, no file under artefacts/M1-S05/ or any of M1-S05's own documentation is touched here -- a parallel M1-S05 re-run is already resolving this.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "re-check once the parallel M1-S05 re-run lands, before milestone-verifier is invoked."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1-S05's build-level manifest is confirmed stale against TestUserFactory and Tier2WebhookFinalizerTest, and milestone:M1's own approval predates every finding closed on this step since (S2-F-06 through S2-F-16); a fresh M1-S05 build plus a re-run milestone-verifier is what re-signs the M1 acceptance."
+    }
+  ]
+}

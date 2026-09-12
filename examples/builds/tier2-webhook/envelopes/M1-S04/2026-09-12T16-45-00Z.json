@@ -1,0 +1,81 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T16-45-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T16-45-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T16-45-00Z.json",
+  "summary": "M1-S04 (tier2-webhook, apex-builder, Schedulable+Queueable channel-health check) re-tested after the operator's run-3 test-only repair for S2-F-11 (MOCK-DEPLOY-M1.md run 6, deploy-order.md sec 0c): xml parsed 4/4 meta files, manifest recorded skipped-not-applicable under the Apex exception naming M1-S05, all three declared checkers exited 0, check-outputs is ok, and the one manual test is deferred to the M1 gate. All runnable declared tests pass, so the step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (or was correctly classified manual/skipped-not-applicable), both always-on checks completed, and every result came from an exit code this run observed directly (Step 7 HIGH row).",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The run-3 repair touched only the test class; all three declared checkers and the undeclared test-class-standards scan confirm zero regressions in Tier2ChannelHealthSchedulable.cls and Tier2ChannelHealthQueueable.cls.",
+      "evidence": {"source": "repo_scan", "query": "tests/M1-S04/check_apex_scheduled_jobs.out, check_apex_queueable_patterns.out, check_error_handling_framework.out"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_test_class_standards.py is still not wired into M1-S04's declared acceptance_tests, the second step in this build (after M1-S03) where a real defect (S2-F-11, user-mode test without runAs) was caught only by a milestone-level mock deploy rather than by the step's own tests.",
+      "evidence": {"source": "input", "query": "plan.json steps[M1-S04].acceptance_tests vs. tests/M1-S04/check_test_class_standards.out"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The manual acceptance test's expected-outcome text names three concrete checks (a/b/c) but is not written in literal Given/When/Then form; each sub-item names a specific file and observable fact, so it is usable as a milestone checklist line rather than unusable, but a stricter GWT rewrite is a judgment call for the human reviewer, not this agent.",
+      "evidence": {"source": "input", "query": "plan.json steps[M1-S04].acceptance_tests[type=manual].description"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Recommend build-doc-keeper to record this re-test in traceability.md now that M1-S04 is tested again post-repair, because the milestone report and traceability rows predate S2-F-11 and S2-F-06.",
+      "evidence": {"source": "input", "query": "plan.json steps[M1-S04].runs[] history"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because the step is tested again post-repair and its traceability/decisions rows still reflect the pre-repair run."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Recommend milestone-verifier for a fresh /verify-milestone on M1, because both M1-S03 and M1-S04 have now been repaired and re-tested after the milestone's original acceptance, per this run's own envelope and M1-S03's prior repair envelope.",
+      "evidence": {"source": "input", "query": "envelopes/M1-S04/2026-09-12T16-30-00Z.md Process Observations, Suggested follow-up"},
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because M1's approved acceptance rests on evidence that predates the S2-F-06/S2-F-11 test-execution fixes to both M1-S03 and M1-S04."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "sec 4 step-type/Apex-exception rule and sec 5 acceptance-test types, runners, pass conditions, checker-scope and deny-list rules governing this run"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "package.xml grammar the manifest check would be judged against, had one existed for this step"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "source-format filename-to-metadata-type mapping used to confirm M1-S01's package.xml carries no ApexClass member for this step"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "confirming ApexClass/ApexTrigger are not coverage-gap types needing manifest exclusion, so the skip here is purely the Apex-exception rule, not a coverage gap"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what makes the step's manual test line tickable by a human at the M1 gate"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "checking the manual test's Given/When/Then shape before carrying it into skipped_manual[]"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations schema and the Step-7 confidence override this agent uses instead of the default rubric"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence, atomic-write and envelope-shape rules for this run's deliverables"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "confirming no refusal condition applied (step status was built, inputs unambiguous)"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "acceptance_tests[] and outputs[] shape read from plan.json for M1-S04"}
+  ],
+  "extensions": {
+    "step_id": "M1-S04",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S04/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "ElementTree parse, always-on", "exit_code": null, "verdict": "pass", "detail": "4/4 *-meta.xml files under artefacts/M1-S04 parsed"},
+      {"name": "manifest", "type": "manifest", "runner": "two-way package.xml consistency check, always-on", "exit_code": null, "verdict": "skipped-not-applicable", "detail": "Apex exception: apex-builder's Output Contract names no manifest; ApexClass members are carried by build-level manifest step M1-S05. Confirmed M1-S01's package.xml (the only depends_on artefact with a package.xml) carries CustomObject/CustomField members only, no ApexClass."},
+      {"name": "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py", "type": "checker", "runner": "python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04", "exit_code": 0, "verdict": "pass", "detail": "Scanned 4 .cls file(s) under artefacts/M1-S04: 0 ERROR, 0 WARN, 0 ADVISORY."},
+      {"name": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py", "type": "checker", "runner": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04", "exit_code": 0, "verdict": "pass", "detail": "Scanned 4 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY."},
+      {"name": "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py", "type": "checker", "runner": "python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04", "exit_code": 0, "verdict": "pass", "detail": "No issues found."},
+      {"name": "check-outputs", "type": "checker-precondition", "runner": "python3 scripts/build_plan.py check-outputs plan.json M1-S04", "exit_code": 0, "verdict": "ok", "detail": "{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []}"},
+      {"name": "manual: prerequisite/threshold read", "type": "manual", "runner": "human at M1 gate", "exit_code": null, "verdict": "deferred", "detail": "see skipped_manual[]"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "A reviewer confirms (a) the CRON literal in Tier2ChannelHealthSchedulable.cls is hourly and the Schedulable's execute() does nothing but enqueue; (b) the two thresholds in Tier2ChannelHealthQueueable.cls are the ones Q24 stated - more than three failures in an hour, or no success in 24 hours while escalations exist; (c) the sender is support-noreply@acme.example and a named person confirms that org-wide address is already verified in the target org, because assumption A4 records that no step in this build can create or verify it."
+    ],
+    "tests_run": 5,
+    "undeclared_extra": {
+      "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S04",
+      "exit_code": 0,
+      "note": "Run per this invocation's explicit instruction, not part of plan.json's declared acceptance_tests[] for M1-S04, and not counted in ran[]/failed[]/tests_run above. Result: 1 WARN (template-class-not-shipped, naming TestUserFactory), 0 ERROR, score 95, exit 0. This WARN is expected: TestUserFactory.cls ships from M1-S03 (its own S2-F-11 repair), not from M1-S04, by the explicit design recorded in deploy-order.md sec 0c/sec 2 - treated as informational, not a failure."
+    }
+  }
+}

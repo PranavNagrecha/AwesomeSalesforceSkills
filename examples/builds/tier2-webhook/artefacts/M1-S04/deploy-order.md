@@ -4,6 +4,9 @@ Build `tier2-webhook` · step `M1-S04` · type `automation` · owner `apex-build
 (run inline under `build-step-runner`) · API version **67.0** (assumption A11) ·
 `build_mode: design-only` — **nothing here has been deployed, and neither agent deploys anything.**
 
+This is the step's **third** run. Runs 1–2 are § 0. Run 3 is the operator's `documented` →
+`running` test-only repair after S2-F-11 (`reports/MOCK-DEPLOY-M1.md` run 6) — § 0c.
+
 ---
 
 ## 0. Rebuild record — 2026-09-12
@@ -46,6 +49,134 @@ prose-only amendment so a later reader is not left choosing between two bound in
 
 ---
 
+## 0c. Repair record — run 3, after S2-F-11 (the tests ran as the wrong user)
+
+**Trigger:** `reports/MOCK-DEPLOY-M1.md` run 6 — the same finding that sent M1-S03 back to
+`running` (S2-F-11, `check_test_class_standards.py` rule `user-mode-test-without-runas`).
+`Tier2ChannelHealthQueueable`'s three `COUNT()` queries run in API 67.0's default user mode
+with no keyword at all, and `Tier2ChannelHealthTest` had no `System.runAs` block for anybody
+but the deploying user — the same shape run 2 shipped for M1-S03 before its own repair. This
+is a **test-only repair** (`standards/build-orchestration.md` § 4, `documented` → `running`):
+`Tier2ChannelHealthSchedulable.cls` and `Tier2ChannelHealthQueueable.cls` are unchanged.
+
+Confirmed before/after with `check_test_class_standards.py` run against the pre-repair test
+class in isolation: `ERROR=1`, rule `user-mode-test-without-runas`, `exit=1`. Against the
+repaired class: `ERROR=0`. See § 8 for the verbatim post-repair run.
+
+`Tier2ChannelHealthTest` gained:
+
+- `PERM_SET = 'Tier2_Webhook_Admin'` and `PROFILE = 'Standard User'` — the same permission
+  set and worked-example profile M1-S03's repair used, confirmed against
+  `artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml` before naming
+  it `PERM_SET`.
+- A `TestUserFactory.createUser(PROFILE, new List<String>{ PERM_SET })` call inside a new
+  `System.runAs(new User(Id = UserInfo.getUserId()))` fence in `@TestSetup` — this class had
+  no pre-existing setup-object fence to fold into (unlike M1-S03: no `PermissionSetAssignment`
+  or other setup object was inserted here before this repair), so the fence is new, and it
+  wraps only the `TestUserFactory` call. `TestDataFactory.createCases(...)` and
+  `buildFailures(2)` moved inside a second `System.runAs(agent)` block, unchanged otherwise.
+- A re-queried `agent()` helper, identical in shape to M1-S03's.
+- Every existing `@IsTest` method's body wrapped in `System.runAs(testUser) { ... }` (`User
+  testUser = agent();` precedes the block, matching M1-S03's naming) — same statements, same
+  assertions, same messages, same order. Nothing was added, removed or reworded in any
+  `Assert.*` call; confirmed with a whitespace-insensitive diff against the pre-repair file
+  showing only inserted lines, zero removed lines.
+
+**`TestUserFactory.cls` is not shipped in this step's artefacts.** M1-S03 already ships it
+(`artefacts/M1-S03/classes/TestUserFactory.cls` + `-meta.xml`, a verbatim copy of
+`templates/apex/tests/TestUserFactory.cls`, added in that step's own S2-F-11 repair). Per the
+task that drove this run, this step depends on that copy rather than shipping a second one.
+That dependency is recorded here in prose because `plan.json`'s `depends_on: [M1-S01]` cannot
+be amended to add `M1-S03` — see "What the playbook/CLI did not support" below — but the
+assembled deploy tree needs only one copy regardless: `scripts/mock_deploy.py:copy_artefacts`
+rebases every step's files onto `<dest>/<path-relative-to-the-step-dir>`, so a class named
+`TestUserFactory.cls` shipped by exactly one step lands once in the assembled tree, and
+`Tier2ChannelHealthTest` compiles against it as long as M1-S03's classes are in the same
+deploy. **M1-S05's build-level `package.xml` must carry `TestUserFactory` as one member, not
+two** — it is already a thirteenth member M1-S03's own deploy-order.md names for M1-S05 (§ 0b
+there); this step adds no new member for it.
+
+**Two things this run's own checker output surfaces, both expected:**
+
+1. `check_test_class_standards.py --manifest-dir artefacts/M1-S04` (run alone, without
+   M1-S03's `TestUserFactory.cls` present in the same directory) reports one WARN,
+   `template-class-not-shipped`, naming `TestUserFactory` as referenced-but-absent from this
+   manifest directory. That is correct for a step-scoped scan: the class is absent *from this
+   step's own outputs* by design (previous paragraph). It is not the `ERROR`-tier
+   `user-mode-test-without-runas` rule the repair exists to close, and that rule fires zero
+   times, down from one before this run — see § 8 for both runs verbatim.
+2. Because `Tier2_Webhook_Admin` (confirmed via M1-S02's permission set XML) grants object
+   and field permissions only on `Integration_Failure__c` and the one `Case` field
+   `Tier2_Notified_At__c`, two of the eleven wrapped methods now carry the same unresolved
+   access question `deploy-order.md` § 4 item 1 already raises for the production code's
+   running user — see Process Observations, "Ambiguous", in the envelope.
+
+## 0d. Repair record — run 4, after S2-F-12 (the shared factory volunteered a null lookup)
+
+**Trigger:** `reports/MOCK-DEPLOY-M1.md` run 7 — the same finding that sent M1-S03 back to
+`running` a second time. Run 6's fix (§ 0c) got every test method into `System.runAs(agent)`
+with a permissioned user; run 7 then failed all 30 test methods across M1-S03 and M1-S04 at
+the same line, the `@TestSetup` seed insert of `Case`, on `System.DmlException: Operation
+failed due to fields being inaccessible on Sobject Case ... fieldNames: AccountId`. This is a
+**second, narrower § 4 test-only repair** (`standards/build-orchestration.md` § 4, `documented`
+→ `running`): `Tier2ChannelHealthSchedulable.cls`, `Tier2ChannelHealthQueueable.cls` and
+`Tier2ChannelHealthTest.cls` are all unchanged. A parallel repair of the same shape ran on
+`M1-S03`; this record covers only this step's own file.
+
+**S2-F-12 (HIGH, library).** `TestDataFactory.createCases(count, accountId, overrides)` — the
+copy this step ships — assigned `AccountId = accountId` unconditionally in the constructor.
+`Tier2ChannelHealthTest.seed()` calls `createCases(1, null, overrides)`, so `accountId` is
+`null`, but the unconditional assignment still marks `AccountId` populated on the sObject: the
+platform cannot distinguish "explicitly set to null" from "never touched" once the constructor
+runs. At API 67.0, Apex runs in user context by default, so the plain `insert` inside
+`System.runAs(agent)` checks FLS on every populated field, including the null one, and the
+`Standard User`-profile agent this build's `Tier2_Webhook_Admin` permission set grants no
+create access on `Case.AccountId` — confirmed by the operator's probe in run 7:
+`createable=true Subject=true Status=true Origin=true AccountId=false
+Tier2_Notified_At__c=true profile=Standard User psa=1 | fields=AccountId |
+code=CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY`. `skills/apex/test-class-standards/references/gotchas.md`
+Gotcha 14 names this exact failure and closes it at the template: assign a lookup argument
+only when non-null.
+
+**What changed here.** `classes/TestDataFactory.cls` is replaced with a verbatim copy of the
+corrected `templates/apex/tests/TestDataFactory.cls` (commit `5edcb3281`) — `diff` against the
+template is empty, confirmed this run. The fix touches `createContacts`, `createOpportunities`
+and `createCases`: each now constructs the record without the lookup field, then
+`if (accountId != null) { record.AccountId = accountId; }`. No other file in this step's
+artefacts changed. `Tier2ChannelHealthTest.seed()` already called `createCases(1, null, ...)`
+and never reads or asserts on `Case.AccountId`, so no test needed to start passing a lookup
+explicitly — the null-argument case is exactly what the corrected factory now leaves unset
+rather than nulling out.
+
+**Checkers re-run verbatim, this run, from the build directory:**
+
+```text
+python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04
+    → Scanned 4 .cls file(s) under artefacts/M1-S04: 0 ERROR, 0 WARN, 0 ADVISORY. exit=0
+python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04
+    → Scanned 4 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY. exit=0
+python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04
+    → No issues found. exit=0
+python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S04/classes
+    → Scanned 4 Apex class file(s); audited 2 @IsTest artifact(s); 1 finding(s). ERROR=0 WARN=1
+      (template-class-not-shipped / TestUserFactory — expected, see § 0c/§ 2: TestUserFactory
+      is deliberately not shipped in this step's own manifest directory). exit=0
+```
+
+Also re-confirmed this run: all four `.cls-meta.xml` files under `artefacts/M1-S04/classes`
+parse at `apiVersion 67.0`, and `check-outputs` on the six declared paths is `ok` with no
+missing, empty or malformed entries.
+
+**What the playbook did not support.** Nothing — this repair fits `standards/build-orchestration.md`
+§ 4's `documented → running` transition and `agents/apex-builder/AGENT.md`'s template-provenance
+rule cleanly: the copy is byte-identical to the template, no production class needed to change,
+and the one already-passing test seed needed no edit. The only gap already on record is
+unchanged from § 0c: `plan.json`'s `depends_on: [M1-S01]` still cannot be amended to add
+`M1-S03` for the `TestUserFactory` dependency (a step past `pending` cannot be amended), so
+that dependency continues to be recorded here in prose rather than in the machine-readable plan.
+
+---
+
 ## 1. What this step ships
 
 | # | File | Declared in `outputs[]`? | Role |
@@ -78,6 +209,15 @@ already be declared by an earlier step. M1-S01 and M1-S02 declare none.
 |---|---|---|
 | `TestDataFactory` — `Tier2ChannelHealthTest.seed()` calls `createCases(1, null, overrides)` | `classes/TestDataFactory.cls` + `-meta.xml` | empty — verified this run |
 | `ApplicationLogger` | **no longer referenced** — removed by the 2026-09-12 amendment (§ 0) | n/a |
+| `TestUserFactory` — `Tier2ChannelHealthTest.seed()` calls `createUser(PROFILE, new List<String>{ PERM_SET })` (§ 0c repair) | **not shipped here — declared by M1-S03**, whose own S2-F-11 repair shipped `artefacts/M1-S03/classes/TestUserFactory.cls` + `-meta.xml` as a verbatim copy | n/a — see M1-S03's own provenance table |
+
+**§ 0c adds a cross-step template dependency this table did not carry before this run.**
+`Tier2ChannelHealthTest` now references `TestUserFactory`, which this step does not ship.
+Per `agents/apex-builder/AGENT.md` Step 6, that is legal only when the reference "already
+[is] declared by an earlier step of the plan this run is part of" — M1-S03 is such a step,
+and it shipped the class first (its own repair landed before this one). Point 2 below already
+recommends a dedicated *Apex foundations* step for the shared `TestDataFactory` dependency;
+`TestUserFactory` is now a second reason for that recommendation.
 
 **M1-S03 may ship an identical `TestDataFactory.cls`, and that is not a collision at deploy.**
 `scripts/mock_deploy.py:copy_artefacts` rebases every file onto
@@ -287,6 +427,28 @@ transaction throws `MIXED_DML_OPERATION` (`skills/apex/apex-system-runas` gotcha
 is passed into `sendAlert` as a parameter instead, and `resolveRecipients()` is asserted
 against whatever assignments the org actually holds.
 
+**Since the § 0c repair, every method body below runs inside `System.runAs(agent())`**, where
+`agent()` re-queries the `TestUserFactory`-built user holding `Tier2_Webhook_Admin` that
+`@TestSetup` mints inside its own setup-object fence. This is what makes
+`Tier2ChannelHealthQueueable`'s default-user-mode queries visible to the test at all — see
+§ 0c and `skills/apex/test-class-standards/references/gotchas.md` Gotcha 13. Two of the eleven
+carry a caveat the wrapping did not resolve, because `Tier2_Webhook_Admin` grants nothing on
+`PermissionSetAssignment` or on `CronTrigger`/`AsyncApexJob`:
+
+- `rosterResolutionReturnsTheDistinctActiveAssigneeEmails` queries `PermissionSetAssignment`
+  directly, now as the permissioned test user under user-mode-by-default. Whether that query
+  still returns rows (rather than throwing or reading empty) for a `Standard User`-profile
+  agent is the same open question § 4 item 1 already raises for the production running user —
+  this repair surfaces it in the test too, rather than resolving it, because resolving it
+  means changing `Tier2_Webhook_Admin` (M1-S02, a different step, out of scope for a test-only
+  repair).
+- `scheduleCreatesAWaitingCronTriggerAndDispatchesTheQueueable` calls `System.schedule` and
+  queries `CronTrigger`/`AsyncApexJob` as the same agent. No cited skill states whether a
+  `Standard User` profile can schedule Apex or read those two system tables; this is the same
+  class of assumption M1-S03's repair flagged for `PROFILE = 'Standard User'` generally
+  ("the library's own worked-example default, not a value any of this build's 45
+  clarifications names").
+
 | Method | Covers |
 |---|---|
 | `scheduleCreatesAWaitingCronTriggerAndDispatchesTheQueueable` | `CronExpression`, `State`, `TimesTriggered`, `NextFireTime`, `CronJobDetail.Name`/`JobType`, and one dispatched `AsyncApexJob` |
@@ -328,7 +490,10 @@ python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_pattern
 python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04
     → No issues found.
 python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S04
-    → 4 files, 2 @IsTest artifacts, 0 findings, score 100   (not declared on this step; run as due diligence)
+    → post-§0c-repair: 4 files, 2 @IsTest artifacts, 1 finding (WARN template-class-not-shipped
+      naming TestUserFactory — expected, see §0c/§2), 0 ERROR, score 95, exit 0. Confirmed
+      against the pre-repair file in isolation: 1 ERROR (user-mode-test-without-runas), exit 1.
+      (Not declared on this step; run as due diligence, per the task that drove §0c.)
 ```
 
 Plus, outside the checkers: every `*.cls` is brace-, paren- and bracket-balanced under a

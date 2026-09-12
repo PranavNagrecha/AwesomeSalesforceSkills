@@ -1,0 +1,241 @@
+{
+    "agent": "step-tester",
+    "mode": "single",
+    "run_id": "2026-09-12T16-30-00Z",
+    "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T16-30-00Z.md",
+    "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T16-30-00Z.json",
+    "summary": "Retested M1-S03 (build tier2-webhook, type automation, owner apex-builder) after apex-builder's run 4 test-only repair for S2-F-11 (reports/MOCK-DEPLOY-M1.md run 6: 39/39 components compiled but 0/28 tests passed at execution because the test classes ran as the deploying user, not a permissioned one). Two always-on checks plus the step's three declared checkers all passed against the repaired artefacts: 13/13 *-meta.xml files parse at apiVersion 67.0 (up from 12 -- the new TestUserFactory.cls-meta.xml), both triggers still declare 'after update'; the manifest check remains skipped-not-applicable under the Apex exception (apex-builder ships no package.xml; M1-S05 aggregates); check_apex_queueable_patterns.py, check_callouts_and_http_integrations.py --fail-on HIGH and check_platform_events_apex.py each exited 0 with zero findings at any severity. check-outputs confirmed all 20 declared outputs present, non-empty and well-formed (exit 0). Per the task's explicit instruction, the undeclared skills/apex/test-class-standards/scripts/check_test_class_standards.py was also run directly (not added to plan.json's acceptance_tests[]) and exited 0 with zero findings, including zero 'user-mode-test-without-runas' hits -- offline, independent confirmation the repair's System.runAs wrapping is in place. The one declared manual test remains classified usable and deferred to the M1 gate, with the same clause-(b) stale-HttpClient-reference caveat carried forward unresolved from run 3. results.json was written with passed: true, failed: [], and the step was transitioned built -> tested via build_plan.py set-status.",
+    "confidence": "HIGH",
+    "confidence_rationale": "Per this agent's Step 7 override: every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly. No test was refused, no declared checker was missing, and no manifest exclusion had to be applied for a coverage-gap type -- the manifest skip is the documented Apex exception. The undeclared extra check the task requested does not affect this score: it is informational only and is neither a declared acceptance test nor a substitute for one.",
+    "outcome": "completed",
+    "inputs_received": {
+        "build_dir": ".sfskills/builds/tier2-webhook/",
+        "step_id": "M1-S03",
+        "precondition_status_observed": "built",
+        "context_supplied": "test-only repair for S2-F-11 (reports/MOCK-DEPLOY-M1.md run 6); repair described in artefacts/M1-S03/deploy-order.md section 0b and envelope envelopes/M1-S03/2026-09-12T16-13-43Z.md",
+        "extra_undeclared_check_requested": "skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S03",
+        "credentials": "[REDACTED] - none present in the step's declared tests or artefacts; nothing echoed here."
+    },
+    "process_observations": [
+        {
+            "category": "healthy",
+            "severity": "info",
+            "observation": "Every declared checker exited 0 with zero findings at any severity against the repaired artefacts, and the undeclared check_test_class_standards.py run per the task's instruction independently confirms the repair's System.runAs wrapping is visible offline: 0 'user-mode-test-without-runas' findings, down from a finding per test class before the repair.",
+            "domain": "acceptance-tests",
+            "evidence": {
+                "source": "repo_scan",
+                "path": "tests/M1-S03/checker1_queueable_run5.txt, checker2_callouts_run5.txt, checker3_platform_events_run5.txt, undeclared_check_test_class_standards_run5.txt"
+            }
+        },
+        {
+            "category": "healthy",
+            "severity": "info",
+            "observation": "check-outputs confirmed all 20 declared outputs present, non-empty and well-formed, and all 13 *-meta.xml files (12 plus the new TestUserFactory.cls-meta.xml) parse at apiVersion 67.0 -- the repair added one class without disturbing any declared output's shape.",
+            "domain": "acceptance-tests",
+            "evidence": {
+                "source": "repo_scan",
+                "path": "tests/M1-S03/check_outputs_run5.txt, tests/M1-S03/xml_parse_output_run5.txt"
+            }
+        },
+        {
+            "category": "concerning",
+            "severity": "medium",
+            "observation": "check_test_class_standards.py already existed with the exact rule that caught S2-F-11 (user-mode-test-without-runas) before this build's runs 2-3 shipped the un-repaired test classes, yet this step's declared acceptance_tests[] still does not include it -- only the queueable, callout and platform-event checkers are declared, unchanged by the repair. The same planning gap the repair envelope flagged stands after the retest.",
+            "domain": "plan-integrity",
+            "evidence": {
+                "source": "input",
+                "path": "plan.json steps[M1-S03].acceptance_tests[] vs envelopes/M1-S03/2026-09-12T16-13-43Z.md Process Observations"
+            }
+        },
+        {
+            "category": "concerning",
+            "severity": "low",
+            "observation": "The declared manual test's clause (b) still names templates/apex/HttpClient.cls, a template remedy B dropped before run 2 and this repair did not touch. Unchanged and unresolved since first flagged in run 3's results.json -- the underlying security property is satisfiable by inspection of the unchanged Tier2WebhookQueueable.cls, but a reviewer ticking the clause literally would look for a file that is not shipped.",
+            "domain": "plan-integrity",
+            "evidence": {
+                "source": "input",
+                "path": "plan.json steps[M1-S03].acceptance_tests[] (manual, clause b)"
+            }
+        },
+        {
+            "category": "ambiguous",
+            "severity": "medium",
+            "observation": "The repair's PERM_SET/PROFILE choice ('Tier2_Webhook_Admin' / 'Standard User') is the test-class-standards library's own worked-example default, not a value any of this build's 45 clarifications names. This agent runs offline checkers and cannot confirm the value matches the target org's actual escalating-user profile.",
+            "domain": "plan-integrity",
+            "evidence": {
+                "source": "input",
+                "path": "envelopes/M1-S03/2026-09-12T16-13-43Z.md Process Observations (Ambiguous)"
+            }
+        },
+        {
+            "category": "suggested_followup",
+            "severity": "medium",
+            "observation": "milestone:M1 was approved on evidence (dry runs 1-5) that predates both S2-F-06 (tests never executed) and S2-F-11 (tests failed once they did); M1-S05's build-level package.xml has not been confirmed to carry the new TestUserFactory member added by this repair.",
+            "domain": "build-loop",
+            "suggested_followup_agent": "milestone-verifier",
+            "followup_reason": "because re-signing the M1 acceptance against a dry run that actually executes tests, and confirming M1-S05's manifest currency, is that agent's job, not this one's.",
+            "evidence": {
+                "source": "input",
+                "path": "envelopes/M1-S03/2026-09-12T16-13-43Z.md Process Observations (Suggested follow-up); plan.json steps[M1-S05].status"
+            }
+        },
+        {
+            "category": "suggested_followup",
+            "severity": "low",
+            "observation": "The step is now tested again; PLAN.md, decisions.md and traceability.md have not yet absorbed the run-4 repair (TestUserFactory addition, System.runAs wrapping) or this retest.",
+            "domain": "build-loop",
+            "suggested_followup_agent": "build-doc-keeper",
+            "followup_reason": "because updating PLAN.md, decisions.md and traceability.md after a tested step is that agent's job, not this one's.",
+            "evidence": {
+                "source": "input",
+                "path": "standards/build-orchestration.md section 6 (role table)"
+            }
+        }
+    ],
+    "extensions": {
+        "step_id": "M1-S03",
+        "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S03/results.json",
+        "results": [
+            {
+                "name": "xml",
+                "type": "xml",
+                "runner": "python3 xml.etree.ElementTree (inline)",
+                "exit_code": 0,
+                "verdict": "pass"
+            },
+            {
+                "name": "manifest",
+                "type": "manifest",
+                "runner": "n/a - Apex exception",
+                "exit_code": null,
+                "verdict": "skipped-not-applicable, naming M1-S05"
+            },
+            {
+                "name": "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py",
+                "type": "checker",
+                "runner": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S03",
+                "exit_code": 0,
+                "verdict": "pass"
+            },
+            {
+                "name": "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py",
+                "type": "checker",
+                "runner": "python3 skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py --manifest-dir artefacts/M1-S03 --fail-on HIGH",
+                "exit_code": 0,
+                "verdict": "pass"
+            },
+            {
+                "name": "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py",
+                "type": "checker",
+                "runner": "python3 skills/apex/platform-events-apex/scripts/check_platform_events_apex.py --manifest-dir artefacts/M1-S03",
+                "exit_code": 0,
+                "verdict": "pass"
+            }
+        ],
+        "failed": [],
+        "skipped_manual": [
+            "Two-point code read at the M1 gate, tickable from this step's artefacts alone. Expected: A reviewer opens Tier2EscalationService.cls and Tier2WebhookQueueable.cls and confirms (a) the EventBus.publish call is in the service, in the escalating transaction, and its List<Database.SaveResult> is inspected with a failure writing an Integration_Failure__c row - not discarded, and not moved inside the Queueable; (b) no class anywhere sets an X-API-Key or Authorization header, reads a credential value, or names a literal hostname, and every endpoint is composed as callout:OnCall_Tool plus a path through templates/apex/HttpClient.cls."
+        ],
+        "tests_run": 5,
+        "check_outputs": {
+            "ok": true,
+            "step": "M1-S03",
+            "missing": [],
+            "empty": [],
+            "malformed": []
+        },
+        "undeclared_extra_check": {
+            "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S03",
+            "exit_code": 0,
+            "verdict": "pass (informational only, not a declared acceptance test)",
+            "summary": "Scanned 11 Apex class file(s); audited 6 @IsTest artifact(s); 0 finding(s).",
+            "note": "Run per explicit task instruction. Not counted in results[]/failed[]/tests_run and not added to plan.json."
+        },
+        "set_status_command": "python3 scripts/build_plan.py set-status .sfskills/builds/tier2-webhook/plan.json M1-S03 tested --run-agent step-tester --envelope envelopes/M1-S03/2026-09-12T16-30-00Z.json --result \"ran 5 (xml 13/13 parse, manifest skipped-not-applicable naming M1-S05, 3 checkers all exit 0), failed 0, manual 1 deferred to M1 gate; undeclared check_test_class_standards.py also exit 0 (informational, not in acceptance_tests)\" --started 2026-09-12T16:25:00Z",
+        "terminal_status": "tested"
+    },
+    "citations": [
+        {
+            "type": "standard",
+            "id": "agents/step-tester/AGENT.md",
+            "path": "agents/step-tester/AGENT.md",
+            "used_for": "Steps 1-8: precondition check, always-on xml/manifest procedure, acceptance-test dispatch table, results.json/summary.md shape, set-status commands, confidence override, envelope self-validation"
+        },
+        {
+            "type": "standard",
+            "id": "agents/_shared/AGENT_CONTRACT.md",
+            "path": "agents/_shared/AGENT_CONTRACT.md",
+            "used_for": "8-section AGENT.md shape, Process Observations requirement and rules, citation format"
+        },
+        {
+            "type": "standard",
+            "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+            "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+            "used_for": "atomic-write rule and the extensions/top-level split for build-scoped payloads"
+        },
+        {
+            "type": "standard",
+            "id": "agents/_shared/REFUSAL_CODES.md",
+            "path": "agents/_shared/REFUSAL_CODES.md",
+            "used_for": "confirming no refusal condition applied this run (step status was built, exactly one step processed)"
+        },
+        {
+            "type": "standard",
+            "id": "AGENT_RULES.md",
+            "path": "AGENT_RULES.md",
+            "used_for": "run-time agent rules: no org writes, no file mutation outside the build directory, one agent per invocation"
+        },
+        {
+            "type": "standard",
+            "id": "standards/build-orchestration.md",
+            "path": "standards/build-orchestration.md",
+            "used_for": "section 4 (documented -> running rebuild transition, Apex row note, step-type table), section 5 (acceptance-test types, checker verbatim-run rule, checker scope, the Apex exception, check-outputs gating built/tested)"
+        },
+        {
+            "type": "standard",
+            "id": "agents/_shared/schemas/build-plan.schema.json",
+            "path": "agents/_shared/schemas/build-plan.schema.json",
+            "used_for": "acceptanceTest and step object shapes read from plan.json"
+        },
+        {
+            "type": "skill",
+            "id": "devops/metadata-api-retrieve-deploy",
+            "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+            "used_for": "the package.xml types/members/name grammar the manifest check would be judged against, had one existed for this step"
+        },
+        {
+            "type": "skill",
+            "id": "devops/salesforce-dx-project-structure",
+            "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+            "used_for": "confirming the emitted tree (classes/, triggers/, -meta.xml siblings, including the new TestUserFactory.cls) is the source-format layout the manifest check's file-to-member derivation assumes"
+        },
+        {
+            "type": "skill",
+            "id": "devops/metadata-api-coverage-gaps",
+            "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+            "used_for": "confirming ApexClass and ApexTrigger carry no coverage-gap exclusion, so the manifest skip here is the Apex exception rather than a coverage-gap exclusion"
+        },
+        {
+            "type": "skill",
+            "id": "admin/uat-and-acceptance-criteria",
+            "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+            "used_for": "the tickability bar (boolean, click-level observable result) applied to reclassify the manual test as still usable after the repair"
+        },
+        {
+            "type": "skill",
+            "id": "admin/acceptance-criteria-given-when-then",
+            "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+            "used_for": "the Given/When/Then testability bar (named observable outcome) applied to the same manual test before carrying it into skipped_manual[]"
+        }
+    ],
+    "followups": [
+        {
+            "agent": "milestone-verifier",
+            "because": "milestone:M1 was approved on dry-run evidence predating S2-F-06 and S2-F-11, and M1-S05's build-level package.xml has not been confirmed to carry the new TestUserFactory member this repair added."
+        },
+        {
+            "agent": "build-doc-keeper",
+            "because": "the step is tested again after a repair and PLAN.md, decisions.md and traceability.md have not yet absorbed the run-4 repair or this retest."
+        }
+    ]
+}

@@ -1519,6 +1519,24 @@
           "started": "2026-09-12T10:47:43Z",
           "envelope_path": "envelopes/M1-S02/2026-09-12T10-47-43Z.json",
           "result": "traceability updated (REQ-005/006 amended in place, REQ-008/009 minted); 6 decisions appended; workbook deferred (scale: feature, optional); check_rtm 0 errors/5 orphans (M1-S04, out of scope)"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T17:14:52Z",
+          "envelope_path": "envelopes/M1-S02/2026-09-12T17-20-00Z.json",
+          "result": "S2-F-13 repair: Tier2_Escalation__e Create+Read added to Tier2_Webhook_Admin (existing D14 assignee population); both declared checkers exit 0 first pass; check-outputs ok; no new component"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T17-19-54Z",
+          "envelope_path": "envelopes/M1-S02/2026-09-12T17-21-00Z.json",
+          "result": "ran 4 (xml, manifest, check_apex_named_credentials_patterns.py, check_permission_set_architecture.py), failed 0, manual 1 deferred to M1 gate; re-test after S2-F-13 repair"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T17:35:19Z",
+          "envelope_path": "envelopes/M1-S02/2026-09-12T17-35-19Z.json",
+          "result": "workbook rows 0 (deferred, scale: feature precedent, unchanged from first pass); traceability rows 3 amended in place (REQ-005, REQ-006, REQ-009 — content-changed/path-unchanged note); decisions appended 1 (D-M1S02-07, S2-F-13 repair)"
         }
       ],
       "human_gate": true,
@@ -1819,6 +1837,82 @@
           "started": "2026-09-12T12:00:00Z",
           "envelope_path": "envelopes/M1-S03/2026-09-12T12-05-00Z.json",
           "result": "workbook rows 0 (scale: feature, optional); traceability rows 13 (7 replaced, 6 new); decisions appended 8"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T16:16:23Z",
+          "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T16-13-43Z.json",
+          "result": "Run 4 (repair): closed S2-F-11 by adding TestUserFactory.cls (+meta) and wrapping all 19 existing test methods in System.runAs(agent()) across the three test classes, with the permissioned-user provisioning folded into the existing mixed-DML setup fence. Non-test classes and triggers unchanged. check_test_class_standards.py: 0 findings (user-mode-test-without-runas closed); the three declared checkers re-run unchanged, exit 0; check-outputs ok on all 20 declared paths."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T16:25:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T16-30-00Z.json",
+          "result": "ran 5 (xml 13/13 parse, manifest skipped-not-applicable naming M1-S05, 3 checkers all exit 0), failed 0, manual 1 deferred to M1 gate; undeclared check_test_class_standards.py also exit 0 (informational, not in acceptance_tests)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T16:33:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T16-35-00Z.json",
+          "result": "workbook rows 0 (scale: feature, optional - no workbook file exists); traceability rows 4 replaced (REQ-012..REQ-015); decisions appended 3 (D-M1S03-09/-10/-11)"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T17:00:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T17-05-00Z.json",
+          "result": "S2-F-12 closed: TestDataFactory.cls replaced with a verbatim copy of the corrected template (diff empty); no test class needed a change (all createCases calls already pass null for accountId, none references AccountId). 4 checkers re-run, 0 findings; check-outputs ok on 20/20 declared paths."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T16:50:58Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T16-51-00Z.json",
+          "result": "ran 5 (xml 13/13 parse, manifest skipped-not-applicable naming M1-S05, 3 checkers all exit 0), failed 0, manual 1 deferred to M1 gate; undeclared check_test_class_standards.py exit 0 and diff against templates/apex/tests/TestDataFactory.cls empty (both informational, not in acceptance_tests) -- verifies S2-F-12 repair"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T17:10:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T17-10-00Z.json",
+          "result": "workbook rows 0 (feature-tier precedent, workbook not written); traceability rows 0 (no artefact path changed); decisions appended 1 (D-M1S03-12)"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T17:40:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T17-40-00Z.json",
+          "result": "Run 6 (repair 3 of section 4): added Tier2WebhookFinalizerTest.cls (+meta), 5 methods directly unit-testing Tier2WebhookFinalizer.execute() via a hand-built FinalizerContext stub, closing S2-F-14's coverage gap without touching shipped classes. 4 checkers exit 0 (1 pre-existing unrelated WARN); check-outputs ok on 20/20 declared paths."
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T17:50:00Z",
+          "result": "Run 7 (repair 4 of section 4): repairing S2-F-15 (transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce failed the org's run 10 -- the finalizer's own re-enqueued job executed inside the test with no HttpCalloutMock registered and re-threw)."
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T17:50:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T17-50-00Z.json",
+          "result": "Run 7 (repair 4 of section 4): fixed S2-F-15 -- registered a 2xx MockHttpResponseGenerator before the one call whose finalizer re-enqueues a job (transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce), since the org's run 10 showed that job runs to completion regardless of Test.startTest/stopTest wrapping. No assertion changed; no shipped class changed. 4 checkers exit 0 (1 pre-existing unrelated WARN); check-outputs ok on 20/20 declared paths; envelope validates against output-envelope.schema.json."
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T18:00:00Z",
+          "result": "Run 8 (repair 5 of section 4): repairing S2-F-16 (Tier2EscalationService below the per-class 75% floor at 53.659% even though aggregate coverage is 86.2% and all 35 tests pass)."
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T18:05:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T18-05-00Z.json",
+          "result": "Run 8 (repair 5 of section 4): fixed S2-F-16 -- added escalateWithNoCasesReturnsImmediately and escalateWithAMissingCaseNumberWritesAPublishFailureRowAndStillEnqueuesTheJob to Tier2EscalationServiceTest, covering the two branches (empty-input guard; publish-rejection path + errorText()) behind the class's 53.659% individual coverage. No shipped class changed. 4 checkers exit 0 (1 pre-existing unrelated WARN); check-outputs ok on 20/20; envelope validates against output-envelope.schema.json."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T18:08:27Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T18-08-27Z.json",
+          "result": "ran 5 (xml 14/14 parse, manifest skipped-not-applicable naming M1-S05, 3 checkers all exit 0), failed 0, manual 1 deferred to M1 gate; undeclared check_test_class_standards.py also exit 0 (informational, not in acceptance_tests); new class Tier2WebhookFinalizerTest not yet in M1-S05 manifest (M1-S05's obligation)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T18:20:00Z",
+          "envelope_path": "envelopes/M1-S03/2026-09-12T18-20-00Z.json",
+          "result": "workbook rows 0 (feature-tier precedent, workbook not written); traceability rows 1 replaced (REQ-013); decisions appended 3 (D-M1S03-13/-14/-15)"
         }
       ],
       "human_gate": false,
@@ -2211,6 +2305,42 @@
           "started": "2026-09-12T11-15-00Z",
           "envelope_path": "envelopes/M1-S04/2026-09-12T11-17-38Z.json",
           "result": "traceability: 1 new row (REQ-010); decisions appended: 7 (D-M1S04-01..07); workbook skipped (scale: feature, optional); RTM checker 0 errors, 1 WARN (11 orphans, all M1-S03, out of scope)"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T16:27:02Z",
+          "envelope_path": "envelopes/M1-S04/2026-09-12T16-30-00Z.json",
+          "result": "run 3 repair: TestUserFactory-permissioned System.runAs wraps all 11 test methods; user-mode-test-without-runas 0 (was 1); TestUserFactory referenced not re-shipped (dependency on M1-S03)"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T16:40:00Z",
+          "envelope_path": "envelopes/M1-S04/2026-09-12T16-45-00Z.json",
+          "result": "ran 5 (xml pass, manifest skipped-not-applicable/M1-S05, 3 checkers exit 0), failed 0, manual 1 deferred; post-repair (S2-F-11) re-test"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T17:00:00Z",
+          "envelope_path": "envelopes/M1-S04/2026-09-12T17-00-00Z.json",
+          "result": "workbook rows 0 (scale: feature, optional, unchanged precedent); traceability rows 1 replaced (REQ-010); decisions appended 3 (D-M1S04-08..10)"
+        },
+        {
+          "agent": "apex-builder",
+          "started": "2026-09-12T16:45:51Z",
+          "envelope_path": "envelopes/M1-S04/2026-09-12T16-45-51Z.json",
+          "result": "run 4 § 0d repair: TestDataFactory.cls replaced with verbatim template copy (S2-F-12 fix), diff empty; no test/production class changed; 3 declared checkers + due-diligence check_test_class_standards.py all exit 0"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T16:49:37Z",
+          "envelope_path": "envelopes/M1-S04/2026-09-12T16-49-37Z.json",
+          "result": "ran 5 (xml pass, manifest skipped-not-applicable/M1-S05, 3 checkers exit 0), failed 0, manual 1 deferred; re-test after run 4 (S2-F-12 repair)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T17-05-00Z",
+          "envelope_path": "envelopes/M1-S04/2026-09-12T17-05-00Z.json",
+          "result": "decisions appended 1 (D-M1S04-11, closes S2-F-12); workbook rows 0 (scale: feature, unchanged precedent); traceability rows 0 (no artefact path changed)"
         }
       ],
       "human_gate": false,
@@ -2344,6 +2474,42 @@
           "started": "2026-09-12T12-30-00Z",
           "envelope_path": "envelopes/M1-S05/2026-09-12T12-32-10Z.json",
           "result": "traceability: coverage note only, 0 new rows, 16 rows unchanged, 0 orphans; decisions appended: 5 (D-M1S05-01..05); workbook skipped (scale: feature, optional, build-wide choice); RTM checker 0 errors, 0 warnings"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T17:03:58Z",
+          "envelope_path": "envelopes/M1-S05/2026-09-12T17-03-58Z.json",
+          "result": "Regenerated build-level package.xml: 34 members (was 33), +TestUserFactory ApexClass member closing M1-S03's S2-F-11 repair; TestDataFactory re-verified byte-identical post-S2-F-12 across both Apex steps and the template; whole-tree two-way manifest check consistent (34/34); declared checker exit 0 (2 WARN, 0 blocking); check-outputs ok; MILESTONE-M1-package.xml now stale (not edited)."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T17:09:17Z",
+          "envelope_path": "envelopes/M1-S05/2026-09-12T17-09-17Z.json",
+          "result": "ran 3, failed 0, manual 1 deferred"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T17:15:00Z",
+          "envelope_path": "envelopes/M1-S05/2026-09-12T17-15-00Z.json",
+          "result": "workbook rows 0 (feature-tier precedent, workbook untouched); traceability rows 0 (no artefact path changed); decisions appended 1 (D-M1S05-06)"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T18:12:00Z",
+          "envelope_path": "envelopes/M1-S05/2026-09-12T18-18-48Z.json",
+          "result": "Regenerated build-level package.xml: 35 members (was 34), +Tier2WebhookFinalizerTest ApexClass member closing M1-S03's S2-F-14 repair; whole-tree two-way manifest check consistent (35 members/54 files); declared checker exit 0 (2 WARN, 0 blocking); check-outputs ok; MILESTONE-M1-package.xml remains stale (not edited); TestDataFactory template drift vs. shipped copies flagged for apex-builder."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T18-20-00Z",
+          "envelope_path": "envelopes/M1-S05/2026-09-12T18-26-05Z.json",
+          "result": "ran 3, failed 0, manual 1 deferred"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T18:35:00Z",
+          "envelope_path": "envelopes/M1-S05/2026-09-12T18-35-00Z.json",
+          "result": "decisions appended 1 (D-M1S05-07); workbook rows 0 (feature-tier precedent, workbook untouched); traceability rows 0 (no artefact path changed)"
         }
       ],
       "human_gate": false,
@@ -2375,9 +2541,9 @@
     {
       "name": "milestone:M1",
       "status": "approved",
-      "by": "requester (Pranav, Support Engineering lead) via dry-run operator (Fable; design-only, nothing deploys)",
-      "at": "2026-09-12T12:57:43Z",
-      "notes": "milestone:M1 (tier2-webhook, scale feature) approved by the requester (Pranav, Support Engineering lead) via the dry-run operator (Fable; design-only, nothing deploys) on reports/MILESTONE-M1-REPORT.md (verdict ready-with-findings, S2-F-06..10; 12/12 cross-step checks; merged manifest identical to M1-S05). Org evidence: reports/MOCK-DEPLOY-M1.md run 4 (source, 38/38) and run 5 (manifest mode, 38/38). Accepted knowingly: (1) no trigger kill switch / data-load bypass (remedy B dropped TriggerControl; backlog: an Apex-foundations step shipping Trigger_Setting__mdt in a later phase); (2) Tier2_Escalation__e.Severity__c is mapped from Case.Priority — UNVERIFIED, confirmed at UAT with the dashboard team; (3) the scheduling user needs read on PermissionSetAssignment and Case visibility for the health check — deploy runbook item; (4) the gap-row self-alert and no duplicate-alert suppression — hourly, accepted; (5) deploy prerequisites with owners: ApiKey entered in Setup (Support Engineering), Tier2_Webhook_Admin assigned to the D14 set, System.schedule registration (A13 user), the verified org-wide sender (A4), the Tier_2_Engineering queue must exist, no pre-existing Case after-update trigger; (6) PV-007 / the AuthHeader manual prose lag on M1-S05 accepted as documented in deploy-order.md § 3. Design-only: nothing deploys.\n Verifier recommendations adopted: (7) the built code follows alert_recipients — the stale recipients key is accepted as a documentation defect; (8) the setMock-ordering defect is the skill example, no build change; (9) S2-F-06: no Apex test has executed — the org dry run ran at no-test level; the operator adds a test-level option to scripts/mock_deploy.py and re-validates with RunSpecifiedTests before any real deploy; (10) S2-F-08: the triggers arrive Active with no kill switch, so the deploy is not dark — manual steps 2–3 run in the same change window, gated on no bulk Case-owner load; (11) \"no pre-existing CaseTrigger\" is a deploy-time check nobody asked — added to the runbook. Build status after this gate: done."
+      "by": "requester (Pranav, on the standing 'choose the path' instruction) via dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T18:35:37Z",
+      "notes": "Re-signed (reject → approve, the CLI's only re-sign path) by the requester (Pranav, on the standing 'choose the path' instruction) via dry-run operator (Fable; design-only, nothing deploys). The 12:57Z approval rested on compile-only evidence (runs 1–5 carried runTestsEnabled: false, S2-F-06). Evidence now: reports/MOCK-DEPLOY-M1.md run 13 — MANIFEST mode, the 35-member artefacts/M1-S05/package.xml, --test-level RunSpecifiedTests: Succeeded, 41/41 components, 37/37 tests, 89.9% coverage, no coverage warnings, no drift. Six findings from tests executing, all closed at the source and in the build: S2-F-11 tests never ran as a permissioned user (TestUserFactory + runAs; library rule user-mode-test-without-runas); S2-F-12 factory populated a null lookup under the 67.0 user-mode default (template fixed 5edcb3281; Gotcha 14); S2-F-13 no persona granted Create on Tier2_Escalation__e (M1-S02 repair; library rule R9); S2-F-14 finalizer uncovered (Tier2WebhookFinalizerTest, FinalizerContext stub confirmed by the org); S2-F-15 re-enqueued job ran to a designed failure (2xx mock); S2-F-16 per-class 75% under RunSpecifiedTests (two escalation-service branch tests). Accepted knowingly: the EmailMessage field-grant question is not this build's; reports/MILESTONE-M1-package.xml (33 members) is stale by two rebuilds and is not re-verified (budget) — the build manifest M1-S05 is the release artefact; the AuthHeader clause in M1-S05's manual test is pre-amendment prose (D-M1S02-06). Step gate step:M1-S02 approved earlier stands; M1-S02's repair added one grant inside the approved file. Build status after this gate: done."
     }
   ],
   "artefacts_root": "artefacts",

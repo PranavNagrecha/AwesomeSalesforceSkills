@@ -1,0 +1,13 @@
+WARN: 1 finding(s) detected
+{
+  "score": 97,
+  "findings": [
+    {
+      "severity": "WARN",
+      "location": "artefacts/M1-S03/classes/Tier2EscalationService.cls",
+      "message": "publishes Tier2_Escalation__e but no *.permissionset-meta.xml or *.profile-meta.xml under artefacts/M1-S03 grants <allowCreate>true on Tier2_Escalation__e; at the API 67.0 user-mode default this rejects the publish for any running user without it (R9)"
+    }
+  ],
+  "summary": "Scanned 14 Apex file(s) and 0 object file(s); 1 platform-event finding(s)."
+}
+exit:0

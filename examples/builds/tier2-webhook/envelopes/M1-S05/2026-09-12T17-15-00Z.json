@@ -1,0 +1,154 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T17-15-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T17-15-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T17-15-00Z.json",
+  "summary": "Documented M1-S05 (build tier2-webhook) after its § 4 documented -> running re-run was re-tested: metadata-builder regenerated artefacts/M1-S05/package.xml to add classes/TestUserFactory.cls as a fourteenth ApexClass member (33 -> 34 total members), closing the obligation D-M1S03-11 recorded and tracing to root-cause finding S2-F-11. Appended one decisions.md entry (D-M1S05-06) covering the member addition and correcting a wrong finding-id citation (S4-F-02) in the re-run brief without propagating it -- while also recording, from re-reading decisions.md before appending, that a differently-scoped S4-F-02 already exists in this file's own D-M1S03-11 entry, so the correction is not overstated. Re-rendered PLAN.md/CLARIFICATIONS.md before and after the status transition. Wrote no workbook rows (scale: feature, § 3.1 precedent: workbook optional at this tier, kept untouched build-wide) and no traceability.md rows (M1-S05 mints no requirement of its own per its own prior pass notes, and no artefact path changed this run -- package.xml and deploy-order.md keep the same paths as run 1). Set M1-S05 tested -> documented via build_plan.py set-status.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 11 rubric. Every artefact fact in the decision entry traced to metadata-builder's and step-tester's envelopes, artefacts/M1-S05/deploy-order.md § 0, and tests/M1-S05/results.json -- none narrated past those sources. Not HIGH: the requirement this step serves has no traceability row of its own to verify (M1-S05 is the manifest-aggregation step, not a requirement-bearing one), and this pass surfaced -- rather than resolved -- a genuine ambiguity in the upstream finding-id citation (a real, differently-scoped S4-F-02 already exists in decisions.md, which metadata-builder's own search did not find), which this agent is not positioned to adjudicate.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S05",
+    "precondition_status": "tested (verified via build_plan.py status and the step-tester envelope 2026-09-12T17-09-17Z before any write)",
+    "sources_read": "plan.json (via the CLI: status, next, check-outputs -- not hand-parsed), tests/M1-S05/results.json, envelopes/M1-S05/2026-09-12T17-03-58Z.{json,md} and 2026-09-12T17-09-17Z.{json,md}, artefacts/M1-S05/deploy-order.md § 0, decisions.md (read in full before appending, per the parallel-pass instruction), traceability.md (read in full; no edit made)"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The member addition this pass documents was independently confirmed by two agents (metadata-builder's SHA-256/manifest checks and step-tester's independent 34/34 re-derivation) before this documentation pass ran, so the decisions.md entry rests on convergent evidence rather than a single agent's claim.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T17-09-17Z.json"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "metadata-builder's envelope and artefacts/M1-S05/deploy-order.md § 0 both state that no finding S4-F-02 exists anywhere in this build's records. Re-reading decisions.md in full before appending (as this pass was instructed to, ahead of a parallel M1-S02 pass) found that D-M1S03-11 is itself titled with a finding literally labelled S4-F-02 -- a real entry, describing a different fact (the manifest obligation, not the FLS root cause). The claim that S4-F-02 does not exist is therefore not exact, even though S2-F-11 is still the correct grounding fact for why TestUserFactory was added. Recorded in D-M1S05-06 rather than silently adopting metadata-builder's search result.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md",
+        "query": "D-M1S03-11"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "reports/MILESTONE-M1-package.xml (33 members, no TestUserFactory) is still stale against this step's now-34-member package.xml, as metadata-builder's own envelope already flagged. This pass did not touch it -- it is milestone-verifier's file, not this agent's, and Step's 'What This Agent Does NOT Do' bars writing outside the paths this agent owns.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-package.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "This build's plan.json steps[M1-S05].inputs.members.ApexClass still names 11 classes against the 14 now on disk, per metadata-builder's own envelope. Whether to amend the step input is a plan-hygiene call outside this agent's scope (it does not touch plan.json beyond the single status transition it owns) -- named here so it is not lost between passes.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs.members.ApexClass"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1 now has one step still at tested (per build_plan.py status: docu 4, test 1) -- the parallel M1-S02 documentation pass this run was told may follow.",
+      "domain": "orchestration",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "once every M1 step is documented (including the pending M1-S02 pass), milestone-verifier is positioned to re-check M1 against the regenerated artefacts and the now-stale reports/MILESTONE-M1-package.xml."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 2 (rendered views are never hand-edited; plan.json is the only shared state), § 4 (the documented -> running re-run transition and the step-type-to-workbook-section map), § 6 (this agent's Tier-4 role), § 8 (a skill gap recorded in decisions.md is the signal to deepen a skill), and § 3.1 (the feature-tier precedent that the ten-section workbook is optional and traceability is produced from the plan record)"
+    },
+    {
+      "type": "standard",
+      "id": "shared/AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations categories, the confidence rubric this agent's Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "shared/DELIVERABLE_CONTRACT",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope/report persistence contract and the atomic-write rule, and the basis for this pass's decision to record (not silently skip) that the Wave 10 docs/reports/build-doc-keeper/ pair was not written"
+    },
+    {
+      "type": "standard",
+      "id": "shared/REFUSAL_CODES",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step was tested, not ambiguous, source_req_id question does not arise since M1-S05 mints no requirement)"
+    },
+    {
+      "type": "standard",
+      "id": "shared/schemas/build-plan",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step status enum and the runs[] record shape set-status writes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "confirming, on re-reading traceability.md in full, that M1-S05 correctly mints no row of its own and that no artefact path in the existing 16 rows changed this run"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, decision, alternative rejected, source grounded in) applied to D-M1S05-06"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's manifest-level artefacts have changed (34 members) since milestone:M1 was last approved on a 33-member manifest, and reports/MILESTONE-M1-package.xml is now stale against artefacts/M1-S05/package.xml."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "mode": "per-step",
+    "build_id": "tier2-webhook",
+    "build_mode": "design-only",
+    "scale": "feature",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/decisions.md",
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md"
+    ],
+    "workbook_rows": [],
+    "traceability_rows": [],
+    "decisions_appended": [
+      {
+        "id": "D-M1S05-06",
+        "title": "Accepted: TestUserFactory added as a fourteenth ApexClass member (33->34), closing S2-F-11; the re-run brief's finding-id citation corrected, not propagated",
+        "grounded_in": [
+          "envelopes/M1-S05/2026-09-12T17-03-58Z.json",
+          "envelopes/M1-S05/2026-09-12T17-09-17Z.json",
+          "artefacts/M1-S05/deploy-order.md § 0",
+          "tests/M1-S05/results.json",
+          "decisions.md D-M1S03-11, D-M1S05-01"
+        ]
+      }
+    ],
+    "rows_replaced": [],
+    "workbook_precedent": "scale: feature; workbook left untouched build-wide per standards/build-orchestration.md § 3.1 and this build's own prior passes (traceability.md's M1-S03/M1-S04/M1-S05 pass notes) -- not newly decided by this pass.",
+    "traceability_precedent": "not updated this pass: M1-S05 mints no requirement of its own (per its own prior pass note in traceability.md) and no artefact path this step's package.xml/deploy-order.md occupy changed -- only their content did.",
+    "status_transition": "tested -> documented, via build_plan.py set-status, run-agent build-doc-keeper, envelope envelopes/M1-S05/2026-09-12T17-15-00Z.json",
+    "persistence_note": "The Wave 10 pair under docs/reports/build-doc-keeper/ was NOT written: per the task instruction, this invocation was constrained to write only inside .sfskills/builds/tier2-webhook/. This envelope pair is the complete record, consistent with metadata-builder's and step-tester's own M1-S05 envelopes for this build."
+  }
+}

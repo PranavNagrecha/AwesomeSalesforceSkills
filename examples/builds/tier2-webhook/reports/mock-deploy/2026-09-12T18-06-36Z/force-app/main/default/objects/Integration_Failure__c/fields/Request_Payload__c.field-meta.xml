@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Request_Payload__c</fullName>
+    <description>The JSON body sent, including the Idempotency-Key header value used, so a resend replays the identical request.</description>
+    <externalId>false</externalId>
+    <label>Request Payload</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>10</visibleLines>
+</CustomField>

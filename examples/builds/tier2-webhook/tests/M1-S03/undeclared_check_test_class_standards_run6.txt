@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 11 Apex class file(s); audited 6 @IsTest artifact(s); 0 finding(s)."
+}

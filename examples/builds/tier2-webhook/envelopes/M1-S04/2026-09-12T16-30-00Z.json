@@ -1,0 +1,344 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T16-30-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T16-30-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T16-30-00Z.json",
+  "summary": "Run 3 of M1-S04 — a § 4 test-only repair after reports/MOCK-DEPLOY-M1.md run 6 (S2-F-11), the same finding that sent M1-S03 back to running: Tier2ChannelHealthQueueable's three aggregate COUNT() queries enforce the running user's FLS by default under API 67.0, and Tier2ChannelHealthTest had no System.runAs block for a permissioned user — every method ran as the deploying user. Tier2ChannelHealthSchedulable.cls and Tier2ChannelHealthQueueable.cls are untouched. templates/apex/tests/TestUserFactory.cls is NOT re-shipped here — it already ships in M1-S03's artefacts (that step's own S2-F-11 repair), and this step depends on that copy instead, recorded in deploy-order.md § 0c/§ 2 since plan.json's depends_on could not be amended (step past pending). Tier2ChannelHealthTest gained PERM_SET/PROFILE constants, a new mixed-DML setup-object fence in @TestSetup around TestUserFactory.createUser (this class had no pre-existing setup-object fence to fold into, unlike M1-S03), a re-queried agent() helper, and every one of its 11 @IsTest method bodies wrapped in System.runAs(testUser) — same statements, same assertions, same messages, same order; verified with a whitespace-insensitive diff against the pre-repair file showing only inserted lines, zero removed. check_test_class_standards.py --manifest-dir artefacts/M1-S04 now reports ERROR=0 (rule user-mode-test-without-runas, the repair's target, fires zero times, down from ERROR=1 confirmed against the pre-repair file in isolation) and WARN=1 (template-class-not-shipped, naming TestUserFactory — expected, since it is deliberately not shipped in this step's own manifest directory). The three previously-declared checkers were re-run unchanged and still exit 0; check-outputs is ok on all six declared paths.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per GATES.md Gate D: Gate B resolved every symbol this run touches (TestUserFactory.createUser, Profile/PermissionSet/PermissionSetAssignment fields, all copied from the template or standard-object grounding) and Gate C check 3 (compile) did not run — build_mode is design-only, there is no target_org_alias, and there is no offline Apex compiler in the sf CLI. The fix is a mechanical application of a documented pattern (Example 5, and M1-S03's own already-accepted repair) the checker itself now verifies at ERROR=0. What would raise this to HIGH is a green dry run with --test-level RunSpecifiedTests or RunLocalTests, which no agent in this loop may perform.",
+  "outcome": "completed",
+  "inputs_received": {
+    "kind": "schedulable",
+    "primary_sobject": "n/a — no CustomObject is emitted by this kind",
+    "api_version": "67.0",
+    "source": "plan.json steps[M1-S04].inputs, unchanged since amendments[0] — no amendment accompanied this repair. The repair scope, sources and constraints were given directly in the task rather than read from plan.json inputs: reports/MOCK-DEPLOY-M1.md run 6 (S2-F-11), skills/apex/test-class-standards/references/gotchas.md Gotcha 13 and references/examples.md Example 5, artefacts/M1-S03/deploy-order.md § 0b, envelopes/M1-S03/2026-09-12T16-13-43Z.md, artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml, and templates/apex/tests/TestUserFactory.cls.",
+    "org_evidence": "reports/MOCK-DEPLOY-M1.md run 6 (MANIFEST mode, milestone M1, --test-level RunSpecifiedTests, reports/mock-deploy/2026-09-12T13-08-43Z/): the same run whose S2-F-11 finding covers this step's tests alongside M1-S03's.",
+    "credentials": "[REDACTED] — none present in the step inputs, none written into any emitted or modified class; TestUserFactory reads no credential, it only builds a User and assigns a permission set by name."
+  },
+  "findings": [
+    {
+      "id": "S5-F-01",
+      "severity": "P0",
+      "title": "S2-F-11 closed for Tier2ChannelHealthTest: all 11 methods now run as a permissioned user",
+      "detail": "Tier2ChannelHealthTest builds a User via TestUserFactory.createUser('Standard User', new List<String>{ 'Tier2_Webhook_Admin' }) inside a new mixed-DML setup-object fence, seeds business data as that user, and wraps every @IsTest method's existing body in System.runAs(testUser). check_test_class_standards.py's user-mode-test-without-runas rule now reports zero occurrences against artefacts/M1-S04, confirmed both by the post-repair run (ERROR=0) and by re-running the same checker against the pre-repair file in isolation (ERROR=1).",
+      "evidence": {
+        "checker_command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S04",
+        "checker_output_after": "Scanned 4 Apex class file(s); audited 2 @IsTest artifact(s); 1 finding(s). ERROR=0 WARN=1 (template-class-not-shipped / TestUserFactory)",
+        "checker_output_before": "Scanned 4 Apex class file(s); audited 2 @IsTest artifact(s); 1 finding(s). ERROR=1 WARN=0 (user-mode-test-without-runas)",
+        "source": "reports/MOCK-DEPLOY-M1.md run 6; reports/mock-deploy/2026-09-12T13-08-43Z/"
+      },
+      "recommendation": "None — this is the fix. A dry run with --test-level RunSpecifiedTests or RunLocalTests is the only thing that can confirm the methods now pass at validation, and that is the operator's to run."
+    },
+    {
+      "id": "S5-F-02",
+      "severity": "P1",
+      "title": "TestUserFactory is a new cross-step dependency plan.json cannot yet record",
+      "detail": "Tier2ChannelHealthTest now references TestUserFactory, which this step does not ship — it depends on M1-S03's copy instead. plan.json's steps[M1-S04].depends_on is still [\"M1-S01\"] only; amend-step is refused once a step has left pending (this step is running), the same limitation M1-S03's own repair recorded for its package.xml request. The dependency is recorded in prose in deploy-order.md § 0c/§ 2 but not in the machine-readable plan.",
+      "evidence": {
+        "recorded_at": "artefacts/M1-S04/deploy-order.md § 0c, § 2",
+        "authority": "standards/build-orchestration.md § 4, Apex row note"
+      },
+      "recommendation": "Whoever next re-plans this build should add M1-S03 to steps[M1-S04].depends_on, and should consider the Apex-foundations step standards/build-orchestration.md § 4 already recommends for the shared TestDataFactory dependency — TestUserFactory is now a second, independent reason for it."
+    },
+    {
+      "id": "S5-F-03",
+      "severity": "P2",
+      "title": "Two of eleven wrapped methods carry an unresolved PermissionSetAssignment/system-object access question",
+      "detail": "Tier2_Webhook_Admin (confirmed via M1-S02's permission set XML) grants object/field permissions only on Integration_Failure__c and Case.Tier2_Notified_At__c — nothing on PermissionSetAssignment, CronTrigger or AsyncApexJob. rosterResolutionReturnsTheDistinctActiveAssigneeEmails queries PermissionSetAssignment directly, and scheduleCreatesAWaitingCronTriggerAndDispatchesTheQueueable calls System.schedule and queries CronTrigger/AsyncApexJob — both now run as the Standard-User-profile permissioned agent under API 67.0's default user mode. Whether that profile can read those objects or schedule Apex is stated in no cited skill. This mirrors the same open question deploy-order.md § 4 item 1 already raises for the production running user; resolving it means changing Tier2_Webhook_Admin, which belongs to M1-S02, out of scope for a test-only repair.",
+      "evidence": {
+        "recorded_at": "artefacts/M1-S04/deploy-order.md § 8, § 0c; artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      },
+      "recommendation": "Confirm at the M1 gate whether the scheduling user's actual profile (not necessarily Standard User) can read PermissionSetAssignment/CronTrigger/AsyncApexJob; if not, both the production roster-resolution path and this test method degrade the same way."
+    },
+    {
+      "id": "S5-F-04",
+      "severity": "INFO",
+      "title": "PROFILE = 'Standard User' is a default, not a grounded fact (second instance in this build)",
+      "detail": "No clarification in this build names a Profile for the users who hold Tier2_Webhook_Admin. 'Standard User' is used because it is a real standard Salesforce profile present in every org and is the same value M1-S03's already-accepted repair used for the identical pattern.",
+      "evidence": {
+        "recorded_at": "artefacts/M1-S04/deploy-order.md § 0c"
+      },
+      "recommendation": "Confirm the actual profile(s) assigned Tier2_Webhook_Admin and update PROFILE if it differs. Does not block this repair."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The fix required zero changes to Tier2ChannelHealthSchedulable.cls or Tier2ChannelHealthQueueable.cls — S2-F-11 is precise about the boundary (a test-fixture defect, not a production-code one), and this repair stayed inside it, exactly as M1-S03's repair did for its own classes.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S04/classes/ — diff limited to Tier2ChannelHealthTest.cls and deploy-order.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The exact fix shape already existed in the library twice over before this run needed it: skills/apex/test-class-standards/references/examples.md Example 5 and M1-S03's own already-shipped repair are both worked instances of the same pattern; this run is a direct, mechanical application of both.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/test-class-standards/references/examples.md Example 5; .sfskills/builds/tier2-webhook/artefacts/M1-S03/classes/Tier2EscalationServiceTest.cls"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "This is the second step in this build to ship with check_test_class_standards.py absent from its declared acceptance_tests, and the second to be caught only by a milestone-level mock deploy rather than by its own step's tests. A checker that exists, is correct, and would catch the defect offline, but is wired into neither step's acceptance_tests, is a planning gap with two instances in one milestone.",
+      "domain": "tooling-gap",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S04].acceptance_tests — three checker entries, none is check_test_class_standards.py"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "standards/build-orchestration.md § 4's Apex-foundations recommendation (a dedicated step for a templates/apex/** class shared by more than one Apex step) now has two independent grounds in this build — TestDataFactory (recorded at M1-S04's original build) and, as of this repair, TestUserFactory — and the plan still has no such step.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S04/deploy-order.md § 2"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Two of the eleven wrapped methods (rosterResolutionReturnsTheDistinctActiveAssigneeEmails and scheduleCreatesAWaitingCronTriggerAndDispatchesTheQueueable) now depend on the permissioned agent's ability to read PermissionSetAssignment/CronTrigger/AsyncApexJob under user mode, and Tier2_Webhook_Admin grants none of that (S5-F-03).",
+      "domain": "integration-contract",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "PROFILE = 'Standard User' is asserted rather than confirmed against the target org's actual user base (S5-F-04) — the same ambiguity M1-S03's repair flagged, now present in a second class.",
+      "domain": "integration-contract",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json clarifications"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "milestone:M1 was approved on evidence that predates S2-F-06 and S2-F-11, and this repair is the second of two steps in that milestone whose tests changed after that approval.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because a fresh /verify-milestone against a dry run that actually executes tests is what re-signs the M1 acceptance both repairs put back in question.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M1.md run 6"
+      }
+    }
+  ],
+  "dimensions_compared": [
+    "security-posture",
+    "test-coverage",
+    "bulk-safety"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "No production class was added, removed or restructured this run; the decomposition is unchanged from run 2.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "not-run",
+      "reason": "No production class changed, so the per-class SOQL/DML/CPU estimate in deploy-order.md § 7 is unchanged and was not re-derived.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "count-only",
+      "reason": "TestUserFactory reads no credential and sets no header; verified by inspection against the shipped M1-S03 copy rather than a dedicated secret scan.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No new hardcoded-Id surface was introduced; TestUserFactory resolves Profile and PermissionSet by name, never by Id literal.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "include_logger is false for this build (Q16: no log object) and this run added no new failure path; unchanged from run 2.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S04",
+    "run": 3,
+    "previous_runs": [
+      "envelopes/M1-S04/2026-09-12T10-44-00Z.json (run 1, built, later reset for a P0)",
+      "envelopes/M1-S04/2026-09-12T10-57-00Z.json (run 2, rebuilt to amended inputs, passed its declared checkers)"
+    ],
+    "org_evidence": {
+      "report": "reports/MOCK-DEPLOY-M1.md, run 6",
+      "mode": "checkOnly, MANIFEST mode, milestone M1, --test-level RunSpecifiedTests, API 67.0",
+      "finding": "S2-F-11 — the same finding that drove M1-S03's run 4 repair, applied here to Tier2ChannelHealthTest"
+    },
+    "changes_this_run": [
+      {
+        "file": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls",
+        "change": "PERM_SET/PROFILE constants added; @TestSetup gained a new setup-object runAs fence around TestUserFactory.createUser; business-data seeding moved into System.runAs(agent); agent() helper added; all 11 @IsTest method bodies wrapped in System.runAs(testUser) with no other change to statements or assertions",
+        "fixes": "S2-F-11"
+      },
+      {
+        "file": "artefacts/M1-S04/deploy-order.md",
+        "change": "run count updated to 3; new § 0c recording the repair; § 2 provenance table gained a TestUserFactory dependency row; § 8 test-plan section and checker-output block updated",
+        "fixes": "n/a — documentation of the above"
+      }
+    ],
+    "files_not_shipped_by_design": [
+      "artefacts/M1-S04/classes/TestUserFactory.cls",
+      "artefacts/M1-S04/classes/TestUserFactory.cls-meta.xml"
+    ],
+    "files_unchanged": "Tier2ChannelHealthSchedulable.cls, Tier2ChannelHealthQueueable.cls, TestDataFactory.cls and all meta XML in this step are byte-identical to run 2.",
+    "classes_modified": 1,
+    "test_methods": 11,
+    "test_methods_unchanged_in_body": 11,
+    "gate_b": "passed — every symbol this run touches (TestUserFactory.createUser, Profile.Id/Name, PermissionSet.Id/Name, PermissionSetAssignment.AssigneeId/PermissionSetId) is copied from templates/apex/tests/TestUserFactory.cls (via M1-S03's shipped copy) or is a standard-object field; 0 unresolved.",
+    "gate_c": "check 1 (symbol grounding) and check 2 (identifier provenance) passed; check 3 (compile) did not run — design-only build_mode, no target_org_alias, no offline Apex compiler in the sf CLI (AGENT_CONTRACT.md § Gate C). What ran offline: the three previously-declared checkers (0 findings each, unchanged), check_test_class_standards.py (ERROR=0, WARN=1 expected, the target of this repair), an XML parse of all four meta files at apiVersion 67.0, and a comment/string-aware brace/paren/bracket balance scan across all four .cls files.",
+    "gate_d": "confidence computed, not self-declared: Gate B unresolved = 0 and Gate C compile not run is the MEDIUM row.",
+    "checkers_run": [
+      {
+        "command": "python3 skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py --manifest-dir artefacts/M1-S04",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 4 .cls file(s) under artefacts/M1-S04: 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py --manifest-dir artefacts/M1-S04",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 4 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY."
+      },
+      {
+        "command": "python3 skills/apex/error-handling-framework/scripts/check_error_handling_framework.py --manifest-dir artefacts/M1-S04",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "No issues found."
+      },
+      {
+        "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M1-S04",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "summary": "Scanned 4 Apex class file(s); audited 2 @IsTest artifact(s); 1 finding(s). ERROR=0 WARN=1 (template-class-not-shipped / TestUserFactory, expected)",
+        "note": "Not declared in this step's acceptance_tests (see process_observations, tooling-gap); run directly per the task's explicit instruction and reported verbatim. Confirmed ERROR=1 (user-mode-test-without-runas) against the pre-repair file in isolation."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "undeclared_artefacts": [
+      "artefacts/M1-S04/classes/TestDataFactory.cls",
+      "artefacts/M1-S04/classes/TestDataFactory.cls-meta.xml",
+      "artefacts/M1-S04/deploy-order.md"
+    ],
+    "not_carried_out": [
+      "plan.json's steps[M1-S04].depends_on could not be amended to add M1-S03. amend-step is refused once a step has left pending (this step is running), the same limitation M1-S03's own repair recorded for its package.xml request. See finding S5-F-02; the dependency is recorded in prose in deploy-order.md § 0c/§ 2 instead.",
+      "check_test_class_standards.py is not in this step's declared acceptance_tests; run and reported per the task's explicit instruction, outside the normal declared-checker loop."
+    ],
+    "unverified": [
+      "PROFILE = 'Standard User' is the library's worked-example default, not a value any clarification in this build names (S5-F-04).",
+      "Whether the Standard User profile can read PermissionSetAssignment/CronTrigger/AsyncApexJob under API 67.0 default user mode is unconfirmed by any cited skill (S5-F-03).",
+      "Whether the target org's actual FLS grants (Standard User profile plus Tier2_Webhook_Admin) are sufficient for every field this test suite touches is unconfirmed until an org runs the tests — no test was executed this run, design-only build_mode."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "the playbook this repair ran under: Step 6's template-provenance check (TestUserFactory referenced but not re-shipped, declared by M1-S03 instead) and Step 7's Gate C, re-run over the one changed file"
+    },
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/GATES.md",
+      "path": "agents/apex-builder/GATES.md",
+      "used_for": "Gate C's compile row — confirms there is no offline Apex compiler in the sf CLI"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section AGENT.md contract this repair followed, rule 12 on copied identifiers (createUser copied verbatim from the template), and Gate C's compile row (design-only, no offline compiler)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's documented -> running rebuild transition this repair is an instance of, and the Apex row note recommending a shared Apex-foundations step for a templates/apex/** dependency used by more than one Apex step"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "the domain skill this repair is scoped by"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/gotchas.md",
+      "used_for": "Gotcha 13 — the four conditions that produce this exact failure, and the checker rule that catches it"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/references/examples.md",
+      "used_for": "Example 5 — the shape every one of this run's edits follows, including the runAs-for-mixed-DML vs runAs-for-permissions distinction and the re-queried agent() helper"
+    },
+    {
+      "type": "skill",
+      "id": "apex/mixed-dml-and-setup-objects",
+      "path": "skills/apex/mixed-dml-and-setup-objects/SKILL.md",
+      "used_for": "why TestUserFactory.createUser is called inside its own new runAs(thisUser) fence, ahead of any Case/Integration_Failure__c DML in the same transaction"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestUserFactory.cls",
+      "path": "templates/apex/tests/TestUserFactory.cls",
+      "used_for": "referenced by Tier2ChannelHealthTest.seed(); not re-shipped here — already shipped verbatim by M1-S03"
+    },
+    {
+      "type": "standard",
+      "id": "artefacts/M1-S03/deploy-order.md",
+      "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md",
+      "used_for": "§ 0b — the accepted repair record this run mirrors, and the source of the TestUserFactory dependency this step now names"
+    },
+    {
+      "type": "standard",
+      "id": "envelopes/M1-S03/2026-09-12T16-13-43Z.md",
+      "path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T16-13-43Z.md",
+      "used_for": "the accepted envelope shape this repair follows"
+    },
+    {
+      "type": "standard",
+      "id": "artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+      "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+      "used_for": "confirmed this is the permission set this deployment ships, and exactly what it does and does not grant, before naming it PERM_SET and before flagging S5-F-03"
+    },
+    {
+      "type": "standard",
+      "id": "reports/MOCK-DEPLOY-M1.md",
+      "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "run 6 / S2-F-11 — the finding this repair closes for this step's test class"
+    }
+  ]
+}

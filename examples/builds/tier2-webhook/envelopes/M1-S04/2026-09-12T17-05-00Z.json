@@ -1,0 +1,189 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T17-05-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T17-05-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S04/2026-09-12T17-05-00Z.json",
+  "summary": "Documented step M1-S04 (tested -> documented) in build tier2-webhook, second repair/retest pass: re-rendered PLAN.md/CLARIFICATIONS.md and appended one decision to decisions.md (D-M1S04-11: the run-4 (S 0d) test-only repair that replaces classes/TestDataFactory.cls with a verbatim copy of the corrected templates/apex/tests/TestDataFactory.cls -- lookups assigned only when the argument is non-null -- closing S2-F-12 for this step's own copy; Tier2ChannelHealthSchedulable.cls, Tier2ChannelHealthQueueable.cls and Tier2ChannelHealthTest.cls are all unchanged). No workbook rows written: scale: feature keeps the ten-section workbook optional and skipped, unchanged from every prior pass. No traceability.md row changed: REQ-010's existing artefact_paths cell already names artefacts/M1-S04/classes/TestDataFactory.cls, and this repair replaced that file's content in place without adding, removing or renaming any artefact path, so Step 7's join has nothing new to record for this pass -- the per-task instruction not to touch traceability.md absent a path change is followed. Set steps[M1-S04].status tested -> documented via build_plan.py set-status.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every write this pass attempted succeeded: PLAN.md/CLARIFICATIONS.md re-rendered, one decision appended with a real citation trail, and the status transition recorded. Held to MEDIUM rather than HIGH for the same reason the prior M1-S04 documentation pass (2026-09-12T17-00-00Z) was held to MEDIUM: this pass documents a second consecutive test-only repair whose underlying finding (S2-F-12) was surfaced by a mock-deploy run this agent did not run and cannot re-run, and no Apex test has actually executed in this design-only build -- every claim rests on source inspection, a byte-diff against the template, and static checkers, not a measured pass/fail. Not LOW: no row was written with an empty source_req_id or verification cell, and the step's test results (tests/M1-S04/results.json) were readable with passed: true.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The run-4 repair stayed inside its own boundary the same way the run-3 (S2-F-11) repair did: only classes/TestDataFactory.cls changed, and it changed to a byte-identical copy of an already-corrected canonical template (diff empty, confirmed independently by both apex-builder's own envelope and step-tester's re-test) -- no production class and no test-method body needed a compensating edit.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S04/deploy-order.md section 0d"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "This build's own precedent from the run-3 repair (D-M1S04-08) carried directly across to the run-4 repair with no new decision shape needed -- both are recorded as a Deviation per agents/build-doc-keeper/AGENT.md Step 3, grounded in the same standards/build-orchestration.md section 4 documented -> running transition.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md D-M1S04-08, D-M1S04-11"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This is now the second consecutive step-level defect on M1-S04 (S2-F-11, then S2-F-12) surfaced only by a milestone-level mock-deploy run rather than by any of the step's three declared checkers or the due-diligence check_test_class_standards.py run -- the library has no static rule for 'a test factory assigns a lookup argument unconditionally,' confirmed again rather than newly found (the prior documentation pass already flagged the S2-F-11 instance of this same gap).",
+      "domain": "tooling-gap",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json steps[M1-S04].acceptance_tests -- three checker entries, none is check_test_class_standards.py, and none would have caught S2-F-12 either"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The Standard-User-profile access question D-M1S04-10 already recorded (whether the permissioned test agent can read PermissionSetAssignment/CronTrigger/AsyncApexJob) was not reached by run 7's failure -- the seed insert failed earlier, at the Case DML itself. That ambiguity remains exactly as open after this pass as it was before it; this pass records no new information about it.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/decisions.md D-M1S04-10; envelopes/M1-S04/2026-09-12T16-45-51Z.md Process Observations"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "Both Apex steps in milestone M1 (M1-S03 and M1-S04) have now each been repaired and re-tested twice (S2-F-11, then S2-F-12) since milestone:M1's original acceptance at 2026-09-12T12:57:43Z, and this pass's own predecessor already made the same recommendation for the S2-F-11 state -- it stands, sharpened: the evidence milestone:M1 was accepted on now predates four test-level findings across its two Apex steps, not two.",
+      "domain": "build-loop",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because a fresh /verify-milestone against a dry run that actually executes tests is what re-signs the M1 acceptance both rounds of repair put back in question, and this step's own step-tester envelope (2026-09-12T16-49-37Z) recommends the same thing.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json human_gates -- milestone:M1 approved 2026-09-12T12:57:43Z"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "confirming REQ-010's existing artefact_paths cell already names artefacts/M1-S04/classes/TestDataFactory.cls, so Step 7's requirement-to-artefact join has no new path to add for a content-only repair"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "confirming the ten-section workbook stays optional at scale: feature per standards/build-orchestration.md section 3.1, so no workbook rows were written this pass"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decisions.md entry shape -- date, step, agent, kind, alternative rejected, grounded in, evidence -- applied to D-M1S04-11"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming this step's manual acceptance test remains the UAT-equivalent evidence this design-only, never-deployed build relies on, unaffected by a test-fixture-only repair"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "the per-case evidence framing used when confirming REQ-010's row still rests on source inspection and static checkers, unchanged by a repair that touched no assertion"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "re-confirming the step's manual test clauses (a)/(b)/(c) are still in an observable Given/When/Then shape after the repair, per step-tester's own re-check"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (rendered vs hand-edited files, and no hand-edit of plan.json), section 3.1 (scale: feature ceremony -- workbook optional, traceability required), section 4 (the documented -> running test-only repair transition this pass documents the far side of, and the step-type table), section 6 (this agent's per-step Tier-4 role), section 8 (skill-gap-as-decisions.md-entry rule)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema and confidence rubric this envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persisted markdown+JSON pair, atomic-write rule and dimensions_skipped shape this envelope and its twin report follow"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied -- step status was tested, the precondition for the ordinary per-step run"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "reading steps[M1-S04] (inputs, outputs, acceptance_tests, runs, amendments) directly rather than through prose"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the prohibition on mutating files outside the paths this agent owns, and on no org deploy/write"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S04",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/tier2-webhook/PLAN.md",
+      ".sfskills/builds/tier2-webhook/CLARIFICATIONS.md",
+      ".sfskills/builds/tier2-webhook/decisions.md"
+    ],
+    "workbook_rows": [],
+    "workbook_skipped_reason": "scale: feature makes the ten-section workbook optional (standards/build-orchestration.md section 3.1); this build has never written one and this pass follows that precedent -- no workbook file exists under workbook/ to run check_workbook.py against.",
+    "traceability_rows": [],
+    "traceability_skipped_reason": "REQ-010's existing artefact_paths cell already names artefacts/M1-S04/classes/TestDataFactory.cls; the run-4 repair replaced that file's content in place (verbatim template swap) without adding, removing or renaming any artefact path, so Step 7 has no new path to join and no row was touched, per this pass's own scope instruction.",
+    "decisions_appended": [
+      "D-M1S04-11"
+    ],
+    "rows_replaced": [],
+    "rtm_check": {
+      "command": "not run this pass -- traceability.md was not written to, so re-running check_rtm.py would confirm an unchanged file rather than validate a new write",
+      "before": null,
+      "after": null
+    }
+  },
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook-rows",
+      "state": "not-run",
+      "reason": "scale: feature makes the ten-section workbook optional per standards/build-orchestration.md section 3.1, and no pass of this build has written one; traceability.md is the required deliverable at this scale and this pass's own artefact (TestDataFactory.cls) needed no new row in it.",
+      "confidence_impact": "NONE",
+      "retry_hint": "run config-workbook-author at release time if the build's committed workbook is later required."
+    },
+    {
+      "dimension": "traceability-row-update",
+      "state": "not-run",
+      "reason": "the repair this pass documents changed a shipped file's content, not its path or its requirement linkage; REQ-010's row already names the affected artefact, so no row edit was in scope for this pass per the task's own instruction to leave traceability.md untouched absent an artefact-path change.",
+      "confidence_impact": "NONE",
+      "retry_hint": "if a future repair on this step adds, removes or renames an artefact path, the next documentation pass updates REQ-010's row then."
+    },
+    {
+      "dimension": "org-finding-reconciliation",
+      "state": "not-run",
+      "reason": "this pass's canonical data surface (plan.json, this step's two run-4/re-test envelopes, tests/M1-S04/results.json, artefacts/M1-S04/deploy-order.md section 0d) is the task-scoped evidence base for S2-F-12; whether reports/MOCK-DEPLOY-M1.md has been updated with a numbered run 7 entry, or whether a run 8 exists, is outside what this pass was asked to read.",
+      "confidence_impact": "NONE",
+      "retry_hint": "milestone-verifier reconciles the full mock-deploy run sequence at the milestone level."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Both Apex steps in M1 have now each been repaired and re-tested twice since the milestone's original acceptance; a fresh /verify-milestone against a dry run that actually executes tests is what re-signs that acceptance on current evidence."
+    }
+  ]
+}

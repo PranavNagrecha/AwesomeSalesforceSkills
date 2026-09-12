@@ -1,0 +1,11 @@
+{
+  "scanned": 13,
+  "queueable_classes": 1,
+  "counts": {
+    "ERROR": 0,
+    "WARN": 0,
+    "ADVISORY": 0
+  },
+  "findings": [],
+  "summary": "Scanned 13 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY."
+}

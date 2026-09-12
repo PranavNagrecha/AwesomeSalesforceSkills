@@ -1,0 +1,202 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T17-20-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T17-20-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S02/2026-09-12T17-20-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "step_id": "M1-S02",
+    "api_version": "67.0",
+    "rebuild_reason": "mock-deploy run 8 (reports/MOCK-DEPLOY-M1.md), finding S2-F-13: EventBus.publish of Tier2_Escalation__e denied at API 67.0 user mode; operator moved the step documented -> running with the step:M1-S02 gate already approved (a section 4 repair of a documented step, not a re-plan)",
+    "external_credential.secret": "[REDACTED]"
+  },
+  "summary": "Repair (run 3) of step M1-S02 after the whole-build mock deploy (run 8) found EventBus.publish of Tier2_Escalation__e denied for the Standard User running Tier2EscalationServiceTest.ownerChangeToTier2QueueEscalatesAndStamps: at API 67.0, EventBus.publish runs in user mode and needs Create on the event object, and no permission set this build ships granted anything on Tier2_Escalation__e. Fix: one new objectPermissions row added to the existing Tier2_Webhook_Admin permission set - allowCreate and allowRead true on Tier2_Escalation__e, allowEdit/allowDelete/viewAllRecords/modifyAllRecords false - rather than a new permission set, because the publishing population is exactly decision D14's existing assignee set (the user whose Case save moved ownership to Tier_2_Engineering, the same async-context user the Named Credential principal access and Integration_Failure__c CRUD in this same set already serve in the same transaction). description updated to name the new grant; deploy-order.md gained section 0b (finding, root cause, the set-vs-new-set decision and its rejected alternative), a section 4 decisions-table row, and a section 6 clause (g). No new component: package.xml and the External Credential / Named Credential files are unchanged, so M1-S05's build-level manifest needs no change. Both declared checkers exit 0 on the first pass; check-outputs ok.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 10 HIGH row: the emitted element (Tier2_Escalation__e objectPermissions with allowCreate/allowRead true) traces directly to two sources in the Step 3 inventory - the platform-events-apex skill's gotcha naming Create as the API-67.0 user-mode requirement, and the permission-set-architecture checker's own dependency-chain rule requiring allowRead alongside allowCreate, which is why allowRead is written and not merely assumed. Both cited checkers exited 0 on the first pass, check-outputs returned ok, every declared output was written and nothing else (no new file, no new package.xml member), and the persona question (which permission set the grant belongs in) was answered from the plan's own decision D14 and D10 rather than defaulted or guessed.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "access-governance",
+      "observation": "The fix stayed inside the file the finding named: no new permission set, no new package.xml member, no change to M1-S05's build-level manifest. The persona already assigned Tier2_Webhook_Admin (decision D14) is exactly the persona that needed the new grant, so one objectPermissions row closed the finding without widening any assignment.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "query": "objectPermissions object=Tier2_Escalation__e"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-coverage",
+      "observation": "check_permission_set_architecture.py's dependency-chain rule (allowCreate/allowEdit require allowRead) caught what a build-time read of the platform-events-apex gotcha alone would not have flagged as mandatory - it only names Create - which is why allowRead is written on this row and not just allowCreate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "query": "if (create or edit) and not read: missing.append(\"allowCreate/allowEdit require allowRead\")"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "checker-coverage-gap",
+      "observation": "Neither check_permission_set_architecture.py nor check_platform_events_apex.py has a rule that flags a __e object with no publisher persona granted Create anywhere in the build's permission sets - the gap that let runs 1-7's green checkers and green manifest checks all miss S2-F-13 until an org actually ran the Apex test. This is the same shape D-M1S02-01 already recorded for the AuthHeader parameterValue gap: a green run from this agent is not evidence the org would accept the artefact.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md",
+        "query": "S2-F-13"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "skill-quality",
+      "observation": "skills/apex/platform-events-apex/references/gotchas.md names only Create as the API-67.0 user-mode requirement for a publisher; it does not discuss whether Read should accompany it, so the Read grant here is grounded in the permission-set checker's dependency chain rather than in the platform-events skill itself. A future reader should not assume the platform-events skill documents a Create+Read pairing - it documents Create only.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/platform-events-apex/references/gotchas.md",
+        "query": "grant the publishing personas create access on the __e object"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "This step's own acceptance tests (both checkers, xml, manifest) were re-run here against the corrected artefact and all pass, but the step's declared molecular-test record under tests/M1-S02/ was written against the pre-repair file and the milestone-level acceptance (which rested on mock-deploy run 8's failure) has not been re-verified against this fix.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S02].status"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because tests/M1-S02/results.json predates this repair and the step cannot reach tested without a fresh molecular-test run against the corrected permission set."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "access",
+    "rebuild": true,
+    "rebuild_of_run": "2026-09-12T10-28-30Z",
+    "invocation": "direct (standalone) per agents/metadata-builder/AGENT.md Invocation - this run owns its own Step 9 set-status transition",
+    "metadata_types_emitted": [
+      "ExternalCredential",
+      "NamedCredential",
+      "PermissionSet"
+    ],
+    "artefacts": [
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/namedCredentials/OnCall_Tool.namedCredential-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/package.xml",
+      ".sfskills/builds/tier2-webhook/artefacts/M1-S02/deploy-order.md"
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Which permission set should grant Create/Read on Tier2_Escalation__e to the persona that publishes it (S2-F-13)?",
+        "answer": "The existing Tier2_Webhook_Admin set, not a new set. New objectPermissions row: allowCreate true, allowRead true, allowEdit/allowDelete/viewAllRecords/modifyAllRecords false.",
+        "source": "Upstream artefacts / plan decisions (Step 4 priority 3) - decision D14 (traceability.md, PLAN.md Decisions table) already assigns Tier2_Webhook_Admin to every user who can escalate a Case to Tier_2_Engineering; decision D10 places the EventBus.publish call in that same user's escalating transaction, in Tier2EscalationService, before the Queueable runs. The publishing persona and D14's existing assignee set are the same population.",
+        "element_determined": "Tier2_Webhook_Admin.permissionset-meta.xml objectPermissions[object=Tier2_Escalation__e]"
+      },
+      {
+        "question": "Does the new objectPermissions row need allowRead as well as allowCreate?",
+        "answer": "Yes, both true.",
+        "source": "Cited skill's checker (Step 3 inventory) - skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py raises ERROR 'allowCreate/allowEdit require allowRead' when allowCreate is true and allowRead is not. skills/apex/platform-events-apex/references/gotchas.md names only Create as the API-67.0 requirement; Read is not independently required by that skill and is written solely to satisfy the checker's dependency chain.",
+        "element_determined": "objectPermissions/allowRead = true"
+      },
+      {
+        "question": "Do allowEdit, allowDelete, viewAllRecords or modifyAllRecords apply to the new row?",
+        "answer": "No - all four written false, explicitly, matching this file's existing convention of always writing all six flags.",
+        "source": "The requirement / no answer - a platform event is an immutable stream entry (skills/apex/platform-events-apex/references/gotchas.md, \"Treating the __e Object Like a Table\"): there is no update or delete DML against a published event, and no clarification or decision asks for view-all/modify-all on this object.",
+        "element_determined": "objectPermissions/allowEdit, allowDelete, viewAllRecords, modifyAllRecords = false"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts/M1-S02",
+        "scope": "step",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "OK: no Named Credential findings."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "scope": "build",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml: objectPermissions for Integration_Failure__c sets modifyAllRecords=true, which bypasses sharing for that object; keep sharing overrides in a named set that is not composed into a persona group.\nINFO: PSA-DESC-02 artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml: PermissionSet description is 224 characters, approaching the 255-character limit.",
+        "note": "WARN is the pre-existing, deliberate D12 sharing-bypass finding, unchanged. INFO is new: the description grew from 190 to 224 characters naming the S2-F-13 grant, still under the 255-character PSA-DESC-01 ERROR ceiling."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "field_permissions_written": 12,
+    "object_permissions_written": 2,
+    "unbound_inputs": [
+      "Assumption A2 (async context user) - risk high, self-flagged UNVERIFIED, unreachable by any checkOnly validation; unchanged by this run"
+    ],
+    "closed_this_run": [
+      "S2-F-13 - Tier2_Escalation__e Create/Read granted to the D14 assignee population via Tier2_Webhook_Admin"
+    ],
+    "dimensions_skipped": []
+  },
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "apex/platform-events-apex",
+      "path": "skills/apex/platform-events-apex/references/gotchas.md",
+      "used_for": "\"API 67.0 Silently Moves Publishing Into User Mode\" - the rule that a user-mode EventBus.publish needs Create on the event object, which is the root-cause citation for S2-F-13"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "the objectPermissions element shape (all six flags written explicitly) the new Tier2_Escalation__e row follows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+      "used_for": "the dependency-chain rule requiring allowRead alongside allowCreate, and PSA-DESC-01/02 description-length thresholds"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1 - Public Read-Only / Public Read-Write -> Tighten OWD before adding anything -> Q2",
+      "used_for": "decision D12, re-confirmed unchanged on the pre-existing Integration_Failure__c row"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 documented -> running repair transition; section 5 checker scope rules"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "tests/M1-S02/results.json predates this repair and must be re-run against the corrected permission set before the step can reach tested"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "decisions.md should gain an entry for S2-F-13 and the set-vs-new-set decision once this step is tested again, following the same pattern as D-M1S02-01 and D-M1S02-03"
+    }
+  ]
+}

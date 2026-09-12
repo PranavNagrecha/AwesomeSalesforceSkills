@@ -1,22 +1,21 @@
-[
-  {
-    "path": "artefacts/M1-S04/classes/TestDataFactory.cls-meta.xml",
-    "parsed": true,
-    "message": null
-  },
-  {
-    "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls-meta.xml",
-    "parsed": true,
-    "message": null
-  },
-  {
-    "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls-meta.xml",
-    "parsed": true,
-    "message": null
-  },
-  {
-    "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls-meta.xml",
-    "parsed": true,
-    "message": null
-  }
-]
+{
+  "count": 4,
+  "results": [
+    {
+      "path": "artefacts/M1-S04/classes/TestDataFactory.cls-meta.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M1-S04/classes/Tier2ChannelHealthQueueable.cls-meta.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M1-S04/classes/Tier2ChannelHealthSchedulable.cls-meta.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M1-S04/classes/Tier2ChannelHealthTest.cls-meta.xml",
+      "parsed": true
+    }
+  ]
+}

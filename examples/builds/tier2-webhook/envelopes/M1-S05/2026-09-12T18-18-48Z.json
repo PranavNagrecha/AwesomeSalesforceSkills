@@ -1,0 +1,305 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T18-18-48Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T18-18-48Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T18-18-48Z.json",
+  "summary": "Re-ran step M1-S05 (type docs) for build tier2-webhook, its third run: the operator moved the step documented -> running because M1-S03's run-6 repair (S2-F-14, artefacts/M1-S03/deploy-order.md section 0d) added classes/Tier2WebhookFinalizerTest.cls, an ApexClass member this manifest did not carry. Regenerated artefacts/M1-S05/package.xml by enumerating the live artefacts/M1-S0[1-4]/ tree: 7 <types> blocks, now 35 members (was 34) at <version>67.0</version>, no wildcards. Only the ApexClass block changed: one <members>Tier2WebhookFinalizerTest</members> line added alphabetically between Tier2WebhookFinalizer and Tier2WebhookQueueable. Manifest-to-file consistency verified in both directions over the whole artefacts/M1-S0[1-4]/ tree: 35 members, 54 backing files, no member without a file and no file without a member. deploy-order.md was updated to match (member roll-up table, total-members prose, the section 2 deploy-order-group row, and a new section 0a rebuild record carrying the member diff and the verification steps). While re-verifying the TestDataFactory de-duplication (the routine check this step always performs), found that templates/apex/tests/TestDataFactory.cls has drifted from both steps' shipped copies since this step's prior run (a Gotcha-15 insertAsSystem helper added at repo HEAD commit be09a7bff) -- the two shipped copies remain byte-identical to each other so this manifest's single TestDataFactory member is unaffected, but the three-way template match run 2 recorded no longer holds. Recorded in Process Observations as apex-builder's / the template's to reconcile, not acted on here. reports/MILESTONE-M1-package.xml remains untouched per instruction and is now stale against 35 members (it still carries 33).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 rubric. Every element traced to the cited skill's fenced manifest example and to the live artefact files; the declared checker exited 0 on the first pass with no repair; check-outputs is ok; every Questions-to-Ask row this step answers came from the artefacts and the cited skill rather than a default. Not HIGH because the plan's own inputs.members.ApexClass is now three rebuilds stale (still the pre-run-2 11-name list) and this run surfaced a template/artefact content drift outside its own scope that a human should adjudicate.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S05",
+    "api_version": "67.0",
+    "source_of_api_version": "step inputs (plan.api_version is null; assumption A11), unchanged from runs 1-2",
+    "members_input_used_as": "cross-check only; superseded by the artefacts on disk, which is now the third run in a row this has been necessary",
+    "operator_citation": "the operator's brief cited artefacts/M1-S03/deploy-order.md section 0d and finding S2-F-14 for the Tier2WebhookFinalizerTest addition; both resolve correctly against the build's own records, unlike run 2's operator brief which cited a nonexistent finding id (S4-F-02)",
+    "credentials_in_inputs": "none - no secret appears in any step input or artefact; the External Credential carries a merge-field reference, not a key"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The operator's brief for this run cited artefacts/M1-S03/deploy-order.md section 0d and finding S2-F-14, and both resolve exactly to the record that names Tier2WebhookFinalizerTest and names this step (M1-S05) as needing the new member. Unlike run 2's brief, no citation correction was needed this time.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts/M1-S03/deploy-order.md",
+        "query": "section 0d"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The whole-tree two-way membership check (35 members, 54 backing files across artefacts/M1-S01 through M1-S04) reconciled exactly on the first attempt, with no orphan file and no member missing a file.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts",
+        "query": "member-to-file bidirectional enumeration"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "templates/apex/tests/TestDataFactory.cls (repo HEAD, commit be09a7bff) is no longer byte-identical to artefacts/M1-S03/classes/TestDataFactory.cls or artefacts/M1-S04/classes/TestDataFactory.cls -- it gained an insertAsSystem(List<SObject>) helper (Gotcha 15) after both steps' copies were written. The two shipped copies still match each other (sha256 fda38fa1...823983, unchanged), so this manifest's single TestDataFactory member is unaffected, but the three-way template match run 2 recorded (fda38fa1...823983 for all three) no longer holds. This is a template-provenance question outside this agent's Output Contract (it writes no Apex).",
+      "domain": "code-provenance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/apex/tests/TestDataFactory.cls",
+        "query": "sha256 vs artefacts/M1-S0[34]/classes/TestDataFactory.cls"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "plan.json steps[M1-S05].inputs.members.ApexClass still names the same 11 classes it named at this step's first run; it has never been updated across any of this step's three rebuilds and is now four members short (TestUserFactory, Tier2WebhookFinalizerTest, plus the run-1 correction).",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs.members.ApexClass",
+        "count": 11
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "reports/MILESTONE-M1-package.xml, the verifier's merged milestone manifest, still carries 33 members and neither TestUserFactory nor Tier2WebhookFinalizerTest. It is now stale relative to this step's own artefacts/M1-S05/package.xml (35 members) across two consecutive rebuilds of this step. This agent did not edit it per instruction; it is the milestone verifier's file to regenerate.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "tests/M1-S05/results.json and its sibling checker/xml/manifest logs under tests/M1-S05/ still hold a prior run's evidence. They were left untouched, as they are step-tester's outputs, not this agent's; they will read as stale until step-tester re-runs against this step's regenerated artefacts.",
+      "domain": "build-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/results.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "This step's own manual acceptance test still frames the AuthHeader parameterValue question in its pre-amendment form (the PV-007 prose lag decision D-M1S02-06 records); unchanged since run 1 and unrelated to this run's member diff, so not re-litigated here beyond noting it still stands.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].acceptance_tests[3].description"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Three plan-record surfaces (inputs.members.ApexClass, the milestone manifest, and now the TestDataFactory template drift) are stale or diverged in ways a human should adjudicate rather than a future agent silently re-deriving again.",
+      "domain": "plan-structure",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/plan.json",
+        "query": "steps[M1-S05].inputs.members"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "milestone-verifier is the owner of reports/MILESTONE-M1-package.xml and is the one positioned to decide whether to regenerate it now that a step under it changed for the second time."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "the package.xml element shape, the object-qualified CustomField member form, the version element, and the checker's argument form and exit policy"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4's dependency-driven deploy order - data model, then Apex, then permission sets - unchanged in this run's deploy-order.md section 2"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4's step status machine (the documented -> running re-run transition this run is) and section 5 The Apex exception governing why ApexClass/ApexTrigger members belong in this build-level manifest"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/TestDataFactory",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "SHA-256 re-verification of the TestDataFactory de-duplication, which surfaced the template/artefact content drift recorded in Process Observations"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S05's four acceptance tests must be re-run against the regenerated artefacts; tests/M1-S05/results.json still reflects a prior 34-member run."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "The member diff and the now-doubly-stale MILESTONE-M1-package.xml belong in decisions.md once this step is tested again."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "reports/MILESTONE-M1-package.xml is the merged milestone manifest and is now stale against this step's own package.xml for the second consecutive rebuild; regenerating it is the milestone verifier's call, not this agent's."
+    },
+    {
+      "agent": "apex-builder",
+      "because": "templates/apex/tests/TestDataFactory.cls has drifted from both steps' shipped copies (a Gotcha-15 helper added after they were written); reconciling the template against the shipped classes is apex-builder's Output Contract, not this agent's."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "step_type": "docs",
+    "build_id": "tier2-webhook",
+    "build_mode": "design-only",
+    "scale": "feature",
+    "run_number": 3,
+    "terminal_path": "built - set by this agent via build_plan.py set-status, direct/standalone invocation (Step 9 standalone branch taken this run, per AGENT.md Invocation: the operator moved the step documented -> running and asked this agent to move it to built directly)",
+    "artefacts": [
+      {
+        "path": "artefacts/M1-S05/package.xml",
+        "declared": true,
+        "kind": "manifest",
+        "source": "admin/change-management-and-deployment/references/metadata-examples.md section 1; members derived from the live artefacts/M1-S0[1-4]/ tree"
+      },
+      {
+        "path": "artefacts/M1-S05/deploy-order.md",
+        "declared": true,
+        "kind": "note",
+        "source": "admin/change-management-and-deployment/references/llm-anti-patterns.md Anti-Pattern 4 plus the four upstream deploy-order.md files, plus this run's own section 0a rebuild record"
+      }
+    ],
+    "undeclared_artefacts": [],
+    "missing_outputs": [],
+    "member_diff": {
+      "before": {
+        "ApexClass": 14,
+        "total": 34
+      },
+      "after": {
+        "ApexClass": 15,
+        "total": 35
+      },
+      "added_members": [
+        { "type": "ApexClass", "member": "Tier2WebhookFinalizerTest", "from_step": "M1-S03" }
+      ],
+      "removed_members": [],
+      "unchanged_member_names_with_changed_file_content": []
+    },
+    "member_counts": {
+      "CustomObject": 2,
+      "CustomField": 13,
+      "ExternalCredential": 1,
+      "NamedCredential": 1,
+      "ApexClass": 15,
+      "ApexTrigger": 2,
+      "PermissionSet": 1,
+      "total": 35
+    },
+    "member_provenance": {
+      "M1-S01": "CustomObject x2, CustomField x13",
+      "M1-S02": "ExternalCredential x1, NamedCredential x1, PermissionSet x1",
+      "M1-S03": "ApexClass x12 (incl. TestDataFactory, MockHttpResponseGenerator, TestUserFactory, Tier2WebhookFinalizerTest), ApexTrigger x2",
+      "M1-S04": "ApexClass x4 (incl. TestDataFactory)",
+      "dedup": "TestDataFactory is contributed by both M1-S03 and M1-S04 and emitted once; re-verified this run by SHA-256 fda38fa11728e1a264ab7f1beb9e2b61686df762a38f09962c9bd8e370823983 for both .cls (unchanged from run 2) and a242f6e22b472afffbd726be71165de394e417355cdf1edd81b5601278ddea32 for both .cls-meta.xml (unchanged); the .cls no longer matches templates/apex/tests/TestDataFactory.cls (now c9023518...15cd6a - see Process Observations)"
+    },
+    "manifest_consistency": {
+      "members_without_a_file": [],
+      "files_without_a_member": [],
+      "duplicate_members": [],
+      "wildcards": [],
+      "bidirectional": "consistent",
+      "scope": "whole tree - every file under artefacts/M1-S0[1-4]/ has a member and every member has a file (35 members, 54 backing files)"
+    },
+    "decision_record": [
+      {
+        "question": "Which API version does the manifest carry?",
+        "answer": "67.0",
+        "source": "step inputs (api_version and version), assumption A11 - unchanged from runs 1-2",
+        "element": "<version>67.0</version>"
+      },
+      {
+        "question": "Is Tier2WebhookFinalizerTest a member, and where does it belong?",
+        "answer": "Yes - ApexClass, contributed by M1-S03, inserted alphabetically between Tier2WebhookFinalizer and Tier2WebhookQueueable",
+        "source": "upstream artefact artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls (present on disk, apiVersion 67.0) and M1-S03 deploy-order.md section 0d",
+        "element": "ApexClass/members"
+      },
+      {
+        "question": "Do the S2-F-15/S2-F-16 M1-S03 repairs affect the manifest?",
+        "answer": "No - both edited content inside already-declared or already-added files (a test method body, two new test methods on an existing class); no file added or removed, so no member effect",
+        "source": "artefacts/M1-S03/deploy-order.md sections 0e and 0f",
+        "element": "n/a"
+      },
+      {
+        "question": "How many ApexClass members in total?",
+        "answer": "15 - the union of M1-S03's twelve and M1-S04's four with TestDataFactory de-duplicated. The plan's inputs.members.ApexClass still names 11 and has not been updated across any of this step's three rebuilds",
+        "source": "artefacts on disk, cross-checked against M1-S03 deploy-order.md sections 0b, 0d and 2",
+        "element": "ApexClass/members"
+      },
+      {
+        "question": "Does the build-wide deploy order change?",
+        "answer": "No - objects+fields, then ExternalCredential/NamedCredential, then Apex, then PermissionSet, unchanged; Tier2WebhookFinalizerTest sits inside the existing Apex group with no new ordering constraint of its own",
+        "source": "admin/change-management-and-deployment llm-anti-patterns Anti-Pattern 4, unchanged from runs 1-2",
+        "element": "deploy-order.md section 2"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S05",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "score": 90,
+        "findings": "2 WARN, 0 blocking - 'manifest includes ExternalCredential' and 'manifest includes NamedCredential', both asking for explicit review and smoke tests. Unchanged in shape from runs 1-2 despite the member-count change"
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M1-S05",
+        "cwd": ".sfskills/builds/tier2-webhook",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "findings": "1 XML file, parses"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "dimensions_skipped": [
+      {
+        "dimension": "org-side validation",
+        "state": "not-run",
+        "reason": "build_mode is design-only and no agent in this loop deploys or validates against an org; mock_deploy.py --mode manifest is written into deploy-order.md as text for the operator to run",
+        "confidence_impact": "NONE",
+        "retry_hint": "The operator runs python3 scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone M1 --mode manifest"
+      },
+      {
+        "dimension": "acceptance-test execution",
+        "state": "not-run",
+        "reason": "the step's four acceptance tests belong to step-tester per standards/build-orchestration.md section 5; the declared checker and the xml check were run here only as this agent's own Step 8 self-check",
+        "confidence_impact": "NONE",
+        "retry_hint": "Run /test-build-step for M1-S05"
+      },
+      {
+        "dimension": "milestone-manifest regeneration",
+        "state": "not-run",
+        "reason": "reports/MILESTONE-M1-package.xml is the milestone verifier's file; this agent reports it stale but does not edit it",
+        "confidence_impact": "NONE",
+        "retry_hint": "milestone-verifier regenerates it on its next run over M1"
+      },
+      {
+        "dimension": "apex-template provenance",
+        "state": "partial",
+        "reason": "this agent verified the TestDataFactory shipped-copy-to-shipped-copy identity (still matches) and shipped-copy-to-template identity (no longer matches), but reconciling the template against the shipped classes is apex-builder's Output Contract, not this agent's - it writes no Apex",
+        "confidence_impact": "NONE",
+        "retry_hint": "apex-builder reviews templates/apex/tests/TestDataFactory.cls's Gotcha-15 insertAsSystem addition against both steps' shipped copies"
+      }
+    ],
+    "persistence_note": "The Wave 10 pair under docs/reports/metadata-builder/ was NOT written: this invocation was constrained to write only under the build directory. The build-scoped envelope pair is the complete record of this run."
+  }
+}

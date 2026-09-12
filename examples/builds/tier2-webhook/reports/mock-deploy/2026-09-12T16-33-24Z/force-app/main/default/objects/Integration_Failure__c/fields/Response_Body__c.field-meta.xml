@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Response_Body__c</fullName>
+    <description>First 32k characters of the response body returned by the on-call tool.</description>
+    <externalId>false</externalId>
+    <label>Response Body</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>10</visibleLines>
+</CustomField>

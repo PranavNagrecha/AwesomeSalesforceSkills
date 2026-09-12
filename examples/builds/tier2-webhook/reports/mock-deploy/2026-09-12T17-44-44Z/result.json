@@ -1,0 +1,1617 @@
+{
+  "status": 1,
+  "result": {
+    "checkOnly": true,
+    "completedDate": "2026-09-12T17:45:19.000Z",
+    "createdBy": "005dL00001j3fsD",
+    "createdByName": "Pranav Nagrecha",
+    "createdDate": "2026-09-12T17:44:46.000Z",
+    "details": {
+      "componentSuccesses": [
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Case.object",
+          "fullName": "Case.Tier2_Notified_At__c",
+          "id": "00NdL00002eQwTJUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Attempt_Count__c",
+          "id": "00NdL00002eQwTKUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Case_Number__c",
+          "id": "00NdL00002eQwTLUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Case__c",
+          "id": "00NdL00002eQwTMUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Endpoint__c",
+          "id": "00NdL00002eQwTNUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Error_Message__c",
+          "id": "00NdL00002eQwTOUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.HTTP_Status__c",
+          "id": "00NdL00002eQwTPUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Last_Attempted_At__c",
+          "id": "00NdL00002eQwTQUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Request_Payload__c",
+          "id": "00NdL00002eQwTRUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Resend__c",
+          "id": "00NdL00002eQwTSUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Response_Body__c",
+          "id": "00NdL00002eQwTTUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Severity__c",
+          "id": "00NdL00002eQwTUUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c.Status__c",
+          "id": "00NdL00002eQwTVUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Case_Link__c",
+          "id": "00NdL00002eQwTWUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Case_Number__c",
+          "id": "00NdL00002eQwTXUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Escalated_At__c",
+          "id": "00NdL00002eQwTYUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Severity__c",
+          "id": "00NdL00002eQwTZUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e.Subject__c",
+          "id": "00NdL00002eQwTaUAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/CaseTriggerHandler.cls",
+          "fullName": "CaseTriggerHandler",
+          "id": "01pdL00000a3Ub7QAE",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/IntegrationFailureResendTest.cls",
+          "fullName": "IntegrationFailureResendTest",
+          "id": "01pdL00000a3Ub8QAE",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/IntegrationFailureTriggerHandler.cls",
+          "fullName": "IntegrationFailureTriggerHandler",
+          "id": "01pdL00000a3Ub9QAE",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/MockHttpResponseGenerator.cls",
+          "fullName": "MockHttpResponseGenerator",
+          "id": "01pdL00000a3UbAQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/TestDataFactory.cls",
+          "fullName": "TestDataFactory",
+          "id": "01pdL00000a3UbBQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/TestUserFactory.cls",
+          "fullName": "TestUserFactory",
+          "id": "01pdL00000a3UbCQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2ChannelHealthQueueable.cls",
+          "fullName": "Tier2ChannelHealthQueueable",
+          "id": "01pdL00000a3UbDQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2ChannelHealthSchedulable.cls",
+          "fullName": "Tier2ChannelHealthSchedulable",
+          "id": "01pdL00000a3UbEQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2ChannelHealthTest.cls",
+          "fullName": "Tier2ChannelHealthTest",
+          "id": "01pdL00000a3UbFQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2EscalationService.cls",
+          "fullName": "Tier2EscalationService",
+          "id": "01pdL00000a3UbGQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2EscalationServiceTest.cls",
+          "fullName": "Tier2EscalationServiceTest",
+          "id": "01pdL00000a3UbHQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2WebhookFinalizer.cls",
+          "fullName": "Tier2WebhookFinalizer",
+          "id": "01pdL00000a3UbIQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2WebhookFinalizerTest.cls",
+          "fullName": "Tier2WebhookFinalizerTest",
+          "id": "01pdL00000a3UbJQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2WebhookQueueable.cls",
+          "fullName": "Tier2WebhookQueueable",
+          "id": "01pdL00000a3UbKQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:54.000Z",
+          "deleted": false,
+          "fileName": "classes/Tier2WebhookQueueableTest.cls",
+          "fullName": "Tier2WebhookQueueableTest",
+          "id": "01pdL00000a3UbLQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexTrigger",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "triggers/CaseTrigger.trigger",
+          "fullName": "CaseTrigger",
+          "id": "01qdL00000CX7yHQAT",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexTrigger",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "triggers/IntegrationFailureTrigger.trigger",
+          "fullName": "IntegrationFailureTrigger",
+          "id": "01qdL00000CX7yIQAT",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ExternalCredential",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "externalCredentials/OnCall_Tool_EC.externalCredential",
+          "fullName": "OnCall_Tool_EC",
+          "id": "0ptdL000000XDsvQAG",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "NamedCredential",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "namedCredentials/OnCall_Tool.namedCredential",
+          "fullName": "OnCall_Tool",
+          "id": "0XAdL0000024HIrWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomObject",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "objects/Integration_Failure__c.object",
+          "fullName": "Integration_Failure__c",
+          "id": "01IdL00000H6jqHUAR",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomObject",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "objects/Tier2_Escalation__e.object",
+          "fullName": "Tier2_Escalation__e",
+          "id": "01IdL00000H6jqIUAR",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Tier2_Webhook_Admin.permissionset",
+          "fullName": "Tier2_Webhook_Admin",
+          "id": "0PSdL00000csBWrWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-12T17:44:55.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "package.xml",
+          "success": true
+        }
+      ],
+      "runTestResult": {
+        "codeCoverage": [
+          {
+            "id": "01pdL00000a3UbDQAU",
+            "locationsNotCovered": [
+              {
+                "column": 0,
+                "line": 103,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 220,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 221,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 222,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 223,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 224,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 227,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 229,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 230,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 232,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 233,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 236,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 238,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 271,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 285,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 286,
+                "numExecutions": 0,
+                "time": -1
+              }
+            ],
+            "name": "Tier2ChannelHealthQueueable",
+            "namespace": null,
+            "numLocations": 100,
+            "numLocationsNotCovered": 16,
+            "type": "Class",
+            "dmlInfo": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000a3UbEQAU",
+            "name": "Tier2ChannelHealthSchedulable",
+            "namespace": null,
+            "numLocations": 2,
+            "numLocationsNotCovered": 0,
+            "type": "Class",
+            "dmlInfo": [],
+            "locationsNotCovered": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000a3Ub7QAE",
+            "locationsNotCovered": [
+              {
+                "column": 0,
+                "line": 50,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 51,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 52,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 101,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 130,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 138,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 141,
+                "numExecutions": 0,
+                "time": -1
+              }
+            ],
+            "name": "CaseTriggerHandler",
+            "namespace": null,
+            "numLocations": 43,
+            "numLocationsNotCovered": 7,
+            "type": "Class",
+            "dmlInfo": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000a3Ub9QAE",
+            "locationsNotCovered": [
+              {
+                "column": 0,
+                "line": 33,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 34,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 42,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 49,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 55,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 120,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 144,
+                "numExecutions": 0,
+                "time": -1
+              }
+            ],
+            "name": "IntegrationFailureTriggerHandler",
+            "namespace": null,
+            "numLocations": 46,
+            "numLocationsNotCovered": 7,
+            "type": "Class",
+            "dmlInfo": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01qdL00000CX7yIQAT",
+            "name": "IntegrationFailureTrigger",
+            "namespace": null,
+            "numLocations": 1,
+            "numLocationsNotCovered": 0,
+            "type": "Trigger",
+            "dmlInfo": [],
+            "locationsNotCovered": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01qdL00000CX7yHQAT",
+            "name": "CaseTrigger",
+            "namespace": null,
+            "numLocations": 1,
+            "numLocationsNotCovered": 0,
+            "type": "Trigger",
+            "dmlInfo": [],
+            "locationsNotCovered": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000a3UbGQAU",
+            "locationsNotCovered": [
+              {
+                "column": 0,
+                "line": 44,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 84,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 85,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 86,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 87,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 88,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 89,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 90,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 91,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 95,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 96,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 106,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 119,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 120,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 121,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 123,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 124,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 125,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 127,
+                "numExecutions": 0,
+                "time": -1
+              }
+            ],
+            "name": "Tier2EscalationService",
+            "namespace": null,
+            "numLocations": 41,
+            "numLocationsNotCovered": 19,
+            "type": "Class",
+            "dmlInfo": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000a3UbKQAU",
+            "locationsNotCovered": [
+              {
+                "column": 0,
+                "line": 132,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 135,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 258,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 263,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 264,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 265,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 279,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 323,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 446,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 447,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 448,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 449,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 450,
+                "numExecutions": 0,
+                "time": -1
+              }
+            ],
+            "name": "Tier2WebhookQueueable",
+            "namespace": null,
+            "numLocations": 183,
+            "numLocationsNotCovered": 13,
+            "type": "Class",
+            "dmlInfo": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000a3UbIQAU",
+            "locationsNotCovered": [
+              {
+                "column": 0,
+                "line": 55,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 58,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 86,
+                "numExecutions": 0,
+                "time": -1
+              }
+            ],
+            "name": "Tier2WebhookFinalizer",
+            "namespace": null,
+            "numLocations": 76,
+            "numLocationsNotCovered": 3,
+            "type": "Class",
+            "dmlInfo": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          }
+        ],
+        "codeCoverageWarnings": [
+          {
+            "id": "01pdL00000a3UbG",
+            "message": "Test coverage of selected Apex Class is 53.659%, at least 75% test coverage is required",
+            "name": "Tier2EscalationService",
+            "namespace": null
+          }
+        ],
+        "failures": [
+          {
+            "id": "01pdL00000a3UbJQAU",
+            "message": "Tier2WebhookQueueable.Tier2WebhookException: Transient failure on attempt 2 of 3 for 1 Case(s); Tier2WebhookFinalizer will retry.",
+            "methodName": "transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce",
+            "name": "Tier2WebhookFinalizerTest",
+            "namespace": null,
+            "packageName": "Tier2WebhookFinalizerTest",
+            "stackTrace": "Class.Tier2WebhookQueueable.execute: line 340, column 1",
+            "time": 520,
+            "type": "Class"
+          }
+        ],
+        "numFailures": 1,
+        "numTestsRun": 35,
+        "successes": [
+          {
+            "id": "01pdL00000a3Ub8QAE",
+            "methodName": "aResendIsNotSuppressedByARecentNotification",
+            "name": "IntegrationFailureResendTest",
+            "namespace": null,
+            "time": 431
+          },
+          {
+            "id": "01pdL00000a3Ub8QAE",
+            "methodName": "aRowWithNoCaseIsIgnored",
+            "name": "IntegrationFailureResendTest",
+            "namespace": null,
+            "time": 263
+          },
+          {
+            "id": "01pdL00000a3Ub8QAE",
+            "methodName": "aRowWithNoStoredPayloadStillResends",
+            "name": "IntegrationFailureResendTest",
+            "namespace": null,
+            "time": 370
+          },
+          {
+            "id": "01pdL00000a3Ub8QAE",
+            "methodName": "clearingResendDoesNotReEnqueue",
+            "name": "IntegrationFailureResendTest",
+            "namespace": null,
+            "time": 285
+          },
+          {
+            "id": "01pdL00000a3Ub8QAE",
+            "methodName": "theResendReplaysTheStoredIdempotencyKey",
+            "name": "IntegrationFailureResendTest",
+            "namespace": null,
+            "time": 208
+          },
+          {
+            "id": "01pdL00000a3Ub8QAE",
+            "methodName": "tickingResendReEnqueuesAndResolvesTheRow",
+            "name": "IntegrationFailureResendTest",
+            "namespace": null,
+            "time": 380
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "aQuietWindowWithNoEscalationsRaisesNoAlert",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 725
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "alertPathDependsOnTheOrgWideAddressPrerequisite",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 260
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "belowBothThresholdsRaisesNoAlert",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 266
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "moreThanThreeFailuresInAnHourRaisesTheBurstAlert",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 314
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "noActiveRecipientRecordsAWarningFailureRowAndSendsNothing",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 283
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "noSuccessInTwentyFourHoursWhileEscalationsOccurredRaisesTheSilentAlert",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 323
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "productionCronIsHourlyOnTheHour",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 212
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "queryBudgetStaysFlatAtBulkVolume",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 396
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "rosterResolutionReturnsTheDistinctActiveAssigneeEmails",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 326
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "scheduleCreatesAWaitingCronTriggerAndDispatchesTheQueueable",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 502
+          },
+          {
+            "id": "01pdL00000a3UbFQAU",
+            "methodName": "subjectAndBodyNameTheRuleThatFired",
+            "name": "Tier2ChannelHealthTest",
+            "namespace": null,
+            "time": 192
+          },
+          {
+            "id": "01pdL00000a3UbHQAU",
+            "methodName": "aNotificationOlderThanTheWindowIsNotSuppressed",
+            "name": "Tier2EscalationServiceTest",
+            "namespace": null,
+            "time": 518
+          },
+          {
+            "id": "01pdL00000a3UbHQAU",
+            "methodName": "aRecentlyNotifiedCaseIsSuppressed",
+            "name": "Tier2EscalationServiceTest",
+            "namespace": null,
+            "time": 368
+          },
+          {
+            "id": "01pdL00000a3UbHQAU",
+            "methodName": "aSaveThatDoesNotChangeOwnerIsIgnored",
+            "name": "Tier2EscalationServiceTest",
+            "namespace": null,
+            "time": 330
+          },
+          {
+            "id": "01pdL00000a3UbHQAU",
+            "methodName": "bulkOwnerChangeStillEnqueuesExactlyOneJob",
+            "name": "Tier2EscalationServiceTest",
+            "namespace": null,
+            "time": 4831
+          },
+          {
+            "id": "01pdL00000a3UbHQAU",
+            "methodName": "ownerChangeToAUserIsNotAnEscalation",
+            "name": "Tier2EscalationServiceTest",
+            "namespace": null,
+            "time": 330
+          },
+          {
+            "id": "01pdL00000a3UbHQAU",
+            "methodName": "ownerChangeToTier2QueueEscalatesAndStamps",
+            "name": "Tier2EscalationServiceTest",
+            "namespace": null,
+            "time": 475
+          },
+          {
+            "id": "01pdL00000a3UbJQAU",
+            "methodName": "abandonedAfterFinalAttemptIsRecordedAbandonedWithNoReEnqueue",
+            "name": "Tier2WebhookFinalizerTest",
+            "namespace": null,
+            "time": 242
+          },
+          {
+            "id": "01pdL00000a3UbJQAU",
+            "methodName": "nullContextIsANoOp",
+            "name": "Tier2WebhookFinalizerTest",
+            "namespace": null,
+            "time": 231
+          },
+          {
+            "id": "01pdL00000a3UbJQAU",
+            "methodName": "secondConsecutiveFailureUpdatesTheExistingRowRatherThanInsertingASecond",
+            "name": "Tier2WebhookFinalizerTest",
+            "namespace": null,
+            "time": 526
+          },
+          {
+            "id": "01pdL00000a3UbJQAU",
+            "methodName": "successResultTakesNoActionAndDoesNotConsumeTheEnqueueSlot",
+            "name": "Tier2WebhookFinalizerTest",
+            "namespace": null,
+            "time": 237
+          },
+          {
+            "id": "01pdL00000a3UbLQAU",
+            "methodName": "aCaseNotifiedInsideTheWindowIsSkippedByTheJobToo",
+            "name": "Tier2WebhookQueueableTest",
+            "namespace": null,
+            "time": 285
+          },
+          {
+            "id": "01pdL00000a3UbLQAU",
+            "methodName": "authFailurePointsTheReaderAtThePrincipalGrant",
+            "name": "Tier2WebhookQueueableTest",
+            "namespace": null,
+            "time": 342
+          },
+          {
+            "id": "01pdL00000a3UbLQAU",
+            "methodName": "permanentFailureRecordsTheAttemptAndDoesNotStamp",
+            "name": "Tier2WebhookQueueableTest",
+            "namespace": null,
+            "time": 332
+          },
+          {
+            "id": "01pdL00000a3UbLQAU",
+            "methodName": "statusCodesAreClassifiedTheWayTheRetryContractSays",
+            "name": "Tier2WebhookQueueableTest",
+            "namespace": null,
+            "time": 191
+          },
+          {
+            "id": "01pdL00000a3UbLQAU",
+            "methodName": "successStampsTheCaseAndWritesNoFailureRow",
+            "name": "Tier2WebhookQueueableTest",
+            "namespace": null,
+            "time": 346
+          },
+          {
+            "id": "01pdL00000a3UbLQAU",
+            "methodName": "theIdempotencyKeyIsStableForTheSameCaseAndEscalationTime",
+            "name": "Tier2WebhookQueueableTest",
+            "namespace": null,
+            "time": 205
+          },
+          {
+            "id": "01pdL00000a3UbLQAU",
+            "methodName": "transientFailureOnTheLastAttemptIsAbandonedRatherThanRetried",
+            "name": "Tier2WebhookQueueableTest",
+            "namespace": null,
+            "time": 328
+          }
+        ],
+        "totalTime": 23140,
+        "flowCoverage": [],
+        "flowCoverageWarnings": []
+      },
+      "componentFailures": []
+    },
+    "done": true,
+    "id": "0AfdL00000gJf45SAC",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2026-09-12T17:45:19.000Z",
+    "numberComponentErrors": 0,
+    "numberComponentsDeployed": 40,
+    "numberComponentsTotal": 40,
+    "numberFiles": "47",
+    "numberTestErrors": 1,
+    "numberTestsCompleted": 34,
+    "numberTestsTotal": 35,
+    "rollbackOnError": true,
+    "runTestsEnabled": true,
+    "startDate": "2026-09-12T17:44:51.000Z",
+    "status": "Failed",
+    "success": false,
+    "zipSize": 64322,
+    "files": [
+      {
+        "fullName": "CaseTriggerHandler",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/CaseTriggerHandler.cls"
+      },
+      {
+        "fullName": "CaseTriggerHandler",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/CaseTriggerHandler.cls-meta.xml"
+      },
+      {
+        "fullName": "IntegrationFailureResendTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/IntegrationFailureResendTest.cls"
+      },
+      {
+        "fullName": "IntegrationFailureResendTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/IntegrationFailureResendTest.cls-meta.xml"
+      },
+      {
+        "fullName": "IntegrationFailureTriggerHandler",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/IntegrationFailureTriggerHandler.cls"
+      },
+      {
+        "fullName": "IntegrationFailureTriggerHandler",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/IntegrationFailureTriggerHandler.cls-meta.xml"
+      },
+      {
+        "fullName": "MockHttpResponseGenerator",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/MockHttpResponseGenerator.cls"
+      },
+      {
+        "fullName": "MockHttpResponseGenerator",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/MockHttpResponseGenerator.cls-meta.xml"
+      },
+      {
+        "fullName": "TestDataFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/TestDataFactory.cls"
+      },
+      {
+        "fullName": "TestDataFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/TestDataFactory.cls-meta.xml"
+      },
+      {
+        "fullName": "TestUserFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/TestUserFactory.cls"
+      },
+      {
+        "fullName": "TestUserFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/TestUserFactory.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2ChannelHealthQueueable",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2ChannelHealthQueueable.cls"
+      },
+      {
+        "fullName": "Tier2ChannelHealthQueueable",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2ChannelHealthQueueable.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2ChannelHealthSchedulable",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2ChannelHealthSchedulable.cls"
+      },
+      {
+        "fullName": "Tier2ChannelHealthSchedulable",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2ChannelHealthSchedulable.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2ChannelHealthTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2ChannelHealthTest.cls"
+      },
+      {
+        "fullName": "Tier2ChannelHealthTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2ChannelHealthTest.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2EscalationService",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2EscalationService.cls"
+      },
+      {
+        "fullName": "Tier2EscalationService",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2EscalationService.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2EscalationServiceTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2EscalationServiceTest.cls"
+      },
+      {
+        "fullName": "Tier2EscalationServiceTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2EscalationServiceTest.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2WebhookFinalizer",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookFinalizer.cls"
+      },
+      {
+        "fullName": "Tier2WebhookFinalizer",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookFinalizer.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2WebhookFinalizerTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookFinalizerTest.cls"
+      },
+      {
+        "fullName": "Tier2WebhookFinalizerTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookFinalizerTest.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2WebhookQueueable",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookQueueable.cls"
+      },
+      {
+        "fullName": "Tier2WebhookQueueable",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookQueueable.cls-meta.xml"
+      },
+      {
+        "fullName": "Tier2WebhookQueueableTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookQueueableTest.cls"
+      },
+      {
+        "fullName": "Tier2WebhookQueueableTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/classes/Tier2WebhookQueueableTest.cls-meta.xml"
+      },
+      {
+        "fullName": "CaseTrigger",
+        "type": "ApexTrigger",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/triggers/CaseTrigger.trigger"
+      },
+      {
+        "fullName": "CaseTrigger",
+        "type": "ApexTrigger",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/triggers/CaseTrigger.trigger-meta.xml"
+      },
+      {
+        "fullName": "IntegrationFailureTrigger",
+        "type": "ApexTrigger",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/triggers/IntegrationFailureTrigger.trigger"
+      },
+      {
+        "fullName": "IntegrationFailureTrigger",
+        "type": "ApexTrigger",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/triggers/IntegrationFailureTrigger.trigger-meta.xml"
+      },
+      {
+        "fullName": "Case.Tier2_Notified_At__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Case/fields/Tier2_Notified_At__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Attempt_Count__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Attempt_Count__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Case_Number__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Case_Number__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Case__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Case__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Endpoint__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Endpoint__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Error_Message__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Error_Message__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.HTTP_Status__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/HTTP_Status__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Last_Attempted_At__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Last_Attempted_At__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Request_Payload__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Request_Payload__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Resend__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Resend__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Response_Body__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Response_Body__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Severity__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Severity__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c.Status__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/fields/Status__c.field-meta.xml"
+      },
+      {
+        "fullName": "Integration_Failure__c",
+        "type": "CustomObject",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Integration_Failure__c/Integration_Failure__c.object-meta.xml"
+      },
+      {
+        "fullName": "Tier2_Escalation__e",
+        "type": "CustomObject",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/objects/Tier2_Escalation__e/Tier2_Escalation__e.object-meta.xml"
+      },
+      {
+        "fullName": "OnCall_Tool_EC",
+        "type": "ExternalCredential",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/externalCredentials/OnCall_Tool_EC.externalCredential-meta.xml"
+      },
+      {
+        "fullName": "OnCall_Tool",
+        "type": "NamedCredential",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/namedCredentials/OnCall_Tool.namedCredential-meta.xml"
+      },
+      {
+        "fullName": "Tier2_Webhook_Admin",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/force-app/main/default/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml"
+      }
+    ],
+    "zipFileCount": 41,
+    "deployUrl": "https://orgfarm-76c95d6f7f-dev-ed.develop.my.salesforce.com/lightning/setup/DeployStatus/page?address=%2Fchangemgmt%2FmonitorDeploymentsDetails.apexp%3FasyncId%3D0AfdL00000gJf45SAC%26retURL%3D%252Fchangemgmt%252FmonitorDeployment.apexp"
+  },
+  "warnings": [
+    "CustomField, Tier2_Escalation__e.Case_Link__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Case_Number__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Escalated_At__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Severity__c, returned from org, but not found in the local project",
+    "CustomField, Tier2_Escalation__e.Subject__c, returned from org, but not found in the local project"
+  ],
+  "api_version": {
+    "value": "67.0",
+    "source": "highest of: M1-S01=67.0, M1-S02=67.0, M1-S05=67.0"
+  },
+  "tests": {
+    "level": "RunSpecifiedTests",
+    "requested_tests": [
+      "IntegrationFailureResendTest",
+      "MockHttpResponseGenerator",
+      "TestDataFactory",
+      "TestUserFactory",
+      "Tier2ChannelHealthTest",
+      "Tier2EscalationServiceTest",
+      "Tier2WebhookFinalizerTest",
+      "Tier2WebhookQueueableTest"
+    ],
+    "run": 34,
+    "passed": 33,
+    "failed": 1,
+    "coverage_pct": 86.8,
+    "failures": [
+      {
+        "class": "Tier2WebhookFinalizerTest",
+        "method": "transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce",
+        "message": "Tier2WebhookQueueable.Tier2WebhookException: Transient failure on attempt 2 of 3 for 1 Case(s); Tier2WebhookFinalizer will retry.",
+        "stack_first_line": "Class.Tier2WebhookQueueable.execute: line 340, column 1"
+      }
+    ]
+  }
+}

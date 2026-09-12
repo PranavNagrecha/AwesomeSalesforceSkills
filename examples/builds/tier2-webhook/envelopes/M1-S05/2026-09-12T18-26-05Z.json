@@ -1,0 +1,215 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T18-26-05Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T18-26-05Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S05/2026-09-12T18-26-05Z.json",
+  "summary": "Ran the molecular tests for step M1-S05 (build tier2-webhook, type docs, owner metadata-builder) after metadata-builder's 2026-09-12T18-18-48Z re-run added the Tier2WebhookFinalizerTest ApexClass member. Always-on xml: 1 file (package.xml) parses. Always-on manifest, re-derived independently over the whole artefacts/M1-S0[1-4] tree per the step's own test description: 35 members across 7 types reconcile bidirectionally against 54 backing files, no orphan file, no member without a file, no coverage-gap exclusion needed. Declared checker check_deployment_manifest.py --manifest-dir artefacts/M1-S05 exited 0 with exactly the 2 predicted WARN findings (ExternalCredential, NamedCredential) and 0 blocking; check-outputs reported ok:true. The step's manual test (deploy-order read at the M1 gate) was checked against the Given/When/Then testability bar, confirmed tickable, and deferred to skipped_manual[] rather than ticked. results.json written with passed:true; step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 rubric: every declared test (checker, xml, manifest, manual) ran or was correctly classified as manual; both always-on checks completed with results this agent derived independently rather than trusting the prior run's stale captures; every result (checker exit 0, check-outputs ok:true, xml parse, manifest two-way derivation) came from an exit code or parse this agent directly observed this run; no manifest exclusion was needed for a coverage-gap type, and no command test was refused as out of policy.",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook/",
+    "step_id": "M1-S05",
+    "precondition_status_observed": "built",
+    "trigger_for_this_run": "operator report that metadata-builder re-ran M1-S05 at 2026-09-12T18-18-48Z adding the Tier2WebhookFinalizerTest ApexClass member (35 members, was 34); prior tests/M1-S05/results.json and summary.md were the stale 34-member run's captures and are overwritten by this run",
+    "credentials_in_inputs": "none - no secret appears in any step input or artefact; the External Credential carries a merge-field reference, not a key"
+  },
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The whole-tree two-way manifest check reconciled exactly on the first attempt: 35 distinct members derived from files under artefacts/M1-S01 through artefacts/M1-S04 match the 35 non-wildcard members in artefacts/M1-S05/package.xml exactly, and the 54 backing files reconcile against those 35 members with no orphan file and no member without a file.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/artefacts",
+        "query": "file-to-member derivation per skills/devops/salesforce-dx-project-structure, both directions"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared checker's WARN findings are unchanged in shape and count from the prior 34-member run despite the member-count and content changes: exactly 2 WARN (ExternalCredential, NamedCredential present) and 0 blocking, matching the step's own acceptance-test description verbatim.",
+      "domain": "checker-stability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/tests/M1-S05/checker.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "plan.json steps[M1-S05].inputs.members.ApexClass still names only 11 class names; the step's own artefacts and this run's independent derivation show 15 ApexClass members, so this input field is 4 members stale (missing MockHttpResponseGenerator, TestDataFactory, TestUserFactory and Tier2WebhookFinalizerTest) and this agent does not edit plan.json inputs.",
+      "domain": "plan-integrity",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].inputs.members.ApexClass",
+        "count": 11
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "reports/MILESTONE-M1-package.xml still carries 33 members and zero occurrences of TestUserFactory or Tier2WebhookFinalizerTest, so it is stale against this step's own artefacts/M1-S05/package.xml (35 members) by two rebuilds; this agent does not write that file, which belongs to milestone-verifier.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-package.xml",
+        "count": 33
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The step's own manual acceptance test still frames the AuthHeader parameterValue question in its pre-amendment form even though deploy-order.md's own § 3 Step 1 records the narrower, corrected reading (D-M1S02-06 / PV-007); this agent reports the divergence rather than rewriting the plan's acceptance_tests[3].expected text, which is outside its Scope Guardrails.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M1-S05].acceptance_tests[3].description"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Two plan-record surfaces (inputs.members.ApexClass and the milestone-level manifest) are stale relative to the step's own regenerated artefacts, and a human or the milestone verifier should reconcile them before the M1 gate rather than a future agent silently re-deriving the same fact again.",
+      "domain": "plan-structure",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-package.xml"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because it owns reports/MILESTONE-M1-package.xml and the cross-step manifest checker run at build scope, and can regenerate the stale milestone manifest and confirm the M1 acceptance test against the now-35-member step manifest."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 5 acceptance-test types/runners/pass-conditions and the manifest fail-vs-skip rule; section 4 step-type table for the docs step type"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema and confidence-rubric override for this agent"
+    },
+    {
+      "type": "standard",
+      "id": "DELIVERABLE_CONTRACT",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence paths and the atomic-write rule governing this envelope and tests/M1-S05/results.json"
+    },
+    {
+      "type": "standard",
+      "id": "REFUSAL_CODES",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirmed no Escalation/Refusal condition applied to this run"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and on auto-chaining into build-doc-keeper"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "shape of acceptance_tests[] and outputs[] read for M1-S05"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar the manifest check parses artefacts/M1-S05/package.xml against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "filename-to-metadata-type mapping used to derive 35 members from files under artefacts/M1-S0[1-4]"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirmed none of the seven present types lacks a standalone source file, so no manifest exclusion applies"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "boolean/observable testability bar applied to the step's manual acceptance test before deferring it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then anatomy used to confirm the manual test names concrete observable outcomes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "owning skill of the declared checker check_deployment_manifest.py run verbatim against this step's manifest"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "the step is now tested and its traceability/decisions record should be updated to reflect the 35-member manifest and this test run."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "reports/MILESTONE-M1-package.xml is stale (33 members) against this step's regenerated 35-member manifest and should be reconciled before the M1 gate."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S05",
+    "results_path": ".sfskills/builds/tier2-webhook/tests/M1-S05/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c (xml.etree.ElementTree over artefacts/M1-S05/**/*.xml, *-meta.xml)",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "stdlib xml.etree.ElementTree two-way derivation over artefacts/M1-S0[1-4] vs artefacts/M1-S05/package.xml",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M1-S05",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "check-outputs",
+        "type": "checker-precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/tier2-webhook/plan.json M1-S05",
+        "exit_code": 0,
+        "verdict": "ok"
+      },
+      {
+        "name": "Deploy-order read at the M1 gate",
+        "type": "manual",
+        "runner": "not run by this agent - deferred to milestone gate",
+        "exit_code": null,
+        "verdict": "deferred"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "A reviewer confirms deploy-order.md lists the five manual steps no deploy performs - confirming the AuthHeader formula grammar, entering the API key against the principal, assigning Tier2_Webhook_Admin to the D14 assignee set, scheduling the hourly job, and confirming the org-wide sender is verified - and that the mock_deploy.py command is written as text for a human to run rather than as anything an agent executes."
+    ],
+    "tests_run": 3
+  }
+}

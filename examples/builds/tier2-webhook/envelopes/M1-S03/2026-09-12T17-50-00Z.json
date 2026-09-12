@@ -1,0 +1,247 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T17-50-00Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T17-50-00Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1-S03/2026-09-12T17-50-00Z.json",
+  "summary": "Run 7 of M1-S03 — the fourth § 4 test-only repair, after reports/MOCK-DEPLOY-M1.md run 10 (S2-F-15). Run 10 answered § 0d's central UNVERIFIED question: Tier2WebhookFinalizerTest.cls (implementing System.FinalizerContext directly) compiles at API 67.0, and coverage rose to 86.8% — clear of the 75% floor. But 1 of 34 tests failed: transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce. The org's real execution disproved § 0d's assumption that omitting Test.startTest()/Test.stopTest() would stop the Finalizer's own re-enqueued Tier2WebhookQueueable from running — it ran to completion by the end of the test method regardless, and with no HttpCalloutMock registered anywhere in that method, its callout threw, was classified transient, and (landing at attempt=2, still below the ceiling) re-threw Tier2WebhookQueueable.execute's own line 340, uncaught. Fixed with one line — Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator().withResponse(200, OK_BODY)) immediately before the finalizer.execute(...) call — plus a new OK_BODY constant and a corrected class header. The alternative offered (assert the enqueue without forcing execution) was not available: the org's own result already showed the job runs regardless of how the call is wrapped. All of the method's existing assertions remain valid because they read the database synchronously before the platform's later run of the re-enqueued job. No shipped class, no other test method, and no other file changed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM, up from run 6's more heavily caveated MEDIUM. Gate B: 0 unresolved symbols. Gate C check 3 (compile): this run cannot itself run a compile (still design-only, no target_org_alias), but the org's own run 10 result — handed to this run as an input, not produced by it — already confirms the file compiles and that 33 of 34 tests (all but the one this run fixes) pass, at 86.8% coverage. That resolves run 6's most serious named risk (S6-F-02, whether System.FinalizerContext is customer-implementable) in the affirmative. What keeps this at MEDIUM rather than HIGH is that no agent in this loop can re-run the dry run to confirm the fix actually turns the 34th test green — the fix is reasoned from the org's own diagnostic (the exact exception, the exact line, the exact method) and from the same skills already grounding this step, but it is unconfirmed by a fresh org run.",
+  "outcome": "completed",
+  "inputs_received": {
+    "kind": "trigger",
+    "primary_sobject": "Case",
+    "api_version": "67.0",
+    "source": "plan.json steps[M1-S03].inputs, unchanged. This run's scope, sources and constraints were given directly by the coordinator's message: reports/MOCK-DEPLOY-M1.md run 10 (S2-F-15), reports/mock-deploy/2026-09-12T17-44-44Z/summary.md, and an explicit instruction to repair exactly one method, test-only, choosing between a 2xx-mock fix or an assert-without-forcing-execution fix and saying which and why.",
+    "org_evidence": "reports/MOCK-DEPLOY-M1.md run 10 — MANIFEST mode, --test-level RunSpecifiedTests: components ok, tests run 34, passed 33, failed 1 (transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce, Tier2WebhookQueueable.execute line 340), coverage_pct 86.8.",
+    "credentials": "[REDACTED] — none present in the step inputs, none touched by this run."
+  },
+  "findings": [
+    {
+      "id": "S7-F-01",
+      "severity": "P1",
+      "title": "S2-F-15 addressed: the one failing method now registers a 2xx mock before the call that re-enqueues a job",
+      "detail": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls, method transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce, gained one line — Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator().withResponse(200, OK_BODY)) — immediately before finalizer.execute(...), plus a new class-level OK_BODY constant. The method's own assertions are unchanged and remain valid: they query the database synchronously right after execute() returns, before the platform's later run of the re-enqueued Tier2WebhookQueueable (attempt=2), so they still observe recordAttempt's isolated 'insert one Retrying row' outcome. The later, now-successful completion of that re-enqueued job (which updates the same row to Resolved and stamps the Case) happens after the assertions and is not itself asserted.",
+      "evidence": {
+        "path": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls",
+        "source": "repo_scan"
+      },
+      "recommendation": "Re-run the dry run with --test-level RunSpecifiedTests to confirm 34/34 passing. No agent in this loop can do this."
+    },
+    {
+      "id": "S7-F-02",
+      "severity": "INFO",
+      "title": "Run 6's central UNVERIFIED question (S6-F-02) is now answered: System.FinalizerContext is customer-implementable at API 67.0 in this org",
+      "detail": "reports/MOCK-DEPLOY-M1.md run 10 shows Tier2WebhookFinalizerTest.cls compiled and 33 of its methods ran and passed — including the four that were never in question and the StubFinalizerContext inner class every one of them depends on. This resolves the risk named at MEDIUM confidence in run 6's envelope; skills/apex/apex-transaction-finalizers still does not document this technique and would benefit from it being added, now that it has org confirmation (S6-F-05 already flagged the citation gap; this closes the open question that gap pointed at).",
+      "evidence": {
+        "path": "reports/MOCK-DEPLOY-M1.md run 10",
+        "source": "input"
+      },
+      "recommendation": "Add a note (with org confirmation) to skills/apex/apex-transaction-finalizers/references/gotchas.md or examples.md documenting that a customer class may implement System.FinalizerContext directly for isolated Finalizer unit tests, as an alternative to the @TestVisible seam the skill currently shows exclusively. Skill authoring, not this agent's own scope."
+    },
+    {
+      "id": "S7-F-03",
+      "severity": "P2",
+      "title": "secondConsecutiveFailureUpdatesTheExistingRowRatherThanInsertingASecond has the identical latent exposure, currently harmless only by arithmetic coincidence",
+      "detail": "That method's own re-enqueued job lands at attempt=MAX_ATTEMPTS (3), so when its unmocked callout fails, Tier2WebhookQueueable.execute() falls into persistOutcomes's no-retry branch instead of re-throwing — no uncaught exception, no test failure, but the same 'real job runs with no mock' condition this run just fixed elsewhere is still present, relying on the ceiling arithmetic rather than a registered mock. Not fixed in this run because the task scoped the repair to exactly one method and this one is not failing.",
+      "evidence": {
+        "path": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls, method secondConsecutiveFailureUpdatesTheExistingRowRatherThanInsertingASecond",
+        "source": "repo_scan"
+      },
+      "recommendation": "A future pass could register the same 2xx MockHttpResponseGenerator there too, purely for robustness — not urgent, since nothing currently fails."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The org's diagnostic was specific enough (exact method name, exact throw site by line number, exact test counts) that the root cause followed directly from re-reading the shipped Tier2WebhookQueueable's own throw condition against each method's chosen attempt value — no speculation was needed to explain why exactly one of the two retry-branch methods failed and not the other.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M1.md run 10; reports/mock-deploy/2026-09-12T17-44-44Z/summary.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This run's whole premise — that a test's assumption about Salesforce async test-execution semantics can be wrong even when it's carefully reasoned and explicitly flagged UNVERIFIED — is itself a data point: run 6 named the FinalizerContext-implementation question as the risk to watch, and it turned out fine; the actual defect was in an entirely different, unflagged assumption (that omitting Test.startTest()/Test.stopTest() suppresses execution of a re-enqueued job). Flagging the risk you can name does not catch the risk you didn't think to name.",
+      "domain": "library-consistency",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls (pre-fix header, quoted in deploy-order.md § 0d)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether Salesforce's real platform behaviour here — running a Finalizer's re-enqueued job to completion by the end of a test method even without Test.startTest()/Test.stopTest() — is documented anywhere official, or is specific to how this org's --test-level RunSpecifiedTests full test-class run works, is not established by anything in this run. It is treated as an empirical fact from this org's own result, not re-derived from a citation.",
+      "domain": "integration-contract",
+      "evidence": {
+        "source": "input",
+        "path": "reports/MOCK-DEPLOY-M1.md run 10"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "observation": "A fresh dry run with --test-level RunSpecifiedTests is the only way to confirm this fix actually turns the 34th test green and that coverage still clears 75% after it.",
+      "domain": "build-orchestration",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "step-tester runs this step's declared acceptance tests next; the actual org confirmation is the operator's mock_deploy.py run, outside any agent's authority.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/tier2-webhook/plan.json steps[M1-S03].acceptance_tests"
+      }
+    }
+  ],
+  "dimensions_compared": [
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "No production class touched this run.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "not-run",
+      "reason": "One Test.setMock() line added to one test method; no production SOQL/DML path changed.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "security-posture",
+      "state": "not-run",
+      "reason": "The fix adds no SOQL, DML, or FLS-relevant code; the affected method's System.runAs wrapper is unchanged.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "secret-handling",
+      "state": "not-run",
+      "reason": "The added mock body is the same fixture literal Tier2WebhookQueueableTest already uses; no credential involved.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "id-handling",
+      "state": "not-run",
+      "reason": "No Id literal introduced by this fix.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "bulk-safety",
+      "state": "not-run",
+      "reason": "The fix does not change the single-Case shape of the affected test.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "include_logger is false for this build; unchanged.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a"
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agents/apex-builder/AGENT.md",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "scope check confirming a test-only, one-method repair with no shipped-class edit stays inside this agent's Escalation Rules"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's step-status machine — confirming built -> failed -> pending -> running is the legal recovery path since there is no built -> running edge"
+    },
+    {
+      "type": "standard",
+      "id": "reports/MOCK-DEPLOY-M1.md",
+      "path": ".sfskills/builds/tier2-webhook/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "run 10 / S2-F-15 — the exact failing method, exception and line number this repair fixes"
+    },
+    {
+      "type": "standard",
+      "id": "reports/mock-deploy/2026-09-12T17-44-44Z/summary.md",
+      "path": ".sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T17-44-44Z/summary.md",
+      "used_for": "the raw test result (34 run, 33 passed, 1 failed, coverage_pct 86.8) behind run 10's report"
+    },
+    {
+      "type": "skill",
+      "id": "apex/callouts-and-http-integrations",
+      "path": "skills/apex/callouts-and-http-integrations/SKILL.md",
+      "used_for": "the rule this fix applies — any code path that can perform a callout under test needs a registered HttpCalloutMock before it runs"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-mocking-and-stubs",
+      "path": "skills/apex/apex-mocking-and-stubs/SKILL.md",
+      "used_for": "the HttpCalloutMock registration pattern (Test.setMock(HttpCalloutMock.class, ...)) used in the one-line fix"
+    },
+    {
+      "type": "template",
+      "id": "apex/tests/MockHttpResponseGenerator.cls",
+      "path": "templates/apex/tests/MockHttpResponseGenerator.cls",
+      "used_for": "withResponse(200, body) — the exact call the fix adds, matching Tier2WebhookQueueableTest's own usage"
+    },
+    {
+      "type": "standard",
+      "id": "plan.json steps[M1-S03]",
+      "path": ".sfskills/builds/tier2-webhook/plan.json",
+      "used_for": "the step's declared acceptance_tests[], re-run verbatim after the fix; read, never hand-edited"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S03",
+    "run": 7,
+    "repair_number_under_section_4": 4,
+    "previous_runs": [
+      "envelopes/M1-S03/2026-09-12T10-57-25Z.json (refused, REFUSAL_INPUT_AMBIGUOUS)",
+      "envelopes/M1-S03/2026-09-12T11-23-31Z.json (run 2, built, later rejected by the org)",
+      "envelopes/M1-S03/2026-09-12T11-40-10Z.json (run 3, fixed S2-F-04/S2-F-05, passed the org's compile)",
+      "envelopes/M1-S03/2026-09-12T16-13-43Z.json (run 4, § 4 repair 1, fixed S2-F-11)",
+      "envelopes/M1-S03/2026-09-12T17-05-00Z.json (run 5, § 4 repair 2, fixed S2-F-12)",
+      "envelopes/M1-S03/2026-09-12T17-40-00Z.json (run 6, § 4 repair 3, fixed S2-F-14, added Tier2WebhookFinalizerTest.cls)"
+    ],
+    "org_evidence": {
+      "report": "reports/MOCK-DEPLOY-M1.md, run 10",
+      "summary_path": "reports/mock-deploy/2026-09-12T17-44-44Z/summary.md",
+      "mode": "MANIFEST, --test-level RunSpecifiedTests, API 67.0",
+      "tests": "run 34, passed 33, failed 1, coverage_pct 86.8",
+      "failure": "transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce, Tier2WebhookQueueable.execute line 340",
+      "finding": "S2-F-15"
+    },
+    "changes_this_run": [
+      {
+        "file": "artefacts/M1-S03/classes/Tier2WebhookFinalizerTest.cls",
+        "change": "added OK_BODY constant; added one Test.setMock(...) line before finalizer.execute(...) in transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce; corrected the class header's now-disproven claim that the re-enqueued job never runs. No assertions changed.",
+        "fixes": "S2-F-15"
+      },
+      {
+        "file": "artefacts/M1-S03/deploy-order.md",
+        "change": "new § 0e recording the repair, S2-F-15, the root-cause explanation (including why the sibling existing-row method did not also fail), and the choice between the two offered remedies",
+        "fixes": "n/a — documentation of the above"
+      }
+    ],
+    "files_unchanged": "Everything else: both triggers, all production classes, TestUserFactory, MockHttpResponseGenerator, TestDataFactory, and the other three pre-existing test classes plus all four other methods and the StubFinalizerContext inner class of Tier2WebhookFinalizerTest itself. No -meta.xml changed.",
+    "classes_emitted_or_modified": 1,
+    "test_methods_changed": 1,
+    "test_methods_unchanged": 23,
+    "gate_b": "passed — 0 unresolved symbols.",
+    "gate_c": "check 1 (symbol grounding) and check 2 (identifier provenance) passed. Check 3 (compile) did not run in this agent — design-only, no target_org_alias — but the org's own run 10 result, supplied as this run's input, already confirms the file compiles and 33/34 methods pass. What ran offline this run: the three step-declared checkers (0 findings, the one pre-existing unrelated WARN unchanged) plus check_test_class_standards.py (0 findings), a brace/paren/bracket/quote-parity check on the edited file (comments stripped for the quote count), and check-outputs (ok, 20/20).",
+    "checker_output": {
+      "check_apex_queueable_patterns": "Scanned 14 Apex file(s), 1 implementing Queueable; 0 ERROR, 0 WARN, 0 ADVISORY. Exit 0.",
+      "check_callouts_and_http_integrations": "Scanned 14 Apex file(s); 0 callout finding(s). Exit 0.",
+      "check_platform_events_apex": "Scanned 14 Apex file(s) and 0 object file(s); 1 platform-event finding(s) (WARN, R9, Tier2EscalationService.cls, pre-existing since § 0d, untouched this run). Exit 0.",
+      "check_test_class_standards": "Scanned 12 Apex class file(s); audited 7 @IsTest artifact(s); 0 finding(s). Exit 0."
+    }
+  }
+}
