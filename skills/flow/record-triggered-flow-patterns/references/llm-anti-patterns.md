@@ -165,3 +165,46 @@ Account After Save Flow:
 Use subflows to keep the consolidated flow maintainable.
 
 **Detection hint:** Multiple active record-triggered flows on the same object with the same trigger type (e.g., after save on update).
+
+---
+
+## Anti-Pattern 7: Copying the after-save `FlowTest`'s `$Record` parameter pair onto a Create-triggered flow
+
+**What the LLM generates:**
+
+```xml
+<!-- flow's <recordTriggerType> is Create -->
+<testPoints>
+    <elementApiName>Start</elementApiName>
+    <parameters>
+        <leftValueReference>$Record</leftValueReference>
+        <type>InputTriggeringRecordInitial</type>
+        <value><sobjectValue>{...}</sobjectValue></value>
+    </parameters>
+    <parameters>
+        <leftValueReference>$Record</leftValueReference>
+        <type>InputTriggeringRecordUpdated</type>
+        <value><sobjectValue>{...}</sobjectValue></value>
+    </parameters>
+</testPoints>
+```
+
+**Why it happens:** LLMs pattern-match `FlowTest` Start test points to the one worked example they have seen — an after-save, `Update`-triggered flow whose Start test point takes both `InputTriggeringRecordInitial` and `InputTriggeringRecordUpdated` (`references/metadata-examples.md` § 4.1). They generalize the pair to "every record-triggered `FlowTest` needs a before-value and an after-value," which is false for `Create`: a newly inserted record has no before-value. Worse, when the deploy rejects an `InputTriggeringRecordUpdated`-only test point with a "missing InputTriggeringRecordInitial" error, the LLM's next attempt often *adds* `InputTriggeringRecordInitial` to what is already there instead of *replacing* `InputTriggeringRecordUpdated` — producing a second, different deploy error instead of a pass.
+
+**Correct pattern:**
+
+```xml
+<!-- flow's <recordTriggerType> is Create -->
+<testPoints>
+    <elementApiName>Start</elementApiName>
+    <parameters>
+        <leftValueReference>$Record</leftValueReference>
+        <type>InputTriggeringRecordInitial</type>
+        <value><sobjectValue>{...}</sobjectValue></value>
+    </parameters>
+</testPoints>
+```
+
+`InputTriggeringRecordInitial` only. Check the target flow's `recordTriggerType` before writing the test point: `Create` → Initial only, `Update` → both. `CreateAndUpdate` is UNVERIFIED (2026-09-12) — do not guess; confirm in a sandbox.
+
+**Detection hint:** A `FlowTest` Start test point carrying `InputTriggeringRecordUpdated` (alone or paired with `InputTriggeringRecordInitial`) where the `<flowApiName>`'s target flow has `<recordTriggerType>Create</recordTriggerType>`. `scripts/check_record_triggered_flow_patterns.py` rule 9 catches this as an ERROR.

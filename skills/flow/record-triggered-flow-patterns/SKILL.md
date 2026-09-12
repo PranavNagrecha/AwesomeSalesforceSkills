@@ -38,9 +38,9 @@ outputs:
   - "review findings for trigger context and recursion risk"
   - "decision on before-save, after-save, or Apex"
 dependencies: []
-version: 2.1.0
+version: 2.2.0
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-12
 ---
 
 Use this skill when the hard part is not "how do I automate" but "what is the right record-triggered pattern for this object and this event?" The purpose is to choose the correct trigger context (before-save vs after-save), control how often the flow runs (entry criteria + prior-value checks), align with Salesforce order-of-execution semantics (so the flow plays well with Validation Rules, Apex triggers, and duplicate rules), and know when the answer is to escalate to Apex rather than force more logic into Flow.
@@ -71,6 +71,7 @@ Ask these before opening Flow Builder. Each one decides an element in the XML, a
 | "If the related-record write fails at 2am, who finds out and how?" | Without a `faultConnector` the interview stops and the error is invisible outside the flow error email | A fault path on every Create/Update/Delete/Get, landing on `Application_Log__c` per `templates/flow/FaultPath_Template.md` |
 | "Does any of this work need to happen later — hours or days after the save?" | A scheduled path is a `FlowScheduledPath`, batches up to 200 interviews, and an `AsyncAfterCommit` path runs post-commit where it cannot roll the save back | The `scheduledPaths` block with `offsetUnit`, `recordField`, and a deliberate `maxBatchSize` (`references/gotchas.md` § scheduled path batching) |
 | "When a record of this type is deleted, does anything have to be preserved or cleaned up?" | `RecordBeforeDelete` is the only delete context that exists — there is no after-delete record-triggered flow, and cascade deletes may never reach it | A third flow (or an explicit decision not to have one) instead of discovering the gap after a mass delete (`references/gotchas.md` § no after-delete) |
+| "Is this flow's `recordTriggerType` `Create`, `Update`, or `CreateAndUpdate`?" | It decides which `$Record` parameters the `FlowTest` Start test point may carry — `Create` takes `InputTriggeringRecordInitial` only, `Update` takes both; carrying the wrong pair fails deploy with a different error for each wrong shape | A `FlowTest` that matches the flow's actual trigger shape on the first try instead of two rounds of guessing from the error text (`references/metadata-examples.md` § 4, `references/gotchas.md` § 11) |
 
 What a proper configuration adds over just building the flow: the trigger context matches the requirement instead of defaulting to after-save, entry criteria encode the business *transition* rather than a state that stays true, every failure path writes a row someone can query, and the object's save context has a declared run order instead of an accidental one.
 
@@ -247,7 +248,7 @@ When an after-save Flow updates records on the same sObject:
 1. **Inventory the object's save contexts.** Query `FlowDefinitionView` for every active record-triggered flow on the object (`references/metadata-examples.md` § 8 has the SOQL), plus `ApexTrigger` and validation rules. You need the existing `TriggerOrder` values before you can pick yours.
 2. **Answer the seven questions above.** The first two fix `triggerType` and `recordTriggerType`; the third fixes `triggerOrder`; the rest decide whether you need a scheduled path, a fault path, and a delete flow.
 3. **Fill in the skeleton, don't freehand the XML.** Start from `templates/flow/RecordTriggered_Skeleton.flow-meta.xml` and use the matching worked flow in `references/metadata-examples.md` — § 1 before-save, § 2 after-save with entry conditions plus a scheduled path, § 3 before-delete. Route every Create/Update/Delete/Get `faultConnector` per `templates/flow/FaultPath_Template.md`.
-4. **Write the `FlowTest` before you activate.** `references/metadata-examples.md` § 4 shows the `InputTriggeringRecordInitial` / `InputTriggeringRecordUpdated` pair — the only mechanism that proves your entry criteria fire on the transition rather than on the state.
+4. **Write the `FlowTest` before you activate.** `references/metadata-examples.md` § 4 shows the `InputTriggeringRecordInitial` / `InputTriggeringRecordUpdated` pair — the only mechanism that proves your entry criteria fire on the transition rather than on the state. Match the parameters to `recordTriggerType` first: `Create` takes `InputTriggeringRecordInitial` only (§ 4.2); `Update` takes both (§ 4.1). Guessing from the deploy error costs a second round-trip (`references/gotchas.md` § 11).
 5. **Run the checker on the source tree**, then a check-only deploy: `python3 skills/flow/record-triggered-flow-patterns/scripts/check_record_triggered_flow_patterns.py --manifest-dir force-app/main/default`, then `sf project deploy validate --manifest manifest/package.xml`. The checker catches missing `faultConnector`s, before-save flows carrying DML, after-save flows re-saving their own object without changed-field criteria, Gets inside loops, and unset `triggerOrder` when the manifest has more than one flow on an object.
 6. **Activate deliberately and verify twice.** Flip `<status>` to `Active`, redeploy, then confirm in Flow Trigger Explorer and in the `FlowDefinitionView` query that the run order and the active version are what you shipped — not what a stale `FlowDefinition` pinned (`references/metadata-examples.md` § 5).
 7. **Prove the transition once with real data.** Drive the record through the change, then read the Task/related-record channel and `Application_Log__c`. Two side-effect records for one transition is the `doesRequireRecordChangedToMeetCriteria` bug, not a coincidence.
@@ -266,6 +267,11 @@ When an after-save Flow updates records on the same sObject:
 8. **Process Builder on the same object runs in a different order than Flow** — orgs mid-migration between PB and record-triggered Flows have unpredictable event sequences; complete the migration before adding more automation.
 9. **Managed-package record-triggered flows are opaque** — you can see that a Flow exists via `list_flows_on_object` but the contents may be locked. Coordinate with the package vendor before adding more automation on the same save context.
 10. **Salesforce's "Flow Trigger Explorer" shows ordering** — admins should use it during design, not just during incident response. Ordering disputes are easier to resolve before deploy.
+11. **A `FlowTest` copies the wrong `$Record` parameters from the wrong example** — a Create-triggered flow's Start test point takes `InputTriggeringRecordInitial` only, not the `InputTriggeringRecordInitial` / `InputTriggeringRecordUpdated` pair that an Update-triggered flow's `FlowTest` uses. Carrying `InputTriggeringRecordUpdated` on a Create-triggered flow fails deploy either way — with a missing-parameter error alone, or with an incompatible-parameter error once `InputTriggeringRecordInitial` is also added (`references/gotchas.md` § 11; UNVERIFIED for `CreateAndUpdate`).
+
+## Anti-Patterns (see `references/llm-anti-patterns.md`)
+
+- Writing a `FlowTest` Start test point with both `InputTriggeringRecordInitial` and `InputTriggeringRecordUpdated` — or with `InputTriggeringRecordUpdated` alone — against a Create-triggered flow, because that is the shape the after-save example uses. Check `recordTriggerType` first.
 
 ## Proactive Triggers
 
@@ -293,7 +299,7 @@ Surface these WITHOUT being asked:
 
 | File | Read it when |
 |---|---|
-| `references/metadata-examples.md` | You are writing or reviewing actual `*.flow-meta.xml`: three complete flows (before-save, after-save with entry conditions and a scheduled path, before-delete), a `FlowTest`, the `FlowDefinition` activation trap, `package.xml`, deploy order, and the `FlowDefinitionView` verification query |
+| `references/metadata-examples.md` | You are writing or reviewing actual `*.flow-meta.xml`: three complete flows on Opportunity (before-save, after-save with entry conditions and a scheduled path, before-delete), a fourth Create-triggered before-save flow on Lead (§ 4.2), two `FlowTest`s covering both the Update-pair and Create-only-Initial shapes, the `FlowDefinition` activation trap, `package.xml`, deploy order, and the `FlowDefinitionView` verification query |
 | `references/gotchas.md` | The flow deploys and still misbehaves — duplicate side effects, recursion, ties in run order, scheduled paths that batch differently than expected |
 | `references/examples.md` | You want the narrative before/after: what a practitioner built first, what broke, and the corrected shape |
 | `references/llm-anti-patterns.md` | You are reviewing flow advice or generated XML produced by an AI assistant, or self-checking your own output |

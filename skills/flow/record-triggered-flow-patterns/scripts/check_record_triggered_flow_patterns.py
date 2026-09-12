@@ -24,14 +24,42 @@ Checks
 7.  ``status`` is one of the documented ``FlowVersionStatus`` values.
 8.  ``triggerOrder`` is set whenever the manifest holds more than one
     record-triggered flow on the same object in the same trigger type.
+9.  A ``FlowTest``'s Start test point carries the ``$Record`` parameter pair
+    that matches the target flow's ``recordTriggerType``:
+
+    - ``Create`` + an ``InputTriggeringRecordUpdated`` parameter -> ERROR. Proven
+      live (dry-run, API 67.0, 2026-09-12): "The test point for elementApiName
+      "Start" contains the incompatible parameter value "$Record" of type
+      InputTriggeringRecordUpdated. Remove the parameter or change the
+      recordTriggerType for the flow."
+    - ``Create`` with no ``InputTriggeringRecordInitial`` parameter -> ERROR.
+      Proven live: "The test point for elementApiName "Start" is missing a
+      parameter of type InputTriggeringRecordInitial."
+    - ``Update`` with only one of ``InputTriggeringRecordInitial`` /
+      ``InputTriggeringRecordUpdated`` -> WARN. The documented shape
+      (``references/metadata-examples.md`` § 4.1) is both; a single parameter on
+      an Update-triggered flow is unverified, not confirmed to fail.
+    - ``CreateAndUpdate`` -> INFO. Not observed live either way; the rule for
+      this trigger shape is UNVERIFIED (2026-09-12) — flagged, not enforced.
+    - The ``FlowTest``'s ``<flowApiName>`` does not match any ``*.flow-meta.xml``
+      found under ``--manifest-dir`` -> WARN (cannot check).
 
 Every element name and enum value above comes from the Metadata API Developer
-Guide, Flow section. See ``references/metadata-examples.md`` for the grounded
-citations and for a passing example of each shape.
+Guide, Flow section, except rule 9's error text and the Create/Initial-only
+requirement, which were proven by a live check-only deploy, not stated in the
+guide. See ``references/metadata-examples.md`` for the grounded citations and
+for a passing example of each shape, and ``references/gotchas.md`` for the
+narrative on rule 9.
+
+Exit codes
+----------
+0 -- no ERROR (and no WARN when ``--strict`` is passed)
+1 -- at least one ERROR, or at least one WARN under ``--strict``
 
 Usage
 -----
     python3 check_record_triggered_flow_patterns.py --manifest-dir force-app/main/default
+    python3 check_record_triggered_flow_patterns.py --manifest-dir force-app/main/default --strict
 """
 
 from __future__ import annotations
@@ -85,6 +113,11 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root of the Salesforce source tree to scan (default: current directory).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on warnings as well as errors.",
+    )
     return parser.parse_args()
 
 
@@ -131,6 +164,20 @@ def _has(parent: ET.Element | None, name: str) -> bool:
 
 def _node_name(node: ET.Element) -> str:
     return _text(node, "name") or "<unnamed>"
+
+
+def _flow_api_name(flow_path: Path) -> str:
+    """A flow's API name from its SFDX filename.
+
+    ``Path.stem`` only strips the final suffix, so ``X.flow-meta.xml`` yields
+    ``X.flow-meta`` instead of ``X`` — wrong for matching a FlowTest's
+    ``<flowApiName>`` against the file that defines the flow. Strip the whole
+    ``.flow-meta.xml`` extension instead.
+    """
+    name = flow_path.name
+    if name.endswith(".flow-meta.xml"):
+        return name[: -len(".flow-meta.xml")]
+    return flow_path.stem
 
 
 def _connector_targets(node: ET.Element, tags: tuple[str, ...] = CONNECTOR_TAGS) -> list[str]:
@@ -309,22 +356,136 @@ def check_flow(flow_path: Path, root: ET.Element) -> tuple[list[str], dict | Non
     return issues, registration
 
 
-def check_record_triggered_flow_patterns(manifest_dir: Path) -> list[str]:
-    issues: list[str] = []
+def check_flow_tests(manifest_dir: Path, flow_registry: dict[str, dict]) -> tuple[list[str], list[str], list[str]]:
+    """Rule 9: a FlowTest's Start test point must carry the $Record parameter(s)
+    that match the recordTriggerType of the flow it targets.
+
+    The flow a FlowTest targets is named by its top-level ``<flowApiName>``
+    element (``api_meta.txt`` FlowTest field table; confirmed against a real
+    ``*.flowtest-meta.xml`` sample, where it sits alongside ``<label>``, not
+    inside ``<testPoints>``). Lookup is by that name against every
+    ``*.flow-meta.xml`` filename stem under ``manifest_dir`` — SFDX source
+    format names a component's file after its API name.
+
+    Severities (proven live in a dry-run, API 67.0, 2026-09-12 — none of this
+    is stated in api_meta.txt):
+
+    - Create + InputTriggeringRecordUpdated present -> ERROR.
+    - Create with InputTriggeringRecordInitial absent -> ERROR.
+    - Update with exactly one of the pair -> WARN (unverified, not proven to fail).
+    - CreateAndUpdate -> INFO (not observed either way; rule not enforced).
+    - flowApiName not found among the manifest's flows -> WARN (cannot check).
+    """
+    errors: list[str] = []
+    warnings: list[str] = []
+    infos: list[str] = []
+
+    for test_path in sorted(manifest_dir.rglob("*.flowtest-meta.xml")):
+        where = test_path.name
+        try:
+            root = ET.parse(test_path).getroot()
+        except ET.ParseError as exc:
+            errors.append(f"{where}: not well-formed XML ({exc}).")
+            continue
+
+        flow_api_name = _text(root, "flowApiName")
+        if not flow_api_name:
+            errors.append(f"{where}: FlowTest has no <flowApiName>; cannot tell which flow it targets.")
+            continue
+
+        start_point = None
+        for test_point in _children(root, "testPoints"):
+            if _text(test_point, "elementApiName") == "Start":
+                start_point = test_point
+                break
+        if start_point is None:
+            continue  # no Start test point to check the $Record parameters of
+
+        param_types = {_text(p, "type") for p in _children(start_point, "parameters")}
+        param_types.discard(None)
+        has_initial = "InputTriggeringRecordInitial" in param_types
+        has_updated = "InputTriggeringRecordUpdated" in param_types
+
+        flow_info = flow_registry.get(flow_api_name)
+        if flow_info is None:
+            warnings.append(
+                f"{where}: targets flowApiName '{flow_api_name}', which does not match any "
+                f"*.flow-meta.xml filename under {manifest_dir}. Cannot check its Start test "
+                "point parameters against recordTriggerType."
+            )
+            continue
+
+        record_trigger_type = flow_info.get("record_trigger_type")
+
+        if record_trigger_type == "Create":
+            # The org checks "is Initial present" before "is Updated absent" — proven live
+            # (dry-run, API 67.0, 2026-09-12): Updated-only produces the missing-Initial
+            # message, not both messages at once; Initial+Updated produces the
+            # incompatible-Updated message. `elif`, not two independent `if`s, so this
+            # doesn't over-report a message the org never actually shows for that shape.
+            if not has_initial:
+                errors.append(
+                    f"{where}: targets '{flow_api_name}' (recordTriggerType Create) and its Start "
+                    "test point has no InputTriggeringRecordInitial parameter. Org text: "
+                    '"The test point for elementApiName \\"Start\\" is missing a parameter of type '
+                    'InputTriggeringRecordInitial." This is the message whether '
+                    "InputTriggeringRecordUpdated is also present or the test point carries "
+                    "neither parameter — only Initial-only is the fix."
+                )
+            elif has_updated:
+                errors.append(
+                    f"{where}: targets '{flow_api_name}' (recordTriggerType Create) and its Start "
+                    "test point carries an InputTriggeringRecordUpdated parameter. Org text: "
+                    '"The test point for elementApiName \\"Start\\" contains the incompatible '
+                    'parameter value \\"$Record\\" of type InputTriggeringRecordUpdated. Remove the '
+                    'parameter or change the recordTriggerType for the flow." Create takes '
+                    "InputTriggeringRecordInitial only."
+                )
+        elif record_trigger_type == "Update":
+            if has_initial != has_updated:
+                missing = "InputTriggeringRecordUpdated" if has_initial else "InputTriggeringRecordInitial"
+                warnings.append(
+                    f"{where}: targets '{flow_api_name}' (recordTriggerType Update) and its Start "
+                    f"test point carries only one of the pair (missing {missing}). "
+                    "references/metadata-examples.md § 4.1 shows Update taking both "
+                    "InputTriggeringRecordInitial and InputTriggeringRecordUpdated; a single "
+                    "parameter here is UNVERIFIED to fail, not the documented shape."
+                )
+        elif record_trigger_type == "CreateAndUpdate":
+            infos.append(
+                f"{where}: targets '{flow_api_name}' (recordTriggerType CreateAndUpdate). Whether "
+                "its Start test point wants one or both $Record parameters is UNVERIFIED "
+                "(2026-09-12) — not observed live, not stated in api_meta.txt. Not enforced."
+            )
+        # Delete / None / no recordTriggerType: no $Record transition parameters to check.
+
+    return errors, warnings, infos
+
+
+def check_record_triggered_flow_patterns(manifest_dir: Path) -> tuple[list[str], list[str], list[str]]:
+    errors: list[str] = []
+    warnings: list[str] = []
+    infos: list[str] = []
 
     if not manifest_dir.exists():
-        return [f"Manifest directory not found: {manifest_dir}"]
+        return [f"Manifest directory not found: {manifest_dir}"], [], []
 
     registrations: list[dict] = []
+    flow_registry: dict[str, dict] = {}
 
     for flow_path in sorted(manifest_dir.rglob("*.flow-meta.xml")):
         try:
             root = ET.parse(flow_path).getroot()
         except ET.ParseError as exc:
-            issues.append(f"{flow_path.name}: not well-formed XML ({exc}).")
+            errors.append(f"{flow_path.name}: not well-formed XML ({exc}).")
             continue
+        start_for_registry = _child(root, "start")
+        flow_registry[_flow_api_name(flow_path)] = {
+            "trigger_type": _text(start_for_registry, "triggerType"),
+            "record_trigger_type": _text(start_for_registry, "recordTriggerType"),
+        }
         flow_issues, registration = check_flow(flow_path, root)
-        issues.extend(flow_issues)
+        errors.extend(flow_issues)
         if registration is not None:
             registrations.append(registration)
 
@@ -339,7 +500,7 @@ def check_record_triggered_flow_patterns(manifest_dir: Path) -> list[str]:
             continue
         unset = [r["file"] for r in group if r["trigger_order"] is None]
         for name in unset:
-            issues.append(
+            errors.append(
                 f"{name}: {len(group)} {trigger_type} flows on {obj} in this manifest and this one has no "
                 "<triggerOrder>. Their relative run order is not declared."
             )
@@ -347,12 +508,18 @@ def check_record_triggered_flow_patterns(manifest_dir: Path) -> list[str]:
         duplicates = {o for o in orders if orders.count(o) > 1}
         for order in sorted(duplicates):
             tied = ", ".join(r["file"] for r in group if r["trigger_order"] == order)
-            issues.append(
+            errors.append(
                 f"{tied}: {trigger_type} flows on {obj} share <triggerOrder>{order}</triggerOrder>. "
                 "Give each a distinct value."
             )
 
-    return issues
+    # 9. FlowTest Start test point parameters vs. the target flow's recordTriggerType.
+    ft_errors, ft_warnings, ft_infos = check_flow_tests(manifest_dir, flow_registry)
+    errors.extend(ft_errors)
+    warnings.extend(ft_warnings)
+    infos.extend(ft_infos)
+
+    return errors, warnings, infos
 
 
 def coverage_note(manifest_dir: Path) -> str | None:
@@ -372,23 +539,40 @@ def coverage_note(manifest_dir: Path) -> str | None:
     )
 
 
+def print_block(title: str, lines: list[str]) -> None:
+    if not lines:
+        return
+    print(title)
+    for line in lines:
+        print(f"  {line}")
+    print()
+
+
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    issues = check_record_triggered_flow_patterns(manifest_dir)
+    errors, warnings, infos = check_record_triggered_flow_patterns(manifest_dir)
 
     note = coverage_note(manifest_dir)
     if note:
         print(note)
 
-    if not issues:
+    if not errors and not warnings and not infos:
         print("No issues found.")
         return 0
 
-    for issue in issues:
-        print(f"ISSUE: {issue}")
+    print_block("ERROR:", errors)
+    print_block("WARN:", warnings)
+    print_block("INFO:", infos)
 
-    return 1
+    print(f"Summary: {len(errors)} error(s), {len(warnings)} warning(s), {len(infos)} info.")
+
+    if errors:
+        return 1
+    if args.strict and warnings:
+        print("--strict: failing on warnings.")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

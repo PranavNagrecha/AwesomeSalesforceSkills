@@ -5,6 +5,14 @@ Three complete, deployable record-triggered flows on one object — **before-sav
 `FlowTest` that pins the after-save transition, the `FlowDefinition` activation form, a
 `package.xml`, a deploy order, and the two places you verify what actually landed.
 
+§ 4 adds a fourth flow on a *different* object — a **Create-triggered before-save** flow
+on Lead — together with the `FlowTest` that proves a rule the Metadata API Developer Guide
+never states: a Create-triggered flow's Start test point takes
+`InputTriggeringRecordInitial` only, not the `InputTriggeringRecordInitial` /
+`InputTriggeringRecordUpdated` pair the Opportunity example above uses. That rule was
+proven live in a check-only deploy (API 67.0, 2026-09-12), not read out of the guide — see
+§ 4.2 and `references/gotchas.md`.
+
 Element names, enum values, version floors and limits below come from the Metadata API
 Developer Guide (`api_meta.txt`) and the Object Reference (`object_reference.txt`), cited
 by `grep -n` line. Save-order positions come from the Apex Developer Guide
@@ -37,6 +45,8 @@ setting rather than a footnote.
 | `Account.Renewal_Review_Due__c` | Checkbox | Flow 2 (scheduled path) |
 | `Opportunity_Archive__c` | Custom object, fields `Original_Id__c`, `Name`, `Amount__c`, `Close_Date__c`, `Stage__c`, `Account__c` | Flow 3 |
 | `Application_Log__c` | Custom object, fields `Source__c`, `Severity__c`, `Message__c`, `Request_Id__c` | every fault path (`templates/flow/FaultPath_Template.md`) |
+| `Lead.Intake_Score__c` | Number | § 4.2, written before save |
+| `Lead.Priority_Tier__c` | Picklist (`Hot`, `Warm`, `Cold`) | § 4.2 |
 
 ---
 
@@ -601,7 +611,7 @@ and no after-delete value (`api_meta.txt` L72536–72538; full `FlowTriggerType`
 
 ---
 
-## 4. The transition test — `Opportunity_AfterSave_ClosedWon_WinsDeal.flowtest-meta.xml`
+## 4. FlowTest — Start test point parameters by `recordTriggerType`
 
 `FlowTest` is how you prove the entry criteria before activating: "Before you activate a
 record-triggered, autolaunched, or Data Cloud-triggered flow, you can test it to verify
@@ -609,12 +619,29 @@ its expected results and identify flow run-time failures" (`api_meta.txt` L73961
 Components have the suffix `.flowtest` and live in the `flowtests` folder (L73976);
 in SFDX source format that is `.flowtest-meta.xml`. Available API 55.0+ (L73980).
 
-The two `$Record` parameters below are what makes this a *transition* test rather than a
-state test — `InputTriggeringRecordInitial` is the prior record,
-`InputTriggeringRecordUpdated` is the record after the save (`api_meta.txt`
-L74326–74327). A flow whose Start lacks `doesRequireRecordChangedToMeetCriteria` passes
-this test *and* fires on records that were already Closed Won, which is exactly the bug
-the pair is there to catch.
+**The rule this section exists to state.** A Start test point's `$Record` parameters must
+match the flow's `recordTriggerType`, and the guide is silent about it —
+`FlowTestParameter` documents `leftValueReference`, `type`, and `value` (`api_meta.txt`
+L74305–74306 for the field; the `FlowTestParameterType` enum at L74326–74327), and the
+guide's own sample (L74351–74365) pairs both `InputTriggeringRecordInitial` and
+`InputTriggeringRecordUpdated` on an update-triggered flow — but nowhere does either guide
+say a **Create**-triggered flow rejects the `Updated` half of that pair. This was proven
+live, not read: a check-only deploy (`sf project deploy start --dry-run`, API 67.0,
+2026-09-12) against a Create-triggered flow produced errors that neither guide predicts.
+**Rule: Create → `InputTriggeringRecordInitial` only. Update → both (§ 4.1, the guide's own
+shape). `CreateAndUpdate` → UNVERIFIED — not observed either way; see
+`references/gotchas.md`.** `scripts/check_record_triggered_flow_patterns.py` rule 9
+enforces the Create case as an ERROR and flags the CreateAndUpdate case as INFO only.
+
+### 4.1 Update-triggered — both parameters (the guide's own shape)
+
+`Opportunity_AfterSave_ClosedWon_WinsDeal.flowtest-meta.xml` targets the after-save flow in
+§ 2, whose `recordTriggerType` is `Update`. The two `$Record` parameters below are what
+makes this a *transition* test rather than a state test — `InputTriggeringRecordInitial`
+is the prior record, `InputTriggeringRecordUpdated` is the record after the save
+(`api_meta.txt` L74326–74327). A flow whose Start lacks
+`doesRequireRecordChangedToMeetCriteria` passes this test *and* fires on records that were
+already Closed Won, which is exactly the bug the pair is there to catch.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -702,6 +729,192 @@ the pair is there to catch.
   L74158), and each test point is evaluated in the order listed (L74131).
 - Salesforce runs a FlowTest against the org, not against a mock: this is a functional
   test with a controlled input record, not a unit test.
+- **The Initial/Updated pair here is for `Update`, not for every record-triggered flow.**
+  This flow's `recordTriggerType` is `Update`, so its Start test point takes both
+  parameters. A **Create**-triggered flow's Start test point takes
+  `InputTriggeringRecordInitial` only — carrying `InputTriggeringRecordUpdated` as well
+  fails deploy with `The test point for elementApiName "Start" contains the incompatible
+  parameter value "$Record" of type InputTriggeringRecordUpdated. Remove the parameter or
+  change the recordTriggerType for the flow.`, and carrying `InputTriggeringRecordUpdated`
+  alone (no `InputTriggeringRecordInitial`) fails with `The test point for elementApiName
+  "Start" is missing a parameter of type InputTriggeringRecordInitial.` — proven live
+  (dry-run, API 67.0, 2026-09-12), not stated in `api_meta.txt`. See § 4.2 for the worked
+  Create-triggered example and `references/gotchas.md` for the full narrative.
+
+### 4.2 Create-triggered — `InputTriggeringRecordInitial` only
+
+A different object on purpose — Lead intake scoring, not another Opportunity or Case
+variant — so the rule reads as general rather than tied to one org model. The flow is
+Create-only: it scores a Lead at the moment it is inserted and has nothing to compare a
+prior value against, which is also why `recordTriggerType` is `Create` rather than
+`CreateAndUpdate` (see `references/gotchas.md` § "`$Record__Prior` Has No Meaningful Value
+On A Create" for the general version of that same point).
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <assignments>
+        <name>Set_Hot_Tier</name>
+        <label>Set Hot Tier</label>
+        <locationX>50</locationX>
+        <locationY>350</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Priority_Tier__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Hot</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Intake_Score__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>90.0</numberValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Set_Cold_Tier</name>
+        <label>Set Cold Tier</label>
+        <locationX>300</locationX>
+        <locationY>350</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Priority_Tier__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Cold</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Intake_Score__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>20.0</numberValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Classify_Lead</name>
+        <label>Classify Lead</label>
+        <locationX>176</locationX>
+        <locationY>220</locationY>
+        <defaultConnector>
+            <targetReference>Set_Cold_Tier</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Cold</defaultConnectorLabel>
+        <rules>
+            <name>Enterprise_Revenue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.AnnualRevenue</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>1000000.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Hot_Tier</targetReference>
+            </connector>
+            <label>Enterprise Revenue</label>
+        </rules>
+    </decisions>
+    <description>Before-save, Create only. Scores a newly inserted Lead's Intake_Score__c and Priority_Tier__c on the record being inserted. No recordCreates/recordUpdates/recordDeletes/actionCalls/subflows by design (rule 2). recordTriggerType is Create, not CreateAndUpdate: $Record__Prior has no prior state to compare against on an insert, and the FlowTest below proves a Create-triggered flow's Start test point takes InputTriggeringRecordInitial only.</description>
+    <environments>Default</environments>
+    <interviewLabel>Lead BeforeSave ScoreIntake {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lead BeforeSave ScoreIntake</label>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>DefaultMode</runInMode>
+    <start>
+        <locationX>176</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Classify_Lead</targetReference>
+        </connector>
+        <object>Lead</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Draft</status>
+    <triggerOrder>10</triggerOrder>
+</Flow>
+```
+
+`Lead_BeforeSave_ScoreIntake_Test.flowtest-meta.xml` — the passing shape:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowTest xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>A new Lead is inserted with AnnualRevenue at enterprise scale. Asserts the before-save flow scored it Hot. Start test point carries InputTriggeringRecordInitial ONLY: this flow's recordTriggerType is Create, and a Create-triggered flow's Start test point does not accept InputTriggeringRecordUpdated (see § 4.1's last "How to read it" bullet and references/gotchas.md).</description>
+    <flowApiName>Lead_BeforeSave_ScoreIntake</flowApiName>
+    <label>New enterprise lead scores Hot</label>
+    <testPoints>
+        <elementApiName>Start</elementApiName>
+        <parameters>
+            <leftValueReference>$Record</leftValueReference>
+            <type>InputTriggeringRecordInitial</type>
+            <value>
+                <sobjectValue>{&quot;LastName&quot;:&quot;Vandelay&quot;,&quot;Company&quot;:&quot;Vandelay Industries&quot;,&quot;AnnualRevenue&quot;:2500000,&quot;LeadSource&quot;:&quot;Web&quot;}</sobjectValue>
+            </value>
+        </parameters>
+    </testPoints>
+    <testPoints>
+        <assertions>
+            <conditions>
+                <leftValueReference>$Record.Priority_Tier__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Hot</stringValue>
+                </rightValue>
+            </conditions>
+            <errorMessage>Priority_Tier__c did not land on Hot.</errorMessage>
+        </assertions>
+        <assertions>
+            <conditions>
+                <leftValueReference>$Record.Intake_Score__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>90.0</numberValue>
+                </rightValue>
+            </conditions>
+            <errorMessage>Intake_Score__c did not land on 90.</errorMessage>
+        </assertions>
+        <elementApiName>Finish</elementApiName>
+    </testPoints>
+    <testType>WithAssertion</testType>
+</FlowTest>
+```
+
+### How to read it
+
+- **The rule, stated once more with the receipts.** Create → `InputTriggeringRecordInitial`
+  only (this example). Update → both parameters (§ 4.1). `CreateAndUpdate` → UNVERIFIED —
+  not observed live in either direction, and neither guide states a requirement either
+  way; do not guess which shape it wants.
+- **Both error texts, verbatim, from the live dry-run (API 67.0, 2026-09-12):**
+  - With only `InputTriggeringRecordUpdated` on the Start test point: `The test point for
+    elementApiName "Start" is missing a parameter of type InputTriggeringRecordInitial.`
+  - With **both** `InputTriggeringRecordInitial` and `InputTriggeringRecordUpdated`: `The
+    test point for elementApiName "Start" contains the incompatible parameter value
+    "$Record" of type InputTriggeringRecordUpdated. Remove the parameter or change the
+    recordTriggerType for the flow.`
+  - With `InputTriggeringRecordInitial` only (the shape above): validates.
+- **The "missing Initial" message is satisfied by two different shapes, and only one is
+  right.** Both "carries `InputTriggeringRecordUpdated` instead of `InputTriggeringRecordInitial`"
+  and "carries neither parameter" produce the identical missing-Initial error text. Reading
+  that message and adding `InputTriggeringRecordInitial` *alongside* the existing
+  `InputTriggeringRecordUpdated` — rather than replacing it — walks straight into the
+  second error instead of fixing the test. The fix is always to end up with
+  `InputTriggeringRecordInitial` and nothing else in that pair, never to end up with both.
+- Nothing else about this flow or test is different from § 1 / § 4.1 — same `apiVersion`,
+  same before-save DML-free shape (rule 2), same `<elementApiName>` restriction to `Start`
+  and `Finish`. The only thing this example demonstrates is the parameter pairing.
+- `scripts/check_record_triggered_flow_patterns.py` rule 9 checks this by reading the
+  `FlowTest`'s `<flowApiName>` (the element that names the target flow — confirmed against
+  a real `.flowtest-meta.xml` sample, sitting at the top level next to `<label>`, not
+  inside `<testPoints>`), resolving it to the matching `*.flow-meta.xml` in the same
+  manifest, and comparing that flow's `<recordTriggerType>` against the Start test point's
+  parameter types.
 
 ---
 
