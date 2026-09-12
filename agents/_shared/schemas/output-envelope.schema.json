@@ -242,7 +242,7 @@
     },
     "citations": {
       "type": "array",
-      "description": "Every skill/template/standard/decision-tree branch/MCP tool/probe consulted.",
+      "description": "Every skill/template/standard/decision-tree branch/MCP tool/probe/agent/example_build consulted.",
       "items": {
         "$ref": "urn:sfskills:citation"
       }

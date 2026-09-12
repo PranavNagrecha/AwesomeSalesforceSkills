@@ -121,7 +121,9 @@ end-to-end test case, built from
 `.sfskills/` is gitignored, so a build becomes a committed example only through
 `build_plan.py export <plan> <dest-dir>` (`--force` to replace an existing one),
 which copies the whole build directory across and refuses to run until
-`validate` passes.
+`validate` passes. `--force` preserves a hand-written `README.md` at
+`dest-dir`'s root across the replace — the build never produces one, so a
+wipe-and-copy must not discard the operator's prose about the example.
 
 ## 3. Lifecycle and human gates
 
@@ -406,18 +408,25 @@ Each step records: `id`, `milestone`, `type`, `title`, `agent`, `skills[]`
 `status`, `human_gate`, `runs[]`.
 
 Step status machine: `pending → running → built → tested → documented`, with
-`failed` and `blocked` as side exits. Three more transitions exist for recovery:
+`failed` and `blocked` as side exits. Four more transitions exist for recovery:
 `failed → pending` (reset a step for retry), `running → running` (re-claim a
-step on resume, which appends a run rather than overwriting one), and
+step on resume, which appends a run rather than overwriting one),
 `documented → running` (rebuild a finished step after a finding that reached it
-late — a milestone report, a mock deploy, a skill fix). A rebuild appends a run
-with the caller's `reason`, drops the step back to `built` when it completes so
-the tester and doc-keeper run again, and leaves the milestone above it stale
-until `/verify-milestone` is re-run; it never reaches around a pending
-`step:<id>` gate. `next` still
-offers `pending` steps only — steps whose `depends_on` are all `documented`, in
-the current (approved) milestone, excluding any step whose `step:<id>` human
-gate is not approved.
+late — a milestone report, a mock deploy, a skill fix), and `built → running`
+(re-run a step that has not been tested yet — e.g. a repair an operator probe
+found before the tester ran) under the same gate preconditions as
+`documented → running`: the milestone's gates and the step's own `step:<id>`
+gate must already be approved, and the re-run appends to `runs[]` exactly like
+`documented → running` does. Both rebuild edges append a run
+with the caller's `reason`, drop the step back to `built` when it completes so
+the tester and doc-keeper run again, and leave the milestone above it stale
+until `/verify-milestone` is re-run; neither reaches around a pending
+`step:<id>` gate. There is deliberately no `tested → running` edge — a repair
+found after testing goes `tested → failed → pending → running` with a real
+failure reason, not a fabricated one used to route around this table. `next`
+still offers `pending` steps only — steps whose `depends_on` are all
+`documented`, in the current (approved) milestone, excluding any step whose
+`step:<id>` human gate is not approved.
 
 ## 5. Acceptance tests
 

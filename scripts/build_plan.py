@@ -125,13 +125,22 @@ STUB_CHECKER_MARKER = "todo: implement"
 
 # Section 4: "pending -> running -> built -> tested -> documented, with
 # `failed` and `blocked` as side exits." Re-running a step (section 8) is
-# `documented -> running`, which appends a run rather than overwriting one.
-# `failed -> pending` resets a step for a clean retry; `running -> running`
-# lets a resumed runner re-claim a step it was already executing.
+# `documented -> running` (a finished step rebuilt after a late finding) or
+# `built -> running` (a re-run before testing — e.g. a repair an operator
+# probe found on a step that never reached 'tested') — both append a run
+# rather than overwriting one, and both are gated exactly like a first run
+# (the milestone's gates and the step's own `step:<id>` gate must already be
+# approved). `tested -> running` is NOT part of this set: section 4 names
+# only `documented -> running` and `built -> running` as re-run edges, so a
+# repair found after testing still goes `tested -> failed -> pending ->
+# running` with a real failure reason, not a fabricated one to route around
+# this table. `failed -> pending` resets a step for a clean retry;
+# `running -> running` lets a resumed runner re-claim a step it was already
+# executing.
 ALLOWED_TRANSITIONS: dict[str, set[str]] = {
     "pending": {"running", "blocked"},
     "running": {"running", "built", "failed", "blocked"},
-    "built": {"tested", "failed", "blocked"},
+    "built": {"tested", "running", "failed", "blocked"},
     "tested": {"documented", "failed", "blocked"},
     "documented": {"running"},
     "failed": {"pending", "running", "blocked"},
@@ -2900,6 +2909,7 @@ def cmd_export(args: argparse.Namespace) -> int:
 
     if dest == build_dir or build_dir in dest.parents:
         _die(f"destination {dest} is the build directory or lives inside it")
+    kept_readme: bytes | None = None
     if dest.exists():
         if not args.force:
             _die(f"{dest} already exists — pass --force to replace it")
@@ -2907,10 +2917,20 @@ def cmd_export(args: argparse.Namespace) -> int:
             _die(f"{dest} exists and is not a directory")
         # Replace, don't merge: a merged export silently keeps files the build
         # no longer produces, and the export would then not be the build.
+        # The one exception is a hand-written README.md at the destination
+        # root: the build never produces one (it is the operator's prose
+        # about the example), so --force must not wipe it either. Read it
+        # before the rmtree, write it back after the copytree.
+        readme_path = dest / "README.md"
+        if readme_path.is_file():
+            kept_readme = readme_path.read_bytes()
         shutil.rmtree(dest)
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(build_dir, dest, ignore=EXPORT_IGNORE, symlinks=True)
+    if kept_readme is not None:
+        (dest / "README.md").write_bytes(kept_readme)
+        print("kept README.md")
     files = sorted(path for path in dest.rglob("*") if path.is_file())
     print(f"exported {build_dir} -> {dest}")
     print(f"  {len(files)} file(s)")
@@ -3151,10 +3171,15 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("set-status", parents=[common], help="advance one step's status",
                        description="Move a step along the § 4 state machine "
                                    "(pending → running → built → tested → documented; failed and "
-                                   "blocked are side exits; documented → running re-runs a step; "
+                                   "blocked are side exits; documented → running re-runs a "
+                                   "finished step, built → running re-runs one before it has "
+                                   "been tested (e.g. a repair an operator probe found); "
                                    "failed → pending resets one for a clean retry; running → "
-                                   "running re-claims one on resume). 'running' is refused while "
-                                   "the milestone's gates or the step's own step:<id> gate are "
+                                   "running re-claims one on resume). 'tested → running' is NOT "
+                                   "legal — a repair found after testing goes tested → failed → "
+                                   "pending → running with a real failure reason instead. "
+                                   "'running' (from any source status) is refused while the "
+                                   "milestone's gates or the step's own step:<id> gate are "
                                    "unapproved; 'built' is refused unless check-outputs passes; "
                                    "'tested' additionally needs tests/<step-id>/results.json with "
                                    "\"passed\": true. Illegal transitions exit 1 and change "
@@ -3220,7 +3245,11 @@ def build_parser() -> argparse.ArgumentParser:
                                    "trees — into <dest-dir>. Runs `validate` first and refuses "
                                    "to export a plan with any ERROR. Refuses an existing "
                                    "destination unless --force, which replaces it outright "
-                                   "(a merge would keep files the build no longer produces). "
+                                   "(a merge would keep files the build no longer produces) — "
+                                   "except a hand-written README.md at dest-dir's root, which "
+                                   "is read before the wipe and written back after, since the "
+                                   "build itself never produces one. Prints 'kept README.md' "
+                                   "when it did. "
                                    "This is how a build under gitignored .sfskills/ becomes a "
                                    "committed example such as examples/builds/case-onboarding "
                                    "(contract § 9). Prints the file count.")

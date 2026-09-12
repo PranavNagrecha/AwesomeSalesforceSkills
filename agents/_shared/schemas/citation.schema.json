@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:sfskills:citation",
   "title": "Agent Citation",
-  "description": "One entry in a run-time agent's citations[] block. Every skill, template, decision-tree branch, MCP tool, or probe recipe the agent consulted gets one entry.",
+  "description": "One entry in a run-time agent's citations[] block. Every skill, template, decision-tree branch, MCP tool, probe recipe, agent playbook, or example build the agent consulted gets one entry.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -19,13 +19,15 @@
         "standard",
         "decision_tree",
         "mcp_tool",
-        "probe"
+        "probe",
+        "agent",
+        "example_build"
       ]
     },
     "id": {
       "type": "string",
       "minLength": 1,
-      "description": "For skill/template/standard/decision_tree/probe: the repo-relative identifier (e.g. admin/permission-set-architecture). For mcp_tool: the tool name (e.g. tooling_query)."
+      "description": "For skill/template/standard/decision_tree/probe/agent/example_build: the repo-relative identifier (e.g. admin/permission-set-architecture, or an agent id, or an examples/builds/ slug). For mcp_tool: the tool name (e.g. tooling_query)."
     },
     "path": {
       "type": "string",
@@ -65,7 +67,9 @@
               "template",
               "standard",
               "decision_tree",
-              "probe"
+              "probe",
+              "agent",
+              "example_build"
             ]
           }
         }

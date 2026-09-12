@@ -24,7 +24,7 @@ Every `agents/<slug>/AGENT.md` MUST start with a YAML frontmatter block validate
 id: field-impact-analyzer          # must match the folder name (kebab-case)
 class: runtime                     # runtime | build
 version: 1.0.0                     # semver
-status: stable                     # stable | beta | deprecated
+status: stable                     # experimental | alpha | beta | stable | deprecated
 requires_org: true                 # true if the agent needs an sf org alias to function
 modes: [single]                    # [single] or [design, audit] etc. — free list of mode names
 owner: sfskills-core               # team or handle responsible for the agent
@@ -123,7 +123,7 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 }
 ```
 
-`type` is one of `skill`, `template`, `standard`, `decision_tree`, `mcp_tool`, `probe`. Every citation must resolve to a real path (or a real MCP tool name) at validation time.
+`type` is one of `skill`, `template`, `standard`, `decision_tree`, `mcp_tool`, `probe`, `agent`, `example_build`. Every citation must resolve to a real path (or a real MCP tool name) at validation time.
 
 ---
 

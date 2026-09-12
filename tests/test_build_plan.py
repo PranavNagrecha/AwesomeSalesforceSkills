@@ -797,6 +797,55 @@ def test_set_status_appends_runs_and_never_overwrites(tmp_path, fixture_repo):
     assert len(json.loads(path.read_text())["steps"][0]["runs"]) == 5
 
 
+def test_built_to_running_edge_is_a_legal_rerun(tmp_path, fixture_repo):
+    """Item 3: a repair found on a step that is `built` but not yet `tested`
+    (e.g. an operator probe) may go straight back to `running` — the same
+    gate preconditions as `documented -> running`, appending a run rather
+    than forcing a fabricated `failed -> pending -> running` detour."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--repo-root", str(fixture_repo)) == 0
+    write_outputs(path, "M1-S01")
+    assert run("set-status", str(path), "M1-S01", "built",
+               "--repo-root", str(fixture_repo)) == 0
+
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--run-agent", "alpha-designer",
+               "--envelope", "envelopes/M1-S01/repair.json",
+               "--result", "repair re-run after operator probe",
+               "--repo-root", str(fixture_repo)) == 0
+    plan_after = json.loads(path.read_text())
+    assert plan_after["steps"][0]["status"] == "running"
+    runs = plan_after["steps"][0]["runs"]
+    assert runs[-1]["result"] == "repair re-run after operator probe"
+    assert runs[-1]["envelope_path"] == "envelopes/M1-S01/repair.json"
+
+
+def test_tested_to_running_is_still_refused(tmp_path, fixture_repo):
+    """Section 4 names only `documented -> running` and `built -> running` as
+    rebuild edges. `tested -> running` stays illegal: a repair found after
+    testing must go tested -> failed -> pending -> running with a real
+    failure reason instead."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--repo-root", str(fixture_repo)) == 0
+    write_outputs(path, "M1-S01")
+    assert run("set-status", str(path), "M1-S01", "built",
+               "--repo-root", str(fixture_repo)) == 0
+    write_results(path, "M1-S01")
+    assert run("set-status", str(path), "M1-S01", "tested",
+               "--repo-root", str(fixture_repo)) == 0
+
+    before = path.read_bytes()
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--repo-root", str(fixture_repo)) == 1
+    assert path.read_bytes() == before
+
+
 def test_set_status_records_a_run_from_started_alone(tmp_path, fixture_repo):
     plan = plan_dict([step("M1-S01", "M1")])
     path = write_plan_file(tmp_path / "b", plan)
@@ -2234,6 +2283,30 @@ def test_export_refuses_an_existing_destination_unless_forced(tmp_path, fixture_
     assert (dest / "plan.json").is_file()
 
 
+def test_export_force_preserves_a_hand_written_readme(tmp_path, fixture_repo, capsys):
+    """The build never produces a README.md; --force must not wipe the
+    operator's hand-written one at dest-dir's root (item 2, today's regression:
+    a real README got clobbered by a re-export)."""
+    path = _exportable_build(tmp_path, fixture_repo)
+    dest = tmp_path / "out"
+    assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 0
+    assert not (dest / "README.md").exists()
+
+    (dest / "README.md").write_text("# Case Onboarding\n\nHand-written notes.\n",
+                                     encoding="utf-8")
+    stale = dest / "artefacts" / "M1-S01" / "Gone.object-meta.xml"
+    stale.write_text("<CustomObject/>\n", encoding="utf-8")
+
+    capsys.readouterr()
+    assert run("export", str(path), str(dest), "--force",
+               "--repo-root", str(fixture_repo)) == 0
+    assert not stale.exists(), "--force still replaces everything else"
+    assert (dest / "README.md").read_text(encoding="utf-8") == (
+        "# Case Onboarding\n\nHand-written notes.\n"
+    ), "README.md must survive --force untouched"
+    assert "kept README.md" in capsys.readouterr().out
+
+
 def test_export_refuses_an_invalid_plan(tmp_path, fixture_repo):
     path = _exportable_build(tmp_path, fixture_repo)
     plan = json.loads(path.read_text())
@@ -2297,6 +2370,53 @@ def test_envelope_accepts_extensions_and_a_build_directory_path():
     stray = dict(MINIMAL_ENVELOPE)
     stray["report_path"] = "notes/wherever.md"
     assert any("report_path" in msg for msg in ve.validate_envelope(stray))
+
+
+def test_citation_type_agent_and_example_build_are_accepted():
+    """Regression: three agents cited their own AGENT.md as `type: agent` and
+    failed validation (standards/build-orchestration.md § 8 fix). `agent` and
+    `example_build` are legal citation types, each requiring `path` like the
+    other resolvable-on-disk types."""
+    pytest.importorskip("jsonschema")
+    from scripts import validate_envelope as ve
+
+    agent_citation = dict(MINIMAL_ENVELOPE)
+    agent_citation["citations"] = [{
+        "type": "agent",
+        "id": "requirements-clarifier",
+        "path": "agents/requirements-clarifier/AGENT.md",
+        "used_for": "cited its own playbook for the clarification loop",
+    }]
+    assert ve.validate_envelope(agent_citation) == []
+
+    example_build_citation = dict(MINIMAL_ENVELOPE)
+    example_build_citation["citations"] = [{
+        "type": "example_build",
+        "id": "case-onboarding",
+        "path": "examples/builds/case-onboarding/README.md",
+        "used_for": "referenced the worked case-intake build as a precedent",
+    }]
+    assert ve.validate_envelope(example_build_citation) == []
+
+    # A citation type outside the enum is still refused.
+    bogus = dict(MINIMAL_ENVELOPE)
+    bogus["citations"] = [{
+        "type": "bogus",
+        "id": "whatever",
+        "path": "whatever",
+        "used_for": "should not validate",
+    }]
+    assert ve.validate_envelope(bogus) != []
+
+    # `agent`/`example_build` still require `path`, like the other
+    # resolvable-on-disk citation types.
+    pathless = dict(MINIMAL_ENVELOPE)
+    pathless["citations"] = [{
+        "type": "agent",
+        "id": "requirements-clarifier",
+        "used_for": "missing path on purpose",
+    }]
+    assert ve.validate_envelope(pathless) != []
 
 
 @pytest.mark.skipif(not (REPO_ROOT / ".sfskills" / "builds" / "case-onboarding").is_dir(),
@@ -2962,10 +3082,12 @@ def test_export_skips_the_skills_symlink(tmp_path, fixture_repo, requirement, ca
 
 
 def test_documented_step_can_be_rebuilt():
-    """Section 4: documented -> running is the rebuild path; built/tested are not re-runnable."""
+    """Section 4: documented -> running and built -> running are the two rebuild
+    paths; tested is not re-runnable — a repair found after testing goes
+    tested -> failed -> pending -> running instead (item 3, 2026-09-12)."""
     from scripts.build_plan import ALLOWED_TRANSITIONS
     assert "running" in ALLOWED_TRANSITIONS["documented"]
-    assert "running" not in ALLOWED_TRANSITIONS["built"]
+    assert "running" in ALLOWED_TRANSITIONS["built"]
     assert "running" not in ALLOWED_TRANSITIONS["tested"]
 
 
