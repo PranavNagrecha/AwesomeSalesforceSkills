@@ -33,6 +33,14 @@ Typical use — validate milestone M1 of a build against a scratch/dev org::
     python3 scripts/mock_deploy.py .sfskills/builds/case-onboarding/plan.json \\
         --org-alias sfskills-dev --milestone M1
 
+API version: `sfdx-project.json` and, in `--mode manifest`, the merged
+`package.xml`, use the HIGHEST `<version>` found across the selected steps'
+own `package.xml` files (see `pick_api_version`) — not the first one seen —
+because later steps legitimately raise the version a build was cut at
+(a property the org rejects below some release, a newer Apex target). Pass
+`--api-version X.Y` to override the scan outright. The chosen version and
+where it came from are recorded in `summary.md` and `result.json`.
+
 Exit codes: 0 = the org validated the deploy (`status: Succeeded`),
 1 = the org rejected it (`status: Failed`), 2 = this script or the `sf` CLI
 could not produce a usable result (bad plan, missing `sf`, unparseable output).
@@ -147,12 +155,43 @@ def copy_artefacts(
     return CopyResult(copied=copied, skipped=skipped)
 
 
+class ApiVersionResolution(NamedTuple):
+    """Result of `pick_api_version`.
+
+    * version — the API version text to use, exactly as found in whichever
+      step's package.xml declared it (not the parsed float), e.g. "63.0".
+    * source — human-readable provenance, written into summary.md's
+      `- api version:` line and result.json's `api_version` key: either
+      "highest of: M1-S01=62.0, M1-S02=63.0, ..." (one entry per selected
+      step that had a usable <version>, in step order) or, when none did,
+      "fallback (no step declared a <version>; default X.Y)".
+    """
+
+    version: str
+    source: str
+
+
 def pick_api_version(
     build_dir: Path, artefacts_root: str, step_ids: list[str], fallback: str = DEFAULT_API_VERSION
-) -> str:
-    """The first <version> text found in a selected step's package.xml, in
-    step order; fallback (default 62.0) if none of them has one.
+) -> ApiVersionResolution:
+    """The HIGHEST <version> found across the selected steps' package.xml
+    files — not the first in step order.
+
+    A build assembled from steps authored at different times legitimately
+    mixes package.xml versions: an earlier milestone's manifest can still
+    say 62.0 while a later step needs 64.0+ for a property the org rejects
+    below that (or a later Apex step targets 67.0). Picking the first or the
+    lowest version found would silently downgrade the merged deploy below
+    what a later step requires and reproduce exactly that failure. Falls
+    back to `fallback` (default 62.0) when none of the selected steps' has a
+    usable <version> element.
+
+    Versions are compared numerically (parsed as float) so "9.0" would beat
+    "62.0" if that were ever a real Salesforce API version; the returned
+    text is the original string from the winning step's package.xml, not a
+    reformatted float.
     """
+    found: list[tuple[str, str]] = []  # (step_id, version_text), in step order
     for step_id in step_ids:
         pkg = build_dir / artefacts_root / step_id / "package.xml"
         if not pkg.is_file():
@@ -163,8 +202,23 @@ def pick_api_version(
             continue
         version_el = root.find(f"{METADATA_NS}version")
         if version_el is not None and version_el.text and version_el.text.strip():
-            return version_el.text.strip()
-    return fallback
+            found.append((step_id, version_el.text.strip()))
+
+    if not found:
+        return ApiVersionResolution(
+            version=fallback,
+            source=f"fallback (no step declared a <version>; default {fallback})",
+        )
+
+    def _numeric(pair: tuple[str, str]) -> float:
+        try:
+            return float(pair[1])
+        except ValueError:
+            return float("-inf")
+
+    _, best_version = max(found, key=_numeric)
+    source = "highest of: " + ", ".join(f"{sid}={ver}" for sid, ver in found)
+    return ApiVersionResolution(version=best_version, source=source)
 
 
 def write_sfdx_project(out_dir: Path, api_version: str) -> Path:
@@ -416,8 +470,13 @@ def render_summary(
     manifest_resolution: ManifestResolution | None = None,
     plan_only: bool = False,
     copy_result: CopyResult | None = None,
+    api_version: str | None = None,
+    api_version_source: str | None = None,
 ) -> str:
     lines = ["# Mock deploy result", "", f"- org: `{org_alias}`", f"- mode: `{mode}`"]
+
+    if api_version is not None:
+        lines.append(f"- api version: `{api_version}` ({api_version_source})")
 
     if copy_result is not None:
         lines.append(
@@ -511,6 +570,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
              "or when no milestone report exists.",
     )
     parser.add_argument(
+        "--api-version", default=None, metavar="X.Y",
+        help="Force this API version (sfdx-project.json sourceApiVersion and, "
+             "in --mode manifest, the merged package.xml's <version>) instead "
+             "of scanning the selected steps' package.xml files. Wins over "
+             "the scan outright; use it when a step you're validating needs a "
+             "version none of its own artefacts declare yet.",
+    )
+    parser.add_argument(
         "--out", default=None,
         help="Output directory. Default: <build_dir>/reports/mock-deploy/<UTC "
              "timestamp>/. Nothing is ever written outside this directory.",
@@ -563,7 +630,13 @@ def main(argv: list[str] | None = None) -> int:
     force_app_dir.mkdir(parents=True, exist_ok=True)
     copy_result = copy_artefacts(build_dir, artefacts_root, step_ids, force_app_dir)
 
-    api_version = pick_api_version(build_dir, artefacts_root, step_ids)
+    if args.api_version:
+        api_version = args.api_version
+        api_version_source = "override"
+    else:
+        version_resolution = pick_api_version(build_dir, artefacts_root, step_ids)
+        api_version = version_resolution.version
+        api_version_source = version_resolution.source
     write_sfdx_project(out_dir, api_version)
 
     manifest_name = "package.xml"
@@ -583,7 +656,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.plan_only:
         summary = render_summary(
             None, args.mode, args.org_alias, manifest_resolution, plan_only=True,
-            copy_result=copy_result,
+            copy_result=copy_result, api_version=api_version, api_version_source=api_version_source,
         )
         (out_dir / "summary.md").write_text(summary, encoding="utf-8")
         print(summary)
@@ -598,12 +671,19 @@ def main(argv: list[str] | None = None) -> int:
 
     raw_stdout = proc.stdout or ""
     raw_stderr = proc.stderr or ""
+    api_version_record = {"value": api_version, "source": api_version_source}
+
     try:
         parsed = json.loads(strip_json_prefix(raw_stdout))
     except (ValueError, json.JSONDecodeError) as exc:
         (out_dir / "result.json").write_text(
             json.dumps(
-                {"error": str(exc), "raw_stdout": raw_stdout, "raw_stderr": raw_stderr},
+                {
+                    "error": str(exc),
+                    "raw_stdout": raw_stdout,
+                    "raw_stderr": raw_stderr,
+                    "api_version": api_version_record,
+                },
                 indent=2,
             )
             + "\n",
@@ -614,13 +694,21 @@ def main(argv: list[str] | None = None) -> int:
             print(raw_stderr, file=sys.stderr)
         return 2
 
+    if isinstance(parsed, dict):
+        # `parsed` is this run's own in-memory copy of the sf CLI's JSON — safe
+        # to extend before we serialize it. "api_version" is not a key `sf`
+        # itself ever emits, so this cannot collide with or shadow one of its
+        # existing keys (status, result, warnings, ...).
+        parsed["api_version"] = api_version_record
+
     (out_dir / "result.json").write_text(json.dumps(parsed, indent=2) + "\n", encoding="utf-8")
 
     result = parsed.get("result") if isinstance(parsed, dict) else None
     status = result.get("status") if isinstance(result, dict) else None
 
     summary = render_summary(
-        parsed, args.mode, args.org_alias, manifest_resolution, copy_result=copy_result
+        parsed, args.mode, args.org_alias, manifest_resolution, copy_result=copy_result,
+        api_version=api_version, api_version_source=api_version_source,
     )
     (out_dir / "summary.md").write_text(summary, encoding="utf-8")
     print(summary)

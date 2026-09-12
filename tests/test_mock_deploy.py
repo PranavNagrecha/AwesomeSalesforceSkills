@@ -218,24 +218,58 @@ def test_copy_artefacts_copies_nested_lwc_bundle_whole(tmp_path):
 # sfdx-project.json version pick
 # --------------------------------------------------------------------------
 
-def test_pick_api_version_uses_first_step_in_order(tmp_path):
+def test_pick_api_version_uses_highest_not_first(tmp_path):
     build_dir = make_build(tmp_path)
-    # M1-S01's package.xml declares 61.0, M1-S02's declares 62.0; step order wins.
-    version = mock_deploy.pick_api_version(build_dir, "artefacts", ["M1-S01", "M1-S02"])
-    assert version == "61.0"
+    # M1-S01's package.xml declares 61.0, M1-S02's declares 62.0; the higher
+    # of the two wins even though M1-S01 comes first in step order.
+    resolution = mock_deploy.pick_api_version(build_dir, "artefacts", ["M1-S01", "M1-S02"])
+    assert resolution.version == "62.0"
+    assert resolution.source == "highest of: M1-S01=61.0, M1-S02=62.0"
 
 
-def test_pick_api_version_skips_missing_and_uses_next(tmp_path):
+def test_pick_api_version_uses_highest_regardless_of_argument_order(tmp_path):
     build_dir = make_build(tmp_path)
-    version = mock_deploy.pick_api_version(build_dir, "artefacts", ["M2-S01", "M1-S02"])
-    assert version == "62.0"
+    # Same two steps, reversed order: the higher version (62.0, from M1-S02)
+    # still wins even though it is now listed first.
+    resolution = mock_deploy.pick_api_version(build_dir, "artefacts", ["M1-S02", "M1-S01"])
+    assert resolution.version == "62.0"
+
+
+def test_pick_api_version_skips_missing_and_uses_remaining(tmp_path):
+    build_dir = make_build(tmp_path)
+    # M2-S01 has no package.xml at all (missing file, skipped); M1-S02 is the
+    # only one left with a usable <version>.
+    resolution = mock_deploy.pick_api_version(build_dir, "artefacts", ["M2-S01", "M1-S02"])
+    assert resolution.version == "62.0"
+    assert resolution.source == "highest of: M1-S02=62.0"
 
 
 def test_pick_api_version_falls_back_when_none_found(tmp_path):
     build_dir = make_build(tmp_path)
-    version = mock_deploy.pick_api_version(build_dir, "artefacts", ["M2-S01"])
-    assert version == mock_deploy.DEFAULT_API_VERSION
-    assert version == "62.0"
+    resolution = mock_deploy.pick_api_version(build_dir, "artefacts", ["M2-S01"])
+    assert resolution.version == mock_deploy.DEFAULT_API_VERSION
+    assert resolution.version == "62.0"
+    assert resolution.source.startswith("fallback")
+
+
+def test_pick_api_version_max_across_more_than_two_mixed_versions(tmp_path):
+    # M3-S03 needs >= 64.0 for a property the org rejects at 62.0; M4-S01
+    # targets 67.0 Apex; M1-S01 (built earliest) still says 61.0. The highest
+    # across all three — 67.0 — must win regardless of step order.
+    build_dir = make_build(tmp_path)
+    _write(
+        build_dir / "artefacts" / "M3-S03" / "package.xml",
+        PACKAGE_XML_TEMPLATE.format(members="Case.Foo__c", type_name="CustomField", version="64.0"),
+    )
+    _write(
+        build_dir / "artefacts" / "M4-S01" / "package.xml",
+        PACKAGE_XML_TEMPLATE.format(members="MyClass", type_name="ApexClass", version="67.0"),
+    )
+    resolution = mock_deploy.pick_api_version(
+        build_dir, "artefacts", ["M1-S01", "M3-S03", "M4-S01"]
+    )
+    assert resolution.version == "67.0"
+    assert resolution.source == "highest of: M1-S01=61.0, M3-S03=64.0, M4-S01=67.0"
 
 
 def test_write_sfdx_project_content(tmp_path):
@@ -708,3 +742,126 @@ def test_main_manifest_mode_writes_manifest_file(tmp_path, monkeypatch):
     manifest_text = (out_dir / "package.xml").read_text(encoding="utf-8")
     assert "CustomField" in manifest_text
     assert "Layout" in manifest_text
+
+
+# --------------------------------------------------------------------------
+# --api-version override + summary/result.json recording
+# --------------------------------------------------------------------------
+
+def test_main_api_version_scanned_highest_recorded_in_summary_and_result(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    payload = {"result": {"status": "Succeeded", "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+
+    out_dir = tmp_path / "api-version-scan-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    # M1-S01=61.0, M1-S02=62.0 -> the higher (62.0) is chosen and used for
+    # sfdx-project.json too.
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "- api version: `62.0` (highest of: M1-S01=61.0, M1-S02=62.0)" in summary
+
+    sfdx_project = json.loads((out_dir / "sfdx-project.json").read_text(encoding="utf-8"))
+    assert sfdx_project["sourceApiVersion"] == "62.0"
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["api_version"]["value"] == "62.0"
+    assert result_json["api_version"]["source"] == "highest of: M1-S01=61.0, M1-S02=62.0"
+    # Adding api_version must not disturb the existing sf CLI keys.
+    assert result_json["result"]["status"] == "Succeeded"
+
+
+def test_main_api_version_override_wins_over_scan(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    payload = {"result": {"status": "Succeeded", "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+
+    out_dir = tmp_path / "api-version-override-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--api-version", "67.0", "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "- api version: `67.0` (override)" in summary
+
+    sfdx_project = json.loads((out_dir / "sfdx-project.json").read_text(encoding="utf-8"))
+    assert sfdx_project["sourceApiVersion"] == "67.0"
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["api_version"] == {"value": "67.0", "source": "override"}
+
+
+def test_main_api_version_override_wins_in_manifest_mode(tmp_path, monkeypatch):
+    # The merged package.xml's <version> must reflect the override too, not
+    # just sfdx-project.json.
+    build_dir = make_build(tmp_path)
+    payload = {"result": {"status": "Succeeded", "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+
+    out_dir = tmp_path / "api-version-override-manifest-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--mode", "manifest", "--api-version", "67.0", "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    manifest_text = (out_dir / "package.xml").read_text(encoding="utf-8")
+    assert "<version>67.0</version>" in manifest_text
+
+
+def test_main_api_version_fallback_recorded_when_no_step_declares_one(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    payload = {"result": {"status": "Succeeded", "checkOnly": True,
+                           "details": {"componentSuccesses": [], "componentFailures": []}}}
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+
+    out_dir = tmp_path / "api-version-fallback-out"
+    # M2-S01 has no package.xml at all -> nothing to scan -> fallback.
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M2",
+         "--out", str(out_dir)]
+    )
+    assert rc == 0
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert f"- api version: `{mock_deploy.DEFAULT_API_VERSION}` (fallback" in summary
+
+
+def test_main_api_version_recorded_in_plan_only_summary(tmp_path, monkeypatch):
+    build_dir = make_build(tmp_path)
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+
+    out_dir = tmp_path / "api-version-plan-only-out"
+    rc = mock_deploy.main(
+        [str(build_dir / "plan.json"), "--org-alias", "sfskills-dev", "--milestone", "M1",
+         "--plan-only", "--out", str(out_dir)]
+    )
+    assert rc == 0
+    assert not (out_dir / "result.json").exists()
+
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "- api version: `62.0` (highest of: M1-S01=61.0, M1-S02=62.0)" in summary
