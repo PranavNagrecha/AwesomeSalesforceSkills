@@ -1,0 +1,3 @@
+WARN:  [artefacts/M3-S02] no EmailAdministrationSettings or EmailAuthorizationSettings file found. Retrieve them first (references/metadata-examples.md § 7) so the org's real deliverability posture is in source before you change it.
+WARN:  [artefacts/M3-S02] no deliverability policy JSON found (an object with sendsExternalEmail / sendingDomains / complianceBccAddress). Checks 3, 4 and the per-domain DKIM check cannot run without it — see references/metadata-examples.md § 3.
+WARN:  [artefacts/M3-S02] no DKIM key inventory JSON found (an object with a dkimKeys list). Nothing on the platform tracks DKIM key age; this file is the rotation record.

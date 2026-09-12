@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Case Tier 2</label>
+    <description>Tier 2 persona delta on Case Agent Core: Support record type visibility, edit on Case.Severity__c. Grants match Tier 1 by design; escalation is routing, not access. See deploy-order.md for rationale.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Severity__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <recordTypeVisibilities>
+        <recordType>Case.Support</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+</PermissionSet>

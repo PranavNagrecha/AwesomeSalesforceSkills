@@ -1,0 +1,110 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T03-55-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-55-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-55-00Z.json",
+  "summary": "Documented M3-S02 (Classic acknowledgement + escalation email templates and folder — EmailFolder:case_intake, EmailTemplate:case_intake/Case_Acknowledgement, EmailTemplate:case_intake/Case_Escalated_To_Tier2 — plus sender-identity-note.md) after step-tester marked it tested. Re-rendered PLAN.md/CLARIFICATIONS.md before and after the status transition. Wrote four Section 2 workbook rows (CWB-LAYOUT-003..006 in workbook/02-page-layouts-and-lightning-pages.md, since the step's type `ui` is the same type M1-S02 carries and Step 4's map names email templates for that section) and two Other Configuration rows (CWB-OTHER-019 package.xml, CWB-OTHER-020 deploy-order.md); minted two new requirement ids (REQ-032 the customer acknowledgement, REQ-033 the Tier 2 escalation handover notice), continuing from the highest existing (REQ-031), and wrote their traceability.md Matrix rows, a requirement-id-derivation pair, a 'What M3-S02 rests on' section citing Q22/Q63/Q68 on REQ-032 and Q63/Q88 on REQ-033, a Coverage section and a Linter-result section; appended four decisions (D-M3S02-01..04 — the ungrounded description ceiling, the inferred intra-request deploy order, the deliberate no-WorkflowAlert omission, and — most load-bearing — the Q22-vs-answers-key sender-identity divergence, recorded as an M3 milestone-gate decision that M3-S04's senderEmail must not pre-empt, recommending a non-routing OWEA and citing admin/email-to-case-configuration's mail-loop gotcha) and five open items for the planner (O-M3S02-01 the Q22/answers-key contradiction as a clarification-record defect, O-M3S02-02 the deliverability checker's assertion-free exit 0, O-M3S02-03 deploy-order.md undeclared in outputs[] on both M3-S02 and M3-S01 with amend-step ruled out for already-documented steps, O-M3S02-04 the stale unfiled$public/ template prefix two consumer skills would hand M3-S04/M4-S04 plus the Q88-vs-REQ-033 notification-mechanism distinction, O-M3S02-05 a check_rtm.py skill-depth gap on EmailFolder-qualified naming). Compiled the step's one manual test (B06) into two UAT cases (TC-M3S02-01 positive, TC-M3S02-02 negative — added so the checker's unconditional per-requirement negative-case rule was satisfied honestly rather than skipped) and two Given/When/Then criteria (AC-032.1, AC-032.2), staged in the session scratchpad and linted clean by both check_uat_case.py and check_ac_format.py. Set the step's status to documented via build_plan.py. No other M3 step was running concurrently with this pass.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every one of the step's seven declared outputs plus the one undeclared deploy-order.md produced a workbook row (six rows total, two of them each covering two files that are one component), every new traceability row carries a real source_req_id freshly minted from requirement.md and an answered clarification (Q22 for REQ-032, requirement.md L15-16 plus Q63 for REQ-033), and both rows name a verification cell that states what passed and what no exit code in this step asserts. Re-running this pass would replace the same six workbook rows and two traceability rows rather than duplicate them (all keyed). Not MEDIUM: the step's type (`ui`) is a named row in Step 4's map (not a fallthrough to Other Configuration), no artefact needed judgment to place in a section, and neither requirement id was inferred from an ambiguous field — REQ-032/REQ-033 read directly off requirement.md's own acknowledgement and escalation lines. The Q22-vs-answers-key divergence and the check_rtm.py false-orphan WARN are both genuine open items, but Step 11's rubric scores the documentation task, not the underlying build's unresolved substantive questions — both are recorded exactly where they belong (a gate decision and a skill-depth open item) rather than either hidden or left to silently degrade a row's accuracy, which is the same treatment M3-S01's HIGH call gave its own six open decisions and four open items.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_uat_case.py enforces an unconditional per-requirement negative-case rule (independent of check_ac_format.py's narrower rule-type-marker trigger). Rather than skip it, a second, genuinely grounded negative case (TC-M3S02-02 / AC-032.2, reusing the tester's own grep-for-@ evidence) was added so both linters passed honestly instead of one being silently under-satisfied.",
+      "evidence": {"source": "repo_scan", "path": "skills/admin/uat-test-case-design/scripts/check_uat_case.py"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both new templates' merge-field bodies were independently re-confirmed to contain no email address (grep -c @ = 0 on both, matching the tester's own tests/M3-S02/summary.md evidence) before being cited as the negative case's oracle, rather than trusting the prior run's prose.",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email, artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email"}
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "The Q22-vs-answers-key sender-identity divergence this step's own artefacts recorded is now a decisions.md entry (D-M3S02-04) rather than only a note buried in sender-identity-note.md — but it remains unresolved, and it is load-bearing: M3-S04, the very next routing step, is the one that actually sets senderEmail.",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S02/sender-identity-note.md"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_rtm.py's file-to-component deriver has no folder-qualification rule for EmailFolder-nested EmailTemplate files, so its orphan report flags two correctly-covered rows as uncovered purely from a key-derivation mismatch — a false positive that would mislead a reader who trusts the WARN count without reading the orphan report.",
+      "evidence": {"source": "repo_scan", "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The ten-position deploy-order sequence in agents/build-doc-keeper/AGENT.md Step 5 has no slot named for EmailFolder/EmailTemplate, the same gap M3-S01 already recorded for `validation` and workbook/01-objects-and-fields.md recorded for `BusinessProcess` — a third step type now missing from the same list.",
+      "evidence": {"source": "repo_scan", "path": "agents/build-doc-keeper/AGENT.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether Q88's queue-level notification default and REQ-033's case-level escalation handover notice are meant to compose, substitute for each other, or run fully independently is not stated anywhere in the plan; this run recorded them as distinct mechanisms on the more conservative reading, but a human at the M3/M4 gate may intend otherwise.",
+      "evidence": {"source": "repo_scan", "path": "answers-key.md"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M3-S02 is documented; M3-S03 and M3-S04 are the next pending M3 steps, and M3-S04 in particular is where decisions.md D-M3S02-04's sender-identity gate decision actually gets exercised.",
+      "evidence": {"source": "repo_scan", "path": "plan.json"},
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "M3-S03 and M3-S04 are both pending and M3-S04 depends on this step; advancing the milestone requires them built, tested and documented next, with D-M3S02-04 read before M3-S04's senderEmail is written."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "check_rtm.py's missing EmailFolder-qualification logic (O-M3S02-05) is a repeated, uninstrumented manual correction every future email-template step will need a human or a doc-keeper run to explain away.",
+      "evidence": {"source": "repo_scan", "path": "docs/reports/skill-depth.md"},
+      "suggested_followup_agent": "config-workbook-author",
+      "followup_reason": "recorded here as a skill-depth candidate rather than acted on, because deepening a checker script is out of this agent's scope and belongs to the skill's own maintenance path, not a workbook compile."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations requirement, confidence rubric this agent's own Step 11 overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "the atomic-write rule for this envelope's markdown/JSON pair"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked against the four refusal triggers; none fired — the step was tested on entry and every row carries a real source_req_id"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the step fields this agent reads (inputs, outputs, skills, depends_on) and leaves untouched beyond the CLI-mediated status transition"},
+    {"type": "standard", "id": "agents/_shared/schemas/output-envelope.schema.json", "path": "agents/_shared/schemas/output-envelope.schema.json", "used_for": "the fixed top-level field set; this run's payload rides in extensions"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 step types and the validation row this run extended by analogy for `ui`/email templates; § 5 the acceptance-test types and check-outputs; § 6 this agent's per-step job; § 8 a decision entry as the deepen-a-skill signal"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "Concept 1 row schema, Concept 2 the ten sections (Section 2's own coverage of email templates), Concept 3 one agent per row"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "the build-layer RTM column set, the REQ-XXX convention, the status enum, the pipe-delimited multi-value convention"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "a decision entry recording the alternative rejected and the source it rests on, applied to all four D-M3S02-* entries"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how a test result becomes acceptance evidence, applied when compiling B06 into the two TC-M3S02 cases"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "the canonical UAT case record shape and the check_uat_case.py schema (case_id, ac_id, req_id, persona, sandbox, steps, evidence, pass_rule) plus its per-requirement negative-case rule"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then record shape and the rule-type-marker negative rule, applied to the two AC-032 criteria"},
+    {"type": "skill", "id": "admin/email-templates-and-alerts", "path": "skills/admin/email-templates-and-alerts/SKILL.md", "used_for": "reading the step's artefacts and deploy-order.md's grounding gaps against the skill's documented element set and sender-identity guidance"},
+    {"type": "skill", "id": "admin/email-deliverability-strategy", "path": "skills/admin/email-deliverability-strategy/SKILL.md", "used_for": "confirming the deliverability checker's WARN-not-fail behaviour on absent files, cited in O-M3S02-02"},
+    {"type": "skill", "id": "admin/email-to-case-configuration", "path": "skills/admin/email-to-case-configuration/SKILL.md", "used_for": "Gotcha 3's mail-loop mechanism, the grounding for decisions.md D-M3S02-04"},
+    {"type": "skill", "id": "admin/escalation-rules", "path": "skills/admin/escalation-rules/SKILL.md", "used_for": "confirming the stale unfiled$public/ prefix in its own worked example, recorded in O-M3S02-04"},
+    {"type": "skill", "id": "admin/assignment-rules", "path": "skills/admin/assignment-rules/SKILL.md", "used_for": "confirming the stale unfiled$public/ prefix in its own worked example and the template-before-rule deploy order, recorded in O-M3S02-04"},
+    {"type": "skill", "id": "admin/queues-and-public-groups", "path": "skills/admin/queues-and-public-groups/SKILL.md", "used_for": "Q88's queue-level notification mechanism, distinguished from REQ-033's case-level notice in O-M3S02-04"}
+  ],
+  "extensions": {
+    "step_id": "M3-S02",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/02-page-layouts-and-lightning-pages.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows": ["CWB-LAYOUT-003", "CWB-LAYOUT-004", "CWB-LAYOUT-005", "CWB-LAYOUT-006", "CWB-OTHER-019", "CWB-OTHER-020"],
+    "traceability_rows": ["REQ-032", "REQ-033"],
+    "decisions_appended": ["D-M3S02-01", "D-M3S02-02", "D-M3S02-03", "D-M3S02-04"],
+    "open_items_appended": ["O-M3S02-01", "O-M3S02-02", "O-M3S02-03", "O-M3S02-04", "O-M3S02-05"],
+    "rows_replaced": [],
+    "uat_cases_staged": ["TC-M3S02-01", "TC-M3S02-02"],
+    "acceptance_criteria_staged": ["AC-032.1", "AC-032.2"],
+    "status_set": "documented"
+  },
+  "followups": [
+    {"agent": "build-step-runner", "because": "M3-S03 and M3-S04 are pending and M3-S04 depends on this step; advancing M3 requires them built, tested and documented, with decisions.md D-M3S02-04 read before M3-S04's senderEmail is written."},
+    {"agent": "milestone-verifier", "because": "not yet — M3 still has three undocumented steps (M3-S03/S04 pending, M3-S05 blocked), so a milestone verification run now would be premature."}
+  ]
+}

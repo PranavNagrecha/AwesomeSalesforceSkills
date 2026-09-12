@@ -1,0 +1,186 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T03-40-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-40-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-40-00Z.json",
+  "summary": "M3-S02 (Classic acknowledgement + escalation email templates) tested: xml (4/4 parsed), manifest (consistent), both declared checkers (exit 0), and check-outputs (ok) all passed; 1 manual test (B06) deferred to the M3 milestone gate, tickable from artefacts on disk. Step status set built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual; both always-on checks (xml, manifest) completed; every result came from an exit code this agent observed (check_email_templates.py exit 0, check_email_deliverability_strategy.py exit 0, check-outputs exit 0 with ok:true). No checker was missing, no manifest exclusion was needed, and check-outputs reported nothing missing/empty/malformed.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Neither template body hardcodes an email address; both are pure merge-field text with no From/Reply-To literal, so the manual test's third observable outcome is satisfied cleanly.",
+      "domain": "email-templates",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -n @ on both .email bodies",
+        "count": 0,
+        "path": "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email, artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The package.xml is fully consistent in both directions with no wildcard members, so every EmailFolder/EmailTemplate member traces to exactly one file pair and vice versa.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S02/package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "sender-identity-note.md section 2 records an unresolved divergence between plan.json Q22 (support@ itself is the routing address) and answers-key.md's Acknowledgement row (an org-wide address, never the routing address) over whether support@ is safe as the acknowledgement's senderEmail; no test in this step's acceptance_tests[] adjudicates it because EmailTemplate carries no sender element, but the divergence carries forward unresolved into M3-S04 where senderEmail is actually set.",
+      "domain": "email-deliverability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S02/sender-identity-note.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The deliverability checker's three WARNs (no EmailAdministrationSettings/EmailAuthorizationSettings file, no deliverability-policy JSON, no DKIM-key-inventory JSON) are expected given this step declares none of those files, but they mean the checker's exit 0 here carries no assertion at all about deliverability posture -- that gap is intentionally covered by the manual test and the note, not by any exit code in this step.",
+      "domain": "email-deliverability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M3-S02/checker2_stderr.txt"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The Q22-vs-answers-key sender divergence and the inert authorizedSenders control are exactly the kind of finding a deployment-risk or security review would want surfaced before M3-S04 sets senderEmail.",
+      "domain": "email-deliverability",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S02/sender-identity-note.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because the doc keeper is the next step in this loop and can carry the unresolved Q22 divergence into decisions.md so it is not lost before M3-S04 runs."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and auto-chaining"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and atomic-write rule for the deliverable pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum (not triggered this run)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a75 acceptance-test types/runners/pass conditions, checker-command-verbatim rule, check-outputs precondition, manifest fail-not-skip rule for metadata step types, \u00a74 step type table"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar the manifest check is judged against (types/members/name)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "source-format filename-to-metadata-type mapping used to derive members from artefact files"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming OrgWideEmailAddress (no metadata type) is correctly absent from both the manifest and the file-to-manifest check"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then shape B06 was checked against before being carried to skipped_manual[]"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "the step is now tested and the doc keeper is the next stage in the loop to update PLAN.md, workbook rows, decisions.md and traceability.md, including the unresolved Q22 divergence."
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S02",
+    "results_path": "tests/M3-S02/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree parse of every *.xml/*-meta.xml under artefacts/M3-S02/",
+        "exit_code": null,
+        "verdict": "pass (4/4 parsed)"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way check of artefacts/M3-S02/package.xml against artefacts/M3-S02/",
+        "exit_code": null,
+        "verdict": "pass (consistent)"
+      },
+      {
+        "name": "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S02 --strict",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02",
+        "exit_code": 0,
+        "verdict": "pass (3 WARNs, no assertion made -- expected per test description)"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M3-S02",
+        "exit_code": 0,
+        "verdict": "pass (ok: true)"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "B06: given the acknowledgement is sent from support@ -- the same address Email-to-Case listens on (Q22) -- when sender-identity-note.md and the two .email bodies are read, then the note names the org-wide address each template sends from (support@ for Case_Acknowledgement, billing@ for finance replies), states the self-addressed-loop risk that arises because support@ is both sender and inbound routing address, and names the control (the auto-response rule fires once per case and the routing address rejects its own sender), and neither body hardcodes a recipient address."
+    ],
+    "tests_run": 5
+  }
+}

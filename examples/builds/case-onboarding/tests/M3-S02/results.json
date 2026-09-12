@@ -1,0 +1,15 @@
+{
+  "step_id": "M3-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py",
+    "skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "B06: given the acknowledgement is sent from support@ — the same address Email-to-Case listens on (Q22) — when sender-identity-note.md and the two .email bodies are read, then the note names the org-wide address each template sends from (support@ for Case_Acknowledgement, billing@ for finance replies), states the self-addressed-loop risk that arises because support@ is both sender and inbound routing address, and names the control (the auto-response rule fires once per case and the routing address rejects its own sender), and neither body hardcodes a recipient address. (tickable at the M3 milestone gate from the artefacts on disk)"
+  ]
+}

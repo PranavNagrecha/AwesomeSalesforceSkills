@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 10 sharing-model metadata file(s) (1 object OWD(s) resolved); 0 finding(s) detected."
+}

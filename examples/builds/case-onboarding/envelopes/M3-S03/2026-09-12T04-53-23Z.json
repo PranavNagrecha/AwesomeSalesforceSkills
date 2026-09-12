@@ -1,0 +1,169 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T04-53-23Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-53-23Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-53-23Z.json",
+  "summary": "Rebuilt M3-S03 (Email-to-Case routing addresses, Web-to-Case intake, Case settings) retested clean after the F-25/F-26/F-27 fix. Declared build-scope checker check_case_management_setup.py exits 0; the always-on XML (2/2 parse) and manifest (Settings:Case consistent) checks pass; check-outputs ok. Two manual tests deferred to the milestone gate, both well-formed Given/When/Then with named observable outcomes. Step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed (step-tester Plan Step 7 HIGH condition).",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared checker (build scope, check_case_management_setup.py) exits 0 on the rebuilt artefacts and its cross-file assertion (webToCase.caseOrigin against M1-S01's CaseOrigin standardValueSet) is satisfiable at this scope, unlike the pre-rebuild run whose defects only the org's own validation caught.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M3-S03/check_case_management_setup.stdout.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The manifest declares Settings:Case explicitly rather than a wildcard, matching case-management-setup section 5's documented rule that the wildcard does not apply to feature settings, and both manifest directions resolve one-to-one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S03/package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "check_email_to_case_configuration.py is not declared on this step by design, and it now carries three new rules from today's commit 0b8805803 (E2C-RT-01, E2C-RT-02, E2C-PRI-01) that this test run never exercises against these artefacts.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/email-to-case-configuration/scripts/check_email_to_case_configuration.py"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Manual test 4 says the webToCase block carries exactly its three documented children while also saying defaultResponseTemplate is deliberately unset, but the file carries only two of the three documented children.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S03/settings/Case.settings-meta.xml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "build-doc-keeper should run next now that M3-S03 is tested, to update PLAN.md, the workbook and traceability against the rebuilt artefacts.",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "The step just moved built -> tested and the doc keeper is the next stage of the build loop for a tested step."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "milestone-verifier should run once the remaining M3 steps (M3-S04, M3-S05) reach documented, against these rebuilt artefacts rather than the pre-rebuild ones.",
+      "evidence": {
+        "source": "heuristic"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "M3's earlier built/tested records were produced against artefact hashes that no longer exist after this rebuild."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations, confidence rubric override"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum (not triggered this run)"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 5 acceptance-test types/runners/pass-conditions, checker-scope rule, manifest fail-vs-skip rule; \u00a7 4 metadata step types"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "acceptance_tests[] and outputs[] shape"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar the manifest check is judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "filename-to-metadata-type mapping (settings/Case.settings-meta.xml -> Settings:Case)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "types with no standalone file (not needed this run; no exclusions applied)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must contain to be tickable by a human"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then shape check on both manual tests before carrying them into skipped_manual"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S03",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M3-S03/results.json",
+    "results": [
+      {
+        "name": "skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "python3",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "step-tester",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given check_email_to_case_configuration.py is not declared here (see the step note), when settings/Case.settings-meta.xml is read, then both routing addresses carry their own caseOrigin (Email-Support, Email-Billing) and no caseOwner, unauthorizedSenderAction is Bounce, overEmailLimitAction is Requeue, saveEmailHeaders is true on both, and the webToCase block carries exactly its three documented children \u2014 enableWebToCase true and a caseOrigin that is a live CaseOrigin value from M1-S01, with defaultResponseTemplate deliberately unset because the guide scopes it to Self-Service portal responses rather than to the customer acknowledgement, which is M3-S04's auto-response rule.",
+      "Given Q66's answer itself says to confirm how the website form posts, when web-to-case-form-contract.md is read, then it states whether the form posts directly to Web-to-Case or through middleware, the Origin value each path stamps, and \u2014 per case-management-setup \u00a7 4 \u2014 that the HTML form itself is not metadata and has no metadata type, so it is authored and hosted outside this build."
+    ],
+    "tests_run": 3
+  }
+}

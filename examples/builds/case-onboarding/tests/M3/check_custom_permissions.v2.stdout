@@ -1,0 +1,15 @@
+Scanning: /Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/case-onboarding/artefacts
+
+Custom permissions defined:        1
+Permission sets / profiles parsed: 8
+Distinct permissions referenced:   1
+
+Coverage (custom permission -> consumers, granting containers):
+  Custom Permission              Consumers  Granted by
+  -----------------------------------------------------------
+  Bypass_Case_Intake_Validation          2  permission set 'Case_Intake_Integration'
+
+INFO:
+  CP-DESC-02 'Bypass_Case_Intake_Validation' has a 250-character description (M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml); approaching the 255-character limit. Headroom only -- never fails the run, even under --strict.
+
+Summary: 0 error(s), 0 warning(s), 1 info.

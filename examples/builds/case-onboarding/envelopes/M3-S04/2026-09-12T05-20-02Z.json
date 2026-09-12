@@ -1,0 +1,407 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T05-20-02Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-20-02Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-20-02Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S04",
+    "step_type": "routing",
+    "api_version": "67.0 (from M3-S03's package.xml and deploy-order.md \u00a7 0; plan.json carries no api_version field \u2014 decisions.md O-M3S03-01)",
+    "build_mode": "design-only",
+    "answers": [
+      "Q24",
+      "Q25",
+      "Q26",
+      "Q27",
+      "Q28",
+      "Q18"
+    ],
+    "answers_also_read": [
+      "Q16",
+      "Q22",
+      "Q63",
+      "Q68",
+      "Q88"
+    ],
+    "decisions": [
+      "D3",
+      "D-M3S02-04",
+      "D-M3S03-01",
+      "D-M3S03-02",
+      "O-M3S03-01"
+    ],
+    "operator_note": "plan.json steps[M3-S04].notes, amended 2026-09-12T05:12:42Z by the dry-run operator (Fable): senderEmail = support-noreply@acme.example; support@/billing@ forbidden as sender; F-27 records that email cases arrive with Priority = Medium.",
+    "upstream_artefacts_read": [
+      "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+      "artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+      "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+      "artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+      "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml",
+      "artefacts/M3-S02/package.xml",
+      "artefacts/M3-S03/settings/Case.settings-meta.xml",
+      "artefacts/M3-S03/deploy-order.md",
+      "artefacts/M1-S01/objects/Account/fields/Support_Tier__c.field-meta.xml"
+    ],
+    "credentials_present": "none \u2014 no input on this step matched a credential shape per skills/devops/pipeline-secrets-management"
+  },
+  "summary": "Built M3-S04 (type: routing) as source-format metadata under artefacts/M3-S04/: AssignmentRules:Case (one rule, Case_Intake_Routing, active, three ordered entries \u2014 Email-Billing to the Billing queue, Email-Support to Tier_1_General, then a criteria-free catch-all to Tier_1_General per Q26), AutoResponseRules:Case (one rule, Case_Acknowledgement, active, exactly one entry so no case can match twice per Q63, sending the folder-qualified Classic template case_intake/Case_Acknowledgement from support-noreply@acme.example per the operator note resolving D-M3S02-04 for this step), plus owner-writer-map.md reconciling the three by-design OwnerId writers (Q27/D3), package.xml at 67.0 and deploy-order.md. The declared build-scope checker exits 0. One planned criterion was NOT written and is recorded instead: a rule entry keyed on the Account support tier has neither a target queue in any answer nor a grounded cross-object criteriaItems notation anywhere in the cited skills, so per Step 5 rule 1 it is a named gap for the M3 gate rather than a guessed value shape.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: every emitted element traces to skills/admin/assignment-rules/references/metadata-examples.md, the declared checker exited 0 on the first pass and check-outputs is ok \u2014 but one Questions-to-Ask row ('Which field values decide the owner') is only half satisfied: the Account-support-tier half could not be written from the plan and no cited skill documents a default for it, so the artefact implements Origin-based routing only. senderName 'Acme Support' is adapted from the skill's worked example rather than answered.",
+  "outcome": "completed",
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Q25 names two routing inputs (Case.Origin and the Account support tier); only Origin could be written. No answer, requirement line or answers-key row maps a support tier to a queue, and no cited skill documents cross-object criteriaItems notation for a Case rule.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer 'which queue owns a Premier-tier case at creation, if not the Origin-derived one', and confirm the criteriaItems field notation for a related Account field against a live org, then re-run this step."
+    },
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "senderType is read by the declared checker but documented by no cited skill, so it was omitted; senderName's value is adapted from the skill's worked example rather than supplied by an answer.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Deepen admin/assignment-rules with the AutoResponseRules senderType element values if the org ever needs the DefaultWorkflowUser form."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "email-deliverability",
+      "observation": "AR-LOOP-01 did not fire at build scope, which is positive evidence rather than an absence: the routing-address inventory WAS in scope (AR-LOOP-02 stayed silent at artefacts/ and fired at artefacts/M3-S04), so the checker actually compared senderEmail against support@ and billing@ and found no match.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/assignment-rules/scripts/check_assignment_rules.py",
+        "query": "python3 check_assignment_rules.py --manifest-dir artefacts"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The step's own notes predicted both checker outcomes before the run \u2014 the declared checker at 0 and check_assignment_rules.py at 1 on the deliberate duplicate target \u2014 and both reproduced exactly, so the plan's test surface was written from evidence rather than expectation.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M3-S04].inputs.note"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "automation-drift",
+      "observation": "The Billing queue's notification address is billing@acme.example, which is also a live Email-to-Case routing address; no assignment ruleEntry template was written here, but any future queue-notification template on the Billing entry would post mail into the intake mailbox.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+        "query": "<email>billing@acme.example</email>"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "requirements-coverage",
+      "observation": "Q24's answer requires the 'Run assignment rules' checkbox to be defaulted on for the Case layouts (~20 manual cases a day), but M2-S03's layouts are already documented and no step in the plan declares that property; without it those cases get neither an authoritative owner nor an acknowledgement.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json clarifications Q24; PLAN.md M2-S03 outputs"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "email-deliverability",
+      "observation": "support-noreply@acme.example is now named by two steps (M3-S03's systemUserEmail and this step's senderEmail/replyToEmail) and is provisioned by neither \u2014 no step declares an OrgWideEmailAddress output, so the acknowledgement cannot send until a human creates and verifies it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "domain": "routing",
+      "observation": "The step title and one manual acceptance test both say the rule is driven by Origin AND the Account support tier, but nothing in the plan says which queue a Premier case should go to, and no cited skill grounds cross-object criteriaItems notation for a Case rule \u2014 so the artefact routes on Origin only and the divergence is left for the gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/assignment-rules/references/metadata-examples.md",
+        "query": "grep -rh -A1 '<criteriaItems>' skills/ | grep '<field>' \u2014 every value is base-object"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "email-deliverability",
+      "observation": "replyToEmail was set to the same no-reply address as senderEmail, following the skill's worked example, which means a customer replying to the acknowledgement does not thread onto the case; whether that is acceptable is the same question D-M3S02-04 holds open at the M3 gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/assignment-rules/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The step's four acceptance tests (one checker, xml, manifest, two manual) have not been run as a set; only the checker, an XML parse and check-outputs were run here.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M3-S04].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It owns the acceptance tests, including the two manual reads this agent is not allowed to tick."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Three items reached this run that belong in decisions.md: the Account-support-tier gap, the replyToEmail threading cost, and the Q24 layout-checkbox hole.",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M3-S04/deploy-order.md \u00a7 6"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "It owns decisions.md and the workbook rows where those three findings have to survive past this envelope."
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S04",
+    "step_type": "routing",
+    "invocation_path": "run under agents/build-step-runner \u2014 per AGENT.md Step 9 this agent set no step status itself; the runner owns the transition",
+    "artefacts": [
+      {
+        "path": "artefacts/M3-S04/assignmentRules/Case.assignmentRules-meta.xml",
+        "type": "AssignmentRules",
+        "declared": true,
+        "grounded_in": "skills/admin/assignment-rules/references/metadata-examples.md \u00a7 'Case assignment rule with case team and Cc handling' + \u00a7 'Lead assignment rule: three regional entries plus catch-all' (catch-all shape, multi-value <value>)"
+      },
+      {
+        "path": "artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml",
+        "type": "AutoResponseRules",
+        "declared": true,
+        "grounded_in": "skills/admin/assignment-rules/references/metadata-examples.md \u00a7 'Case auto-response rule'"
+      },
+      {
+        "path": "artefacts/M3-S04/owner-writer-map.md",
+        "type": "documentation",
+        "declared": true,
+        "grounded_in": "plan.json decisions D3 consequences; Q27; skills/admin/assignment-rules/SKILL.md \u00a7 'When Assignment Rules Run' + gotchas 1-3"
+      },
+      {
+        "path": "artefacts/M3-S04/package.xml",
+        "type": "manifest",
+        "declared": true,
+        "grounded_in": "skills/admin/assignment-rules/references/metadata-examples.md \u00a7 'package.xml and CLI'; version 67.0 per artefacts/M3-S03/deploy-order.md \u00a7 0"
+      },
+      {
+        "path": "artefacts/M3-S04/deploy-order.md",
+        "type": "documentation",
+        "declared": false,
+        "grounded_in": "agents/metadata-builder/AGENT.md Step 7; written on every run; same undeclared pattern as decisions.md O-M3S02-03"
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M3-S04/deploy-order.md"
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "How do Cases arrive: web form, email, UI, API, Data Loader, Flow? (Q24)",
+        "answer": "Email-to-Case and Web-to-Case invoke the rule automatically; manual UI creation needs the checkbox defaulted on.",
+        "source": "clarification answer Q24",
+        "element": "no element \u2014 it determines the catch-all's reach and \u00a7 3 of owner-writer-map.md. The layout checkbox is not metadata this step writes."
+      },
+      {
+        "question": "Which field values decide the owner, and are they set at save time? (Q25)",
+        "answer": "Case.Origin (stamped by the routing address) and the Account's support tier. ONLY the Origin half was writable.",
+        "source": "clarification answer Q25 (partial)",
+        "element": "criteriaItems/field = Case.Origin on entries 1 and 2. No tier entry \u2014 see extensions.ungrounded[0]."
+      },
+      {
+        "question": "Queue or person, and what happens when nobody matches? (Q26)",
+        "answer": "Queue targets only; unmatched cases go to the Tier 1 General queue.",
+        "source": "clarification answer Q26",
+        "element": "assignedToType = Queue on all three entries; entry 3 is the criteria-free catch-all to Tier_1_General."
+      },
+      {
+        "question": "Which queue owns each channel's cases? (Q18)",
+        "answer": "support@ to Tier 1, billing@ to Billing/Finance, expressed as caseOrigin per address plus assignment-rule entries.",
+        "source": "clarification answer Q18",
+        "element": "entry 1 Email-Billing to Billing; entry 2 Email-Support to Tier_1_General."
+      },
+      {
+        "question": "Does anything else write OwnerId after save? (Q27)",
+        "answer": "The assignment rule is the sole authoritative writer at creation; Omni-Channel (M3-S05) and the escalation rule (M4-S04) are the two by-design post-save writers.",
+        "source": "clarification answer Q27 + plan decision D3",
+        "element": "owner-writer-map.md \u00a7 1."
+      },
+      {
+        "question": "Should the customer get an acknowledgement, and on which channels? (Q28)",
+        "answer": "Yes, on both intake channels, with the case number.",
+        "source": "clarification answer Q28",
+        "element": "autoResponseRule active=true; criteriaItems Case.Origin equals Email-Support,Email-Billing,Web."
+      },
+      {
+        "question": "Could the same event fire twice and send two emails? (Q63)",
+        "answer": "One acknowledgement per case creation: auto-response only, no parallel Flow email alert.",
+        "source": "clarification answer Q63",
+        "element": "exactly one ruleEntry in the auto-response file; no Flow email alert exists in this build."
+      },
+      {
+        "question": "Who sends the acknowledgement, and does that address forward back to us? (Q22 / D-M3S02-04)",
+        "answer": "support-noreply@acme.example \u2014 a verified org-wide address that is not an Email-to-Case routing address.",
+        "source": "step inputs: plan.json steps[M3-S04].notes (operator amendment 2026-09-12T05:12:42Z), which outranks the Q22 answer for this step",
+        "element": "senderEmail and replyToEmail. D-M3S02-04 stays open at the M3 gate; if overturned, only this element changes."
+      },
+      {
+        "question": "Which email template does the acknowledgement send? (Q28 + M3-S02)",
+        "answer": "The Classic template M3-S02 built, folder-qualified.",
+        "source": "upstream artefact artefacts/M3-S02/package.xml",
+        "element": "template = case_intake/Case_Acknowledgement \u2014 not the skill example's stale unfiled$public/ prefix."
+      },
+      {
+        "question": "What sender display name? (no plan source)",
+        "answer": "Acme Support",
+        "source": "DEFAULT \u2014 adapted from the worked example in skills/admin/assignment-rules/references/metadata-examples.md \u00a7 'Case auto-response rule'",
+        "element": "senderName."
+      },
+      {
+        "question": "Which API version does package.xml carry?",
+        "answer": "67.0",
+        "source": "upstream artefact artefacts/M3-S03/deploy-order.md \u00a7 0 and decisions.md O-M3S03-01 \u2014 plan.json carries no api_version field",
+        "element": "package.xml <version>."
+      }
+    ],
+    "ungrounded": [
+      {
+        "item": "A rule entry keyed on the Account support tier",
+        "why": "(a) no answer, requirement line or answers-key row names a tier-to-queue mapping \u2014 the requirement gives Premier a faster SLA (M4-S02), not a different owner; (b) no file under skills/ documents a criteriaItems/field on a related object inside a Case rule. Account.Customer_Tier__c exists only in admin/outbound-message-setup on an Account workflow rule, which grounds nothing cross-object.",
+        "not_written": true,
+        "escalated_to": "M3 gate \u2014 see artefacts/M3-S04/deploy-order.md \u00a7 6 row 1"
+      },
+      {
+        "item": "<template> on the assignment ruleEntry (assignment notification)",
+        "why": "no answer asks for one and M3-S02 built no assignment-notification template; also the Billing queue's email is a live routing address.",
+        "not_written": true,
+        "escalated_to": "CRM admin lead if queue notification is ever wanted"
+      },
+      {
+        "item": "team / overrideExistingTeams / notifyCcRecipients",
+        "why": "documented in the cited skill but no answer in this build asks for a case team or for the inbound Cc line on the acknowledgement.",
+        "not_written": true,
+        "escalated_to": "Process owner"
+      },
+      {
+        "item": "senderType",
+        "why": "read by the declared checker but documented by no cited skill; senderEmail alone satisfies the check and is what the worked example writes.",
+        "not_written": true,
+        "escalated_to": "none \u2014 recorded so the absence is not read as an oversight"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "declared": true,
+        "scope": "build",
+        "exit_code": 0,
+        "stdout": "No case management setup issues found.",
+        "repair_passes": 0,
+        "baseline_before_write": "exit 0 \u2014 run before this step's files existed, so the pass is attributable to the tree as a whole staying clean, not to this step alone"
+      },
+      {
+        "command": "python3 skills/admin/assignment-rules/scripts/check_assignment_rules.py --manifest-dir artefacts/M3-S04",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 1,
+        "stdout": "ISSUE: Case.assignmentRules-meta.xml / rule 'Case_Intake_Routing': target 'Tier_1_General' appears in multiple rule entries. Verify this is intentional and not a copy-paste error.\nISSUE: AR-LOOP-02 WARN: no Email-to-Case routing-address inventory (settings/Case.settings-meta.xml or equivalent) found under artefacts/M3-S04 - cannot verify the sender is not an intake address at this scope.",
+        "repair_passes": 0,
+        "interpretation": "Both findings are the ones plan.json steps[M3-S04].inputs.note predicted. The duplicate target is Q18 plus Q26 by construction and is intentional; the artefact was NOT changed to satisfy the checker (metadata-builder AGENT.md Step 8: fix the artefact, never the checker \u2014 and here the artefact is right). AR-LOOP-02 is a scope artefact: the settings file lives in M3-S03's directory."
+      },
+      {
+        "command": "python3 skills/admin/assignment-rules/scripts/check_assignment_rules.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "declared": false,
+        "scope": "build",
+        "exit_code": 1,
+        "stdout": "ISSUE: Case.assignmentRules-meta.xml / rule 'Case_Intake_Routing': target 'Tier_1_General' appears in multiple rule entries. Verify this is intentional and not a copy-paste error.",
+        "repair_passes": 0,
+        "interpretation": "Run at build scope so AR-LOOP-01 could actually see the routing addresses. It did not fire: no senderEmail in this step matches support@ or billing@. AR-LOOP-02 is absent here, which proves the inventory was found. The duplicate-target finding is the sole remaining issue and is by design."
+      },
+      {
+        "command": "python3 -c \"import xml.etree.ElementTree as ET, pathlib; [ET.parse(p) for p in pathlib.Path('artefacts/M3-S04').rglob('*.xml')]\"",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "stdout": "3 files parsed",
+        "repair_passes": 0
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "persistence_deviation": "The Wave 10 pair under docs/reports/metadata-builder/ was NOT written: the invocation constrained this run to write only under the build directory. Recorded rather than silently skipped."
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/SKILL.md",
+      "used_for": "Questions-to-Ask rows, the one-active-rule limit, first-match-wins entry order, and the channel table behind owner-writer-map.md \u00a7 3"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/references/metadata-examples.md",
+      "used_for": "every element written in both rule files \u2014 assignmentRule/ruleEntry/assignedTo/assignedToType/criteriaItems, the catch-all shape, the comma-separated multi-value <value>, autoResponseRule/senderEmail/senderName/replyToEmail/template, and the package.xml fragment"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/references/gotchas.md",
+      "used_for": "gotcha 6 (senderEmail equal to a routing address is a mail loop), gotcha 2 (activation silently deactivates the incumbent rule), gotcha 1 and 3 (API and UI channels do not invoke the rule by default)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/references/routing-selector.md",
+      "used_for": "corroborating D3's choice of an assignment rule over a Flow for the create-time OwnerId write"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/references/metadata-examples.md",
+      "used_for": "the rule that a queue's developer name is its file stem, which is what assignedTo must carry, and the queues-deploy-first ordering in deploy-order.md \u00a7 2"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q13 \u2014 first leaf: the first owner comes from an ordered criteria table of field values -> Assignment Rules",
+      "used_for": "the step's routing type was settled at plan time by this branch (plan decision D3); cited, not re-decided"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 4 step-type table (routing is a metadata-builder type), \u00a7 5 (the tester runs acceptance tests, not this agent), \u00a7 8 (a knowledge gap is a deepen-a-skill signal, not licence to freestyle)"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "it owns this step's four acceptance tests, including the two manual reads this agent may not tick."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the Account-support-tier gap, the replyToEmail threading cost and the Q24 layout-checkbox hole need to reach decisions.md and the workbook, not just this envelope."
+    }
+  ]
+}

@@ -1,0 +1,801 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T07-20-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3/2026-09-12T07-20-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3/2026-09-12T07-20-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "milestone_id": "M3",
+    "approver_name": null
+  },
+  "outcome": "completed",
+  "confidence": "LOW",
+  "summary": "Re-verification of milestone M3 after commit fec2a222b reclassified every *-DESC-02 description-headroom finding to INFO in the five access/object checkers. F-29 is CLOSED AT SOURCE: milestone test M3-T2 (check_custom_permissions.py --manifest-dir artefacts --strict) now exits 0 from the build directory, printing CP-DESC-02 as INFO with 'Headroom only -- never fails the run, even under --strict.' The fix was verified rather than trusted, with two negative controls on a scratchpad copy: the assertion --strict was declared for still bites (an unresolvable $Permission.Bypass_Ghost consumer reference exits 1 under --strict, 0 plain) and the real 255-character limit still ERRORs without --strict at 271 characters. All five declared milestone tests now stand at their declared outcome; 4 of 4 executable/structural tests pass, 0 fail. Nothing else in the build changed - no artefact is newer than the first report, 41/41 references still resolve, the deploy order is unchanged, and the merged manifest was re-derived, compared identical and deliberately not rewritten. Verdict remains not-ready and now rests on ONE ground: M3-S05 is blocked. Per AGENT.md Step 1 a blocked-with-a-reason step is verifiable but its verdict is not-ready, because the decision to accept a known gap belongs to the human at G3. Absent M3-S05 this milestone would return ready-with-findings. A correction to the first run's own framing is recorded: of the three grounds it gave, only 'failing test' and 'blocked step' are Step 9 triggers - the API-version conflict was an escalated finding, not a verdict trigger. All six G3 decisions are now taken by the operator and recorded. One of this agent's recommendations is retracted: the 'third option' of setting replyToEmail to support@acme.example was wrong, and the cited skill said so six hours before the run - assignment-rules gotcha 6 names 'senderEmail (or replyToEmail)' in the loop pattern, and decisions.md D-M3S04-04 had already considered and rejected it. The auto-response artefact is correct exactly as built. One new finding: F-34, decision 3 is only half-writable because amend-step refuses 'title' on a documented step and --prose-only's allowlist excludes it. F-30, F-31, F-32, F-33 remain open; F-32 in particular is NOT closed by decision 2, because M4-S03's flow does not exist yet. Recorded with set-milestone --status rejected. No sf command, no mock_deploy.py, no org contact, no gate write, no amend-step; nothing deployed.",
+  "confidence_rationale": "Step 10 rubric, LOW branch, on its first named trigger and now its only one: a step was blocked (M3-S05). The two facts that independently capped the first run below HIGH are both gone - no declared acceptance test fails any longer, and the merged manifest's version conflict is now a decided item rather than an unresolved one - but neither was the binding constraint then and neither is now. Reference resolution remains complete at 41 of 41 with zero unclassifiable. LOW measures how much of M3 the checks could see, not how well it is built: four of five steps are documented and every declared test stands at its declared outcome.",
+  "dimensions_compared": [
+    "reference-resolution",
+    "deploy-order",
+    "merged-manifest",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "milestone-acceptance-tests",
+      "state": "partial",
+      "reason": "Three of M3's five declared tests are executable and all three ran (M3-T1 exit 0, M3-T2 exit 1, M3-T4 exit 0); the always-on manifest test (M3-T3) ran and is consistent. M3-T5 is type manual and is carried to the human checklist rather than executed. M3-T3's Omni-Channel clause passes vacuously because M3-S05 produced no components.",
+      "confidence_impact": "LOW",
+      "retry_hint": "Re-run M3-T2 after G3 item on F-29 is settled (shorten M2-S01's description below 200 chars, or scope --strict by severity in check_custom_permissions.py as commit 214da9abd already did for check_access_model.py)."
+    },
+    {
+      "dimension": "manual-checklist",
+      "state": "partial",
+      "reason": "Ten lines collected, but two of them (B06 from M3-S02 and W02 from M3-S04) assert behaviour the built artefacts do not have, so they are not tickable as written. Both are plan/artefact mismatches escalated as G3 decision items 1 and 3, not test failures.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Re-word B06 to whichever sender reading G3 affirms, and W02 to Origin-only if G3 takes D-M3S04-02 option (b)."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-29",
+      "severity": "INFO",
+      "title": "CLOSED AT SOURCE \u2014 milestone test M3-T2 now exits 0; CP-DESC-02 is INFO and never blocks",
+      "detail": "Closed by commit fec2a222b, which reclassified every *-DESC-02 description-headroom finding to INFO across the five access/object checkers so it never fails a run even under --strict, while leaving DESC-01 (over the documented limit) an ERROR. Re-run from the build directory: exit 0, 'Summary: 0 error(s), 0 warning(s), 1 info.' with the CP-DESC-02 line now reading 'Headroom only -- never fails the run, even under --strict.' Verified rather than trusted, because a checker that stops failing is indistinguishable from a checker that stopped checking. Two negative controls on a scratchpad copy: (1) the assertion --strict was declared for still bites \u2014 $Permission.Bypass_Ghost exits 1 under --strict and 0 plain; (2) the real limit still blocks \u2014 a 271-character description ERRORs on CP-DESC-01 without --strict. The remedy taken was this report's recommendation (c), fixing the exit policy at the checker rather than editing an accepted milestone's artefact. Recommendation (a) is now unnecessary and should NOT be done. decisions.md F-16 (M2 headroom, half open) closes by the same commit.",
+      "step_id": "M3",
+      "evidence": {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts --strict",
+        "exit_code": 0,
+        "previous_exit_code": 1,
+        "fix_commit": "fec2a222b",
+        "capture": "tests/M3/check_custom_permissions.v2.stdout",
+        "negative_control_strict_exit": 1,
+        "negative_control_over_limit_exit": 1
+      },
+      "recommendation": "No further action. Do not shorten M2-S01's description: that would touch an accepted milestone's artefact to silence a line that is already INFO.",
+      "severity_label": "CLOSED"
+    },
+    {
+      "id": "F-30",
+      "severity": "P2",
+      "title": "M3-S02's sender note and M3-S04's built metadata state different acknowledgement senders; manual test B06 is not tickable as written",
+      "detail": "artefacts/M3-S02/sender-identity-note.md section 1 records the acknowledgement's sender as support@acme.example and its section 5 gate checklist asks the human to tick that. artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml ships support-noreply@acme.example per the operator's pre-gate amendment (D-M3S04-01). B06, carried from tests/M3-S02/results.json, asserts the self-addressed-loop risk 'that arises because support@ is both sender and inbound routing address' - a risk that does not arise against the built metadata. Same class as D-M3S04-02's W02 mismatch. Not a test failure: the note is internally consistent and its section 2 records both readings; the step predates the operator's decision.",
+      "step_id": "M3-S02",
+      "evidence": {
+        "note": "artefacts/M3-S02/sender-identity-note.md",
+        "note_sections": [
+          "1",
+          "5"
+        ],
+        "metadata": "artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml",
+        "note_says": "support@acme.example",
+        "metadata_says": "support-noreply@acme.example",
+        "test": "tests/M3-S02/results.json skipped_manual[0]"
+      },
+      "recommendation": "Now actionable: decision 1 settles which side is wrong. Correct artefacts/M3-S02/sender-identity-note.md sections 1 and 5 to support-noreply@acme.example (build-doc-keeper's write) and re-word B06 via amend-step --prose-only. The auto-response metadata is correct and must not be touched.",
+      "severity_label": "MEDIUM"
+    },
+    {
+      "id": "F-31",
+      "severity": "P2",
+      "title": "Step manifests disagree on the API version; the build carries no plan-level version field",
+      "detail": "artefacts/M3-S01/package.xml and artefacts/M3-S02/package.xml declare 62.0; artefacts/M3-S03/package.xml and artefacts/M3-S04/package.xml declare 67.0. Every M1 and M2 manifest, and both earlier merged milestone manifests, read 62.0. The merged M3 manifest carries 67.0 with the disagreement named in an XML comment rather than silently resolved. 62.0 is not a live option: mock-deploy Run 4 probes (a) and (b) proved newEntityRecordType is rejected at 62.0 and 63.0 and accepted from 64.0, and Runs 5 and 6 deployed at 67.0. agents/milestone-verifier/AGENT.md lists an API-version disagreement under REFUSAL_NEEDS_HUMAN_REVIEW; this run did not refuse because Step 5 of the same playbook gives an explicit in-report handling for the case, and refusing would have suppressed the five other G3 decision items. Escalated as decision item 6 instead.",
+      "step_id": "M3",
+      "evidence": {
+        "M3-S01": "62.0",
+        "M3-S02": "62.0",
+        "M3-S03": "67.0",
+        "M3-S04": "67.0",
+        "merged": "67.0",
+        "open_item": "decisions.md O-M3S03-01",
+        "live_evidence": "reports/MOCK-DEPLOY-M3.md Run 4 probes a-c, Runs 5 and 6"
+      },
+      "recommendation": "Open as a recorded fact, closed as a decision: 67.0 accepted, planner v6 api_version adopted. Note this was never a Step 9 verdict trigger \u2014 the first run's framing overstated it.",
+      "severity_label": "MEDIUM"
+    },
+    {
+      "id": "F-32",
+      "severity": "P1",
+      "title": "The Web-to-Case channel's dependence on the bypass grant is documented but reaches no checklist line",
+      "detail": "artefacts/M3-S03/deploy-order.md section 6 records that both intake channels rely on Bypass_Case_Intake_Validation to pass M3-S01's rules, that the Permission Set carrying it (Case_Intake_Integration, M2-S01) must be assigned to the identity the channels save as, and that assignment is an org action outside this build - and that if the identity cannot hold it, 'every intake save fails ... a rejection the submitter never sees, because the web form still returns its retURL success page'. After the F-26/F-27 rebuild the exposure narrowed to one channel, and section 0 of the same file says so: email cases arrive with Origin stamped and Priority Medium so neither rule fires; web cases arrive with Origin Web stamped but Priority blank, because WebToCaseSettings has no priority element (three children, api_meta L112128 ff.). So at the end of M3, with M4 not built, Priority_Required_On_Agent_Save fires on every Web-to-Case submission (~60/day) unless the web save identity holds the bypass. M4-S03's before-save flow would also close it - before-save record-triggered flows run ahead of custom validation rules - but that step is pending and is itself subject to G3 decision item 2. Appears in no skipped_manual[] line in any tests/<step>/results.json.",
+      "step_id": "M3-S03",
+      "evidence": {
+        "source": "artefacts/M3-S03/deploy-order.md",
+        "sections": [
+          "0",
+          "6"
+        ],
+        "channel_volume_per_day": 60,
+        "rule": "Case.Priority_Required_On_Agent_Save",
+        "permission_set": "Case_Intake_Integration",
+        "checklist_lines_before_this_run": 0
+      },
+      "recommendation": "NOT closed by decision 2. Option (2) makes M4-S03's before-save flow the mechanism, but M4-S03 is pending and unbuilt, so Web-to-Case (~60/day) still depends on the bypass grant reaching the web save identity. Checklist line 9 stands and must be ticked or explicitly accepted at G3.",
+      "severity_label": "HIGH"
+    },
+    {
+      "id": "F-33",
+      "severity": "INFO",
+      "title": "artefacts/M3-S03/deploy-order.md section 6 is stale against section 0 of the same file",
+      "detail": "Section 6 opens 'Both intake channels create Cases with Priority blank (section 4)'. Section 0, written by the rebuild, states the opposite for the email channel: 'Email-originated cases now arrive with Priority already set to Medium ... M3-S01's Priority_Required_On_Agent_Save plus Bypass_Case_Intake_Validation is now load-bearing for the web channel only.' Section 4's casePriority row was struck through and updated; section 6's opening sentence was not. Section 6 is headed 'Confirm before the first real submission in each org' - the half a human acts on.",
+      "step_id": "M3-S03",
+      "evidence": {
+        "path": "artefacts/M3-S03/deploy-order.md",
+        "stale_section": "6",
+        "correcting_section": "0"
+      },
+      "recommendation": "One-sentence correction when the step is next touched. No rebuild, no status change.",
+      "severity_label": "LOW"
+    },
+    {
+      "id": "F-34",
+      "severity": "P2",
+      "severity_label": "MEDIUM",
+      "title": "G3 decision 3 is only half-writable: M3-S04's title cannot be corrected while the step is documented",
+      "detail": "Decision 3 takes D-M3S04-02 option (b) \u2014 correct the step's title and the W02 manual test to Origin-only. Checked against the writer rather than assumed. W02's text is writable now: it is an acceptance_tests[].description, and amend-step --prose-only accepts notes and acceptance_tests at any status except running, with an already-approved step gate no obstacle. The title is not: 'title' is amendable only under full amend-step, which is refused unless the step's status is pending or blocked, and M3-S04 is documented; --prose-only's allowlist is notes and acceptance_tests only. Confirmed from build_plan.py amend-step --help, not only from the standard. Same shape as O-M3S02-03, where the undeclared deploy-order.md on five steps is unfixable for the same reason.",
+      "step_id": "M3-S04",
+      "evidence": {
+        "step_status": "documented",
+        "prose_only_allowlist": [
+          "notes",
+          "acceptance_tests"
+        ],
+        "full_amend_requires_status": [
+          "pending",
+          "blocked"
+        ],
+        "source": "scripts/build_plan.py amend-step --help",
+        "analogue": "decisions.md O-M3S02-03"
+      },
+      "recommendation": "Three writes, for their owners \u2014 this agent makes no plan.json write but the one set-milestone call. (1) amend-step --prose-only on M3-S04 to re-word W02 to Origin-only, citing D-M3S04-02 option (b); that is the artefact a human ticks, so it is the one that has to be true. (2) Record in decisions.md that steps[M3-S04].title still names Account-support-tier routing, is known wrong and is unfixable in place \u2014 the treatment O-M3S02-03 gives its analogue; do not rebuild M3-S04 to fix a title. (3) Planner v6 backlog, beside api_version: 'title' belongs in --prose-only's allowlist \u2014 it decides no output, checker or edge, and this is the second decided correction blocked by a text-only field sitting behind a structural gate."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "remediation-layer-choice",
+      "observation": "F-29 was closed at the layer that caused it. The cheap fix was to shorten one description in an accepted milestone; the fix taken was to reclassify the headroom rule across all five checkers so a future advisory cannot retroactively fail a gate on an artefact nobody is changing. That also closed M2's F-16, which had been half-open since the previous gate, without anyone re-opening M2.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "fix-scoped-not-blunt",
+      "observation": "The reclassification was surgical and survives both negative controls: --strict still exits 1 on the unresolvable-consumer WARN it was declared for, and the over-limit DESC-01 still ERRORs without --strict. A blunter fix - dropping --strict from the test, or making the whole checker advisory - would have produced the same green while retiring a real assertion.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M3/check_custom_permissions.v2.stdout",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "verifier-recommendation-outran-its-own-sources",
+      "observation": "This agent proposed a sender-identity option that the cited skill had already ruled out in one sentence, and that decisions.md D-M3S04-04 had already considered and rejected - both readable at the time of the run. The failure was not a missing source; it was reasoning past sources that had been opened. Worth noting because the run's confidence was LOW for an unrelated reason and would not have flagged it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/assignment-rules/references/gotchas.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "decided-corrections-that-cannot-be-written",
+      "observation": "Two of the six G3 decisions cannot be fully executed against plan.json as it stands: decision 3's title half (F-34) and, from the previous run, the undeclared deploy-order.md outputs on five steps (O-M3S02-03). Both are text, both are blocked by a status gate written for substantive amendments. A build accumulating known-wrong prose it is not permitted to fix is how a plan stops being readable as a record.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "a-decision-that-does-not-close-its-finding",
+      "observation": "Decision 2 reads like it closes F-32 and does not. Option (2) names M4-S03's before-save flow as the mechanism that stamps Priority ahead of the validation rule, but M4-S03 is pending and unbuilt, so the ~60/day Web-to-Case exposure is live between G3 and M4. A decision about a future step is not a control today, and the gate checklist has to keep carrying it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S03/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "rtm-green-over-an-unbuilt-capability",
+      "observation": "Unchanged from the first run and still worth a human's eye: REQ-022's push half resolves against M2-S04's Queue:Tier_1_General, so traceability.md shows no coverage gap while the capability the requirement names is blocked in M3-S05.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation: no org write, no auto-chain, exit code is the contract"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the mandatory Process Observations block and its four categories, the confidence rubric this run's Step 10 override extends, and rule 7 (never deploy, never mutate outside the given paths)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the four mandatory deliverables, run_id format, dimensions_skipped states, and the --no-persist opt-out invoked here by the caller's write-only-under-the-build-dir constraint"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "REFUSAL_NEEDS_HUMAN_REVIEW, weighed and not taken for the API-version disagreement; the conflict is escalated as a G3 decision item instead"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (this report is written not rendered and recorded with set-milestone --report-path; the three output trees; amend-step's pending-only precondition and set-plan's PLAN_FROZEN_STATUSES, both behind F-29's remedy analysis), section 3 (the three G3 conditions and approval over a blocked-with-a-reason step), section 5 (test types, checkers run verbatim from the build directory via the skills symlink, milestone scope is build by definition), section 7 (return so the human can act)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the milestone, step-status and human_gates fields this run read, and the set-milestone write it made"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "manifest grammar for the merged milestone package.xml, the single <version> element and what one deploy request does and does not carry across"
+    },
+    {
+      "type": "skill",
+      "id": "devops/permission-set-deployment-ordering",
+      "path": "skills/devops/permission-set-deployment-ordering/SKILL.md",
+      "used_for": "the backwards-dependency check in the deploy-order pass - M3 writes no permission sets, so the fieldPermissions-before-field failure class is absent by construction rather than unchecked"
+    },
+    {
+      "type": "skill",
+      "id": "devops/flow-deployment-activation-ordering",
+      "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md",
+      "used_for": "where automation sits in the order and what an active state means on arrival - applied to AutoResponseRules shipping <active>true</active> behind both its prerequisites, and to M4-S03's before-save flow running ahead of custom validation rules in F-32"
+    },
+    {
+      "type": "skill",
+      "id": "devops/deployment-error-diagnosis",
+      "path": "skills/devops/deployment-error-diagnosis/SKILL.md",
+      "used_for": "turning each reference class into the deploy-time error it would produce, and classifying F-28 and F-32 as org prerequisites rather than metadata defects"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pre-deployment-checklist",
+      "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+      "used_for": "the go/no-go items the acceptance report must cover, including the routing-address full-replacement retrieve-first warning attached to the optional validate-only command"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the form a manual line must take to be tickable by someone who was not in the build loop - the test against which B06 and W02 were found not tickable as written"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "stating which requirements M3 closes and which remain open using traceability.md's own ids, and reading the two explained orphan WARNs of O-M3S04-03"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "deployment-risk-scorer",
+      "because": "the merged M3 manifest is now a single artefact a human with an org alias can risk-score before G3, and F-28's one-component failure is exactly the kind of item it prices"
+    },
+    {
+      "agent": "release-readiness-reviewer",
+      "because": "not yet - M3 is the third of five milestones, so this is the agent to run before M5's gate rather than this one"
+    }
+  ],
+  "extensions": {
+    "milestone": "M3",
+    "milestone_title": "Validation, intake and routing",
+    "report_path": "reports/MILESTONE-M3-REPORT.md",
+    "verdict": "not-ready",
+    "passed": false,
+    "passed_note": "false, per the Output Contract: true is reserved for ready-for-gate, and is false in any case whenever a step in the milestone is not documented. M3-S05 is blocked.",
+    "verdict_grounds": [
+      "M3-S05 is blocked with a recorded reason \u2014 the only remaining ground"
+    ],
+    "blocked_steps": [
+      {
+        "step_id": "M3-S05",
+        "blocked_reason": "deferred: Q32, Q33, Q34, Q35",
+        "runs": 0,
+        "artefacts": 0
+      }
+    ],
+    "what_m3_s05_leaves_unverified": [
+      "No Case work is pushed to anyone; the queues fill but nothing pulls. Tier 1's interim surface is M5-S01's list view, in a milestone that has not started.",
+      "REQ-022's push half is undelivered and invisible in the RTM, because the row resolves against M2-S04's Queue:Tier_1_General.",
+      "Six ERROR-class assertions never ran - E1 channel-with-no-routing-config, E2 channel-to-presence-status, E3 routing config with no target, E4 missing relatedEntityType, E5 routing model or priority, E6 zero capacity.",
+      "The milestone manifest test's 'and Omni-Channel component' clause passes vacuously - zero such components exist to check.",
+      "owner-writer-map.md's three-writer model is untested against a second writer; 'sole authoritative writer at creation' is true only because the other two are unbuilt.",
+      "Q32, Q33, Q34 and Q35 remain open with no owner and no due date on file - which M3's own manual acceptance test exists to fix at this gate."
+    ],
+    "steps": [
+      {
+        "id": "M3-S01",
+        "type": "validation",
+        "status": "documented",
+        "components": [
+          "ValidationRule:Case.Priority_Required_On_Agent_Save",
+          "ValidationRule:Case.Origin_Must_Be_Known"
+        ],
+        "notes": [
+          "validation-bypass-note.md",
+          "deploy-order.md"
+        ]
+      },
+      {
+        "id": "M3-S02",
+        "type": "ui",
+        "status": "documented",
+        "components": [
+          "EmailFolder:case_intake",
+          "EmailTemplate:case_intake/Case_Acknowledgement",
+          "EmailTemplate:case_intake/Case_Escalated_To_Tier2"
+        ],
+        "notes": [
+          "sender-identity-note.md",
+          "deploy-order.md"
+        ]
+      },
+      {
+        "id": "M3-S03",
+        "type": "routing",
+        "status": "documented",
+        "components": [
+          "Settings:Case"
+        ],
+        "notes": [
+          "email-to-case-routing-addresses.md",
+          "web-to-case-form-contract.md",
+          "deploy-order.md"
+        ],
+        "build_rounds": 2,
+        "rebuild_reason": "F-25 systemUserEmail, F-26 newEntityRecordType object-qualified, F-27 casePriority, package.xml 62.0 -> 67.0"
+      },
+      {
+        "id": "M3-S04",
+        "type": "routing",
+        "status": "documented",
+        "components": [
+          "AssignmentRules:Case",
+          "AutoResponseRules:Case"
+        ],
+        "notes": [
+          "owner-writer-map.md",
+          "deploy-order.md"
+        ]
+      },
+      {
+        "id": "M3-S05",
+        "type": "routing",
+        "status": "blocked",
+        "components": [],
+        "notes": []
+      }
+    ],
+    "preceding_gate": {
+      "name": "milestone:M2",
+      "status": "approved",
+      "at": "2026-09-12T03:10:35Z"
+    },
+    "reference_totals": {
+      "total": 41,
+      "resolved_in_m3": 11,
+      "resolved_in_earlier_milestones": 30,
+      "unresolved": 0,
+      "unclassifiable": 0
+    },
+    "reference_resolution": [
+      {
+        "class": "validation-rule field references",
+        "read_from": "errorConditionFormula tokens and errorDisplayField on both .validationRule files",
+        "resolved": 5,
+        "unresolved": 0
+      },
+      {
+        "class": "assignment-rule criteria and targets",
+        "read_from": "criteriaItems/field and assignedTo in Case.assignmentRules-meta.xml",
+        "resolved": 9,
+        "unresolved": 0
+      },
+      {
+        "class": "auto-response rule",
+        "read_from": "Case.autoResponseRules-meta.xml ruleEntry",
+        "resolved": 6,
+        "unresolved": 0
+      },
+      {
+        "class": "case settings to routing",
+        "read_from": "settings/Case.settings-meta.xml emailToCase and webToCase",
+        "resolved": 6,
+        "unresolved": 0
+      },
+      {
+        "class": "permission-set grants",
+        "read_from": "fieldPermissions / objectPermissions",
+        "resolved": 0,
+        "unresolved": 0,
+        "note": "M3 writes no permission sets"
+      },
+      {
+        "class": "flow field references",
+        "read_from": "-",
+        "resolved": 0,
+        "unresolved": 0,
+        "note": "M3 contains no Flow"
+      },
+      {
+        "class": "entitlement-process milestones",
+        "read_from": "-",
+        "resolved": 0,
+        "unresolved": 0,
+        "note": "M4"
+      },
+      {
+        "class": "layout and path assignments",
+        "read_from": "-",
+        "resolved": 0,
+        "unresolved": 0,
+        "note": "M1-S02"
+      }
+    ],
+    "operator_cross_checks": [
+      {
+        "check": "routing address caseOrigin values subset of M1-S01 CaseOrigin value set",
+        "result": "PASS",
+        "detail": "Email-Support, Email-Billing (emailToCase), Web (webToCase); no fourth value anywhere"
+      },
+      {
+        "check": "assignment-rule queue names subset of M2-S04 queues",
+        "result": "PASS",
+        "detail": "Billing, Tier_1_General, Tier_1_General; all assignedToType Queue; Tier_2_Engineering defined and deliberately unused at intake"
+      },
+      {
+        "check": "auto-response template equals M3-S02's folder-qualified template",
+        "result": "PASS",
+        "detail": "case_intake/Case_Acknowledgement; Case_Escalated_To_Tier2 correctly not referenced here - it is M4-S04's assignedToTemplate"
+      },
+      {
+        "check": "newEntityRecordType values subset of M1-S01 record types",
+        "result": "PASS",
+        "detail": "Case.Support and Case.Billing, object-qualified as F-26 proved the org requires; the bare form is absent"
+      },
+      {
+        "check": "no senderEmail or replyToEmail equals a routing address",
+        "result": "PASS",
+        "detail": "routing addresses support@acme.example and billing@acme.example; senderEmail = replyToEmail = systemUserEmail = support-noreply@acme.example. Adjacent hit surfaced by the same sweep: Queue:Billing's <email> IS billing@acme.example - already on file as D-M2S04-04 / O-M3S04-02, latent because no assignment-notification template is written"
+      }
+    ],
+    "reference_check_boundary": "Grep-based resolution against the artefact tree, not against an org. It cannot see whether a name that resolves here exists in the target org, and it cannot see a Setup-only object no metadata type represents - the class F-28 (OrgWideEmailAddress) and F-32 (the permission-set assignment) both fall into.",
+    "deploy_order": [
+      "M3-S01",
+      "M3-S02",
+      "M3-S03",
+      "M3-S04"
+    ],
+    "deploy_order_verdict": "no contradiction; no dependency runs backwards through the sequence. AutoResponseRules is behind both prerequisites (the active assignment rule in the same step, M3-S02's template in an earlier one). Live corroboration: mock-deploy Run 6 validated 42 of 42 components in one request, failing only on F-28's org-side sender address.",
+    "deploy_order_sequence_gaps": [
+      "ValidationRule",
+      "EmailFolder",
+      "EmailTemplate"
+    ],
+    "deploy_order_sequence_gaps_note": "No slot in the ten-position sequence; reported and placed by dependency chain, the same treatment BusinessProcess (CWB-OBJ-002) and CustomPermission (CWB-PERM-001) already get.",
+    "merged_manifest_path": "reports/MILESTONE-M3-package.xml",
+    "merged_manifest": {
+      "types": 6,
+      "members": 8,
+      "member_collisions": 0,
+      "members_without_a_file": 0,
+      "deployable_files_not_in_any_types_block": 0,
+      "md_notes_excluded": 9,
+      "version_written": "67.0",
+      "version_conflict": {
+        "M3-S01": "62.0",
+        "M3-S02": "62.0",
+        "M3-S03": "67.0",
+        "M3-S04": "67.0"
+      }
+    },
+    "acceptance_tests": [
+      {
+        "id": "M3-T1",
+        "type": "checker",
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts --strict",
+        "expected": "exit 0",
+        "exit_code": 0,
+        "result": "pass",
+        "v1_exit_code": 0,
+        "capture": "tests/M3/check_validation_rules.v2.stdout"
+      },
+      {
+        "id": "M3-T2",
+        "type": "checker",
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts --strict",
+        "expected": "exit 0",
+        "exit_code": 0,
+        "result": "pass",
+        "v1_exit_code": 1,
+        "change": "F-29 closed at source by fec2a222b",
+        "capture": "tests/M3/check_custom_permissions.v2.stdout"
+      },
+      {
+        "id": "M3-T3",
+        "type": "manifest",
+        "expected": "consistent",
+        "result": "pass",
+        "note": "re-merged and compared; membership block byte-identical to the file on disk, which was not rewritten. The Omni-Channel clause still passes vacuously."
+      },
+      {
+        "id": "M3-T4",
+        "type": "checker",
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "expected": "exit 0",
+        "exit_code": 0,
+        "result": "pass",
+        "v1_exit_code": 0,
+        "capture": "tests/M3/check_case_management_setup.v2.stdout"
+      },
+      {
+        "id": "M3-T5",
+        "type": "manual",
+        "expected": "ticked at the milestone gate",
+        "result": "carried to the checklist, line 8"
+      }
+    ],
+    "acceptance_test_summary": {
+      "declared": 5,
+      "executable": 3,
+      "ran": 4,
+      "passed": 4,
+      "failed": 0,
+      "manual": 1
+    },
+    "g3_decision_items": [
+      {
+        "n": 1,
+        "id": "D-M3S02-04",
+        "question": "the acknowledgement's sender identity; operator pre-resolved to support-noreply@acme.example",
+        "recommendation": "CONFIRM the operator's pre-resolution",
+        "why": "two cited skills state the prohibition and a third repeats it; the answer key's 'never the routing address itself' reading has no citation in either cited skill; ~400 email cases a day through support@, and answers-key.md's own Mailbox ownership row confirms IT holds forwarding rules on it - gotcha 3's exact precondition",
+        "cost_of_confirming": "replyToEmail mirrors senderEmail (D-M3S04-04), so a customer's Reply does not thread onto the case; replies to the original Email-to-Case thread are unaffected",
+        "third_option_neither_decision_names": "replyToEmail = support@acme.example with senderEmail left at support-noreply@ - buys threading without reintroducing the loop, which is a From-address mechanism",
+        "if_overturned": "only senderEmail (and possibly replyToEmail) changes; Q68's sandbox loop test becomes a release blocker",
+        "must_also_close": "F-30"
+      },
+      {
+        "n": 2,
+        "id": "D-M3S03-02",
+        "question": "casePriority Medium on email cases vs M4-S03's null guard",
+        "recommendation": "option (2) - M4-S03 derives Priority from Severity__c / Support_Tier__c and unconditionally overwrites for email cases",
+        "why": "it is Q16's reading ('priority must be set from what the form or email tells us'), it makes the two channels behave alike, and option (1) hands ~400 cases a day the same priority regardless of what the customer wrote - which the first-response SLA and the 8-business-hour escalation clock both read",
+        "interaction": "choosing (2) also closes F-32 by flow rather than by permission-set assignment",
+        "if_option_1": "say so in the requirement record and re-word M4-S03's specification; leaving 'null-guarded' standing over a guard that cannot fire ships a false statement"
+      },
+      {
+        "n": 3,
+        "id": "D-M3S04-02",
+        "question": "Account-support-tier routing omitted; title/manual-test mismatch; which queue for Premier?",
+        "recommendation": "option (b) - correct the title and W02 to Origin-only",
+        "why": "the requirement gives Premier a faster SLA (4 business hours, M4-S02), not a different owner; a Premier queue would be a fourth work pool with no staffing answer behind it (Q8 splits 18 users 12/4/2); and no file under skills/ documents a cross-object criteriaItems notation, so writing one repeats F-26's guessed-value-shape failure",
+        "if_option_a": "the step is rebuilt (documented -> running) and the cross-object notation must be confirmed against a live org first; Account.Support_Tier__c already exists in the tree, so the field is not the blocker - the notation and the destination are",
+        "either_way": "W02 must not be ticked as written"
+      },
+      {
+        "n": 4,
+        "id": "F-28",
+        "question": "the org-wide email address as a deploy prerequisite",
+        "recommendation": "accept as a named G3 prerequisite with an owner and a date; do not rebuild",
+        "why": "no metadata this build can emit substitutes for a verified OrgWideEmailAddress - it is Setup, not deployable source - and the value is the one item 1 decides",
+        "record_with_it": [
+          "the same address is M3-S03's systemUserEmail (D-M3S03-01), so one mailbox unblocks both",
+          "the whole M3 manifest is deployable today except this one component - Run 6's per-component table is the evidence"
+        ],
+        "interaction": "if item 1 is overturned to support@, F-28 dissolves for the sender but the loop risk returns and Q68's test becomes the blocker - a trade, not independence"
+      },
+      {
+        "n": 5,
+        "id": "O-M3S04-01",
+        "question": "Q24's 'Run assignment rules' checkbox declared by no step",
+        "recommendation": "accept the narrowing at the gate with the process control written down - an agent-training line in the M5 UAT script, not a metadata change",
+        "why": "~20 of ~480 cases a day is the smallest exposure on this list and the remedy is a one-line habit; no element in the cited skill's inventory pre-checks the box, so neither M1-S02 nor M3-S04 could write it",
+        "do_not": "route it to a Setup step until someone establishes whether a Layout element that defaults the checkbox on exists in the Metadata API guide - this build did not establish that",
+        "cost": "the ~20 hand-logged cases sit with their creator rather than a queue; flag it in the M5 sandbox proof as a named negative case"
+      },
+      {
+        "n": 6,
+        "id": "O-M3S03-01",
+        "question": "the build deploys at API 67.0 while M1/M2 package.xml say 62.0",
+        "recommendation": "accept 67.0 as this build's version and say so; do not rewrite the accepted M1/M2 manifests; adopt the planner v6 plan-level api_version remedy; pass an explicit --api-version 67.0 on any real deploy until it lands",
+        "why": "newEntityRecordType is rejected below 64.0 (Run 4 probes a-c) so 62.0 is not a live option, and mock_deploy.py's request-wide maximum is what made Runs 5 and 6 pass - a real pipeline pinning per package would fail the way the tool did before its own fix",
+        "interaction": "unaffected by item 1 either way"
+      }
+    ],
+    "manual_checklist": [
+      "1. M3-S01 (W01) - Read both .validationRule files: each errorConditionFormula opens with NOT($Permission.Bypass_Case_Intake_Validation) (Q56), emptiness is tested with ISBLANK(TEXT(<picklist>)) not ISPICKVAL(<picklist>, \"\") alone, only component fields are named (Q59), and the error message is final text an agent can act on (Q93). Verifier note: all four hold on disk.",
+      "2. M3-S02 (B06) - NOT TICKABLE AS WRITTEN (F-30): the line asserts the sender is support@acme.example and that the loop risk arises because support@ is both sender and routing address; the built metadata sends from support-noreply@acme.example. Re-word to whichever reading item 1 settles, then tick. Tickable now: neither .email body hardcodes a recipient address.",
+      "3. M3-S03 - Read settings/Case.settings-meta.xml: both routing addresses carry their own caseOrigin and no caseOwner; unauthorizedSenderAction Bounce; overEmailLimitAction Requeue; saveEmailHeaders true on both; webToCase carries enableWebToCase true and a live M1-S01 caseOrigin, defaultResponseTemplate deliberately unset. Verifier note: every clause confirmed on disk; casePriority and newEntityRecordType are now also present, added by the F-26/F-27 rebuild after this line was written and covered by decision item 2.",
+      "4. M3-S03 - Read web-to-case-form-contract.md: it states whether the form posts directly or through middleware, the Origin each path stamps, and that the HTML form is not metadata. Verifier note: the file states both paths and says the choice is still open (Q66) rather than assuming one - read that as the tick condition, not as a gap.",
+      "5. M3-S04 (W02) - NOT TICKABLE AS WRITTEN (decision item 3 / D-M3S04-02): asserts routing on Case.Origin and the Account support tier; the rule routes on Origin only. Satisfied half: the last entry is a catch-all with no criteriaItems and no booleanFilter assigned to Tier_1_General, and every assignedTo names a queue under artefacts/M2-S04/queues/.",
+      "6. M3-S04 - Read Case.autoResponseRules-meta.xml: exactly one acknowledgement entry can match any case, no second entry and no parallel Flow alert, and its template names M3-S02's Classic template folder-qualified. Verifier note: confirmed - one rule, one ruleEntry, template case_intake/Case_Acknowledgement. A clean tick.",
+      "7. M3-S04 / decision item 1 - The gate record names the acknowledgement sender explicitly and says whether the reply-threading cost (D-M3S04-04) is accepted or a third option is taken.",
+      "8. M3 milestone test - The support manager records that no Omni-Channel push is built this phase, that Tier 1 works the Tier 1 General queue list view (M5-S01) in the interim, and that Q32, Q33, Q34 and Q35 each have a named owner and a due date.",
+      "9. ELEVATED (F-32) - Someone confirms the identity Web-to-Case saves as can hold and has been assigned the Case_Intake_Integration Permission Set, or the gate records that Web-to-Case intake is knowingly at risk until M4-S03 stamps Priority. Failure here is silent: the form still returns its retURL success page.",
+      "10. ELEVATED (F-28 / decision item 4) - A human is named to provision and verify the acknowledgement sender as an OrgWideEmailAddress in each target org before AutoResponseRules:Case deploys there."
+    ],
+    "manual_checklist_accounting": {
+      "from_step_results_json": 6,
+      "from_milestone_tests": 1,
+      "elevated_by_this_run": 2,
+      "decision_record_lines": 1,
+      "total": 10,
+      "not_tickable_as_written": 2
+    },
+    "requirement_closure": {
+      "m3_requirements": [
+        "REQ-030",
+        "REQ-031",
+        "REQ-032",
+        "REQ-033",
+        "REQ-034",
+        "REQ-035",
+        "REQ-036",
+        "REQ-037"
+      ],
+      "closed_at_metadata_level": 8,
+      "closed_at_uat_level": 1,
+      "in_uat": 7,
+      "rtm": {
+        "rows": 37,
+        "coverage_gaps": 0,
+        "errors": 0,
+        "explained_orphan_warns": 2
+      },
+      "not_closed_and_not_visible_as_a_gap": "REQ-022's push half - the row resolves against M2-S04's Queue:Tier_1_General while the capability it names is unbuilt"
+    },
+    "org_facing_evidence": {
+      "source": "reports/MOCK-DEPLOY-M3.md",
+      "runs": 6,
+      "run_5": "M1 + M2 + M3-S01..S03, Succeeded 38/38, checkOnly, API 67.0",
+      "run_6": "M1 + M2 + M3-S01..S04, 42 components, 42 ok, 1 error - AutoResponseRule Case.Case_Acknowledgement sender not a verified OrgWideEmailAddress (F-28)",
+      "run_by": "the operator, not this agent"
+    },
+    "optional_validate_only_command": "sf project deploy start --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M3-package.xml --dry-run --target-org <alias>",
+    "optional_production_command": "sf project deploy validate --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M3-package.xml --target-org <prod-alias>",
+    "optional_command_note": "OPTIONAL and human-run. This agent ran neither, ran no sf command of any kind, ran no mock_deploy.py, and deployed nothing. Expect one component to fail until F-28's address is provisioned. Retrieve Settings:Case from the target org FIRST - routingAddresses is a full-replacement list and emailServicesAddress / isVerified cannot be restored by re-adding the element.",
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/case-onboarding/plan.json M3 --status rejected --report-path reports/MILESTONE-M3-REPORT.md",
+    "set_milestone_result": "milestone M3: status -> rejected, report -> reports/MILESTONE-M3-REPORT.md (unchanged from the first run; the verdict did not move)",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M3 approve --by \"<name>\"",
+    "gate_reject_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M3 reject --by \"<name>\"",
+    "gate_command_note": "printed, not run. This agent has no authority to approve or record a gate.",
+    "gate_conditions": {
+      "plan_gate": "approved",
+      "milestone_M2": "approved",
+      "steps_documented_or_blocked_with_reason": true,
+      "will_be_accepted": true,
+      "approving_anyway_accepts": [
+        "no Omni-Channel push this phase and the six consequences in section 1 of the original report",
+        "Q32-Q35 get a named owner and a due date at this gate (checklist line 8)",
+        "Web-to-Case depends on the bypass grant until M4-S03 exists (F-32, checklist line 9)",
+        "support-noreply@acme.example provisioned as a verified OrgWideEmailAddress before AutoResponseRules:Case deploys (F-28, checklist line 10)",
+        "B06 and W02 corrected before they are ticked (F-30, F-34)"
+      ]
+    },
+    "files_written_by_this_run": [
+      "reports/MILESTONE-M3-REPORT.md (Re-verification section appended; original text unmodified)",
+      "tests/M3/check_validation_rules.v2.{stdout,stderr,exit}",
+      "tests/M3/check_custom_permissions.v2.{stdout,stderr,exit}",
+      "tests/M3/check_case_management_setup.v2.{stdout,stderr,exit}",
+      "envelopes/M3/2026-09-12T07-20-00Z.json",
+      "envelopes/M3/2026-09-12T07-20-00Z.md"
+    ],
+    "nothing_else_touched": "reports/MILESTONE-M3-package.xml re-derived, compared identical and NOT rewritten. No artefact, test result or document written by another agent edited, moved or deleted. No step status changed. No gate record written. No amend-step run \u2014 F-34's three writes are recommendations for their owners. plan.json touched only by the one set-milestone subcommand. Negative controls ran on a scratchpad copy of artefacts/, never on the build.",
+    "persistence_deviation": "The Wave 10 pair under docs/reports/milestone-verifier/ was NOT written. The caller constrained this run to write only under the build directory, which is the DELIVERABLE_CONTRACT --no-persist opt-out. The build-scoped pair under envelopes/M3/ is complete and is what this envelope's top-level report_path and envelope_path name.",
+    "report_path_disambiguation": "The top-level report_path is this run's own markdown twin under envelopes/M3/. The acceptance report at reports/MILESTONE-M3-REPORT.md is a different document and its path is extensions.report_path.",
+    "severity_mapping_note": "Schema enum is P0/P1/P2/INFO; severity_label carries the prose word. F-29 moved P0 -> INFO (label CLOSED) on this run. F-32 P1, F-30/F-31/F-34 P2, F-33 INFO.",
+    "run_kind": "re-verification",
+    "supersedes_run": "2026-09-12T06-05-00Z",
+    "supersedes_note": "Appends a Re-verification section to the same acceptance report; the original report text is unmodified and the merged manifest was not rewritten.",
+    "trigger_commit": {
+      "sha": "fec2a222b",
+      "subject": "*-DESC-02 description-headroom findings are INFO in all five access/object checkers (never fail, even under --strict); DESC-01 over-limit stays ERROR"
+    },
+    "verdict_grounds_correction": "The first run listed three grounds. Only 'failing test' and 'blocked step' are in the Step 9 enum; the API-version conflict was an escalated finding, not a verdict trigger, and listing it as a ground overstated it. The failing test is now gone.",
+    "would_be_without_the_blocked_step": "ready-with-findings",
+    "negative_controls": [
+      {
+        "control": "the assertion M3-T2 was declared for still bites",
+        "mutation": "$Permission.Bypass_Case_Intake_Validation -> $Permission.Bypass_Ghost in Origin_Must_Be_Known",
+        "strict_exit": 1,
+        "plain_exit": 0,
+        "output": "WARN: 'Bypass_Ghost' is referenced by 1 consumer location(s) but is not defined in the tree; --strict: failing on warnings."
+      },
+      {
+        "control": "the real 255-character limit still blocks without --strict",
+        "mutation": "custom-permission description padded to 271 characters",
+        "plain_exit": 1,
+        "output": "ERROR: CP-DESC-01 ... the Metadata API field limit is 255 characters (api_meta.txt L46651-46652) and the deploy will be rejected."
+      }
+    ],
+    "negative_controls_location": "scratchpad copy of artefacts/ only; the build was never mutated",
+    "unchanged_since_v1": {
+      "artefacts_modified_after_first_report": 0,
+      "reference_totals": "41/41 resolved, 0 unresolved, 0 unclassifiable",
+      "deploy_order": "no contradiction",
+      "merged_manifest": "re-derived, identical, not rewritten",
+      "requirement_closure": "8/8 metadata level, 1 UAT level",
+      "M3-S05": "still blocked, deferred Q32-Q35"
+    },
+    "g3_decisions_taken": [
+      {
+        "n": 1,
+        "item": "D-M3S02-04 sender identity",
+        "decision": "senderEmail confirmed support-noreply@acme.example; replyToEmail unchanged",
+        "vs_recommendation": "recommendation confirmed; this agent's suggested third option rejected, correctly"
+      },
+      {
+        "n": 2,
+        "item": "D-M3S03-02 casePriority",
+        "decision": "option (2) \u2014 M4-S03 derives from Severity__c/Support_Tier__c and overwrites",
+        "vs_recommendation": "matches",
+        "caveat": "does NOT close F-32 yet \u2014 M4-S03 is pending and unbuilt"
+      },
+      {
+        "n": 3,
+        "item": "D-M3S04-02 Premier routing",
+        "decision": "option (b) \u2014 correct title and W02 to Origin-only",
+        "vs_recommendation": "matches",
+        "caveat": "only half-writable \u2014 see F-34"
+      },
+      {
+        "n": 4,
+        "item": "F-28 org-wide address",
+        "decision": "named G3 prerequisite, no rebuild",
+        "vs_recommendation": "matches"
+      },
+      {
+        "n": 5,
+        "item": "O-M3S04-01 Q24 checkbox",
+        "decision": "narrowing accepted",
+        "vs_recommendation": "matches"
+      },
+      {
+        "n": 6,
+        "item": "O-M3S03-01 API version",
+        "decision": "67.0 accepted, planner v6 api_version adopted",
+        "vs_recommendation": "matches"
+      }
+    ],
+    "retracted_recommendation": {
+      "what": "The first report offered, under G3 decision item 1, a 'third option neither decision names': replyToEmail = support@acme.example with senderEmail left at support-noreply@, on the reasoning that the loop is a From-address mechanism.",
+      "why_it_is_wrong": "skills/admin/assignment-rules/references/gotchas.md Gotcha 6 states the loop pattern as an autoResponseRules entry's 'senderEmail (or replyToEmail)' matching a routing address \u2014 an out-of-office or bounce auto-reply is addressed to Reply-To, so the mail returns to the routing address by exactly that route. check_assignment_rules.py rules AR-LOOP-01 and AR-SENDER-01 treat the two elements as one class.",
+      "availability": "The clause was committed in 0c6a13440 at 2026-09-11 23:48, about six hours before the first run. It was readable at the time and was missed.",
+      "second_error": "'Neither decision names it' was also wrong: decisions.md D-M3S04-04 names this exact alternative and rejects it on the same grounds.",
+      "consequence_for_the_build": "None. artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml is correct exactly as built; the reply-threading cost in D-M3S04-04 is a consequence to accept, not a defect to engineer around."
+    },
+    "manual_checklist_changes": "Unchanged at 10 lines. Line 2 (B06) and line 5 (W02) are still not tickable as written; decisions 1 and 3 now say what each must be re-worded to, and F-34 says which of those two re-wordings is writable today. Line 9 (F-32) is unchanged and still live."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "step_id": "M3-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/validation-rules/scripts/check_validation_rules.py",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "W01: given the checker fails the step on a REVIEW finding ONLY because --strict is declared on its command, when the two validationRule files are read, then each errorConditionFormula opens with NOT($Permission.Bypass_Case_Intake_Validation) (Q56), tests emptiness with ISBLANK(TEXT(<picklist>)) rather than ISPICKVAL(<picklist>, \"\") alone, names only component fields and never a compound address field (Q59), and carries a final error message a customer-facing agent can act on rather than a placeholder (Q93)."
+  ]
+}

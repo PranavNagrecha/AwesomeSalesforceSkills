@@ -1,0 +1,417 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T04-39-20Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-39-20Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-39-20Z.json",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S03",
+    "api_version": "67.0 (RAISED from the 62.0 of run 2026-09-12T04-16-16Z; the org's API version, and the version M4's Apex steps already target per the plan notes)",
+    "invocation": "inline under agents/build-step-runner (the 'any other host' branch of build-step-runner Step 6): this agent's Plan was executed by the runner, not dispatched to a separate subagent",
+    "rebuild_reason": "Operator-supplied. The as-built settings/Case.settings-meta.xml failed the operator's validate-only run against the org (sf project deploy start --dry-run, checkOnly, alias sfskills-dev; run 5 of reports/MOCK-DEPLOY-M3.md). Four changes, proven by the operator on a scratchpad copy to make the file validate with 0 errors, were supplied verbatim in the invocation and applied exactly: F-25 systemUserEmail, F-26 newEntityRecordType (object-qualified), F-27 casePriority, and package.xml version 67.0.",
+    "credentials_present": "none - no value in steps[M3-S03].inputs{}, in any bound clarification answer, or in the operator's four changes is credential-shaped. support-noreply@acme.example and the two routing addresses are example-domain mailboxes, not secrets, so nothing required [REDACTED]",
+    "answers_bound": [
+      "Q15",
+      "Q16",
+      "Q17",
+      "Q18",
+      "Q19",
+      "Q21",
+      "Q23",
+      "Q24",
+      "Q66",
+      "Q74"
+    ],
+    "answers_deferred": [
+      "Q20 -> assumption A3 (unchanged by this rebuild)"
+    ],
+    "upstream_artefacts_read": [
+      "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+      "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml (fullName Support)",
+      "artefacts/M1-S01/package.xml (member Case.Support - the object-qualified form the org accepted)",
+      "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml"
+    ]
+  },
+  "summary": "REBUILD of M3-S03 (routing) after the operator's validate-only run rejected the as-built settings/Case.settings-meta.xml. Applied exactly the four operator-proven changes and nothing else: F-25 <systemUserEmail>support-noreply@acme.example</systemUserEmail> after <useSystemUserAsDefaultCaseUser>; F-26 <newEntityRecordType>Case.Support</newEntityRecordType> and <newEntityRecordType>Case.Billing</newEntityRecordType> after each <caseOrigin>; F-27 <casePriority>Medium</casePriority> before each <createTask>; and package.xml <version> 62.0 -> 67.0. Every other byte of both files is unchanged, and web-to-case-form-contract.md is byte-identical (hash unchanged). The two markdown notes were rewritten where the change lands: the F-25 value is stated NOT to be a routing address and NOT to pre-empt D-M3S02-04; useSystemEmailAddress and isPermsetControlled stay omitted for the same reasons as before; F-26 closes the as-built ungrounded item 2 and carries the API >= 64.0 floor; F-27 is marked UNVERIFIED-in-guide / proven-live and its consequence for M4-S03 (email cases now arrive with Priority set, so a null-guarded stamp never fires) is stated prominently in both notes. Declared build-scope checker exit 0 on the first pass, step-scope run also exit 0, both XML files parse, check-outputs ok. Nothing was deployed and no sf command was run.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM on two counts. (1) Element grounding is partial in a new way: systemUserEmail is in NEITHER cited skill's inventory (grep across both skills returns zero hits) and newEntityRecordType's value shape and version floor are in neither either - all three facts came from the org via the operator, not from the library, which is exactly the input Step 5 rule 1 normally forbids and which is admissible here only because the operator supplied them as proven. (2) casePriority Medium is a skill-documented default (the worked example's value) standing in for an unanswered question, and its required-ness contradicts the guide. The undeclared deploy-order.md artefact from the as-built run persists. Not LOW: check-outputs is ok, every declared output exists, nothing was written outside artefacts/M3-S03/, and both checker runs exit 0.",
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Three facts written into this step's metadata are not carried by either cited skill: systemUserEmail (named nowhere in skills/admin/case-management-setup or skills/admin/email-to-case-configuration), newEntityRecordType's value shape (object-qualified Case.Support, not bare Support), and newEntityRecordType's API >= 64.0 floor. All three reached this build from an org error plus the operator's api_meta quotes. fallbackQueue is still named without description, example or value shape and is still not written.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Deepen skills/admin/email-to-case-configuration/references/metadata-examples.md with a worked newEntityRecordType value (Case.<RecordType>), its 64.0 version floor, a fallbackQueue example, and the CaseSettings systemUserEmail/useSystemUserAsDefaultCaseUser pairing; then this step rebuilds from the library rather than from an org."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "casePriority now has to carry a value and no clarification supplies one. Medium is the value in email-to-case-configuration/references/metadata-examples.md lines 50 and 59 - a skill default, not an answered question. Q16 ('priority set from what the form or email tells us') is now only partly met on the email channel.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Ask which CasePriority value each intake channel should stamp, and decide at the M3 gate whether M4-S03 overwrites the intake default or the plan accepts Medium."
+    },
+    {
+      "dimension": "manifest-consistency",
+      "state": "partial",
+      "reason": "package.xml is consistent with the one file on disk (Settings:Case), but its version is now 67.0 while other steps' manifests were written at 62.0. A merged deploy must not drop below 64.0 or newEntityRecordType is rejected. This step cannot fix the other steps' manifests.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Raise every step manifest to 67.0, or rely on scripts/mock_deploy.py's merged manifest - the operator validated the full M1+M2+M3-S01..S03 set at 67.0."
+    },
+    {
+      "dimension": "deploy-order",
+      "state": "partial",
+      "reason": "Element order inside CaseSettings is no longer UNVERIFIED in the direction that mattered - the org accepted this sequence with 0 errors - but whether a different order would be REJECTED is still unknown, and no checker in this build tests ordering.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Retrieve Settings:Case from a live org and compare the returned child order with the authored one."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "CaseSettings - REBUILT: systemUserEmail (F-25), newEntityRecordType x2 (F-26), casePriority x2 (F-27); everything else byte-identical",
+      "target_path": "artefacts/M3-S03/settings/Case.settings-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CaseSettings xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <defaultCaseOwner>Tier_1_General</defaultCaseOwner>\n    <defaultCaseOwnerType>Queue</defaultCaseOwnerType>\n    <notifyDefaultCaseOwner>true</notifyDefaultCaseOwner>\n    <useSystemUserAsDefaultCaseUser>true</useSystemUserAsDefaultCaseUser>\n    <systemUserEmail>support-noreply@acme.example</systemUserEmail>\n    <emailToCase>\n        <enableEmailToCase>true</enableEmailToCase>\n        <enableOnDemandEmailToCase>true</enableOnDemandEmailToCase>\n        <enableE2CAttachmentAsFile>true</enableE2CAttachmentAsFile>\n        <enableE2CDeduplicateAttachments>true</enableE2CDeduplicateAttachments>\n        <enableThreadTokenInBody>true</enableThreadTokenInBody>\n        <enableThreadTokenInSubject>true</enableThreadTokenInSubject>\n        <useEmailHeadersForThreading>true</useEmailHeadersForThreading>\n        <notifyOwnerOnNewCaseEmail>false</notifyOwnerOnNewCaseEmail>\n        <overEmailLimitAction>Requeue</overEmailLimitAction>\n        <unauthorizedSenderAction>Bounce</unauthorizedSenderAction>\n        <routingAddresses>\n            <addressType>EmailToCase</addressType>\n            <routingName>ACME General Support</routingName>\n            <emailAddress>support@acme.example</emailAddress>\n            <caseOrigin>Email-Support</caseOrigin>\n            <newEntityRecordType>Case.Support</newEntityRecordType>\n            <casePriority>Medium</casePriority>\n            <createTask>false</createTask>\n            <saveEmailHeaders>true</saveEmailHeaders>\n        </routingAddresses>\n        <routingAddresses>\n            <addressType>EmailToCase</addressType>\n            <routingName>ACME Billing</routingName>\n            <emailAddress>billing@acme.example</emailAddress>\n            <caseOrigin>Email-Billing</caseOrigin>\n            <newEntityRecordType>Case.Billing</newEntityRecordType>\n            <casePriority>Medium</casePriority>\n            <createTask>false</createTask>\n            <saveEmailHeaders>true</saveEmailHeaders>\n        </routingAddresses>\n    </emailToCase>\n    <closeCaseThroughStatusChange>true</closeCaseThroughStatusChange>\n    <keepRecordTypeOnAssignmentRule>true</keepRecordTypeOnAssignmentRule>\n    <enableSuggestedSolutions>false</enableSuggestedSolutions>\n    <enableSuggestedArticlesApplication>false</enableSuggestedArticlesApplication>\n    <webToCase>\n        <enableWebToCase>true</enableWebToCase>\n        <caseOrigin>Web</caseOrigin>\n    </webToCase>\n</CaseSettings>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "package.xml fragment - Settings:Case named explicitly; <version> raised 62.0 -> 67.0 (64.0 is the hard floor for newEntityRecordType)",
+      "target_path": "artefacts/M3-S03/package.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <types>\n        <members>Case</members>\n        <name>Settings</name>\n    </types>\n    <version>67.0</version>\n</Package>\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Email-to-Case routing addresses - rewritten for the three new elements: address table, the proven-live casePriority write-up and its M4-S03 consequence, the systemUserEmail row, the 'not a sender' statement, and the closed newEntityRecordType gap",
+      "target_path": "artefacts/M3-S03/email-to-case-routing-addresses.md",
+      "content": "See file - 27 KB on disk, MODIFIED by this rebuild (sha256 465ac2f4... -> fe6ca9a1...)."
+    },
+    {
+      "kind": "markdown",
+      "title": "Web-to-Case form contract - unchanged by this rebuild",
+      "target_path": "artefacts/M3-S03/web-to-case-form-contract.md",
+      "content": "See file - byte-identical to the as-built version (sha256 d29fd1d7...40954a before and after)."
+    },
+    {
+      "kind": "markdown",
+      "title": "Deploy order - new section 0 (the four changes, before/after hashes, D-M3S02-04 non-pre-emption, the F-27 consequence for M4-S03), retired omission rows, updated ungrounded list, and the API >= 64.0 whole-build floor",
+      "target_path": "artefacts/M3-S03/deploy-order.md",
+      "content": "See file - UNDECLARED artefact, MODIFIED by this rebuild (sha256 fefe9192... -> 09525677...)."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The loop caught a defect no checker in this build could have caught. check_case_management_setup.py exits 0 on both the as-built file and the rebuilt one; the three missing elements were only ever visible to the org's own validation. That is the mock-deploy stage doing precisely the job it exists for, one milestone before the gate.",
+      "evidence": {
+        "source": "checker_output",
+        "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-coverage",
+      "observation": "Three facts that decide whether this file deploys are absent from both cited skills: systemUserEmail entirely (zero hits across either skill package), newEntityRecordType's value shape, and newEntityRecordType's API 64.0 floor. The as-built run behaved correctly by its own contract - Step 5 rule 1 forbade guessing - and still produced a file the org refuses. A rule that prevents fabrication does not, on its own, prevent an undeployable artefact when the library is thin.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "grep -rn 'systemUserEmail' skills/admin/case-management-setup skills/admin/email-to-case-configuration",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "cross-step-consistency",
+      "observation": "F-27 silently invalidates a design decision recorded in two places. M4-S03's before-save flow is specified to stamp Priority 'guarded so it writes only into a null value', and the as-built M3-S03 deliberately left casePriority blank so that guard would fire. The org's requirement removes that option for the email channel only, so the two intake channels now diverge: email arrives at Medium, web arrives blank. Recorded in both notes rather than left for M4-S03 to discover.",
+      "evidence": {
+        "source": "plan_field",
+        "path": "plan.json steps[M4-S03].acceptance_tests + artefacts/M3-S03/deploy-order.md section 0",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "requirements",
+      "observation": "casePriority Medium is a skill default, not an answer. No clarification among the 97 says which CasePriority value either channel should stamp, and no CasePriority standard value set exists under artefacts/ to validate it against - the org accepting it proves the value exists in THAT org's picklist and nothing more. Whether Medium is right for a billing channel with its own SLA ladder is unadjudicated.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/email-to-case-configuration/references/metadata-examples.md lines 50, 59",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "metadata-semantics",
+      "observation": "systemUserEmail's value is unprovisioned. support-noreply@acme.example was chosen (by the operator) to be visibly not either inbound routing address, which is the right shape for avoiding both an inbound loop and a mistaken reading as the acknowledgement sender - but no step in this build creates or verifies that mailbox, and the guide does not say whether the platform sends to it, from it, or merely records it.",
+      "evidence": {
+        "source": "file",
+        "path": "artefacts/M3-S03/settings/Case.settings-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "change-discipline",
+      "observation": "The rebuild is minimal and auditable: three added elements and one version string. Diffing the before/after hashes of all five artefacts shows web-to-case-form-contract.md untouched, and the two XML files differ only by the four operator-proven changes.",
+      "evidence": {
+        "source": "file",
+        "path": "artefacts/M3-S03/deploy-order.md section 0 hash table",
+        "count": 5
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/references/metadata-examples.md",
+      "used_for": "the routingAddresses element order the three new elements were slotted into, and the casePriority value Medium at lines 50 and 59 - the only place in either skill that shows a casePriority value"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/references/well-architected.md",
+      "used_for": "line 39's per-address field enumeration, which names newEntityRecordType and fallbackQueue without a value shape - the gap this rebuild closed for the first of the two from the org rather than from the skill"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/SKILL.md",
+      "used_for": "line 147: casePriority sets Case.Priority - the mechanism behind the M4-S03 consequence"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/gotchas.md",
+      "used_for": "gotcha 9 - the instruction to set newEntityRecordType on every routing address, and the api_meta L112010 field description quoted there; the same gotcha's record that WebToCaseSettings has no record-type element, which is why the web channel still needs M4-S03"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "the Questions-to-Ask row on Priority derivation naming casePriority as one of three competing sources - the row this rebuild's F-27 consequence is written against"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "section 3's CaseSettings sequence (unchanged), section 5's wildcard rule and deploy order"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step types and status machine; section 8 - a knowledge gap is a signal to deepen a skill, which is how the three org-learned facts are recorded rather than quietly absorbed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the deploy-order note's shape and the manifest-version constraint stated for the whole build"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the declared build-scope checker, the xml parse, the manifest check and the two manual rows are the tester's to run and record against the rebuilt files, not this agent's"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the F-27 priority consequence needs a decisions.md entry against M4-S03, and D-M3S02-04 needs the explicit note that F-25 did not pre-empt it"
+    },
+    {
+      "agent": "flow-builder",
+      "because": "M4-S03's before-save flow now has to overwrite a populated Priority on the email channel and stamp RecordTypeId on the web channel - both consequences of this step's rebuild"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S03",
+    "step_type": "routing",
+    "invoked_by": "build-step-runner (inline execution of this AGENT.md, per build-step-runner Step 6 'any other host' branch)",
+    "build_mode": "design-only",
+    "rebuild": {
+      "of_run": "2026-09-12T04-16-16Z",
+      "trigger": "operator dry-run validation failure recorded on the step's runs[] with agent mock-deploy",
+      "authority": "operator-supplied and operator-proven; sf project deploy start --dry-run (checkOnly) on a scratchpad copy, run 5 of reports/MOCK-DEPLOY-M3.md, 0 errors with these four changes",
+      "changes": [
+        {
+          "id": "F-25",
+          "file": "settings/Case.settings-meta.xml",
+          "element": "systemUserEmail",
+          "value": "support-noreply@acme.example",
+          "placement": "immediately after <useSystemUserAsDefaultCaseUser>true</useSystemUserAsDefaultCaseUser>",
+          "org_error_closed": "CaseSettings: Enter the system user's email address",
+          "grounding": "api_meta L111871 (operator-quoted) - 'Specifies the email address used when the default case user is the system user'. Not present in either cited skill.",
+          "pre_empts_D-M3S02-04": false
+        },
+        {
+          "id": "F-26",
+          "file": "settings/Case.settings-meta.xml",
+          "element": "newEntityRecordType",
+          "value": "Case.Support on support@, Case.Billing on billing@",
+          "placement": "immediately after each <caseOrigin>",
+          "org_evidence": "bare 'Support' fails with 'no RecordType named Support found'; object-qualified 'Case.Support' resolves. Rejected at API 62.0 and 63.0 ('Property newEntityRecordType not valid in version 63.0'), accepted from 64.0.",
+          "grounding": "case-management-setup gotcha 9 instructs the element; the value shape and version floor came from the org"
+        },
+        {
+          "id": "F-27",
+          "file": "settings/Case.settings-meta.xml",
+          "element": "casePriority",
+          "value": "Medium on both addresses",
+          "placement": "immediately before each <createTask>",
+          "org_error_closed": "EmailToCaseRoutingAddress[support@acme.example]: Missing casePriority",
+          "grounding": "value copied from email-to-case-configuration/references/metadata-examples.md lines 50/59. REQUIREDNESS IS UNVERIFIED-IN-GUIDE / PROVEN-LIVE: api_meta L112039 describes the element only as 'the default case priority for cases created through this routing address' and marks no requirement.",
+          "downstream_consequence": "M4-S03's before-save flow must derive Priority from Severity__c / Support_Tier__c and overwrite the intake default, or the plan accepts Medium - its null guard will never fire for an email-originated case. Web-to-Case has no such setting, so web cases still arrive blank."
+        },
+        {
+          "id": "API",
+          "file": "package.xml",
+          "element": "version",
+          "value": "62.0 -> 67.0",
+          "grounding": "the org's API version; M4's Apex steps already target apiVersion 67.0 per the plan notes. Whole-build floor is 64.0 because of F-26."
+        }
+      ],
+      "hashes": {
+        "settings/Case.settings-meta.xml": {
+          "before": "5781669c97a3db69ab8ed88fe46bd523be04ddc1d6c8003ace5127acb29c63b8",
+          "after": "f43aba801741a269a5f8a6428f375b5075ca8f83d547583606319a8bb503c8f4"
+        },
+        "package.xml": {
+          "before": "2d5f0839b251ac31bd4110699a72d1aa8ce9ba9c1ede1b4d65244c5cca82dd41",
+          "after": "c38d2ef27988d4f878cab01fadf7aba4d37d8cced36e11c02340dd84c681837e"
+        },
+        "email-to-case-routing-addresses.md": {
+          "before": "465ac2f4d4145bebcfdbd21494ff7d266c135a2bcd66644039a2bf56e8c4fa39",
+          "after": "fe6ca9a174f5460099aee32fa58e630204f8effb95a361b4d9716e86f8c1822f"
+        },
+        "deploy-order.md": {
+          "before": "fefe91928fd9be1c6c1374a3abede3749577eff12427d3ff3611bc2e19039666",
+          "after": "095256775572f38edf08089d6aa66209527ebf98dcdefa53e8bdcb7a1ffd3898"
+        },
+        "web-to-case-form-contract.md": {
+          "before": "d29fd1d7abd9d8621eca564738db7b676e773dd7a98b7289f8b5d5d48740954a",
+          "after": "d29fd1d7abd9d8621eca564738db7b676e773dd7a98b7289f8b5d5d48740954a"
+        }
+      }
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M3-S03/settings/Case.settings-meta.xml",
+        "type": "Settings:Case",
+        "declared": true,
+        "modified": true
+      },
+      {
+        "path": "artefacts/M3-S03/package.xml",
+        "type": "manifest",
+        "declared": true,
+        "modified": true
+      },
+      {
+        "path": "artefacts/M3-S03/email-to-case-routing-addresses.md",
+        "type": "note",
+        "declared": true,
+        "modified": true
+      },
+      {
+        "path": "artefacts/M3-S03/web-to-case-form-contract.md",
+        "type": "note",
+        "declared": true,
+        "modified": false
+      },
+      {
+        "path": "artefacts/M3-S03/deploy-order.md",
+        "type": "note",
+        "declared": false,
+        "modified": true
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M3-S03/deploy-order.md"
+    ],
+    "decision_record": [
+      {
+        "question": "Does the default case user need an email address?",
+        "answer": "Yes - systemUserEmail support-noreply@acme.example",
+        "source": "operator-supplied, org-proven (not one of the four Step 4 sources; neither cited skill names the element)",
+        "element": "CaseSettings/systemUserEmail"
+      },
+      {
+        "question": "Which Case record type do email-originated cases land on?",
+        "answer": "Case.Support for support@, Case.Billing for billing@ - the mapping the build always wanted, now writable",
+        "source": "step requirement + M1-S01 artefacts for the names; operator-proven for the value SHAPE",
+        "element": "EmailToCaseRoutingAddress/newEntityRecordType"
+      },
+      {
+        "question": "How is Case Priority derived - from the form, from the mailbox, or from the account? (case-management-setup Questions-to-Ask)",
+        "answer": "Unresolved at the requirement level; Medium is written on both addresses because the org refuses the file without a value. Escalated to the M3 gate with three named options.",
+        "source": "skill default (email-to-case-configuration metadata-examples lines 50/59), not an answered clarification",
+        "element": "EmailToCaseRoutingAddress/casePriority"
+      },
+      {
+        "question": "Which API version does this manifest carry?",
+        "answer": "67.0 - the org's version; 64.0 is the hard floor because of newEntityRecordType",
+        "source": "operator-supplied, org-proven",
+        "element": "Package/version"
+      },
+      {
+        "question": "Does any of this settle the acknowledgement sender (D-M3S02-04)?",
+        "answer": "No. systemUserEmail is an attribution field, not a sender; EmailToCaseRoutingAddress still carries no sender element; useSystemEmailAddress and isPermsetControlled remain omitted for the reasons already recorded.",
+        "source": "step inputs + decisions.md D-M3S02-04",
+        "element": "none written"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No case management setup issues found.",
+        "note": "the step's declared acceptance test, at its declared build scope. Exit 0 on the first pass: none of the three added elements is rejected by the checker, so no element had to be removed."
+      },
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts/M3-S03 --verbose",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "8 NOTE lines (no assignmentRules/escalation/autoResponse/queue/value-set files in this narrower tree), then 'No case management setup issues found.'",
+        "note": "step-scope control run, not a declared test - confirms the added elements do not trip the checker in isolation either."
+      },
+      {
+        "command": "python3 -c \"import xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path('artefacts/M3-S03').rglob('*.xml')]\"",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "parsed 2: artefacts/M3-S03/package.xml, artefacts/M3-S03/settings/Case.settings-meta.xml"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "status_path_taken": "under the runner - this agent set no status itself; build-step-runner owns the pending -> running -> built transitions for this run",
+    "skill_gaps_recorded_not_blocking": [
+      "CaseSettings/systemUserEmail is named in neither skills/admin/case-management-setup nor skills/admin/email-to-case-configuration, yet the org requires it whenever useSystemUserAsDefaultCaseUser is true.",
+      "EmailToCaseRoutingAddress/newEntityRecordType has no value shape and no API-version floor in either skill; both are now known (object-qualified <Object>.<RecordType>, API >= 64.0) and belong in the library.",
+      "EmailToCaseRoutingAddress/casePriority is not marked required by the guide but is refused-if-absent by the org at API 67.0.",
+      "EmailToCaseRoutingAddress/fallbackQueue and routingFlow remain named once, with no description, example or value shape - still not written."
+    ],
+    "unverified_carried_forward": [
+      "casePriority required-ness: UNVERIFIED-in-guide / proven-live 2026-09-12 on one org at API 67.0.",
+      "Whether CaseSettings child order is ENFORCED: the org accepted this order, which does not prove a different one would fail.",
+      "notifyDefaultCaseOwner behaviour against a queue with no <email> and doesSendEmailToMembers false - unchanged by this rebuild.",
+      "The numeric daily Email-to-Case limit and the Web-to-Case daily allocation - neither is in a fetchable source."
+    ]
+  }
+}

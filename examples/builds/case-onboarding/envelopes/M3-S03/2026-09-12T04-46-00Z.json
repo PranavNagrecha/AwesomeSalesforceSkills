@@ -1,0 +1,307 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T04-46-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-46-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-46-00Z.json",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S03",
+    "reason": "REBUILD after an operator dry-run validation failure. The step had already been reset failed -> pending by the operator, so no Step 2 carve-out was used: M3-S03 was the single entry build_plan.py next printed and the ordinary pending -> running -> built path applied. The reason text is recorded on both runs[] entries this agent appended.",
+    "credentials_present": "none - no value in steps[M3-S03].inputs{}, in any bound clarification answer, or in the four operator-supplied changes is credential-shaped; the three mailboxes are example-domain addresses, so nothing required [REDACTED]"
+  },
+  "summary": "Re-ran step M3-S03 (routing) of the case-onboarding build after the operator reset it from failed to pending following a dry-run validation failure. The step was the single entry in build_plan.py next, was claimed with set-status running, and its owning agent metadata-builder was executed inline per the caller's instruction. The builder applied exactly the four operator-proven changes (F-25 systemUserEmail, F-26 newEntityRecordType object-qualified on both routing addresses, F-27 casePriority on both, and package.xml version 62.0 -> 67.0) and left every other byte of the artefacts alone; web-to-case-form-contract.md hashes identical before and after. The declared build-scope checker exited 0 on the first pass with none of the three added elements rejected, the step-scope control run also exited 0, both XML files parse, check-outputs returned ok, build_plan.py validate is OK, and the step was set built. No mock_deploy.py and no sf command was run, no gate was approved, no org was contacted, and nothing outside the build directory was touched. MEDIUM confidence: one undeclared artefact (deploy-order.md) and, more materially, three of the elements now on disk are grounded in the org rather than in either cited skill.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 MEDIUM: an undeclared artefact is present (artefacts/M3-S03/deploy-order.md, which metadata-builder writes on every run but steps[M3-S03].outputs[] does not declare), and the owning agent returned MEDIUM for partial element grounding plus one skill default standing in for an unanswered question. Everything else is at the HIGH condition - the step was in next, every required input resolved from the plan plus the operator's explicit change list, both envelopes validate, check-outputs exited 0, and no file was written outside artefacts/M3-S03/.",
+  "dimensions_skipped": [
+    {
+      "dimension": "wave-10-report-directory",
+      "state": "not-run",
+      "reason": "The invocation constrained all writes to the build directory, so the docs/reports/build-step-runner/<run_id>.{md,json} twin the Wave 10 contract also names was not written. The build-layer paths this envelope carries are explicitly permitted by output-envelope.schema.json, so the deliverable is addressable; only the second copy is absent.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Copy envelopes/M3-S03/2026-09-12T04-46-00Z.{json,md} to docs/reports/build-step-runner/ if the tracked twin is wanted."
+    },
+    {
+      "dimension": "org-revalidation",
+      "state": "not-run",
+      "reason": "The four changes are operator-proven, not re-proven here: this agent was instructed not to run mock_deploy.py or any sf command, and it did not. The claim that the rebuilt file validates with 0 errors rests entirely on the operator's scratchpad run, and the artefacts on disk are byte-for-byte the changes the operator described rather than a copy of the artefacts the operator actually validated.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "A human re-runs python3 scripts/mock_deploy.py .sfskills/builds/case-onboarding/plan.json --org-alias <alias> --milestone M3 (or the per-step --dry-run in deploy-order.md section 7) against these exact files, and records it as run 6 in reports/MOCK-DEPLOY-M3.md."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Runnability was taken from build_plan.py next rather than re-derived. The operator's failed -> pending reset put M3-S03 back through the ordinary path, which is the documented preference in build-step-runner Step 2 precisely because the step's gates and dependencies get re-checked; next printed M3-S03 alone and set-status running was accepted.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "python3 scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "change-discipline",
+      "observation": "The rebuild is bounded and provable: five artefacts, four of them hashed before and after in deploy-order.md section 0, and the one file with no reason to change (web-to-case-form-contract.md) hashes identically. A reviewer can confirm the scope of the change without reading the diff.",
+      "evidence": {
+        "source": "file",
+        "path": "artefacts/M3-S03/deploy-order.md section 0",
+        "count": 5
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "skill-coverage",
+      "observation": "Three facts that decide whether this step deploys are absent from both cited skills, and all three arrived from an org: systemUserEmail (zero hits in either skill package), newEntityRecordType's object-qualified value shape, and its API >= 64.0 floor. The as-built run obeyed its contract - metadata-builder Step 5 rule 1 forbids writing an element it cannot copy from the inventory - and still produced an undeployable file. The guardrail against fabrication is working; it is not a guardrail against a thin library, and this step is the clearest evidence of that distinction the build has produced so far.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "grep -rn 'systemUserEmail' skills/admin/case-management-setup skills/admin/email-to-case-configuration -> 0 hits",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "cross-step-consistency",
+      "observation": "F-27 changes a downstream step's specification without touching it. M4-S03's before-save flow is specified to stamp Priority 'guarded so it writes only into a null value'; email-originated cases now arrive at Medium, so that guard is dead on the email channel while it still fires on the web channel. The divergence is recorded prominently in both notes, but plan.json steps[M4-S03] itself still carries the original wording - only build-doc-keeper or a plan amendment can close that.",
+      "evidence": {
+        "source": "plan_field",
+        "path": "plan.json steps[M4-S03].acceptance_tests vs artefacts/M3-S03/deploy-order.md section 0",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "build-loop",
+      "observation": "Everything above this step in the M3 stack is now stale and nothing has marked it so. The earlier built/tested records for M3-S03, and any M3 milestone material derived from them, were written against artefacts whose hashes no longer exist on disk.",
+      "evidence": {
+        "source": "plan_field",
+        "path": "plan.json steps[M3-S03].runs[] - three prior runs, of which the mock-deploy entry is the one that invalidated the others",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "evidence-chain",
+      "observation": "reports/MOCK-DEPLOY-M3.md is 24 lines and records runs 1 and 2 only. The invocation cites 'run 5' of that file as the proof for all four changes, and runs 3, 4 and 5 are not written down anywhere this agent can read. This agent did not add them - it does not own that report and was told to run no deploy tooling - so the evidence for the rebuild currently lives in the invocation text and in the step's mock-deploy runs[] entry rather than in the report the artefacts cite.",
+      "evidence": {
+        "source": "file",
+        "path": "reports/MOCK-DEPLOY-M3.md",
+        "count": 24
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "metadata-semantics",
+      "observation": "support-noreply@acme.example is unprovisioned. It was chosen to be visibly not either inbound routing address, which is the right shape for keeping D-M3S02-04 open and for avoiding an inbound loop, but no step in this build creates or verifies that mailbox and the guide does not say whether the platform sends to it, from it, or merely records it.",
+      "evidence": {
+        "source": "file",
+        "path": "artefacts/M3-S03/settings/Case.settings-meta.xml",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the no-org-write and no-auto-chain rules this run is bound by"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement and the confidence rubric Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence paths, atomic writes and redaction of echoed inputs"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum - none was triggered on this run"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 status machine and the failed -> pending reset the operator used; section 5 check-outputs precondition on built and who owns tests; section 8 the plan CLI as the only writer of derived state"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the steps[] / inputs{} / outputs[] / runs[] fields this agent reads and the ones it must leave alone"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the envelope shape both stored envelopes were validated against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming settings/Case.settings-meta.xml still sits in the source-format directory-per-type shape after the rebuild"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "Settings is a deployable Metadata API type and the manifest's api version is what a deploy is evaluated at - the reason the 62.0 -> 67.0 change is a build-wide fact, not a formatting detail"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema the step's inputs were mapped from onto metadata-builder's Inputs section"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the Q<nn> / D-<id> / A<n> id conventions echoed into the envelope so build-doc-keeper can join this rebuild to D-M3S02-04 and assumption A3 without re-deriving the link"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "the credential shapes checked for before echoing inputs - none matched, so nothing was redacted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+      "used_for": "the step's declared acceptance test, run verbatim from the build directory at its declared build scope"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the four declared acceptance tests - the build-scope checker, the xml parse, the manifest check and the two manual rows - are the tester's to run and record against the rebuilt artefacts, and the step is now built"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the F-27 priority consequence needs a decisions.md entry against M4-S03, D-M3S02-04 needs the explicit note that F-25 did not pre-empt it, and the three org-learned facts belong in the skill-gap log"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "once M3's remaining steps are documented it must re-verify M3 against these artefacts rather than the pre-rebuild ones"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S03",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_awareness_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md returns a non-zero count; its Inputs take build_dir and step_id and its Output Contract declares artefacts/<step-id>/ - so no Step 7 relocation was needed or performed.",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-39-20Z.json",
+    "owning_report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-39-20Z.md",
+    "invocation_mode": "inline - the owning agent's AGENT.md was read end to end and its Plan executed in this process, per build-step-runner Step 6 'any other host' branch and the caller's explicit instruction",
+    "rebuild": {
+      "prior_run": "2026-09-12T04-16-16Z (metadata-builder, built)",
+      "invalidated_by": "2026-09-12T04:35:57Z (mock-deploy, failed) - dry-run validation, checkOnly, alias sfskills-dev, API 62.0",
+      "reset_by": "operator (failed -> pending) before this invocation",
+      "changes_applied": [
+        "F-25 systemUserEmail",
+        "F-26 newEntityRecordType (Case.Support / Case.Billing)",
+        "F-27 casePriority Medium x2",
+        "package.xml version 62.0 -> 67.0"
+      ],
+      "changes_applied_verbatim": true,
+      "stale_records": "The step's earlier built record and anything derived from it - including any M3 milestone material written against the pre-rebuild artefacts - are stale. The step is back at built and must be re-tested and re-documented."
+    },
+    "relocations": [],
+    "artefacts": [
+      {
+        "path": "artefacts/M3-S03/settings/Case.settings-meta.xml",
+        "declared": true,
+        "modified": true,
+        "sha256_before": "5781669c97a3db69ab8ed88fe46bd523be04ddc1d6c8003ace5127acb29c63b8",
+        "sha256_after": "f43aba801741a269a5f8a6428f375b5075ca8f83d547583606319a8bb503c8f4"
+      },
+      {
+        "path": "artefacts/M3-S03/package.xml",
+        "declared": true,
+        "modified": true,
+        "sha256_before": "2d5f0839b251ac31bd4110699a72d1aa8ce9ba9c1ede1b4d65244c5cca82dd41",
+        "sha256_after": "c38d2ef27988d4f878cab01fadf7aba4d37d8cced36e11c02340dd84c681837e"
+      },
+      {
+        "path": "artefacts/M3-S03/email-to-case-routing-addresses.md",
+        "declared": true,
+        "modified": true,
+        "sha256_before": "465ac2f4d4145bebcfdbd21494ff7d266c135a2bcd66644039a2bf56e8c4fa39",
+        "sha256_after": "fe6ca9a174f5460099aee32fa58e630204f8effb95a361b4d9716e86f8c1822f"
+      },
+      {
+        "path": "artefacts/M3-S03/web-to-case-form-contract.md",
+        "declared": true,
+        "modified": false,
+        "sha256_before": "d29fd1d7abd9d8621eca564738db7b676e773dd7a98b7289f8b5d5d48740954a",
+        "sha256_after": "d29fd1d7abd9d8621eca564738db7b676e773dd7a98b7289f8b5d5d48740954a"
+      },
+      {
+        "path": "artefacts/M3-S03/deploy-order.md",
+        "declared": false,
+        "modified": true,
+        "sha256_before": "fefe91928fd9be1c6c1374a3abede3749577eff12427d3ff3611bc2e19039666",
+        "sha256_after": "095256775572f38edf08089d6aa66209527ebf98dcdefa53e8bdcb7a1ffd3898"
+      }
+    ],
+    "missing_outputs": [],
+    "undeclared_artefacts": [
+      "artefacts/M3-S03/deploy-order.md"
+    ],
+    "files_written_outside_step_artefact_dir": [
+      "envelopes/M3-S03/2026-09-12T04-39-20Z.json and .md (the owning agent's envelope, stored verbatim per Step 7)",
+      "envelopes/M3-S03/2026-09-12T04-46-00Z.json and .md (this agent's own envelope pair)",
+      "plan.json (status transitions and run records, written only through scripts/build_plan.py)"
+    ],
+    "input_map": {
+      "build_dir": ".sfskills/builds/case-onboarding/ (caller)",
+      "step_id": "M3-S03 (caller)",
+      "api_version": "67.0 (caller, overriding the plan default - the plan's own api_version is null and metadata-builder's documented fallback is 62.0, which is exactly the version the org rejected newEntityRecordType at)",
+      "skills": "steps[M3-S03].skills[] - admin/email-to-case-configuration, admin/case-management-setup",
+      "decision_trees": "steps[M3-S03].decision_trees[] - standards/decision-trees/integration-pattern-selection.md (no Web-to-Case branch; unchanged from the as-built run)",
+      "acceptance_tests": "passed as context only - this agent does not run them",
+      "operator_changes": "the four proven changes, supplied verbatim in the invocation and applied without reinterpretation"
+    },
+    "clauses_passed_to_owning_agent": [
+      "Write every artefact under .sfskills/builds/case-onboarding/artefacts/M3-S03/ and nowhere else.",
+      "Return the envelope defined by agents/_shared/schemas/output-envelope.schema.json, including confidence, Process Observations and citations.",
+      "Do not deploy, do not run any sf write command, and do not invoke another agent.",
+      "Apply exactly the four operator-proven changes; keep everything else byte-identical; if a checker ERRORs on a new element, stop and report rather than remove it."
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "plan_validate": "OK .sfskills/builds/case-onboarding/plan.json: 5 milestone(s), 22 step(s), 3 warning(s). The three WARNs are pre-existing and belong to M5-S02 and M5-S04 (non-standard checker argument forms); none concerns M3-S03.",
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M3-S03 running --run-agent metadata-builder --started 2026-09-12T04:39:20Z --result \"REBUILD after operator dry-run validation failure ...\"",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M3-S03 built --run-agent metadata-builder --envelope envelopes/M3-S03/2026-09-12T04-39-20Z.json --started 2026-09-12T04:39:20Z --result \"<see runs[]>\""
+    ],
+    "terminal_status": "built",
+    "gates_touched": "none - M3-S03 has human_gate false, and no gate command was run",
+    "org_contacted": false,
+    "deploy_tooling_run": "none - no scripts/mock_deploy.py, no sf command of any kind, per the invocation",
+    "next_command": "/test-build-step .sfskills/builds/case-onboarding/ M3-S03  (agents/step-tester/AGENT.md) - recommended only; this agent does not auto-chain into it. The tester re-runs the four declared acceptance tests against the REBUILT artefacts; the prior test/doc records for this step are stale."
+  }
+}

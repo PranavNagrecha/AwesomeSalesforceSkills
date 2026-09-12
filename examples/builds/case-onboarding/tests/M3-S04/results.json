@@ -1,0 +1,14 @@
+{
+  "step_id": "M3-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "W02: given the checker above now proves that exactly one rule is active, this test carries what the exit code cannot see. Given Q25 and Q26, when Case.assignmentRules-meta.xml is read, then the active rule's entries route on Case.Origin and the Account support tier only (both present at save); the last entry is a catch-all with no criteriaItems and no booleanFilter, assigned to the Tier_1_General queue built in M2-S04; and every assignedTo names a queue developer name that exists under artefacts/M2-S04/queues/.",
+    "Given Q28 and Q63, when Case.autoResponseRules-meta.xml is read, then exactly one acknowledgement entry can match any given case — no second entry and no parallel Flow email alert on the same event — and its template names the Classic template M3-S02 built, folder-qualified."
+  ]
+}

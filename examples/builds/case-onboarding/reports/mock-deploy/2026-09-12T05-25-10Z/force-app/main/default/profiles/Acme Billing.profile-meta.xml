@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Profile xmlns="http://soap.sforce.com/2006/04/metadata">
+    <applicationVisibilities>
+        <application>standard__Service</application>
+        <default>true</default>
+        <visible>true</visible>
+    </applicationVisibilities>
+    <custom>true</custom>
+    <description>Base profile: Billing. Holds only default app, default record type and layout assignments. All object/field/tab access comes from PSG_Billing_Prod.</description>
+    <layoutAssignments>
+        <layout>Case-Case Billing Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Case-Case Support Layout</layout>
+        <recordType>Case.Support</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Case-Case Billing Layout</layout>
+        <recordType>Case.Billing</recordType>
+    </layoutAssignments>
+    <recordTypeVisibilities>
+        <default>false</default>
+        <recordType>Case.Support</recordType>
+        <visible>false</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <default>true</default>
+        <recordType>Case.Billing</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <userLicense>Salesforce</userLicense>
+</Profile>

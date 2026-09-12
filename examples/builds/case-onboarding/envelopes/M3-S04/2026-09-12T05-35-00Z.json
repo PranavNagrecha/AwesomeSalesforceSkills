@@ -1,0 +1,94 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "per-step",
+  "run_id": "2026-09-12T05-35-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-35-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-35-00Z.json",
+  "summary": "Documented M3-S04 (Case assignment rules and auto-response rules) after it reached `tested`. Re-rendered PLAN.md/CLARIFICATIONS.md from plan.json; appended 7 decisions.md entries covering the operator's pre-gate senderEmail resolution (D-M3S04-01), the deliberately-omitted Account-support-tier criterion and its title/test mismatch (D-M3S04-02), F-28's org-wide-address deploy prerequisite (D-M3S04-03), the replyToEmail/senderEmail threading consequence (D-M3S04-04), the still-open Q24 layout-default gap (O-M3S04-01), the recurring Billing-queue routing-address risk (O-M3S04-02), and a check_rtm.py skill-depth signal on its dual-key derivation for rule-container types (O-M3S04-03); wrote 5 workbook rows (CWB-AUT-010..012 in Section 6, CWB-OTHER-023..024 in Other Configuration); added 2 traceability rows (REQ-036 the assignment rule, REQ-037 the auto-response rule) and 2 Requirement-id-derivation entries; ran check_rtm.py from the build dir (37 rows, 0 coverage gaps, 0 errors, 2 orphans explained by O-M3S04-03, exit 0); set the step to `documented`.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every artefact produced a workbook row with a real source_req_id and a verification cell, and both new requirements have a traceability row (the HIGH conditions), but two things needed judgment rather than a mechanical read: the check_rtm.py orphan WARN required deciding which of two checker-derived component keys is canonical for the artefact cell (recorded as O-M3S04-03) and the step's own Account-support-tier title/manual-test mismatch remains genuinely open at the M3 gate rather than resolved by this pass.",
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both checker predictions recorded in the step's own plan.json inputs.note reproduced exactly at run time: check_assignment_rules.py's exit-1 duplicate-target message and check_case_management_setup.py's exit-0 pass, at both build and step scope.",
+      "evidence": {"source": "repo_scan", "query": "tests/M3-S04/OBSERVATION-check_assignment_rules.*.stdout.txt; tests/M3-S04/checker_check_case_management_setup.stdout.txt"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The auto-response rule's senderEmail and replyToEmail both avoid this org's two live Email-to-Case routing addresses, matching the operator's binding pre-gate note and both cited gotchas' mail-loop prohibition.",
+      "evidence": {"source": "repo_scan", "query": "artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "deploy-order.md is undeclared in M3-S04's outputs[] for a fourth consecutive M3 step, so check-outputs has never adjudicated it.",
+      "evidence": {"source": "input", "query": "plan.json steps[M3-S04].outputs[]"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Q24's assignment-rule-checkbox default remains unwritten after three prior recordings (D-M1S02-03), and owner-writer-map.md now states the concrete consequence: roughly 20 hand-logged cases a day get neither an owner nor an acknowledgement without it.",
+      "evidence": {"source": "repo_scan", "query": "artefacts/M3-S04/owner-writer-map.md section 5"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The step's title and its first manual acceptance test assert Account-support-tier routing that no answered clarification or grounded skill notation lets this build write, carried to the M3 gate as D-M3S04-02 rather than resolved here.",
+      "evidence": {"source": "input", "query": "plan.json steps[M3-S04].title vs acceptance_tests[3]; artefacts/M3-S04/deploy-order.md section 6 row 1"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "check_rtm.py reports 2 orphans for this step's own components because its RULE_CONTAINERS derivation registers a second, singular per-rule key alongside the container key the manifest and every other row in this build actually names; 0 coverage gaps and 0 errors otherwise.",
+      "evidence": {"source": "repo_scan", "query": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo root>"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "milestone-verifier should run once every M3 step is documented, because F-28's org-wide-address prerequisite and the open gate decisions (D-M3S02-04, D-M3S04-02, D-M3S03-02) all need one human adjudication pass across the whole milestone rather than four separate ones.",
+      "evidence": {"source": "input", "query": "decisions.md D-M3S02-04, D-M3S03-02, D-M3S04-02, D-M3S04-03"},
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because F-28's org-wide-address prerequisite and three open gate decisions all belong to one cross-step M3 acceptance pass rather than four separate step-level ones."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "config-workbook-author is the recommended follow-up once the build's workbook is ready to compile into a release-level document, since this run only wrote the per-step slice under workbook/.",
+      "evidence": {"source": "input", "query": "workbook/06-automation.md; workbook/99-other-configuration.md"},
+      "suggested_followup_agent": "config-workbook-author",
+      "followup_reason": "because it owns compiling the accumulated per-step workbook slices into the release-level ten-section document."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation, including the file-scope prohibition"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations schema, confidence rubric"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence and atomic-write rule"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum (not triggered this run)"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "section 2 (rendered-view/plan-state rules), section 4 (step-type to workbook-section map and its default clause), section 6 (this agent's per-step job), section 8 (skill-gap-to-decisions.md rule)"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "fields read from and left alone in plan.json"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "ten canonical sections and row schema for the 5 new workbook rows"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "canonical column set, REQ-id convention, and the check_rtm.py checker run"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "decision-entry shape (date, alternative rejected, source grounded in) for the 7 new decisions.md entries"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how the two deferred manual tests are recorded as acceptance evidence in the traceability rows rather than a plain pass/fail"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "mandatory read for a per-step pass; no UAT case pack compiled this run (that is M5-S04's compile-run job)"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "mandatory read for a per-step pass; no criteria document compiled this run (M5-S04's job)"}
+  ],
+  "extensions": {
+    "step_id": "M3-S04",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/decisions.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md"
+    ],
+    "workbook_rows": ["CWB-AUT-010", "CWB-AUT-011", "CWB-AUT-012", "CWB-OTHER-023", "CWB-OTHER-024"],
+    "traceability_rows": ["REQ-036", "REQ-037"],
+    "decisions_appended": ["D-M3S04-01", "D-M3S04-02", "D-M3S04-03", "D-M3S04-04", "O-M3S04-01", "O-M3S04-02", "O-M3S04-03"],
+    "rows_replaced": []
+  }
+}

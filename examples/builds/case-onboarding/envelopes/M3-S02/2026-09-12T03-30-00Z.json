@@ -1,0 +1,476 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T03-30-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-30-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-30-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S02",
+    "api_version": "62.0 (resolved: plan.json carries no api_version, so the agent's documented default applies; the value already on disk and in the other seven artefacts/*/package.xml is 62.0 and was kept)",
+    "invoked_by": "agents/build-step-runner (step already claimed; two run entries, the second a resume re-claim)",
+    "resume": "true - a prior session of this invocation wrote the six metadata files and sender-identity-note.md, then was cut off before deploy-order.md, the checker loop, check-outputs and the envelope pair"
+  },
+  "summary": "Resumed and completed M3-S02 (step type ui): two Classic Case email templates and their public email folder, under artefacts/M3-S02/. Re-verified all seven previously written outputs against the cited skill's element table (skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md) before touching anything and changed none of them: both EmailTemplate meta XMLs carry exactly the eight elements that reference documents, in the same order, with uiType Aloha / type text / style none / letterhead omitted - the one gotchas.md row a rule-driven template may use; the folder file reproduces the reference's own three-element EmailFolder shape with the fullName in the file stem and the label in <name>; and package.xml reproduces the reference's own manifest form, EmailFolder as the bare folder and EmailTemplate as Folder/Developer_Name with no wildcard. Wrote the one missing output, deploy-order.md, which states the intra-step order (folder, then either template), the member forms with their grounding, the two downstream consumers (M3-S04's auto-response <template> and the senderEmail this step only records; M4-S04's escalation <assignedToTemplate>), and the stale unfiled$public/ prefix both consumer skills' worked examples would otherwise hand them. Both declared checkers exited 0 on the first pass with zero repair passes; all four XML files parse; check-outputs returned ok with empty missing/empty/malformed. Status is built; per Step 9 under the runner, this agent set no status.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM row, on the 'documented skill default stood in for an unanswered question' clause: three of admin/email-deliverability-strategy's Questions-to-Ask rows are unanswered on this plan (DKIM key per sending domain with a rotation date; SMTP relay and bounce management; DNS ownership and change lead time), and a fourth (enableSubstituteFromAddress) is carried by the skill's own documented default rather than by an answer. None changes an element in this step's declared outputs, so none blocks. Not HIGH also because the plan carries two irreconcilable readings of whether support@acme.example is itself an Email-to-Case routing address (plan.json Q22 versus answers-key.md's Acknowledgement row), recorded rather than resolved. Not LOW: check-outputs is ok, all seven declared outputs exist, nothing landed outside artefacts/M3-S02/, both checkers passed on pass 1, and every element written traces to the Step 3 inventory.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Every Questions-to-Ask row of admin/email-templates-and-alerts is answered from plan.json clarifications (Q60/Q61/Q62/Q63/Q64, with Q22 and Q28 on the sender). Of admin/email-deliverability-strategy's seven rows, three have no answer and no documented default (DKIM rotation, SMTP relay plus bounce management, DNS ownership and lead time), one is carried by the skill's documented default (enableSubstituteFromAddress false), and one is half-answered (the answer key names IT as owner of the mail-server forwarding rules, which is not DNS ownership).",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer the three open deliverability rows, or add a deliverability step to the plan that owns EmailAdministrationSettings, the policy JSON and the DKIM inventory - the three files that checker reads and this step declares none of."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "element-grounding",
+      "observation": "Both EmailTemplate meta XMLs written by the cut-off session carry exactly the eight elements the cited reference's worked template documents - available, description, encodingKey, name, style, subject, type, uiType - in the same order, with no element outside that set; re-verification changed nothing.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md",
+        "count": 8
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-fidelity",
+      "observation": "The plan's B05 note predicted the email checker's behaviour exactly: it scanned 4 template files and left both .md notes alone, so --strict produced no REVIEW findings on the sender addresses in sender-identity-note.md.",
+      "evidence": {
+        "source": "input",
+        "path": "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "cross-skill-consistency",
+      "observation": "Two consumer skills' worked examples reference the same developer names this step builds under the shared unfiled folder - escalation-rules metadata-examples.md:95 writes unfiled$public/Case_Escalated_To_Tier2 and assignment-rules metadata-examples.md:148/:159 write unfiled$public/Case_Web_Acknowledgement - so copying either example verbatim into M4-S04 or M3-S04 produces a template reference that resolves to nothing in an org where these templates live in case_intake.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/escalation-rules/references/metadata-examples.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "constraint-provenance",
+      "observation": "The 255-character <description> ceiling this build applies is not documented for EmailTemplate or EmailFolder in either cited skill; it is carried from the build's own mock-deploy finding F-15 on a different metadata type, and is recorded as ungrounded in deploy-order.md rather than asserted as platform behaviour. Nothing here hangs on it - the two descriptions are 163 and 182 characters.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S02/deploy-order.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-dependency-precision",
+      "observation": "M3-S03 declares depends_on M3-S02 but none of its declared outputs references a template of this step; the element that looks as though it should, webToCase.defaultResponseTemplate, is documented as not being the acknowledgement email (case-management-setup metadata-examples.md:407-412 scopes it to Self-Service portal responses) and is deliberately omitted there.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "domain": "sender-identity",
+      "observation": "The plan carries two readings of whether support@acme.example is itself an Email-to-Case routing address - plan.json Q22's answer says a live routing address sends the acknowledgement, answers-key.md's Acknowledgement row says never the routing address itself - and the prohibition both cited skills state bites under one reading and not the other; recorded in sender-identity-note.md section 2 and left to a human.",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M3-S02/sender-identity-note.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "deliverability-posture",
+      "observation": "Three deliverability Questions-to-Ask rows have no answer and no documented default on this plan, and the deliverability checker never fails on absence, so its exit 0 here carries three WARNs and asserts nothing about the org's posture.",
+      "evidence": {
+        "source": "input",
+        "path": "skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "api-version-fit",
+      "observation": "sender-identity-note.md section 4 records enableSubstituteFromAddress as carried by the skill's documented default false, and both phrases it quotes are verbatim-correct; the note does not add that the field is API 66.0 and later while this build stamps 62.0, so at this version the default holds for a second reason - the field does not exist yet. No artefact of this step writes it, so the note was left as authored.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/email-deliverability-strategy/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The step's five declared acceptance tests have not been run as tests by this agent - two checkers, xml, manifest, and the manual B06 tick the M3 gate needs from the artefacts on disk.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because this agent ran the two checker commands only as its own Step 8 repair loop, and section 5 of the orchestration standard makes the tester the runner of record for the declared acceptance tests, including the manual one."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Two facts produced by this step belong in the build's written record rather than only in an artefact: the stale unfiled$public prefix M3-S04 and M4-S04 must not copy, and the unresolved Q22-versus-answer-key divergence.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S02/deploy-order.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because once the step is tested it is the agent that writes decisions.md and the traceability rows, and both of those facts are decisions a later reader of the plan needs without re-reading this note."
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S02",
+    "step_type": "ui",
+    "status": "built",
+    "build_mode": "design-only",
+    "invocation_path": "under agents/build-step-runner - per AGENT.md Step 9 this agent ran check-outputs and did NOT run set-status; the runner sets the terminal status from this envelope",
+    "resume_context": {
+      "prior_session": "wrote the six metadata files plus sender-identity-note.md, then was cut off",
+      "outstanding_on_entry": [
+        "deploy-order.md",
+        "Step 8 checker loop",
+        "Step 9 check-outputs",
+        "Step 11 envelope pair"
+      ],
+      "verified_unchanged": [
+        "artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+        "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email",
+        "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml",
+        "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email",
+        "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml",
+        "artefacts/M3-S02/sender-identity-note.md",
+        "artefacts/M3-S02/package.xml"
+      ],
+      "changed_this_session": [],
+      "written_this_session": [
+        "artefacts/M3-S02/deploy-order.md"
+      ]
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+        "metadata_type": "EmailFolder",
+        "declared_in_outputs": true,
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md section Folder (accessType, name, publicFolderAccess) and the naming rule at its 'Where the files live' table",
+        "verification": "unchanged - three elements, identical to the reference's worked folder; fullName case_intake is the file stem, label Case Intake is <name>; publicFolderAccess ReadOnly per the reference's note that a private folder is invisible to the rule engine"
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email",
+        "metadata_type": "EmailTemplate (body)",
+        "declared_in_outputs": true,
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md section 'Classic text template used by an auto-response rule' - the worked .email body",
+        "verification": "unchanged - merge fields {!Case.Subject} and {!Case.CaseNumber} are inside the Case auto-response context the reference permits; no recipient address anywhere in the body; deliberately opens 'Hello,' rather than the reference example's {!Contact.FirstName}, which renders blank on a web case with no Contact"
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml",
+        "metadata_type": "EmailTemplate",
+        "declared_in_outputs": true,
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md worked EmailTemplate meta XML; the uiType/type/style/letterhead/encodingKey row for rule-driven templates in skills/admin/email-templates-and-alerts/references/gotchas.md",
+        "verification": "unchanged - eight elements in the reference's order; uiType Aloha satisfies Q61; subject 67 chars against the reference's 230-char Classic ceiling; thread token {!Case.Thread_Id} in the reference's own subject form, kept per Q64; description 163 chars"
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email",
+        "metadata_type": "EmailTemplate (body)",
+        "declared_in_outputs": true,
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md worked .email body",
+        "verification": "unchanged - four Case merge fields, all in the escalation rule's own Case context; no address in the body; carries no thread token because it is internal, which is consistent with Q64 and assumption A3 binding customer-facing templates only"
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml",
+        "metadata_type": "EmailTemplate",
+        "declared_in_outputs": true,
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md worked EmailTemplate meta XML; the rule-driven row in skills/admin/email-templates-and-alerts/references/gotchas.md",
+        "verification": "unchanged - same eight elements; subject 62 chars; description 182 chars"
+      },
+      {
+        "path": "artefacts/M3-S02/sender-identity-note.md",
+        "metadata_type": "documentation (not metadata)",
+        "declared_in_outputs": true,
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md section 'Org-wide email address (the sender)'; skills/admin/email-deliverability-strategy/references/metadata-examples.md sections 2, 5 and 'Where each control actually lives'",
+        "verification": "unchanged - spot-verified its load-bearing quotations: OrgWideEmailAddress has no metadata type (deliverability metadata-examples.md:27), the Purpose enum and UserSelection semantics (:250), 'the correct deliverability posture' and 'carries none of your SPF/DKIM/DMARC reputation' (:90), IsVerified 58.0+ default false and IsAllowAllProfiles default false (gotchas.md senderAddress section), and the escalation reference's own unfiled$public/Case_Escalated_To_Tier2 line. All accurate as quoted"
+      },
+      {
+        "path": "artefacts/M3-S02/package.xml",
+        "metadata_type": "manifest",
+        "declared_in_outputs": true,
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md section 'package.xml and CLI'; the no-wildcard rule at the same file's 'Where the files live' table and skills/admin/email-templates-and-alerts/references/gotchas.md",
+        "verification": "unchanged - EmailFolder member is the bare folder name, EmailTemplate members are Folder/Developer_Name with no wildcard and no trailing slash (the slash is required only for a nested folder member); version 62.0 kept"
+      },
+      {
+        "path": "artefacts/M3-S02/deploy-order.md",
+        "metadata_type": "deploy-order note (Step 7)",
+        "declared_in_outputs": false,
+        "element_source": "skills/admin/change-management-and-deployment/references/metadata-examples.md sections 1 and 3; admin/assignment-rules metadata-examples.md:88/:221/:253; admin/escalation-rules metadata-examples.md:153/:231; admin/case-management-setup metadata-examples.md:407-412; the two cited-skill files above",
+        "verification": "written this session - the one output missing on entry. Not in the step's outputs[], and per AGENT.md Step 5 rule 2 it is produced on every run regardless"
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M3-S02/deploy-order.md is written on every run per AGENT.md Step 5 rule 2 but is not in this step's outputs[]. package.xml, the other always-written file, IS declared. Recording the omission so the plan gets the line added; the step was still built and check-outputs is unaffected."
+    ],
+    "decision_record": [
+      {
+        "question": "Is each template used by a rule or by Flow?",
+        "answer": "Rule-driven (auto-response and escalation), therefore Classic",
+        "source": "clarification-answer Q61",
+        "element_determined": "uiType Aloha, type text, style none, letterhead omitted, encodingKey UTF-8 - the rule-driven row of gotchas.md",
+        "note": "Q61's recorded answer is the clarifier's proposed default, accepted in the dry run"
+      },
+      {
+        "question": "Which record is the merge context?",
+        "answer": "Case, with Contact and Account as parents",
+        "source": "clarification-answer Q62",
+        "element_determined": "every merge field in both bodies and both subjects is {!Case.*}",
+        "note": "default accepted - dry run. The acknowledgement body declines the reference example's {!Contact.FirstName} because a web case may have no Contact"
+      },
+      {
+        "question": "Could the same event fire twice?",
+        "answer": "One acknowledgement per case creation: auto-response only, no parallel Flow email alert",
+        "source": "clarification-answer Q63",
+        "element_determined": "no WorkflowAlert and no workflows/Case.workflow-meta.xml in this step",
+        "note": "default accepted - dry run"
+      },
+      {
+        "question": "Does Email-to-Case threading depend on a token in this email?",
+        "answer": "Keep the thread token in every customer-facing Case template",
+        "source": "clarification-answer Q64",
+        "element_determined": "<subject> of Case_Acknowledgement carries [ ref:{!Case.Thread_Id} ]; the internal escalation template carries none",
+        "note": "default accepted - dry run; assumption A3 binds customer-facing templates only"
+      },
+      {
+        "question": "Who does the email come from, and who answers replies?",
+        "answer": "support@acme.example for the acknowledgement on both channels and for Tier 1 replies; billing@acme.example for finance replies; all verified org-wide addresses restricted to the profiles that need them",
+        "source": "clarification-answers Q60, Q22, Q28",
+        "element_determined": "NO element - EmailTemplate carries no sender. Recorded in sender-identity-note.md; the element is M3-S04's senderEmail",
+        "note": "Q60/Q22 supersede the clarifier's proposed no-reply default, which is the origin of the loop risk this step records"
+      },
+      {
+        "question": "Is the folder public or private?",
+        "answer": "Public, ReadOnly",
+        "source": "step inputs{}.note plus the cited reference's own statement that a template in a private folder is invisible to the rule engine",
+        "element_determined": "accessType Public, publicFolderAccess ReadOnly"
+      },
+      {
+        "question": "Which API version?",
+        "answer": "62.0",
+        "source": "agent default (plan.json carries no api_version); already on disk and in the other seven artefacts/*/package.xml",
+        "element_determined": "<version>62.0</version>"
+      },
+      {
+        "question": "Does any criterion involve an email arriving, and who has to receive it?",
+        "answer": "Yes - raise sandbox deliverability deliberately and scrub Contact emails first",
+        "source": "clarification-answer Q78",
+        "element_determined": "no element; recorded in deploy-order.md's post-deploy checks and in sender-identity-note.md",
+        "note": "default accepted - dry run"
+      },
+      {
+        "question": "Which sends are failing - Marketing Cloud or Core? (deliverability skill row 1)",
+        "answer": "Core, greenfield - nothing in requirement.md names Marketing Cloud",
+        "source": "requirement.md",
+        "element_determined": "no element; recorded in sender-identity-note.md section 4"
+      },
+      {
+        "question": "Has anyone touched enableSubstituteFromAddress? (deliverability skill row 4)",
+        "answer": "No answer on file - the skill's documented default false stands",
+        "source": "SKILL DEFAULT, admin/email-deliverability-strategy references/metadata-examples.md:87-90",
+        "element_determined": "no element; this step declares no settings file. The field is also API 66.0+ while this build stamps 62.0"
+      },
+      {
+        "question": "DKIM key per sending domain with a rotation date? SMTP relay and bounce management? DNS owner and lead time? (deliverability skill rows 3, 6, 7)",
+        "answer": "OPEN - no answer and no documented default",
+        "source": "none",
+        "element_determined": "no element in this step's outputs[], so no block. Recorded in sender-identity-note.md section 4 as open for a human"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S02 --strict",
+        "cwd": ".sfskills/builds/case-onboarding (the build directory, which carries a skills symlink to the repo skills/)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 4 email template file(s); 0 finding(s) detected.\"}",
+        "what_changed": "nothing - passed on the first pass. The 4 files are the two .email bodies and the two .email-meta.xml files; the two .md notes are excluded by the checker's own documented scope, as the plan's B05 note predicted"
+      },
+      {
+        "command": "python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: no EmailAdministrationSettings or EmailAuthorizationSettings file found. | WARN: no deliverability policy JSON found. | WARN: no DKIM key inventory JSON found. | OK - no deliverability errors (3 warning(s)).",
+        "what_changed": "nothing. The three WARNs are the documented absence of three files this step declares none of; the checker never fails on absence and inventing those files to quiet it would widen the step"
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" .sfskills/builds/case-onboarding/artefacts/M3-S02",
+        "cwd": "repo root",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "parsed 4 file(s): the two .email-meta.xml, case_intake.emailFolder-meta.xml, package.xml",
+        "what_changed": "nothing - AGENT.md Step 8's always-on ElementTree check"
+      }
+    ],
+    "manifest_consistency": {
+      "every_file_covered_by_a_member": true,
+      "every_member_backed_by_a_file": true,
+      "detail": "EmailFolder member case_intake backs case_intake.emailFolder-meta.xml; each EmailTemplate member backs one .email + .email-meta.xml pair. sender-identity-note.md and deploy-order.md are documentation, correctly absent from the manifest and deployed by nothing."
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "step_9_status_transition": "NOT PERFORMED BY THIS AGENT. Invoked by agents/build-step-runner, so per AGENT.md Step 9 set-status was skipped and only check-outputs was run; the runner owns the terminal transition to built.",
+    "could_not_ground": [
+      "The 255-character <description> ceiling: neither cited skill documents a description limit for EmailTemplate or EmailFolder. Carried from this build's mock-deploy finding F-15 on a different metadata type. Recorded in deploy-order.md as ungrounded; both values (163, 182) are well under it, so no element depends on it.",
+      "Intra-request deploy ordering between EmailFolder and EmailTemplate: neither cited skill states it for the additive path. What gotchas.md does state is the deletion order ('the folder goes last'), and deploy-order.md marks the additive order as that dependency read in reverse - an inference, not a quote. All three components ship in one request, which is the form the cited reference's own package.xml uses.",
+      "Whether support@acme.example is itself an Email-to-Case routing address - see ambiguities_recorded."
+    ],
+    "ambiguities_recorded": [
+      "plan.json Q22's answer ('support@ - a live routing address - itself sends the acknowledgement') and answers-key.md's Acknowledgement row ('an org-wide email address, never the Email-to-Case routing address itself') are two readings of one decision. The prohibition both cited skills state (metadata-and-sender-identity.md: the auto-response senderEmail 'must not be the Email-to-Case routing address, or the acknowledgement re-enters Email-to-Case and loops') bites under Q22's reading and not the answer key's. No artefact of this step sets a sender, so nothing here turns on it; sender-identity-note.md section 2 records both readings, names the loop mechanism, and qualifies both halves of the plan's named control - one-acknowledgement-per-case is grounded but bounds fan-out rather than the loop, and 'the routing address rejects its own sender' is inert while authorizedSenders is empty. Left to a human at the M3 gate; if the sandbox loop test (Q68) fails, the file to change is M3-S04's senderEmail.",
+      "Three deliverability Questions-to-Ask rows are open with no documented default (DKIM rotation, SMTP relay plus bounce management, DNS ownership and lead time), and one is half-answered (IT owns the mail-server forwarding rules, which is not DNS ownership). Recorded in sender-identity-note.md section 4; none changes an element of this step."
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by, including the ban on org writes and the one-target rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the Citations schema and the confidence rubric Step 10 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope-plus-report pair, atomic write, and the dimensions_skipped state vocabulary"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied - the step is this agent's, its type is a section 4 row this agent owns, and no deploy was requested"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 for the ui step-type row and the status machine, section 5 for the tester (not this agent) running the acceptance tests and for running checkers from the build directory, section 8 for recording a gap rather than freestyling"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{} and outputs[] read for M3-S02"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape - the build payload under extensions, never a top-level artefacts key"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+      "used_for": "the Questions to Ask Before Configuring table bound in Step 4, and the Recommended Workflow step that decides the template family before any XML is written"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md",
+      "used_for": "the authoritative element set for EmailTemplate and EmailFolder, the folder-and-file layout, the Folder/Developer_Name reference form, the no-wildcard rule, the 230-character Classic subject ceiling, the thread-token subject form, the org-wide-address query, and the package.xml this step's manifest copies"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/gotchas.md",
+      "used_for": "the two-shapes-only uiType/type/style/letterhead table that grounds Aloha+text+none, the nested-folder trailing-slash rule that shows why the flat member takes none, IsVerified and IsAllowAllProfiles defaults, the WorkflowAlert sender elements this step deliberately does not write, and the deletion ordering the additive order is inferred from"
+    },
+    {
+      "type": "template",
+      "id": "admin/email-templates-and-alerts/templates/email-template-plan.md",
+      "path": "skills/admin/email-templates-and-alerts/templates/email-template-plan.md",
+      "used_for": "checked as the skill's only template; it is a planning worksheet, not a metadata placeholder, so the metadata was adapted from the reference's worked example instead"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-deliverability-strategy",
+      "path": "skills/admin/email-deliverability-strategy/SKILL.md",
+      "used_for": "its Questions to Ask table, and the Core-versus-Marketing-Cloud layer split that places this step's sends in Core"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-deliverability-strategy",
+      "path": "skills/admin/email-deliverability-strategy/references/metadata-examples.md",
+      "used_for": "verifying sender-identity-note.md's quotations - OrgWideEmailAddress has no metadata type, the Purpose enum, and the enableSubstituteFromAddress default and its two quoted phrases"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "the package.xml reading rules (a member is a fullName; manifest membership not zip contents is what deploys) and the validate-versus-dry-run distinction in the deploy-order note's copyable command"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "the seven-position dependency order, checked and found NOT to cover email folders or templates - which is why the deploy-order note grounds its ordering in the two consumer skills instead"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/references/metadata-examples.md",
+      "used_for": "the downstream consumer facts in deploy-order.md: template is Folder/Developer_Name, templates deploy before the rules that name them, and the stale unfiled$public prefix on its own auto-response examples"
+    },
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/references/metadata-examples.md",
+      "used_for": "the M4-S04 assignedToTemplate reference at line 95 that this build must re-prefix to case_intake, the templates-before-rules deploy order, and that a missing template fails the deploy on the reference"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "verifying that M3-S03's webToCase.defaultResponseTemplate is NOT the acknowledgement, so this step has no third consumer and nobody wires the template there"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the step's five declared acceptance tests still need running as tests, including the manual B06 tick the M3 gate takes from the artefacts on disk"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once the step is tested, the stale unfiled$public prefix and the unresolved Q22 divergence belong in decisions.md rather than only in this step's notes"
+    }
+  ]
+}

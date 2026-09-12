@@ -276,8 +276,8 @@ hand-edited. The contract is `standards/build-orchestration.md` — read it
 before touching any of these agents. No agent in this layer deploys to an org
 or approves a gate; each stops and prints the next command for a human to run.
 A complete worked example — requirement → 97 clarifications → plan v5 (verified
-after five rounds) → milestone M1 built, tested, documented, verified, and
-mock-deployed with `--dry-run` — is committed under
+after five rounds) → milestones M1–M3 built, tested, documented, verified, and
+mock-deployed with `--dry-run` (every org finding fed back into a skill) — is committed under
 `examples/builds/case-onboarding/` (start with its `README.md`).
 
 ## Golden Evals Layer

@@ -1,0 +1,22 @@
+Two-way package.xml <-> artefact-file consistency check, Step 3 always-on check.
+
+package.xml declares:
+  AssignmentRules: Case
+  AutoResponseRules: Case
+
+Files under artefacts/M3-S04/ derive to:
+  assignmentRules/Case.assignmentRules-meta.xml -> AssignmentRules:Case
+  autoResponseRules/Case.autoResponseRules-meta.xml -> AutoResponseRules:Case
+
+File -> manifest: both derived members (AssignmentRules:Case, AutoResponseRules:Case)
+  appear under their own <types> block. 0 unmatched.
+
+Manifest -> file: both explicitly-named members (neither is a wildcard) have a
+  backing file. 0 unmatched.
+
+Non-metadata artefacts excluded from both directions (skills/devops/metadata-api-coverage-gaps
+does not apply -- these are plan-layer notes, not metadata types):
+  owner-writer-map.md
+  deploy-order.md
+
+Result: consistent.

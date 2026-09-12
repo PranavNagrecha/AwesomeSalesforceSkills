@@ -1,0 +1,1177 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-12T02-54-59Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M2/2026-09-12T02-54-59Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M2/2026-09-12T02-54-59Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "milestone_id": "M2",
+    "approver_name": null,
+    "invocation": "re-verification after commit 214da9abd fixed check_access_model.py's exit policy; v1 run 2026-09-12T02-10-00Z returned not-ready on F-16 alone"
+  },
+  "outcome": "completed",
+  "confidence": "MEDIUM",
+  "summary": "Milestone M2 (Access, work pools and Case visibility) re-verified across its five documented steps after commit 214da9abd narrowed check_access_model.py's blocking severities to CRITICAL/ERROR/HIGH, added --strict, and raised the migratable-grant check from WARN to HIGH. All three declared executable acceptance tests now pass (M2-T1 exit 0 with \"blocking\": 0, M2-T2 exit 0, M2-T3 consistent); four negative controls confirm the new green is earned and both halves of M2-T1's declared assertion still exit 1 when violated. 49 of 49 cross-artefact references resolve with 1 unclassifiable and 0 unresolved; no artefact's recorded deploy position contradicts its type; the merged manifest was recomputed and is byte-identical to the committed file, so it was deliberately not rewritten. F-16 and F-17 are CLOSED at the tooling; F-01, F-12, F-13 (step manifest) and F-15 (platform limit) remain closed; F-18, F-19, F-20 and F-21 are still open and unchanged. Two findings are new: F-22, the same fix falsified a non-vacuity claim carried in three step test descriptions (an empty directory now exits 0 where they say 1), and F-23, v1's manual checklist carried six lines where the testers deferred seven. Verdict ready-with-findings, recorded as set-milestone --status verified (rejected -> verified). No step is blocked, no test fails, no org was contacted, nothing was deployed, and the G3 gate is left to the human.",
+  "confidence_rationale": "Step 10 rubric. HIGH requires that every declared acceptance test ran AND no reference was unclassifiable; one unclassifiable reference (the sharing rule's bare RecordTypeId criteria value 'Support') caps it at MEDIUM by itself. Nothing pulls it to LOW: every step was documented, no declared checker was missing, no artefact directory was empty, the earlier-milestone inventory built from an accepted M1, and all three executable tests ran. Unchanged from v1 even though the verdict improved, because verdict and confidence measure different things - what the checks found versus how much of the milestone the checks could see.",
+  "dimensions_compared": [
+    "reference-resolution",
+    "deploy-order",
+    "merged-manifest",
+    "milestone-acceptance-tests",
+    "manual-checklist",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "reference-resolution",
+      "state": "partial",
+      "reason": "One reference is unclassifiable rather than resolved: the sharing rule's criteriaItems value 'Support' on RecordTypeId, which grep cannot distinguish from a literal string because the Metadata API guide establishes neither the developer-name nor the 18-character-Id form. Mock deploy run 3 validated it against sfskills-dev.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Retrieve the deployed sharing rule from a target org and re-read the emitted criteriaItems value format."
+    },
+    {
+      "dimension": "milestone-acceptance-tests",
+      "state": "partial",
+      "reason": "Three of M2's four declared tests are executable and all three ran and passed; the fourth is type manual and is carried to the human checklist as line 1 rather than executed. A milestone-level checker also cannot assert the record-type half of the Profile cross-reference (F-19) or a live-user access denial, which is M5's.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "The manual test is ticked by the support manager and the admin lead at G3; the record-type resolution rule has to be added to admin/record-types-and-page-layouts' checker."
+    },
+    {
+      "dimension": "requirement-closure",
+      "state": "partial",
+      "reason": "All 14 of M2's REQ rows pass their machine half, and after this run that includes M2-T1, but no row reaches Done: two reach In UAT and twelve wait on a later step. Correcting six recorded status cells that a landed M2-S05 has overtaken is build-doc-keeper's, not this agent's.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Re-read traceability.md after build-doc-keeper's next pass over REQ-018 to REQ-020 and REQ-026 to REQ-028."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-16",
+      "severity": "INFO",
+      "title": "CLOSED at the tooling - M2's acceptance test M2-T1 no longer exits 1 on a description-length WARN",
+      "detail": "v1 returned not-ready on this finding alone: check_access_model.py --manifest-dir artefacts exited 1 against a declared exit 0, on a single WARN (PSVP-DESC-02, a 244-character description on artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml), because main() ended 'return 1 if normalized else 0'. Commit 214da9abd (skill v1.2.1) narrowed the blocking set to CRITICAL/ERROR/HIGH; the same command on the same unmodified artefacts now exits 0 and reports \"blocking\": 0. Neither remedy v1 offered was taken: M2-S01 was not rebuilt and the planner did not restate the expected value - the fix landed one layer below both, in the checker's exit policy. The 244-character description is unchanged and is still reported every run as an advisory, as are the 250-character CustomPermission description and M1-S01's 249-character Region__c description, neither of which any checker reads.",
+      "evidence": {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "blocking": 0,
+        "capture": "tests/M2/check_access_model.v2.stdout.txt",
+        "v1_exit_code": 1,
+        "fix_commit": "214da9abd",
+        "description_length": 244,
+        "platform_limit": 255,
+        "warn_threshold": 200
+      },
+      "recommendation": "No action required for the verdict. If the intent behind the 200-character headroom was also that descriptions should have headroom rather than merely not fail a test, what is left of it is F-22 and go/no-go item 11, and neither is fixable inside this milestone."
+    },
+    {
+      "id": "F-17",
+      "severity": "INFO",
+      "title": "CLOSED - the three access checkers now agree that a description-length WARN exits 0",
+      "detail": "In v1 the three checkers reading the same 244-character description exited 1 / 0 / 0, so whether a length advisory could fail a milestone depended on which checker the plan happened to declare. Run at build scope this session they exit 0 / 0 / 0: check_access_model.py (BLOCKING_SEVERITIES = {CRITICAL, ERROR, HIGH}, line 182), check_permission_set_architecture.py (return 1 if any level == ERROR, line 422), check_permission_set_group_composition.py (if errors: return 1, line 433). The fix was made in the one checker that disagreed, aligning it to the policy the other two already followed. One residue, not an open finding: check_permission_set_architecture.py has no --strict flag and no HIGH tier, so a caller who wants advisories to fail can get that from two of the three and not the third.",
+      "evidence": {
+        "captures": [
+          "tests/M2/check_access_model.v2.exit.txt",
+          "tests/M2/OBSERVATION-check_permission_set_architecture.v2.exit.txt",
+          "tests/M2/OBSERVATION-check_permission_set_group_composition.v2.exit.txt"
+        ],
+        "exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "v1_exit_codes": [
+          1,
+          0,
+          0
+        ],
+        "shared_finding": "PSVP-DESC-02 / PSA-DESC-02 / PSGC-DESC-02 on artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml, 244 characters"
+      },
+      "recommendation": "Closed. When those three files are next touched, give check_permission_set_architecture.py a --strict flag so all three offer the same opt-in."
+    },
+    {
+      "id": "F-22",
+      "severity": "P1",
+      "title": "NEW - the fix that closed F-16 made a non-vacuity claim false in three step test descriptions",
+      "detail": "The plan verifier's item W09 asked each check_access_model.py step test to prove it was not a discovery no-op, and steps[M2-S01].acceptance_tests[1], steps[M2-S02].acceptance_tests[2] and steps[M2-S03].acceptance_tests[0] all answer it the same way: 'against an empty directory this checker exits 1 ... so it is not a discovery no-op'. Measured this run, an empty --manifest-dir produces a WARN ('no profile, permission set, or permission set group metadata files found') with \"blocking\": 0 and exits 0. None of the three declared commands passes --strict, so as declared all three would now pass against an empty step directory, and so would M2-T1. The build is not currently exposed: check-outputs must confirm every declared outputs[] path exists and is non-empty before set-status built is allowed, the always-on manifest test fails a metadata step with no package.xml, and a missing --manifest-dir is now a usage error exiting 1. What is broken is the claim - W09's answer no longer follows from the checker's behaviour. This is F-16's pattern inverted: a rule added under a finished step turned green to red, and an exit policy narrowed under three finished steps turned a stated guarantee into an unstated one. Both times the step tests were not re-run.",
+      "evidence": {
+        "commands": [
+          "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir <empty dir>  -> exit 0",
+          "... --manifest-dir <empty dir> --strict  -> exit 1",
+          "... --manifest-dir does-not-exist  -> ERROR: --manifest-dir does not exist, exit 1"
+        ],
+        "source": "repo_scan",
+        "affected_tests": [
+          "steps[M2-S01].acceptance_tests[1]",
+          "steps[M2-S02].acceptance_tests[2]",
+          "steps[M2-S03].acceptance_tests[0]"
+        ],
+        "count": 3,
+        "fix_commit": "214da9abd",
+        "deploy_time_error": "none - this is a claim-versus-behaviour defect inside the build"
+      },
+      "recommendation": "Either append --strict to the three step-scope commands, or rewrite the three descriptions to answer W09 from check-outputs and the always-on manifest test, which is where the non-vacuity guarantee actually lives now. amend-step is refused on a documented step, so in practice this waits on a v6 re-plan or on a rebuild of each step."
+    },
+    {
+      "id": "F-23",
+      "severity": "P1",
+      "title": "NEW - v1's manual checklist carried six lines; the step testers deferred seven",
+      "detail": "tests/M2-S04/results.json carries four skipped_manual[] entries, matching its four manual acceptance tests. v1 section 8 listed three of them, and its own prose said 'five deferred by the step testers' where six were deferred (M2-S01 one, M2-S04 four, M2-S05 one). The missing line is M2-S04 skipped_manual[3] - W02 (3 of 3) and verifier item S4, the ownership-data-skew assertion over queue-retirement-runbook.md. A manual test the tester explicitly declined to tick did not reach the checklist the human ticks at G3, so it would have been approved without being put in front of anyone. The line itself carries a tester PASS on all three of its criteria, re-confirmed this run against the runbook's sections 1, 2 and 3, so nothing about the build is wrong; the defect is in the assembly of Step 7, which gathers skipped_manual[] with no count assertion behind it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M2-S04/results.json",
+        "count": 7,
+        "skipped_manual_counts": {
+          "M2-S01": 1,
+          "M2-S02": 0,
+          "M2-S03": 0,
+          "M2-S04": 4,
+          "M2-S05": 1
+        },
+        "v1_checklist_lines": 6,
+        "v2_checklist_lines": 7,
+        "restored_line": "M2-S04 skipped_manual[3] - the queue-retirement runbook records the 10,000-record ownership-skew threshold, a named monitor and the split-into-buckets remedy"
+      },
+      "recommendation": "Restored as section 8 line 7 of this report. Step 7 of agents/milestone-verifier/AGENT.md should assert the gathered line count against sum(len(skipped_manual)) across the milestone's results.json files plus the milestone's own manual tests, so an omission cannot be silent."
+    },
+    {
+      "id": "F-18",
+      "severity": "P1",
+      "title": "OPEN, unchanged - reports/MILESTONE-M1-package.xml is stale; F-13's fix never reached it",
+      "detail": "The committed merged M1 manifest still declares the bare CompactLayout member 'Case_Intake' - the exact form a mock deploy rejected by name - while artefacts/M1-S01/package.xml carries the corrected object-qualified 'Case.Case_Intake'. The merged file's mtime (2026-09-09 16:16) predates the M1-S01 rebuild (2026-09-11 20:12) by two days. Mock deploy #4's manifest-mode success does not discharge it: mock_deploy.py:resolve_manifest_text() reads reports/MILESTONE-<id>-package.xml only when exactly one --milestone is named with no --step mixed in, and run #4 passed --step M1-S01 --step M1-S02, so it read an on-the-fly merge of the step files. MILESTONE-M2-package.xml carries no CompactLayout member and is unaffected.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MILESTONE-M1-package.xml",
+        "stale_member": "Case_Intake",
+        "correct_member": "Case.Case_Intake",
+        "merged_mtime": "2026-09-09 16:16",
+        "step_manifest_mtime": "2026-09-11 20:12",
+        "deploy_time_error": "An object 'Case_Intake' of type CompactLayout was named in package.xml, but was not found in zipped directory"
+      },
+      "recommendation": "Regenerate MILESTONE-M1-package.xml on M1's next verification run, or a human takes Case.Case_Intake when merging M1 and M2 by hand. Not fixed here - one milestone per invocation, and M1's manifest belongs to M1's verification run."
+    },
+    {
+      "id": "F-19",
+      "severity": "P1",
+      "title": "OPEN, unchanged - check_record_type_layouts.py resolves the layout half of a profile reference and not the record-type half",
+      "detail": "v1 established with two negative controls that a layoutAssignments/layout rewritten to a ghost fires a LOW and exits 1 under --strict, while a recordTypeVisibilities/recordType rewritten to Case.Ghost fires nothing at any scope and exits 0 with and without --strict. Commit 214da9abd touched a different skill, and this run's identical build-scope output (Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected., exit 0 both forms) is consistent with both a correct tree and an unasserted half. Nothing is wrong in this build - all 9 recordTypeVisibilities references resolve, proven by the section 3 inventory walk rather than by that exit code. What is wrong is what the exit code is claimed to carry: steps[M2-S03].acceptance_tests[1].description says the run resolves any Profile-sourced record-type reference, traceability.md REQ-026 repeats it, and decisions.md D-M2S03-07 sources F-01's closure to the same run.",
+      "evidence": {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "capture": "tests/M2/check_record_type_layouts.v2.stdout.txt",
+        "strict_capture": "tests/M2/check_record_type_layouts.strict.v2.stdout.txt",
+        "record_type_references_resolved_independently": 9,
+        "deploy_time_error": "INVALID_CROSS_REFERENCE_KEY on the Profile component"
+      },
+      "recommendation": "Add the record-type-resolution rule to admin/record-types-and-page-layouts' checker, then narrow steps[M2-S03].acceptance_tests[1].description and traceability.md REQ-026 to what the exit code proves until that lands."
+    },
+    {
+      "id": "F-20",
+      "severity": "P2",
+      "title": "OPEN, unchanged - the recorded deploy positions put the sharing rule ahead of the group it shares to",
+      "detail": "SharingRules:Case sits at recorded position 7 (sharing) and references Support_Tier_2, a Group filed at position 9 (routing). Read as a staged sequence the rule deploys two positions before the group it shares to, and a sharedTo naming an absent group is a deploy failure. Mitigated three ways: M2-S05 depends_on [M1-S01, M2-S04] so the step graph orders them correctly; M2-S05/deploy-order.md names Support_Tier_2.group-meta.xml under 'Dependencies on components OUTSIDE this step' and quotes the skill's 'OWD and roles first, then groups, then the rules that reference them'; and mock deploy run 3 sent all seven steps as one request and validated 32 of 32. The sharpest form of it is that the Support_Tier_1 workbook row at position 9 itself says 'Deploy the group before any queue or sharing rule' - the constraint and its violation sit in the same cell. Live only for a human staging a deploy by position rather than by the step graph. This is the one finding a strict reading of Step 9 would treat as an ordering contradiction forcing not-ready; this report reads it as a LOW the human may accept, consistently with v1, and says so where it can be argued with.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/04-sharing-settings.md",
+        "sharing_position": 7,
+        "group_position": 9,
+        "artefact_that_names_the_dependency": "artefacts/M2-S05/deploy-order.md",
+        "org_evidence": "reports/MOCK-DEPLOY-M2.md run 3 - 32 components, 0 errors, one request"
+      },
+      "recommendation": "At v6, record the groups at the access layer alongside the permission sets they are peer to, or annotate position 9 with the precedence the workbook row already states."
+    },
+    {
+      "id": "F-21",
+      "severity": "P2",
+      "title": "OPEN, unchanged - F-08 is closed across all five M2 steps and still open on both M1 steps",
+      "detail": "artefacts/M1-S01/deploy-order.md:141 and artefacts/M1-S02/deploy-order.md:135 both print 'sf project deploy validate --target-org <your-sandbox-alias>'. Salesforce documents deploy validate as production-only: it requires Apex tests and returns a job id for a later quick deploy, so offering it for a sandbox sends the human into an error that has nothing to do with their build. All five M2 steps get it right - M2-S01 emits deploy start --dry-run for the sandbox and a separate deploy validate --target-org <your-production-alias> --test-level RunLocalTests for production, and the other four emit deploy start --dry-run only. So metadata-builder applies the correct form to new work and the residue is confined to two files that predate it.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -rn 'deploy validate' artefacts/*/deploy-order.md",
+        "count": 2,
+        "paths": [
+          "artefacts/M1-S01/deploy-order.md:141",
+          "artefacts/M1-S02/deploy-order.md:135"
+        ]
+      },
+      "recommendation": "metadata-builder fixes both lines on M1's next rebuild. Not fixed here - this agent does not edit artefacts other agents wrote."
+    },
+    {
+      "id": "F-06",
+      "severity": "INFO",
+      "title": "OPEN - the API version was defaulted by the owning agent for an eighth time",
+      "detail": "All five M2 step manifests declare <version>62.0</version>, as do both M1 step manifests and the two merged manifests, so there is no conflict to report. plan.json still carries no api_version key, so 62.0 is an agent-side default repeated eight times rather than a decision the plan records. Go/no-go item 7 asks the human whether 62.0 is right for their target org.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M2/manifest.v2.stdout.txt",
+        "count": 8,
+        "distinct_versions": [
+          "62.0"
+        ]
+      },
+      "recommendation": "Record api_version in plan.json at v6 so the manifest version is a decision rather than a default."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "remediation-layer-choice",
+      "observation": "The F-16 remedy landed at the right layer. It could have been closed by trimming one description on one step, and was instead closed by fixing the exit policy that let a length advisory fail a milestone - which also closed F-17, the finding that said the three checkers should decide this once rather than per plan.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-policy",
+      "observation": "The fix protected the assertion it narrowed. Raising check 2 (migratable permissions still on a profile) from WARN to HIGH in the same commit is the easy part to skip and the expensive part to miss: without it, 'no migratable permission left on a profile' - half of M2-T1's declared assertion - would have become a non-blocking advisory and the test would have passed a profile carrying objectPermissions. Negative control C injected exactly that and got exit 1 with blocking 1.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "merged-manifest",
+      "observation": "The merged manifest was recomputed from the five step manifests and correctly left alone: member sets identical, byte-identical to the canonical render, mtime untouched. On the M1 side, a manifest whose content and mtime drifted apart is F-18, so not rewriting an unchanged file keeps its mtime an honest record of when its content was last decided.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MILESTONE-M2-package.xml",
+        "count": 19
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manual-checklist",
+      "observation": "Every file-checkable half of the six tester-deferred manual lines was re-run against the artefacts rather than copied forward, and all six still hold - zero <users> elements across the six queue and group files, exactly one sharingCriteriaRules block, Private on Case.object-meta.xml line 5, no settings-meta.xml anywhere, four top-level children on the integration permission set, and the runbook's three skew criteria. That is what makes the checklist narrower for the human rather than just longer.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M2-S04/results.json",
+        "count": 6
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-drift-under-finished-steps",
+      "observation": "A skill fix moved a claim from true to false under three finished steps. F-16 was a rule added under a finished step (green to red); F-22 is an exit policy narrowed under three (a stated guarantee to an unstated one). Two instances in six days, in opposite directions, from two commits to the same skill - and both times nothing in the loop re-ran the affected step tests while the plan's prose kept asserting the older behaviour.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "manual-checklist-assembly",
+      "observation": "A deferred manual test never reached the gate's checklist. tests/M2-S04/results.json has four skipped_manual[] entries and v1's checklist carried three, with its own prose saying five where six were deferred. Step 7 is a gather-all step with no count assertion behind it, so an omission is silent - nothing would have caught this one if the re-verification had not re-walked the results files.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M2-S04/results.json",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-mutability",
+      "observation": "No agent in the loop may correct a stale test description, and there are now five. amend-step is refused on a documented step (pending or blocked only), so each waits on a v6 re-plan or on a rebuild of the step it sits on. Four consecutive verification runs have recorded prose that no agent is permitted to fix, and the list grows one entry per run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json",
+        "count": 5
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "rule-coverage",
+      "observation": "The 200-character description headroom is enforced on exactly the metadata types that were already compliant. Region__c at 249 characters and Bypass_Case_Intake_Validation at 250 are within six characters of the 255-character platform limit that broke mock deploy run 1, and no checker in the library reads a CustomField or CustomPermission description at all. The rule went where the failure was observed rather than where it can recur.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S01/objects/Account/fields/Region__c.field-meta.xml",
+        "count": 7
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "remediation-completeness",
+      "observation": "Whether F-16's remedy is complete is a human call. 'Advisories should not fail a milestone' is done. 'Descriptions should have headroom' is not - the description is still 244 characters, M2-S01 was never rebuilt, and its step-level test result is five days and two checker versions old. The two intents were never separated, so closing one reads as closing both.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M2-S01/check_access_model.exit.txt",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deploy-order",
+      "observation": "Whether F-20's backwards position counts as an ordering contradiction in the Step 9 sense decides between ready-with-findings and not-ready. This report reads it as a finding the human may accept, consistently with v1, which attributed its not-ready verdict to F-16 alone - so removing F-16 removes the verdict. A human who weighs F-20 differently should reject the gate, and the finding is in front of them either way.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "workbook/04-sharing-settings.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access-design",
+      "observation": "Whether Case_Tier1/Case_Tier2 and the two Tier profiles should collapse is unresolved. Both pairs are byte-identical apart from label and description, re-diffed this run, and no answered clarification distinguishes Tier 2's access from Tier 1's - the requirement's split is routing and escalation, neither of which is access. It depends on whether the two teams are expected to diverge on access later.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "manifest-grammar",
+      "observation": "The SharingRules container versus SharingCriteriaRule rule-type manifest form is unsettled. The cited skill's metadata-examples.md section 6 prescribes the rule-type form and says SharingRules is not what you address; two other skills in the library manifest the container form; the step chose the container form so the manifest test's file-stem derivation would cover the file; and all three mock-deploy runs were source-mode, so no deploy has read either form for this file.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MILESTONE-M2-package.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "acceptance-criteria",
+      "observation": "Tier 2's queue mailbox is a posture with no address: Q88 answers 'a shared mailbox' and names no address anywhere on file, metadata-builder will not invent one, and check_queues.py confirms Tier_2_Engineering carries no <email> at all. The artefact is right and the test criterion is not, and only a human can say which should change. This is the one checklist line whose evidence is a mismatch, and it must not be ticked as written.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "deployment-risk",
+      "observation": "The merged manifest is worth risk-scoring against the target org before the human runs the optional validate-only command, because 19 members across Profile, PermissionSet and SharingRules is the change class where an org's existing state matters most.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MILESTONE-M2-package.xml",
+        "count": 19
+      },
+      "suggested_followup_agent": "deployment-risk-scorer",
+      "followup_reason": "Scores reports/MILESTONE-M2-package.xml against a real org, which this design-only build cannot do."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "access-design",
+      "observation": "The two identical pairs need a design call with the persona model in view rather than another verification pass, which is what a permission-set architect would bring.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml",
+        "count": 2
+      },
+      "suggested_followup_agent": "permission-set-architect",
+      "followup_reason": "Adjudicates whether Case_Tier1/Case_Tier2 and the two Tier profiles should collapse into composed artefacts."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (this report is written not rendered, recorded with set-milestone --report-path; the three output trees; amend-step's pending-only precondition behind the stale-description finding), section 3 (the G3 conditions), section 4 (the documented-to-running rebuild path), section 5 (checker scope, commands run verbatim from the build directory via the skills symlink, check-outputs and the always-on manifest test as the non-vacuity guarantee F-22 falls back on, mock_deploy.py as the pre-G3 human-run validation), section 7 (return so the human can act), section 8 (build_plan.py as the single writer)"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation: no org write, no auto-chaining, no hand edit of generated state"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the required Process Observations block, and the confidence rubric this agent's Step 10 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "atomic write of the envelope/report pair, the dimensions_skipped states, and the build-scoped persistence deviation recorded in this envelope"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked and not used - no refusal condition was met: every step is documented, the preceding gate is approved, and no two steps declare the same artefact path"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the milestones[], human_gates[], steps[].amendments[], steps[].outputs[] and assumptions[] fields read for the precondition and carry-forward sections"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "envelope shape, and the distinction between the top-level report_path (this agent's markdown twin under envelopes/M2/) and extensions.report_path (the acceptance report under reports/)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the manifest grammar, the single <version> element and the sorted-member form in the merged manifest; what one deploy request does and does not carry across, behind the GroupMember-does-not-deploy note"
+    },
+    {
+      "type": "skill",
+      "id": "devops/permission-set-deployment-ordering",
+      "path": "skills/devops/permission-set-deployment-ordering/SKILL.md",
+      "used_for": "the check that no fieldPermissions entry names a field defined later in the order - the Case_Agent_Core to M1-S01 fields row, and go/no-go item 1"
+    },
+    {
+      "type": "skill",
+      "id": "devops/flow-deployment-activation-ordering",
+      "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md",
+      "used_for": "where automation sits in the order, and the recorded finding that M2 contains no Flow, Apex or active-state artefact, so the check is not-applicable rather than silently passed"
+    },
+    {
+      "type": "skill",
+      "id": "devops/deployment-error-diagnosis",
+      "path": "skills/devops/deployment-error-diagnosis/SKILL.md",
+      "used_for": "the deploy-time error each finding predicts: INVALID_CROSS_REFERENCE_KEY for F-19 and go/no-go 1, the CompactLayout not-found-in-zipped-directory message for F-18, and the explicit none for F-16 and F-22"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pre-deployment-checklist",
+      "path": "skills/devops/pre-deployment-checklist/SKILL.md",
+      "used_for": "the eleven go/no-go items, so 'verified' means checked rather than quiet"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the Given/When/Then shape and tick condition on every checklist line, the judgment that the Tier 2 mailbox line is not tickable as written, and the completeness check on skipped_manual[] that surfaced F-23"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the closure statement in traceability.md's own REQ ids and In Build / In UAT vocabulary, and the REQ-026 caveat F-19 attaches to it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "check_access_model.py v1.2.1 as M2-T1: its PSVP-DESC-01/02 rules, the BLOCKING_SEVERITIES exit policy, --strict, and check 2's raise to HIGH - the substance of F-16, F-17, F-22 and the four negative controls"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sharing-and-visibility",
+      "path": "skills/admin/sharing-and-visibility/SKILL.md",
+      "used_for": "check_sharing_model.py as M2-T2, and the SharingRules versus SharingCriteriaRule manifest-form divergence read from references/metadata-examples.md section 6"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "check_permission_set_architecture.py at build scope as an observation run, and PSA-DESC-02 with its ERROR-only exit policy in the F-17 table"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-group-composition",
+      "path": "skills/admin/permission-set-group-composition/SKILL.md",
+      "used_for": "check_permission_set_group_composition.py at build scope, the PSG_<persona>_<env> convention the three PSGs adopt, and PSGC-DESC-02 with its --strict in the F-17 table"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "check_record_type_layouts.py re-run at build scope - F-01's closure and its boundary, F-19"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "check_queues.py at build scope, and the GroupMember-does-not-deploy fact behind go/no-go 3"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/SKILL.md",
+      "used_for": "check_custom_permissions.py at build scope, and why Consumers: 0 is the designed state at M2 - the consumers are M3-S01's validation rules"
+    },
+    {
+      "type": "skill",
+      "id": "admin/data-skew-and-sharing-performance",
+      "path": "skills/admin/data-skew-and-sharing-performance/SKILL.md",
+      "used_for": "check_data_skew_and_sharing_performance.py at build scope, the step-versus-build scope difference recorded against O-M2S04-04, and SKILL.md:88's 10,000-record threshold behind checklist line 7"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/sharing-selection.md",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q3 - criteria-based sharing rule (plan decision D5)",
+      "used_for": "cited by M2-S05 and read to confirm the Billing-visibility mechanism table and that a restriction rule is not available on Case per Q8's eligible-object list"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "deployment-risk-scorer",
+      "because": "Risk-scores reports/MILESTONE-M2-package.xml against a target org before the human runs the optional validate-only command; 19 members across Profile, PermissionSet and SharingRules is the change class where existing org state matters most."
+    },
+    {
+      "agent": "permission-set-architect",
+      "because": "Adjudicates whether Case_Tier1/Case_Tier2 and the two byte-identical Tier profiles should collapse into composed artefacts, which is a design call rather than a verification one."
+    }
+  ],
+  "extensions": {
+    "milestone": "M2",
+    "milestone_title": "Access, work pools and Case visibility",
+    "run_kind": "re-verification",
+    "supersedes_run": "2026-09-12T02-10-00Z",
+    "supersedes_report": ".sfskills/builds/case-onboarding/reports/MILESTONE-M2-REPORT.md",
+    "report_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M2-REPORT-v2.md",
+    "verdict": "ready-with-findings",
+    "previous_verdict": "not-ready",
+    "passed": false,
+    "passed_note": "passed is true only for ready-for-gate; ready-with-findings projects to false. Nothing about it is a failing test - all three executable acceptance tests pass.",
+    "what_changed_since_v1": {
+      "outside_the_build": "commit 214da9abd, skill admin/permission-sets-vs-profiles v1.2.1: check_access_model.py blocking severities narrowed to CRITICAL/ERROR/HIGH, --strict added, check 2 (migratable grants on a profile) raised WARN -> HIGH, and a new \"blocking\" count emitted in the JSON",
+      "inside_the_build": "nothing - no artefact, no test declaration, no step status and no gate record changed; all 24 XML files are byte-for-byte what v1 read"
+    },
+    "blocked_steps": [],
+    "steps": [
+      {
+        "id": "M2-S01",
+        "status": "documented",
+        "type": "access",
+        "owner": "metadata-builder",
+        "depends_on": [],
+        "amendments": 0,
+        "gate": "approved"
+      },
+      {
+        "id": "M2-S02",
+        "status": "documented",
+        "type": "access",
+        "owner": "metadata-builder",
+        "depends_on": [
+          "M1-S01"
+        ],
+        "amendments": 0,
+        "gate": "approved"
+      },
+      {
+        "id": "M2-S03",
+        "status": "documented",
+        "type": "access",
+        "owner": "metadata-builder",
+        "depends_on": [
+          "M1-S02",
+          "M2-S02"
+        ],
+        "amendments": 1,
+        "gate": "approved"
+      },
+      {
+        "id": "M2-S04",
+        "status": "documented",
+        "type": "access",
+        "owner": "metadata-builder",
+        "depends_on": [
+          "M2-S02"
+        ],
+        "amendments": 1,
+        "gate": "approved"
+      },
+      {
+        "id": "M2-S05",
+        "status": "documented",
+        "type": "access",
+        "owner": "metadata-builder",
+        "depends_on": [
+          "M1-S01",
+          "M2-S04"
+        ],
+        "amendments": 1,
+        "gate": "approved"
+      }
+    ],
+    "preceding_gate": {
+      "name": "milestone:M1",
+      "status": "approved",
+      "at": "2026-09-09T20:30:32Z",
+      "milestone_status": "accepted"
+    },
+    "reference_totals": {
+      "total": 49,
+      "resolved_earlier_milestone": 33,
+      "resolved_this_milestone": 11,
+      "resolved_standard_object": 4,
+      "unclassifiable": 1,
+      "unresolved": 0,
+      "v1_stated_total": 48,
+      "correction": "v1's prose said 48 while its own class-by-class table summed to 49; every row matches this run exactly, so the slip was arithmetic, not a missed reference"
+    },
+    "reference_resolution": [
+      {
+        "reference_class": "Permission-set field grants (fieldPermissions/field)",
+        "count": 5,
+        "resolved_earlier": 5,
+        "resolved_here": 0,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Permission-set object grants (objectPermissions/object)",
+        "count": 5,
+        "resolved_earlier": 1,
+        "standard_object": 4,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Record-type visibility (recordTypeVisibilities/recordType)",
+        "count": 9,
+        "resolved_earlier": 9,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Layout assignment -> layout",
+        "count": 9,
+        "resolved_earlier": 9,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Layout assignment -> record type",
+        "count": 6,
+        "resolved_earlier": 6,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Custom-permission grant (customPermissions/name)",
+        "count": 1,
+        "resolved_here": 1,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "PSG membership (permissionSets)",
+        "count": 6,
+        "resolved_here": 6,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Queue membership -> public group",
+        "count": 3,
+        "resolved_here": 3,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Queue supported object (queueSobject/sobjectType)",
+        "count": 3,
+        "resolved_earlier": 3,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Sharing rule -> sharedTo group",
+        "count": 1,
+        "resolved_here": 1,
+        "unresolved": 0
+      },
+      {
+        "reference_class": "Sharing-rule criteria value on RecordTypeId",
+        "count": 1,
+        "unclassifiable": 1,
+        "note": "bare developer name 'Support'; grep cannot distinguish it from a literal string, and the Metadata API guide establishes neither the name nor the 18-char-Id form. Mock deploy run 3 validated it."
+      }
+    ],
+    "reference_classes_not_checked": [
+      "validation-rule field tokens",
+      "assignment-rule criteria",
+      "Flow field references",
+      "entitlement-process milestones and business hours",
+      "path steps"
+    ],
+    "reference_classes_not_checked_reason": "None exists in the build yet - M3 and M4 are pending. Stated so a reader does not infer completeness from silence.",
+    "deploy_order": [
+      "M2-S01",
+      "M2-S02",
+      "M2-S03",
+      "M2-S04",
+      "M2-S05"
+    ],
+    "deploy_order_verdict": {
+      "artefacts_whose_recorded_position_contradicts_their_type": 0,
+      "backwards_dependencies": 1,
+      "backwards_dependency_detail": "SharingRules:Case at position 7 (sharing) references Support_Tier_2, a Group filed at position 9 (routing) - F-20",
+      "permission_sets_after_their_fields": "satisfied - Case_Agent_Core's three fieldPermissions all resolve to M1-S01 (position 2), already accepted; no fieldPermissions entry names a field this build defines later",
+      "profiles_after_their_record_types_and_layouts": "satisfied - M2-S03 depends_on [M1-S02, M2-S02], and positions 4 and 5 precede 6",
+      "automation_before_routing": "not applicable - M2 contains no Flow, no Apex and no active-state artefact; recorded rather than silently passed"
+    },
+    "merged_manifest_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M2-package.xml",
+    "merged_manifest": {
+      "regenerated": false,
+      "regeneration_reason": "recomputed from the five step manifests this run; member sets identical and the committed file is byte-identical to the canonical render, so rewriting it would move only its mtime. Left untouched deliberately - a merged manifest whose mtime moves without its content moving is how F-18 became hard to spot on the M1 side.",
+      "types": 7,
+      "members": 19,
+      "version": "62.0",
+      "version_conflict": false,
+      "member_collisions_within_m2": 0,
+      "member_collisions_against_m1": 0,
+      "member_name_reused_across_types": [
+        "Case - as CustomObject:Case (M1-S01) and SharingRules:Case (M2-S05); different components, not a collision"
+      ],
+      "files_reaching_no_types_block": 12,
+      "files_reaching_no_types_block_detail": "five package.xml (the manifests themselves), five deploy-order.md, queue-retirement-runbook.md and case-visibility-model.md. No source-format metadata file is missing from the manifest.",
+      "by_type": {
+        "CustomPermission": [
+          "Bypass_Case_Intake_Validation"
+        ],
+        "Group": [
+          "Billing_Team",
+          "Support_Tier_1",
+          "Support_Tier_2"
+        ],
+        "PermissionSet": [
+          "Case_Agent_Core",
+          "Case_Billing",
+          "Case_Intake_Integration",
+          "Case_Tier1",
+          "Case_Tier2"
+        ],
+        "PermissionSetGroup": [
+          "PSG_Billing_Prod",
+          "PSG_Tier1_Prod",
+          "PSG_Tier2_Prod"
+        ],
+        "Profile": [
+          "Acme Billing",
+          "Acme Support Tier 1",
+          "Acme Support Tier 2"
+        ],
+        "Queue": [
+          "Billing",
+          "Tier_1_General",
+          "Tier_2_Engineering"
+        ],
+        "SharingRules": [
+          "Case"
+        ]
+      },
+      "unverified_manifest_form": "SharingRules:Case addresses the container; admin/sharing-and-visibility references/metadata-examples.md section 6 prescribes SharingCriteriaRule with member Case.Support_Cases_To_Tier_2. All three mock-deploy runs were --mode source, so no package.xml was opened and neither form has been read by a deploy."
+    },
+    "acceptance_tests": [
+      {
+        "id": "M2-T1",
+        "type": "checker",
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts",
+        "expected": "exit 0",
+        "exit_code": 0,
+        "v1_exit_code": 1,
+        "result": "PASS",
+        "blocking": 0,
+        "detail": "score 97, one WARN (PSVP-DESC-02, 244 characters on artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml), \"blocking\": 0. The finding did not go away; it is now classified non-blocking. The declared assertion - no dangerous system permission, no migratable permission left on a profile - held in v1 and holds now.",
+        "captures": [
+          "tests/M2/check_access_model.v2.stdout.txt",
+          "tests/M2/check_access_model.v2.stderr.txt",
+          "tests/M2/check_access_model.v2.exit.txt"
+        ]
+      },
+      {
+        "id": "M2-T2",
+        "type": "checker",
+        "command": "python3 skills/admin/sharing-and-visibility/scripts/check_sharing_model.py --manifest-dir artefacts",
+        "expected": "exit 0",
+        "exit_code": 0,
+        "v1_exit_code": 0,
+        "result": "PASS",
+        "detail": "score 100, 0 findings, 'Scanned 10 sharing-model metadata file(s) (1 object OWD(s) resolved)'. The 1 resolved OWD is load-bearing: the checker read M1-S01's Private sharingModel and measured M2-S05's Edit grant against it. At step scope the same command resolves 0 OWDs and exits 0 on any value.",
+        "captures": [
+          "tests/M2/check_sharing_model.v2.stdout.txt",
+          "tests/M2/check_sharing_model.v2.stderr.txt",
+          "tests/M2/check_sharing_model.v2.exit.txt"
+        ]
+      },
+      {
+        "id": "M2-T3",
+        "type": "manifest",
+        "expected": "consistent",
+        "result": "PASS (consistent)",
+        "detail": "Two-way over the merged manifest and the milestone's 13 metadata files. File to manifest: all 19 derived type:member pairs appear, 0 missing. Manifest to file: all 19 named members have a file, 0 orphans. Always-on XML parse: 24 files, 0 failures.",
+        "captures": [
+          "tests/M2/manifest.v2.stdout.txt"
+        ]
+      },
+      {
+        "id": "M2-T4",
+        "type": "manual",
+        "expected": "ticked at the milestone gate",
+        "result": "DEFERRED to the human - manual checklist line 1",
+        "detail": "The support manager and the admin lead jointly confirm that no named user is hard-coded in any queue or group (file-checkable, and re-confirmed: zero <users> elements) and that the Billing visibility reading taken from deferred Q13 (assumption A1) is the one they want (not evidenceable from any artefact - ticking it accepts A1)."
+      }
+    ],
+    "acceptance_test_summary": {
+      "declared": 4,
+      "executable": 3,
+      "passed": 3,
+      "failed": 0,
+      "manual": 1
+    },
+    "f01_rerun_at_build_scope": {
+      "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+      "exit_code": 0,
+      "strict_exit_code": 0,
+      "summary": "Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.",
+      "verdict": "F-01 CLOSED, re-confirmed - identical to v1 in every number",
+      "boundary": "the record-type half of the same assertion fires nothing at any scope - F-19",
+      "captures": [
+        "tests/M2/check_record_type_layouts.v2.stdout.txt",
+        "tests/M2/check_record_type_layouts.strict.v2.stdout.txt"
+      ]
+    },
+    "negative_controls": [
+      {
+        "id": "A",
+        "injection": "none - the real tree with --strict",
+        "expected": "exit 1",
+        "exit_code": 1,
+        "blocking": 0,
+        "proves": "the old all-findings-fail behaviour is still reachable, explicitly"
+      },
+      {
+        "id": "B",
+        "injection": "ModifyAllData userPermission added to Case_Agent_Core (check 1)",
+        "expected": "exit 1",
+        "exit_code": 1,
+        "blocking": 1,
+        "finding": "HIGH PermissionSet grants dangerous system permission `ModifyAllData`",
+        "proves": "half one of M2-T1's declared assertion is live and blocking"
+      },
+      {
+        "id": "C",
+        "injection": "objectPermissions on Case added to the 'Acme Support Tier 1' profile (check 2)",
+        "expected": "exit 1",
+        "exit_code": 1,
+        "blocking": 1,
+        "finding": "HIGH profile grants object permissions on 1 object(s) (Case) - object CRUD has a permission-set equivalent and belongs there",
+        "proves": "the most important control - without commit 214da9abd's WARN-to-HIGH raise, the narrowed exit policy would have made 'no migratable permission left on a profile' a non-blocking advisory and this test would have passed a profile carrying objectPermissions"
+      },
+      {
+        "id": "D",
+        "injection": "Case_Intake_Integration description pushed to 300 characters (PSVP-DESC-01)",
+        "expected": "exit 1",
+        "exit_code": 1,
+        "blocking": 1,
+        "finding": "ERROR PSVP-DESC-01 PermissionSet description is 300 characters, over the 255-character limit",
+        "proves": "the platform-limit rule still blocks; only the 200-character headroom advisory stopped blocking"
+      }
+    ],
+    "negative_controls_location": "a copy of artefacts/ in the session scratchpad; no file under the build directory was modified by any control",
+    "f17_exit_policy_comparison": [
+      {
+        "checker": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "rule": "PSVP-DESC-02",
+        "exit_on_this_warn": 0,
+        "v1_exit": 1,
+        "policy": "BLOCKING_SEVERITIES = {CRITICAL, ERROR, HIGH} (line 182)",
+        "has_strict": true
+      },
+      {
+        "checker": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "rule": "PSA-DESC-02",
+        "exit_on_this_warn": 0,
+        "v1_exit": 0,
+        "policy": "return 1 if any(level == \"ERROR\") (line 422)",
+        "has_strict": false
+      },
+      {
+        "checker": "skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py",
+        "rule": "PSGC-DESC-02",
+        "exit_on_this_warn": 0,
+        "v1_exit": 0,
+        "policy": "if errors: return 1; if strict and warns: return 1 (line 433)",
+        "has_strict": true
+      }
+    ],
+    "observation_runs": [
+      {
+        "checker": "check_custom_permissions.py",
+        "exit_code": 0,
+        "note": "Bypass_Case_Intake_Validation, 0 consumers, granted by permission set Case_Intake_Integration; 0 error(s), 0 warning(s). Consumers: 0 is the designed state at M2 - the consumers are M3-S01's validation rules"
+      },
+      {
+        "checker": "check_permission_set_architecture.py",
+        "exit_code": 0,
+        "note": "one line: WARN PSA-DESC-02 on the same 244-character description"
+      },
+      {
+        "checker": "check_permission_set_group_composition.py",
+        "exit_code": 0,
+        "note": "GOOD: reuse - Case_Agent_Core referenced by 3 PSGs; 1 good, 0 error, 1 warn, 0 info, 3 PSG file(s)"
+      },
+      {
+        "checker": "check_queues.py",
+        "exit_code": 0,
+        "note": "all three queues with Objects : Case, all three groups, Warnings found (2) - Tier 1 General and Tier 2 Engineering have no <email>. Confirms O-M2S04-01: the step test's description predicts (1)"
+      },
+      {
+        "checker": "check_data_skew_and_sharing_performance.py",
+        "exit_code": 0,
+        "note": "No data skew or sharing performance issues found. At build scope the groups are referenced by a queue and by the sharing rule, so the three step-scope 'used but unmigrated' WARNs do not fire. Record counts skipped - skew is data, and no --skew-plan exists in a design-only build"
+      }
+    ],
+    "observation_runs_note": "None is in M2.acceptance_tests[]; none contributed to any pass verdict. All five are identical to v1.",
+    "manual_checklist": [
+      "1 - M2 (milestone) - The support manager and the admin lead jointly confirm no named user is hard-coded in any queue or group AND that the Billing visibility reading from deferred Q13 (assumption A1, risk high) is the one they want. Evidence: zero <users> elements across the six queue and group files, re-confirmed. Ticking this line accepts A1, on which nine of M2's fourteen requirements rest.",
+      "2 - M2-S01 - The integration permission set grants the bypass and nothing else. Evidence re-confirmed by parsing the file: four top-level children (label, description, hasActivationRequired, customPermissions), one customPermissions entry -> Bypass_Case_Intake_Validation = true, and no objectPermissions, fieldPermissions or userPermissions. The residue - whether it is assigned to the integration identity and no human user - is PermissionSetAssignment data and is not evidenceable in a design-only build.",
+      "3 - M2-S04 - All six components are present, named, and every queue supports Case. Tester's evidence PASS, re-confirmed by check_queues.py (Objects : Case on all three) and by M2-T3 (6 members to 6 files).",
+      "4 - M2-S04 - The per-queue email posture (Q88). ONE CRITERION DOES NOT HOLD - Tier_2_Engineering carries no <email> element at all, so it does not carry 'the Tier 2 shared mailbox' the criterion asserts. Not a defect in the artefact: Q88 answers a posture and names no address, and metadata-builder will not invent one. DO NOT TICK AS WRITTEN - either supply the address and rebuild M2-S04, or accept the decided state and have the criterion reworded at v6.",
+      "5 - M2-S04 - Membership is by group and role, never by named user, and the rosters are current. Tester's evidence PASS on the file-checkable half, re-confirmed. The roster half needs a support manager: 12 Tier 1 / 4 Tier 2 / 2 Billing (Q8). Read alongside it that doesIncludeBosses=true is a skill default rather than an answered decision, that no <roles> member appears although Q29 answers 'by role and public group', and that the groups deploy empty.",
+      "6 - M2-S05 - Private OWD plus exactly one sharing rule, and no rule reaches Billing. All five of the tester's grep confirmations re-run this session: one sharingCriteriaRules block, sharedTo group Support_Tier_2 and no other, 'Billing' only inside the rule's free-text description on line 6, Private on artefacts/M1-S01/objects/Case/Case.object-meta.xml line 5, and zero settings-meta.xml files anywhere under artefacts/. It certifies the configuration; proving the denial against a live user is M5's UserRecordAccess test.",
+      "7 - M2-S04 - The queue-retirement runbook records the ownership-skew threshold, a named monitor and a remedy. RESTORED - v1's checklist omitted this line (F-23). Tester's evidence PASS on all three criteria, re-confirmed: section 1 states the 10,000-record threshold citing data-skew-and-sharing-performance SKILL.md:88, section 2 names the CRM admin lead with a cadence and a HAVING COUNT(Id) > 10000 probe, section 3 states the split-into-ownership-buckets remedy."
+    ],
+    "manual_checklist_accounting": {
+      "total_lines": 7,
+      "from_step_testers": 6,
+      "from_milestone_own_manual_test": 1,
+      "by_step": {
+        "M2-S01": 1,
+        "M2-S02": 0,
+        "M2-S03": 0,
+        "M2-S04": 4,
+        "M2-S05": 1
+      },
+      "v1_total_lines": 6,
+      "omission": "v1 carried three of M2-S04's four skipped_manual[] entries - see F-23",
+      "lines_that_must_not_be_ticked_as_written": [
+        "4 - the Tier 2 mailbox criterion does not hold against its artefact"
+      ]
+    },
+    "planner_carry_forward": {
+      "open_item_series": {
+        "O-M2S01-01": "Moot, as its own text predicted - F-01 is closed, so re-pointing its remedy from M2-S01 to M2-S03 is no longer the applicable fix",
+        "O-M2S02-01": "Still open, and still the only M2 step affected - deploy-order.md undeclared in M2-S02's outputs[]",
+        "O-M2S02-02": "Confirmed again by diff this run - Case_Tier1 and Case_Tier2 are byte-identical apart from label and description, and the two Tier profiles are the twin it does not mention",
+        "O-M2S02-03": "Open - A1.steps[] does not list M2-S02",
+        "O-M2S02-04": "Still open and now half-overtaken: the DESC rules no longer fail anything, so the descriptions' silence costs less - but the same three descriptions now carry a false claim about the same checker, which is F-22 and is the larger half of this item",
+        "O-M2S03-01": "Confirmed again by this run: the build-scope run prints 15 metadata files where the description predicts 14",
+        "O-M2S03-02": "Open - two Questions-to-Ask rows unanswered by any of the 97 clarifications (managed packages forcing a profile assignment; Person Accounts enabled)",
+        "O-M2S03-03": "Open - A1.steps[] does not list M2-S03",
+        "O-M2S04-01": "Confirmed again: check_queues.py prints Warnings found (2) where the description predicts (1)",
+        "O-M2S04-02": "Confirmed - staged for adjudication as manual checklist line 4",
+        "O-M2S04-03": "Open, neither half fixable at step level - M3-S05 sequenced after M2-S04 against the cited reference's own order, and the step's type (access) disagrees with the deploy-order table (routing), which is why M2-S04's workbook rows are filed under Section 6",
+        "O-M2S04-04": "Confirmed again - at build scope the data-skew checker reports no issues found, not the three reclassified WARNs it gives at step scope",
+        "O-M2S05-01": "Partly discharged by an artefact, still open in the plan - see billing_visibility_reconciliation",
+        "O-M2S05-02": "The build-scope check_sharing_model.py assertion has now run three times and passed three times; M1-S01's CWB-SHARE-001 and REQ-010 still say it 'has not run', and both are that step's doc keeper's to correct"
+      },
+      "a1_steps_omission": {
+        "recorded": [
+          "M2-S05"
+        ],
+        "should_be": [
+          "M1-S01",
+          "M2-S02",
+          "M2-S03",
+          "M2-S05"
+        ],
+        "omitted": [
+          "M1-S01",
+          "M2-S02",
+          "M2-S03"
+        ],
+        "what_each_carries": {
+          "M1-S01": "the Private OWD - the mechanism that actually makes A1 true (verifier W03)",
+          "M2-S02": "Case_Tier1/Case_Tier2 withhold Case.Billing; Case_Billing withholds Case.Support (O-M2S02-03)",
+          "M2-S03": "the same mirror-image recordTypeVisibilities / layoutAssignments split on all three profiles (O-M2S03-03)",
+          "M2-S05": "the deliberate absence of a Billing rule (listed)"
+        },
+        "concrete_cost": "M5-S04's compile run builds the assumptions section from assumptions[].steps[] rather than from step-note prose - its own acceptance test says so - so the compiled document will name one carrier of a risk-high assumption where four exist",
+        "distinction_the_fix_should_not_blur": "recordTypeVisibilities governs which record type a user may select; the Private OWD plus M2-S05's rule governs whether an existing record can be opened"
+      },
+      "deploy_order_md_declared_in_outputs": {
+        "M1-S01": false,
+        "M1-S02": false,
+        "M2-S01": "yes - at plan time in v5, 0 amendments; the first step in this build to declare it",
+        "M2-S02": false,
+        "M2-S03": "yes - amend-step 2026-09-12T00:38:44Z",
+        "M2-S04": "yes - the same amendment run",
+        "M2-S05": "yes - the same amendment run",
+        "summary": "declared on four of five M2 steps, undeclared on M2-S02 alone plus both M1 steps. All seven files exist and are non-empty; the four declared ones are the only ones check-outputs confirms.",
+        "why_it_matters": "agents/build-doc-keeper/AGENT.md Step 10 compiles M5-S04's build-wide deploy order from exactly these seven files, three of which no gate in the loop confirms",
+        "remedy": "at v6, declare artefacts/<step-id>/deploy-order.md on every metadata-builder-owned step at once rather than case by case as each gap is found"
+      },
+      "stale_test_descriptions": [
+        {
+          "where": "steps[M2-S03].acceptance_tests[1]",
+          "says": "Scanned 14 metadata file(s)",
+          "run_says": "15",
+          "item": "O-M2S03-01"
+        },
+        {
+          "where": "steps[M2-S04].acceptance_tests[0]",
+          "says": "Warnings found (1), Tier 1 General only",
+          "run_says": "Warnings found (2), Tier 1 General and Tier 2 Engineering",
+          "item": "O-M2S04-01"
+        },
+        {
+          "where": "steps[M2-S02].acceptance_tests[0..2]",
+          "says": "no mention of the DESC rules the checkers enforce",
+          "run_says": "the rules ran and were the only thing found",
+          "item": "O-M2S02-04"
+        },
+        {
+          "where": "steps[M2-S03].acceptance_tests[1]",
+          "says": "the run resolves any Profile-sourced record-type reference",
+          "run_says": "the layout half is asserted; the record-type half is not",
+          "item": "F-19"
+        },
+        {
+          "where": "steps[M2-S01].acceptance_tests[1], steps[M2-S02].acceptance_tests[2], steps[M2-S03].acceptance_tests[0]",
+          "says": "an empty directory exits 1, so this is not a discovery no-op",
+          "run_says": "exit 0 without --strict",
+          "item": "F-22 - new this run"
+        }
+      ],
+      "stale_test_descriptions_note": "Each expected value still holds; only the prose is stale. amend-step is the writer and is refused on a documented step, so all five wait on a v6 re-plan or on a rebuild of the step they sit on. Four consecutive verification runs have recorded prose no agent in the loop is permitted to correct.",
+      "identical_pairs": {
+        "permission_sets": "Case_Tier1 and Case_Tier2 are byte-identical apart from <label> and <description> - same fieldPermissions edit on Case.Severity__c, same recordTypeVisibilities on Case.Support (O-M2S02-02)",
+        "profiles": "Acme Support Tier 1 and Acme Support Tier 2 are byte-identical apart from <description> - the twin O-M2S02-02 does not mention",
+        "why": "no answered clarification distinguishes Tier 2's access from Tier 1's; the requirement's Tier 1/Tier 2 split is routing (M2-S04/M3-S05) and escalation (M4-S04), neither of which is access. Four files exist because outputs[] declares four.",
+        "not_a_step_defect": "both steps built exactly what the plan declared and both pass every check declared against them - this is a v6 design question at two layers"
+      }
+    },
+    "billing_visibility_reconciliation": {
+      "item": "O-M2S05-01",
+      "statement": "Billing's access to Billing cases and Tier 1's exclusion from them are two different mechanisms, built by two different steps, and only one of them is a file you can point at.",
+      "matrix": [
+        {
+          "who": "Tier 1 (Support_Tier_1)",
+          "support_case": "as owner, once M3-S04's assignment rule transfers the case to Tier_1_General and a member takes it",
+          "billing_case": "no access",
+          "mechanism": "the Private OWD, and the ABSENCE of any rule naming Billing_Team or the Billing record type",
+          "steps": [
+            "M1-S01",
+            "M2-S05"
+          ]
+        },
+        {
+          "who": "Tier 2 (Support_Tier_2)",
+          "support_case": "Edit, by Support_Cases_To_Tier_2 (RecordTypeId equals Support, includeRecordsOwnedByAll true)",
+          "billing_case": "no access - the criterion filters it out",
+          "mechanism": "a criteria-based sharing rule",
+          "steps": [
+            "M2-S05"
+          ]
+        },
+        {
+          "who": "Billing (Billing_Team)",
+          "support_case": "no standing access",
+          "billing_case": "as owner, through the Billing queue",
+          "mechanism": "QUEUE OWNERSHIP - not a sharing rule",
+          "steps": [
+            "M2-S04",
+            "M3-S04 (pending)"
+          ]
+        }
+      ],
+      "asymmetry": "Tier 1's exclusion is proved by finding NO file; Billing's own access is proved by finding a queue in a DIFFERENT step, and it does not work until M3-S04 (pending) transfers ownership to that queue. A reviewer reading only M2-S05 would not learn where Billing's access comes from.",
+      "what_an_artefact_now_reconciles": "artefacts/M2-S05/case-visibility-model.md section 'How each team actually reaches a case' states all three rows and names queue ownership explicitly: 'This is queue ownership, not a sharing rule. No sharing rule was written for Billing, because A1's conservative reading is about keeping others out, and the Billing team's own access already exists through the queue.' Both halves of its one-sentence denial statement were re-verified on disk this run - Case.object-meta.xml line 5 carries Private, and the sharing rule mentions Billing only inside a <description>.",
+      "what_is_still_open": "Nothing in plan.json records the composition. A1.steps[] names M2-S05 alone, and no decision entry ties M2-S04's queue to M2-S05's absence as two halves of one answer.",
+      "consequence": "A later change to M2-S04's queue - a second Billing queue, or dropping queue-based ownership for direct assignment - could silently break Billing's access to its own cases without touching anything M2-S05 owns, and nothing in the build would flag the connection.",
+      "what_the_gate_should_do": "Accept, in the same breath as manual checklist line 1, that Billing visibility = queue ownership (M2-S04) + no competing restriction (M2-S05's deliberate absence), and ask for that composition to be recorded at plan level rather than only in one step's documentation artefact."
+    },
+    "requirement_closure": {
+      "requirements_served": "REQ-016 to REQ-029 (14 rows in traceability.md)",
+      "done": [],
+      "in_uat": [
+        "REQ-016",
+        "REQ-025"
+      ],
+      "in_build": [
+        "REQ-017",
+        "REQ-018",
+        "REQ-019",
+        "REQ-020",
+        "REQ-021",
+        "REQ-022",
+        "REQ-023",
+        "REQ-024",
+        "REQ-026",
+        "REQ-027",
+        "REQ-028",
+        "REQ-029"
+      ],
+      "note": "Every row's machine half now passes, and after this run that includes M2-T1. Six of the twelve In Build rows (REQ-018 to 020, REQ-026 to 028) wait on nothing in M2 - they were written when M2-S05 was pending and that dependency has landed; correcting the status cells is build-doc-keeper's. REQ-021 and REQ-024 wait on M3-S03/M3-S04 (pending), REQ-022 on M3-S05 (blocked, deferred Q32-Q35), REQ-023 on M4-S04 and M5-S01, REQ-029 on M5-S02 (blocked).",
+      "open_assumptions": [
+        "Q13 -> A1 (risk high) - the lineage of REQ-010, REQ-018 to 020, REQ-023, REQ-026 to 029. Nine of M2's fourteen requirements rest on a deferred answer; manual checklist line 1 is where a human accepts it.",
+        "Q57 -> A13 (risk medium) - REQ-014. Unverifiable until M3-S01's validation rules exist, and A13's own stated verification route does not exist (F-03)."
+      ],
+      "caveat": "REQ-026's recorded evidence is the build-scope check_record_type_layouts.py exit code, and F-19 is the finding that the record-type half of that claim is not asserted by the checker. The requirement is satisfied - the section 3 inventory walk proves it - but not by the artefact traceability.md cites."
+    },
+    "org_facing_evidence": {
+      "script": "scripts/mock_deploy.py",
+      "run": 3,
+      "report": ".sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M2.md",
+      "result": "32 components, 0 errors, checkOnly: true",
+      "run_by": "human, before G3, per standards/build-orchestration.md section 5",
+      "unchanged_since_v1": true,
+      "limits": [
+        "all three runs were --mode source, so no package.xml was opened - the merged manifest's SharingRules container form has still not been read by a deploy (F-18, and the optional --mode manifest run)",
+        "checkOnly: true validates metadata, not access - no user was assigned, no GroupMember row loaded, no record read"
+      ]
+    },
+    "optional_validate_only_command": "sf project deploy start --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M2-package.xml --dry-run --target-org <your-sandbox-alias>",
+    "optional_production_command": "sf project deploy validate --manifest .sfskills/builds/case-onboarding/reports/MILESTONE-M2-package.xml --target-org <your-production-alias> --test-level RunLocalTests",
+    "optional_manifest_mode_run": "python3 scripts/mock_deploy.py plan.json --org-alias <alias> --milestone M2 --mode manifest",
+    "optional_command_note": "All three lines are OPTIONAL and HUMAN-RUN. This agent ran no sf command at all and no mock deploy. The manifest-mode run is the one worth the human's time, because it is the only invocation for which mock_deploy.py:resolve_manifest_text() reads reports/MILESTONE-M2-package.xml rather than merging the step files on the fly - pass --milestone M2 with no --step.",
+    "go_no_go_items": 11,
+    "go_no_go_new_in_v2": "item 11 - descriptions on types no checker guards: Region__c at 249 characters and Bypass_Case_Intake_Validation at 250 are within six of the 255-character platform limit, and no DESC rule covers CustomField or CustomPermission",
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/case-onboarding/plan.json M2 --status verified --report-path reports/MILESTONE-M2-REPORT-v2.md",
+    "set_milestone_result": "milestone M2: status -> verified, report -> reports/MILESTONE-M2-REPORT-v2.md. Status moved rejected -> verified; M2 is not accepted, so F-12's guard did not intercept the write and nothing was appended to reverifications[].",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M2 approve --by \"<name>\"",
+    "gate_reject_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M2 reject --by \"<name>\" --notes \"<why>\"",
+    "gate_command_note": "NOT RUN by this agent - the G3 gate is the human's and build_plan.py gate is its only writer. Section 3's three conditions are all met (milestone:M1 approved, plan approved, all five M2 steps documented with none blocked), so the command will succeed if run. It does not check this report's verdict. milestone:M2 remains pending.",
+    "gate_conditions": [
+      {
+        "condition": "milestone:M1 is approved",
+        "state": "yes - 2026-09-09T20:30:32Z"
+      },
+      {
+        "condition": "plan is approved",
+        "state": "yes - 2026-09-05T19:35:19Z"
+      },
+      {
+        "condition": "every step in M2 is documented, or blocked with a recorded reason",
+        "state": "yes - 5 of 5 documented, none blocked"
+      }
+    ],
+    "what_the_human_decides_at_g3": [
+      "1. Assumption A1, and whether M2 was built on the right reading of deferred Q13. Nine of M2's fourteen requirements rest on it; if the answer is field-level masking, D5's stated consequence is that M2-S05 is re-planned, not patched.",
+      "2. The Billing composition - accept that Billing visibility = queue ownership (M2-S04) + no competing restriction (M2-S05's absence), and ask for it recorded at plan level.",
+      "3. Manual checklist line 4 - the Tier 2 mailbox criterion that does not hold. Supply the address and rebuild M2-S04, or accept the decided state and have the criterion reworded. Must not be ticked as written.",
+      "4. Whether F-16's remedy is finished. The checker stopped failing on a 244-character description; the description is still 244 characters, M2-S01 was never rebuilt, and its step-level test result is five days and two checker versions old. If the intent was also that descriptions should have headroom, F-22 and go/no-go item 11 are what is left of it.",
+      "5. F-18 before any manifest-driven deploy - MILESTONE-M1-package.xml still carries the bare CompactLayout member a deploy has already rejected by name. A hand-merge of M1 and M2 must take Case.Case_Intake."
+    ],
+    "files_written_by_this_run": [
+      ".sfskills/builds/case-onboarding/reports/MILESTONE-M2-REPORT-v2.md",
+      ".sfskills/builds/case-onboarding/envelopes/M2/2026-09-12T02-54-59Z.json",
+      ".sfskills/builds/case-onboarding/envelopes/M2/2026-09-12T02-54-59Z.md",
+      ".sfskills/builds/case-onboarding/tests/M2/*.v2.* (29 capture files)",
+      ".sfskills/builds/case-onboarding/plan.json (the single set-milestone write)"
+    ],
+    "files_deliberately_not_written": [
+      ".sfskills/builds/case-onboarding/reports/MILESTONE-M2-REPORT.md - v1 is preserved as the record of what the checks found then",
+      ".sfskills/builds/case-onboarding/reports/MILESTONE-M2-package.xml - recomputed, member sets identical and byte-identical to the canonical render, so left untouched rather than given a new mtime"
+    ],
+    "nothing_else_touched": "No artefact, no step's results.json, no workbook section, no decisions.md entry and no traceability.md row was modified. No skill, agent, standard or script was edited. No org was contacted and nothing was deployed. Three zero-name capture files created by a mis-quoted shell loop earlier in this run were removed.",
+    "persistence_deviation": "The Wave 10 default pair is docs/reports/milestone-verifier/<run_id>.{md,json}. This run is build-scoped and persists to .sfskills/builds/case-onboarding/envelopes/M2/ instead - the path agents/milestone-verifier/AGENT.md Step 11 and the envelope schema's build-layer pattern both prescribe, and the path v1 and both M1 verification runs used. docs/reports/milestone-verifier/ does not exist in this repo, and the invocation scoped all writes to the build directory."
+  }
+}

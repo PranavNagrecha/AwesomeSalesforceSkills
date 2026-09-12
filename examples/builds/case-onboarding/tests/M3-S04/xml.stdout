@@ -1,0 +1,7 @@
+xml.etree.ElementTree parse over artefacts/M3-S04/** (recursive), Step 2 always-on check.
+
+artefacts/M3-S04/assignmentRules/Case.assignmentRules-meta.xml -- parsed OK
+artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml -- parsed OK
+artefacts/M3-S04/package.xml -- parsed OK
+
+3 files, 3 parsed, 0 failed.

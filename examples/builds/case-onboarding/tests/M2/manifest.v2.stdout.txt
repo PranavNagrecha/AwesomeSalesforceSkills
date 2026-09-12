@@ -1,0 +1,50 @@
+=== API version per step manifest ===
+  M2-S01: 62.0
+  M2-S02: 62.0
+  M2-S03: 62.0
+  M2-S04: 62.0
+  M2-S05: 62.0
+  distinct versions: ['62.0']  -> NO CONFLICT
+
+=== Merged types and members ===
+  CustomPermission (1): Bypass_Case_Intake_Validation
+  Group (3): Billing_Team, Support_Tier_1, Support_Tier_2
+  PermissionSet (5): Case_Agent_Core, Case_Billing, Case_Intake_Integration, Case_Tier1, Case_Tier2
+  PermissionSetGroup (3): PSG_Billing_Prod, PSG_Tier1_Prod, PSG_Tier2_Prod
+  Profile (3): Acme Billing, Acme Support Tier 1, Acme Support Tier 2
+  Queue (3): Billing, Tier_1_General, Tier_2_Engineering
+  SharingRules (1): Case
+  TOTAL: 7 types, 19 members
+
+=== Member collisions across M2 steps ===
+  none
+
+=== Committed reports/MILESTONE-M2-package.xml vs freshly merged ===
+  committed: 7 types, 19 members, version 62.0
+  freshly merged: 7 types, 19 members, version 62.0
+  members only in committed : none
+  members only in fresh merge: none
+  MEMBER SETS IDENTICAL: True  -> regeneration NOT required
+  byte-identical to canonical render: True
+
+=== M2-T3 manifest consistency (two-way) ===
+  metadata files mapped to a type:member pair: 19
+  file -> manifest  missing members: none (0 missing)
+  manifest -> file  orphan members : none (0 orphans)
+  files reaching no <types> block: 12
+      artefacts/M2-S01/deploy-order.md  [documentation / non-metadata]
+      artefacts/M2-S01/package.xml  [manifest itself]
+      artefacts/M2-S02/deploy-order.md  [documentation / non-metadata]
+      artefacts/M2-S02/package.xml  [manifest itself]
+      artefacts/M2-S03/deploy-order.md  [documentation / non-metadata]
+      artefacts/M2-S03/package.xml  [manifest itself]
+      artefacts/M2-S04/deploy-order.md  [documentation / non-metadata]
+      artefacts/M2-S04/package.xml  [manifest itself]
+      artefacts/M2-S04/queue-retirement-runbook.md  [documentation / non-metadata]
+      artefacts/M2-S05/case-visibility-model.md  [documentation / non-metadata]
+      artefacts/M2-S05/deploy-order.md  [documentation / non-metadata]
+      artefacts/M2-S05/package.xml  [manifest itself]
+  VERDICT: consistent
+
+=== XML parse over every M2 *.xml / *-meta.xml ===
+  parsed 24 file(s); failures: none

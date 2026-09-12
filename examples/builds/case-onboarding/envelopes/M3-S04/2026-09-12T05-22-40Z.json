@@ -1,0 +1,237 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T05-22-40Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-22-40Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-22-40Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S04",
+    "reason": "not supplied \u2014 the step was pending and appeared in `build_plan.py next`, so no Step 2 carve-out applied",
+    "build_mode": "design-only",
+    "owning_agent": "metadata-builder",
+    "credentials_present": "none \u2014 no value in steps[M3-S04].inputs{} or in the answers it names matched a credential shape per skills/devops/pipeline-secrets-management, so nothing was redacted"
+  },
+  "summary": "Ran one step: M3-S04, owned by metadata-builder. The step was in `build_plan.py next`, was claimed pending -> running, and the owning agent's Plan was executed inline (this host's other form). It wrote five files under artefacts/M3-S04/ \u2014 four declared, one (deploy-order.md) undeclared by design \u2014 the declared build-scope checker exited 0 and check-outputs returned ok, so the step was set built. The owning agent's envelope validates. One planned criterion (a rule entry keyed on the Account support tier) was not written and is recorded as an M3-gate item rather than guessed, which is why the owning agent returned MEDIUM.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 9 rubric: the step was in `next`, every required input resolved from the plan, both envelopes validate, check-outputs exited 0 and nothing was written outside artefacts/M3-S04/ \u2014 the HIGH row \u2014 except that one artefact (deploy-order.md) is undeclared in outputs[], which the table scores MEDIUM.",
+  "outcome": "completed",
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-tests",
+      "state": "not-run",
+      "reason": "The step's four acceptance tests belong to agents/step-tester per standards/build-orchestration.md \u00a7 5. Only the declared checker, an XML parse and check-outputs were run, and those were run as part of building, not as the test pass.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run /test-build-step on M3-S04."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "build_plan.py next returned M3-S04 as the only runnable step and set-status accepted the claim without argument, so the dependency and gate computation agreed with the plan's own PLAN.md view of M2-S04/M3-S02/M3-S03 as documented.",
+      "evidence": {
+        "source": "input",
+        "path": "scripts/build_plan.py next .sfskills/builds/case-onboarding/plan.json"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The operator's amend-step note reached the builder as a binding input and outranked a contradicting clarification answer (Q22) without either being edited, which is the amendment mechanism working as designed rather than a plan rewrite.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M3-S04].notes + amendments[0]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "build-orchestration",
+      "observation": "deploy-order.md is written on every metadata-builder run but is declared in no step's outputs[] anywhere in M3, so check-outputs has never adjudicated it; this is the fourth consecutive step where the runner records it as undeclared rather than the plan carrying it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S04/deploy-order.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "build-orchestration",
+      "observation": "The step's own title and one of its manual acceptance tests assert tier-based routing that the plan's answers cannot specify, so a test written at plan time now asserts something the built artefact deliberately does not do \u2014 the tester will have to read it as a mismatch rather than a failure.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M3-S04].acceptance_tests[2]"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The step is built and untested; its two manual tests are gate-deferred reads and its checker test has already been exercised once during the build.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M3-S04].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It owns the acceptance tests and the tests/M3-S04/results.json record this runner may not write."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Once the step is tested, three named findings from this run need to land in decisions.md and the workbook rather than staying in two envelopes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "envelopes/M3-S04/2026-09-12T05-20-02Z.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "It owns decisions.md, the workbook and traceability.md, which is where the Account-support-tier gap has to survive to reach the M3 gate."
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S04",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "build_awareness_probe": {
+      "command": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md",
+      "result": 39,
+      "interpretation": "Non-zero: the owner declares outputs under artefacts/<step-id>/ and takes a build_dir, so Step 5 supplied build paths and Step 7 relocated nothing."
+    },
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-20-02Z.json",
+    "owning_envelope_validated": "OK .sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-20-02Z.json",
+    "invocation_form": "inline \u2014 the owning agent's AGENT.md was read end to end and its Plan executed in this session, per build-step-runner AGENT.md Step 6 ('in any other host'), as the invocation instructed for this build",
+    "artefacts": [
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/assignmentRules/Case.assignmentRules-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/owner-writer-map.md",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/package.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/deploy-order.md",
+        "declared": false
+      }
+    ],
+    "missing_outputs": [],
+    "files_outside_artefact_dir": [],
+    "relocations": [],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "checker_exit_codes": {
+      "declared:check_case_management_setup.py --manifest-dir artefacts (build scope, cwd=build dir)": 0,
+      "informational:check_assignment_rules.py --manifest-dir artefacts/M3-S04": 1,
+      "informational:check_assignment_rules.py --manifest-dir artefacts": 1
+    },
+    "informational_checker_note": "check_assignment_rules.py is not declared on this step and exits 1 on the single finding plan.json steps[M3-S04].inputs.note predicted verbatim: target 'Tier_1_General' appears in multiple rule entries, which Q18 plus Q26 make inevitable. At step scope it also emits AR-LOOP-02 (no routing-address inventory in scope); at build scope AR-LOOP-02 is absent and AR-LOOP-01 does not fire, which is the affirmative loop check passing. No artefact was changed to satisfy this checker.",
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M3-S04 running --started 2026-09-12T05:16:34Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M3-S04 built --run-agent metadata-builder --envelope envelopes/M3-S04/2026-09-12T05-20-02Z.json --result \"AssignmentRules:Case + AutoResponseRules:Case built; declared checker exit 0; Account-support-tier criterion escalated to the M3 gate, not written\" --started 2026-09-12T05:16:34Z"
+    ],
+    "terminal_status": "built",
+    "gates_touched": "none \u2014 steps[M3-S04].human_gate is false and this agent approves no gate",
+    "persistence_deviation": "The Wave 10 pair under docs/reports/build-step-runner/ was NOT written: this invocation constrained the run to write only under the build directory. Recorded rather than silently skipped.",
+    "requirement_ids_touched": [
+      "REQ-021",
+      "REQ-022",
+      "REQ-032"
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 4 step record fields and the status machine, \u00a7 5 who runs acceptance tests, \u00a7 8 the plan CLI as the only writer of derived state"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and the confidence rubric Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape \u2014 everything step-specific hangs off extensions"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "confirming the directory-per-type layout the two rule files had to land in (assignmentRules/, autoResponseRules/) so the manifest check and any later deploy can read the tree"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming AssignmentRules and AutoResponseRules are Metadata API component types, so the step's declared outputs are deployable metadata rather than documents"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "checking the step's inputs and the echoed answers for credential shapes before they reached a git-tracked envelope \u2014 none matched"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "reading the workbook rows this step derives from (CWB-AUT-004, CWB-AUT-007, CWB-LAYOUT-004/006) to map target values onto the owning agent's inputs rather than paraphrasing the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ-XXX id convention echoed into extensions.requirement_ids_touched so the doc keeper can join step to requirement"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/SKILL.md",
+      "used_for": "carried through from the owning agent's citations \u2014 the step's own skills[] reading list"
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "carried through from the owning agent's citations \u2014 the queue developer-name rule behind every assignedTo"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q13 \u2014 first leaf: the first owner comes from an ordered criteria table of field values -> Assignment Rules",
+      "used_for": "the step's declared decision_trees[] entry, already resolved at plan time as decision D3; cited, not re-decided"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M3-S04 is built and untested; it owns the four acceptance tests and the tests/M3-S04/results.json record."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once tested, the Account-support-tier gap, the replyToEmail threading cost and the Q24 layout-checkbox hole belong in decisions.md and the workbook."
+    }
+  ]
+}

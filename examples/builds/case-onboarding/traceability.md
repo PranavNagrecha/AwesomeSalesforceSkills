@@ -49,6 +49,14 @@ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py \
 | REQ-027 | Q7 | Tier 2 engineers (4) who take escalated Support cases need the same base-profile footprint as Tier 1 — default app, default record type and layout assignments, with every object/field/tab grant in `PSG_Tier2_Prod` | M2-S03 | `Profile:Acme Support Tier 2` | metadata-builder | — | M2-S03-T2 | checker | In Build | `artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml` \| `artefacts/M2-S03/deploy-order.md` | pass — same build-scope `check_record_type_layouts.py --strict` run as `REQ-026` (this file is 1 of the 15 files scanned, one of the two `Profile`-sourced record types resolved), same `check_access_model.py` run (1 of 3 files, 0 findings), `xml` and `manifest` as above. **Byte-identical to `Acme Support Tier 1` in every grant-bearing element** — the same shape `decisions.md` D-M2S02-05 already records for `Case_Tier1`/`Case_Tier2` one layer up the access stack; two files exist because `outputs[]` declares two, not because any answered clarification distinguishes Tier 2's profile residue from Tier 1's. Same Rebuild #2 description fix (279 → 152 chars) and the same two mock-deploy-settled elements as `REQ-026` (`decisions.md` D-M2S03-01, D-M2S03-02) — not repeated here. **Status is `In Build`,** same reasoning as `REQ-026`: `M2-S05` remains pending, and no clarification distinguishes Tier 2's profile access from Tier 1's (the Tier 1/Tier 2 split is routing and escalation, `M2-S04`/`M3`/`M4`, not access). |
 | REQ-028 | Q7 | Finance (2 Billing staff) work Billing cases from a base profile carrying only the default app, default record type and layout assignments, with the Support record type deliberately withheld as default/visible — every object/field/tab grant lives in `PSG_Billing_Prod` | M2-S03 | `Profile:Acme Billing` | metadata-builder | — | M2-S03-T2 | checker | In Build | `artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml` \| `artefacts/M2-S03/deploy-order.md` | pass — same build-scope `check_record_type_layouts.py --strict` run as `REQ-026`/`027` (1 of 15 files, the third `Profile`-sourced record type resolved), same `check_access_model.py` run (1 of 3 files, 0 findings), `xml` and `manifest` as above. **`Case.Support` carries a `layoutAssignments` entry while `<visible>false</visible>` on the same record type** — the exact ungrounded pairing `decisions.md` D-M2S03-01 records as settled positively by the M2 mock deploy; mirrors `Case_Billing`'s own withheld `Case.Support` visibility (`REQ-020`) and plan assumption **A1** (Q13 deferred, conservative reading), per `artefacts/M2-S03/deploy-order.md` § "Decisions worth reading before deploy", item 2. Same Rebuild #2 description fix (407 → 147 characters, the largest cut of the three — `decisions.md` D-M2S03-06). **Status is `In Build`,** same `M2-S05`-pending reasoning as `REQ-026`/`027`; Billing is the mirror image, withholding `Case.Support` where the two Support profiles withhold `Case.Billing`. |
 | REQ-029 | Q13 | Tier 2 engineers must be able to work every Support-record-type case whoever owns it, and nothing may extend Billing-case access to Tier 1 | M2-S05 | `SharingRules:Case` | metadata-builder | D5 | M2-S05-T2 | manual | In Build | `artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml` \| `artefacts/M2-S05/case-visibility-model.md` | machine half **pass**, manual half **outstanding**. Machine: `check_sharing_model.py --manifest-dir artefacts` (build scope, per `standards/build-orchestration.md` § 5) exit 0, `1 object OWD(s) resolved`, `0 finding(s)` — resolves `M1-S01`'s OWD and this step's grant together, unlike the vacuous 0-resolved step-scope reading (`M2-S05-T1`); `xml` 2/2 parsed; `manifest` consistent (`SharingRules:Case` ↔ file, both directions). Manual **B01+B04** (`tests/M2-S05/results.json` `skipped_manual[0]`): the tester's grep evidence (`envelopes/M2-S05/2026-09-12T01-41-33Z.md`) confirms exactly one `<sharingCriteriaRules>` block, `sharedTo` group `Support_Tier_2` only, no `Billing`/`Billing_Team` string outside the free-text `<description>`, `Case.object-meta.xml` (`M1-S01`) carrying `<sharingModel>Private</sharingModel>`, and no `*.settings-meta.xml` file anywhere under `artefacts/` — compiled into `TC-M2S05-01` (Tier 2 grant half, `AC-029.1`) and `TC-M2S05-02` (Billing negative half, `AC-029.2`) in the session scratchpad, both linted clean by `check_uat_case.py` (`OK — 2 case(s) ... 2 criterion id(s) cross-checked`) and their criteria by `check_ac_format.py` (`0 error(s), 0 warning(s)`). **See also `REQ-010`** — `M1-S01`'s OWD row, same Q13→A1 lineage, a different artefact; that row's own "Gap named" sentence ("the machine assertion... has not run") is now stale now that this build-scope test has run and passed, corrected in `decisions.md` **O-M2S05-02** rather than by editing `REQ-010` itself, which is not this run's row to touch. **Status is `In Build`, not `In UAT`:** `M5-S02` lists this step in `depends_on`, though `M5-S02` is currently `blocked` for a reason unrelated to this row (missing sandbox-strategy inputs, `blocked_reason` on the step) — a step nominally serving this requirement remains on the books, the same reasoning `REQ-021`'s row applies to a pending dependent step. `Q80`'s answer ("Tier 1 must not see billing cases") is the restriction half this row also proves; `Q13` is recorded alone in `source` per the single-clarification-id convention `REQ-010` already sets, with `Q80` named here in prose rather than added as a second `source` value. |
+| REQ-030 | Q5 | Priority must be set before an agent-created Case saves, because the first-response SLA and the 8-business-hour escalation clock both read it | M3-S01 | `ValidationRule:Case.Priority_Required_On_Agent_Save` | metadata-builder | — | TC-M3S01-01 | manual | In UAT | `artefacts/M3-S01/objects/Case/validationRules/Priority_Required_On_Agent_Save.validationRule-meta.xml` | machine half **pass**, manual half **outstanding**. Machine: `check_validation_rules.py --manifest-dir artefacts/M3-S01 --strict` exit 0, score 100, `Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.` (`tests/M3-S01/checker_stdout.txt`) — under `--strict` this also asserts the blank-guard shape (a fixture with `ISPICKVAL(Priority, "")` alone reproduced one REVIEW finding and exit 1, per `plan.json` `steps[M3-S01].inputs.note`); `xml` 3/3 parsed; `manifest` (`Case.Priority_Required_On_Agent_Save` two-way consistent). **What the exit does not prove** (`decisions.md` **D-M3S01-06**): that `Priority` or `$Permission.Bypass_Case_Intake_Validation` resolve to real components — the checker has no field inventory; both were checked by hand against `M1-S01` and `M2-S01`. Manual **W01** (`tests/M3-S01/results.json` `skipped_manual[0]`): the tester's on-disk evidence (`tests/M3-S01/summary.md` table "Manual test — checked against disk, not ticked") confirms the bypass clause opens the formula, the blank test is `ISBLANK(TEXT(Priority))` not `ISPICKVAL` alone, `errorMessage` is 218 of 255 characters, and `active` is `true` — compiled into `TC-M3S01-01` (positive, `AC-030.1`) and `TC-M3S01-02` (negative, bypass suppresses the rule, `AC-030.2`) in the session scratchpad, both linted clean by `check_uat_case.py` (`OK — 4 case(s) ... 4 criterion id(s) cross-checked`, covering both this row and `REQ-031`) and by `check_ac_format.py` (`0 error(s), 0 warning(s)`). **See also `REQ-014`** — `M1-S02`'s layout-visibility requirement for assumption A13; its own note that "no `ValidationRule` metadata exists anywhere under `artefacts/` yet" is now stale, corrected in `decisions.md` **O-M3S01-04** rather than by editing `REQ-014` itself. **See also `REQ-015`/`REQ-016`** — `M2-S01`'s bypass *grant*, a different pair of artefacts this rule depends on and consumes; `REQ-015`'s own "has not run" note on the consumer cross-reference is addressed in `decisions.md` **O-M3S01-03**. **Status is `In UAT`, not `In Build`:** `M3-S01` is now `documented` and its only dependency (`M1-S01`, `M2-S01`) is `documented` too, so the machine half is complete; the manual half (**W01**) is outstanding at the M3 gate. |
+| REQ-031 | Q5 | Origin must carry a known value before a Case saves, because assignment routing and the customer acknowledgement both read it | M3-S01 | `ValidationRule:Case.Origin_Must_Be_Known` | metadata-builder | — | TC-M3S01-03 | manual | In UAT | `artefacts/M3-S01/objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml` | machine half **pass**, manual half **outstanding**. Machine: same declared checker run as `REQ-030` (one command scans both files) exit 0, score 100, 0 findings; `xml` 3/3 parsed; `manifest` (`Case.Origin_Must_Be_Known` two-way consistent). **What the exit does not prove** (`decisions.md` **D-M3S01-06**, same gap as `REQ-030`): that `Origin` or the `$Permission` name resolve to real components. **What is genuinely unresolved, not merely unchecked** (`decisions.md` **D-M3S01-04**): whether a value outside the three tested `CaseOrigin` values can reach `Origin` at all is undocumented in both cited skills; the enumerated clause may be redundant, which is the safe direction. Manual **W01**, same declared test as `REQ-030`: the tester's on-disk evidence additionally confirms the formula names only `Origin` component values, never a compound address field (Q59) — compiled into `TC-M3S01-03` (positive, `AC-031.1`) and `TC-M3S01-04` (negative, bypass, `AC-031.2`). **See also `REQ-014`, `REQ-015`/`REQ-016`** — same cross-references as `REQ-030`, `decisions.md` **O-M3S01-04**/**O-M3S01-03**. `Q24`'s answer (assignment rules read `Origin` per channel) is the routing half of why this field must carry a known value; recorded here in prose rather than added as a second `source` value, per the single-clarification-id convention `REQ-029` already sets for `Q80`. **Status is `In UAT`,** same reasoning as `REQ-030`. |
+| REQ-032 | Q22 | The customer receives an acknowledgement carrying the case number, sent from a live org-wide address on both the email and web intake channels, within the first minute of the Case being created | M3-S02 | `EmailTemplate:case_intake/Case_Acknowledgement` | metadata-builder | — | TC-M3S02-01 | manual | In UAT | `artefacts/M3-S02/email/case_intake.emailFolder-meta.xml` \| `artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email` \| `artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml` \| `artefacts/M3-S02/sender-identity-note.md` | machine half **pass**, manual half **outstanding**. Machine: `check_email_templates.py --manifest-dir artefacts/M3-S02 --strict` exit 0, score 100, `Scanned 4 email template file(s); 0 finding(s) detected.` (`tests/M3-S02/checker1_stdout.txt`); `check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02` exit 0 with 3 WARNs that assert nothing — this step declares none of the three files that checker reads (`tests/M3-S02/checker2_stdout.txt`; `decisions.md` **O-M3S02-02**); `xml` 4/4 parsed; `manifest` (`EmailFolder:case_intake` and `EmailTemplate:case_intake/Case_Acknowledgement` both two-way consistent). **What the machine half does not touch:** `EmailTemplate` carries no sender element, so no exit code here asserts anything about `senderEmail` — that element belongs to `M3-S04`, not this row (`sender-identity-note.md` § "The sender that actually gets set"). Manual **B06** (`tests/M3-S02/results.json` `skipped_manual[0]`): the tester's on-disk evidence (`tests/M3-S02/summary.md` § "B06 (manual)") confirms neither `.email` body contains an email address (`grep -n @`, 0 matches on both), `sender-identity-note.md` § 1 names `support@acme.example` for both channels and `billing@acme.example` for finance replies, and § 2 states the self-addressed-loop risk with both qualifications of the named control — compiled into `TC-M3S02-01` (positive, `AC-032.1`) and `TC-M3S02-02` (negative — neither body hardcodes an address, `AC-032.2`) in the session scratchpad, both linted clean by `check_uat_case.py` (`OK — 2 case(s) ... 2 criterion id(s) cross-checked`) and by `check_ac_format.py` (`0 error(s), 0 warning(s)`). **The load-bearing gap this row carries forward, not resolves:** `plan.json` Q22's answer states `support@acme.example` — a live Email-to-Case routing address — itself sends this acknowledgement; `answers-key.md`'s "Acknowledgement" row states the opposite, that the sender is "never the Email-to-Case routing address itself." Both cited skills' mail-loop prohibition (`skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md`; `skills/admin/email-to-case-configuration/references/gotchas.md` Gotcha 3) bites under Q22's reading and not the answer key's, and no artefact of this step sets a sender, so nothing here settles it. `decisions.md` **D-M3S02-04** records it as an M3 milestone-gate decision that `M3-S04` — the step that actually writes `senderEmail` — must not pre-empt on its own; `decisions.md` **O-M3S02-01** records the contradiction itself as a clarification-record defect for the planner. Q63's answer (one acknowledgement per case, auto-response only, no parallel Flow alert) is why exactly one template exists for this row rather than an auto-response template plus a Workflow Alert; Q68's answer (a sandbox test with real inbound email, a clock test and a loop test before go-live) is the detection mechanism named in § 2 that the M3 gate decision defers to — both cited here in prose rather than as a second `source` value, per the single-clarification-id convention `REQ-029` already sets for `Q80`. **Status is `In UAT`, not `In Build`:** `M3-S02` is now `documented` and its only dependency (`M1-S01`) is `documented` too, so the machine half is complete; the manual half (**B06**) is outstanding at the M3 gate. |
+| REQ-033 | Q63 | Tier 2 receives a named handover notice, distinct from the customer acknowledgement, when a Case is reassigned to it by the 8-business-hour escalation action | M3-S02 | `EmailTemplate:case_intake/Case_Escalated_To_Tier2` | metadata-builder | — | M3-S02-T1 | checker | In Build | `artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email` \| `artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml` | pass — same declared checker run as `REQ-032` (one command scans both templates) exit 0, score 100, 0 findings (`tests/M3-S02/checker1_stdout.txt`); `xml` 4/4 parsed (shared with `REQ-032`); `manifest` (`EmailTemplate:case_intake/Case_Escalated_To_Tier2` two-way consistent). **No manual test targets this row:** B06 names only the acknowledgement path, so this requirement carries no compiled UAT case and no `test_case_ids` value — per `skills/admin/requirements-traceability-matrix` the status stays `In Build`, the same shape `REQ-001` already establishes for a checker-only row whose step is nonetheless `documented`. Internal, not customer-facing: the body carries no thread token by design (Q64/assumption A3 bind customer-facing templates only) and `EscalationAction` carries no sender element in its own reference, so none was invented here or in `M4-S04` (`sender-identity-note.md` § 3). **Cross-reference a reader should not conflate:** `Q88`'s answer (`M2-S04`) already gives the Tier 2 queue a queue-level notification default (a shared mailbox, applied since the answer key does not address Tier 2); this template is a separate, case-level handover notice the escalation action's reassignment fires, not a re-implementation of that queue-level control — `decisions.md` **O-M3S02-04** names the distinction so `M4-S04` does not wire the two together as if they were one mechanism. `Q63`'s "one event, one email" discipline is carried to this template as well: no parallel Workflow Alert is built alongside the escalation action either (`decisions.md` **D-M3S02-03**). |
+| REQ-034 | Q17 | Two public routing addresses — support@acme.example and billing@acme.example — accept inbound mail and create Cases, each stamped with its own Case Origin so channel-level routing and the customer acknowledgement can both read it | M3-S03 | `Settings:Case` | metadata-builder | — | TC-M3S03-01 | manual | In UAT | `artefacts/M3-S03/settings/Case.settings-meta.xml` \| `artefacts/M3-S03/email-to-case-routing-addresses.md` \| `artefacts/M3-S03/package.xml` | machine half **pass**, manual half **outstanding**. Machine: declared build-scope `check_case_management_setup.py --manifest-dir artefacts` exit 0, `No case management setup issues found.` (`tests/M3-S03/check_case_management_setup.stdout.txt`); step-scope control (`--manifest-dir artefacts/M3-S03 --verbose`) also exit 0; `xml` 2/2 parsed; `manifest` (`Settings:Case` ↔ file, two-way, no wildcard — feature settings do not accept one). **Rebuilt once (run `2026-09-12T04-39-20Z`) after the operator's validate-only run against the org failed the as-built file** (`reports/MOCK-DEPLOY-M3.md` Run 3: `CaseSettings Case: Enter the system user's email address`). Three elements were added and nothing else changed: **F-25** `systemUserEmail` = `support-noreply@acme.example` (`decisions.md` **D-M3S03-01** — deliberately not either routing address, so `decisions.md` **D-M3S02-04** stays open, unresolved by this change); **F-26** `newEntityRecordType` = `Case.Support` / `Case.Billing`, object-qualified (the bare developer name does not resolve) and gated at API ≥ 64.0, so `package.xml` moved `62.0` → `67.0` (`decisions.md` **O-M3S03-01** — a build-wide API-version drift this raises, not a defect in this row); **F-27** `casePriority` `Medium` on both addresses, required by the org though the guide does not say so (`decisions.md` **D-M3S03-02** — an M3-gate decision affecting `M4-S03`, not pre-empted here). Manual **TC-M3S03-01** (`tests/M3-S03/results.json` `skipped_manual[0]`), deferred to the M3 gate: "...both routing addresses carry their own `caseOrigin` (Email-Support, Email-Billing) and no `caseOwner`, `unauthorizedSenderAction` is Bounce, `overEmailLimitAction` is Requeue, `saveEmailHeaders` is true on both..." — every element the sentence names is present and matches on disk; its clause about the `webToCase` block belongs to `REQ-035` below, and the sentence's own wording ("exactly its three documented children") is itself the defect `decisions.md` **O-M3S03-02** records, not a fact about this row's file. `caseOwner` is deliberately unset on both addresses per **Q18** — ownership is expressed once, in `M3-S04`'s assignment rule, not twice. **See also `REQ-005`** — `M1-S01`'s `StandardValueSet:CaseOrigin` row anticipated this step by name ("Downstream consumers ... are M3 and are not asserted here"); this row is that consumer, and `REQ-005`'s own row is left byte-identical per Step 8. **See also `REQ-021`** — `M2-S04`'s `Queue:Tier_1_General` row; this file's `defaultCaseOwner`/`defaultCaseOwnerType` (`Tier_1_General`/`Queue`) is the fall-through owner that requirement names, now actually wired into `CaseSettings` rather than existing only as a queue. Q20 (threading mode) is **deferred** — assumption **A3** (Lightning Threading) is what this file implements (`useEmailHeadersForThreading` `true`; the legacy pair `enableThreadIDInBody`/`enableThreadIDInSubject` omitted); rebuild this step if Setup shows legacy threading. **Status is `In UAT`, not `In Build`:** `M3-S03` is now `documented` and its three `depends_on` (`M1-S01`, `M2-S04`, `M3-S02`) are `documented` too, so the machine half is complete; the manual half (**TC-M3S03-01**) is outstanding at the M3 gate. |
+| REQ-035 | Q66 | Web-to-Case intake is enabled for the website form (~60 cases a day) and stamps a Web Case Origin; the HTML form itself is authored and hosted outside this build | M3-S03 | `Settings:Case` | metadata-builder | — | TC-M3S03-02 | manual | In UAT | `artefacts/M3-S03/settings/Case.settings-meta.xml` \| `artefacts/M3-S03/web-to-case-form-contract.md` \| `artefacts/M3-S03/package.xml` | machine half **pass**, manual half **outstanding**. Machine: same declared checker run as `REQ-034` (one command scans the same file) exit 0, 0 findings; `xml` 2/2 parsed (shared); `manifest` (`Settings:Case` two-way, shared). `webToCase` carries exactly two of its three documented children — `enableWebToCase` `true` and `caseOrigin` `Web` — `defaultResponseTemplate` deliberately unset because the guide scopes it to Self-Service portal responses rather than to the customer acknowledgement, which is `M3-S04`'s `AutoResponseRules` element (`web-to-case-form-contract.md` § 1). Manual **TC-M3S03-02** (`tests/M3-S03/results.json` `skipped_manual[1]`), deferred to the M3 gate: confirms `web-to-case-form-contract.md` states whether the form posts directly or through middleware, the `Origin` value each path stamps, and that the HTML form itself is not metadata — all three are present in the file (§§ 1–2), but **Q66 itself is not settled**: the file specifies both posting paths (§ 2) and recommends Path A (direct post) without a confirmed answer from the website owner, so the manual test's own precondition ("given Q66's answer itself says to confirm...") remains open past this step, not merely past this test. **The fallback owner for unrouted web cases** — `defaultCaseOwner` `Tier_1_General` / `defaultCaseOwnerType` `Queue` — is the same `CaseSettings` field `REQ-034`'s row documents; see that row rather than a second citation here. `Case.Origin` value `Web` is a live entry in `artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml` (**Q19**, `REQ-005`). No record type is stamped on a web case — `WebToCaseSettings` has no record-type element (`web-to-case-form-contract.md` § 1) — so a web case lands on the object's default record type rather than `Case.Support`/`Case.Billing` the way an email case now does (**F-26**). **Status is `In UAT`, not `In Build`:** same dependency reasoning as `REQ-034` — `M3-S03` and its three `depends_on` are all `documented`; the manual half (**TC-M3S03-02**) and Q66's own open confirmation are both outstanding at the M3 gate. |
+| REQ-036 | Q25 | Within the first minute of a case being created it must have an owner — the assignment rule is the authoritative mechanism, routing support@ (`Email-Support`) to Tier 1 and billing@ (`Email-Billing`) to Finance, with an explicit fall-through, not the queue alone | M3-S04 | `AssignmentRules:Case` | metadata-builder | D3 | M3-S04-T2 | manual | In UAT | `artefacts/M3-S04/assignmentRules/Case.assignmentRules-meta.xml` \| `artefacts/M3-S04/owner-writer-map.md` | machine half **pass**, manual half **outstanding and not tickable as written**. Machine: declared build-scope `check_case_management_setup.py --manifest-dir artefacts` exit 0, `No case management setup issues found.` (`tests/M3-S04/checker_check_case_management_setup.stdout.txt`); `xml` 3/3 parsed; `manifest` (`AssignmentRules:Case` ↔ file, two-way, member named explicitly though the cited skill documents that all three rule types accept `*`). Undeclared, informational `check_assignment_rules.py --manifest-dir artefacts` exits 1 on `target 'Tier_1_General' appears in multiple rule entries` — deliberate by construction (Q18 routes support@ to Tier 1, Q26 sends every unmatched case to the same catch-all queue), reproducing `deploy-order.md` § 7's prediction word for word at both scopes (`tests/M3-S04/OBSERVATION-check_assignment_rules.*.stdout.txt`); its `AR-LOOP-01` mail-loop rule does **not** fire at build scope — positive evidence no `senderEmail` in this build matches a routing address. **Manual `M3-S04-T2` (`W02`):** given Q25 and Q26, the active rule's entries route on `Case.Origin` **and the Account support tier**; the built file routes on `Case.Origin` **only** — the order/catch-all half (most-specific-first, criteria-less catch-all last, assigned to `Tier_1_General`) matches the artefact; the tier clause does not, and the test cannot be ticked as written (`tests/M3-S04/summary.md` § "Ambiguity recorded verbatim"; `decisions.md` **D-M3S04-02** — two independent blockers: no answer names a `Premier` tier→queue mapping, and no skill grounds a related-object `criteriaItems/field` on a Case rule). Carried to the M3 gate: either an answer names the mapping and a live org confirms the notation, or the step's title and `W02` are corrected to Origin-only. `owner-writer-map.md` (this row's second artefact) records the three by-design `OwnerId` writers in fire order and the still-open Q24 layout-default gap (`decisions.md` **O-M3S04-01**) — without that default, ~20 hand-logged cases a day never reach this rule at all. **Status is `In UAT`, not `In Build`:** `M3-S04` is now `documented` and its three `depends_on` (`M2-S04`, `M3-S02`, `M3-S03`) are `documented` too, so the machine half is complete; the manual half is outstanding at the M3 gate, carrying the mismatch above rather than a plain sign-off. |
+| REQ-037 | Q28 | The customer must receive an acknowledgement with the case number within the first minute — fired by the auto-response rule only when the assignment rule fires, exactly once per case, on both intake channels | M3-S04 | `AutoResponseRules:Case` | metadata-builder | — | M3-S04-T3 | manual | In UAT | `artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml` | machine half **pass** (with one org-validation caveat below), manual half **outstanding, on-disk consistent, not ticked**. Machine: same declared build-scope `check_case_management_setup.py --manifest-dir artefacts` run as `REQ-036` (one command scans both rule files) exit 0; `xml` 3/3 parsed (shared); `manifest` (`AutoResponseRules:Case` ↔ file, two-way, member named explicitly). **`reports/MOCK-DEPLOY-M3.md` Run 6 (F-28):** a real `sf project deploy start --dry-run` against `sfskills-dev` rejected this exact component — `AutoResponseRule Case.Case_Acknowledgement: support-noreply@acme.example is an invalid From email address` — because the org carries no verified `OrgWideEmailAddress` for it. Not a metadata defect: the value is the operator's pre-gate resolution of `decisions.md` **D-M3S02-04** (`decisions.md` **D-M3S04-01**), and the address's absence is recorded as a **G3 deploy prerequisite** (`decisions.md` **D-M3S04-03**), not a rebuild — the sibling `AssignmentRules:Case` component validated cleanly in the same run. **Manual `M3-S04-T3`:** given Q28 and Q63, exactly one acknowledgement entry can match any case (structurally true — one `ruleEntry`) and its template names `M3-S02`'s folder-qualified Classic template (`case_intake/Case_Acknowledgement`), confirmed on disk; deferred to the M3 gate, on-disk evidence consistent, not a mismatch. **`replyToEmail` mirrors `senderEmail`:** a customer's *Reply* does not thread onto the case (`decisions.md` **D-M3S04-04**) — carried to the same gate item as `D-M3S02-04`. **See also `REQ-032`** — `M3-S02`'s `EmailTemplate:case_intake/Case_Acknowledgement` row is the template *content* this rule's `<template>` element names; this row is the delivery *mechanism*, a different artefact serving the same acknowledgement requirement. **Status is `In UAT`, not `In Build`:** same dependency reasoning as `REQ-036` — the machine half is complete; the manual half and F-28's org prerequisite are both outstanding at the M3 gate. |
 
 ---
 
@@ -91,6 +99,14 @@ key is auditable rather than invented. Ids are stable and are never reused.
 | REQ-027 | L12–L13 — "Tier 2 (4 engineers) … pick from a list"; L16 — "Anything untouched for 8 business hours escalates to Tier 2" | Q7 (answered); Q13 (**deferred**) → assumption A1; no clarification distinguishes Tier 2's profile access from Tier 1's |
 | REQ-028 | L8 — "Finance queries arrive at billing@acme.example and should be worked by Finance" | Q7 (answered); Q13 (**deferred**) → assumption A1 |
 | REQ-029 | L12–L16 — Tier 2 receives escalated Support cases and picks from a list; L8 — "Finance queries … should be worked by Finance" (the Billing half, mirroring `REQ-010`) | Q13 (**deferred**) → assumption A1; Q80 (answered — the "must be blocked" restriction) |
+| REQ-030 | L9–L11 — "priority must be set from what the form or email tells us" | Q5 (answered — enforce at field/validation level, because Web-to-Case and Email-to-Case create Cases through the API, not a layout) |
+| REQ-031 | L6–L8 — three named intake channels, each stamping a different `Origin`; L9 — "Within the first minute of a case being created it must have an owner" (routing reads `Origin` to decide) | Q5 (answered, same citation as REQ-030); Q24 (answered — only the web/email channels invoke the assignment rule by default, which is what makes a known `Origin` load-bearing for routing) |
+| REQ-032 | L9–L11 — "the customer must receive an acknowledgement with the case number" | Q22 (answered — who sends it, and the loop question it opens); Q63 (answered — one acknowledgement per case, no parallel Flow alert); Q68 (answered — the sandbox proof gate the loop question is deferred to) |
+| REQ-033 | L15–L16 — "Anything untouched for 8 business hours escalates to Tier 2" (the handover notice half, distinct from `REQ-023`/`REQ-027`'s access half) | Q63 (answered, same one-event-one-email citation as REQ-032); Q88 (answered — the Tier 2 queue-level notification default this template is distinct from, cited in prose only) |
+| REQ-034 | L6–L8 — "Cases arrive by email to support@acme.example (roughly 400 a day)… Finance queries arrive at billing@acme.example" | Q17 (answered — the two addresses and their forwarding); Q15 (answered — volumes, cited in prose); Q18 (answered — ownership expressed as `caseOrigin` per address, `caseOwner` left unset); Q21 (answered — bounce/requeue); Q23 (answered — `saveEmailHeaders`); Q74 (answered — sandbox re-pointing) |
+| REQ-035 | L6–L8 — "and from a form on our website (roughly 60 a day)" | Q66 (answered — the form is the only named external producer; posting path unconfirmed); Q15 (answered — volume, cited in prose) |
+| REQ-036 | L9–L11 — "Within the first minute of a case being created it must have an owner" (+ L6–L8 support@/billing@ split) | Q25 (answered — the routing fields); Q18, Q24, Q26, Q27 (all answered, cited in prose) |
+| REQ-037 | L9–L11 — "the customer must receive an acknowledgement with the case number" (+ L19 "Replies to customers go from support@ for general cases and from billing@ for finance cases") | Q28 (answered — the per-channel acknowledgement decision); Q63 (answered, cited in prose — one-event-one-email); Q22 (answered, cited in prose — sender identity, still open per D-M3S02-04) |
 
 ---
 
@@ -911,3 +927,242 @@ exit 0
 The step-scoped run's twenty-six warnings are the twenty-six rows belonging to every other step
 whose components are not under `artefacts/M2-S05/` — scope, not a finding, the same shape every
 prior step-scoped run in this file has produced. `REQ-029`'s own row resolves at this scope.
+
+## What M3-S01 rests on — Q5 for both rules, Q24 for Origin's routing half, the M2-S01 bypass grant as a forward dependency
+
+Two new rows, two new requirements, minted after re-reading this file immediately before writing
+(`M3-S02` is `running` concurrently but is a `ui` step touching layouts, not this file's Section 5
+or Other Configuration rows):
+
+- **Q5, answered** — "Priority and Origin enforced at field or validation-rule level, because
+  Web-to-Case and Email-to-Case create Cases through the API, not through a layout." This is the
+  reason both rules exist at all rather than a Layout Required checkbox, and it is the `source`
+  cell for both `REQ-030` and `REQ-031` — the same single-clarification-id convention every other
+  row in this file follows, with the field each rule targets (`Priority`/`Origin`) split into two
+  requirements because they answer two different downstream needs.
+- **Q24, answered, cited in prose on `REQ-031` only** — "Email-to-Case and Web-to-Case invoke [the
+  assignment rule] by default; manual UI creation ... needs the checkbox defaulted on." Assignment
+  rules read `Case.Origin` to decide which channel a case arrived through
+  (`Origin_Must_Be_Known.validationRule-meta.xml`'s own `errorMessage`: "Assignment ... read[s]
+  Origin"), so a Case with an unknown `Origin` is a case the routing layer (`M3-S04`, not yet
+  built) cannot reliably route. `REQ-031` is the first row in this file to cite Q24 outside
+  `REQ-013` (`M1-S02`, the layout checkbox itself).
+- **`M2-S01`, backward** — `depends_on: ["M1-S01", "M2-S01"]`. Both rules reference
+  `$Permission.Bypass_Case_Intake_Validation`, built in `M2-S01` and already documented under
+  `REQ-015`/`REQ-016`. That row's own forward reference ("the only consumers this permission will
+  ever have") now resolves: this step is the consumer, and `decisions.md` **O-M3S01-03** records
+  what does and does not close on `REQ-015`'s side of that link.
+- **`M1-S02`, backward, through assumption A13** — both `errorDisplayField` values (`Priority`,
+  `Origin`) must be visible on the page where the error appears, or the error surfaces at "Top of
+  Page" instead. `REQ-014` (`M1-S02`) is the row that carries this requirement and assumption
+  A13; its own note is now stale in one place, corrected in `decisions.md` **O-M3S01-04** rather
+  than by editing `REQ-014` itself, which is not this run's row to touch.
+
+**`REQ-030`/`REQ-031` do not reuse `REQ-014`, `REQ-015` or `REQ-016`.** `REQ-014` is the layout
+*visibility* requirement A13 rests on; `REQ-015`/`REQ-016` are the bypass *grant* these two rules
+consume; `REQ-030`/`REQ-031` are the two rules themselves — four different artefacts, at three
+different layers of the same mechanism, minted at the layer that built each one.
+
+## Coverage, as far as M3-S01
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M3-S01` — eight
+of twenty-two steps documented (`M1-S01`, `M1-S02`, `M2-S01`, `M2-S02`, `M2-S03`, `M2-S04`,
+`M2-S05`, `M3-S01`):
+
+- **Requirements with no step:** not yet computable, same reasoning as every prior "Coverage"
+  section — ids are minted when a step delivers them. Thirty-one `REQ-XXX` ids exist and all
+  thirty-one have a step.
+- **Steps with no requirement:** 0 of the documented set. Both of `M3-S01`'s `ValidationRule`
+  manifest members are named by a row above. `M3-S01`'s `package.xml` and `deploy-order.md` are
+  workbook rows (`CWB-OTHER-017`, `-018`), not traceability rows, the same convention every prior
+  step's manifest/deploy-order pair already established; `validation-bypass-note.md` is a
+  workbook row (`CWB-VR-003`) for the same reason.
+- **Manual tests outstanding:** 14 — the 10 already outstanding after `M2-S05`
+  (`TC-M1S01-01`, `TC-M1S01-02`, `TC-M1S02-01`, `TC-M2S01-01`, `TC-M2S04-01`–`04`,
+  `TC-M2S05-01`–`02`) plus this step's manual test **W01**, staged as four cases
+  (`TC-M3S01-01`–`04`: the two positive per-rule proofs and the two bypass-negative proofs).
+- **Orphan artefacts, build scope:** 7 at the moment of this run's linter pass, up from 2 after
+  `M2-S05` — **5 of the increase belong to `M3-S02`, running concurrently with this
+  documentation pass**, not to `M3-S01`: `M3-S02` (`ui`, building the intake email templates) has
+  written `EmailFolder:case_intake` and two `EmailTemplate` components to `artefacts/M3-S02/`
+  ahead of being `tested`/documented, so they are legitimately orphaned right now and are that
+  step's own doc-keeper pass to resolve, not this run's. `M3-S01` itself adds no orphan: both
+  `ValidationRule` members are byte-identical to their file stems. The two `M1-S01`
+  `BusinessProcess` file-stem keys are unchanged (`decisions.md` D-M1S01-03). See "Concurrency"
+  below.
+
+## Linter result — after M3-S01
+
+```
+check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..
+```
+traceability.md: 31 row(s), build schema, 0 coverage gap(s), 7 orphan(s), 0 error(s), 1 warning(s)
+exit 0
+```
+
+Zero errors. Of the 7 orphans, 5 are `M3-S02`'s in-flight artefacts (`EmailFolder:case_intake`
+and two `EmailTemplate` components, both raw and manifest-member forms — `M3-S02` is `running`,
+not yet `tested`), and 2 are the pre-existing `M1-S01` `BusinessProcess` file-stem keys
+(`decisions.md` D-M1S01-03). `M3-S01` adds zero: both `ValidationRule` members resolve against
+`REQ-030`/`REQ-031` above.
+
+```
+check_rtm.py --file traceability.md --manifest-dir artefacts/M3-S01 --repo-root ../../..
+traceability.md: 31 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 29 warning(s)
+exit 0
+```
+
+The step-scoped run's twenty-nine warnings are the twenty-nine rows belonging to every other
+step whose components are not under `artefacts/M3-S01/` — scope, not a finding, the same shape
+every prior step-scoped run in this file has produced. Both of `M3-S01`'s own rows resolve at
+this scope.
+
+## Concurrency — `M3-S02` was writing its own artefacts while this run documented `M3-S01`
+
+`M3-S02` (`ui`, the intake email templates) is `running` concurrently, owned by a separate
+`metadata-builder` invocation. This run touched no `M3-S02` row, no `M3-S02` artefact, and no
+`M3-S02` line in `decisions.md` or `workbook/`:
+
+1. **`traceability.md`** — re-read immediately before every write in this run. The build-scope
+   linter run above picked up `M3-S02`'s new manifest members as orphans (see "Coverage" above)
+   because they exist on disk, not because this run wrote anything about them. Nothing in that
+   fact is this run's to resolve; `M3-S02`'s own doc-keeper pass, once it is `tested`, is where
+   those rows land.
+2. **`decisions.md`** — re-read immediately before this run's append (tail matched the
+   `M2-S05` open-items block, with no `M3-S02` content yet). This run's six decisions and four
+   open items were appended after that point.
+3. **`workbook/99-other-configuration.md`** — re-read immediately before appending; the tail
+   matched the `M2-S05` closing paragraph, with nothing new added since. `workbook/05-validation-rules.md`
+   is a new file this run created; `M3-S02`'s own rows, when it documents, will land in
+   `workbook/02-page-layouts-and-lightning-pages.md` (layouts) and wherever Step 4's map sends
+   the email templates — not a file this run touched.
+
+No row or file belonging to `M3-S02` was written by this run at any point.
+
+## What M3-S02 rests on — Q22 for the sender identity and the loop question it opens, Q63 for the one-event-one-email discipline on both templates, Q68 for the sandbox proof gate, Q88 in prose only
+
+Two new rows, two new requirements, minted after re-reading this file immediately before writing
+(no other step is `running` concurrently — `M3-S01` documented before this run started):
+
+- **Q22, answered** — "who sends the acknowledgement, and does that address forward back to us?"
+  This is the `source` cell for `REQ-032`, and it is also this row's central unresolved fact: the
+  answer states `support@acme.example` — a live routing address — itself sends the
+  acknowledgement, which is the reading `sender-identity-note.md` § 2 and `decisions.md`
+  **D-M3S02-04** carry forward as an M3 gate decision rather than settle.
+- **Q63, answered, cited on both `REQ-032` and `REQ-033`** — "one acknowledgement per case
+  creation: auto-response only, with no parallel Flow email alert on the same event." Applied to
+  `REQ-032` as the reason exactly one customer-facing template exists; applied to `REQ-033` as the
+  same one-event-one-email discipline carried to the internal handover notice, recorded in
+  `decisions.md` **D-M3S02-03**.
+- **Q68, answered, cited in prose on `REQ-032` only** — "a sandbox test with real inbound email, a
+  clock test, and a loop test, before go-live." This is the detection mechanism `sender-identity-note.md`
+  § 2 names as what actually stands between this build and the Q22 loop risk, and it is the gate
+  `decisions.md` **D-M3S02-04** defers the sender question to rather than resolving it here.
+- **Q88, answered, cited in prose on `REQ-033` only** — "Tier 1 uses Omni-Channel push, so no
+  queue email; Billing wants the queue address emailed" (Tier 2 not addressed by the answer key;
+  the proposed default — a shared mailbox per queue — was accepted for it). This is `M2-S04`'s
+  queue-level notification control, not this step's; cited here only so a reader does not conflate
+  it with `REQ-033`'s case-level handover notice — `decisions.md` **O-M3S02-04** names the
+  distinction.
+- **`M1-S01`, backward** — `depends_on: ["M1-S01"]`. Both templates' merge fields resolve against
+  `Case` fields (`{!Case.Subject}`, `{!Case.CaseNumber}`, `{!Case.Priority}`, `{!Case.Origin}`),
+  and `{!Case.Origin}`'s *values* are the `CaseOrigin` standard value set `M1-S01` built
+  (`REQ-005`) — a send-time dependency, not a deploy-time one, per
+  `artefacts/M3-S02/deploy-order.md` § "Needed at send time, not at deploy time".
+- **`M3-S01`, sibling, not a dependency** — both steps mint requirement ids in the same
+  milestone; `REQ-032`/`REQ-033` do not reuse `REQ-030`/`REQ-031`, which are the two `Priority`/`Origin`
+  validation rules, a different mechanism entirely.
+- **`M3-S04`, forward reference** — the step that actually writes `senderEmail`,
+  `<template>case_intake/Case_Acknowledgement</template>` and
+  `<assignedToTemplate>case_intake/Case_Escalated_To_Tier2</assignedToTemplate>` (the last on
+  `M4-S04`). `decisions.md` **D-M3S02-04** binds `M3-S04` not to pre-empt the Q22-vs-answers-key
+  sender decision on its own.
+
+**`REQ-032`/`REQ-033` do not reuse any existing id.** No prior row names an email template, a
+customer acknowledgement, or a Tier 2 handover notice — the closest neighbours, `REQ-023`/`REQ-027`
+(Tier 2's *access* to escalated cases) and `REQ-029` (Tier 2's *sharing* grant), are about who can
+open the case, not about the notice that tells them one landed.
+
+## Coverage, as far as M3-S02
+
+Full coverage counts are compiled at `M5-S04`, over every documented step. As of `M3-S02` — nine
+of twenty-two steps documented (`M1-S01`, `M1-S02`, `M2-S01`, `M2-S02`, `M2-S03`, `M2-S04`,
+`M2-S05`, `M3-S01`, `M3-S02`):
+
+- **Requirements with no step:** not yet computable, same reasoning as every prior "Coverage"
+  section — ids are minted when a step delivers them. Thirty-three `REQ-XXX` ids exist and all
+  thirty-three have a step.
+- **Steps with no requirement:** 0 of the documented set. All three of `M3-S02`'s manifest
+  members are named by `REQ-032` or `REQ-033` above. `M3-S02`'s `package.xml` and
+  `deploy-order.md` are workbook rows (`CWB-OTHER-019`, `-020`), not traceability rows, the same
+  convention every prior step's manifest/deploy-order pair already established;
+  `sender-identity-note.md` is a workbook row (`CWB-LAYOUT-006`) for the same reason.
+- **Manual tests outstanding:** 15 — the 14 already outstanding after `M3-S01`
+  (`TC-M1S01-01`, `TC-M1S01-02`, `TC-M1S02-01`, `TC-M2S01-01`, `TC-M2S04-01`–`04`,
+  `TC-M2S05-01`–`02`, `TC-M3S01-01`–`04`) plus this step's manual test **B06**, staged as two
+  cases (`TC-M3S02-01`–`02`: the positive sender-facts proof and the negative
+  no-hardcoded-address proof). `REQ-033` carries no manual test and adds none to this count.
+- **Orphan artefacts, build scope:** 4 at the moment of this run's linter pass, down from 7 after
+  `M3-S01` — the 5 `M3-S02` components that were legitimately orphaned while the step was
+  `running`/`tested` are now covered by `REQ-032`/`REQ-033`, **except two**, which stay orphaned
+  for a reason internal to the checker rather than to this row: `check_rtm.py`'s file-to-component
+  deriver keys an `.email` file as `EmailTemplate:<file stem>` (script `SUFFIX_TYPE`), with no
+  folder-qualification logic for `EmailFolder`-nested templates the way `OBJECT_CHILD_DIR` folds a
+  `Case/fields/` file into `CustomField:Case.<stem>` for a `CustomObject` child. So it derives
+  `EmailTemplate:Case_Acknowledgement` and `EmailTemplate:Case_Escalated_To_Tier2` from the two
+  `.email` files, while this file's rows correctly name the deployable, folder-qualified members
+  `EmailTemplate:case_intake/Case_Acknowledgement` and `EmailTemplate:case_intake/Case_Escalated_To_Tier2`
+  (`artefacts/M3-S02/package.xml`; `artefacts/M3-S02/deploy-order.md` § "`package.xml` member
+  forms"). The two forms do not string-match, so the checker reports two orphans that are not
+  real coverage gaps — recorded as a skill-depth signal in `decisions.md` **O-M3S02-05**, not
+  fixed by renaming the row to the checker's cruder key, which would make the traceability row
+  wrong to make the linter quiet. The two remaining orphans are the pre-existing `M1-S01`
+  `BusinessProcess` file-stem keys, unchanged (`decisions.md` D-M1S01-03).
+
+## Linter result — after M3-S02
+
+```
+check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..
+traceability.md: 33 row(s), build schema, 0 coverage gap(s), 4 orphan(s), 0 error(s), 1 warning(s)
+exit 0
+```
+
+Zero errors. Of the 4 orphans, 2 are the `check_rtm.py` component-key mismatch on
+folder-qualified `EmailTemplate` naming described above (`decisions.md` **O-M3S02-05**), and 2 are
+the pre-existing `M1-S01` `BusinessProcess` file-stem keys (`decisions.md` D-M1S01-03). `M3-S02`
+adds zero real orphans: both manifest members resolve against `REQ-032`/`REQ-033` above under
+their correct, folder-qualified names.
+
+```
+check_rtm.py --file traceability.md --manifest-dir artefacts/M3-S02 --repo-root ../../..
+traceability.md: 33 row(s), build schema, 0 coverage gap(s), 2 orphan(s), 0 error(s), 31 warning(s)
+exit 0
+```
+
+The step-scoped run's thirty-one warnings are the thirty-one rows belonging to every other step
+whose components are not under `artefacts/M3-S02/` — scope, not a finding, the same shape every
+prior step-scoped run in this file has produced. Both of `M3-S02`'s own rows resolve at this
+scope; the 2 orphans at this scope are the same `check_rtm.py` key-derivation mismatch named
+above, not a real gap specific to this narrower scope.
+
+## Linter result — after M3-S04
+
+```
+check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root <repo root>
+WARN: orphan artefacts: 2 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 37 row(s), build schema, 0 coverage gap(s), 2 orphan(s), 0 error(s), 1 warning(s)
+exit 0
+```
+
+Zero errors, zero coverage gaps: `REQ-036` and `REQ-037` above both carry an artefact and a test,
+and every other row is unchanged. The 2 orphans are `AssignmentRule:Case.Case_Intake_Routing` and
+`AutoResponseRule:Case.Case_Acknowledgement` — a **new** kind of key-derivation mismatch, distinct
+from `M3-S02`'s (`decisions.md` **O-M3S02-05**): `check_rtm.py`'s `RULE_CONTAINERS` map derives a
+second, singular, rule-named key by reading inside `AssignmentRules`/`AutoResponseRules` files, in
+addition to the container-level key (`AssignmentRules:Case`, `AutoResponseRules:Case`) that
+`package.xml` actually declares and that `REQ-036`/`REQ-037` name, matching `package.xml` and
+`workbook/06-automation.md` `CWB-AUT-010`/`-011`. The two keys carry different evidencing paths
+(`package.xml` versus the rule file itself), so naming the deployable member — the form every
+other row in this build uses — cannot also satisfy the derived sub-key. Recorded as a skill-depth
+signal, not fixed by renaming the row to the checker's finer-grained key: `decisions.md`
+**O-M3S04-03**.

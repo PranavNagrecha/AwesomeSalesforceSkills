@@ -1,0 +1,106 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T05-05-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T05-05-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T05-05-00Z.json",
+  "summary": "Documented M3-S03 (Email-to-Case routing addresses for support@/billing@, Web-to-Case intake, Case settings — Settings:Case, rebuilt once for F-25/F-26/F-27) after step-tester marked it tested. Re-rendered PLAN.md/CLARIFICATIONS.md. Wrote three Section 6 workbook rows (CWB-AUT-007 the Settings:Case component, CWB-AUT-008 email-to-case-routing-addresses.md, CWB-AUT-009 web-to-case-form-contract.md, in workbook/06-automation.md) and two Other Configuration rows (CWB-OTHER-021 package.xml, CWB-OTHER-022 deploy-order.md); minted two new requirement ids (REQ-034 the two Email-to-Case routing addresses, REQ-035 Web-to-Case intake), continuing from the highest existing (REQ-033), and wrote their traceability.md Matrix rows plus a requirement-id-derivation pair. Appended two decisions (D-M3S03-01 — F-25's systemUserEmail is an attribution field, not a sender, so D-M3S02-04 stays open; D-M3S03-02 — F-27's forced casePriority is a new M3-gate decision affecting M4-S03, not pre-empted here even though the dry-run operator already amended M4-S03's own notes) and two open items (O-M3S03-01 — F-26's API >= 64.0 floor now leaves this build's package.xml files at two different versions with no plan-level field recording either, flagged as a build-planner v6 backlog item; O-M3S03-02 — the tester's own manual-test wording contradicts itself, 'exactly its three documented children' against a deliberate two-of-three omission the same sentence names, corrected as a record rather than by hand-editing acceptance_tests[].description). Cross-referenced REQ-005 (M1-S01's CaseOrigin row, which named M3 as its downstream consumer) and REQ-021 (M2-S04's fall-through-queue row, whose defaultCaseOwner is the field this step actually wires) in prose rather than duplicating either row — check_rtm.py enforces req_id uniqueness across the matrix, so a requirement already owning a row is cited, not re-rowed. Did not stage session-scratchpad UAT cases or Given/When/Then criteria for the two deferred manual tests this run, unlike the M3-S01/M3-S02 doc-keeper passes; both manual tests are recorded in traceability.md with their verbatim text and left for the M3-gate/compile-run UAT pack instead (extensions.uat_cases_staged is empty; see Process Observations, ambiguous). Set the step's status to documented via build_plan.py, then re-rendered PLAN.md/CLARIFICATIONS.md again and ran check_rtm.py, which reported 0 coverage gaps, 0 orphans, 0 errors and 0 warnings across all 35 matrix rows. No other M3 step was running concurrently with this pass.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every one of the step's four declared outputs plus the one undeclared deploy-order.md produced a workbook row (five rows total), both new traceability rows carry a real source_req_id freshly minted from requirement.md (L6-L8) and an answered clarification (Q17 for REQ-034, Q66 for REQ-035), and both rows name a verification cell stating what passed and what remains outstanding. check_rtm.py ran clean (0 errors, 0 warnings, 0 orphans) over the whole matrix, not just the two new rows. Re-running this pass would replace the same five workbook rows and two traceability rows rather than duplicate them (all keyed). Not MEDIUM: the step's type (`routing`) is a named row in Step 4's map (not a fallthrough to Other Configuration for the component itself — only package.xml/deploy-order.md use that default, consistent with every prior step), no artefact needed judgment to place in a section, and neither requirement id was inferred from an ambiguous field — both read directly off requirement.md's own intake-channel lines (L6-L8) plus one directly-answered clarification each. The decision not to stage scratchpad UAT cases this run is a scope choice, not a gap: agents/build-doc-keeper/AGENT.md Step 7 does not require it, and the final UAT pack is Step 10's job at the milestone compile step, which has not run.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_rtm.py's req_id-uniqueness rule (an ERROR, not a WARN) was checked before writing any new row, which is why REQ-005 and REQ-021 were cross-referenced in prose rather than given a second row each for M3-S03 — the matrix stayed at exactly 35 rows with 0 duplicate-req_id errors on the actual lint run, not merely by intent.",
+      "evidence": {"source": "repo_scan", "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The rebuild's three field-level changes (F-25/F-26/F-27) and the one manifest-version change were verified against the actual on-disk artefact (settings/Case.settings-meta.xml, package.xml) rather than only against the builder's own prose, before being written into the workbook and traceability rows.",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S03/settings/Case.settings-meta.xml, artefacts/M3-S03/package.xml"}
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "F-27's forced casePriority default permanently disables M4-S03's null-guarded Priority stamp for email-originated Cases, and that consequence is only partly recorded in the plan today: the dry-run operator amended M4-S03's own notes, but the actual three-way choice (accept Medium / derive-and-overwrite / other) is still unmade, and nothing currently blocks M4-S03 from being built against the stale plan wording before the M3 gate resolves it.",
+      "evidence": {"source": "repo_scan", "path": "plan.json steps[M4-S03].amendments[0], artefacts/M3-S03/deploy-order.md"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "This build now carries two package.xml API versions (67.0 on M3-S03, 62.0 on every M1/M2 step) with no plan-level field recording either as the build's version — mock_deploy.py's own tooling fix (computing the highest version across the steps selected in one request) is what let Run 5 validate the mixed set, not anything in plan.json itself.",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S03/package.xml, artefacts/M1-S01/package.xml"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "plan.json steps[M3-S03].acceptance_tests[3].description asserts the webToCase block carries 'exactly its three documented children' while, in the same sentence, naming the deliberate omission of the third — the two clauses cannot both be true, and the artefact matches the omission, not the count. Recorded as O-M3S03-02 rather than hand-edited, since this agent does not touch acceptance_tests[].description.",
+      "evidence": {"source": "repo_scan", "path": "plan.json steps[M3-S03].acceptance_tests[3].description"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "No session-scratchpad UAT case or Given/When/Then criterion was staged for TC-M3S03-01/TC-M3S03-02 this run, unlike the M3-S01/M3-S02 precedent of compiling a manual test into a linted case pre-emptively. Both test ids appear in traceability.md as manual, deferred tests with their verbatim acceptance-test text; whether the M3 gate expects them pre-compiled or expects the milestone-compile step (Step 10, not yet run) to produce them first is not stated anywhere this agent can read.",
+      "evidence": {"source": "repo_scan", "path": "traceability.md REQ-034/REQ-035 rows"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M3-S03 is documented; M3-S04 is the next pending M3 step and the one that both exercises decisions.md D-M3S02-04 (senderEmail) and must read D-M3S03-02 before its own Priority-stamping logic (in M4-S03) is finalized.",
+      "evidence": {"source": "repo_scan", "path": "plan.json"},
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "M3-S04 is pending and depends on this step; advancing M3 requires it built, tested and documented next, with D-M3S02-04 and D-M3S03-02 both read first."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "O-M3S03-01's API-version drift and missing plan-level api_version field is a build-planner concern, not something this documentation pass can fix from inside a single step.",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S03/package.xml"},
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "a plan-level api_version (or a documented per-step floor) is a planner-owned field; recorded as backlog here rather than acted on, because this agent does not edit plan.json beyond the Step 9 status transition."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations requirement, confidence rubric this agent's own Step 11 overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "the atomic-write rule for this envelope's markdown/JSON pair"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked against the four refusal triggers; none fired — the step was tested on entry and every new row carries a real source_req_id"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the step fields this agent reads (inputs, outputs, skills, depends_on, runs, amendments) and leaves untouched beyond the CLI-mediated status transition"},
+    {"type": "standard", "id": "agents/_shared/schemas/output-envelope.schema.json", "path": "agents/_shared/schemas/output-envelope.schema.json", "used_for": "the fixed top-level field set; this run's payload rides in extensions"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 step types (routing -> Section 6, package.xml/deploy-order -> Other Configuration default) and amend-step/amend-step --prose-only scope; § 6 this agent's per-step job; § 8 a decision entry as the deepen-a-skill signal, and set-status as the only status writer"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "Concept 1 row schema, Concept 2 the ten sections and the routing table for Section 6, Concept 3 one agent per row"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "the build-layer RTM column set, the REQ-XXX minting convention this build's own 'Requirement id derivation' section documents, the status enum, the pipe-delimited multi-value convention"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "a decision entry recording the alternative rejected and the source it rests on, applied to D-M3S03-01 and D-M3S03-02"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how a test result is recorded as acceptance evidence, applied to the two deferred manual tests' traceability entries"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "confirming the TC-/UAT-CI-/AC- id-space distinction before deciding not to mint a scratchpad case this run"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then shape used to evaluate whether the two manual tests are observable, and to identify the O-M3S03-02 wording defect"},
+    {"type": "skill", "id": "admin/email-to-case-configuration", "path": "skills/admin/email-to-case-configuration/SKILL.md", "used_for": "reading the rebuilt routing-address elements (newEntityRecordType, casePriority) against the skill's documented element set and worked-example defaults, grounding D-M3S03-02 and O-M3S03-01"},
+    {"type": "skill", "id": "admin/case-management-setup", "path": "skills/admin/case-management-setup/SKILL.md", "used_for": "the org-level CaseSettings field set (systemUserEmail, defaultCaseOwner) and the deploy-order sequencing this step's artefacts and workbook notes rest on, grounding D-M3S03-01"}
+  ],
+  "extensions": {
+    "step_id": "M3-S03",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/06-automation.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows": ["CWB-AUT-007", "CWB-AUT-008", "CWB-AUT-009", "CWB-OTHER-021", "CWB-OTHER-022"],
+    "traceability_rows": ["REQ-034", "REQ-035"],
+    "decisions_appended": ["D-M3S03-01", "D-M3S03-02"],
+    "open_items_appended": ["O-M3S03-01", "O-M3S03-02"],
+    "rows_replaced": [],
+    "uat_cases_staged": [],
+    "acceptance_criteria_staged": [],
+    "status_set": "documented"
+  },
+  "followups": [
+    {"agent": "build-step-runner", "because": "M3-S04 is pending and depends on this step; advancing M3 requires it built, tested and documented next, with decisions.md D-M3S02-04 (senderEmail) and D-M3S03-02 (casePriority / M4-S03) both read first."},
+    {"agent": "milestone-verifier", "because": "not yet — M3 still has two undocumented steps (M3-S04 pending, M3-S05 blocked), so a milestone verification run now would be premature."}
+  ]
+}

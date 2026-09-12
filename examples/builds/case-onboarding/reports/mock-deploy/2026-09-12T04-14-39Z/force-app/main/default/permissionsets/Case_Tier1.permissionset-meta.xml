@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Case Tier 1</label>
+    <description>Tier 1 persona delta on Case Agent Core: Support record type visibility, edit on Case.Severity__c. Record access is via OWD and M2-S05 sharing rule, not here. See deploy-order.md for rationale.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Severity__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <recordTypeVisibilities>
+        <recordType>Case.Support</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+</PermissionSet>

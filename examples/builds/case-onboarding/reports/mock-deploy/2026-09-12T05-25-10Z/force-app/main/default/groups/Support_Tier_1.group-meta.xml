@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Membership source for the Tier 1 General case queue. Q29 - membership changes monthly, so the queue names this group and the roster is maintained as GroupMember data, never as named users in the queue file. Owner: CRM admin lead.</description>
+    <doesIncludeBosses>true</doesIncludeBosses>
+    <name>Support Tier 1</name>
+</Group>

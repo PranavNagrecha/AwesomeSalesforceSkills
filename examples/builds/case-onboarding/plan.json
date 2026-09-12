@@ -2367,8 +2367,8 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "rejected",
-      "report_path": "reports/MILESTONE-M2-REPORT.md"
+      "status": "accepted",
+      "report_path": "reports/MILESTONE-M2-REPORT-v2.md"
     },
     {
       "id": "M3",
@@ -2411,7 +2411,8 @@
           "expected": "exit 0"
         }
       ],
-      "status": "pending"
+      "status": "accepted",
+      "report_path": "reports/MILESTONE-M3-REPORT.md"
     },
     {
       "id": "M4",
@@ -2858,7 +2859,7 @@
         {
           "type": "checker",
           "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S01",
-          "description": "No dangerous system permission (Modify All Data, View All Data, Author Apex) rides along on the integration permission set. W09 — against an empty artefacts/M2-S01/ this checker exits 1 with 'Scanned 0 access-model metadata file(s); no files matched the provided paths', so it is not a discovery no-op: an empty step fails it.",
+          "description": "No dangerous system permission (Modify All Data, View All Data, Author Apex) rides along on the integration permission set. W09 — against an empty artefacts/M2-S01/ this checker prints 'Scanned 0 access-model metadata file(s); no files matched the provided paths' but exits 0 with a WARN; check-outputs and the always-on manifest test stop an empty step (F-22).",
           "expected": "exit 0"
         },
         {
@@ -2904,7 +2905,49 @@
           "result": "workbook rows 4; traceability rows 2; decisions appended 5"
         }
       ],
-      "human_gate": true
+      "human_gate": true,
+      "amendments": [
+        {
+          "at": "2026-09-12T04:10:43Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "F-22",
+          "fields": [
+            "acceptance_tests"
+          ],
+          "before": {
+            "acceptance_tests": [
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M2-S01",
+                "description": "W01: reworded to what the exit code carries at this scope. Fixture run over exactly this step's two files printed 'Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 0' and the coverage line 'Bypass_Case_Intake_Validation  0  permission set Case_Intake_Integration', exiting 0. What exit 0 proves here: the grant is not dangling (an ERROR is a permission set granting a custom permission no file in the tree defines). What it does NOT prove is the consumer side — with no validation rule in scope, 'Consumers' is 0 and removing the grant entirely still exits 0 with an INFO. The consumer cross-reference is carried by M3's milestone test, which runs the same checker at --manifest-dir artefacts --strict once M3-S01's rules exist.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S01",
+                "description": "No dangerous system permission (Modify All Data, View All Data, Author Apex) rides along on the integration permission set. W09 — against an empty artefacts/M2-S01/ this checker exits 1 with 'Scanned 0 access-model metadata file(s); no files matched the provided paths', so it is not a discovery no-op: an empty step fails it.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "xml",
+                "description": "Every *.xml / *-meta.xml under artefacts/M2-S01/ parses with ElementTree.",
+                "expected": "all parse"
+              },
+              {
+                "type": "manifest",
+                "description": "Every type/member produced by M2-S01 appears in package.xml and every member has a file.",
+                "expected": "consistent"
+              },
+              {
+                "type": "manual",
+                "description": "B01: rewritten as an assertion over an artefact this design-only build actually produces. PermissionSetAssignment is record data, not metadata, so no artefact here can record who holds the permission. Given the bypass exists to let API-created cases skip the Case validation rules, when permissionsets/Case_Intake_Integration.permissionset-meta.xml is read, then it grants Bypass_Case_Intake_Validation and nothing else — no objectPermissions, no fieldPermissions, no userPermissions — and deploy-order.md carries the post-deploy instruction that this permission set is assigned to the integration/automated-process identity only and to no human user, with a named owner for that assignment.",
+                "expected": "ticked at the M2 milestone gate from the artefacts on disk"
+              }
+            ]
+          },
+          "prose_only": true
+        }
+      ]
     },
     {
       "id": "M2-S02",
@@ -2974,7 +3017,7 @@
         {
           "type": "checker",
           "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
-          "description": "No sharing-bypass or dangerous system permission is granted to any of the four team permission sets. Step scope: all four permission sets are this step's outputs. W09 — against an empty directory this checker exits 1 ('Scanned 0 access-model metadata file(s)'), so it is not a discovery no-op.",
+          "description": "No sharing-bypass or dangerous system permission is granted to any of the four team permission sets. Step scope: all four permission sets are this step's outputs. W09 — against an empty directory this checker prints 'Scanned 0 access-model metadata file(s)' but exits 0 with a WARN; check-outputs and the always-on manifest test stop an empty step (F-22).",
           "expected": "exit 0"
         },
         {
@@ -3039,7 +3082,52 @@
           "result": "UPDATE pass after rebuild #2 (F-15): amended CWB-PERM-003..006 target_value+notes (description trimmed, rebuild cited), amended REQ-017..020 test_result (re-tested 2026-09-12T01-26-00Z, all checkers exit 0 with new DESC rules), appended D-M2S02-07 and O-M2S02-04, F-15 closed at the skills"
         }
       ],
-      "human_gate": true
+      "human_gate": true,
+      "amendments": [
+        {
+          "at": "2026-09-12T04:10:43Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "F-22",
+          "fields": [
+            "acceptance_tests"
+          ],
+          "before": {
+            "acceptance_tests": [
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+                "scope": "build",
+                "description": "Declared at build scope because standards/build-orchestration.md § 5 lists check_permission_set_architecture.py as cross-referential and validate WARNs on it at step scope on an 'access' step. Fixture runs at both scopes printed 'No issues found.' and exited 0. What it actually asserts, read from the file's own docstring: fieldPermissions edit-without-read, the objectPermissions dependency chain, modifyAllRecords/viewAllRecords as a sharing-bypass WARN, >8 objectPermissions as INFO, a PSG naming a permission set not in the tree, no-op muting, and hasActivationRequired inside a group. It exits 1 only on ERROR. Note for the reader: the object-and-field-metadata cross-reference § 5 attributes to it is not implemented in the current file — build scope is declared to satisfy the contract and to catch a PSG whose member set another step moves, not because the object cross-check runs.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/permission-set-group-composition/scripts/check_permission_set_group_composition.py --manifest-dir artefacts/M2-S02",
+                "description": "B02 closed twice over. The checker was rebuilt this session (commit fa3cad053): naming-convention violations are now WARN and exit 0, ERROR is reserved for platform facts (a PSG with no permissionSets, the same PS twice in one group, a missing label, a status outside the documented enum, a file that will not parse). The three PSGs are additionally renamed to the skill's own PSG_<persona>_<env> convention, so the WARN does not fire either. Fixture run over exactly this step's eight files: 'GOOD: reuse: permission set Case_Agent_Core is referenced by 3 PSGs (PSG_Billing_Prod, PSG_Tier1_Prod, PSG_Tier2_Prod)' and 'Summary: 1 good, 0 error, 0 warn, 0 info, scanned 3 PSG file(s)', exit 0. The same fixture with the pre-rename names printed 3 WARNs and still exited 0. Step scope is correct and sufficient: every permission set and PSG this checker reads is an output of this step.",
+                "expected": "exit 0",
+                "scope": "step"
+              },
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+                "description": "No sharing-bypass or dangerous system permission is granted to any of the four team permission sets. Step scope: all four permission sets are this step's outputs. W09 — against an empty directory this checker exits 1 ('Scanned 0 access-model metadata file(s)'), so it is not a discovery no-op.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "xml",
+                "description": "Every *.xml / *-meta.xml under artefacts/M2-S02/ parses with ElementTree.",
+                "expected": "all parse"
+              },
+              {
+                "type": "manifest",
+                "description": "Every type/member produced by M2-S02 appears in package.xml and every member has a file.",
+                "expected": "consistent"
+              }
+            ]
+          },
+          "prose_only": true
+        }
+      ]
     },
     {
       "id": "M2-S03",
@@ -3082,13 +3170,13 @@
         {
           "type": "checker",
           "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
-          "description": "No migratable permission is left on a profile and no profile-only element leaked into a permission set. Step scope: the three profiles are this step's outputs. W09 — an empty artefacts/M2-S03/ exits 1 here, so this is not a discovery no-op.",
+          "description": "No migratable permission is left on a profile and no profile-only element leaked into a permission set. Step scope: the three profiles are this step's outputs. W09 — an empty artefacts/M2-S03/ exits 0 with a WARN here; check-outputs and the always-on manifest test stop an empty step (F-22).",
           "expected": "exit 0"
         },
         {
           "type": "checker",
           "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
-          "description": "B03: declared at build scope with --manifest-dir artefacts, which is the only scope where this assertion exists. The record types are M1-S01's artefacts and the layouts are M1-S02's, so at artefacts/M2-S03 the checker printed 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s)' plus two INFO lines saying 6 record-type and 3 layout references were 'unresolvable at this scope' — a profile naming Case.Nonexistent and Case-Ghost Layout still exited 0. Over the whole tree the same command printed 'Scanned 14 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.' and exited 0, and the same negative fixture produced a MEDIUM ('record type Case.Billing is active but no scanned Profile or PermissionSet makes it visible') and two LOW dangling-reference findings. --strict is declared because a dangling profile reference is LOW/MEDIUM in this checker and would exit 0 without it: with --strict the correct tree exits 0 and the negative exits 1, so the exit code carries the cross-reference the description claims. The checker was rebuilt this session (fa3cad053) to report the unresolvable-at-this-scope case as INFO rather than silence.",
+          "description": "B03: declared at build scope with --manifest-dir artefacts, which is the only scope where this assertion exists. The record types are M1-S01's artefacts and the layouts are M1-S02's, so at artefacts/M2-S03 the checker printed 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s)' plus two INFO lines saying 6 record-type and 3 layout references were 'unresolvable at this scope' — a profile naming Case.Nonexistent and Case-Ghost Layout still exited 0. Over the whole tree the same command printed 'Scanned 15 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.' and exited 0, and the same negative fixture produced a MEDIUM ('record type Case.Billing is active but no scanned Profile or PermissionSet makes it visible') and two LOW dangling-reference findings. --strict is declared because a dangling profile reference is LOW/MEDIUM in this checker and would exit 0 without it: with --strict the correct tree exits 0 and the negative exits 1, so the exit code carries the cross-reference the description claims. The checker was rebuilt this session (fa3cad053) to report the unresolvable-at-this-scope case as INFO rather than silence.",
           "expected": "exit 0",
           "scope": "build"
         },
@@ -3177,6 +3265,42 @@
               "artefacts/M2-S03/package.xml"
             ]
           }
+        },
+        {
+          "at": "2026-09-12T04:10:43Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "F-22, O-M2S03-01",
+          "fields": [
+            "acceptance_tests"
+          ],
+          "before": {
+            "acceptance_tests": [
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S03",
+                "description": "No migratable permission is left on a profile and no profile-only element leaked into a permission set. Step scope: the three profiles are this step's outputs. W09 — an empty artefacts/M2-S03/ exits 1 here, so this is not a discovery no-op.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts --strict",
+                "description": "B03: declared at build scope with --manifest-dir artefacts, which is the only scope where this assertion exists. The record types are M1-S01's artefacts and the layouts are M1-S02's, so at artefacts/M2-S03 the checker printed 'Scanned 3 metadata file(s): 0 record type(s), 0 layout(s)' plus two INFO lines saying 6 record-type and 3 layout references were 'unresolvable at this scope' — a profile naming Case.Nonexistent and Case-Ghost Layout still exited 0. Over the whole tree the same command printed 'Scanned 14 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.' and exited 0, and the same negative fixture produced a MEDIUM ('record type Case.Billing is active but no scanned Profile or PermissionSet makes it visible') and two LOW dangling-reference findings. --strict is declared because a dangling profile reference is LOW/MEDIUM in this checker and would exit 0 without it: with --strict the correct tree exits 0 and the negative exits 1, so the exit code carries the cross-reference the description claims. The checker was rebuilt this session (fa3cad053) to report the unresolvable-at-this-scope case as INFO rather than silence.",
+                "expected": "exit 0",
+                "scope": "build"
+              },
+              {
+                "type": "xml",
+                "description": "Every *.xml / *-meta.xml under artefacts/M2-S03/ parses with ElementTree.",
+                "expected": "all parse"
+              },
+              {
+                "type": "manifest",
+                "description": "Every type/member produced by M2-S03 appears in package.xml and every member has a file — Profile as its own <name> block with the three profile names as members.",
+                "expected": "consistent"
+              }
+            ]
+          },
+          "prose_only": true
         }
       ]
     },
@@ -3227,7 +3351,7 @@
           "type": "checker",
           "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M2-S04",
           "scope": "step",
-          "description": "S2 (this run's sweep): the checker is declared here for the first time. v3 left it off because it exited 1 on any finding and Q88 gives Tier_1_General no queue email on purpose. It was rebuilt this session (fa3cad053): queue-configuration findings are WARNs that exit 0, ERROR is reserved for a file that will not parse, it recurses into queues/ and groups/ at any depth, and it reads the real element names (name, email, queueSobject, queueMembers). Fixture run over exactly this step's six files: it listed all three queues with 'Objects : Case', listed the three public groups, and printed 'Warnings found (1): WARN: [Queue: Tier 1 General] No <email> configured'. Exit 0. That WARN is the documented expected state for this build, not a defect — --strict is deliberately NOT passed, and with it the same fixture exits 1. What exit 1 would mean here is a queue or group file that will not parse.",
+          "description": "S2 (this run's sweep): the checker is declared here for the first time. v3 left it off because it exited 1 on any finding and Q88 gives Tier_1_General no queue email on purpose. It was rebuilt this session (fa3cad053): queue-configuration findings are WARNs that exit 0, ERROR is reserved for a file that will not parse, it recurses into queues/ and groups/ at any depth, and it reads the real element names (name, email, queueSobject, queueMembers). Fixture run over exactly this step's six files: it listed all three queues with 'Objects : Case', listed the three public groups, and printed 'Warnings found (2): WARN: [Queue: Tier 1 General] No <email> configured, WARN: [Queue: Tier 2 Engineering] No <email> configured'. Exit 0. Both WARNs are the documented expected state for this build, not a defect (O-M2S04-01) — --strict is deliberately NOT passed, and with it the same fixture exits 1. What exit 1 would mean here is a queue or group file that will not parse.",
           "expected": "exit 0, with the Tier 1 General no-email WARN as the documented outcome"
         },
         {
@@ -3309,6 +3433,56 @@
               "artefacts/M2-S04/package.xml"
             ]
           }
+        },
+        {
+          "at": "2026-09-12T04:10:43Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "O-M2S04-01",
+          "fields": [
+            "acceptance_tests"
+          ],
+          "before": {
+            "acceptance_tests": [
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M2-S04",
+                "scope": "step",
+                "description": "S2 (this run's sweep): the checker is declared here for the first time. v3 left it off because it exited 1 on any finding and Q88 gives Tier_1_General no queue email on purpose. It was rebuilt this session (fa3cad053): queue-configuration findings are WARNs that exit 0, ERROR is reserved for a file that will not parse, it recurses into queues/ and groups/ at any depth, and it reads the real element names (name, email, queueSobject, queueMembers). Fixture run over exactly this step's six files: it listed all three queues with 'Objects : Case', listed the three public groups, and printed 'Warnings found (1): WARN: [Queue: Tier 1 General] No <email> configured'. Exit 0. That WARN is the documented expected state for this build, not a defect — --strict is deliberately NOT passed, and with it the same fixture exits 1. What exit 1 would mean here is a queue or group file that will not parse.",
+                "expected": "exit 0, with the Tier 1 General no-email WARN as the documented outcome"
+              },
+              {
+                "type": "xml",
+                "description": "Every *.xml / *-meta.xml under artefacts/M2-S04/ parses with ElementTree.",
+                "expected": "all parse"
+              },
+              {
+                "type": "manifest",
+                "description": "Every type/member produced by M2-S04 appears in package.xml and every member has a file.",
+                "expected": "consistent"
+              },
+              {
+                "type": "manual",
+                "description": "Given the step claims to have built the work pools, when artefacts/M2-S04/ is listed, then all six components are present and named: queues Tier_1_General, Tier_2_Engineering and Billing, and groups Support_Tier_1, Support_Tier_2 and Billing_Team, and every queue's <queueSobject><sobjectType> is Case (Q30).",
+                "expected": "ticked at the milestone gate"
+              },
+              {
+                "type": "manual",
+                "description": "W02 (1 of 3): given Q88 fixes the per-queue email posture, when the three queue files are read, then Tier_1_General carries no <email> (work is pushed by Omni-Channel, not emailed), Billing carries the billing@ queue address, and Tier_2_Engineering carries the Tier 2 shared mailbox.",
+                "expected": "ticked at the M2 milestone gate"
+              },
+              {
+                "type": "manual",
+                "description": "W02 (2 of 3): given Q29 says membership changes monthly and must not require a deploy, when the three group files are read, then no <users> element names an individual username in any queue or group file — membership is expressed by public group and role only — and a support manager confirms the three public-group memberships match the current rosters.",
+                "expected": "ticked at the M2 milestone gate"
+              },
+              {
+                "type": "manual",
+                "description": "W02 (3 of 3) and S4: given skills/admin/data-skew-and-sharing-performance SKILL.md:88 defines ownership data skew as a single user or queue owning more than 10,000 records of one object, and this build routes roughly 480 cases a day to Tier_1_General as the catch-all, when queue-retirement-runbook.md is read, then it records that 10,000-record threshold, names who monitors the open-case count owned by each queue, and states the split-into-buckets remedy that skill documents.",
+                "expected": "ticked at the M2 milestone gate"
+              }
+            ]
+          },
+          "prose_only": true
         }
       ]
     },
@@ -3484,8 +3658,33 @@
           "expected": "ticked at the M3 milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T03:11:39Z",
+          "envelope_path": "envelopes/M3-S01/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T03:11:39Z",
+          "envelope_path": "envelopes/M3-S01/2026-09-12T03-19-00Z.json",
+          "result": "Built 2 Case ValidationRules (Priority_Required_On_Agent_Save, Origin_Must_Be_Known) with the Bypass_Case_Intake_Validation clause and ISBLANK(TEXT(...)) blank guards, plus validation-bypass-note.md, package.xml (API 62.0) and deploy-order.md; declared checker exited 0 with 0 findings under --strict; check-outputs ok."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T03-27-39Z",
+          "envelope_path": "envelopes/M3-S01/2026-09-12T03-28-00Z.json",
+          "result": "ran 4 (xml, manifest, check_validation_rules.py --strict, check-outputs), failed 0, manual 1 deferred to M3 gate"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T03:35:00Z",
+          "envelope_path": "envelopes/M3-S01/2026-09-12T03-47-00Z.json",
+          "result": "workbook rows 5 (2 Section 5 ValidationRule + 1 Section 5 doc + 2 Other configuration); traceability rows 2 (REQ-030, REQ-031); decisions appended 6 (D-M3S01-01..06) + 4 open items (O-M3S01-01..04)"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -3562,8 +3761,39 @@
           "expected": "ticked at the M3 milestone gate from the artefacts on disk"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T03:14:08Z",
+          "envelope_path": "envelopes/M3-S02/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T03:25:27Z",
+          "envelope_path": "envelopes/M3-S02/running.json",
+          "result": "re-claimed after session cut-off (running -> running); artefacts present, deploy-order.md and envelopes outstanding"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T03:25:27Z",
+          "envelope_path": "envelopes/M3-S02/2026-09-12T03-30-00Z.json",
+          "result": "built: 7 declared outputs verified byte-identical + deploy-order.md written; 2/2 declared checkers exit 0 on pass 0 (check_email_templates --strict: 'Scanned 4 email template file(s); 0 finding(s)'); check-outputs ok; Q22-vs-answers-key loop divergence recorded not resolved"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T03:36:00Z",
+          "envelope_path": "envelopes/M3-S02/2026-09-12T03-40-00Z.json",
+          "result": "ran 5 (xml, manifest, check_email_templates.py --strict, check_email_deliverability_strategy.py, check-outputs), failed 0, manual 1 (B06, deferred to M3 gate)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T03:50:00Z",
+          "envelope_path": "envelopes/M3-S02/2026-09-12T03-55-00Z.json",
+          "result": "workbook rows 6 (4 Section 2 email/folder/note + 2 Other Configuration manifest/deploy-order); traceability rows 2 (REQ-032, REQ-033); decisions appended 4 (D-M3S02-01..04) + 5 open items (O-M3S02-01..05); UAT cases TC-M3S02-01/02 (AC-032.1/.2) staged and linted clean"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -3643,8 +3873,51 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T04:16:16Z",
+          "envelope_path": "envelopes/M3-S03/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T04:16:16Z",
+          "envelope_path": "envelopes/M3-S03/2026-09-12T04-16-16Z.json",
+          "result": "Built Settings:Case (emailToCase with support@/billing@ routing addresses on caseOrigin Email-Support/Email-Billing, caseOwner+casePriority unset, saveEmailHeaders true, Bounce/Requeue, A3 Lightning threading pair; webToCase enableWebToCase true + caseOrigin Web, defaultResponseTemplate omitted; defaultCaseOwner Tier_1_General/Queue) plus routing-address note, Web-to-Case form contract, package.xml and deploy-order.md. Declared build-scope check_case_management_setup.py exit 0 on first pass; negative control exit 1. No sender element written - D-M3S02-04 left to the M3 gate. newEntityRecordType recorded as a skill gap, not written."
+        },
+        {
+          "agent": "mock-deploy",
+          "started": "2026-09-12T04:35:57Z",
+          "envelope_path": "envelopes/M3-S03/failed.json",
+          "result": "Dry-run validation (checkOnly, sfskills-dev, API 62.0) failed on CaseSettings: 'Enter the system user's email address' — useSystemUserAsDefaultCaseUser=true without systemUserEmail (api_meta L111871). Second finding from a scratchpad probe: EmailToCaseRoutingAddress.newEntityRecordType (case-management-setup gotcha 9 instructs it; omitted as ungrounded) is rejected at API 62.0 ('Property not valid in version 62.0') and accepted at 67.0. Rebuild: add systemUserEmail, stamp newEntityRecordType on both routing addresses, raise package.xml to the accepted API version. F-25/F-26 in reports/MOCK-DEPLOY-M3.md."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T04:39:20Z",
+          "envelope_path": "envelopes/M3-S03/running.json",
+          "result": "REBUILD after operator dry-run validation failure (run 5, reports/MOCK-DEPLOY-M3.md): applying F-25 systemUserEmail, F-26 newEntityRecordType (object-qualified), F-27 casePriority, and package.xml version 67.0. Operator-proven on a scratchpad copy; nothing deployed from here."
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T04:39:20Z",
+          "envelope_path": "envelopes/M3-S03/2026-09-12T04-39-20Z.json",
+          "result": "REBUILT Settings:Case with the four operator-proven changes and nothing else: F-25 systemUserEmail support-noreply@acme.example (org error 'Enter the system user's email address'; NOT a sender, does not pre-empt D-M3S02-04); F-26 newEntityRecordType Case.Support / Case.Billing on the two routing addresses (bare 'Support' fails, object-qualified resolves; rejected at 62.0/63.0, accepted from 64.0 - closes the as-built ungrounded item 2); F-27 casePriority Medium on both (org requires it although api_meta L112039 does not - UNVERIFIED-in-guide / proven-live; consequence: email cases now arrive with Priority set, so M4-S03's null-guarded stamp never fires and the flow must derive-and-overwrite or the plan accepts Medium; Web-to-Case has no such setting); package.xml version 62.0 -> 67.0 (build-wide floor 64.0). web-to-case-form-contract.md byte-identical; before/after hashes in deploy-order.md section 0. Declared build-scope check_case_management_setup.py exit 0 on first pass, step-scope control exit 0, both XML parse, check-outputs ok. Nothing deployed; no sf command run."
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T04:53:23Z",
+          "envelope_path": "envelopes/M3-S03/2026-09-12T04-53-23Z.json",
+          "result": "ran 3 (checker exit 0, xml 2/2 parsed, manifest consistent), failed 0, manual 2 deferred to milestone gate"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T05:05:00Z",
+          "envelope_path": "envelopes/M3-S03/2026-09-12T05-05-00Z.json",
+          "result": "workbook rows 5 (3 Section 6 + 2 Other configuration); traceability rows 2 (REQ-034, REQ-035); decisions appended 2 (D-M3S03-01, D-M3S03-02) + 2 open items (O-M3S03-01, O-M3S03-02)"
+        }
+      ],
       "human_gate": false
     },
     {
@@ -3706,7 +3979,7 @@
         },
         {
           "type": "manual",
-          "description": "W02: given the checker above now proves that exactly one rule is active, this test carries what the exit code cannot see. Given Q25 and Q26, when Case.assignmentRules-meta.xml is read, then the active rule's entries route on Case.Origin and the Account support tier only (both present at save); the last entry is a catch-all with no criteriaItems and no booleanFilter, assigned to the Tier_1_General queue built in M2-S04; and every assignedTo names a queue developer name that exists under artefacts/M2-S04/queues/.",
+          "description": "W02: given the checker above now proves that exactly one rule is active, this test carries what the exit code cannot see. Given Q25 and Q26, when Case.assignmentRules-meta.xml is read, then the active rule's entries route on Case.Origin (Origin only this phase — Premier gets a faster SLA in M4-S02, not a different owner; G3 decision 3, decisions.md D-M3S04-02) only (both present at save); the last entry is a catch-all with no criteriaItems and no booleanFilter, assigned to the Tier_1_General queue built in M2-S04; and every assignedTo names a queue developer name that exists under artefacts/M2-S04/queues/.",
           "expected": "ticked at the milestone gate"
         },
         {
@@ -3715,9 +3988,86 @@
           "expected": "ticked at the milestone gate"
         }
       ],
-      "status": "pending",
-      "runs": [],
-      "human_gate": false
+      "status": "documented",
+      "runs": [
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T05:16:34Z",
+          "envelope_path": "envelopes/M3-S04/running.json",
+          "result": "running"
+        },
+        {
+          "agent": "metadata-builder",
+          "started": "2026-09-12T05:16:34Z",
+          "envelope_path": "envelopes/M3-S04/2026-09-12T05-20-02Z.json",
+          "result": "AssignmentRules:Case + AutoResponseRules:Case built; declared checker exit 0; Account-support-tier criterion escalated to the M3 gate, not written"
+        },
+        {
+          "agent": "step-tester",
+          "started": "2026-09-12T05:25:00Z",
+          "envelope_path": "envelopes/M3-S04/2026-09-12T05-27-04Z.json",
+          "result": "ran 3 (xml, manifest, check_case_management_setup.py build-scope), failed 0, manual 2 deferred to M3 gate (W02 flagged: title/test assert Account-support-tier routing, artefact deliberately Origin-only per deploy-order.md sec6 row1)"
+        },
+        {
+          "agent": "build-doc-keeper",
+          "started": "2026-09-12T05:30:00Z",
+          "envelope_path": "envelopes/M3-S04/2026-09-12T05-35-00Z.json",
+          "result": "workbook rows 5 (CWB-AUT-010..012, CWB-OTHER-023..024); traceability rows 2 (REQ-036, REQ-037); decisions appended 7 (D-M3S04-01..04, O-M3S04-01..03); check_rtm.py 37 rows, 0 coverage gaps, 0 errors, 2 orphans explained (O-M3S04-03)"
+        }
+      ],
+      "human_gate": false,
+      "notes": "OPERATOR DECISION ahead of the M3 gate (dry-run operator, Fable, 2026-09-12), resolving decisions.md D-M3S02-04 for this step only: AutoResponseRules ruleEntry.senderEmail = support-noreply@acme.example — a verified org-wide address that is NOT an Email-to-Case routing address (support@ / billing@ are routing addresses and must never be the sender: email-to-case-configuration gotcha 3 loop, email-templates-and-alerts § sender identity). This follows the build's own recommended reading and Q22's original proposed_default, and matches M3-S03's systemUserEmail. The M3 gate may still overturn it (Q22 reading: support@ sends, loop risk accepted under the Q68 sandbox test); if so, only this step's senderEmail changes. The builder must cite this note and D-M3S02-04 in deploy-order.md and must not write support@acme.example or billing@acme.example into any senderEmail. Also: F-27 — email cases arrive with Priority = Medium from the routing address, so assignment-rule criteria keyed on Priority for Email-* origins compare against that default, not null; key criteria on Origin and Account.Support_Tier__c (Q25) as planned. Templates referenced by auto-response entries must be M3-S02's case_intake/Case_Acknowledgement (folder-qualified) and nothing else.",
+      "amendments": [
+        {
+          "at": "2026-09-12T05:12:42Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "D-M3S02-04 resolved for this step ahead of the M3 gate: senderEmail = support-noreply@acme.example (non-routing org-wide address); F-27 priority default noted",
+          "fields": [
+            "notes"
+          ],
+          "before": {}
+        },
+        {
+          "at": "2026-09-12T06:24:06Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "G3 decision 3 (D-M3S04-02): routing is Origin-only this phase; W02 re-worded so the manual test is tickable as built (verifier F-34); title is not amendable on a documented step — planner v6",
+          "fields": [
+            "acceptance_tests"
+          ],
+          "before": {
+            "acceptance_tests": [
+              {
+                "type": "checker",
+                "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+                "scope": "build",
+                "description": "W02 (v4 verification): declared for the first time on this step, because the defect that made it undeclarable is fixed and the fix was reproduced rather than taken on trust. What it asserts here that nothing else in the plan does: exactly one <assignmentRule> in this step's file carries <active>true</active>, and an active rule exists at all — the condition every auto-response in Case.autoResponseRules-meta.xml depends on, since an auto-response fires only when the assignment rule fires. Build scope is declared to match the literal --manifest-dir, per standards/build-orchestration.md section 5, and it is the scope the assertion needs: this checker also cross-checks M3-S03's webToCase/caseOrigin against M1-S01's CaseOrigin standardValueSet, and both are steps this one depends_on transitively. Fixture run over a tree holding M1-S01's value set, M3-S03's Case.settings-meta.xml and this step's two rule files: 'No case management setup issues found.' exit 0. Matched negative, this step's <active> flipped to false: exit 1 on 'No active case assignment rule found in metadata. Auto-response rules depend on the assignment rule firing - without an active rule, auto-responses will not send.' Second matched negative, M3-S03's caseOrigin changed to 'WebPortal': exit 1. On the pre-repair checker the first negative could not fire and the passing case fired falsely, which is why this test is new rather than reworded.",
+                "expected": "exit 0"
+              },
+              {
+                "type": "xml",
+                "description": "Every *.xml / *-meta.xml under artefacts/M3-S04/ parses with ElementTree.",
+                "expected": "all parse"
+              },
+              {
+                "type": "manifest",
+                "description": "Every type/member produced by M3-S04 appears in package.xml and every member has a file — AssignmentRules and AutoResponseRules each as their own <name> block.",
+                "expected": "consistent"
+              },
+              {
+                "type": "manual",
+                "description": "W02: given the checker above now proves that exactly one rule is active, this test carries what the exit code cannot see. Given Q25 and Q26, when Case.assignmentRules-meta.xml is read, then the active rule's entries route on Case.Origin and the Account support tier only (both present at save); the last entry is a catch-all with no criteriaItems and no booleanFilter, assigned to the Tier_1_General queue built in M2-S04; and every assignedTo names a queue developer name that exists under artefacts/M2-S04/queues/.",
+                "expected": "ticked at the milestone gate"
+              },
+              {
+                "type": "manual",
+                "description": "Given Q28 and Q63, when Case.autoResponseRules-meta.xml is read, then exactly one acknowledgement entry can match any given case — no second entry and no parallel Flow email alert on the same event — and its template names the Classic template M3-S02 built, folder-qualified.",
+                "expected": "ticked at the milestone gate"
+              }
+            ]
+          },
+          "prose_only": true
+        }
+      ]
     },
     {
       "id": "M3-S05",
@@ -4030,7 +4380,19 @@
       ],
       "status": "pending",
       "runs": [],
-      "human_gate": false
+      "human_gate": false,
+      "notes": "F-27 (reports/MOCK-DEPLOY-M3.md run 4, 2026-09-12): the org requires EmailToCaseRoutingAddress.casePriority, so M3-S03 sets Priority = Medium on both routing addresses. Email-originated cases therefore arrive with Priority already populated and a null-guarded priority stamp in this flow never fires for them; only Web-to-Case cases (no such setting) arrive with Priority null. The builder must either derive Priority from Severity__c / Support_Tier__c and overwrite the intake default for Origin in (Email-Support, Email-Billing), or record that the plan accepts Medium for email cases — and say which in deploy-order.md. The 'writes only when the field is null' rule in this step's inputs still holds for EntitlementId and BusinessHoursId; it is superseded for Priority on the email channels. Also read decisions.md D-M3S02-04 before touching any sender or template reference.",
+      "amendments": [
+        {
+          "at": "2026-09-12T04:50:22Z",
+          "by": "dry-run operator (Fable)",
+          "reason": "F-27: M3-S03 now sets casePriority on both Email-to-Case routing addresses, so this flow's null-guarded Priority stamp is dead for email cases; builder must derive/overwrite or record acceptance of Medium",
+          "fields": [
+            "notes"
+          ],
+          "before": {}
+        }
+      ]
     },
     {
       "id": "M4-S04",
@@ -4610,11 +4972,17 @@
     },
     {
       "name": "milestone:M2",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T03:10:35Z",
+      "notes": "Per MILESTONE-M2-REPORT-v2.md (ready-with-findings). Recorded, not resolved: A1 (deferred Q13) still underpins 9/14 M2 requirements; Billing visibility is composed across M2-S04 queue ownership + M2-S05 absence-of-rule (O-M2S05-01); checklist line 4 (Tier 2 mailbox) NOT ticked — artefact has no <email>; F-16 headroom half open (M2-S01 at 244 chars); F-18 stale M1 merged manifest before any manifest deploy; F-22/F-23 carried. Mock deploy run 3 (32/0) is the § 5 evidence."
     },
     {
       "name": "milestone:M3",
-      "status": "pending"
+      "status": "approved",
+      "by": "dry-run operator (Fable; design-only, nothing deploys)",
+      "at": "2026-09-12T06:24:17Z",
+      "notes": "G3 (milestone:M3) approved by the dry-run operator (Fable; design-only, nothing deploys) on reports/MILESTONE-M3-REPORT.md (verdict not-ready on the single ground that M3-S05 is blocked — the verifier holds that verdict by its Step 1 rule; F-29 closed at source fec2a222b and re-verified 4/4 executable tests pass; W02 re-worded by prose-only amendment; the blocked step is accepted here as a known gap). Decisions: (1) D-M3S02-04 CONFIRMED: acknowledgement From = support-noreply@acme.example; replyToEmail stays support-noreply@ — the verifier's third option (replyToEmail = support@) is REJECTED because assignment-rules gotcha 6 names replyToEmail in the loop pattern (customer out-of-office auto-replies go to Reply-To → Email-to-Case → new case → acknowledgement → loop); reply threading is accepted as lost, agents reply from the case. (2) D-M3S03-02: option 2 — M4-S03 derives Priority from Severity__c/Support_Tier__c and OVERWRITES the routing-address default for Email-* origins (M4-S03 notes already say so); this also closes F-32 because the before-save flow runs before Priority_Required_On_Agent_Save evaluates. (3) D-M3S04-02: option b — routing is Origin-only this phase; Premier gets a faster SLA (M4-S02), not a different owner; M3-S04's title and manual test W02 are corrected at planner v6 (title is not amendable on a documented step). (4) F-28: support-noreply@acme.example is a named deploy prerequisite (owner: dry-run operator; due before any real deploy); one org-wide address provisioning also serves M3-S03's systemUserEmail; no rebuild. (5) O-M3S04-01/Q24: narrowing accepted — the layout shows the checkbox; defaulting it on is an agent-training line in the M5 UAT script. (6) O-M3S03-01/F-31: build API version = 67.0 accepted; accepted M1/M2 manifests are not rewritten; scripts/mock_deploy.py deploys at the highest step version (a7dbdf018); planner v6 adds a plan-level api_version. Accepted explicitly: M3-S05 (Omni-Channel) stays blocked on Q32–Q35 — no push routing this phase, REQ-022's push half undelivered; the F-30 sender-note prose mismatch (M3-S02 sender-identity-note.md says support@) is a documentation fix at the next M3-S02 touch; F-33 stale sentence likewise."
     },
     {
       "name": "milestone:M4",

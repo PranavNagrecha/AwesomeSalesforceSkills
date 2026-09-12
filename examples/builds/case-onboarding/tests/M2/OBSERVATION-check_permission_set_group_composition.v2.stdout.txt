@@ -1,0 +1,3 @@
+GOOD: reuse: permission set 'Case_Agent_Core' is referenced by 3 PSGs (PSG_Billing_Prod, PSG_Tier1_Prod, PSG_Tier2_Prod) — composition reuse working as intended.
+
+Summary: 1 good, 0 error, 1 warn, 0 info, scanned 3 PSG file(s).

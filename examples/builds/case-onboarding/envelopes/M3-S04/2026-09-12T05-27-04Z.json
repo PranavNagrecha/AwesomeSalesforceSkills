@@ -1,0 +1,279 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T05-27-04Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-27-04Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S04/2026-09-12T05-27-04Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S04",
+    "status_at_entry": "built"
+  },
+  "summary": "M3-S04 tested. All 3 runnable acceptance tests passed: both always-on structural checks (xml 3/3 parse; manifest 2/2 types <-> files, two-way consistent, no wildcards, deploy-order.md and owner-writer-map.md correctly excluded as non-metadata) and the one declared checker (check_case_management_setup.py, build scope) at exit 0, paired with check-outputs ok (4/4 declared outputs present, non-empty, parsing). 2 manual tests deferred to the M3 gate, neither ticked here. Step set to tested. Recorded verbatim per instruction, not resolved: the step's title and the first manual test (W02) assert routing on Case.Origin AND the Account support tier, but the built assignment-rule artefact routes on Case.Origin only -- deploy-order.md section 6 row 1 documents this as a deliberate omission (no answer names a tier->queue mapping and no skill grounds a cross-object criteriaItems notation on a Case rule), so the mismatch is a plan/artefact disagreement for the M3 gate to adjudicate, not a test failure here.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 rubric, HIGH row: every declared test ran (checker, xml, manifest) or was correctly classified as manual (2), both always-on checks completed, and every result came from an exit code this agent observed. No MEDIUM trigger fired -- no command test was refused, no manifest exclusion was needed for a coverage-gap type (both AssignmentRules and AutoResponseRules are ordinary standalone-file types), and check-outputs reported no missing, empty or malformed declared output. No LOW trigger fired -- the one declared checker resolved to exactly one existing script, the artefact directory holds 5 files (2 XML + package.xml + 2 markdown), and every exit code was captured to tests/M3-S04/. The title/manual-test vs artefact mismatch is a build-content ambiguity for the human gate, not a defect in this agent's own test execution, so it does not lower confidence under this step's own rubric.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "Rule-entry order inside Case_Intake_Routing is load-bearing and correct: the Email-Billing entry (Billing queue) precedes the Email-Support entry (Tier_1_General), and a criteria-less catch-all (also Tier_1_General) is last with no booleanFilter -- matching skills/admin/assignment-rules SKILL.md 'Active Rule Limit and Rule Entry Order' (first match wins, evaluation stops). Exactly one assignmentRule carries <active>true</active>, which check_case_management_setup.py's declared test independently confirms.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/assignmentRules/Case.assignmentRules-meta.xml",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "The auto-response rule's senderEmail and replyToEmail both read support-noreply@acme.example, matching the binding operator note on plan.json steps[M3-S04].notes (2026-09-12T05:12:42Z) and avoiding both of this org's live Email-to-Case routing addresses (support@/billing@ per M3-S03 settings) -- the mail-loop condition admin/assignment-rules gotcha 6 and admin/email-to-case-configuration gotcha 3 both warn against is not present in the built artefact.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "check_assignment_rules.py is undeclared on this step (informational, per plan.json steps[M3-S04].inputs.note) and was run anyway as an observation, not a test. Its exit code and message reproduce deploy-order.md section 7's prediction exactly at both scopes: exit 1 on \"target 'Tier_1_General' appears in multiple rule entries\" at step and build scope alike, with the step-scope run additionally emitting AR-LOOP-02 (no routing-address inventory in scope) that the build-scope run does not. The duplication is deliberate by construction (Q18 support@ -> Tier 1, Q26 catch-all -> Tier 1), so this non-passing exit code was correctly left undeclared rather than forced into acceptance_tests[].",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M3-S04/OBSERVATION-check_assignment_rules.build-scope.stdout.txt",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "admin",
+      "observation": "Recorded verbatim, not resolved, per this run's instructions: steps[M3-S04].title reads 'Case assignment rules and auto-response rules driven by Origin and account support tier', and the first manual acceptance test (W02) asserts the active rule's entries 'route on Case.Origin and the Account support tier only'. The built assignmentRules file routes on Case.Origin only -- no criteriaItems anywhere in the file names Account.Support_Tier__c or any related-object field. deploy-order.md section 6 row 1 (written by metadata-builder) records this as deliberate: Q25 names Support_Tier__c as available at save but no answer maps a tier to a queue, and no skill under skills/ grounds a related-object criteriaItems/field notation on a Case assignment rule, so writing one would have been a guessed value shape. The mismatch is between the plan's own title/test text and what the plan's own answers can ground -- this agent does not adjudicate it.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "deploy-order.md is produced on this run (per metadata-builder's own contract) but is not in steps[M3-S04].outputs[], so check-outputs never adjudicates it -- the fourth consecutive M3 step where this pattern appears (decisions.md O-M3S02-03). Not a test failure: check-outputs still returned ok:true for the four outputs that are declared.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "M3-S04 is tested; three findings (the title/test mismatch, the undeclared deploy-order.md, and D-M3S02-04's still-open sender-address question) need to reach decisions.md and the workbook.",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "It owns decisions.md, the workbook and traceability.md, and is the next stage once a step reaches tested.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "The title/manual-test vs artefact mismatch on the Account support tier is exactly the kind of open design question the M3 milestone gate needs adjudicated before acceptance.",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "It compiles the M3 acceptance report and is where a human sees this ambiguity alongside every other M3 step's manual tests.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S04/deploy-order.md",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "Section 5 - Acceptance tests; Checker scope; Section 4 metadata step types",
+      "used_for": "The five test types and their runners, the rule that a declared checker command is run verbatim from the build directory, and the rule that a metadata step's manifest check fails rather than skips when no package.xml exists"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the mandatory Process Observations block and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence of the report/envelope pair and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked against the precondition; none applied because the step's status was built"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "branch": "Run-time Agents",
+      "used_for": "The ban on org writes, on mutating files outside the build directory, and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "branch": "$defs.acceptanceTest",
+      "used_for": "The shape of acceptance_tests[] and outputs[] this agent reads, and the meaning of scope as declared intent rather than a path source"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar the manifest was judged against -- one types block per type, members naming components"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "The source-format filename-to-metadata-type mapping used to derive AssignmentRules:Case and AutoResponseRules:Case from the two artefact files"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Checking whether AssignmentRules or AutoResponseRules legitimately have no standalone file or manifest member; neither does, so no exclusion was applied and only the two non-XML markdown artefacts were excluded"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then shape both manual tests were checked against before deferral; both name an observable outcome, so neither is reported unusable"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "The bar for a manual line being tickable by a human without re-interpretation, which is what the title/test-vs-artefact mismatch fails against"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "Its checker is the step's one declared checker acceptance test (build scope)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/SKILL.md",
+      "used_for": "The Active Rule Limit and Rule Entry Order rule the healthy observation on entry ordering cites; its checker was run as an undeclared observation only, per plan.json's own note on why it is not a declared test"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S04",
+    "build_id": "case-onboarding",
+    "status_set": "tested",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M3-S04/results.json",
+    "tests_run": 3,
+    "failed": [],
+    "skipped_manual": [
+      "W02: given the checker above now proves that exactly one rule is active, this test carries what the exit code cannot see. Given Q25 and Q26, when Case.assignmentRules-meta.xml is read, then the active rule's entries route on Case.Origin and the Account support tier only (both present at save); the last entry is a catch-all with no criteriaItems and no booleanFilter, assigned to the Tier_1_General queue built in M2-S04; and every assignedTo names a queue developer name that exists under artefacts/M2-S04/queues/.",
+      "Given Q28 and Q63, when Case.autoResponseRules-meta.xml is read, then exactly one acknowledgement entry can match any given case -- no second entry and no parallel Flow email alert on the same event -- and its template names the Classic template M3-S02 built, folder-qualified."
+    ],
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree over artefacts/M3-S04/** (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "3 files, 3 parsed, 0 failed",
+        "capture": "tests/M3-S04/xml.stdout"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way file<->member derivation against artefacts/M3-S04/package.xml (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "2 mapped files, 2 explicit members (AssignmentRules:Case, AutoResponseRules:Case), 0 wildcards, 0 unmatched in either direction; 2 markdown artefacts excluded as non-metadata",
+        "capture": "tests/M3-S04/manifest.stdout"
+      },
+      {
+        "name": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+        "type": "checker",
+        "declared_scope": "build",
+        "runner": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "No case management setup issues found.",
+        "capture": "tests/M3-S04/checker_check_case_management_setup.stdout.txt"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M3-S04",
+        "exit_code": 0,
+        "verdict": "ok",
+        "detail": "{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []} -- the second half of the checker's pass condition",
+        "capture": "tests/M3-S04/check-outputs.json"
+      },
+      {
+        "name": "manual: W02 routing criteria (Origin + Account support tier)",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M3 milestone gate -- not tickable as written against the built artefact",
+        "detail": "Given/When/Then shape present and an observable outcome named, so usable in shape terms per admin/acceptance-criteria-given-when-then. On-disk read confirms the catch-all and queue-name portions of the assertion hold, but the Account-support-tier portion has no corresponding criteriaItems anywhere in the file -- recorded verbatim as an ambiguity in process_observations rather than resolved."
+      },
+      {
+        "name": "manual: auto-response single-match + template",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M3 milestone gate",
+        "detail": "Given/When/Then shape present and an observable outcome named, so usable. On-disk read: exactly one ruleEntry in the file, template field reads case_intake/Case_Acknowledgement (folder-qualified) -- consistent with a tickable claim, but not ticked here."
+      }
+    ],
+    "observation_only_not_an_acceptance_test": {
+      "command": "python3 skills/admin/assignment-rules/scripts/check_assignment_rules.py --manifest-dir artefacts",
+      "exit_code": 1,
+      "stdout": "ISSUE: Case.assignmentRules-meta.xml / rule 'Case_Intake_Routing': target 'Tier_1_General' appears in multiple rule entries. Verify this is intentional and not a copy-paste error.",
+      "did_not_contribute_to_passed": true,
+      "reason_undeclared": "plan.json steps[M3-S04].inputs.note: the duplicate target is deliberate by construction (Q18 + Q26), and the checker has no way to be told so; deploy-order.md section 7 documents the same finding as expected",
+      "step_scope_variant": {
+        "command": "python3 skills/admin/assignment-rules/scripts/check_assignment_rules.py --manifest-dir artefacts/M3-S04",
+        "exit_code": 1,
+        "additional_stdout": "ISSUE: AR-LOOP-02 WARN: no Email-to-Case routing-address inventory (settings/Case.settings-meta.xml or equivalent) found under artefacts/M3-S04 -- cannot verify the sender is not an intake address at this scope."
+      },
+      "capture": "tests/M3-S04/OBSERVATION-check_assignment_rules.build-scope.stdout.txt"
+    },
+    "deny_list_screening": {
+      "standard": "standards/build-orchestration.md section 5 deploy deny-list",
+      "commands_screened": 2,
+      "commands_refused": 0,
+      "detail": "The one declared checker command and check-outputs were screened against the full deny-list pattern before execution; neither matched, so both ran verbatim as declared with no flag appended, removed, re-ordered or substituted. The two undeclared assignment-rules-checker observation runs were likewise screened (both python3 skills/... --manifest-dir forms) before being run for the Process Observations."
+    },
+    "dimensions_skipped": []
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "the workbook rows, traceability entries and decisions log for M3-S04 need to record the title/test-vs-artefact mismatch, the undeclared deploy-order.md, and D-M3S02-04's still-open sender-address question"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "the M3 acceptance report is where a human adjudicates the Account-support-tier mismatch alongside every other M3 step"
+    }
+  ]
+}

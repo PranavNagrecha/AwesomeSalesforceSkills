@@ -1,0 +1,127 @@
+=== SYMBOL INVENTORY (M1 accepted + M2 this milestone) ===
+  object (1):
+      Case  <- M1-S01
+  field (3):
+      Account.Region__c  <- M1-S01
+      Account.Support_Tier__c  <- M1-S01
+      Case.Severity__c  <- M1-S01
+  recordType (2):
+      Case.Billing  <- M1-S01
+      Case.Support  <- M1-S01
+  layout (2):
+      Case-Case Billing Layout  <- M1-S02
+      Case-Case Support Layout  <- M1-S02
+  compactLayout (1):
+      Case.Case_Intake  <- M1-S01
+  businessProcess (2):
+      Case.Billing_Process  <- M1-S01
+      Case.Support_Process  <- M1-S01
+  picklistValueSet (1):
+      StandardValueSet:CaseOrigin  <- M1-S01
+  customPermission (1):
+      Bypass_Case_Intake_Validation  <- M2-S01
+  permissionSet (5):
+      Case_Agent_Core  <- M2-S02
+      Case_Billing  <- M2-S02
+      Case_Intake_Integration  <- M2-S01
+      Case_Tier1  <- M2-S02
+      Case_Tier2  <- M2-S02
+  permissionSetGroup (3):
+      PSG_Billing_Prod  <- M2-S02
+      PSG_Tier1_Prod  <- M2-S02
+      PSG_Tier2_Prod  <- M2-S02
+  profile (3):
+      Acme Billing  <- M2-S03
+      Acme Support Tier 1  <- M2-S03
+      Acme Support Tier 2  <- M2-S03
+  queue (3):
+      Billing  <- M2-S04
+      Tier_1_General  <- M2-S04
+      Tier_2_Engineering  <- M2-S04
+  group (3):
+      Billing_Team  <- M2-S04
+      Support_Tier_1  <- M2-S04
+      Support_Tier_2  <- M2-S04
+  sharingRule (1):
+      Support_Cases_To_Tier_2  <- M2-S05
+
+=== REFERENCE RESOLUTION over M2's metadata files ===
+
+  custom-permission grant  (1)
+      'Bypass_Case_Intake_Validation'            resolved (this milestone) <- M2-S01   [artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml]
+
+  PSG membership  (6)
+      'Case_Agent_Core'                          resolved (this milestone) <- M2-S02   [artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml]
+      'Case_Billing'                             resolved (this milestone) <- M2-S02   [artefacts/M2-S02/permissionsetgroups/PSG_Billing_Prod.permissionsetgroup-meta.xml]
+      'Case_Agent_Core'                          resolved (this milestone) <- M2-S02   [artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml]
+      'Case_Tier1'                               resolved (this milestone) <- M2-S02   [artefacts/M2-S02/permissionsetgroups/PSG_Tier1_Prod.permissionsetgroup-meta.xml]
+      'Case_Agent_Core'                          resolved (this milestone) <- M2-S02   [artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml]
+      'Case_Tier2'                               resolved (this milestone) <- M2-S02   [artefacts/M2-S02/permissionsetgroups/PSG_Tier2_Prod.permissionsetgroup-meta.xml]
+
+  field grant (fieldPermissions)  (5)
+      'Case.Severity__c'                         resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+      'Account.Region__c'                        resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+      'Account.Support_Tier__c'                  resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+      'Case.Severity__c'                         resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml]
+      'Case.Severity__c'                         resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml]
+
+  object grant (objectPermissions)  (5)
+      'Case'                                     resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+      'Account'                                  resolved-standard-object   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+      'Contact'                                  resolved-standard-object   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+      'EmailMessage'                             resolved-standard-object   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+      'Entitlement'                              resolved-standard-object   [artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml]
+
+  record-type visibility  (9)
+      'Case.Billing'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Billing.permissionset-meta.xml]
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Tier1.permissionset-meta.xml]
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S02/permissionsets/Case_Tier2.permissionset-meta.xml]
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml]
+      'Case.Billing'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml]
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml]
+      'Case.Billing'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml]
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml]
+      'Case.Billing'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml]
+
+  layout assignment -> layout  (9)
+      'Case-Case Billing Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml]
+      'Case-Case Support Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml]
+      'Case-Case Billing Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml]
+      'Case-Case Support Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml]
+      'Case-Case Support Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml]
+      'Case-Case Billing Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml]
+      'Case-Case Support Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml]
+      'Case-Case Support Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml]
+      'Case-Case Billing Layout'                 resolved (earlier milestone) <- M1-S02   [artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml]
+
+  layout assignment -> record type  (6)
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml]
+      'Case.Billing'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Billing.profile-meta.xml]
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml]
+      'Case.Billing'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 1.profile-meta.xml]
+      'Case.Support'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml]
+      'Case.Billing'                             resolved (earlier milestone) <- M1-S01   [artefacts/M2-S03/profiles/Acme Support Tier 2.profile-meta.xml]
+
+  queue membership -> public group  (3)
+      'Billing_Team'                             resolved (this milestone) <- M2-S04   [artefacts/M2-S04/queues/Billing.queue-meta.xml]
+      'Support_Tier_1'                           resolved (this milestone) <- M2-S04   [artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml]
+      'Support_Tier_2'                           resolved (this milestone) <- M2-S04   [artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml]
+
+  queue supported object  (3)
+      'Case'                                     resolved (earlier milestone) <- M1-S01   [artefacts/M2-S04/queues/Billing.queue-meta.xml]
+      'Case'                                     resolved (earlier milestone) <- M1-S01   [artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml]
+      'Case'                                     resolved (earlier milestone) <- M1-S01   [artefacts/M2-S04/queues/Tier_2_Engineering.queue-meta.xml]
+
+  sharing rule -> sharedTo group  (1)
+      'Support_Tier_2'                           resolved (this milestone) <- M2-S04   [artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml]
+
+  sharing-rule criteria value (RecordTypeId)  (1)
+      'Support'                                  UNCLASSIFIABLE — bare developer name vs 18-char Id, grep cannot decide   [artefacts/M2-S05/sharingRules/Case.sharingRules-meta.xml]
+
+=== TOTALS ===
+  total references: 49
+    UNCLASSIFIABLE — bare developer name vs 18-char Id, grep cannot decide: 1
+    resolved (earlier milestone): 33
+    resolved (this milestone): 11
+    resolved-standard-object: 4
+  UNRESOLVED: 0

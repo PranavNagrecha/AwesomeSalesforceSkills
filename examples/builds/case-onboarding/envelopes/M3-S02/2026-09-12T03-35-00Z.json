@@ -1,0 +1,415 @@
+{
+  "agent": "build-step-runner",
+  "mode": "single",
+  "run_id": "2026-09-12T03-35-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-35-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-35-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S02",
+    "reason": "RESUME of an interrupted run of this same step (contract \u00a7 4 running -> running re-claim). The first claim (started 2026-09-12T03:14:08Z) wrote all seven declared outputs and then the session ended before deploy-order.md, the checker loop, check-outputs or either envelope. Re-claimed at 2026-09-12T03:25:27Z; history preserved, nothing overwritten."
+  },
+  "summary": "Step M3-S02 (ui, metadata-builder) built: the two Classic case-intake email templates, their EmailFolder, the sender-identity note and package.xml, plus the deploy-order note written on this resume pass. Owning agent invoked per its own AGENT.md under the three Step 6 clauses; it verified the seven pre-existing outputs byte-identical against skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md and changed none of them. Both declared checkers exit 0 with zero repair passes, check-outputs ok, both envelopes validate. The substantive finding is not a build defect: the plan's own two records of the acknowledgement sender disagree (Q22 reads support@ as a live routing address, answers-key.md reads it as never the routing address), and the cited skills forbid an auto-response senderEmail that is itself an Email-to-Case intake. No artefact of this step sets a sender, so the divergence is recorded in sender-identity-note.md for a human at the M3 gate rather than resolved here.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 9 row 2 of agents/build-step-runner/AGENT.md: an undeclared artefact appeared (artefacts/M3-S02/deploy-order.md, mandated by the owning agent's Step 7 but absent from the step's outputs[]), and the owning agent's one optional input (api_version) had no value in plan.json and was defaulted. Not HIGH for those two reasons alone. Not LOW: the step was in `next` at claim time, every required input resolved from the plan, check-outputs exited 0, both envelopes validate, and nothing was written outside artefacts/M3-S02/ except the two contract-mandated envelope and report pairs.",
+  "dimensions_compared": [
+    "step-runnability",
+    "input-map-resolution",
+    "artefact-declaration-match",
+    "checker-exit-codes",
+    "envelope-schema-validity",
+    "citation-spot-verification"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "acceptance-test-execution",
+      "state": "partial",
+      "reason": "By contract \u00a7 5 the tester owns the step's acceptance tests. This agent ran the two declared checker commands, the always-on xml parse and check-outputs; it did not run the always-on manifest check and did not tick the manual test B06, which is a human's at the M3 gate.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run agents/step-tester on M3-S02; it executes the full declared set and writes tests/M3-S02/results.json."
+    },
+    {
+      "dimension": "deliverability-posture",
+      "state": "not-run",
+      "reason": "check_email_deliverability_strategy.py asserts nothing here: the step declares none of the three files it reads, so it exits 0 on three WARNs. Three of its Questions-to-Ask rows (DKIM rotation, SMTP relay plus bounce management, DNS ownership and lead time) have no answer and no documented default and are recorded open in sender-identity-note.md \u00a7 4.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "A human answers the three open rows, or the plan gains a deliverability step that declares settings/EmailAdministration.settings-meta.xml and the two JSON inventories."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The running -> running re-claim behaved as contract \u00a7 4 describes: set-status appended a fresh run rather than overwriting the interrupted one, so plan.json now carries all three runs and the interruption is visible rather than erased.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Resuming by re-invoking the owning agent, rather than writing deploy-order.md directly, kept the authoring boundary intact. The coordinator's resume message asked this agent to write it; agents/build-step-runner/AGENT.md 'What This Agent Does NOT Do' forbids authoring metadata, and metadata-builder Step 7 owns that file. The owning agent then grounded two ordering claims this agent would have asserted flat.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": "agents/build-step-runner/AGENT.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two cited-adjacent skills contradict their own prose in their own worked examples, and this step is where it surfaces. admin/assignment-rules/references/metadata-examples.md:131 states senderEmail 'must never be the Email-to-Case routing address', then writes <senderEmail>support@acme.example</senderEmail> at :145 and :156 - while admin/email-to-case-configuration/references/metadata-examples.md:48 puts that same literal in <emailAddress> of a routing address. Whichever reading a human picks for this build, one of those two worked examples wants correcting at the skill.",
+      "domain": "email",
+      "evidence": {
+        "source": "repo",
+        "path": "skills/admin/assignment-rules/references/metadata-examples.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "One quotation in sender-identity-note.md \u00a7 1 is mis-attributed. It gives the OrgWideEmailAddress row of admin/email-deliverability-strategy/references/metadata-examples.md \u00a7 'Where each control actually lives' as 'No metadata type - API/Data Loader/Setup only'; that Deployable? cell (:27) reads only 'No metadata type', and the longer string belongs to the EmailDomainKey row above it (:24). The substantive claim - OrgWideEmailAddress has no metadata type - is correct and separately grounded in the sender-identity reference. Reported, not repaired: an artefact is not this agent's to edit.",
+      "domain": "email",
+      "evidence": {
+        "source": "repo",
+        "path": "skills/admin/email-deliverability-strategy/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "high",
+      "observation": "The plan holds two incompatible records of one decision and no artefact of this step can settle it. plan.json clarification Q22 (answered) says 'support@ (a live routing address) itself sends the acknowledgement'; answers-key.md's Acknowledgement row says 'from support@acme.example (an org-wide email address, never the Email-to-Case routing address itself)'. Both cited skills forbid an auto-response senderEmail that is an Email-to-Case intake address. EmailTemplate carries no sender element, so nothing here changes either way - the element that turns on it is M3-S04's senderEmail. Left to a human at the M3 gate, per the step's manual test B06.",
+      "domain": "email",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The control the plan names against the loop is half inert as configured, and the owning agent marked rather than asserted it. 'Fires once per case' is grounded (Q63) but bounds fan-out per case, not a loop whose growth is one new case per round trip. 'The routing address rejects its own sender' depends on authorizedSenders, which email-to-case-configuration tells you to leave empty for a public support address - so unauthorizedSenderAction never fires. What actually stands between this build and the loop is the Q68 sandbox loop test, which is detection, and a mail-server setting outside Salesforce.",
+      "domain": "email",
+      "evidence": {
+        "source": "repo",
+        "path": "skills/admin/email-to-case-configuration/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The concurrency constraint held. M3-S01 moved from running to built underneath this run (the other runner finished it); nothing in this run read-modify-wrote anything under artefacts/M3-S01/, and every checker was invoked at --manifest-dir artefacts/M3-S02 rather than at build scope, so a half-built sibling tree could not have entered this step's exit codes.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S02",
+        "count": 8
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "deploy-order.md is written on every metadata-builder run and is declared by no step in this build - not M1-S01, M1-S02, or any of the five M2 steps. Every such step therefore books a permanent undeclared artefact and cannot score HIGH under this agent's Step 9 rubric. The fix is one amend-step per pending step to add the path, not a change to either agent.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 7
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S02",
+    "owning_agent": "metadata-builder",
+    "owning_agent_build_aware": true,
+    "owning_agent_build_aware_evidence": "grep -ciE 'artefact|build_dir|build directory|step_id|\\.sfskills' agents/metadata-builder/AGENT.md -> 39. Its Output Contract declares artefacts under artefacts/<step-id>/ and it takes build_dir, so no Step 7 relocation applies.",
+    "owning_envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-30-00Z.json",
+    "resume": {
+      "kind": "running -> running re-claim (contract \u00a7 4)",
+      "first_claim_started": "2026-09-12T03:14:08Z",
+      "reclaim_started": "2026-09-12T03:25:27Z",
+      "written_before_cutoff": [
+        "artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+        "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email",
+        "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml",
+        "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email",
+        "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml",
+        "artefacts/M3-S02/sender-identity-note.md",
+        "artefacts/M3-S02/package.xml"
+      ],
+      "written_on_resume": [
+        "artefacts/M3-S02/deploy-order.md"
+      ],
+      "files_changed_on_resume": []
+    },
+    "carveout_used": null,
+    "gate_status_at_claim": "step M3-S02 has human_gate false; milestone:M2 approved, milestone:M3 pending (the current building milestone). Step appeared in `build_plan.py next` alongside M3-S01.",
+    "input_map": {
+      "build_dir": {
+        "value": ".sfskills/builds/case-onboarding/",
+        "source": "caller"
+      },
+      "step_id": {
+        "value": "M3-S02",
+        "source": "caller"
+      },
+      "api_version": {
+        "value": null,
+        "source": "absent",
+        "note": "Optional input of the owning agent. plan.json carries no api_version, so the agent's documented default applies. All seven pre-existing artefacts/*/package.xml in this build and the file already on disk use 62.0, which is what the default resolves to; recorded as defaulted, not as resolved from the plan."
+      }
+    },
+    "artefacts": [
+      {
+        "path": "artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M3-S02/sender-identity-note.md",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M3-S02/package.xml",
+        "declared": true
+      },
+      {
+        "path": "artefacts/M3-S02/deploy-order.md",
+        "declared": false,
+        "note": "Undeclared but mandatory: agents/metadata-builder/AGENT.md Step 5 rule 2 and Step 7 put package.xml and deploy-order.md outside the declared-outputs rule - 'produced on every run whether or not the plan named them'. Same shape as M1-S01, M1-S02 and all five M2 steps, none of which declare it either. The coordinator's resume message called it a declared output; plan.json.steps[M3-S02].outputs[] does not list it, and plan.json governs."
+      }
+    ],
+    "missing_outputs": [],
+    "relocations": [],
+    "files_outside_step_artefact_dir": [
+      {
+        "path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-30-00Z.json",
+        "why": "owning agent's envelope; the loop's shared state per contract \u00a7 2"
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-30-00Z.md",
+        "why": "its markdown twin"
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-35-00Z.json",
+        "why": "this agent's own envelope"
+      },
+      {
+        "path": ".sfskills/builds/case-onboarding/envelopes/M3-S02/2026-09-12T03-35-00Z.md",
+        "why": "its markdown twin"
+      },
+      {
+        "path": "docs/reports/metadata-builder/2026-09-12T03-30-00Z.{md,json}",
+        "why": "owning agent's Wave-10 persistence pair, its declared default_output_dir; gitignored at .gitignore:68"
+      },
+      {
+        "path": "docs/reports/build-step-runner/2026-09-12T03-35-00Z.{md,json}",
+        "why": "this agent's Wave-10 persistence pair; gitignored at .gitignore:68"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "checker_runs": [
+      {
+        "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S02 --strict",
+        "cwd": ".sfskills/builds/case-onboarding/",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 4 email template file(s); 0 finding(s) detected.\"}",
+        "note": "Run verbatim as the step declares it, from the build directory, where the skills symlink resolves the checker path and artefacts/M3-S02 resolves as written. The two .md notes are excluded by the checker, as the plan's B05 note predicted."
+      },
+      {
+        "command": "python3 skills/admin/email-deliverability-strategy/scripts/check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02",
+        "cwd": ".sfskills/builds/case-onboarding/",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "3 WARNs (no EmailAdministrationSettings/EmailAuthorizationSettings file; no deliverability policy JSON; no DKIM key inventory JSON), then 'OK - no deliverability errors (3 warning(s)).'",
+        "note": "Asserts nothing about this step: it never fails on absence and the step declares none of the three files it reads. Recorded in dimensions_skipped."
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path('artefacts/M3-S02').rglob('*.xml')]\"",
+        "cwd": ".sfskills/builds/case-onboarding/",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "all parse (4 files)"
+      }
+    ],
+    "artefact_spot_checks": {
+      "purpose": "This agent re-derived the mock-deploy lessons against the files rather than trusting the owning agent's report.",
+      "results": [
+        "File stem = fullName: email/case_intake.emailFolder-meta.xml -> package.xml member 'case_intake'; <name>Case Intake</name> is the label. Matches metadata-and-sender-identity.md 'Where the files live'.",
+        "Template pairing: each .email body has its .email-meta.xml sibling under email/case_intake/, with the folder file beside the directory.",
+        "package.xml member forms: EmailFolder as <Folder>, EmailTemplate as <Folder>/<Name>, both explicit, no wildcard - the form the reference's own manifest sample uses.",
+        "<subject> present on both meta files (the --strict REVIEW the checker fires on its absence); 67 and 62 characters against the reference's 230-character Classic ceiling.",
+        "<description> 163 and 182 characters, inside 255.",
+        "Both bodies carry merge fields and neither contains an email address of any kind.",
+        "No workflows/ directory and no WorkflowAlert: outputs[] declares none, and Q63 wants no parallel alert."
+      ]
+    },
+    "ungrounded_items_marked_in_deploy_order": [
+      "The 255-character <description> ceiling: neither cited skill documents a description limit for EmailTemplate or EmailFolder; it comes from this build's mock-deploy F-15 on a different type. Marked in deploy-order.md \u00a7 'Elements and constraints this step could NOT ground'. Nothing turns on it at 163/182 characters.",
+      "EmailFolder-before-EmailTemplate ordering inside the request: the cited skill states only the deletion order ('the folder goes last', gotchas.md:183); the additive order is that read in reverse and deploy-order.md labels it an inference. All three components ship in one request, the reference's own manifest form."
+    ],
+    "cross_step_facts_recorded": [
+      "M3-S04 (AutoResponseRules) sets the senderEmail this step only records, and must reference case_intake/Case_Acknowledgement.",
+      "M4-S04 (escalation action assignedToTemplate) must reference case_intake/Case_Escalated_To_Tier2. Both admin/escalation-rules/references/metadata-examples.md:95 and admin/assignment-rules write that developer name with an unfiled$public/ prefix; this build files it in case_intake, and a stale prefix fails the deploy on the reference.",
+      "M3-S03 is NOT a consumer: webToCase.defaultResponseTemplate is documented as not the acknowledgement (admin/case-management-setup/references/metadata-examples.md:407-412)."
+    ],
+    "set_status_commands": [
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M3-S02 running --started 2026-09-12T03:14:08Z",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M3-S02 running --started 2026-09-12T03:25:27Z --result \"re-claimed after session cut-off (running -> running); artefacts present, deploy-order.md and envelopes outstanding\"",
+      "python3 scripts/build_plan.py set-status .sfskills/builds/case-onboarding/plan.json M3-S02 built --run-agent metadata-builder --envelope envelopes/M3-S02/2026-09-12T03-30-00Z.json --started 2026-09-12T03:25:27Z --result \"built: 7 declared outputs verified byte-identical + deploy-order.md written; 2/2 declared checkers exit 0 on pass 0 (check_email_templates --strict: 'Scanned 4 email template file(s); 0 finding(s)'); check-outputs ok; Q22-vs-answers-key loop divergence recorded not resolved\""
+    ],
+    "terminal_status": "built",
+    "no_deploy": "No sf command of any kind was run. The validate-only command in deploy-order.md is text for a human. No gate was approved; no plan.json field was hand-edited."
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "\u00a7 2 build_mode design-only and the no-hand-edit rule; \u00a7 3 the gate set and what next excludes; \u00a7 4 the step-type table, agent eligibility and the running -> running re-claim used on this resume; \u00a7 5 who runs the acceptance tests and the check-outputs precondition on built; \u00a7 8 build_plan.py as the only writer of derived state"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by: no org write, no auto-chain into the tester, citations must resolve"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement and the confidence rubric this agent's Step 9 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence pair, the atomic-write rule and the dimensions_skipped states used above"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked against the run; no refusal condition was met, so no refusal block is set"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{}, outputs[], depends_on[] and runs[], so this agent read and wrote only the fields it owns"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "this envelope's closed shape - everything agent-specific under extensions, and the build-layer report_path/envelope_path pattern"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "judging that email/<Folder>/<Name>.email plus the folder file beside the directory is the source-format layout a later deploy can read, and that sourceApiVersion/<version> alignment is why 62.0 was kept"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "confirming the step's declared outputs are deployable Metadata API components and that explicit members beat wildcards in a manifest"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the workbook row schema (target_value, recommended_agent, recommended_skills[], source_req_id) the step derives from, so the owning agent was handed the plan's cells rather than a paraphrase of the step title"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the REQ-XXX / US-XXX id conventions echoed so build-doc-keeper can join step to requirement without re-deriving it"
+    },
+    {
+      "type": "skill",
+      "id": "devops/pipeline-secrets-management",
+      "path": "skills/devops/pipeline-secrets-management/SKILL.md",
+      "used_for": "screening the step's inputs for credential shapes before echoing them. The two senders are .example email addresses, not credentials; no force:// auth URL, PEM key or client id appeared, so nothing was redacted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+      "used_for": "the step's own cited skill; its references/metadata-and-sender-identity.md was read to spot-verify the EmailTemplate element set, the EmailFolder file shape, the package.xml member forms, the 230-character subject ceiling and the senderEmail-must-not-be-the-routing-address rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-deliverability-strategy",
+      "path": "skills/admin/email-deliverability-strategy/SKILL.md",
+      "used_for": "the step's second cited skill; its checker and references/metadata-examples.md were read to confirm the three files it reads are absent by design here and to check the note's quotations, one of which is mis-attributed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/SKILL.md",
+      "used_for": "verifying the loop mechanism the note rests on: references/gotchas.md Gotcha 3 quoted verbatim, and references/metadata-examples.md:48 putting support@acme.example in a routing address's emailAddress"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/SKILL.md",
+      "used_for": "verifying the senderEmail contradiction between :131 prose and the :145/:156 worked example, recorded as a concerning observation"
+    },
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/SKILL.md",
+      "used_for": "verifying the unfiled$public/Case_Escalated_To_Tier2 reference at :95 that M4-S04 must rewrite to case_intake/"
+    },
+    {
+      "type": "standard",
+      "id": "metadata-builder-agent",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the owning agent: its Inputs table gave the input map, its Output Contract settled that it is build-aware, and its Step 5 rule 2 / Step 7 are why deploy-order.md is mandatory though undeclared"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M3-S02 is at built and its five declared acceptance tests plus the always-on xml and manifest checks are the tester's to run, not this agent's; the manual test B06 is then a human's tick at the M3 gate."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once the step is tested, the Q22-vs-answers-key sender divergence and the two ungrounded items in deploy-order.md belong in decisions.md, and the M4-S04 / M3-S04 folder-prefix correction belongs in traceability before those steps run."
+    }
+  ]
+}

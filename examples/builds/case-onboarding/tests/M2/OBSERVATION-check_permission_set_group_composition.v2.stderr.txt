@@ -1,0 +1,1 @@
+WARN: artefacts/M2-S01/permissionsets/Case_Intake_Integration.permissionset-meta.xml: PSGC-DESC-02 PermissionSet description is 244 characters, approaching the 255-character limit.

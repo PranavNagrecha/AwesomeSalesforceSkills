@@ -1,0 +1,553 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T04-16-16Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-16-16Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S03/2026-09-12T04-16-16Z.json",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S03",
+    "api_version": "62.0 (plan default; stamped in package.xml)",
+    "volumes": {
+      "email_per_day": 400,
+      "web_per_day": 60,
+      "manual_per_day": 20
+    },
+    "answers_bound": [
+      "Q4",
+      "Q5",
+      "Q15",
+      "Q16",
+      "Q17",
+      "Q18",
+      "Q19",
+      "Q21",
+      "Q22",
+      "Q23",
+      "Q24",
+      "Q60",
+      "Q64",
+      "Q66",
+      "Q74",
+      "Q88"
+    ],
+    "answers_deferred": [
+      "Q20 -> assumption A3"
+    ],
+    "upstream_artefacts_read": [
+      "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+      "artefacts/M1-S01/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+      "artefacts/M1-S01/objects/Case/businessProcesses/Billing_Process.businessProcess-meta.xml",
+      "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+      "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml",
+      "artefacts/M2-S04/queues/Billing.queue-meta.xml",
+      "artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+      "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml",
+      "artefacts/M3-S02/sender-identity-note.md",
+      "artefacts/M3-S01/objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml",
+      "artefacts/M3-S01/validation-bypass-note.md"
+    ],
+    "credentials_present": "none - no input on this step is credential-shaped; nothing required [REDACTED]"
+  },
+  "summary": "Built M3-S03 (routing, design-only) as one deployable component plus three notes: settings/Case.settings-meta.xml carrying the emailToCase block with the support@ and billing@ routing addresses (caseOrigin Email-Support / Email-Billing, caseOwner and casePriority deliberately unset, saveEmailHeaders true, Bounce / Requeue), the webToCase block with its two in-scope children (enableWebToCase true, caseOrigin Web) and defaultResponseTemplate deliberately absent, and the org-level fields the checker and gotcha 8 require (defaultCaseOwner Tier_1_General / defaultCaseOwnerType Queue). Threading follows assumption A3 (Lightning pair set, legacy pair absent, useEmailHeadersForThreading true as the gateway fallback). No artefact of this step sets any sender: EmailToCaseRoutingAddress has no sender field, so decisions.md D-M3S02-04 is left to the M3 gate and useSystemEmailAddress is omitted rather than chosen. The declared build-scope checker exits 0 and a negative control proves it binds on this step's file. Two elements the cited skills instruct but do not exemplify (newEntityRecordType, fallbackQueue) were not written and are recorded as skill gaps instead.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: three Questions-to-Ask rows were answered from a skill-documented default rather than from the plan (Email-to-Case mode On-Demand, attachments-as-Files, the notifyDefaultCaseOwner fallback), and one declared output type - CaseSettings child ordering - is documented by worked example only, so the XML element order is UNVERIFIED until a validate-only run. Every emitted element name and enum value traces to the Step 3 inventory, the declared checker exited 0 on the first pass with no repair, and check-outputs is ok.",
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "newEntityRecordType and fallbackQueue are named and (for the former) behaviourally described by the cited skills but carry no value format or XML example, so neither was written.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Add a worked newEntityRecordType value (Support vs Case.Support) and a fallbackQueue example to skills/admin/email-to-case-configuration/references/metadata-examples.md, then rebuild this step."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Q20 is deferred (assumption A3 supplies the threading pair) and no answer anywhere states which CasePriority value each channel should end up with; the Email-to-Case mode question has no answer and took the skill template's 'On-Demand (recommended)' default.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer Q20 from Setup and add a priority-per-channel clarification before M4-S03 designs the Priority default."
+    },
+    {
+      "dimension": "deploy-order",
+      "state": "partial",
+      "reason": "CaseSettings child element ordering is not stated by either cited skill and no checker in the build tests it; only a validate-only deploy can confirm the sequence this file uses.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run scripts/mock_deploy.py for milestone M3 and re-order alphabetically if the deploy fails on sequence."
+    }
+  ],
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency"
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "CaseSettings - Email-to-Case routing addresses, Web-to-Case switch, org-level intake fields",
+      "target_path": "artefacts/M3-S03/settings/Case.settings-meta.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CaseSettings xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <defaultCaseOwner>Tier_1_General</defaultCaseOwner>\n    <defaultCaseOwnerType>Queue</defaultCaseOwnerType>\n    <notifyDefaultCaseOwner>true</notifyDefaultCaseOwner>\n    <useSystemUserAsDefaultCaseUser>true</useSystemUserAsDefaultCaseUser>\n    <emailToCase>\n        <enableEmailToCase>true</enableEmailToCase>\n        <enableOnDemandEmailToCase>true</enableOnDemandEmailToCase>\n        <enableE2CAttachmentAsFile>true</enableE2CAttachmentAsFile>\n        <enableE2CDeduplicateAttachments>true</enableE2CDeduplicateAttachments>\n        <enableThreadTokenInBody>true</enableThreadTokenInBody>\n        <enableThreadTokenInSubject>true</enableThreadTokenInSubject>\n        <useEmailHeadersForThreading>true</useEmailHeadersForThreading>\n        <notifyOwnerOnNewCaseEmail>false</notifyOwnerOnNewCaseEmail>\n        <overEmailLimitAction>Requeue</overEmailLimitAction>\n        <unauthorizedSenderAction>Bounce</unauthorizedSenderAction>\n        <routingAddresses>\n            <addressType>EmailToCase</addressType>\n            <routingName>ACME General Support</routingName>\n            <emailAddress>support@acme.example</emailAddress>\n            <caseOrigin>Email-Support</caseOrigin>\n            <createTask>false</createTask>\n            <saveEmailHeaders>true</saveEmailHeaders>\n        </routingAddresses>\n        <routingAddresses>\n            <addressType>EmailToCase</addressType>\n            <routingName>ACME Billing</routingName>\n            <emailAddress>billing@acme.example</emailAddress>\n            <caseOrigin>Email-Billing</caseOrigin>\n            <createTask>false</createTask>\n            <saveEmailHeaders>true</saveEmailHeaders>\n        </routingAddresses>\n    </emailToCase>\n    <closeCaseThroughStatusChange>true</closeCaseThroughStatusChange>\n    <keepRecordTypeOnAssignmentRule>true</keepRecordTypeOnAssignmentRule>\n    <enableSuggestedSolutions>false</enableSuggestedSolutions>\n    <enableSuggestedArticlesApplication>false</enableSuggestedArticlesApplication>\n    <webToCase>\n        <enableWebToCase>true</enableWebToCase>\n        <caseOrigin>Web</caseOrigin>\n    </webToCase>\n</CaseSettings>\n"
+    },
+    {
+      "kind": "xml",
+      "title": "package.xml fragment - Settings:Case named explicitly (no wildcard for feature settings)",
+      "target_path": "artefacts/M3-S03/package.xml",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Package xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <types>\n        <members>Case</members>\n        <name>Settings</name>\n    </types>\n    <version>62.0</version>\n</Package>\n"
+    },
+    {
+      "kind": "markdown",
+      "title": "Email-to-Case routing addresses - per-address record, sender boundary, forwarding runbook, two unwritten elements",
+      "target_path": "artefacts/M3-S03/email-to-case-routing-addresses.md",
+      "content": "See file - 21 KB, reproduced on disk rather than inline."
+    },
+    {
+      "kind": "markdown",
+      "title": "Web-to-Case form contract - what is and is not metadata, both posting paths, the form skeleton",
+      "target_path": "artefacts/M3-S03/web-to-case-form-contract.md",
+      "content": "See file - 15 KB, reproduced on disk rather than inline."
+    },
+    {
+      "kind": "markdown",
+      "title": "Deploy order, omissions with their costs, and the ungrounded/open list",
+      "target_path": "artefacts/M3-S03/deploy-order.md",
+      "content": "See file - 16 KB, reproduced on disk rather than inline."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "cross-step-consistency",
+      "observation": "Every name this step resolves by deploy-time lookup matched an artefact already on disk exactly: Tier_1_General as a queue file stem, and Email-Support / Email-Billing / Web as live CaseOrigin standard values.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml; artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+        "count": 4
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-design",
+      "observation": "The plan's build-scope declaration for this checker is load-bearing rather than decorative: a negative control changing webToCase/caseOrigin to WebPortal exits 1 naming the three legal values, which is an assertion that cannot exist at step scope.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "check_case_management_setup.py --manifest-dir <copy of artefacts with caseOrigin=WebPortal>",
+        "path": "artefacts/M3-S03/settings/Case.settings-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "record-type-drift",
+      "observation": "No step in this build stamps a Case record type on an email or web case, so both channels land on the handling context's default - gotcha 9 instructs setting newEntityRecordType per routing address, and the string does not occur anywhere in plan.json.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/references/gotchas.md (Gotcha 9); .sfskills/builds/case-onboarding/plan.json",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-depth",
+      "observation": "Two per-address elements are named in email-to-case-configuration/references/well-architected.md line 39 with no description, example or second mention anywhere in the skill - fallbackQueue and routingFlow - and one of them would remove this build's dependence on the single shared defaultCaseOwner.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/email-to-case-configuration/references/well-architected.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "deploy-safety",
+      "observation": "This file is the whole of Settings:Case for the build, and routingAddresses is a full-replacement list whose emailServicesAddress and isVerified cannot be restored once deleted, so deploying it as-is over an org that already has Email-to-Case configured would delete addresses it does not name.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/email-to-case-configuration/references/gotchas.md (Gotcha 7)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "sender-identity",
+      "observation": "useSystemEmailAddress is the one org-level lever in this file that reads on the sender axis D-M3S02-04 holds open, so it was omitted rather than set - which means the org's existing value stands until the M3 gate decides.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md (D-M3S02-04); artefacts/M3-S02/sender-identity-note.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "notification-design",
+      "observation": "notifyDefaultCaseOwner true follows gotcha 8's explicit instruction to make the fallback loud, but Tier_1_General carries no queue email address and Q88 says Tier 1 takes no queue email, so the setting is either inert or contrary to Q88 and the guide does not say which.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/references/gotchas.md (Gotcha 8); artefacts/M2-S04/queues/Tier_1_General.queue-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "decision-tree-coverage",
+      "observation": "standards/decision-trees/integration-pattern-selection.md has no branch for a native platform intake endpoint, so the direct-post Web-to-Case path this build recommends was grounded in the skill rather than routed by the declared tree.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -i 'web-to|webtocase|html form|web form' standards/decision-trees/integration-pattern-selection.md",
+        "count": 0
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "element-ordering",
+      "observation": "Neither cited skill states whether CaseSettings child elements must follow the WSDL sequence, and a retrieved settings file is ordinarily alphabetical while the guide's sample definition is not, so this file's order is unverified until a validate-only run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/case-management-setup/references/metadata-examples.md (section 3); skills/admin/email-to-case-configuration/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "The step is built and untested; its declared build-scope checker, the always-on xml parse and the manifest check are the tester's to run and record.",
+      "evidence": {
+        "source": "input",
+        "path": "plan.json steps[M3-S03].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the acceptance tests including the two manual rows belong to the tester and this agent must not run or tick them."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "domain": "build-loop",
+      "observation": "Three items need a decisions.md entry a builder cannot write: the unwritten newEntityRecordType, the notifyDefaultCaseOwner tension with Q88, and the decision-tree gap for native intake endpoints.",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M3-S03/deploy-order.md section 5"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the gaps this step recorded in its notes only reach the workbook and the decisions log through the doc keeper, once the step is tested."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/SKILL.md",
+      "used_for": "Questions-to-Ask rows for channel inventory, routing addresses, priority derivation and support processes"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/metadata-examples.md",
+      "used_for": "section 3 CaseSettings org-level and webToCase element set; section 4 what is and is not metadata about Web-to-Case; section 5 package.xml, wildcard rule and deploy order; section 2.1 file stem = fullName; section 6 the per-origin verification query"
+    },
+    {
+      "type": "skill",
+      "id": "admin/case-management-setup",
+      "path": "skills/admin/case-management-setup/references/gotchas.md",
+      "used_for": "#1 auto-response needs an active assignment rule; #4 the web overflow signal stops after five emails; #7 a deployed Origin value is invisible per record type; #8 the queue fallback and notifyDefaultCaseOwner; #9 keepRecordTypeOnAssignmentRule scope and newEntityRecordType; #10 closeCaseThroughStatusChange and closed statuses"
+    },
+    {
+      "type": "template",
+      "id": "admin/case-management-setup/case-management-setup-template.md",
+      "path": "skills/admin/case-management-setup/templates/case-management-setup-template.md",
+      "used_for": "the 'On-Demand (recommended)' default for the Email-to-Case mode question, which no clarification answers"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/SKILL.md",
+      "used_for": "Questions-to-Ask rows for addresses, ownership, Origin values, threading mode, refused mail, the acknowledgement sender and email headers"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/references/metadata-examples.md",
+      "used_for": "the emailToCase block and routingAddresses element set, enableEmailToCase vs enable, the read-only emailServicesAddress/isVerified pair, the Bounce/Requeue enums, which Case field a routing address populates, and the forwarding and verification checklist"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/references/gotchas.md",
+      "used_for": "#3 the auto-response loop mechanism; #6 caseOwner writes the org-level field; #7 routingAddresses is a full-replacement list; #8 the two mutually exclusive threading pairs; #9 Discard and authorizedSenders; #11 notifyOwnerOnNewCaseEmail on a queue; #12 saveEmailHeaders cannot be backfilled; #13 isPermsetControlled is deny-by-default"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-to-case-configuration",
+      "path": "skills/admin/email-to-case-configuration/references/well-architected.md",
+      "used_for": "the fullest per-address field enumeration the library carries (line 39), which is where fallbackQueue, routingFlow, taskStatus and newEntityRecordType are named"
+    },
+    {
+      "type": "template",
+      "id": "admin/email-to-case-configuration/email-to-case-configuration-template.md",
+      "path": "skills/admin/email-to-case-configuration/templates/email-to-case-configuration-template.md",
+      "used_for": "the per-address context table (origin, priority, owner) and its explicit 'Auto-response From address (must NOT be a routing address)' row"
+    },
+    {
+      "type": "decision_tree",
+      "id": "integration-pattern-selection",
+      "path": "standards/decision-trees/integration-pattern-selection.md",
+      "branch": "Direction 2 (external writes into Salesforce), Q5 '< 1k rows/day -> REST API' and Q9 'Yes, plain CRUD -> Standard REST on sObject'; no branch exists for a native platform intake endpoint, which is recorded as a gap rather than routed",
+      "used_for": "routing the middleware variant of the Web-to-Case posting path at 60 submissions/day, and recording that the direct-post path is unrouteable by this tree"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table and the design-only owner rule, section 5 who runs acceptance tests and the package.xml declaration rule, section 8 that a knowledge gap is a deepen-a-skill signal"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement, the Citations schema and the rule that a technology recommendation cites a tree branch"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope/report pair, atomic write, and the dimensions_skipped state classification"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition was met - a missing value format is a recorded gap, not a refusal"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the fields of steps[] this agent reads and the ones it must leave alone"
+    },
+    {
+      "type": "probe",
+      "id": "check_case_management_setup",
+      "path": "skills/admin/case-management-setup/scripts/check_case_management_setup.py",
+      "used_for": "the declared build-scope acceptance test, its webToCase caseOrigin cross-reference and its defaultCaseOwner/defaultCaseOwnerType ISSUE rules; run verbatim, exit 0, plus a negative control"
+    },
+    {
+      "type": "probe",
+      "id": "check_email_to_case_configuration",
+      "path": "skills/admin/email-to-case-configuration/scripts/check_email_to_case_configuration.py",
+      "used_for": "run for information although the plan does not declare it: 0 errors and 3 warnings, two of which no metadata can clear, confirming the plan's documented test swap"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the declared build-scope checker, the xml parse, the manifest check and the two manual rows are the tester's to run and record, not this agent's"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "the unwritten newEntityRecordType, the notifyDefaultCaseOwner tension with Q88 and the decision-tree gap for native intake endpoints need decisions.md entries a builder cannot write"
+    },
+    {
+      "agent": "assignment-and-auto-response-rules-designer",
+      "because": "M3-S04 owns the assignment and auto-response rules this file's caseOrigin values hand off to, and the acknowledgement sender the M3 gate must decide first"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S03",
+    "step_type": "routing",
+    "invoked_by": "agents/build-step-runner (so neither set-status branch in metadata-builder Step 9 was run by this agent)",
+    "build_mode": "design-only",
+    "artefacts": [
+      {
+        "path": "artefacts/M3-S03/settings/Case.settings-meta.xml",
+        "metadata_type": "CaseSettings (Settings:Case)",
+        "declared": true,
+        "element_source": "case-management-setup/references/metadata-examples.md section 3 + email-to-case-configuration/references/metadata-examples.md emailToCase block"
+      },
+      {
+        "path": "artefacts/M3-S03/email-to-case-routing-addresses.md",
+        "metadata_type": "none (note)",
+        "declared": true,
+        "element_source": "email-to-case-configuration references + gotchas"
+      },
+      {
+        "path": "artefacts/M3-S03/web-to-case-form-contract.md",
+        "metadata_type": "none (note)",
+        "declared": true,
+        "element_source": "case-management-setup/references/metadata-examples.md section 4"
+      },
+      {
+        "path": "artefacts/M3-S03/package.xml",
+        "metadata_type": "manifest",
+        "declared": true,
+        "element_source": "case-management-setup/references/metadata-examples.md section 5"
+      },
+      {
+        "path": "artefacts/M3-S03/deploy-order.md",
+        "metadata_type": "none (note)",
+        "declared": false,
+        "element_source": "metadata-builder AGENT.md Step 7; case-management-setup section 5 deploy order"
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M3-S03/deploy-order.md - written on every run per metadata-builder AGENT.md Step 7, but steps[M3-S03].outputs[] declares only four paths. Same gap as decisions.md O-M3S02-03 records for M3-S01 and M3-S02."
+    ],
+    "decision_record": [
+      {
+        "question": "Which public addresses do customers write to (Q17)?",
+        "answer": "support@acme.example and billing@acme.example, one forwarding rule each (assumed, IT to confirm)",
+        "source": "clarification answer",
+        "element": "routingAddresses[].emailAddress, routingName"
+      },
+      {
+        "question": "Which queue owns each channel's cases (Q18)?",
+        "answer": "Tier 1 for support@, Billing for billing@ - expressed as caseOrigin plus assignment-rule entries, with caseOwner unset on both",
+        "source": "clarification answer",
+        "element": "routingAddresses[].caseOrigin; caseOwner and caseOwnerType deliberately absent"
+      },
+      {
+        "question": "Is the Case.Origin value for each channel active (Q19)?",
+        "answer": "Email-Support, Email-Billing and Web, confirmed present in M1-S01's CaseOrigin value set",
+        "source": "upstream artefact + clarification answer",
+        "element": "routingAddresses[].caseOrigin; webToCase.caseOrigin"
+      },
+      {
+        "question": "Lightning Threading or legacy (Q20)?",
+        "answer": "DEFERRED - assumption A3 assumes Lightning Threading with the visible token retained",
+        "source": "assumption A3 (risk: medium)",
+        "element": "enableThreadTokenInBody, enableThreadTokenInSubject, useEmailHeadersForThreading; the legacy ID pair deliberately absent"
+      },
+      {
+        "question": "Bounce or drop refused mail (Q21)?",
+        "answer": "Bounce on unauthorised sender, Requeue on over-limit",
+        "source": "clarification answer",
+        "element": "unauthorizedSenderAction, overEmailLimitAction"
+      },
+      {
+        "question": "Who sends the acknowledgement (Q22 / Q60)?",
+        "answer": "NOT ANSWERED BY THIS STEP - held open as M3 gate decision D-M3S02-04; no element here can express a sender",
+        "source": "decisions.md D-M3S02-04",
+        "element": "none written; useSystemEmailAddress and isPermsetControlled deliberately omitted"
+      },
+      {
+        "question": "Does anyone need email headers (Q23)?",
+        "answer": "Yes, from day one",
+        "source": "clarification answer",
+        "element": "routingAddresses[].saveEmailHeaders true on both"
+      },
+      {
+        "question": "How do Cases arrive, and does manual entry use assignment rules (Q24)?",
+        "answer": "Email-to-Case and Web-to-Case invoke rules by default; ~20 manual cases/day with the layout checkbox defaulted on",
+        "source": "clarification answer",
+        "element": "keepRecordTypeOnAssignmentRule true (manual-creation scope only)"
+      },
+      {
+        "question": "How is Case Priority derived (skill row) / what must happen in the first minute (Q16)?",
+        "answer": "Not by this step. M4-S03's before-save flow stamps Priority only into a null value, so casePriority is unset on both addresses and the web form is told not to send one. No answer states the per-channel value",
+        "source": "plan.json steps[M4-S03] + clarification Q16",
+        "element": "casePriority deliberately absent on both routing addresses"
+      },
+      {
+        "question": "Where does the form data live / how does it post (Q66)?",
+        "answer": "UNCONFIRMED - both paths specified, direct post recommended",
+        "source": "clarification answer (which itself says to confirm)",
+        "element": "webToCase.enableWebToCase true; the form itself is not metadata"
+      },
+      {
+        "question": "What must never point at production after a refresh (Q74)?",
+        "answer": "The routing addresses and the website form endpoint",
+        "source": "clarification answer",
+        "element": "none - recorded in both notes as a human runbook item"
+      },
+      {
+        "question": "Who should be notified of a new record (Q88)?",
+        "answer": "Tier 1 uses Omni-Channel push, no queue email - so notifyOwnerOnNewCaseEmail false; notifyDefaultCaseOwner true was taken from gotcha 8 instead and the tension is recorded",
+        "source": "clarification answer + gotcha 8",
+        "element": "notifyOwnerOnNewCaseEmail false; notifyDefaultCaseOwner true"
+      },
+      {
+        "question": "Email-to-Case mode: On-Demand or Standard (skill row)?",
+        "answer": "On-Demand - DEFAULT, not an answer. The skill template marks it recommended and nothing in the requirement or 97 clarifications names a locally hosted agent",
+        "source": "skill-documented default (case-management-setup template)",
+        "element": "enableOnDemandEmailToCase true"
+      },
+      {
+        "question": "Files or Attachments for inbound attachments (gotcha 10)?",
+        "answer": "Files - DEFAULT from gotcha 10's 'the Files direction is the one to pick for a new org', with Q4 confirming greenfield",
+        "source": "skill-documented default",
+        "element": "enableE2CAttachmentAsFile true, enableE2CDeduplicateAttachments true"
+      },
+      {
+        "question": "Does a support process expose a closed status (gotcha 10)?",
+        "answer": "Yes - Support_Process and Billing_Process each carry Closed, so Closed is exposed on the edit page",
+        "source": "upstream artefact",
+        "element": "closeCaseThroughStatusChange true"
+      },
+      {
+        "question": "Suggested Articles or Suggested Solutions?",
+        "answer": "Neither - the requirement puts knowledge base out of scope for this phase, and the skill says set both explicitly rather than inherit",
+        "source": "requirement.md + skill instruction",
+        "element": "enableSuggestedSolutions false, enableSuggestedArticlesApplication false"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "declared": true,
+        "scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No case management setup issues found.",
+        "notes": "With --verbose: three NOTEs, all about metadata M3-S04 has not built yet (no assignmentRules, escalationRules or autoResponseRules directory). The two NOTEs about a missing Case.settings file that appeared on the pre-step baseline are gone, which is the evidence the settings checks actually ran."
+      },
+      {
+        "command": "python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir <copy of artefacts with webToCase/caseOrigin=WebPortal>",
+        "cwd": "scratchpad",
+        "declared": false,
+        "scope": "build",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "stdout": "ISSUE: Case.settings-meta.xml: webToCase/caseOrigin is 'WebPortal' but that value is not in CaseOrigin.standardValueSet-meta.xml (Email-Support, Email-Billing, Web).",
+        "notes": "Negative control, run on a copy in the scratchpad. Proves the build-scope cross-reference binds on this step's file rather than passing vacuously."
+      },
+      {
+        "command": "python3 skills/admin/email-to-case-configuration/scripts/check_email_to_case_configuration.py --manifest-dir artefacts/M3-S03 --verbose",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "stdout": "0 error(s), 3 warning(s): isVerified false or absent on both routing addresses; no case assignment rule metadata found.",
+        "notes": "Run for information because the skill is cited. Exactly the behaviour steps[M3-S03].inputs.note documents as the reason it is not declared: two WARNs no metadata can ever clear (isVerified is read-only) and one M3-S04 will close, with main() returning 1 on any finding. No artefact was changed in response."
+      },
+      {
+        "command": "python3 -c \"import xml.etree.ElementTree as ET, pathlib; [ET.parse(p) for p in pathlib.Path('artefacts/M3-S03').rglob('*.xml')]\"",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "XML OK",
+        "notes": "Pre-empting the tester's always-on xml check; both XML files parse."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "skill_gaps_recorded_not_blocking": [
+      "admin/email-to-case-configuration documents EmailToCaseRoutingAddress.newEntityRecordType by name and behaviour (via case-management-setup gotcha 9) but shows no value format in any XML block - 'Support' vs 'Case.Support' is undecidable from the files, so the element gotcha 9 explicitly instructs setting was not written. The step's declared outputs and tests do not require it, so this is recorded rather than blocking.",
+      "admin/email-to-case-configuration names fallbackQueue and routingFlow (API 56.0+) once, in references/well-architected.md line 39, with no description or example anywhere in the skill."
+    ],
+    "unverified_carried_forward": [
+      "CaseSettings child element order (this build's own UNVERIFIED, 2026-09-12) - settled only by a validate-only deploy.",
+      "Whether notifyDefaultCaseOwner reaches queue members when the queue has no email address (guide silent; the same open question gotcha 11 records for notifyOwnerOnNewCaseEmail).",
+      "The numeric daily Email-to-Case limit and the Web-to-Case daily allocation (both inherited from the cited skills; neither is in a fetchable source).",
+      "Whether the identity On-Demand Email-to-Case saves as can hold the Case_Intake_Integration permission set that M3-S01's validation bypass depends on."
+    ]
+  }
+}

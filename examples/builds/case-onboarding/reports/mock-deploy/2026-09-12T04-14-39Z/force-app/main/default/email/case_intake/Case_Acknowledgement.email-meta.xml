@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Acknowledgement sent by the Case auto-response rule (M3-S04) when a case is created from Email or Web origin. Carries the case number and the visible thread token.</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Case Acknowledgement</name>
+    <style>none</style>
+    <subject>We received your request: {!Case.Subject} [ ref:{!Case.Thread_Id} ]</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

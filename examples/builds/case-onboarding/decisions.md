@@ -1859,3 +1859,888 @@ the step — `M2-S05` passed every executable test it declares.
   and passed, citing this entry and `M2-S05`'s own `REQ-029` row as the evidence.
 - **Evidence:** `tests/M2-S05/results.json`; `envelopes/M2-S05/2026-09-12T01-41-33Z.md`;
   `workbook/04-sharing-settings.md` `CWB-SHARE-001`; `traceability.md` `REQ-010`.
+
+---
+
+## D-M3S01-01 — DX file suffix and directory for `ValidationRule` carried forward as UNVERIFIED, not resolved by this step
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S01` (`validation`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an inherited library gap, named rather than silently relied on
+- **What was recorded:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded" item 1
+  carries forward `skills/admin/validation-rules/references/metadata-examples.md`'s own marker:
+  "UNVERIFIED (2026-09-04): the Metadata API Developer Guide documents only the metadata-format
+  `.object` layout; the string `validationRule-meta` does not appear anywhere in it." The
+  **element names and semantics** (`fullName`, `active`, `description`, `errorConditionFormula`,
+  `errorDisplayField`, `errorMessage`) are confirmed by the guide's field table and are identical
+  in both metadata shapes.
+- **Why this build proceeds anyway:** `plan.json` declares the DX path for this build, so the
+  file layout is the plan's choice, not a fact this step had to establish. Both artefact files
+  parsed (`xml`, exit 0) and the declared checker read them without error.
+- **What remains open:** the DX suffix itself is still not confirmed against the Metadata API
+  Developer Guide. Skill-gap signal per `standards/build-orchestration.md` § 8, same skill and
+  same marker `decisions.md` has carried since before this build reached M3.
+- **Grounded in:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded", item 1;
+  `skills/admin/validation-rules/references/metadata-examples.md`.
+- **Evidence:** `tests/M3-S01/xml_result.json` (3/3 parsed).
+
+## D-M3S01-02 — `Object.RuleName` manifest member form: UNVERIFIED in the skill, corroborated by this build's own manifest checker and one prior org validation, neither of which is `ValidationRule`-specific evidence
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S01` (`validation`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an ungrounded manifest form, corroborated by analogy rather than
+  by a `ValidationRule` deploy
+- **What was recorded:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded" item 2:
+  the cited skill's own reference marks the `Object.RuleName` form UNVERIFIED for `ValidationRule`
+  — the guide shows the pattern for `CustomField`/`ListView` sub-components of `CustomObject` and
+  no `ValidationRule` manifest sample. `Case.Priority_Required_On_Agent_Save` follows the
+  documented sub-component pattern by analogy.
+- **What corroborates it, and what it does not prove:** `M1-S01`'s manifest already uses the same
+  form for `RecordType` and `CustomField` members and validated against an org
+  (`reports/MOCK-DEPLOY-M2.md` run 2, 30 components, 0 errors) — evidence for the pattern in
+  general, not for `ValidationRule` specifically. This build's own `manifest` acceptance test
+  passed on both files, which confirms internal two-way consistency, not that the platform
+  accepts this exact member type/name pairing.
+- **Alternative rejected:** none attempted — no second manifest form was trialled for this build.
+- **What remains open:** the same skill-gap `admin/validation-rules` has carried since M3-S01 was
+  built; only an actual `ValidationRule` deploy (a future `mock_deploy.py` run against M3) closes
+  it, the way Run 3 closed the analogous `RecordTypeId` question for `admin/sharing-and-visibility`
+  in `decisions.md` **D-M2S05-03**.
+- **Grounded in:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded", item 2;
+  `reports/MOCK-DEPLOY-M2.md` run 2.
+- **Evidence:** `artefacts/M3-S01/package.xml`; `tests/M3-S01/summary.md` § "Manifest derivation".
+
+## D-M3S01-03 — No documented cap on `ValidationRule.description`; both descriptions held under 200 characters as a cross-type precaution, not a documented limit
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S01` (`validation`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a precaution inferred from a different metadata type's org
+  rejection, named as such rather than presented as a `ValidationRule` rule
+- **What was recorded:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded" item 3: the
+  skill's element table gives `errorMessage` an explicit 255-character ceiling and says only
+  "free text" for `description`. Both rule descriptions are 188 and 185 characters
+  (`envelopes/M3-S01/2026-09-12T03-19-00Z.md` § "The two rules"), held under 200 as a precaution
+  inferred from `reports/MOCK-DEPLOY-M2.md` finding **F-15**, where `PermissionSet.description`
+  and `Profile.description` failed an org validate over 255.
+- **Alternative rejected:** writing longer, more narrative descriptions with no length discipline.
+  Rejected because F-15 already showed this org enforces a description cap on at least two other
+  metadata types, and there is no cost to staying well under it here.
+- **What remains open:** this is a cross-type inference, not a documented `ValidationRule` limit —
+  the same caveat `decisions.md` D-M2S05-02/03 apply to other inferred-from-elsewhere facts in
+  this build. Skill-gap signal per § 8 for `admin/validation-rules`'s own element inventory.
+- **Grounded in:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded", item 3;
+  `reports/MOCK-DEPLOY-M2.md` finding F-15.
+- **Evidence:** `artefacts/M3-S01/objects/Case/validationRules/*.validationRule-meta.xml`
+  (`<description>` elements).
+
+## D-M3S01-04 — Whether an out-of-set `Origin` value can reach the field at all is undocumented; the enumerated clause is written anyway, on the safe (redundant, not permissive) side
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S01` (`validation`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a formula clause that may be redundant, kept rather than dropped,
+  with the reasoning named
+- **What was recorded:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded" item 4:
+  the blank half of `Origin_Must_Be_Known` is plainly grounded; whether a value **outside**
+  `CaseOrigin`'s three active values can reach `Origin` at all — through the API, or as a
+  retained inactive standard value — is documented in neither cited skill. The three values
+  tested are read off `artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml`,
+  so the clause is correct about what is allowed; it may be redundant if the platform already
+  rejects everything else.
+- **Alternative rejected:** dropping the `NOT(OR(ISPICKVAL(...)))` half and testing only for
+  blank. Rejected because redundant is the safe direction here, and the shape is the documented
+  one for a picklist inequality (`skills/admin/validation-rules/references/llm-anti-patterns.md`
+  Anti-Pattern 6).
+- **What remains open:** same skill-gap as D-M3S01-01/02, recorded once more against a different
+  fact — whether the platform enforces `CaseOrigin` membership independent of this rule.
+- **Grounded in:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded", item 4;
+  `artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml`.
+- **Evidence:** `artefacts/M3-S01/objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml`.
+
+## D-M3S01-05 — A12 (Q55 deferred): whether these rules are invariants depends on an assumed sole post-save writer that does not exist yet
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S01` (`validation`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a platform-behaviour risk recorded rather than silently carried
+- **What was recorded:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded" item 5: both
+  rules are correct at the moment of save; what is unproven is that they are *unbypassable* after
+  save. Custom validation rules are not re-run after a workflow field update re-saves a record
+  (`skills/admin/validation-rules/references/gotchas.md`). `M4-S03`'s before-save stamping flow
+  (`decisions.md` D1) is assumed to be the sole writer of `Priority`/`Origin` after creation, and
+  `M4-S03` is not yet built, so the assumption cannot be confirmed from this build's own artefacts.
+- **Alternative rejected:** none — resolving this requires `M4-S03` to exist and be read, which is
+  outside this step's `depends_on`.
+- **What remains open:** the same item `tests/M3-S01/results.json`'s tester envelope names under
+  "Ambiguous": M4-S03 is the step to re-check this assumption against once it lands.
+- **Grounded in:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded", item 5;
+  `plan.json` `assumptions[A12]`; `decisions.md` D1.
+- **Evidence:** `plan.json` `steps[M3-S01].inputs.assumptions` (`A11`, `A12`, `A13`).
+
+## D-M3S01-06 — The step's declared checker test description overclaims: `check_validation_rules.py` verifies neither field-token resolution nor `errorDisplayField` resolution
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S01` (`validation`)
+- **Agent:** `metadata-builder`, named in its own envelope's Concerning observation;
+  independently re-confirmed by `step-tester` from the checker's source; recorded here by
+  `build-doc-keeper`
+- **Kind:** design trade-off — a gap between what a declared acceptance test's `description`
+  claims and what its command actually asserts, named rather than left for a reader to discover
+  by reading the checker source themselves
+- **What was recorded:** `plan.json` `steps[M3-S01].acceptance_tests[0].description` states the
+  checker verifies "every field token in every formula resolves" and "an `errorDisplayField` that
+  resolves." `skills/admin/validation-rules/scripts/check_validation_rules.py` does neither — it
+  has no field inventory and no describe/cross-check logic anywhere in the script; it inspects
+  only formula and message text. `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded"
+  item 6 names this first; `envelopes/M3-S01/2026-09-12T03-28-00Z.md` (step-tester) independently
+  confirms it by reading the checker source end to end, arriving at the same conclusion from a
+  different direction.
+- **What is NOT missing:** the fields do resolve. `Priority` and `Origin` are real fields on
+  `Case` (standard fields, present since `M1-S01`), and `$Permission.Bypass_Case_Intake_Validation`
+  resolves to the real Custom Permission built in `M2-S01` — both checked by hand against
+  `M1-S01`, `M1-S02` and `M2-S01`'s artefacts while this step was built and again while it was
+  documented. What is missing is that the exit code does not carry that confirmation: a rename
+  or a typo in either field name would still exit 0.
+- **Alternative rejected:** amending the step's `acceptance_tests[0].description` to state
+  accurately what the checker checks. Not applied in this pass — amending a step's declared
+  `acceptance_tests[]` is `build_plan.py amend-step`'s job, scoped to a `pending`/`blocked` step,
+  and `M3-S01` is `tested` (moving to `documented` in this pass), so the amendment window for this
+  step has closed per `standards/build-orchestration.md` § 2.
+- **What remains open:** two things, kept distinct — (1) the plan's own test description is wrong
+  and should be corrected at the next re-plan (**O-M3S01-01** below); (2)
+  `check_validation_rules.py` genuinely has no field-inventory logic, which is a real capability
+  gap in the checker itself, not only a wording problem in this plan — skill-gap signal per
+  `standards/build-orchestration.md` § 8 for `admin/validation-rules` (**O-M3S01-02** below).
+- **Grounded in:** `artefacts/M3-S01/deploy-order.md` § "Marked as ungrounded", item 6;
+  `envelopes/M3-S01/2026-09-12T03-19-00Z.md` § "Concerning"; `envelopes/M3-S01/2026-09-12T03-28-00Z.md`
+  § "Concerning".
+- **Evidence:** `skills/admin/validation-rules/scripts/check_validation_rules.py` (read end to
+  end by both the builder and the tester); `tests/M3-S01/checker_stdout.txt` (0 findings, which
+  is what a rename would also have produced).
+
+---
+
+# Open items for the planner — raised by the M3-S01 documentation run
+
+Same standing as every section above: plan-file text and plan-file declarations, and
+`standards/build-orchestration.md` § 2 gives `build_plan.py` sole authority over them. None
+blocks the step — `M3-S01` passed every executable test it declares.
+
+## O-M3S01-01 — Correct `steps[M3-S01].acceptance_tests[0].description`: the checker does not verify field-token or `errorDisplayField` resolution
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `decisions.md` **D-M3S01-06**
+- The description's claim ("verifies... every field token in every formula resolves" and "an
+  `errorDisplayField` that resolves") does not describe `check_validation_rules.py`'s actual
+  behaviour. Left uncorrected, a future reader of `PLAN.md` will believe the green exit code
+  proves something it does not.
+- **Remedy:** at the next re-plan (v6+), rewrite the description to state what the checker
+  actually checks — formula and message text, the compound-field ban, the blank-guard REVIEW
+  rule under `--strict`, duplicate `fullName`, `RecordType.Name` usage, and the 255-character
+  message cap — and note separately that field/permission resolution was confirmed by hand
+  against `M1-S01`/`M1-S02`/`M2-S01`.
+- **Evidence:** `plan.json` `steps[M3-S01].acceptance_tests[0].description`;
+  `skills/admin/validation-rules/scripts/check_validation_rules.py`.
+
+## O-M3S01-02 — Skill-depth signal: `admin/validation-rules`' checker has no field-reference resolution logic
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `decisions.md` **D-M3S01-06**
+- Distinct from O-M3S01-01: even a corrected test description would still leave a real gap —
+  `check_validation_rules.py` cannot catch a validation rule that references a field that does
+  not exist, or a `$Permission` name that is misspelled, because it never inspects anything but
+  the two files it is pointed at. Every build that reaches a `validation` step re-derives this
+  confirmation by hand, which is exactly the kind of repeated, uninstrumented check
+  `docs/reports/skill-depth.md` exists to surface.
+- **Remedy:** record `admin/validation-rules` as a candidate for the next depth pass — a
+  field-inventory cross-check (reading the object's `CustomField`/standard-field set from the
+  same `--manifest-dir` tree, the way `check_permission_set_architecture.py` already cross-checks
+  a permission set's grants against object metadata) would close this gap for every future build
+  through this layer, not only this one.
+- **Evidence:** `skills/admin/validation-rules/scripts/check_validation_rules.py` (no field
+  inventory); `docs/reports/skill-depth.md` (the scoreboard this candidate belongs on).
+
+## O-M3S01-03 — Correction of record, in the other direction: `REQ-015`'s "has not run" note on the consumer cross-reference is now partly stale, but not fully closed
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, cross-reading `traceability.md`
+  `REQ-015` against `envelopes/M3-S01/2026-09-12T03-19-00Z.md`'s own checker table
+- `traceability.md` `REQ-015` (`M2-S01`, `CustomPermission:Bypass_Case_Intake_Validation`) states
+  the consumer cross-reference "is M3's milestone test, which runs the same checker at
+  `--manifest-dir artefacts --strict` once `M3-S01` writes `Priority_Required_On_Agent_Save` and
+  `Origin_Must_Be_Known`." `M3-S01` has now written both. `metadata-builder`'s own build-run
+  envelope for this step independently ran `check_custom_permissions.py --manifest-dir artefacts`
+  (build scope) as a self-check, not as a declared acceptance test, and got 0 errors, 0 warnings,
+  "2 consumers, granted by `Case_Intake_Integration`" — the shape the consumer cross-reference is
+  supposed to show.
+- **What this does NOT prove:** that self-check was not run by `--strict`'s own declared form
+  the way M3-S01's *own* checker command was, and it was never recorded in
+  `tests/M3-S01/results.json` or as a milestone-level acceptance test — it is diagnostic evidence
+  the builder happened to capture, not the formal cross-step test `standards/build-orchestration.md`
+  § 5's Checker scope table describes. That formal test is `milestone-verifier`'s to run once M3
+  reaches its gate.
+- **What this does NOT do:** rewrite `REQ-015`'s row. It belongs to `M2-S01`, and
+  `agents/build-doc-keeper/AGENT.md` Step 8 restricts a per-step run to its own step's rows.
+- **Remedy:** when `M2-S01` is next touched, or when `milestone-verifier` runs M3's own
+  cross-step test, update `REQ-015`'s `test_result` to record that the consumer count is
+  non-zero, citing this entry and the checker table in
+  `envelopes/M3-S01/2026-09-12T03-19-00Z.md`.
+- **Evidence:** `traceability.md` `REQ-015`; `envelopes/M3-S01/2026-09-12T03-19-00Z.md` §
+  "Checker results".
+
+## O-M3S01-04 — Correction of record: `REQ-014`'s note that "no `ValidationRule` metadata exists anywhere under `artefacts/` yet" no longer holds; A13's premise is now checkable for both new rules
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, cross-reading `traceability.md`
+  `REQ-014` (`M1-S02`) against `artefacts/M3-S01/`'s two new `ValidationRule` files
+- `traceability.md` `REQ-014` states: "no `ValidationRule` metadata exists anywhere under
+  `artefacts/` yet — `M3-S01` is `pending` — so there is no `errorDisplayField` to resolve and
+  nothing to check against." `M3-S01` now carries exactly two: `Priority_Required_On_Agent_Save`
+  (`errorDisplayField` `Priority`) and `Origin_Must_Be_Known` (`errorDisplayField` `Origin`).
+  Both fields are `layoutItems` on **both** Case layouts (`artefacts/M1-S02/layouts/*.layout-meta.xml`,
+  confirmed again by this run — see `artefacts/M3-S01/validation-bypass-note.md` § "Open items
+  this note does not close", A13/Q57), so **assumption A13's premise now holds for both rules
+  concretely**, not only in principle. `Severity__c`'s Billing-layout gap that `REQ-014`'s own row
+  warns about does not apply here, because neither new rule attaches its error to `Severity__c`.
+- **What this does NOT do:** rewrite `REQ-014`'s row, or resolve Q57 (still deferred) or close
+  A13 (still `risk: medium` — layout **visibility** per profile remains unreadable from the
+  artefacts, per `artefacts/M3-S01/validation-bypass-note.md` § "Open items this note does not
+  close", A13/Q57's own final sentence). `REQ-014` belongs to `M1-S02`, and
+  `agents/build-doc-keeper/AGENT.md` Step 8 restricts this run to `M3-S01`'s own rows.
+- **Remedy:** when `M1-S02` is next touched (a rebuild, or `M1`'s next re-verification), update
+  `REQ-014`'s note to record that `M3-S01` has landed and that both its `errorDisplayField`
+  values resolve to fields present on both layouts, citing this entry and
+  `artefacts/M3-S01/validation-bypass-note.md`.
+- **Evidence:** `traceability.md` `REQ-014`; `artefacts/M3-S01/objects/Case/validationRules/*.validationRule-meta.xml`
+  (`errorDisplayField` elements); `artefacts/M1-S02/layouts/*.layout-meta.xml`;
+  `artefacts/M3-S01/validation-bypass-note.md`.
+
+## D-M3S02-01 — No documented cap on `EmailTemplate`/`EmailFolder.description`; both descriptions held under 200 characters as a cross-type precaution, not a documented limit
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S02` (`ui`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an inherited, cross-type precaution, named rather than silently
+  relied on
+- **What was recorded:** `artefacts/M3-S02/deploy-order.md` § "Elements and constraints this step
+  could NOT ground", item 1: neither cited skill (`admin/email-templates-and-alerts`,
+  `admin/email-deliverability-strategy`) states any `description` limit for `EmailTemplate` or
+  `EmailFolder`. The 255-character ceiling this step keeps under is carried from this build's own
+  mock-deploy finding **F-15** — a different metadata type (`admin` access metadata) — not from a
+  cited reference.
+- **Why this build proceeds anyway:** nothing here is close to the ceiling either way: the two
+  `description` values are 163 and 182 characters, both well under it and under the 200-character
+  headroom line F-15 established for this build. The precaution costs nothing to keep.
+- **What remains open:** whether `EmailTemplate`/`EmailFolder` actually enforces a `description`
+  cap, and at what length, is unconfirmed. Skill-gap signal per `standards/build-orchestration.md`
+  § 8 — the same shape `decisions.md` **D-M3S01-03** already records for `ValidationRule`.
+- **Grounded in:** `artefacts/M3-S02/deploy-order.md` § "Elements and constraints this step could
+  NOT ground", item 1; the M1 mock-deploy finding F-15.
+- **Evidence:** `artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml`
+  `<description>` (163 chars); `Case_Escalated_To_Tier2.email-meta.xml` `<description>` (182
+  chars).
+
+## D-M3S02-02 — Intra-request deploy order (`EmailFolder` before `EmailTemplate`) is an inference, not a quoted rule
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S02` (`ui`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — an inferred sequence, corroborated by the cited reference's own
+  manifest form rather than by a stated ordering rule
+- **What was recorded:** `artefacts/M3-S02/deploy-order.md` § "Elements and constraints this step
+  could NOT ground", item 2: neither cited skill states intra-request ordering for `EmailFolder`
+  versus `EmailTemplate` on the additive path. What `references/gotchas.md` states explicitly is
+  the *deletion* order ("the folder goes last"), and `deploy-order.md`'s additive order (folder,
+  then either template) is that same dependency read in reverse.
+- **Why this build proceeds anyway:** all three components ship in **one** deploy request — the
+  same form the cited reference's own worked `package.xml` uses (`metadata-and-sender-identity.md:83`–`:97`)
+  — so no two-deployment split, and no ordering guarantee between components in the same request,
+  is actually load-bearing here. The inferred order is recorded as the safe sequence to fall back
+  to if the single request is ever split, not as a platform rule this build depends on today.
+- **Alternative rejected:** none attempted — no second manifest split was trialled for this build.
+- **What remains open:** the same skill-gap `admin/email-templates-and-alerts` carries for
+  additive intra-request ordering; only an actual deploy (a future `mock_deploy.py` run against
+  M3) would settle it, and nothing in this build's single-request path needs it settled.
+- **Grounded in:** `artefacts/M3-S02/deploy-order.md` § "Elements and constraints this step could
+  NOT ground", item 2; `skills/admin/email-templates-and-alerts/references/gotchas.md` (deletion
+  order); `references/metadata-and-sender-identity.md` (worked manifest).
+- **Evidence:** `artefacts/M3-S02/package.xml` (single `<types>` block per metadata type, one
+  manifest, one request).
+
+## D-M3S02-03 — No `WorkflowAlert` and no parallel Flow email alert built alongside either template, per Q63's one-event-one-email discipline
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S02` (`ui`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`
+- **Kind:** design trade-off — a deliberate omission, grounded in an answered clarification rather
+  than a gap
+- **What was recorded:** `artefacts/M3-S02/deploy-order.md` § "Elements and constraints this step
+  could NOT ground", item 3: this step's `outputs[]` declares no `WorkflowAlert` and no
+  `workflows/Case.workflow-meta.xml`. Q63's answer — "one acknowledgement per case creation:
+  auto-response only, with no parallel Flow email alert on the same event" — is what rules a
+  second, parallel send out, for both the customer acknowledgement (`REQ-032`) and the Tier 2
+  handover notice (`REQ-033`).
+- **Why this is listed under "could not ground" even though it is grounded:** `references/gotchas.md`
+  documents `WorkflowAlert` at length, including that `senderAddress` is legal only with
+  `senderType` `OrgWideEmailAddress` — precisely the element type that would have carried a sender
+  for these templates had one been built. `deploy-order.md` records this as the pointer for a
+  future step that does need a `WorkflowAlert`, not as an unresolved question for this one.
+- **Alternatives rejected:** a `WorkflowAlert` mirroring the auto-response send; a `WorkflowAlert`
+  mirroring the escalation handover.
+- **Consequences:** the only sender element either template will ever have is downstream —
+  `M3-S04`'s `AutoResponseRules` entry for the acknowledgement — because this step and its
+  deliberately-omitted `WorkflowAlert` both carry none.
+- **Grounded in:** `artefacts/M3-S02/deploy-order.md` § "Elements and constraints this step could
+  NOT ground", item 3; clarification-answer Q63; `skills/admin/email-templates-and-alerts/references/gotchas.md`
+  (`WorkflowAlert` / `senderAddress` / `senderType`).
+- **Evidence:** `plan.json` `steps[M3-S02].outputs[]` (no `workflows/` path anywhere in it).
+
+## D-M3S02-04 — M3 gate decision, not to be pre-empted by `M3-S04`: whether `support@acme.example` is itself the Email-to-Case routing address
+
+- **Date:** 2026-09-12
+- **Step:** `M3-S02` (`ui`)
+- **Agent:** `metadata-builder`; recorded here by `build-doc-keeper`, at the request of the
+  builder's own envelope (`envelopes/M3-S02/2026-09-12T03-30-00Z.json` `followups[1]`) and the
+  tester's (`envelopes/M3-S02/2026-09-12T03-40-00Z.json` `followups[0]`)
+- **Kind:** design trade-off, held open as a milestone-gate decision — the plan carries two
+  contradictory readings of one fact, and neither cited skill lets this build pick a side from
+  the artefacts alone
+- **What was recorded:** `plan.json` clarification **Q22**'s answer states: "yes, from
+  `support@acme.example`, for both channels, including the case number... per the answer key:
+  support@ (a live routing address) itself sends the acknowledgement." `answers-key.md`'s
+  "Acknowledgement" row states the customer acknowledgement is sent "from `support@acme.example`
+  (**an org-wide email address, never the Email-to-Case routing address itself**)." These two
+  sources describe `support@acme.example` in mutually exclusive terms — one names it a live
+  routing address that itself sends the acknowledgement, the other insists it is never the
+  routing address.
+- **Why this bites, grounded in two skills independently:** `skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md`
+  § "Org-wide email address (the sender)" — "The auto-response `senderEmail` must match this
+  address exactly and must **not** be the Email-to-Case routing address, or the acknowledgement
+  re-enters Email-to-Case and loops." `skills/admin/email-to-case-configuration/references/gotchas.md`
+  Gotcha 3, "Auto-Response Email Loops When From Address Matches Routing Address" — the mechanism
+  is exactly this shape: an auto-response `senderEmail` copied from the routing address, plus a
+  mailbox forwarding rule (which `answers-key.md`'s own "Mailbox ownership" row confirms IT holds
+  for `support@`/`billing@`), produces an unbounded case-creation loop. Both prohibitions bite
+  under Q22's reading and neither bites under the answer key's reading, and this build's own
+  `admin/email-to-case-configuration` reference treats the customer-facing address as literally
+  the routing address's `<emailAddress>` value — the answer key's "never the routing address
+  itself" reading has no citation in either cited skill.
+- **Why this step does not resolve it:** `EmailTemplate` carries no sender element at all (the
+  element set in `metadata-and-sender-identity.md` — `available`, `description`, `encodingKey`,
+  `name`, `style`, `subject`, `type`, `uiType` — has no From address), so no artefact this step
+  produces sets, or could set, `senderEmail`. The element that actually decides the question is
+  `M3-S04`'s `AutoResponseRules` `ruleEntry.senderEmail`.
+- **Decision — recorded as an M3 milestone-gate decision, explicitly not to be pre-empted by `M3-S04`:**
+  this build recommends the non-routing reading in practice — i.e., that `M3-S04` set
+  `senderEmail` to a **verified org-wide address that is not itself an Email-to-Case routing
+  address** (a dedicated address, or a second org-wide address restricted to sending only), which
+  is the reading both cited skills' prohibitions are written to protect, and is also Q22's own
+  `proposed_default` before the answer key superseded it. `M3-S04` must **not** independently
+  decide this by simply copying `support@acme.example` into `senderEmail` because the answer
+  key's row appears to bless it — that would resolve the divergence by picking the reading with no
+  skill citation, silently, inside a build step, rather than at the human gate this decision names.
+  If a human at the M3 gate instead affirms Q22's reading (support@ itself sends it, loop risk
+  accepted and covered by the Q68 sandbox loop test), that is a valid outcome too — but it must be
+  an explicit gate decision, not `M3-S04`'s default.
+- **Alternatives rejected:** silently following the answer key (would contradict Q22, the more
+  recently answered and more specific clarification); silently following Q22 (would contradict
+  the answer key without surfacing the conflict); inventing a third reading not stated by either
+  source.
+- **Consequences:** `M3-S04` cannot be documented as "resolving" this question by exit code alone
+  — its own declared checkers have no sender-identity assertion (`sender-identity-note.md` § 2)
+  — and the milestone verifier must treat this decision as outstanding until the M3 gate records
+  an explicit choice.
+- **Grounded in:** `plan.json` clarification Q22; `answers-key.md` "Acknowledgement" row;
+  `skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md`;
+  `skills/admin/email-to-case-configuration/references/gotchas.md` Gotcha 3;
+  `artefacts/M3-S02/sender-identity-note.md` §§ 1–2.
+- **Evidence:** `envelopes/M3-S02/2026-09-12T03-30-00Z.json` `extensions.ambiguities_recorded[0]`;
+  `tests/M3-S02/summary.md` "Process notes worth a human's attention"; `tests/M3-S02/results.json`
+  `skipped_manual[0]` (B06).
+
+## O-M3S02-01 — Q22 vs `answers-key.md`: a clarification-record defect for the planner, not merely an ambiguity this step carries
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `decisions.md` **D-M3S02-04**
+- The contradiction `D-M3S02-04` records is not only a decision this build must make at the M3
+  gate — it is evidence that the clarification-answering process itself produced two disagreeing
+  records for the same question. `Q22`'s answer was written to say the answer key's own position,
+  and instead states the opposite of the row in `answers-key.md` it claims to follow ("Per the
+  answer key: yes, from support@acme.example... support@ (a live routing address) itself sends
+  the acknowledgement" — but the answer key's own row says the reverse). One of the two records is
+  simply wrong about what the other one says.
+- **Remedy:** at the next clarification-gate pass, reconcile `plan.json` `clarifications[Q22].answer`
+  against `answers-key.md`'s "Acknowledgement" row directly, side by side, and correct whichever
+  one misquotes the other — not by picking a winner on technical grounds (that is `D-M3S02-04`'s
+  job), but by fixing the record so a future reader is not told "per the answer key" about a
+  position the answer key does not hold.
+- **Evidence:** `plan.json` `clarifications` (Q22); `answers-key.md` "Acknowledgement" row.
+
+## O-M3S02-02 — The deliverability checker's exit 0 on this step asserts nothing: three declared-file WARNs, not a posture proof
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `tests/M3-S02/checker2_stdout.txt`
+- `check_email_deliverability_strategy.py --manifest-dir artefacts/M3-S02` exits 0 with three
+  WARNs: no `EmailAdministrationSettings`/`EmailAuthorizationSettings` file, no deliverability
+  policy JSON, no DKIM key inventory JSON. This step declares none of those three files, so the
+  checker's own documented behaviour on absence (WARN, never fail) means this exit code carries no
+  assertion about the org's deliverability posture — it only confirms the three files are, as
+  expected, not present. A reader who sees "checker: pass" without reading the WARNs would believe
+  more was proven than was.
+- **Remedy:** either add a dedicated deliverability step to a future milestone plan that owns
+  `settings/EmailAdministration.settings-meta.xml`, a deliverability policy JSON and a DKIM key
+  inventory JSON — closing the three open `admin/email-deliverability-strategy` Questions-to-Ask
+  rows `sender-identity-note.md` § 4 names (DKIM rotation, SMTP relay and bounce management, DNS
+  ownership and lead time) — or explicitly accept the gap at the M3/M5 gate as out of scope for
+  this phase.
+- **Evidence:** `tests/M3-S02/checker2_stdout.txt`; `tests/M3-S02/summary.md` § "checker 2";
+  `artefacts/M3-S02/sender-identity-note.md` § 4.
+
+## O-M3S02-03 — Correction of record: `deploy-order.md` is undeclared in `outputs[]` on both `M3-S02` and `M3-S01`; `amend-step` cannot fix either now that both are documented
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, cross-reading `plan.json`
+  `steps[M3-S02].outputs[]` and `steps[M3-S01].outputs[]` against
+  `workbook/99-other-configuration.md` `CWB-OTHER-018`
+- `plan.json` `steps[M3-S02].outputs[]` lists seven paths and does not include
+  `artefacts/M3-S02/deploy-order.md` — confirmed directly in the metadata-builder's own envelope
+  (`envelopes/M3-S02/2026-09-12T03-30-00Z.json` `extensions.undeclared_artefacts[0]`), which
+  states the file "is written on every run per `agents/build-doc-keeper/AGENT.md` Step 5 rule 2
+  but is not in this step's `outputs[]`." Re-reading `steps[M3-S01].outputs[]` while writing this
+  entry shows the identical gap there: four paths declared, none of them `deploy-order.md`. That
+  is a direct contradiction of `workbook/99-other-configuration.md` `CWB-OTHER-018`'s notes cell,
+  which states `M3-S01`'s `deploy-order.md` is "declared in `outputs[]`, present, non-empty" —
+  it is present and non-empty, but it is not declared.
+- **Why this is left standing rather than fixed in either row:** `agents/build-doc-keeper/AGENT.md`
+  Step 8 restricts a per-step documentation run to its own step's rows; `CWB-OTHER-018` belongs to
+  `M3-S01` and is not this run's row to rewrite, and `M3-S02`'s own `CWB-OTHER-020` records the
+  gap as it actually stands rather than repeating the same claim.
+- **Why `amend-step` cannot simply close this:** `scripts/build_plan.py amend-step` amends a step
+  that has not yet produced the artefact it is amending outputs for; both `M3-S01` and `M3-S02` are
+  already `documented` (this run sets `M3-S02`'s status), with real deploy-order files on disk
+  that predate any `outputs[]` entry for them. Amending `outputs[]` now would not change what was
+  actually declared at build time, and `check-outputs` for both steps already reads as `ok` from
+  the file's presence alone regardless of declaration — so an after-the-fact `outputs[]` edit
+  would silently rewrite history rather than correct it. The five prior instances of this same
+  undeclared-`deploy-order.md` pattern (`M1-S01`, `M1-S02`, `M2-S02`, and now `M3-S01`/`M3-S02`)
+  are open items for the same reason: `decisions.md` O-M1S02-02, O-M2S02-01.
+- **Remedy:** for the planner, the durable fix is a template-level one — add `deploy-order.md` to
+  the default `outputs[]` list every `metadata-builder`-owned step's scaffold carries, so future
+  steps don't reproduce this gap, rather than retrofitting `outputs[]` on documented steps.
+- **Evidence:** `plan.json` `steps[M3-S02].outputs[]`; `plan.json` `steps[M3-S01].outputs[]`;
+  `envelopes/M3-S02/2026-09-12T03-30-00Z.json` `extensions.undeclared_artefacts[0]`;
+  `workbook/99-other-configuration.md` `CWB-OTHER-018`, `CWB-OTHER-020`.
+
+## O-M3S02-04 — Correction of record, forward-looking: two consumer skills' worked examples hand `M3-S04` and `M4-S04` a stale `unfiled$public/` template prefix; and `REQ-033`'s handover notice is not `Q88`'s queue-level notification
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from
+  `artefacts/M3-S02/deploy-order.md` § "The stale folder prefix both consumer skills will hand
+  you", flagged for the written record by both the builder's and the tester's envelopes
+- `skills/admin/escalation-rules/references/metadata-examples.md:95` writes
+  `<assignedToTemplate>unfiled$public/Case_Escalated_To_Tier2</assignedToTemplate>`, and
+  `skills/admin/assignment-rules/references/metadata-examples.md:148`/`:159` write
+  `<template>unfiled$public/Case_Web_Acknowledgement</template>` — the same developer names this
+  build's templates carry (except `Case_Acknowledgement`, not `Case_Web_Acknowledgement` — one
+  template for both channels, per Q28/Q60, not the examples' channel-split pair), filed under a
+  different folder (`unfiled$public` versus this build's `case_intake`). Copying either worked
+  example verbatim into `M3-S04` or `M4-S04` produces a template reference that resolves to
+  nothing in this build's org, and per `escalation-rules:153` the deploy then fails on the
+  reference, not on the rule.
+- **What `M3-S04`/`M4-S04` must write instead:** `case_intake/Case_Acknowledgement` (`M3-S04`'s
+  `<template>`) and `case_intake/Case_Escalated_To_Tier2` (`M4-S04`'s `<assignedToTemplate>`) —
+  the `case_intake/` prefix, never `unfiled$public/`.
+- **Second, distinct correction bundled here rather than as a separate entry:** `Q88`'s answer
+  ("Tier 1 uses Omni-Channel push, so no queue email; Billing wants the queue address emailed";
+  Tier 2 defaulted to a shared mailbox) is a **queue-level** notification control, set on the
+  `Group.email`/`doesSendEmailToMembers` elements `M2-S04` built for each queue. `REQ-033`'s
+  `Case_Escalated_To_Tier2` template is a **case-level** notice the escalation action fires on
+  reassignment — a different mechanism serving a related but distinct need (a queue email is one
+  message per record landing in the queue by any path; the escalation handover is one message per
+  case specifically reassigned by the SLA breach). Nothing in this build wires them together, and
+  nothing should: `M4-S04` should not treat `Q88`'s Tier 2 default as already covering the
+  handover notice, or vice versa.
+- **Remedy:** when `M3-S04` and `M4-S04` are built, their own deploy-order notes should cite this
+  entry and `artefacts/M3-S02/deploy-order.md` directly rather than copying either cited skill's
+  worked example's folder prefix by hand.
+- **Evidence:** `artefacts/M3-S02/deploy-order.md` § "The stale folder prefix both consumer skills
+  will hand you"; `skills/admin/escalation-rules/references/metadata-examples.md:95`;
+  `skills/admin/assignment-rules/references/metadata-examples.md:148,159`; `answers-key.md` "Queue
+  notifications" row; `plan.json` clarification Q88.
+
+## O-M3S02-05 — Skill-depth signal: `check_rtm.py`'s component-key deriver does not know `EmailFolder`-qualified `EmailTemplate` naming, and reports two false orphans
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the build-scope `check_rtm.py`
+  run in `traceability.md` § "Linter result — after M3-S02"
+- `check_rtm.py`'s file-to-component deriver (`SUFFIX_TYPE`) keys any `.email` file as
+  `EmailTemplate:<file stem>`, with no equivalent of `OBJECT_CHILD_DIR`'s folding logic for a
+  folder-nested component. So it derives `EmailTemplate:Case_Acknowledgement` and
+  `EmailTemplate:Case_Escalated_To_Tier2` from the two `.email` files under
+  `artefacts/M3-S02/email/case_intake/`, while the correct, deployable member names — the ones
+  `package.xml` and `traceability.md` `REQ-032`/`REQ-033` both correctly use — are folder-qualified:
+  `EmailTemplate:case_intake/Case_Acknowledgement` and `EmailTemplate:case_intake/Case_Escalated_To_Tier2`.
+  The two forms don't string-match, so the checker's orphan report lists both as uncovered even
+  though both are named by a row.
+- **Why the row was not renamed to quiet it:** renaming the traceability row to the checker's
+  bare-stem key would make the row assert a manifest member name that does not exist in
+  `package.xml` — a wrong row purely to satisfy a linter is a worse outcome than a WARN the reader
+  can see is a false positive once explained, which this entry now does.
+- **Remedy:** record `admin/requirements-traceability-matrix`'s `check_rtm.py` as a candidate for
+  the next depth pass — a folder-qualification rule for `EmailFolder`-nested `EmailTemplate`
+  files, mirroring `OBJECT_CHILD_DIR`'s existing fold for `CustomObject` children, would close
+  this gap for every future build reaching an email-template step, not only this one.
+- **Evidence:** `skills/admin/requirements-traceability-matrix/scripts/check_rtm.py`
+  (`SUFFIX_TYPE`, `OBJECT_CHILD_DIR`); `traceability.md` § "Linter result — after M3-S02";
+  `artefacts/M3-S02/package.xml`.
+
+## D-M3S03-01 — F-25: `systemUserEmail` is an attribution field, not a sender; `D-M3S02-04` stays open
+
+- **Date:** 2026-09-12 · **Step:** `M3-S03` (`routing`) · **Agent:** `metadata-builder` (rebuild run
+  `2026-09-12T04-39-20Z`); recorded here by `build-doc-keeper`
+- **Kind:** deviation — the rebuilt artefact adds an element the as-built run's `inputs{}` never
+  asked for, in response to an org finding rather than a clarification answer
+- **What was recorded:** the operator's validate-only run against the org (`sf project deploy
+  start --dry-run`, `checkOnly: true`, alias `sfskills-dev`; `reports/MOCK-DEPLOY-M3.md` Run 3)
+  refused the as-built `settings/Case.settings-meta.xml` — `CaseSettings Case: Enter the system
+  user's email address` — because `useSystemUserAsDefaultCaseUser` `true` has no `systemUserEmail`.
+  Neither cited skill names the element at all (`envelopes/M3-S03/2026-09-12T04-39-20Z.json`: zero
+  grep hits across `admin/email-to-case-configuration` and `admin/case-management-setup`). The
+  rebuild adds `<systemUserEmail>support-noreply@acme.example</systemUserEmail>` immediately after
+  `<useSystemUserAsDefaultCaseUser>` and changes nothing else on that element pair.
+- **Why this needed a decision, not just a fix:** `support-noreply@acme.example` is a new address
+  this build invents, and this step already carries an open M3-gate decision about a different
+  address — `D-M3S02-04`, whether `support@acme.example` itself is the acknowledgement's sender.
+  Picking a careless value for `systemUserEmail` (for example, `support@acme.example` itself) would
+  read, to a later reviewer, as though this step had quietly resolved that question.
+- **Decision:** the value is deliberately **neither** `support@acme.example` **nor**
+  `billing@acme.example` — it names a mailbox this build does not otherwise use. api_meta L111871
+  scopes `systemUserEmail` to "the email address used when the default case user is the system
+  user," an ownership/attribution field on Case History, not a From address on outbound mail;
+  `EmailToCaseRoutingAddress` still carries no sender element at all, so nothing this step writes
+  can set `senderEmail`. `D-M3S02-04` therefore stays open, exactly as it was before this rebuild —
+  this entry does not settle it and is not to be read as doing so.
+- **Alternatives rejected:** reusing `support@acme.example` (would look like a silent answer to
+  `D-M3S02-04`); leaving `useSystemUserAsDefaultCaseUser` `true` with `systemUserEmail` unset (the
+  org refuses the deploy); switching to `useSystemUserAsDefaultCaseUser` `false` with a
+  `defaultCaseUser` username (rejected — this build creates no `User` metadata, so a username would
+  resolve by name against nobody).
+- **Consequences:** `support-noreply@acme.example` is **unprovisioned** by this build — a real
+  deploy must confirm the mailbox exists or replace the value first.
+- **Grounded in:** api_meta L111871 ("Specifies the email address used when the default case user
+  is the system user"); `reports/MOCK-DEPLOY-M3.md` Run 3.
+- **Evidence:** `envelopes/M3-S03/2026-09-12T04-39-20Z.json` § decision record;
+  `artefacts/M3-S03/settings/Case.settings-meta.xml`; `artefacts/M3-S03/deploy-order.md` §§ 0,
+  "F-25 does not pre-empt the acknowledgement-sender decision (D-M3S02-04)".
+
+## D-M3S03-02 — M3 gate decision, not to be pre-empted by `M4-S03`: F-27 forces `casePriority` on both routing addresses, killing that step's null-guard on the email channel
+
+- **Date:** 2026-09-12 · **Step:** `M3-S03` (`routing`) · **Agent:** `metadata-builder` (rebuild run
+  `2026-09-12T04-39-20Z`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off, held open as a milestone-gate decision — the as-built design and the
+  org's own validation requirement point in opposite directions, and no cited skill lets this build
+  pick a side from the artefacts alone
+- **What was recorded:** the as-built file left `casePriority` unset on both routing addresses on
+  purpose, so that `M4-S03`'s before-save Flow — specified to stamp `Case.Priority` "guarded so it
+  writes only into a null value" — would still fire for email-originated cases. The operator's probe
+  (`reports/MOCK-DEPLOY-M3.md` Run 4, probe d) returned `EmailToCaseRoutingAddress[support@acme.example]:
+  Missing casePriority`; probe e proved the file only validates with a value present. The rebuild
+  sets `<casePriority>Medium</casePriority>` on both addresses — the value the skill's own worked
+  example carries (`skills/admin/email-to-case-configuration/references/metadata-examples.md` lines
+  50, 59), not an answered clarification.
+- **Why this bites, and who it bites:** `M4-S03`'s null guard can now never fire for an
+  email-originated Case — `Priority` arrives already `Medium`. `WebToCaseSettings` has no priority
+  element at all (three children only, api_meta L112128 ff.), so the guard still fires for web
+  cases. The two intake channels now diverge in how `Priority` is derived, and `M4-S03`'s own
+  `plan.json` wording (`Case_BeforeSave_StampEntitlementAndCalendar`) does not yet say so.
+- **Decision — recorded as an M3 milestone-gate decision, explicitly not to be pre-empted by
+  `M4-S03`:** three options are named for the gate, and none is chosen here: (1) accept `Medium` as
+  the email channel's intake priority and update the requirement record accordingly; (2) have
+  `M4-S03`'s flow derive `Priority` from `Severity__c` / `Support_Tier__c` and unconditionally
+  **overwrite** rather than null-guard for email-originated cases — the recommended reading of Q16,
+  "priority must be set from what the form or email tells us"; (3) some other resolution outside
+  this build's current scope. `M4-S03` must not silently pick option 2 merely because it is the
+  build's own working assumption — that would resolve a milestone-gate decision inside an unrelated
+  step's build run, the same failure mode `D-M3S02-04` already guards against for the sender
+  question.
+- **Already partly actioned, not fully:** the dry-run operator (Fable) has already written this
+  consequence into `M4-S03`'s own `notes` via `amend-step --prose-only`
+  (`plan.json` `steps[M4-S03].amendments[0]`, `2026-09-12T04:50:22Z`: "M3-S03 now sets casePriority
+  on both Email-to-Case routing addresses, so this flow's null-guarded Priority stamp is dead for
+  email cases; builder must derive/overwrite or record acceptance of Medium"). So `M4-S03`'s builder
+  will not discover this cold — but the **choice** among the three options above is still open at
+  the M3 gate, and the amendment does not make it.
+- **Alternatives rejected:** leaving `M4-S03`'s plan wording as if the guard still fires for every
+  channel (already partly corrected by the amendment above, but the underlying choice remains
+  unmade); having this step silently omit `casePriority` again (the org refuses the deploy).
+- **Consequences:** the milestone verifier must treat this as an outstanding M3-gate item, the same
+  way it already must for `D-M3S02-04`.
+- **Grounded in:** `reports/MOCK-DEPLOY-M3.md` Run 4 (probes d, e); api_meta L112039 ("Specifies
+  the default case priority for cases created through this routing address" — no Required marker);
+  `skills/admin/email-to-case-configuration/references/metadata-examples.md` lines 50, 59.
+- **Evidence:** `envelopes/M3-S03/2026-09-12T04-39-20Z.json` § decision record;
+  `artefacts/M3-S03/deploy-order.md` § "F-27's consequence for M4-S03 — read this before building
+  the before-save flow"; `plan.json` `steps[M4-S03].amendments[0]`, `steps[M4-S03].inputs.note`.
+
+## O-M3S03-01 — Skill-depth and planner signal: F-26's API ≥ 64.0 floor now leaves this build's `package.xml` files at two different versions, with no plan-level field recording either
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from `artefacts/M3-S03/deploy-order.md`
+  § 0 and `reports/MOCK-DEPLOY-M3.md` Run 4
+- `newEntityRecordType` is rejected at API 62.0 and 63.0 (`Property 'newEntityRecordType' not valid
+  in version 63.0`) and accepted from 64.0, and only in its object-qualified form (`Case.Support`,
+  never the bare `Support`) — proven live, UNVERIFIED in `admin/case-management-setup` gotcha 9,
+  which instructs writing the element but names neither fact. `M3-S03`'s `package.xml` now reads
+  `67.0` (the org's own version, and the version `M4`'s Apex steps already target), while
+  `artefacts/M1-S01/package.xml` and every `M2-*` manifest still read `62.0` — this build's original
+  floor (`reports/MOCK-DEPLOY-M1.md` finding F-06).
+- **Why this is a backlog item, not a defect in this step:** `scripts/mock_deploy.py` computes the
+  deployed API version as the **highest** across whichever steps are selected in one request (its
+  own fix, landed alongside this rebuild), so a mixed-version build still validates correctly end to
+  end — Run 5 proved 0 errors deploying `M1 + M2 + M3-S01..S03` together at `67.0`. But `plan.json`
+  carries no single field recording "this build's API version" or a floor any step's `package.xml`
+  is checked against, so a step can drift upward (as this one just did) with nothing to notice if a
+  later step drifted back down, and a real deploy pipeline that pins a version per package rather
+  than computing a request-wide maximum would fail exactly the way `mock_deploy.py` did before its
+  own fix.
+- **Remedy:** record as a `build-planner` v6 backlog item — a plan-level `api_version` (or a
+  documented floor every `metadata-builder` step's `package.xml` is generated against), rather than
+  each step defaulting independently. Until then, a human deploying this build for real should pass
+  an explicit `--api-version` (or rely on `mock_deploy.py`'s computed maximum) instead of trusting
+  any single step's `package.xml` as the build's version.
+- **Evidence:** `artefacts/M3-S03/package.xml` (`67.0`); `artefacts/M1-S01/package.xml`,
+  `artefacts/M2-S01/package.xml` et al. (`62.0`); `reports/MOCK-DEPLOY-M3.md` Run 4 (probes a–e) and
+  Run 5; `envelopes/M3-S03/2026-09-12T04-39-20Z.json`.
+
+## O-M3S03-02 — Correction of record: `steps[M3-S03].acceptance_tests[3]`'s manual-test wording contradicts itself, and the artefact is right where the sentence is wrong
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the tester's envelope
+  (`envelopes/M3-S03/2026-09-12T04-53-23Z.md` § 7, "Ambiguous") and
+  `plan.json` `steps[M3-S03].acceptance_tests[3].description`
+- The manual test's own text reads, in part: "...the `webToCase` block carries exactly its three
+  documented children — `enableWebToCase` true and a `caseOrigin` that is a live CaseOrigin value
+  from M1-S01, with `defaultResponseTemplate` deliberately unset..." — it asserts "exactly its
+  three documented children" and then names the deliberate omission of the third in the same
+  breath, which cannot both be true. The artefact itself is unambiguous and matches the step's
+  stated design: `webToCase` carries exactly **two** children (`enableWebToCase`, `caseOrigin`);
+  `defaultResponseTemplate` is not written, for the reason the same sentence gives (scoped to
+  Self-Service portal responses, not the customer acknowledgement, which is `M3-S04`'s element).
+- **Why not corrected here:** `build-doc-keeper` does not hand-edit `acceptance_tests[].description`
+  — that is `amend-step --prose-only`'s job (`standards/build-orchestration.md` § 2), and this agent
+  touches `plan.json` only through the single Step 9 status transition. The tester's own boundary is
+  the same: it "never ticks a manual test" and records the wording verbatim for the human at the
+  gate rather than resolving it.
+- **Remedy:** `amend-step --prose-only` should replace "carries exactly its three documented
+  children" with "carries two of its three documented children," the same class of fix `O-M2S04-01`
+  already recorded for a stale WARN count in a different step's test description. The step is
+  `tested`, not `running`, so `--prose-only` may run on it without reopening the `step:M3-S03` gate
+  (it has none) or requiring a rejected `step:<id>` gate first.
+- **Evidence:** `plan.json` `steps[M3-S03].acceptance_tests[3].description`;
+  `envelopes/M3-S03/2026-09-12T04-53-23Z.md` § 7; `artefacts/M3-S03/settings/Case.settings-meta.xml`
+  (`webToCase` block, two children); `tests/M3-S03/results.json` `skipped_manual[0]`.
+
+## D-M3S04-01 — Operator's pre-gate resolution of `D-M3S02-04` for this step only: `senderEmail` = `replyToEmail` = `support-noreply@acme.example`
+
+- **Date:** 2026-09-12 · **Step:** `M3-S04` (`routing`) · **Agent:** dry-run operator (Fable),
+  `plan.json` `steps[M3-S04].amendments[0]` (`2026-09-12T05:12:42Z`); binding input read by
+  `metadata-builder` (run `2026-09-12T05-20-02Z`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off, entered as an operator amendment to the step's `notes` ahead of the
+  M3 gate — not a clarification answer and not this step's to invent on its own
+- **What was recorded:** `autoResponseRules/Case.autoResponseRules-meta.xml` → `ruleEntry`
+  `senderEmail` and `replyToEmail` both read `support-noreply@acme.example` — a verified org-wide
+  address that is **not** an Email-to-Case routing address. `support@acme.example` and
+  `billing@acme.example` are this org's two routing addresses (`artefacts/M3-S03/settings/Case.settings-meta.xml`
+  `emailToCase/routingAddresses/emailAddress`) and neither appears in either element. The value
+  also matches `M3-S03`'s `systemUserEmail` (`D-M3S03-01`), so the build now names one
+  unprovisioned no-reply mailbox rather than two.
+- **This is explicitly a pre-gate resolution, not a closure of `D-M3S02-04`.** That entry holds
+  open whether `support@acme.example` itself should be the acknowledgement's sender (Q22's
+  reading, loop risk accepted under Q68's sandbox test) or a non-routing address (the reading this
+  amendment takes). The M3 gate may still affirm Q22's reading; if it does, only this element
+  changes — nothing else in this step depends on the answer (`deploy-order.md` § 0).
+- **Alternative rejected:** letting `metadata-builder` pick a sender value on its own judgment at
+  build time. Rejected because the choice between two prohibited addresses and a third,
+  unprovisioned one is exactly the M3-gate decision `D-M3S02-04` already reserves for a human — an
+  operator amendment to the step's binding `notes` is the mechanism `standards/build-orchestration.md`
+  provides for resolving it early without editing the gate record itself.
+- **Grounded in:** `skills/admin/assignment-rules/references/gotchas.md` #6 ("Auto-Response
+  `senderEmail` Equal to the Email-to-Case Routing Address Creates a Mail Loop");
+  `skills/admin/email-to-case-configuration/references/gotchas.md` #3 (same prohibition, second
+  source); Q22's original `proposed_default`; `D-M3S03-01` (the matching `systemUserEmail` value).
+- **Consequence a human must accept with this value:** `support-noreply@acme.example` is
+  unprovisioned by this build (see `D-M3S04-03`, F-28).
+- **Evidence:** `plan.json` `steps[M3-S04].notes`, `steps[M3-S04].amendments[0]`;
+  `artefacts/M3-S04/deploy-order.md` § 0; `artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml`.
+
+## D-M3S04-02 — The Account-support-tier criterion is deliberately NOT written; title/manual-test mismatch escalated to the M3 gate
+
+- **Date:** 2026-09-12 · **Step:** `M3-S04` (`routing`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T05-20-02Z`); confirmed by `step-tester` (run `2026-09-12T05-27-04Z`)
+- **Kind:** design trade-off — an omission recorded rather than a guessed value shape, carrying an
+  unresolved title/test mismatch forward to the gate
+- **What was recorded:** `plan.json` `steps[M3-S04].title` and the first manual acceptance test
+  (`W02`) both say the rule routes on `Case.Origin` **and** the Account support tier. The built
+  `assignmentRules/Case.assignmentRules-meta.xml` routes on **`Case.Origin` only** — no
+  `criteriaItems` anywhere names `Account.Support_Tier__c` or any related-object field.
+- **Alternative rejected — writing a rule entry keyed on the support tier — for two independent
+  reasons, either sufficient on its own:**
+  1. **No target.** Q25 names `Account.Support_Tier__c` as a field *available* at save; no
+     clarification answer, no line of `requirement.md`, and no `answers-key.md` row says which
+     queue a `Premier` case should go to instead of the Origin-derived one. The requirement gives
+     Premier a faster **SLA** (4 business hours, `M4-S02`), not a different owner.
+  2. **No grounded notation.** No file under `skills/` documents a `criteriaItems/field` on a
+     *related* object inside a Case assignment rule. Every documented value is base-object
+     (`Case.Origin`, `Case.Priority`, `Lead.Country`); `Account.Customer_Tier__c` appears only in
+     `admin/outbound-message-setup`, on an **Account** workflow rule, which grounds nothing
+     cross-object. Writing `Account.Support_Tier__c` or `Case.Account.Support_Tier__c` would be the
+     same class of guessed value *shape* that produced **F-26** in this build (`Support` where the
+     org required `Case.Support`) and cost a rebuild.
+- **Decision required at the M3 gate — a human's, not this agent's:** either (a) an answer names
+  the tier→queue mapping for `Premier` and a live org confirms the cross-object `criteriaItems`
+  notation, and the step is rebuilt; or (b) the step's title and `W02` are corrected to
+  Origin-only, matching what was actually built and what a customer-tier SLA (not routing) already
+  requires.
+- **Consequence for this run:** `W02` is deferred at the M3 gate as **not tickable as written**
+  against the artefact as built (`tests/M3-S04/summary.md` § "Ambiguity recorded verbatim") — this
+  is a plan/artefact mismatch, not a test failure, and no artefact was changed to force a tick.
+- **Grounded in:** `artefacts/M3-S04/deploy-order.md` § 6 row 1; `requirement.md` (Premier SLA,
+  not a Premier queue); `envelopes/M3-S04/2026-09-12T05-20-02Z.json` § 5.
+- **Evidence:** `envelopes/M3-S04/2026-09-12T05-20-02Z.md` § 5; `envelopes/M3-S04/2026-09-12T05-27-04Z.md`
+  § 2; `tests/M3-S04/summary.md`.
+
+## D-M3S04-03 — F-28: the `support-noreply@acme.example` OrgWideEmailAddress is a G3 deploy prerequisite, not a metadata defect
+
+- **Date:** 2026-09-12 · **Step:** `M3-S04` (`routing`) · **Agent:** mock-deploy operator, run 6;
+  recorded here by `build-doc-keeper`
+- **Kind:** design trade-off, held open as a milestone-gate (G3) prerequisite — the org's own
+  validation requirement cannot be satisfied by any metadata this build's scope can produce
+- **What was recorded:** `reports/MOCK-DEPLOY-M3.md` Run 6 (`M1-S01`..`M3-S04`, API 67.0) —
+  `AutoResponseRule Case.Case_Acknowledgement: support-noreply@acme.example is an invalid From
+  email address.` `sfskills-dev` carries no `OrgWideEmailAddress` record at all
+  (`SELECT Address FROM OrgWideEmailAddress` → 0 rows), and there is no metadata type for one —
+  `admin/email-templates-and-alerts` § "Org-wide email address (the sender)" already documents it
+  as Setup-only and requiring verification. The assignment rule (`Case_Intake_Routing`) validated
+  cleanly in the same run; only the auto-response rule's sender fails.
+- **Why this is not a rebuild:** the value is the one the operator decided ahead of the M3 gate
+  (`D-M3S04-01`), and this step's own `deploy-order.md` § 2 row 6 already named the address as
+  "provisioned by nobody" before the mock deploy confirmed it live. No metadata this build can emit
+  substitutes for a verified org-wide address — it is Setup, not deployable source.
+- **Decision:** recorded as a **G3 prerequisite**, not an artefact defect: (1) a human provisions
+  and verifies `support-noreply@acme.example` as an `OrgWideEmailAddress` in the target org before
+  this component deploys; (2) the M3 milestone report lists the address as a G3 prerequisite; (3)
+  no rebuild of this step. Until the address exists, M3 mock-deploy validation runs without
+  `M3-S04`'s auto-response rule — the assignment rule alone validates.
+- **Skill-gap signal:** `admin/assignment-rules` should gain a gotcha and an advisory checker line
+  that `senderEmail` / `replyToEmail` are deploy-time prerequisites, not merely send-time ones —
+  provision and verify the address before deploying the rule, or the deploy fails.
+- **Grounded in:** `reports/MOCK-DEPLOY-M3.md` Run 6; `skills/admin/email-templates-and-alerts`
+  § "Org-wide email address (the sender)"; `artefacts/M3-S04/deploy-order.md` § 2 row 6.
+- **Evidence:** `reports/MOCK-DEPLOY-M3.md` Run 6 (finding F-28); `artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml`.
+
+## D-M3S04-04 — `replyToEmail` mirrors `senderEmail`; the acknowledgement's replies do not thread onto the case
+
+- **Date:** 2026-09-12 · **Step:** `M3-S04` (`routing`) · **Agent:** `metadata-builder` (run
+  `2026-09-12T05-20-02Z`); recorded here by `build-doc-keeper`
+- **Kind:** design trade-off, recorded as a consequence rather than resolved — a side effect of
+  `D-M3S04-01`'s value, following the cited skill's own worked example
+- **What was recorded:** `autoResponseRules/Case.autoResponseRules-meta.xml` sets `replyToEmail`
+  to the same value as `senderEmail`, `support-noreply@acme.example`, per
+  `skills/admin/assignment-rules/references/metadata-examples.md` § "Case auto-response rule".
+- **Consequence:** a customer who hits *Reply* on the acknowledgement writes to a mailbox that
+  does not feed Email-to-Case, and that reply does **not** thread onto the case — unlike a
+  customer replying to the *original* Email-to-Case thread (thread token in subject and body,
+  `M3-S03`), which is unaffected.
+- **Alternative not chosen here:** setting `replyToEmail` to `support@acme.example` so replies
+  thread onto the case. Not written, because that is the routing address `D-M3S04-01`'s value was
+  chosen specifically to avoid naming in this element (the mail-loop prohibition, `D-M3S04-01`'s
+  own grounding) — routing the acknowledgement's replies back into the case is exactly the
+  trade-off `D-M3S02-04` holds open, not something this element can resolve unilaterally.
+- **Status:** carried forward as an open question under the same gate item as `D-M3S02-04` — if
+  the M3 gate affirms Q22's reading (`support@` itself sends), this element changes along with
+  `senderEmail`.
+- **Grounded in:** `skills/admin/assignment-rules/references/metadata-examples.md` § "Case
+  auto-response rule"; `D-M3S02-04`; `D-M3S04-01`.
+- **Evidence:** `artefacts/M3-S04/autoResponseRules/Case.autoResponseRules-meta.xml`;
+  `envelopes/M3-S04/2026-09-12T05-20-02Z.md` § 9 ("Ambiguous"); `envelopes/M3-S04/2026-09-12T05-27-04Z.md`.
+
+## O-M3S04-01 — Q24's "defaulted on" checkbox still carries no metadata after three steps; the routing consequence is now concrete
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the `M3-S04` builder and runner
+  envelopes
+- Q24's answer requires the "Assign using active assignment rule" checkbox **defaulted on** for
+  the Case layouts, because ~20 cases a day are logged by hand. `D-M1S02-03` already recorded that
+  `M1-S02`'s layouts carry `<showRunAssignmentRulesCheckbox>true</showRunAssignmentRulesCheckbox>`
+  and nothing that pre-checks it, because no element in the cited skill's inventory does so at
+  skill v1.2.0. `M3-S04`'s builder and runner both raise the same gap again, now with the routing
+  mechanism actually built: `owner-writer-map.md` § 5 states plainly that without the default, "~20
+  cases a day are owned by their creator and get no acknowledgement" — the assignment rule and the
+  auto-response rule both fire only when the checkbox is ticked, so the consequence is no longer
+  hypothetical once this step exists.
+- **Why this is filed again rather than left as `D-M1S02-03` alone:** that entry recorded the gap
+  at the layout step, before any downstream step depended on the checkbox actually being ticked.
+  `M3-S04` is the step whose behavior the missing default silently degrades, and it is a Setup-level
+  layout property no step's `outputs[]` can add — `agents/metadata-builder` cannot write it here
+  any more than `M1-S02` could.
+- **Remedy, unchanged from `D-M1S02-03`:** accept the narrowing at the gate (each hand-logged case
+  is ticked by the agent), or route the remaining half to a recorded Setup step. Deepen
+  `skills/admin/record-types-and-page-layouts` if a `Layout` element that defaults the checkbox on
+  turns out to exist in the Metadata API guide — not established by this build.
+- **Evidence:** `decisions.md` **D-M1S02-03**; `artefacts/M3-S04/owner-writer-map.md` § 5;
+  `envelopes/M3-S04/2026-09-12T05-20-02Z.md` § 9 ("Concerning"); `envelopes/M3-S04/2026-09-12T05-22-40Z.md`.
+
+## O-M3S04-02 — The Billing queue's notification address is a live routing address; the risk named at `M2-S04` is now live rather than latent
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the `M3-S04` builder envelope
+- `decisions.md` **D-M2S04-04** already named the risk: `Queue:Billing`'s `<email>` is
+  `billing@acme.example`, the same address `M3-S03` configured as an Email-to-Case intake address —
+  a queue-assignment notification and a fresh inbound case can chain through the same mailbox. At
+  `M2-S04` time, nothing yet sent a notification through that address; `M3-S03`'s Email-to-Case
+  routing and `M3-S04`'s assignment rule (which assigns to `Billing` on `Case.Origin` =
+  `Email-Billing`) are both now built, so the mailbox is live on both ends of the risk.
+- **What has NOT been built, stated rather than implied:** no assignment-notification `<template>`
+  was written on the `Billing` entry in `assignmentRules/Case.assignmentRules-meta.xml` — Q88
+  accepted the queue's `<email>` deliberately, but no answer in this build asks for a queue-level
+  assignment notification, and none is on file. The risk is therefore latent again in this build's
+  actual artefacts, not realized — recorded because the *next* person who adds one will not
+  otherwise know the mailbox is shared with live inbound mail.
+- **Remedy:** carry `D-M2S04-04` forward at the M3 gate alongside `D-M3S04-01`/`-03`/`-04`; before
+  any future step adds an assignment-notification template to the `Billing` entry, confirm it does
+  not post into `billing@acme.example` itself.
+- **Evidence:** `decisions.md` **D-M2S04-04**; `artefacts/M3-S04/deploy-order.md` § 6 row 2;
+  `envelopes/M3-S04/2026-09-12T05-20-02Z.md` § 9 ("Concerning").
+
+## O-M3S04-03 — Skill-depth signal: `check_rtm.py` derives two component keys per rule file, and one traceability row can only satisfy one of them
+
+- **Date:** 2026-09-12 · **Recorded by:** `build-doc-keeper`, from the RTM checker run over
+  `traceability.md` after this step's two rows were added
+- **What was recorded:** `check_rtm.py --manifest-dir artefacts` reports **2 orphans** —
+  `AssignmentRule:Case.Case_Intake_Routing` (evidenced by
+  `assignmentRules/Case.assignmentRules-meta.xml`) and
+  `AutoResponseRule:Case.Case_Acknowledgement` (evidenced by
+  `autoResponseRules/Case.autoResponseRules-meta.xml`) — exit 0, 0 errors, 0 coverage gaps, 37
+  rows, 1 warning (this orphan WARN).
+- **Why, read from the script:** for any type in its `RULE_CONTAINERS` map (`AssignmentRules`,
+  `AutoResponseRules`, `EscalationRules`), `build_manifest_index()` registers **two** keys per
+  file: the container-level member the manifest actually declares (`AssignmentRules:Case`,
+  evidenced by `package.xml`, the plural form every other row in this build's convention uses for
+  a deployable member) and, separately, a singular per-rule key derived by reading each
+  `<ruleEntry>`'s parent `fullName` **inside** the file (`AssignmentRule:Case.Case_Intake_Routing`,
+  evidenced by that file itself). `REQ-036`/`REQ-037` name the container form — matching
+  `package.xml`, `workbook/06-automation.md` `CWB-AUT-010`/`-011`, and every other row in this
+  build, which names the deployable member rather than a sub-component. `resolve_artefact()`
+  marks a key "referenced" only when a row's artefact string matches it exactly or shares its
+  exact evidencing path; the container key's path is `package.xml`, the rule key's path is the
+  rule file itself, so naming one never satisfies the other.
+- **Alternative rejected:** renaming `REQ-036`/`REQ-037`'s `artefact` cell to the singular
+  per-rule form to quiet the checker. Rejected for the same reason `decisions.md` **O-M3S02-05**
+  already gives for a different key-derivation mismatch on this build: it would make the row name
+  a component nobody deploys (`AssignmentRule:Case.Case_Intake_Routing` is not what `package.xml`
+  declares) purely to satisfy a linter, which is a worse outcome than a WARN a reader can see is a
+  false positive once explained.
+- **Also rejected:** adding two more rows (one per rule file) solely to name the singular form.
+  Rejected because it would mint traceability rows with no requirement behind them, the same
+  anti-pattern `agents/build-doc-keeper/AGENT.md`'s Output Contract and Step 7 guard against — a
+  row exists to join a requirement to a delivery, not to pre-empt a specific checker's dual-key
+  quirk.
+- **Remedy:** record `admin/requirements-traceability-matrix`'s `check_rtm.py` as a further
+  skill-depth candidate — `RULE_CONTAINERS`' per-rule key derivation should be additive evidence
+  toward the *same* orphan check as its container key (matching by name suffix regardless of
+  evidencing path, the way `resolve_artefact()`'s own "same name, different type spelling"
+  fallback already does for a *row's* lookup), not a second, independently-orphanable component.
+  This is the second such gap `O-M3S02-05` and this entry both name in the same script.
+- **Evidence:** `skills/admin/requirements-traceability-matrix/scripts/check_rtm.py`
+  (`RULE_CONTAINERS`, `build_manifest_index()`, `resolve_artefact()`); `traceability.md` §
+  "Linter result — after M3-S04"; `artefacts/M3-S04/package.xml`.

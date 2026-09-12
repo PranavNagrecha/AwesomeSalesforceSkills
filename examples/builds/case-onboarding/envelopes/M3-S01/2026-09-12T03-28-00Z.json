@@ -1,0 +1,222 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-12T03-28-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S01/2026-09-12T03-28-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S01/2026-09-12T03-28-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S01",
+    "status_at_entry": "built"
+  },
+  "summary": "M3-S01 (two Case ValidationRules — Priority_Required_On_Agent_Save, Origin_Must_Be_Known — with the Bypass_Case_Intake_Validation clause) passed all 3 runnable declared acceptance tests plus both always-on structural checks: xml (3/3 parse: package.xml plus both validationRule-meta.xml files), manifest (ValidationRule:Case two-way consistent, both members explicit, no wildcard, both files present), and the declared checker skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M3-S01 --strict (exit 0, score 100, 0 findings). check-outputs: ok, no missing/empty/malformed. 1 manual test (W01: bypass clause, blank-guard shape, component-field-only, message quality) deferred to the M3 gate — Given/When/Then shape present with named observable outcomes, so usable, not ticked here. Grep-confirmed directly from disk: both formulas open with NOT($Permission.Bypass_Case_Intake_Validation); both use ISBLANK(TEXT(<picklist>)) as the blank test (Origin_Must_Be_Known uses ISPICKVAL only to enumerate the three valid values, never as the blank test); the referenced custom permission exists at artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml; both errorMessage values are 218 characters (under the 255 cap); both rules are active=true; neither formula names a compound address field. Status set to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 rubric, HIGH row: every declared test either ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed. No MEDIUM trigger fired — no command test was refused, no coverage-gap exclusion was needed (ValidationRule has a standalone source file per devops/metadata-api-coverage-gaps), and check-outputs reported no missing, empty or malformed declared output. No LOW trigger fired — the one declared checker existed and ran, the artefact directory holds 4 files (3 XML, 2 markdown, one of which — validation-bypass-note.md — is a declared output rather than metadata), and every exit code was captured to tests/M3-S01/.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "The step's own documented fixture claim held on re-run: check_validation_rules.py --strict against these exact two rules printed 'Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.' and exited 0. The REVIEW rule the plan's inputs.note warns about ('picklist logic has no explicit blank guard', fired by ISPICKVAL( with no ISBLANK() in the same formula) does not fire here because both formulas gate the blank case with ISBLANK(TEXT(...)) before any ISPICKVAL comparison runs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/tests/M3-S01/checker_stdout.txt",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "admin",
+      "observation": "The bypass-guard REVIEW rule in the checker (fires when an active rule's formula contains no $PERMISSION. token) also does not fire: both formulas open with NOT($Permission.Bypass_Case_Intake_Validation), and the permission it names exists as a real CustomPermission artefact from a dependency step rather than a forward reference to nothing.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "devops",
+      "observation": "acceptance_tests[0].description in plan.json claims the declared checker verifies 'every field token in every formula resolves' and 'an errorDisplayField that resolves'. Reading check_validation_rules.py end to end (audit_rule, collect_rules, main) shows no field inventory, no describe call and no cross-check against any object/field metadata anywhere in the script — it only inspects the formula string and error-message text. The step's own deploy-order.md already names this gap under 'Marked as ungrounded' item 6; this run independently confirms it by reading the checker source rather than taking the note's word for it. Priority, Origin and the $Permission name were still verified by this run against M1-S01, M1-S02 and M2-S01's artefacts directly (see the manual-test table), so the fields do resolve — the exit code just does not carry that proof.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "admin",
+      "observation": "deploy-order.md item 5 (A12) records that these two rules are correct but not proven to be invariants: if any automation re-saves Priority or Origin after the initial insert, a custom validation rule does not re-fire on a workflow field update, so a later automation write could leave a Case in a state the rule would have blocked at insert. The note assumes M4-S03's before-save flow is the only future writer of these two fields, but M4-S03 is not yet built at this point in the milestone sequence, so the assumption is unresolved rather than false.",
+      "evidence": {
+        "source": "input",
+        "path": "artefacts/M3-S01/validation-bypass-note.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "devops",
+      "observation": "M3-S01 is now tested but its documentation (workbook rows, traceability entries, decisions log) has not yet been updated to reflect this test run.",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the doc keeper is the agent that carries a tested step's evidence into PLAN.md, the workbook and traceability.md, and this run performed no documentation writes.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "branch": "Section 5 — Acceptance tests, Checker scope, deploy deny-list, check-outputs, the Apex exception; Section 4 — metadata step types and the validation row",
+      "used_for": "The five test types and their runners, the rule that a declared checker command runs verbatim from the build directory with the literal command (not the scope field) governing the tree read, the deny-list the checker and check-outputs commands were screened against, and the rule that a validation-type step with its own package.xml runs the manifest check rather than skipping it"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the mandatory Process Observations block, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Persistence of the report/envelope pair and the atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "The refusal enum checked against the precondition; none applied because the step's status was built at entry"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "The ban on org writes, on mutating files outside the supplied build directory, and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "branch": "$defs.acceptanceTest, $defs.step.properties.outputs",
+      "used_for": "The shape of acceptance_tests[] and outputs[] this run read from the step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "The package.xml grammar (one types block per type, members naming components, wildcard semantics — and that ValidationRule does not support the wildcard, matching this step's own deploy-order.md) the manifest was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "Deriving the metadata type/member (Case.Origin_Must_Be_Known, Case.Priority_Required_On_Agent_Save) from the artefact file names under objects/Case/validationRules/ for the always-on manifest check"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "Confirming ValidationRule is not a type documented as having no standalone source file, so no manifest exclusion applied; only the two markdown artefacts were excluded as non-metadata"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "The bar for a manual line being tickable by a human at the gate without re-interpretation"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "The Given/When/Then anatomy (precondition / single action / observable outcome) the W01 manual test was checked against before deferral; it names observable outcomes, so it was reported usable rather than unusable"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "Its checker (check_validation_rules.py) is this step's declared acceptance test 1, run verbatim with --strict as the plan declared"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S01",
+    "build_id": "case-onboarding",
+    "status_set": "tested",
+    "results_path": ".sfskills/builds/case-onboarding/tests/M3-S01/results.json",
+    "tests_run": 4,
+    "failed": [],
+    "skipped_manual": [
+      "W01: given the checker fails the step on a REVIEW finding ONLY because --strict is declared on its command, when the two validationRule files are read, then each errorConditionFormula opens with NOT($Permission.Bypass_Case_Intake_Validation) (Q56), tests emptiness with ISBLANK(TEXT(<picklist>)) rather than ISPICKVAL(<picklist>, \"\") alone, names only component fields and never a compound address field (Q59), and carries a final error message a customer-facing agent can act on rather than a placeholder (Q93)."
+    ],
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree over artefacts/M3-S01/** (always-on, Step 2)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "3 files (package.xml, objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml, objects/Case/validationRules/Priority_Required_On_Agent_Save.validationRule-meta.xml), 3 parsed, 0 failed",
+        "capture": "tests/M3-S01/xml_result.json"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way file<->member derivation against artefacts/M3-S01/package.xml (always-on, Step 3)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "2 mapped files -> 2 explicit members (Case.Origin_Must_Be_Known, Case.Priority_Required_On_Agent_Save), 0 wildcards, 0 unmatched in either direction; validation-bypass-note.md and deploy-order.md excluded as non-metadata markdown",
+        "capture": "manual derivation, no separate stdout file"
+      },
+      {
+        "name": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "type": "checker",
+        "declared_scope": "step",
+        "runner": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M3-S01 --strict",
+        "exit_code": 0,
+        "verdict": "pass",
+        "detail": "score 100; Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.",
+        "capture": "tests/M3-S01/checker_stdout.txt"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/case-onboarding/plan.json M3-S01",
+        "exit_code": 0,
+        "verdict": "ok",
+        "detail": "{\"ok\": true, \"missing\": [], \"empty\": [], \"malformed\": []} — the second half of the checker test's pass condition",
+        "capture": "tests/M3-S01/check_outputs.json"
+      },
+      {
+        "name": "manual: W01 bypass clause / blank guard / component fields / message quality",
+        "type": "manual",
+        "runner": "not runnable by this agent",
+        "exit_code": null,
+        "verdict": "deferred to the M3 milestone gate",
+        "detail": "Given/When/Then shape present and observable outcomes named, so usable; on-disk evidence (bypass clause text, ISBLANK(TEXT(...)) blank-test shape, existence of the custom permission artefact, errorMessage lengths, active flags, absence of compound-field references) gathered by this run but NOT ticked — ticking is a human act at the milestone gate."
+      }
+    ],
+    "deny_list_screening": {
+      "standard": "standards/build-orchestration.md section 5 deploy deny-list",
+      "commands_screened": 2,
+      "commands_refused": 0,
+      "detail": "The declared checker command and check-outputs were screened against the full deny-list pattern before execution; neither matched, so both ran verbatim as declared with no flag appended, removed, re-ordered or substituted"
+    },
+    "dimensions_skipped": []
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M3-S01 is now tested and its workbook rows, traceability entries and decisions log have not yet been written for this test run"
+    }
+  ]
+}

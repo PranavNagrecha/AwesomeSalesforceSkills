@@ -1,0 +1,14 @@
+{
+  "step_id": "M3-S03",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/case-management-setup/scripts/check_case_management_setup.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given check_email_to_case_configuration.py is not declared here (see the step note), when settings/Case.settings-meta.xml is read, then both routing addresses carry their own caseOrigin (Email-Support, Email-Billing) and no caseOwner, unauthorizedSenderAction is Bounce, overEmailLimitAction is Requeue, saveEmailHeaders is true on both, and the webToCase block carries exactly its three documented children — enableWebToCase true and a caseOrigin that is a live CaseOrigin value from M1-S01, with defaultResponseTemplate deliberately unset because the guide scopes it to Self-Service portal responses rather than to the customer acknowledgement, which is M3-S04's auto-response rule.",
+    "Given Q66's answer itself says to confirm how the website form posts, when web-to-case-form-contract.md is read, then it states whether the form posts directly to Web-to-Case or through middleware, the Origin value each path stamps, and — per case-management-setup § 4 — that the HTML form itself is not metadata and has no metadata type, so it is authored and hosted outside this build."
+  ]
+}

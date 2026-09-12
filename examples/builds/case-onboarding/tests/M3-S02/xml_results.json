@@ -1,0 +1,22 @@
+[
+  {
+    "path": "artefacts/M3-S02/package.xml",
+    "parsed": true,
+    "message": null
+  },
+  {
+    "path": "artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+    "parsed": true,
+    "message": null
+  },
+  {
+    "path": "artefacts/M3-S02/email/case_intake/Case_Escalated_To_Tier2.email-meta.xml",
+    "parsed": true,
+    "message": null
+  },
+  {
+    "path": "artefacts/M3-S02/email/case_intake/Case_Acknowledgement.email-meta.xml",
+    "parsed": true,
+    "message": null
+  }
+]

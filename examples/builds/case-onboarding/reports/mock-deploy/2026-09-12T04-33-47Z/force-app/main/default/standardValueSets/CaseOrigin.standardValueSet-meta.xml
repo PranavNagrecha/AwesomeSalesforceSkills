@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sorted>false</sorted>
+    <standardValue>
+        <fullName>Email-Support</fullName>
+        <default>false</default>
+        <label>Email-Support</label>
+        <description>Set by the support@ Email-to-Case routing address.</description>
+    </standardValue>
+    <standardValue>
+        <fullName>Email-Billing</fullName>
+        <default>false</default>
+        <label>Email-Billing</label>
+        <description>Set by the billing@ Email-to-Case routing address.</description>
+    </standardValue>
+    <standardValue>
+        <fullName>Web</fullName>
+        <default>true</default>
+        <label>Web</label>
+        <description>Set by the Web-to-Case form on the public website.</description>
+    </standardValue>
+</StandardValueSet>

@@ -1,0 +1,22 @@
+{
+  "total_files": 3,
+  "parsed": 3,
+  "failed": 0,
+  "files": [
+    {
+      "path": "artefacts/M3-S01/objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml",
+      "parsed": true,
+      "message": null
+    },
+    {
+      "path": "artefacts/M3-S01/objects/Case/validationRules/Priority_Required_On_Agent_Save.validationRule-meta.xml",
+      "parsed": true,
+      "message": null
+    },
+    {
+      "path": "artefacts/M3-S01/package.xml",
+      "parsed": true,
+      "message": null
+    }
+  ]
+}

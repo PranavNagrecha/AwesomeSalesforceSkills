@@ -1,0 +1,385 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-12T03-19-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S01/2026-09-12T03-19-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S01/2026-09-12T03-19-00Z.json",
+  "outcome": "completed",
+  "summary": "Built M3-S01 (validation, design-only, owner metadata-builder) into five files: the two Case ValidationRule components the step declares (Priority_Required_On_Agent_Save and Origin_Must_Be_Known), validation-bypass-note.md, a one-type package.xml at API 62.0, and deploy-order.md. Every element name used - fullName, active, description, errorConditionFormula, errorDisplayField, errorMessage - comes from the Step 3 inventory built out of admin/validation-rules references/metadata-examples.md (the type-in-one-table field list and Example 2, the DX source-format shape), its references/gotchas.md and references/llm-anti-patterns.md Anti-Pattern 6, plus admin/custom-permissions references/metadata-examples.md for the $Permission reference form. Both formulas open with NOT($Permission.Bypass_Case_Intake_Validation) per Q56 and test emptiness with ISBLANK(TEXT(<picklist>)) per the plan's own recorded fixture, so the declared checker exited 0 with zero findings on the first pass under --strict. No repair pass was needed. check-outputs returned ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10: four of the five HIGH conditions hold - every emitted element traces to the Step 3 inventory, the declared checker exited 0 on the first pass, check-outputs returned ok, and every declared output was written with nothing outside artefacts/M3-S01/. MEDIUM because the fifth fails: three of the seven Questions-to-Ask rows in admin/validation-rules are deferred in this plan rather than answered - the child-record row (Q54), the post-save-automation row (Q55) and the errorDisplayField-on-every-layout row (Q57) - and stand as assumptions A11, A12 and A13. A12 is the one that decides whether these rules are invariants at all, per the workflow-field-update gotcha, and it is assumed rather than proven.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding/",
+    "step_id": "M3-S01",
+    "api_version": "62.0 (defaulted - plan.json carries no api_version; matches the version M1-S01 and M2-S01 manifests already carry)",
+    "step_inputs.answers": [
+      "Q5",
+      "Q56",
+      "Q58",
+      "Q59",
+      "Q93",
+      "Q54 (DEFERRED)",
+      "Q55 (DEFERRED)",
+      "Q57 (DEFERRED)"
+    ],
+    "step_inputs.assumptions": [
+      "A11",
+      "A12",
+      "A13"
+    ],
+    "step_inputs.note": "carried verbatim from plan.json; its ISBLANK(TEXT(...)) constraint and its --strict finding are treated as binding",
+    "upstream_artefacts_read": [
+      "artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+      "artefacts/M1-S01/package.xml",
+      "artefacts/M1-S01/objects/Case/recordTypes/Support.recordType-meta.xml",
+      "artefacts/M1-S02/layouts/Case-Case Support Layout.layout-meta.xml",
+      "artefacts/M1-S02/layouts/Case-Case Billing Layout.layout-meta.xml",
+      "artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml",
+      "artefacts/M2-S01/package.xml"
+    ],
+    "invoked_by": "build-step-runner, executing this AGENT.md inline (the runner's Step 6 'any other host' path); Step 9's set-status commands were therefore skipped and left to the runner",
+    "persist": "--no-persist - the caller restricted writes to the build directory, so the docs/reports/metadata-builder/ pair was not written; no prior step in this build wrote one either",
+    "secrets_redacted": "none - no step input matched a credential shape per skills/devops/pipeline-secrets-management"
+  },
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Three of the seven deduplicated Questions-to-Ask rows in admin/validation-rules are answered 'DEFER' in plan.json rather than answered: Q54 (which field the user edits - Case or child), Q55 (post-save automation writing the guarded field) and Q57 (errorDisplayField present on every layout for every record type). The plan converts each to an assumption (A11, A12, A13) and the skill documents no default for any of them, so the rules were written to the conservative reading each assumption names. Not a query failure and not a skill gap.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Answer Q54/Q55/Q57 with the customer and re-run this step as a documented -> running rebuild; A12 in particular is checkable once M4-S03's before-save flow exists."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "The declared checker exited 0 with zero findings on the first pass under --strict, reproducing the plan's own recorded fixture output word for word: 'Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.'",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M3-S01",
+        "count": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "element-grounding",
+      "observation": "Run at build scope, admin/custom-permissions' own checker resolves the cross-step reference this step creates: Bypass_Case_Intake_Validation shows 2 consumers granted by permission set Case_Intake_Integration, with 0 errors and 0 warnings - so both $Permission tokens point at a permission that M2-S01 really defines.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "question-coverage",
+      "observation": "A13's premise is checkable from the artefacts without an org: Priority and Origin both appear as layout fields on both Case layouts M1-S02 wrote, so neither errorDisplayField is relying on a field that is absent from a layout.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S02/layouts",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-accuracy",
+      "observation": "The step's checker acceptance_tests[0].description claims the checker verifies 'every field token in every formula resolves' and 'an errorDisplayField that resolves'; check_validation_rules.py has no field inventory and does neither, so that exit code carries less than the description promises.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "element-grounding",
+      "observation": "Two of the shapes this step depends on carry the cited skill's own UNVERIFIED markers - the .validationRule-meta.xml DX suffix and directory, and the Object.RuleName manifest member form - while the element names and semantics used inside the files are confirmed by the guide's field table; both are recorded in deploy-order.md rather than silently adopted.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/references/metadata-examples.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "question-coverage",
+      "observation": "Whether these two rules are database invariants cannot be settled from the artefacts: Q55 is deferred, so A12 (no automation writes Priority or Origin after save) is assumed, and a workflow field update re-saving the record would leave a committed Case in exactly the state the rules exist to prevent.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "element-grounding",
+      "observation": "Neither cited skill documents whether a value outside the CaseOrigin standard value set can reach Origin at all, so the unrecognised-value half of Origin_Must_Be_Known may be redundant; the three values it tests are read off M1-S01's value set, so it is at least not wrong about what is allowed.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M1-S01/standardValueSets/CaseOrigin.standardValueSet-meta.xml",
+        "count": 3
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "standards/build-orchestration.md section 5 gives the tester the job of running M3-S01's four declared acceptance tests and writing tests/M3-S01/results.json; this agent ran checkers only to check its own output.",
+      "observation": "The step's declared tests, including the manual one that has to be ticked at the M3 gate, have not been run by this agent.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json",
+        "count": 4
+      }
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns running M3-S01's declared acceptance tests and writing tests/M3-S01/results.json; this agent only repaired its own output."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M3-S01 is tested, the workbook rows, decisions entries and traceability links for the two rules and the three deferred questions are due."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "the seven Questions-to-Ask rows bound in Step 4"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/metadata-examples.md",
+      "used_for": "the ValidationRule element table, the 255-character errorMessage ceiling, Example 2's DX source-format shape, the bypass-first clause order, and the no-wildcard manifest rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/gotchas.md",
+      "used_for": "errorDisplayField relocation, the workflow-field-update non-invariant, undefined rule evaluation order, compound-field prohibition, and the never-deactivate-in-production bypass rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 6 - ISBLANK(TEXT(<picklist>)) for the blank test and NOT(ISPICKVAL(...)) for picklist inequality"
+    },
+    {
+      "type": "template",
+      "id": "admin/validation-rules/validation-rule-template",
+      "path": "skills/admin/validation-rules/templates/validation-rule-template.md",
+      "used_for": "the canonical clause order and the bypass/test-scenario rows reproduced in validation-bypass-note.md"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "the $Permission.<Name> formula reference form and the rule that a CustomPermission's file stem is its API name"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 step-type table and status machine, section 5 who runs the tests, section 8 the deepen-a-skill rule"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations, citation and confidence rules"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, atomic write, dimensions_skipped states and redaction"
+    },
+    {
+      "type": "probe",
+      "id": "check_validation_rules",
+      "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+      "used_for": "the step's declared checker, run verbatim with --strict"
+    },
+    {
+      "type": "probe",
+      "id": "check_custom_permissions",
+      "path": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+      "used_for": "resolving the $Permission cross-step reference at build scope"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S01",
+    "step_type": "validation",
+    "build_mode": "design-only",
+    "api_version": "62.0",
+    "invocation_path": "inline under build-step-runner; Step 9 set-status skipped by contract",
+    "blocked_reason": null,
+    "artefacts": [
+      {
+        "path": "artefacts/M3-S01/objects/Case/validationRules/Priority_Required_On_Agent_Save.validationRule-meta.xml",
+        "type": "ValidationRule",
+        "declared": true,
+        "source": "admin/validation-rules references/metadata-examples.md Example 2 + field table"
+      },
+      {
+        "path": "artefacts/M3-S01/objects/Case/validationRules/Origin_Must_Be_Known.validationRule-meta.xml",
+        "type": "ValidationRule",
+        "declared": true,
+        "source": "admin/validation-rules references/metadata-examples.md Example 2 + field table; values from M1-S01 CaseOrigin"
+      },
+      {
+        "path": "artefacts/M3-S01/validation-bypass-note.md",
+        "type": "note",
+        "declared": true,
+        "source": "admin/validation-rules templates/validation-rule-template.md + admin/custom-permissions references/metadata-examples.md"
+      },
+      {
+        "path": "artefacts/M3-S01/package.xml",
+        "type": "Package",
+        "declared": true,
+        "source": "admin/validation-rules references/metadata-examples.md package.xml section (named members, no wildcard)"
+      },
+      {
+        "path": "artefacts/M3-S01/deploy-order.md",
+        "type": "note",
+        "declared": false,
+        "source": "metadata-builder Step 5 rule 2 and Step 7 - written on every run"
+      }
+    ],
+    "undeclared_artefacts": [
+      "artefacts/M3-S01/deploy-order.md"
+    ],
+    "not_grounded": [
+      "The .validationRule-meta.xml DX suffix and directory carry the cited skill's own UNVERIFIED marker; element names and semantics are confirmed.",
+      "The Object.RuleName package.xml member form carries the same marker; it follows the documented CustomField/ListView sub-component pattern by analogy.",
+      "No documented character cap on ValidationRule.description; both are held under 200 characters as a cross-type inference from MOCK-DEPLOY-M2 F-15 (PermissionSet/Profile at 255).",
+      "Whether a value outside the CaseOrigin standard value set can reach Origin is documented in neither cited skill, so the unrecognised-value clause may be redundant.",
+      "A12 (no post-save automation writes Priority or Origin) is assumed, not proven, so the rules' status as invariants is unestablished."
+    ],
+    "decision_record": [
+      {
+        "question": "Which users and integrations must be able to save a Case the rule would reject? (Q56)",
+        "answer": "The Email-to-Case and Web-to-Case intake identities, via the Bypass_Case_Intake_Validation custom permission on the Case_Intake_Integration permission set.",
+        "source": "clarification answer Q56 + artefacts/M2-S01",
+        "element": "NOT($Permission.Bypass_Case_Intake_Validation) first inside each AND"
+      },
+      {
+        "question": "Is a field being marked Required on the layout meant to be enforced everywhere? (Q5)",
+        "answer": "Priority and Origin are enforced at validation-rule level because both intake channels create Cases through the API, which ignores layout requiredness.",
+        "source": "clarification answer Q5",
+        "element": "the existence and scope of both rules"
+      },
+      {
+        "question": "Does the data already violate this rule today? (Q58)",
+        "answer": "No existing Cases, so the data is clean by construction; the active=false caveat applies to rules aimed at migrated Accounts or Contacts, which neither of these is.",
+        "source": "clarification answer Q58 + requirement.md",
+        "element": "<active>true</active> on both rules"
+      },
+      {
+        "question": "Does the formula touch an address, a person name, or a dependent picklist? (Q59)",
+        "answer": "No. Both formulas name only Priority and Origin; no compound field appears.",
+        "source": "clarification answer Q59",
+        "element": "formula field tokens; checker's COMPOUND_FIELDS list is clean"
+      },
+      {
+        "question": "Does each message fit in 255 characters and name both the problem and the fix? (Q93)",
+        "answer": "Final text written now: 218 characters each, each naming the field to set and why it matters downstream.",
+        "source": "clarification answer Q93",
+        "element": "<errorMessage> on both rules"
+      },
+      {
+        "question": "Is the field the error should attach to on every layout for every record type in scope? (Q57, DEFERRED)",
+        "answer": "Assumed yes (A13). Verified as far as the artefacts allow: Priority and Origin are layout fields on both M1-S02 layouts. Per-profile field visibility is not readable here.",
+        "source": "assumption A13 + artefacts/M1-S02",
+        "element": "<errorDisplayField>Priority</errorDisplayField>, <errorDisplayField>Origin</errorDisplayField>"
+      },
+      {
+        "question": "Which field does the user actually edit to cause this - the one on the record, or a child record? (Q54, DEFERRED)",
+        "answer": "Assumed the Case itself (A11). Both guarded fields live on Case and are edited there, so the child-record blind spot does not apply.",
+        "source": "assumption A11",
+        "element": "object scope of both rules"
+      },
+      {
+        "question": "Is any workflow field update or automation writing this field after save? (Q55, DEFERRED)",
+        "answer": "Assumed none (A12); M4-S03's before-save flow is the assumed sole writer. Recorded as the open risk to the rules' invariance.",
+        "source": "assumption A12",
+        "element": "none - recorded in deploy-order.md and validation-bypass-note.md"
+      },
+      {
+        "question": "How should the blank test be written? (plan constraint, not a skill question)",
+        "answer": "ISBLANK(TEXT(<picklist>)) rather than ISPICKVAL(<picklist>, \"\") alone, because the checker's REVIEW rule fires on ISPICKVAL with no ISBLANK and the step declares --strict.",
+        "source": "step inputs note (plan.json) + references/llm-anti-patterns.md Anti-Pattern 6",
+        "element": "ISBLANK(TEXT(Priority)), ISBLANK(TEXT(Origin))"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M3-S01 --strict",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "summary": "Scanned 2 validation rule(s) across 2 file(s); 0 finding(s) detected.",
+        "score": 100,
+        "blocking": 0
+      },
+      {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M3-S01",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "summary": "0 error(s), 1 warning(s): Bypass_Case_Intake_Validation referenced by 2 consumer locations but not defined in this step's tree - the definition is M2-S01's, which is correct at step scope and not a defect in this step."
+      },
+      {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "summary": "0 error(s), 0 warning(s), 0 info - the cross-step reference resolves: 1 permission, 2 consumers, granted by permission set Case_Intake_Integration."
+      },
+      {
+        "command": "python3 -c \"<ElementTree parse of every *.xml under artefacts/M3-S01>\"",
+        "cwd": ".sfskills/builds/case-onboarding",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "summary": "3 XML file(s) parsed."
+      }
+    ],
+    "manifest_cross_check": {
+      "members": [
+        "Case.Origin_Must_Be_Known",
+        "Case.Priority_Required_On_Agent_Save"
+      ],
+      "every_member_has_a_file": true,
+      "every_metadata_file_has_a_member": true,
+      "file_stem_equals_fullName": true,
+      "version": "62.0"
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "check_outputs_exit_code": 0
+  }
+}

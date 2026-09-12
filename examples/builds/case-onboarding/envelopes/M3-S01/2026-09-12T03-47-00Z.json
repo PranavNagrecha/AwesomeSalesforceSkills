@@ -1,0 +1,106 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-12T03-47-00Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M3-S01/2026-09-12T03-47-00Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M3-S01/2026-09-12T03-47-00Z.json",
+  "summary": "Documented M3-S01 (two Case ValidationRules — Priority_Required_On_Agent_Save, Origin_Must_Be_Known — with the Bypass_Case_Intake_Validation clause) after step-tester marked it tested. Re-rendered PLAN.md/CLARIFICATIONS.md before and after the status transition; created workbook/05-validation-rules.md (first Section 5 file in the build) with three rows (CWB-VR-001, CWB-VR-002, CWB-VR-003) and appended two Other-Configuration rows (CWB-OTHER-017 package.xml, CWB-OTHER-018 deploy-order.md); minted two new requirement ids (REQ-030 Priority, REQ-031 Origin), continuing from the highest existing (REQ-029), and wrote their traceability.md Matrix rows, a requirement-id-derivation pair, a 'What M3-S01 rests on' section, a Coverage section and a Linter-result section; appended six decisions (D-M3S01-01..06, one per item in deploy-order.md's 'Marked as ungrounded' list) and four open items for the planner (O-M3S01-01..04, including two correction-of-record items against REQ-014 and REQ-015 which this run's own artefacts touch but does not edit); compiled the step's one manual test (W01) into four UAT cases (TC-M3S01-01..04, positive and negative per rule) and four Given/When/Then criteria (AC-030.1/.2, AC-031.1/.2), staged in the session scratchpad and linted clean by both check_uat_case.py and check_ac_format.py. Set the step's status to documented via build_plan.py. A concurrent M3-S02 run (ui, email templates) was building its own artefacts throughout; every shared file was re-read immediately before each write and only M3-S01's own rows and this run's appended entries were touched.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Both artefacts produced a workbook row, both new traceability rows carry a real source_req_id (Q5, with Q24 cited in prose for REQ-031) and a verification cell naming both what passed and what the checker does not prove, both requirements' step (M3-S01) is documented, and re-running this pass would replace the same rows rather than duplicate them. Not MEDIUM: no artefact needed judgment to place in a section (validation rules map cleanly to Section 5), no req_id was inferred from an ambiguous field, and the concurrent M3-S02 write surfaced as an orphan-count observation rather than a conflict this run had to resolve.",
+  "outcome": "completed",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared checker's REVIEW rule for a missing blank guard did not fire on either rule, and the step's own fixture fed to it during planning reproduced the documented pass/fail boundary exactly.",
+      "evidence": {"source": "repo_scan", "path": "tests/M3-S01/checker_stdout.txt"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both errorDisplayField values (Priority, Origin) are confirmed present as layoutItems on both Case layouts from M1-S02, so assumption A13's premise now holds concretely for both new rules rather than only in principle.",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M1-S02/layouts/"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The step's declared checker test description claims check_validation_rules.py verifies field-token and errorDisplayField resolution; the script has no field inventory and does neither, a gap the owning agent and the tester both independently named.",
+      "evidence": {"source": "repo_scan", "path": "skills/admin/validation-rules/scripts/check_validation_rules.py"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Six distinct grounding gaps in deploy-order.md's own 'Marked as ungrounded' list were carried forward as decisions rather than resolved, because none can be settled without either a documented Metadata API guarantee or an org validation this build has not run for M3.",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S01/deploy-order.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The ten-position deploy-order sequence in agents/build-doc-keeper/AGENT.md Step 5 (objects, fields, picklists, record types, layouts, permission sets, sharing, automation, routing, SLA) has no slot named for the validation step type, the same gap workbook/01-objects-and-fields.md already records for BusinessProcess.",
+      "evidence": {"source": "repo_scan", "path": "agents/build-doc-keeper/AGENT.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether these two rules are unbypassable invariants depends on M4-S03's before-save flow being the sole post-save writer of Priority/Origin, and M4-S03 does not exist yet to confirm it against.",
+      "evidence": {"source": "repo_scan", "path": "plan.json"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M3-S01 is documented; M3-S02 (running) is the remaining M3 step this run observed in flight, and M3-S03/S04/S05 remain pending or blocked before the milestone can be verified.",
+      "evidence": {"source": "repo_scan", "path": "plan.json"},
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "M3-S02 is running and M3-S03 depends on it; advancing the milestone requires those steps built, tested and documented next."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "check_validation_rules.py's missing field-inventory logic is a repeated, uninstrumented manual check every build reaching a validation step must redo by hand.",
+      "evidence": {"source": "repo_scan", "path": "docs/reports/skill-depth.md"},
+      "suggested_followup_agent": "config-workbook-author",
+      "followup_reason": "recorded here as a skill-depth candidate rather than acted on, because deepening a checker script is out of this agent's scope and belongs to the skill's own maintenance path, not a workbook compile."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "the run-time rules for this invocation, including the prohibition on mutating files outside the paths this agent owns"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, Process Observations requirement, confidence rubric this agent's own Step 11 overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "the atomic-write rule for this envelope's markdown/JSON pair"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked against the four refusal triggers; none fired — the step was tested on entry and every row carries a real source_req_id"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the step fields this agent reads (inputs, outputs, skills, depends_on) and leaves untouched beyond the CLI-mediated status transition"},
+    {"type": "standard", "id": "agents/_shared/schemas/output-envelope.schema.json", "path": "agents/_shared/schemas/output-envelope.schema.json", "used_for": "the fixed top-level field set; this run's payload rides in extensions"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 2 rendered views and the no-hand-edit-plan.json rule; § 4 step types and the validation row; § 5 the acceptance-test types, checker scope and check-outputs; § 6 this agent's per-step job; § 8 a decision entry as the deepen-a-skill signal"},
+    {"type": "skill", "id": "admin/configuration-workbook-authoring", "path": "skills/admin/configuration-workbook-authoring/SKILL.md", "used_for": "Concept 1 row schema, Concept 2 the ten sections (Section 5 — Validation Rules) and its own bypass-reference coverage, Concept 3 one agent per row"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "the build-layer RTM column set, the REQ-XXX convention, the status enum, the pipe-delimited multi-value convention"},
+    {"type": "skill", "id": "devops/development-documentation-standards", "path": "skills/devops/development-documentation-standards/SKILL.md", "used_for": "a decision entry recording the alternative rejected and the source it rests on, applied to all six D-M3S01-* entries"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "how a test result becomes acceptance evidence, applied when compiling W01 into the four TC-M3S01 cases"},
+    {"type": "skill", "id": "admin/uat-test-case-design", "path": "skills/admin/uat-test-case-design/SKILL.md", "used_for": "the canonical UAT case record shape and the check_uat_case.py schema (case_id, ac_id, req_id, persona, sandbox, steps, evidence, pass_rule)"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then record shape and the negative-per-rule-type-requirement rule, applied to the four AC-030/031 criteria"},
+    {"type": "skill", "id": "admin/validation-rules", "path": "skills/admin/validation-rules/SKILL.md", "used_for": "reading deploy-order.md's grounding gaps and the checker's own documented behaviour against the step's artefacts"},
+    {"type": "skill", "id": "admin/custom-permissions", "path": "skills/admin/custom-permissions/SKILL.md", "used_for": "the $Permission reference form and the bypass-grant dependency this step consumes from M2-S01"}
+  ],
+  "extensions": {
+    "step_id": "M3-S01",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/case-onboarding/PLAN.md",
+      ".sfskills/builds/case-onboarding/CLARIFICATIONS.md",
+      ".sfskills/builds/case-onboarding/workbook/05-validation-rules.md",
+      ".sfskills/builds/case-onboarding/workbook/99-other-configuration.md",
+      ".sfskills/builds/case-onboarding/traceability.md",
+      ".sfskills/builds/case-onboarding/decisions.md"
+    ],
+    "workbook_rows": ["CWB-VR-001", "CWB-VR-002", "CWB-VR-003", "CWB-OTHER-017", "CWB-OTHER-018"],
+    "traceability_rows": ["REQ-030", "REQ-031"],
+    "decisions_appended": ["D-M3S01-01", "D-M3S01-02", "D-M3S01-03", "D-M3S01-04", "D-M3S01-05", "D-M3S01-06"],
+    "open_items_appended": ["O-M3S01-01", "O-M3S01-02", "O-M3S01-03", "O-M3S01-04"],
+    "rows_replaced": [],
+    "uat_cases_staged": ["TC-M3S01-01", "TC-M3S01-02", "TC-M3S01-03", "TC-M3S01-04"],
+    "acceptance_criteria_staged": ["AC-030.1", "AC-030.2", "AC-031.1", "AC-031.2"],
+    "status_set": "documented"
+  },
+  "followups": [
+    {"agent": "build-step-runner", "because": "M3-S02 is running and M3-S03/S04 depend on it; advancing M3 requires the remaining steps built, tested and documented."},
+    {"agent": "milestone-verifier", "because": "not yet — M3 still has four undocumented steps (M3-S02 running, M3-S03/S04 pending, M3-S05 blocked), so a milestone verification run now would be premature."}
+  ]
+}
