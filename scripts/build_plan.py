@@ -1410,22 +1410,50 @@ def render_run_md(plan: dict, build_dir: Path) -> str:
         out.append("")
 
     clarifications = plan.get("clarifications") or []
+
+    def _real_default_source(c: dict) -> str:
+        # "none" is the literal marker `requirements-clarifier` stamps when a
+        # question had no proposed default and a human answered from scratch
+        # (AGENT.md § "proposed_default"); it is not itself a source.
+        src = (c.get("default_source") or "").strip()
+        return src if src and src.lower() != "none" else ""
+
+    answered = [c for c in clarifications if c.get("status") == "answered"]
+    defaults = [c for c in answered if _real_default_source(c)]
+    answers_given = [c for c in answered if not _real_default_source(c)]
+    deferred = [c for c in clarifications if c.get("status") == "deferred"]
+    open_qs = [c for c in clarifications if c.get("status") == "open"]
+
     out.append("## Defaults applied")
     out.append("")
-    defaults = [c for c in clarifications if (c.get("default_source") or "").strip()]
     out.append(_bullets(
         (f"`{c.get('id')}` — {_cell(c.get('question'))}: "
          f"{_cell(c.get('answer') or c.get('proposed_default'))} "
-         f"(source: {_cell(c.get('default_source'))})")
+         f"(source: {_cell(_real_default_source(c))})")
         for c in defaults))
+    out.append("")
+
+    out.append("## Answers given")
+    out.append("")
+    out.append(_bullets(
+        f"`{c.get('id')}` — {_cell(c.get('question'))}: {_cell(c.get('answer'))}"
+        for c in answers_given))
     out.append("")
 
     out.append("## Deferred questions")
     out.append("")
-    deferred = [c for c in clarifications if c.get("status") == "deferred"]
     out.append(_bullets(
         f"`{c.get('id')}` — {_cell(c.get('question'))}: {_cell(c.get('answer'))}"
         for c in deferred))
+    out.append("")
+
+    out.append("## Open questions")
+    out.append("")
+    out.append(_bullets(
+        (f"`{c.get('id')}` — {_cell(c.get('question'))}"
+         + (f" (proposed default: {_cell(c.get('proposed_default'))})"
+            if (c.get("proposed_default") or "").strip() else ""))
+        for c in open_qs))
     out.append("")
 
     out.append("## Manual acceptance")

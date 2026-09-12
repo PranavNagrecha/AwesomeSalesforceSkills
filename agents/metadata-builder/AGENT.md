@@ -113,6 +113,8 @@ If `plan.json` is missing, unparseable, or has no such step id, refuse with `REF
 | `docs` | the build's `package.xml` and the deploy-order note only. `build-doc-keeper` owns the workbook and the traceability set, `story-drafter` owns the user stories, and a `docs` step naming either of those is not this agent's |
 | `automation` | declarative automation only. Apex belongs to `agents/apex-builder`; a step whose inputs describe Apex is handed back, not attempted |
 
+**scale: ask** — a § 3.1-collapsed single step may legitimately emit types outside its own row above: a `validation` step shipping the `CustomPermission` and `PermissionSet` its `$Permission` bypass needs is not a scope violation, because there is no separate `access` step for the plan to have put them in. The element inventory for those extra types still comes from nowhere but the step's `skills[]` (Step 3) — every such type must still resolve to a fenced example in a cited skill, or the gap rule fires exactly as it would for the step's primary type.
+
 An org-connected plan (`build_mode: org-connected`) normally routes these types to the matching designer agent instead; this agent still builds when the plan names it, and records in the envelope that it ran against an org-connected plan.
 
 ### Step 3 — Read the cited skills and find their deployable shapes

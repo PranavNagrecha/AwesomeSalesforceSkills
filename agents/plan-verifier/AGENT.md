@@ -180,7 +180,10 @@ Open every skill the step cites and read the parts that matter: its `## Question
 | Pass condition objective | The pass condition is not stated as something checkable (exit 0, parses, member present in `package.xml`). "Looks correct" is a blocker. |
 | Test can fail | Every test would pass against an empty `artefacts/<step-id>/`. A test that cannot fail is not a test. |
 | Milestone test present | The milestone this step belongs to has no acceptance test of its own. |
+| Manual test observable only in a deployed org | A `manual` test's `expected` can only be confirmed after a deploy the plan itself does not perform (a Setup UI click-through, a live email, a scheduled job firing) and nothing marks it deferred to a later milestone gate (that case is the row above). **At `scale: ask` this is a WARN, not a refutation**: `RUN.md`'s manual acceptance line is itself the human's UAT script for the single step, printed for them to run against the org before `go` — refuting it would refuse the only mechanism this scale has for exercising it. At other scales, refute as usual. |
 | Human gate present | The step changes access or deletes something and `human_gate` is not `true`. |
+
+**scale: ask** — the collapsed single step is `human_gate: false` by contract (§ 3.1's forced `human_gate: false`) even when it changes access or deletes something, and `ensure-gates` writes no per-step gate at this scale; this row is not refuted for that alone. `REFUSAL_SECURITY_GUARD` still fires independently of `human_gate`: a step granting Modify All Data, View All Data, or an Author Apex-class permission is refused outright (`agents/_shared/REFUSAL_CODES.md`'s scope). An ordinary custom-permission bypass, or a permission set carrying none of those three rights, is not refused — raise it as a WARN naming the granting artefact (the Permission Set / Custom Permission path) so `RUN.md` puts it in front of the human at `go`.
 
 ### Step 5 — Cross-step checks
 
@@ -413,6 +416,8 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 | `REFUSAL_NEEDS_HUMAN_REVIEW` | Two skills contradict on a claim a step depends on and `standards/source-hierarchy.md` does not resolve it; or the plan is internally consistent but rests on a policy question (who may approve an access change) that no file settles. |
 | `REFUSAL_SECURITY_GUARD` | A step grants a security-sensitive permission with `human_gate: false` — this is reported as a blocker and the plan is rejected, never verified with a warning. |
 | `REFUSAL_OVER_SCOPE_LIMIT` | The plan has more steps than the run can verify without truncating a lens — verify the subset, report which steps were not reached, and return partial results rather than an unearned `verified`. |
+
+**scale: ask** — `human_gate: false` on the collapsed single step is the contract (§ 3.1), not itself the trigger this code exists to catch. `REFUSAL_SECURITY_GUARD` still fires — and the plan is still rejected, not warned — when that step grants Modify All Data, View All Data, or an Author Apex-class permission (`agents/_shared/REFUSAL_CODES.md`'s scope for this code). An ordinary custom-permission bypass, or a permission set granting none of those three, does not refuse: name the artefact as a WARN instead so `RUN.md` carries it to the human at `go`.
 
 A refused run still writes its deliverable pair with the refusal block populated, and it never leaves `plan.status` at `verified`.
 

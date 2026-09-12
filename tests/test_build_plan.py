@@ -3220,6 +3220,60 @@ def test_run_md_covers_the_required_sections(tmp_path, fixture_repo):
     assert "exists" in text2
 
 
+def test_run_md_splits_defaults_answers_deferred_and_open(tmp_path, fixture_repo):
+    """A human-written answer must not be tagged as a default (driver's-log
+    follow-up A): only a row with a real ``default_source`` — anything but
+    the literal marker ``"none"`` requirements-clarifier stamps when it had
+    no proposed default — belongs under 'Defaults applied'. Human answers
+    land in a separate 'Answers given' section with no source tag, deferred
+    rows keep 'Deferred questions', and still-open rows (the state a
+    pre-fix ask build can be stuck in) get their own 'Open questions'."""
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, scale="ask", clarifications=[
+        # A real default, applied and left as-is.
+        {"id": "Q1", "question": "What should the error say?", "kind": "informational",
+         "status": "answered", "answer": "Use the standard message.",
+         "proposed_default": "Use the standard message.", "default_source": "skill-guidance"},
+        # A human answer with no proposed default (default_source: "none").
+        {"id": "Q2", "question": "Does Amount roll up from line items?", "kind": "blocking",
+         "status": "answered", "answer": "No, it is typed directly.",
+         "default_source": "none"},
+        # A blocking question the human deferred.
+        {"id": "Q3", "question": "Does it fire on insert too?", "kind": "blocking",
+         "status": "deferred", "answer": "DEFER: ask the PM"},
+        # An informational row still open, with a proposed default on file.
+        {"id": "Q4", "question": "Is Amount on every layout?", "kind": "informational",
+         "status": "open", "proposed_default": "Yes, on the standard layout."},
+    ])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    text = (path.parent / "RUN.md").read_text()
+
+    def section(name: str) -> str:
+        marker = f"## {name}"
+        start = text.index(marker) + len(marker)
+        end = text.index("\n## ", start)
+        return text[start:end]
+
+    defaults = section("Defaults applied")
+    assert "`Q1`" in defaults and "(source: skill-guidance)" in defaults
+    assert "`Q2`" not in defaults
+    assert "(source: none)" not in text
+
+    answers_given = section("Answers given")
+    assert "`Q2`" in answers_given and "No, it is typed directly." in answers_given
+    assert "(source:" not in answers_given
+    assert "`Q1`" not in answers_given
+
+    deferred = section("Deferred questions")
+    assert "`Q3`" in deferred and "ask the PM" in deferred
+
+    open_qs = section("Open questions")
+    assert "`Q4`" in open_qs
+    assert "(proposed default: Yes, on the standard layout.)" in open_qs
+    assert "`Q1`" not in open_qs and "`Q2`" not in open_qs and "`Q3`" not in open_qs
+
+
 def test_run_md_shows_the_latest_test_result_when_present(tmp_path, fixture_repo):
     steps = [step("M1-S01", "M1")]
     plan = plan_dict(steps, scale="ask")
