@@ -1081,6 +1081,48 @@ def _bullets(items: Iterable[str], empty: str = "_None recorded._") -> str:
     return "\n".join(f"- {item}" for item in items)
 
 
+def _test_result_line(entry: dict) -> str:
+    """One deterministic line for a single `results[]` entry in results.json.
+
+    `runner` carries the literal command for a `checker` test and a plain
+    description for `xml`/`manifest` — the same field is "the command" or
+    "the label" depending on `type`, per contract § 3.1, so it renders under
+    whichever name matches this entry's own type.
+    """
+    r_type = _cell(entry.get("type") or entry.get("name") or "?")
+    field = "command" if entry.get("type") == "checker" else "label"
+    text = _cell(entry.get("runner") or entry.get("name"))
+    exit_code = entry.get("exit_code")
+    verdict = entry.get("verdict") or ("manual-deferred" if entry.get("type") == "manual" else "?")
+    return f"- type={r_type} {field}={text} exit={json.dumps(exit_code)} verdict={verdict}"
+
+
+def _manual_deferred_line(text: str) -> str:
+    """One line for a `skipped_manual[]` entry — never in `results[]` (§ 3.1:
+
+    step-tester records a manual test's full text here, not as a `results[]`
+    row, so this is the only place a `manual-deferred` verdict is synthesised
+    rather than read verbatim off disk).
+    """
+    return f"- type=manual label={_cell(text)} exit={json.dumps(None)} verdict=manual-deferred"
+
+
+def _test_result_lines(results: dict) -> list[str]:
+    """Every recorded test result for one step, in `results.json` order.
+
+    Machine-run tests (`xml`, `manifest`, `checker`) come from `results[]`;
+    manual tests step-tester could not run come from `skipped_manual[]`,
+    which carries bare description strings rather than result objects. Older
+    / minimal `results.json` files carry neither key — this returns `[]` for
+    those rather than inventing a claim about tests that were never recorded.
+    """
+    lines = [_test_result_line(r) for r in (results.get("results") or [])
+             if isinstance(r, dict)]
+    lines.extend(_manual_deferred_line(m) for m in (results.get("skipped_manual") or [])
+                 if isinstance(m, str))
+    return lines
+
+
 def render_plan_md(plan: dict) -> str:
     out: list[str] = []
     out.append(f"# {plan['title']}")
@@ -1405,6 +1447,12 @@ def render_run_md(plan: dict, build_dir: Path) -> str:
                 if isinstance(results, dict):
                     tests_root = (plan.get("docs") or {}).get("tests") or "tests/"
                     rel = f"{tests_root.rstrip('/')}/{sid}/results.json"
+                    detail_lines = _test_result_lines(results)
+                    if detail_lines:
+                        out.append("")
+                        out.append(f"Recorded results (`{rel}`):")
+                        out.append("")
+                        out.extend(detail_lines)
                     out.append("")
                     out.append(f"Latest test run (`{rel}`): passed={json.dumps(results.get('passed'))}")
         out.append("")

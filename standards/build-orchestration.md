@@ -221,7 +221,7 @@ scale: ask (D=1 metadata type, S=2 skills with question tables, O=1 object, inte
 | Plan shape | 1 milestone, 1 step | 1 milestone, ≤ 5 steps | unchanged: 2–6 milestones |
 | Verification | verifier runs **once** — three lenses over the one step, refutation-only; no re-plan round unless a blocker is CRITICAL (below) | ≤ 2 rounds | unchanged |
 | Gates | two human decisions: `go` and `accept` | `clarifications`, `plan`, one `milestone:M1` | unchanged |
-| Documentation | envelopes + one `RUN.md`; `decisions.md` and `traceability.md` keep their `init` stubs | workbook optional, traceability required | unchanged |
+| Documentation | envelopes + one `RUN.md`; `decisions.md` appended at every scale (append-only and cheap — a one-step build still makes decisions); workbook and traceability skipped, `RUN.md` carries the artefact↔test rows | workbook optional, traceability required | unchanged |
 
 The ≤ 8 is **not** a cap on the harvest. § 3's "questions are never capped" and
 the schema's "Never capped" both still hold: every row of every cited question
@@ -267,7 +267,7 @@ at the `go` gate for the human to weigh.
 - `requirements-clarifier` — **Inputs** (accept `scale`); **Step 1** (compute, print, pass to `init`); **Step 4** (`ask`: informational rows pre-filled from their defaults, plus the eight-blocking tier test); **Step 5** (one round); **Step 6** (`ask`: print the single `gate go` command instead of G1-then-`/plan-build`).
 - `build-planner` — **Step 5** ("between two and six" becomes exactly 1 at `ask` and at `feature`); **Step 6** (`ask`: one step, `human_gate: false`); **Step 7** (`ask`: `render` also writes `RUN.md`).
 - `plan-verifier` — **Step 1** (a one-step plan is a plan); **Step 6** (`ask`: one round, refutation-only, the CRITICAL list above, no second pass).
-- `build-doc-keeper` — **Step 4** (`ask`: `RUN.md` rows instead of workbook sections; leave the `decisions.md` / `traceability.md` stubs alone).
+- `build-doc-keeper` — **Step 4** (`ask`: `RUN.md` rows instead of workbook sections; `decisions.md` is still appended, exactly as at every other scale; leave the `traceability.md` stub alone).
 - `milestone-verifier` — **the report** (`ask`: one page, and it is the `accept` gate's evidence).
 - `build-step-runner` and `step-tester` — **no branch.** A step is a step at every scale, and that is the point.
 

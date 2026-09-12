@@ -3285,6 +3285,66 @@ def test_run_md_shows_the_latest_test_result_when_present(tmp_path, fixture_repo
     assert "passed=true" in text
 
 
+def test_run_md_renders_one_line_per_recorded_test_result(tmp_path, fixture_repo):
+    """§ 3.1 promises RUN.md carries the checker commands with their exit
+    codes, not just the aggregate `passed=` line. A minimal results.json
+    (just step_id/passed, no `results[]`) must still render — this is the
+    real shape step-tester writes: `results[]` for machine-run tests
+    (xml/manifest/checker) and `skipped_manual[]` as bare strings for tests
+    it could not run, synthesised here into a `manual-deferred` verdict."""
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    write_json(path.parent / "tests" / "M1-S01" / "results.json", {
+        "step_id": "M1-S01",
+        "ran": ["xml", "manifest", "skills/admin/fake-object-design/scripts/check_fake.py"],
+        "passed": False,
+        "failed": ["skills/admin/fake-object-design/scripts/check_fake.py"],
+        "skipped_manual": ["Given X, when Y, then Z."],
+        "results": [
+            {"name": "xml", "type": "xml",
+             "runner": "ElementTree parse of every *.xml/*-meta.xml under artefacts/M1-S01/",
+             "exit_code": None, "verdict": "pass"},
+            {"name": "manifest", "type": "manifest",
+             "runner": "two-way consistency check", "exit_code": None, "verdict": "pass"},
+            {"name": "skills/admin/fake-object-design/scripts/check_fake.py", "type": "checker",
+             "runner": "python3 skills/admin/fake-object-design/scripts/check_fake.py "
+                       "--manifest-dir artefacts/M1-S01",
+             "exit_code": 1, "verdict": "fail"},
+        ],
+    })
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    text = (path.parent / "RUN.md").read_text()
+
+    assert "Recorded results (`tests/M1-S01/results.json`):" in text
+    assert ("- type=xml label=ElementTree parse of every *.xml/*-meta.xml under "
+            "artefacts/M1-S01/ exit=null verdict=pass") in text
+    assert "- type=manifest label=two-way consistency check exit=null verdict=pass" in text
+    assert ("- type=checker command=python3 skills/admin/fake-object-design/scripts/"
+            "check_fake.py --manifest-dir artefacts/M1-S01 exit=1 verdict=fail") in text
+    assert "- type=manual label=Given X, when Y, then Z. exit=null verdict=manual-deferred" in text
+    # the aggregate line is kept, not replaced
+    assert "Latest test run (`tests/M1-S01/results.json`): passed=false" in text
+
+    # byte-deterministic: re-rendering the same plan.json changes nothing
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert (path.parent / "RUN.md").read_text() == text
+
+
+def test_run_md_omits_recorded_results_when_results_json_has_no_results_array(
+        tmp_path, fixture_repo):
+    """The minimal / legacy shape (`write_results` writes only step + passed)
+    must not crash and must not fabricate result lines out of nothing."""
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    write_results(path, "M1-S01", passed=True)
+    assert run("render", str(path), "--repo-root", str(fixture_repo)) == 0
+    text = (path.parent / "RUN.md").read_text()
+    assert "Recorded results" not in text
+    assert "Latest test run (`tests/M1-S01/results.json`): passed=true" in text
+
+
 def test_help_mentions_the_new_scale_flag_and_aliases():
     import contextlib
     import io
