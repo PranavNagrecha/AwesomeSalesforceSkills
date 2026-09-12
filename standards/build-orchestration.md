@@ -273,7 +273,7 @@ at the `go` gate for the human to weigh.
 ### Worked example — "add a validation rule so Opportunity Amount can't go down after Closed Won"
 
 1. `init` prints `scale: ask (D=1, S=2, O=1, integration=no)`.
-2. Clarifier harvests `admin/validation-rules` and `admin/formula-fields-and-rollups`: five blocking rows — which profiles are exempt (default: none), does it fire on insert as well as update (default: update only), do integration users get the same rule (default: yes), where does the error show (default: on the Amount field), what does it say (default: the skill's worded example). Informational rows land pre-filled.
+2. Clarifier harvests `admin/validation-rules` and `admin/formula-fields`: five blocking rows — which profiles are exempt (default: none), does it fire on insert as well as update (default: update only), do integration users get the same rule (default: yes), where does the error show (default: on the Amount field), what does it say (default: the skill's worded example). Informational rows land pre-filled.
 3. Human accepts all five defaults in `CLARIFICATIONS.md`, then `ingest-answers`. **[read 1]**
 4. Planner: 1 milestone, 1 step `M1-S01`, type `validation`, agent `metadata-builder`, skill `admin/validation-rules`, outputs the rule XML plus `package.xml`, tests: the skill's checker, always-on `xml` and `manifest`, one `manual` line.
 5. Verifier: three lenses, one round, no blockers; status `verified`.
