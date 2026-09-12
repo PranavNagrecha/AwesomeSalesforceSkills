@@ -41,9 +41,9 @@ outputs:
   - "RTM linkage block mapping each row_id back to a source_req_id and forward to a downstream runtime agent"
   - "Stdlib checker (check_workbook.py) that validates row schema, agent membership against the runtime roster, and absence of placeholder rows"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-12
 ---
 
 # Configuration Workbook Authoring
@@ -86,7 +86,7 @@ and routes to nobody.
 | "Which requirements did the steering committee descope, defer or escalate?" | A descoped story that reappears as a row is a refusal condition for `config-workbook-author`, not a nice-to-have; an escalated one needs an ADR before any row exists | The descope ledger — the record of the requirements that deliberately produced no row (Gotcha 4 in `references/worked-examples.md` Rule 7) |
 | "Who, by name, is accountable for each section landing in the org?" | `owner` is a person, not a team alias. A section owned by "the admin team" is a section nobody signs off, including the empty ones | A named owner per section, including for `not-in-scope-this-release` rows |
 | "Which agent executes this row, and is it still on the runtime roster?" | The fourteen Wave-3b auditors still have `AGENT.md` files on disk, so an existence check passes them and routes the row to a stub | One live agent id per row, with `--domain=` arguments where `audit-router` replaced a retired auditor (Gotcha 8) |
-| "For every automation and sharing row, which decision-tree branch resolved the tool choice?" | An unrecorded choice cannot be disagreed with at review, and "it was obvious" is the decision that goes unrecorded | A `<tree>.md Q<n>` citation plus one clause of reason on every Section 4 and Section 6 row (Gotchas 12 and 13) |
+| "For every automation and sharing row that picks a mechanism, which decision-tree branch resolved it?" | An unrecorded choice cannot be disagreed with at review, and "it was obvious" is the decision that goes unrecorded | A `<tree>.md Q<n>` citation plus one clause of reason on every Section 4 row and every Section 6 row whose artefact is an automation-engine choice; a Queue/Group/BusinessHours configuration row cites nothing because it picks no engine (Gotchas 12 and 13) |
 | "Is access granted through permission sets, or is this org still profile-driven?" | A profile row is unverifiable after deploy: a retrieved profile only carries FLS for what else was in the same manifest, and a profile deploy overlays rather than replaces | Section 3 rows that name permission sets, with profiles reserved for the residue that has no `PermissionSet` equivalent (Gotcha 15) |
 | "What is the org's current state for every `target_value` you are about to write?" | API names, existing rules and existing PSGs collide silently; "we'll figure out the API name later" rows become rework | A probe date in `notes` beside each new component, so the reviewer knows the row was checked against reality and when |
 | "What does version-lock mean here — who tags the file, and where does it live?" | `status: committed` is a per-row label an in-place edit can rewrite; only the snapshot is the lock | A path (`docs/workbooks/<release>/cwb.md`) and a tag, agreed before the sprint, not improvised at commit (Gotcha 14) |
@@ -317,7 +317,13 @@ Before declaring the workbook ready for sprint commit:
 - [ ] Every `recommended_skills` entry resolves to a file that exists on disk
 - [ ] No `target_value` is a Setup navigation path
 - [ ] Every Section 4 row cites `sharing-selection.md` and its `Q<n>` branch
-- [ ] Every Section 6 row cites `automation-selection.md` and its `Q<n>` branch
+- [ ] Every Section 6 row whose artefact is an automation-engine choice
+      (Flow, Apex, Approvals, Workflow, Platform Events, Agentforce, or a
+      rule engine that carries one — assignment/auto-response/escalation,
+      entitlement process) cites `automation-selection.md` and its `Q<n>`
+      branch; a Queue, Group, or `Settings:BusinessHours` row is
+      configuration, not an engine choice, and gets an INFO instead
+      (Gotcha 12)
 - [ ] No Section 3 row grants access through a Profile (residue only)
 - [ ] The descope / defer / escalate ledger exists and no descoped `req_id` has a row
 - [ ] `python3 scripts/check_workbook.py --workbook <path>` exits 0 (no `--allow-empty-section`)

@@ -20,9 +20,21 @@ Validates a Configuration Workbook markdown file (authored from
 - no row is missing `source_req_id` (orphan rows)
 - Section 4 (Sharing Settings) rows cite a `sharing-selection.md` step and
   Section 6 (Automation) rows cite an `automation-selection.md` step, in the
-  form `<tree>.md Q<n>` — see `references/gotchas.md` Gotchas 12 and 13
+  form `<tree>.md Q<n>` — see `references/gotchas.md` Gotchas 12 and 13.
+  The Section 6 rule is scoped to rows whose artefact is itself an
+  automation-engine choice (Flow, Apex, Approvals, Workflow, Platform
+  Events, Agentforce, plus the rule engines that carry an automation
+  choice — assignment/auto-response/escalation rules, entitlement
+  process). A row tagged `` `Queue:…` ``, `` `Group:…` ``, or
+  `` `Settings:BusinessHours` `` supports routing but picks no engine, so a
+  missing citation there is an INFO, not an ERROR; an author can also write
+  the literal notes value `n/a (not an automation choice)` to override the
+  type-based guess in either direction. See `artefact_tag()` and
+  `automation_row_requires_tree_citation()` below.
 - `target_value` names a metadata component, not a Setup navigation path
 - no row carries an inline credential in `target_value`
+- table cells may escape a literal `|` as `\\|` (e.g. a regex alternation);
+  only an unescaped `|` is treated as a column boundary
 
 Uses stdlib only — no pip dependencies.
 
@@ -105,6 +117,54 @@ REQUIRED_TREE_CITATION = {
 # A tree citation is only useful if it names the branch that resolved the
 # choice. The trees label their branches Q1..Q12.
 TREE_STEP_RE = re.compile(r"\bQ\d{1,2}\b")
+
+# A Section 6 `target_value` cell that opens with the workbook's
+# `` `<MetadataType>:<componentName>` `` or bare `` `<MetadataType>` `` tag
+# convention (every worked example in references/worked-examples.md and the
+# live case-onboarding workbook uses it) — pulled off the front so the
+# tree-citation rule can be scoped to the artefact type rather than the row.
+ARTEFACT_TAG_RE = re.compile(r"^`([A-Za-z][A-Za-z0-9]*)(?::([^`]*))?`")
+
+# Section 6 artefact types that ARE an automation-engine choice: the tree's
+# own scope (Flow / Apex / Approvals / Workflow / Platform Events /
+# Agentforce — automation-selection.md's own header) plus the rule-engine
+# metadata types whose row is itself a choice of automation mechanism
+# (assignment / auto-response / escalation routing, the entitlement-process
+# SLA engine and its milestone identity). Only a row tagged with one of
+# these — checked via `automation_row_requires_tree_citation()` — must cite
+# `automation-selection.md`; everything else (untagged prose/filename rows,
+# and the configuration types below) does not.
+AUTOMATION_ENGINE_ARTEFACT_TYPES = {
+    "Flow",
+    "FlowTest",
+    "Workflow",
+    "ApexTrigger",
+    "ApexClass",
+    "ApprovalProcess",
+    "PlatformEvent",
+    "PlatformEventSubscriberConfig",
+    "GenAiPlannerBundle",
+    "GenAiPlugin",
+    "GenAiFunction",
+    "Bot",
+    "BotVersion",
+    "AssignmentRules",
+    "AutoResponseRules",
+    "EscalationRules",
+    "EntitlementProcess",
+    "MilestoneType",
+}
+
+# `Settings:<subtype>` is ambiguous on the bare `Settings` tag alone —
+# `Settings:Case` (Email-to-Case / Web-to-Case channel enablement) and
+# `Settings:Flow` (deploy-as-active) each gate an automation choice;
+# `Settings:BusinessHours` only shapes SLA calendars and picks no engine.
+AUTOMATION_SETTINGS_SUBTYPES = {"Case", "Flow"}
+
+# The literal `notes` (or `target_value`) text an author can write to
+# override the type-based guess above in either direction, for the case a
+# tagged row genuinely isn't an automation choice, or an untagged one is.
+NO_AUTOMATION_CHOICE_MARKER = "n/a (not an automation choice)"
 
 # `target_value` must name the metadata component, not the click-path to it.
 SETUP_PATH_RE = re.compile(
@@ -327,7 +387,7 @@ def parse_workbook(path: Path) -> dict:
 
         # Markdown tables: header row, separator row, body rows.
         if line.startswith("|") and line.endswith("|"):
-            cells = [cell.strip() for cell in line.strip("|").split("|")]
+            cells = split_table_row(line)
             if table_header is None:
                 table_header = [c.lower() for c in cells]
                 in_table_body = False
@@ -357,6 +417,60 @@ def parse_workbook(path: Path) -> dict:
 
 def is_blank(value: str | None) -> bool:
     return value is None or not value.strip()
+
+
+def artefact_tag(target_value: str) -> tuple[str, str]:
+    """Pull the `` `Type:Name` `` (or bare `` `Type` ``) tag off a cell.
+
+    Returns `(type, subtype)` — `("Flow", "")` for `` `Flow:MyFlow` ``,
+    `("Settings", "BusinessHours")` for `` `Settings:BusinessHours` ``, or
+    `("", "")` when the cell doesn't open with the tag convention at all
+    (prose, a bare filename — a documentation artefact rather than a
+    deployable component).
+    """
+    match = ARTEFACT_TAG_RE.match(target_value.strip())
+    if not match:
+        return "", ""
+    return match.group(1), (match.group(2) or "").strip()
+
+
+def automation_row_requires_tree_citation(target_value: str) -> bool:
+    """Whether a Section 6 row must cite `automation-selection.md`.
+
+    Only rows whose artefact is itself an automation-engine choice need the
+    citation (references/gotchas.md Gotcha 12). An untagged row — one that
+    doesn't open with the `` `Type:Name` `` convention — is a documentation
+    artefact, not a deployable engine, so it is not required either. Queue,
+    Group and `Settings:BusinessHours` rows are configuration in support of
+    routing; nothing in the tree resolves "which Queue" or "which calendar
+    shape".
+    """
+    art_type, sub_type = artefact_tag(target_value)
+    if art_type == "Settings":
+        return sub_type in AUTOMATION_SETTINGS_SUBTYPES
+    return art_type in AUTOMATION_ENGINE_ARTEFACT_TYPES
+
+
+# A `|` immediately preceded by `\` is a literal pipe inside a cell (e.g. a
+# regex alternation), not a column boundary.
+UNESCAPED_PIPE_RE = re.compile(r"(?<!\\)\|")
+
+
+def split_table_row(line: str) -> list[str]:
+    """Split one markdown table row into cells, honoring `\\|` as literal.
+
+    A well-formed row starts and ends with an (unescaped) `|`; splitting on
+    unescaped pipes only and dropping the resulting empty first/last element
+    reproduces what `line.strip("|").split("|")` did for rows with no
+    escaped pipes, while a cell that needs a literal `|` can now write `\\|`
+    instead of breaking the column count.
+    """
+    parts = UNESCAPED_PIPE_RE.split(line.strip())
+    if parts and parts[0] == "":
+        parts = parts[1:]
+    if parts and parts[-1] == "":
+        parts = parts[:-1]
+    return [cell.strip().replace("\\|", "|") for cell in parts]
 
 
 def looks_like_secret(target_value: str) -> bool:
@@ -445,8 +559,9 @@ def check_row(
     section: str,
     runtime_agents: dict[str, dict],
     repo_root: Path,
-) -> list[str]:
+) -> tuple[list[str], list[str]]:
     issues: list[str] = []
+    infos: list[str] = []
     row_id = row.get("row_id") or "(missing row_id)"
 
     # A section that is deliberately empty carries one row whose
@@ -576,15 +691,33 @@ def check_row(
     notes = row.get("notes") or ""
     required_tree = REQUIRED_TREE_CITATION.get(section)
     if required_tree and not is_blank(target_value) and not out_of_scope:
+        needs_citation = True
+        if section == "Automation":
+            na_override = (
+                NO_AUTOMATION_CHOICE_MARKER in notes.lower()
+                or NO_AUTOMATION_CHOICE_MARKER in target_value.lower()
+            )
+            needs_citation = (
+                automation_row_requires_tree_citation(target_value)
+                and not na_override
+            )
         cited = f"{required_tree}" in notes or f"{required_tree}" in target_value
         haystack = f"{notes} {target_value}"
         if not cited:
-            issues.append(
-                f"[{section}] row {row_id}: no `{required_tree}` citation — "
-                f"every {section} row must name the decision-tree branch that "
-                f"resolved the choice (standards/decision-trees/{required_tree})"
-            )
-        elif not TREE_STEP_RE.search(haystack):
+            if needs_citation:
+                issues.append(
+                    f"[{section}] row {row_id}: no `{required_tree}` citation — "
+                    f"every {section} row must name the decision-tree branch "
+                    f"that resolved the choice "
+                    f"(standards/decision-trees/{required_tree})"
+                )
+            else:
+                infos.append(
+                    f"[{section}] row {row_id}: no automation choice to cite "
+                    f"— artefact is configuration, not an automation-engine "
+                    f"pick (references/gotchas.md Gotcha 12)"
+                )
+        elif needs_citation and not TREE_STEP_RE.search(haystack):
             issues.append(
                 f"[{section}] row {row_id}: cites `{required_tree}` but names "
                 f"no branch — add the step that resolved it (e.g. "
@@ -607,7 +740,7 @@ def check_row(
                 f"the default record type). See admin/permission-sets-vs-profiles."
             )
 
-    return issues
+    return issues, infos
 
 
 def _is_out_of_scope(target_value: str) -> bool:
@@ -623,8 +756,9 @@ def check_workbook(
     workbook_path: Path,
     repo_root: Path,
     allow_empty_section: bool,
-) -> list[str]:
+) -> tuple[list[str], list[str]]:
     issues: list[str] = []
+    infos: list[str] = []
     runtime_agents = load_runtime_agents(repo_root)
     parsed = parse_workbook(workbook_path)
     sections = parsed["sections"]
@@ -672,7 +806,9 @@ def check_workbook(
                 f"`not-in-scope-this-release`."
             )
         for row in data_rows:
-            issues.extend(check_row(row, section, runtime_agents, repo_root))
+            row_issues, row_infos = check_row(row, section, runtime_agents, repo_root)
+            issues.extend(row_issues)
+            infos.extend(row_infos)
 
     # row_id uniqueness across the whole workbook — a duplicate id makes the
     # RTM linkage block ambiguous and silently drops one row from hand-off.
@@ -691,7 +827,7 @@ def check_workbook(
             else:
                 seen[row_id] = section
 
-    return issues
+    return issues, infos
 
 
 def main() -> int:
@@ -699,11 +835,14 @@ def main() -> int:
     workbook = Path(args.workbook).resolve()
     repo_root = discover_repo_root(args.repo_root)
 
-    issues = check_workbook(
+    issues, infos = check_workbook(
         workbook_path=workbook,
         repo_root=repo_root,
         allow_empty_section=args.allow_empty_section,
     )
+
+    for info in infos:
+        print(f"INFO: {info}")
 
     if not issues:
         print(f"OK: workbook {workbook} passes all checks.")

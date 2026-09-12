@@ -47,7 +47,10 @@ solution: `skills/admin/case-management-setup/references/worked-example-case-int
 - [ ] No row has placeholder status (`TBD`, `WIP`, `?`, a bare to-do marker, empty)
 - [ ] No `target_value` is a Setup navigation path
 - [ ] Every Section 4 row cites `sharing-selection.md` + its `Q<n>` branch
-- [ ] Every Section 6 row cites `automation-selection.md` + its `Q<n>` branch
+- [ ] Every Section 6 row that picks an automation engine (Flow, Apex,
+      Approvals, a rule engine with an automation choice) cites
+      `automation-selection.md` + its `Q<n>` branch — a Queue/Group/
+      BusinessHours configuration row is exempt (Gotcha 12)
 - [ ] No Section 3 row grants access through a Profile (residue only)
 - [ ] No row has inline credentials in `target_value`
 - [ ] The descope / defer / escalate ledger is written and no descoped
