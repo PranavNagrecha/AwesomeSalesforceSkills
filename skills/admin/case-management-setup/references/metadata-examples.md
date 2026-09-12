@@ -421,6 +421,23 @@ go in the *same* physical file when both channels are in scope.
   `useSystemUserAsDefaultCaseUser` is `false`, "then you must specify a value for the
   `defaultCaseUser` field". Naming a real automation user is what makes Case History readable when
   the assignment rule, not a person, moved the case.
+- **The `true` branch has a required partner too, and the guide does not say so.** Flip the boolean
+  and the file above no longer deploys: the org rejects it with `CaseSettings: Enter the system
+  user's email address.` The `true` form is therefore two elements, not one:
+
+  ```xml
+      <useSystemUserAsDefaultCaseUser>true</useSystemUserAsDefaultCaseUser>
+      <systemUserEmail>support.automation@acme.example</systemUserEmail>
+  ```
+
+  `systemUserEmail` is documented only as "the email address used when the default case user is the
+  system user" (api_meta L111871 ff.) — no Required marker, no cross-reference to the boolean.
+  UNVERIFIED (2026-09-12): the requirement is proven live (dry-run, `checkOnly`, API 67.0), not in
+  the guide. The file above keeps `false` + `defaultCaseUser` on purpose — a named automation user
+  is queryable in Case History and reports, where "the system user" is not — but whichever branch
+  you take, set the boolean **explicitly** and its partner with it. The guide states no default for
+  the boolean, so omitting it hands the behaviour to whatever the target org already had. Checker
+  rule `CMS-SYSUSER-01`; gotchas #12.
 - **`useSystemEmailAddress` decides who the notification appears to come from** — `true` = a system
   address, `false` = "the user or contact who is updating the case". It applies to case comment,
   case attachment and case assignment notifications.

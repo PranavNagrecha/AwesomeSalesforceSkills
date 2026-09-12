@@ -238,3 +238,85 @@ email composer and confirm the address is in the From picklist — `EmailMessage
 is the picklist of "the sender's address, org-wide email addresses, or Email-to-Case routing address"
 and "the email address must be verified" (object_reference L104682). Permission set design itself is
 `admin/permission-set-architecture`.
+
+---
+
+## Gotcha 14: `newEntityRecordType` Is Version-Gated and Object-Qualified, and the Guide Says Neither
+
+**What happens:** A routing address is given the intake record type the design calls for —
+`<newEntityRecordType>Support</newEntityRecordType>` — and the deploy fails twice, for two different
+reasons, neither of which is written down in the field's guide entry. First the API version:
+`Property 'newEntityRecordType' not valid in version 63.0`. Raise the manifest and the second one
+lands: `In field: newEntityRecordType - no RecordType named Support found` — with a record type
+named `Support`, active on Case, sitting in the same deployment.
+
+**When it occurs:** The Metadata API Developer Guide entry for
+`EmailToCaseRoutingAddress.newEntityRecordType` (api_meta L112078) is three sentences long: it
+"Sets the Case Record Type used for new Cases that are created from emails sent to that specific
+routing address", falls back to "the org's default Case Record Type for the user/context handling
+Email-to-Case" when absent, and asks you to "Ensure the record type exists and is active on Case".
+It carries no "Available in API version N and later" line, even though `fallbackQueue` (56.0) and
+`isPermsetControlled` (61.0) — two fields away in the same table — both do, and it states no value
+format. Two dry-run deploys (`checkOnly`, 2026-09-12) settle both:
+
+- **Version gate.** The identical file is rejected at API 62.0 *and* 63.0 with
+  `Property 'newEntityRecordType' not valid in version 63.0`, and accepted at 64.0. The error is a
+  property-validation error, so it fires before anything looks at the record type at all — which is
+  why the second failure only surfaces once the version is right.
+- **Value format.** The bare developer name never resolves. `Case.Support` does. The guide's
+  instruction to "ensure the record type exists and is active" is true and insufficient: existing
+  and active is exactly the state in which the bare form still fails.
+
+UNVERIFIED (2026-09-12): both behaviours are observed live, not documented. The guide edition read
+here is v62 (`api_meta.pdf`, Spring '25 / API 63.0 era); a later edition may add the version note.
+Re-read the field entry before quoting the gate as permanent.
+
+**How to avoid:** Write the value as `Case.<DeveloperName>` and pin the `package.xml`
+`<version>` to 64.0 or later in the same change — the version that travels with the deploy is the
+one the property check reads, not the project's `sourceApiVersion`. `E2C-RT-01` and `E2C-RT-02` in
+`scripts/check_email_to_case_configuration.py` catch both before the org does; `E2C-RT-02`
+deliberately reads every `package.xml` under the manifest tree, because the failing manifest is
+usually not the one being edited. If the org must stay below 64.0, drop the element and set the
+record type in a before-save record-triggered Flow keyed on `Origin` instead — but do not expect
+`keepRecordTypeOnAssignmentRule` to hold it, which is a different trap
+(`admin/case-management-setup` → `references/gotchas.md` #9).
+
+---
+
+## Gotcha 15: `casePriority` Is Required by the Org and Optional in the Guide, and It Pre-empts Your Priority Automation
+
+**What happens:** A routing address is authored from the field list with everything the design
+needs — origin, owner strategy, threading, headers — and the deploy fails on a field nobody thought
+was mandatory: `EmailToCaseRoutingAddress[support@acme.example]: Missing casePriority`. It is
+supplied to clear the error, and a second, quieter problem starts: the before-save Flow that was
+supposed to derive `Priority` from the account's support tier never runs its logic, because its
+entry condition is `Priority` is null and `Priority` is never null on this channel again.
+
+**When it occurs:** The guide's entry is one sentence — `casePriority` "Specifies the default case
+priority for cases created through this routing address" (api_meta L112039) — with no Required
+marker and nothing about deploy-time validation. The org disagrees: a `checkOnly` deploy of a
+routing address with no `casePriority` is rejected (dry-run, API 67.0, 2026-09-12). Supporting but
+not conclusive: the guide's own `CaseSettings` sample sets `casePriority` on **both** of its routing
+addresses, `Medium` and `High` (api_meta L112187, L112200) — every field in a sample is a choice,
+not a requirement, so the sample is consistent with the requirement rather than evidence of it.
+UNVERIFIED (2026-09-12): required-ness proven live, absent from the guide.
+
+The design consequence outlives the deploy error. Because the address always stamps a priority,
+every Email-to-Case case is created with `Priority` populated, at the value on the address, before
+any assignment rule or record-triggered automation sees it. Three patterns break on that:
+
+- a null-guarded stamp (`Priority` is blank → set it) that silently never fires on email cases;
+- an SLA or entitlement milestone keyed to `Priority`, which now starts on the address's default
+  tier rather than the derived one;
+- a report that reads `Priority` distribution as customer-reported urgency, when for this channel
+  it is a constant.
+
+**How to avoid:** Set `casePriority` deliberately per channel — it is the channel's declared
+starting tier, not a placeholder — and pick the value the business would accept if nothing else ran.
+Then decide explicitly whether anything downstream is allowed to change it: if priority is derived,
+derive it unconditionally (from account tier, keyword, or entitlement) rather than on a null guard,
+and document which source wins. `E2C-PRI-01` in `scripts/check_email_to_case_configuration.py`
+errors on a missing `casePriority`. Verify with the origin/priority query in
+`references/metadata-examples.md` § Verification 2: group a day of cases by `Origin` and `Priority`
+and confirm the email channels show the distribution the design intended, not a single constant you
+did not choose.

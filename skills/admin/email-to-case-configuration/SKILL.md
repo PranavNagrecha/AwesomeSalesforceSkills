@@ -1,6 +1,6 @@
 ---
 name: email-to-case-configuration
-description: "Configuring Salesforce Email-to-Case: Standard vs On-Demand mode selection, routing address setup, email threading via Lightning tokens, auto-response rules, attachment limits, and per-address case field defaults. Trigger keywords: email-to-case, routing address, on-demand email-to-case, email threading, case from email, email agent, routing address setup, Case.settings-meta.xml, EmailToCaseRoutingAddress, emailServicesAddress, isVerified, caseOrigin, enableThreadTokenInBody, useEmailHeadersForThreading, overEmailLimitAction, unauthorizedSenderAction, enableE2CAttachmentAsFile, saveEmailHeaders, EmailMessage.EmailRoutingAddressId, auto-response loop. NOT for the wider case layer (queues, escalation rules, case teams, entitlements) - use admin/case-management-setup. NOT for routing case work items to agents after creation - use admin/omni-channel-routing-setup. NOT for the email templates or letterheads themselves - use admin/email-templates-and-alerts."
+description: "Configuring Salesforce Email-to-Case: Standard vs On-Demand mode selection, routing address setup, email threading via Lightning tokens, auto-response rules, attachment limits, and per-address case field defaults. Trigger keywords: email-to-case, routing address, on-demand email-to-case, email threading, case from email, email agent, routing address setup, Case.settings-meta.xml, EmailToCaseRoutingAddress, emailServicesAddress, isVerified, caseOrigin, enableThreadTokenInBody, useEmailHeadersForThreading, overEmailLimitAction, unauthorizedSenderAction, enableE2CAttachmentAsFile, saveEmailHeaders, newEntityRecordType, casePriority, EmailMessage.EmailRoutingAddressId, auto-response loop. NOT for the wider case layer (queues, escalation rules, case teams, entitlements) - use admin/case-management-setup. NOT for routing case work items to agents after creation - use admin/omni-channel-routing-setup. NOT for the email templates or letterheads themselves - use admin/email-templates-and-alerts."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -21,6 +21,9 @@ triggers:
   - "cases from two different support mailboxes are all landing with the same owner"
   - "should Email-to-Case attachments be saved as Files or as Attachments"
   - "one of our support channels disappeared from Setup after a settings deploy"
+  - "Property 'newEntityRecordType' not valid in version 63.0"
+  - "no RecordType named Support found when deploying a routing address"
+  - "EmailToCaseRoutingAddress Missing casePriority on deploy"
 tags:
   - email-to-case
   - routing-address
@@ -44,10 +47,11 @@ outputs:
   - "Mail server forward rule directing inbound mail to Salesforce routing address"
   - "Email threading tested end-to-end (reply threads into parent case)"
   - "Auto-response rule firing correctly when assignment rule fires"
+  - "Per-address intake record type (newEntityRecordType) on an API 64.0+ manifest"
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-12
 ---
 
 # Email-to-Case Configuration
@@ -80,6 +84,7 @@ produces a settings file that deploys cleanly and silently drops customer mail.
 | "Is this org on Lightning Threading or legacy threading?" | Two mutually exclusive pairs of token switches exist and the wrong pair is inert (gotchas #8) | The one pair to set, plus `useEmailHeadersForThreading` as the gateway fallback |
 | "What should happen to mail we refuse — bounce it or drop it?" | `unauthorizedSenderAction` and `overEmailLimitAction` both accept `Discard`, which leaves no Case, no EmailMessage and no bounce (gotchas #9) | A deliberate `Bounce` / `Requeue` choice instead of an invisible failure mode |
 | "Who sends the acknowledgement, and does that address forward back to us?" | Any auto-response sender that reaches a routing address is an unbounded case-creation loop; so is a vacation responder on the forwarding mailbox | A no-reply sender, plus the mail-server rule audit the checker cannot see |
+| "Which record type and which starting priority should each channel's cases be created on?" | `newEntityRecordType` and `casePriority` are stamped at creation, before any rule or Flow runs. The record type decides the support process and status ladder; the priority is never null afterwards, so a null-guarded priority stamp downstream never fires (gotchas #14, #15) | A record type per channel in `Case.<DeveloperName>` form on an API 64.0+ manifest, and a declared starting tier per channel |
 | "Does anyone need email headers for a future security investigation?" | `saveEmailHeaders` captures envelope data at processing time and cannot be backfilled (gotchas #12) | Headers on from day one, and `EmailMessage.Headers` inside the org's retention scope |
 
 What a proper configuration adds over just switching Email-to-Case on: every channel is a reviewable
@@ -133,7 +138,8 @@ A routing address is a per-mailbox Email-to-Case configuration record. Each rout
 
 - The external email address customers use (`emailAddress` — the address your mail server forwards from).
 - The Salesforce-generated target address (On-Demand mode only) that the mail server forwards to.
-- Default values applied to cases created via this address: Case Origin, Status, Priority, and optionally a queue or owner.
+- Default values applied to cases created via this address: Case Origin, Status, Priority, and optionally a queue or owner. `casePriority` is not skippable — the org rejects an address without it (gotchas #15).
+- The record type new cases land on, via `newEntityRecordType` — `Case.<DeveloperName>`, API 64.0 and later only (gotchas #14). This is the only deterministic record-type control on the channel; `keepRecordTypeOnAssignmentRule` does not cover it.
 - Whether an auto-response is sent and which auto-response rule entries apply.
 
 An org can have multiple routing addresses, one per inbound support channel (e.g., `support@`, `billing@`, `returns@`). Each address creates cases with its own defaults, allowing cases to be pre-classified by channel before assignment rules run.
@@ -208,7 +214,7 @@ This dependency is the most commonly misdiagnosed "auto-response not sending" is
 1. **Read the org before writing anything.** `sf project retrieve start --metadata "Settings:Case" "AssignmentRules:Case" "AutoResponseRules:Case"`. `routingAddresses` is a full-replacement list, so every later edit must start from what the org actually has (`references/gotchas.md` #7).
 2. **Answer the seven questions above** and fill in `templates/email-to-case-configuration-template.md`: channels, the `caseOrigin` value each stamps, the owning queue, the acknowledgement sender, the threading mode. Confirm the mode choice — On-Demand unless data residency policy forbids it.
 3. **Shape the metadata** from `references/metadata-examples.md`: the `emailToCase` block with one `routingAddresses` element per channel, the matching `Case.assignmentRules` entries keyed on `Case.Origin`, and the `package.xml` naming `Settings:Case` explicitly (the wildcard does not work for an individual setting).
-4. **Run the checker** — `python3 scripts/check_email_to_case_configuration.py --manifest-dir <dir> --verbose`. Clear every ERROR (duplicate `emailAddress`, `caseOwner` without `caseOwnerType`, more than one address setting `caseOwner`, auto-response sender equal to a routing address). Justify or fix each WARN.
+4. **Run the checker** — `python3 scripts/check_email_to_case_configuration.py --manifest-dir <dir> --verbose`. It exits 1 on ERRORs only; add `--strict` to fail on the advisory WARNs too. Clear every ERROR (duplicate `emailAddress`, `caseOwner` without `caseOwnerType`, more than one address setting `caseOwner`, auto-response sender equal to a routing address, `E2C-PRI-01` a missing `casePriority`, `E2C-RT-01` a bare `newEntityRecordType`, `E2C-RT-02` that element on a `package.xml` below API 64.0). Justify or fix each WARN — `isVerified` reports org state that metadata cannot set at all.
 5. **Deploy, then finish the setup that metadata cannot do**: copy each `emailServicesAddress` out of Setup, create one forwarding rule per channel, disable any auto-reply on the forwarding mailbox, send the verification email, and confirm each address reads Verified. The checklist is in `references/metadata-examples.md`.
 6. **Run the three tests** from `references/metadata-examples.md`: the threading round-trip through the *production* mail gateway asserted on `EmailMessage.ParentId`, the routing-address/origin query, and the loop test (one email per address, case count must stop at one).
 7. **Hand over.** Record the public address to `emailServicesAddress` mapping, the verification dates, and the threading mode in the org runbook — the org will not hand `emailServicesAddress` back if an address is ever deleted. Work through the Review Checklist below.
@@ -232,6 +238,8 @@ Run through these before marking Email-to-Case configuration complete:
 - [ ] Only the threading switch pair matching the org's threading mode is set; `useEmailHeadersForThreading` is on
 - [ ] `unauthorizedSenderAction` and `overEmailLimitAction` are a deliberate choice, and `Discard` is used only where someone has signed off on losing the message
 - [ ] `saveEmailHeaders` is true on every routing address
+- [ ] Every routing address carries `casePriority`, the value is a deliberate starting tier for that channel, and nothing downstream derives priority behind a "is blank" guard
+- [ ] If `newEntityRecordType` is used: every value is `Case.<DeveloperName>`, the record type is active on Case, and the `package.xml` `<version>` is 64.0 or later
 - [ ] Threading verified on `EmailMessage.ParentId`, not on `ThreadIdentifier` (blank for On-Demand Email-to-Case by design)
 - [ ] `python3 scripts/check_email_to_case_configuration.py --manifest-dir <dir> --verbose` reports zero ERRORs and every WARN is justified
 
@@ -249,8 +257,10 @@ Non-obvious platform behaviors that cause real production problems:
 6. **`caseOwner` is an org-level field wearing a per-address costume** — the Metadata API guide states that setting it on a routing address writes `CaseSettings.defaultCaseOwner`. Give a second address its own owner and the first one's is overwritten, with no deploy warning. Route on `Case.Origin` instead.
 7. **Deploying a partial settings file deletes the channels it omits** — `routingAddresses` is a full-replacement list, and `emailServicesAddress` is read-only, so a deleted address cannot be restored to its old Salesforce-generated value. Always retrieve first.
 8. **`Discard` is genuinely silent** — both `unauthorizedSenderAction` and `overEmailLimitAction` accept it, and a discarded message produces no Case, no EmailMessage and no bounce. Nobody can prove the customer wrote in.
+9. **`newEntityRecordType` is version-gated and object-qualified, and the guide says neither** — a bare `<newEntityRecordType>Support</newEntityRecordType>` fails with `In field: newEntityRecordType - no RecordType named Support found` even when that record type exists and is active; `Case.Support` resolves. The element itself is rejected below API 64.0 with `Property 'newEntityRecordType' not valid in version 63.0`, so the `package.xml` `<version>` must be raised with it. The field's guide entry (api_meta L112078) carries no version note, unlike `fallbackQueue` (56.0) and `isPermsetControlled` (61.0) beside it. UNVERIFIED (2026-09-12): both proven live, not in the guide. Detail in `references/gotchas.md` #14.
+10. **`casePriority` is required by the org and optional in the guide** — an address without it is rejected with `EmailToCaseRoutingAddress[support@acme.example]: Missing casePriority`, though api_meta L112039 marks the field neither Required nor Optional. UNVERIFIED (2026-09-12): proven live. The consequence outlives the deploy: every email case is created with `Priority` already set, so a null-guarded priority stamp downstream never fires. Detail in `references/gotchas.md` #15.
 
-Deeper treatment, with the platform behaviour behind each, in `references/gotchas.md` (13 entries).
+Deeper treatment, with the platform behaviour behind each, in `references/gotchas.md` (15 entries).
 
 ---
 

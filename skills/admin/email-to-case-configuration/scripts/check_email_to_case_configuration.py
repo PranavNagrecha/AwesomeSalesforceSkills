@@ -15,6 +15,19 @@ ERROR-level findings (fix before deploying):
 - An auto-response senderEmail / replyToEmail equal to a routing emailAddress,
   which is the Email-to-Case reply loop
 - An auto-response rule entry with no email template
+- E2C-RT-01: newEntityRecordType carrying a bare developer name. The org rejects
+  it with "In field: newEntityRecordType - no RecordType named <name> found";
+  only the object-qualified Case.<DeveloperName> form resolves (proven live
+  2026-09-12; the guide documents no value format)
+- E2C-RT-02: newEntityRecordType present while a package.xml in the same tree
+  declares an API version below 64.0. The org rejects the deploy with
+  "Property 'newEntityRecordType' not valid in version <n>" (proven live at
+  62.0 and 63.0, accepted at 64.0; the guide carries no version note)
+- E2C-PRI-01: a routing address with no casePriority. The org rejects the
+  deploy with "EmailToCaseRoutingAddress[<address>]: Missing casePriority"
+  (proven live 2026-09-12; the guide marks the field neither required nor
+  optional, but its own sample sets it on every address - api_meta L112187,
+  L112200)
 
 WARN-level findings (review, then justify or fix):
 - A routing address whose isVerified is false or absent; Salesforce does not
@@ -30,11 +43,17 @@ Element names follow the Metadata API Developer Guide: CaseSettings,
 EmailToCaseSettings, EmailToCaseRoutingAddress.
 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 
+Exit code: 1 on any ERROR, 0 when only WARNs remain. Several WARNs above are
+advisory or describe state metadata cannot set at all (isVerified is read-only),
+so a correct artefact must still be able to exit 0. Pass --strict to promote
+every WARN to a failure.
+
 Uses stdlib only - no pip dependencies.
 
 Usage:
     python3 check_email_to_case_configuration.py --manifest-dir path/to/metadata
     python3 check_email_to_case_configuration.py --manifest-dir force-app/main/default --verbose
+    python3 check_email_to_case_configuration.py --manifest-dir force-app/main/default --strict
 """
 
 from __future__ import annotations
@@ -60,6 +79,15 @@ ON_DEMAND_EFFECTIVE_ATTACHMENT_MB = 25
 # EmailToCaseOnFailureActionType values that destroy the message silently.
 SILENT_FAILURE_ACTIONS = {"discard"}
 
+# EmailToCaseRoutingAddress.newEntityRecordType is listed in the Metadata API
+# Developer Guide (api_meta L112078) with no "Available in API version N and
+# later" note, unlike its neighbours fallbackQueue (56.0) and isPermsetControlled
+# (61.0). The gate exists anyway: a checkOnly deploy at 62.0 and at 63.0 is
+# rejected with "Property 'newEntityRecordType' not valid in version 63.0", and
+# the same file is accepted at 64.0.
+# UNVERIFIED (2026-09-12): version gate observed live, not in the guide.
+NEW_ENTITY_RECORD_TYPE_MIN_API = 64.0
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -77,6 +105,11 @@ def parse_args() -> argparse.Namespace:
         "--verbose",
         action="store_true",
         help="Print informational notes in addition to findings.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding, including the advisory WARNs.",
     )
     return parser.parse_args()
 
@@ -136,6 +169,31 @@ def find_xml_files(base: Path, subdir: str) -> list[Path]:
     if not target.is_dir():
         return []
     return sorted(target.rglob("*.xml"))
+
+
+def manifest_api_versions(manifest_dir: Path) -> list[tuple[Path, float, str]]:
+    """Return (path, API version) for every package.xml under the manifest tree.
+
+    The version in the manifest is what the deploy is sent as, so it - not the
+    sourceApiVersion of some enclosing project - is what decides whether
+    newEntityRecordType is a valid property (E2C-RT-02).
+    """
+    versions: list[tuple[Path, float, str]] = []
+    for path in sorted(manifest_dir.rglob("package.xml")):
+        root = xml_root(path)
+        if root is None:
+            continue
+        raw = text(root, "version")
+        if not raw:
+            continue
+        try:
+            parsed = float(raw)
+        except ValueError:
+            continue
+        # The raw text is carried through so the finding quotes the manifest and
+        # the org's error message verbatim ("version 63.0", not "version 63").
+        versions.append((path, parsed, raw))
+    return versions
 
 
 def locate(manifest_dir: Path, subdir: str, stem: str, suffix: str) -> list[Path]:
@@ -261,6 +319,7 @@ def check_email_to_case_settings(
 
         seen_addresses: dict[str, list[str]] = defaultdict(list)
         owner_setters: list[str] = []
+        record_type_setters: list[str] = []
 
         for index, addr in enumerate(routing_addresses, start=1):
             name = text(addr, "routingName") or f"#{index}"
@@ -325,6 +384,38 @@ def check_email_to_case_settings(
                     "this channel has no envelope evidence to read."
                 )
 
+            # E2C-PRI-01. The guide describes casePriority as "the default case
+            # priority for cases created through this routing address"
+            # (api_meta L112039) and marks it neither Required nor Optional, but
+            # a checkOnly deploy of an address without it is rejected:
+            # "EmailToCaseRoutingAddress[support@acme.example]: Missing
+            # casePriority". The guide's own sample sets it on both of its
+            # addresses (api_meta L112187, L112200).
+            # UNVERIFIED (2026-09-12): required-ness proven live, not in the guide.
+            if not text(addr, "casePriority"):
+                findings.append(
+                    f"ERROR: E2C-PRI-01 routing address '{name}': no <casePriority>. "
+                    "The org rejects the deploy with 'EmailToCaseRoutingAddress"
+                    f"[{email_address or name}]: Missing casePriority'. Set it to a live "
+                    "CasePriority value, and treat the stamped priority as the channel's "
+                    "starting tier - an email case is never created with Priority null, so a "
+                    "null-guarded downstream stamp will not fire."
+                )
+
+            # E2C-RT-01 / E2C-RT-02. Both proven live 2026-09-12; neither the
+            # value format nor the version gate is in the guide (api_meta L112078).
+            new_entity_record_type = text(addr, "newEntityRecordType")
+            if new_entity_record_type:
+                record_type_setters.append(name)
+                if "." not in new_entity_record_type:
+                    findings.append(
+                        f"ERROR: E2C-RT-01 routing address '{name}': newEntityRecordType is "
+                        f"'{new_entity_record_type}', a bare developer name. The org rejects it "
+                        f"with 'In field: newEntityRecordType - no RecordType named "
+                        f"{new_entity_record_type} found'. Use the object-qualified form, "
+                        f"'Case.{new_entity_record_type}'."
+                    )
+
             address_type = text(addr, "addressType")
             if address_type and address_type not in {"EmailToCase", "Outlook"}:
                 findings.append(
@@ -350,6 +441,19 @@ def check_email_to_case_settings(
                 "silently do nothing. Give each address its own caseOrigin and route on "
                 "Case.Origin in the assignment rule instead."
             )
+
+        if record_type_setters:
+            for manifest_path, api_version, raw_version in manifest_api_versions(manifest_dir):
+                if api_version < NEW_ENTITY_RECORD_TYPE_MIN_API:
+                    findings.append(
+                        f"ERROR: E2C-RT-02 {manifest_path.name} declares "
+                        f"<version>{raw_version}</version>, but "
+                        f"{len(record_type_setters)} routing address(es) "
+                        f"({', '.join(record_type_setters)}) set newEntityRecordType. The org "
+                        f"rejects the deploy with \"Property 'newEntityRecordType' not valid in "
+                        f"version {raw_version}\". Raise the manifest to "
+                        f"{NEW_ENTITY_RECORD_TYPE_MIN_API:.1f} or later, or drop the element."
+                    )
 
     if verbose:
         for note in notes:
@@ -528,10 +632,13 @@ def main() -> int:
     for finding in errors + warnings:
         print(f"  {finding}", file=sys.stderr)
 
-    return 1
+    # Exit 1 on ERRORs only. The WARNs above are advisory, and one of them
+    # (isVerified) reports state that metadata cannot set at all, so a correct
+    # artefact has to be able to exit 0. --strict promotes every WARN.
+    if errors:
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":
-    if main() != 0:
-        sys.exit(1)
-    sys.exit(0)
+    sys.exit(main())

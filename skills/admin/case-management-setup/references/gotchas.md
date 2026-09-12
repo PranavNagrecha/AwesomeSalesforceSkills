@@ -141,7 +141,11 @@ carries no record type element (api_meta L112128 ff.).
 
 **How to avoid:** Do not rely on this setting for either inbound channel. For Email-to-Case, set
 `newEntityRecordType` explicitly on every routing address (owned by
-`admin/email-to-case-configuration`) rather than leaving it to the handling context's default. For
+`admin/email-to-case-configuration`) rather than leaving it to the handling context's default — its
+value is object-qualified (`Case.Support`, not `Support`) and the element is rejected below API 64.0
+with `Property 'newEntityRecordType' not valid in version 63.0`, neither of which the guide states;
+see `admin/email-to-case-configuration` → `references/gotchas.md` #14. UNVERIFIED (2026-09-12):
+format and version gate proven live, not in the guide. For
 Web-to-Case, set the record type deterministically in a before-save record-triggered Flow keyed on
 `Origin`, or accept the org default and make sure that default's support process is the intake one
 (`references/metadata-examples.md` §2). Then verify per channel, not in aggregate: group created
@@ -225,3 +229,53 @@ tree on this: **CMS-STEM-01** for a stem/`fullName` divergence or a `fullName` c
 **CMS-STEM-02** for a `<businessProcess>` naming a process with no matching file stem. Run it before
 the deploy — it is the cheapest place to catch a failure whose message points at the manifest rather
 than at the file.
+
+---
+
+## Gotcha 12: `useSystemUserAsDefaultCaseUser` Has a Required Partner in Each Direction, and the Guide Documents Only One
+
+**What happens:** A `CaseSettings` file that names no automation user — the deliberate choice to let
+the platform's own system user own automated case changes — fails to deploy:
+
+```
+CaseSettings: Enter the system user's email address.
+```
+
+Nothing in the file is obviously missing. `defaultCaseOwner`, `defaultCaseOwnerType` and the four
+notification templates are all set; the only thing that changed from the version that deployed is
+`<useSystemUserAsDefaultCaseUser>false</useSystemUserAsDefaultCaseUser>` becoming `true`, and the
+`<defaultCaseUser>` element being dropped as no longer needed. The error names a field the file has
+never contained: `systemUserEmail`.
+
+**When it occurs:** The two fields are a pair, and the Metadata API Developer Guide writes down one
+half of it. `useSystemUserAsDefaultCaseUser` "Indicates whether the system user is used as the
+automated case user (`true`) or not (`false`). **If `false`, then you must specify a value for the
+`defaultCaseUser` field**" (*Metadata API Developer Guide*, `CaseSettings`, api_meta L111880 ff.).
+The `true` branch has the mirror requirement and no sentence describing it: `systemUserEmail` is
+documented only as "Specifies the email address used when the default case user is the system user"
+(api_meta L111871 ff.) — a description of what the field is for, with no Required marker and no
+cross-reference back to the boolean that makes it mandatory. A `checkOnly` deploy (API 67.0,
+2026-09-12) of `true` with no `systemUserEmail` is rejected with the message above.
+UNVERIFIED (2026-09-12): the `true → systemUserEmail` requirement is proven live, not in the guide.
+
+The guide also states no default for `useSystemUserAsDefaultCaseUser`, so an **absent** element is
+not evidence that the org will behave as `true` — it inherits whatever the org already has. That is
+why `CMS-SYSUSER-01` in `scripts/check_case_management_setup.py` fires on an explicit `true` only,
+and why the safe authoring habit is to set the boolean explicitly rather than omit it: an omitted
+boolean makes the deploy's behaviour a property of the target org, which is exactly the thing a
+source file is supposed to remove.
+
+**How to avoid:** Decide which user Case History should name for assignment-rule, escalation-rule
+and On-Demand Email-to-Case changes, then set the matching pair in the same edit:
+
+| Decision | Set | Also set |
+|---|---|---|
+| A named automation user, visible and queryable in Case History | `useSystemUserAsDefaultCaseUser` `false` | `defaultCaseUser` — a real, active, licensed user |
+| The platform's system user | `useSystemUserAsDefaultCaseUser` `true` | `systemUserEmail` — a monitored address |
+
+Never leave the boolean out and hope. Make `systemUserEmail` a mailbox someone reads: it is the
+identity automated case mail is attributed to, so replies and bounces from customers and from the
+mail system land there, and an unmonitored address turns every one of them into silence. Run
+`python3 scripts/check_case_management_setup.py --manifest-dir <metadata-root>` before the deploy —
+`CMS-SYSUSER-01` catches the `true` half, and the existing `false` half has been checked since the
+skill's first version.

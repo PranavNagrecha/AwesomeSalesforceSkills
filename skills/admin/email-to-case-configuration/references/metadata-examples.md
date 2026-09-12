@@ -48,6 +48,7 @@ to two real support channels. The guide's sample uses an `Outlook` second addres
             <emailAddress>support@acme.example</emailAddress>
             <caseOrigin>Email</caseOrigin>
             <casePriority>Medium</casePriority>
+            <newEntityRecordType>Case.Support</newEntityRecordType>
             <createTask>false</createTask>
             <saveEmailHeaders>true</saveEmailHeaders>
         </routingAddresses>
@@ -57,6 +58,7 @@ to two real support channels. The guide's sample uses an `Outlook` second addres
             <emailAddress>billing@acme.example</emailAddress>
             <caseOrigin>Billing</caseOrigin>
             <casePriority>Medium</casePriority>
+            <newEntityRecordType>Case.Billing</newEntityRecordType>
             <createTask>false</createTask>
             <saveEmailHeaders>true</saveEmailHeaders>
         </routingAddresses>
@@ -104,6 +106,35 @@ to two real support channels. The guide's sample uses an `Outlook` second addres
   email instead of re-storing it when a reply threads onto an existing case.
 - **`enableE2CSourceTracking`** — "the Case Source field is updated to Email for all cases that
   originate from Email-to-Case. Associated emails are marked as Read when the agent opens the case."
+- **`casePriority` is not optional, whatever the guide's silence suggests.** The guide describes it
+  as "the default case priority for cases created through this routing address" (api_meta L112039)
+  and marks it neither Required nor Optional. A `checkOnly` deploy of an address without it is
+  rejected: `EmailToCaseRoutingAddress[support@acme.example]: Missing casePriority`. The guide's own
+  sample sets it on both of its addresses (api_meta L112187, L112200), which is consistent with the
+  org's behaviour but is not itself a statement of requirement.
+  UNVERIFIED (2026-09-12): the requirement is proven live (dry-run, `checkOnly`, API 67.0), not
+  documented in the guide. Checker rule `E2C-PRI-01`. The design consequence is in
+  `references/gotchas.md` #15: every Email-to-Case case is created with `Priority` already set, so
+  a downstream "stamp a priority if it is blank" Flow or rule never fires on this channel.
+- **`newEntityRecordType` takes `Object.DeveloperName`, and needs API 64.0 or later.** The guide
+  says it "Sets the Case Record Type used for new Cases that are created from emails sent to that
+  specific routing address. If not provided, Salesforce uses the org's default Case Record Type for
+  the user/context handling Email-to-Case" (api_meta L112078) — and stops there. Two things it does
+  not say, both proven live on 2026-09-12:
+  - A bare developer name is rejected: `<newEntityRecordType>Support</newEntityRecordType>` fails
+    with `In field: newEntityRecordType - no RecordType named Support found`. `Case.Support`
+    resolves. Checker rule `E2C-RT-01`.
+  - The element is version-gated. The same file is rejected at API 62.0 and 63.0 with
+    `Property 'newEntityRecordType' not valid in version 63.0`, and accepted from 64.0. The field
+    entry carries no "Available in API version N and later" note, although its neighbours
+    `fallbackQueue` (56.0) and `isPermsetControlled` (61.0) do. Checker rule `E2C-RT-02`; the
+    `package.xml` below is pinned to 64.0 for exactly this reason.
+
+  UNVERIFIED (2026-09-12): value format and version gate observed live, not in the guide.
+
+  Setting it per address is the only deterministic way to put an email case on the intake record
+  type — `keepRecordTypeOnAssignmentRule` is scoped to manually created records and does not cover
+  either inbound channel (`admin/case-management-setup` → `references/gotchas.md` #9).
 
 ---
 
@@ -113,6 +144,7 @@ to two real support channels. The guide's sample uses an `Outlook` second addres
 |---|---|---|
 | `caseOrigin` | `Case.Origin` (picklist; "The source of the case, such as Email, Phone, or Web. Label is Case Origin") | object_reference L62568 |
 | `casePriority` | `Case.Priority` | object_reference, Case section L62202 ff. |
+| `newEntityRecordType` | `Case.RecordTypeId` (API 64.0+; value is `Case.<DeveloperName>`) | api_meta L112078; format and version gate proven live 2026-09-12 |
 | `caseOwner` + `caseOwnerType` | `Case.OwnerId`, via the org-level `defaultCaseOwner` it writes | api_meta L112010 ff. |
 | the routing address itself | **not a Case field** — `EmailMessage.EmailRoutingAddressId` | object_reference L104154 |
 
@@ -215,9 +247,16 @@ accepted once the address is verified.
         <members>Case</members>
         <name>AssignmentRules</name>
     </types>
-    <version>62.0</version>
+    <version>64.0</version>
 </Package>
 ```
+
+**The manifest version is load-bearing here.** `newEntityRecordType` on a routing address is
+rejected below API 64.0 — `Property 'newEntityRecordType' not valid in version 63.0` — so a manifest
+left at the 62.0 this guide edition documents fails a deploy that is otherwise correct. If the org's
+`sourceApiVersion` is lower, raise the manifest, not just the project file: the version sent with
+the deploy is the one that decides. Drop the element and 62.0 is fine again.
+UNVERIFIED (2026-09-12): version gate observed live (dry-run, `checkOnly`), not in the guide.
 
 The wildcard `*` does not work for an individual settings type — the guide states it "applies only
 when retrieving all settings, not for an individual setting" (api_meta, CaseSettings, Wildcard

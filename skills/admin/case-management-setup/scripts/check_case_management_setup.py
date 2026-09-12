@@ -12,9 +12,14 @@ DX-decomposed *.businessProcess-meta.xml / *.recordType-meta.xml form), and the
 source-format stem rules CMS-STEM-01 / CMS-STEM-02.
 
 ERROR-level rules (printed as `ERROR:`, exit 1):
-  CMS-STEM-01  a decomposed *.businessProcess-meta.xml / *.recordType-meta.xml whose
-               <fullName> is not exactly its file stem, or whose <fullName> holds a space.
-  CMS-STEM-02  a record type whose <businessProcess> names no existing process file stem.
+  CMS-STEM-01     a decomposed *.businessProcess-meta.xml / *.recordType-meta.xml whose
+                  <fullName> is not exactly its file stem, or whose <fullName> holds a space.
+  CMS-STEM-02     a record type whose <businessProcess> names no existing process file stem.
+  CMS-INPUT-01    --manifest-dir points at a path that does not exist.
+  CMS-SYSUSER-01  useSystemUserAsDefaultCaseUser is true with no non-empty <systemUserEmail>.
+                  The org rejects the deploy with "CaseSettings: Enter the system user's
+                  email address." (proven live 2026-09-12). This is the mirror of the
+                  false -> defaultCaseUser rule the guide does document.
 Everything else prints as `ISSUE:` and also exits 1.
 
 Element names and constraints are grounded in the Metadata API Developer Guide
@@ -43,6 +48,11 @@ WEB_TO_CASE_PENDING_LIMIT = 50_000
 
 # Email body is truncated at this character count
 EMAIL_BODY_TRUNCATION_LIMIT = 32_000
+
+# Rule-coded findings print as `ERROR:`; everything else prints as `ISSUE:`.
+# Both exit 1 - this checker treats every finding as blocking, which is what the
+# recorded runs in examples/builds/case-onboarding depend on.
+ERROR_RULE_PREFIXES = ("CMS-STEM-", "CMS-SYSUSER-", "CMS-INPUT-")
 
 
 def parse_args() -> argparse.Namespace:
@@ -541,14 +551,42 @@ def check_case_settings(manifest_dir: Path, verbose: bool) -> list[str]:
                 "The platform cannot tell whether the owner is a User or a Queue."
             )
 
-        # useSystemUserAsDefaultCaseUser=false requires defaultCaseUser.
+        # useSystemUserAsDefaultCaseUser has a requirement in each direction, and
+        # the guide documents only one of them.
+        #
+        #   false -> defaultCaseUser   documented: "If false, then you must specify a
+        #                              value for the defaultCaseUser field"
+        #                              (api_meta L111880 ff.)
+        #   true  -> systemUserEmail   NOT documented. systemUserEmail is described only
+        #                              as "the email address used when the default case
+        #                              user is the system user" (api_meta L111871 ff.),
+        #                              with no Required marker and no cross-reference.
+        #                              A checkOnly deploy of <useSystemUserAsDefault
+        #                              CaseUser>true</...> with no <systemUserEmail> is
+        #                              rejected with "CaseSettings: Enter the system
+        #                              user's email address."
+        #                              UNVERIFIED (2026-09-12): requirement proven live,
+        #                              not in the guide.
+        #
+        # The rule fires on an explicit `true` only. The guide states no default for the
+        # field, so an absent element is not evidence that the org will behave as `true`.
         sys_user = _child(root, "useSystemUserAsDefaultCaseUser")
-        if sys_user is not None and (sys_user.text or "").strip().lower() == "false":
+        sys_user_value = (sys_user.text or "").strip().lower() if sys_user is not None else ""
+        if sys_user_value == "false":
             if not text(root, "defaultCaseUser"):
                 issues.append(
                     f"{path.name}: useSystemUserAsDefaultCaseUser is false but "
                     "<defaultCaseUser> is empty. The guide requires a value in that case; "
                     "without it, automated case changes have no attributable user in Case History."
+                )
+        elif sys_user_value == "true":
+            if not text(root, "systemUserEmail"):
+                issues.append(
+                    f"CMS-SYSUSER-01 {path.name}: useSystemUserAsDefaultCaseUser is true but "
+                    "<systemUserEmail> is missing or empty. The org rejects the deploy with "
+                    "\"CaseSettings: Enter the system user's email address.\" Add a monitored "
+                    "address; it is the From identity on automated case mail and the only "
+                    "reply path a customer has when the system user made the change."
                 )
 
         # Suggested Articles and Suggested Solutions are mutually exclusive.
@@ -911,7 +949,7 @@ def check_case_management_setup(manifest_dir: Path, verbose: bool = False) -> li
     issues: list[str] = []
 
     if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
+        issues.append(f"CMS-INPUT-01 manifest directory not found: {manifest_dir}")
         return issues
 
     issues.extend(check_assignment_rules(manifest_dir, verbose))
@@ -937,7 +975,7 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        if issue.startswith("CMS-STEM-"):
+        if issue.startswith(ERROR_RULE_PREFIXES):
             print(f"ERROR: {issue}")
         else:
             print(f"ISSUE: {issue}")

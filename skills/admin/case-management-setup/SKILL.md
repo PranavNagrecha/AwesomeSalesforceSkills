@@ -23,6 +23,7 @@ triggers:
   - "web-to-case submissions are all owned by the admin instead of the support queue"
   - "named in package.xml but was not found in zipped directory"
   - "business process not found in zipped directory"
+  - "CaseSettings Enter the system user's email address on deploy"
 tags:
   - cases
   - email-to-case
@@ -46,9 +47,9 @@ outputs:
   - "Case team roles and predefined team setup"
   - "Entitlement process with milestones and violation actions (if SLA tracking required)"
 dependencies: []
-version: 1.2.0
+version: 1.3.0
 author: Pranav Nagrecha
-updated: 2026-09-09
+updated: 2026-09-12
 ---
 
 # Case Management Setup
@@ -79,6 +80,7 @@ Gather this context before working on case management configuration:
 | "Who is allowed to reply to the customer from which address?" | Sender identity is a verified org-wide address with profile restrictions | Templates and senders that deploy and deliver |
 | "How will we know it works before customers do?" | Threading, auto-response loops, and truncation only show up under real email | A clock test, a threading test, and a loop test in the sandbox |
 | "How is Case Priority derived — from the form, from the mailbox, or from the account?" | `Priority` is a picklist stamped at save by three competing sources: a hidden or visible input on the Web-to-Case form, `casePriority` on the Email-to-Case routing address, and any before-save automation. Undecided, they overwrite each other and the SLA fires on the wrong tier | A single named source per channel, the `CasePriority` values it may stamp, and the derivation rule for anything else |
+| "Which user should Case History name when a rule, not a person, changed the case — and if that is the system user, which mailbox is it?" | Assignment rules, escalation rules and On-Demand Email-to-Case all write as one configured identity. `useSystemUserAsDefaultCaseUser` `false` requires `defaultCaseUser`; `true` requires `systemUserEmail`, which the guide never says and the org enforces at deploy (gotchas #12) | A named, licensed automation user or a monitored system address — and the pair set explicitly rather than inherited from the target org |
 | "Will this deploy in source format — do the file stems match the `fullName`s?" | A DX project decomposes the Case object into one file per business process and record type, and the CLI names each `package.xml` member from the **file stem**. A `Support_Process.businessProcess-meta.xml` whose `<fullName>` reads `Support Process` declares a member that is not in the zip, and the deploy dies before the org sees it | Process and record-type names in stem form (`Inbound_Intake_Process`), display wording moved to `<description>`, and a checker run that proves it (`references/metadata-examples.md` § 2.1) |
 | "Which support processes (status sets) exist, and which record type gets each?" | A Case record type is invalid without a support process, and the process is a subset of the `CaseStatus` value set — so the status ladder, the closed states, and the reports are all decided here, before any rule is written | The status ladder per channel, at least one closed status in each, and the record type each intake channel lands on |
 
@@ -207,7 +209,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 4. Build the queues and Classic email templates the settings will name (`admin/queues-and-public-groups`, `admin/email-templates-and-alerts`), then author `settings/Case.settings-meta.xml` from §3 — `webToCase` here, `emailToCase` from `admin/email-to-case-configuration`, both in the one file.
 5. Author the rule layer in the sibling skills — assignment rule with a catch-all, then auto-response (it fires only when assignment fires), then escalation entries with business hours explicitly attached (`admin/assignment-rules`, `admin/escalation-rules`, `admin/business-hours-and-holidays`).
 6. If SLA tracking is required, add the entitlement process and milestones per `admin/entitlements-and-milestones`, plus the automation that attaches entitlements to new cases.
-7. Run `python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir <metadata-root> --verbose` (it exits 1 on any finding; `ERROR: CMS-STEM-01/02` mean a decomposed file stem and its `<fullName>` disagree, which no org-side validation will catch for you), deploy in the §5 order (values → object → queues/templates → settings → rules), then run the three verification queries in §6 and the Review Checklist below.
+7. Run `python3 skills/admin/case-management-setup/scripts/check_case_management_setup.py --manifest-dir <metadata-root> --verbose` (it exits 1 on any finding; `ERROR: CMS-STEM-01/02` mean a decomposed file stem and its `<fullName>` disagree, which no org-side validation will catch for you, and `ERROR: CMS-SYSUSER-01` means `useSystemUserAsDefaultCaseUser` is `true` with no `systemUserEmail`, which the org rejects at deploy), deploy in the §5 order (values → object → queues/templates → settings → rules), then run the three verification queries in §6 and the Review Checklist below.
 
 ---
 
@@ -222,6 +224,7 @@ Run through these before marking case management configuration complete:
 - [ ] Escalation rule entries each have a business hours record explicitly attached; deactivation/reactivation risk communicated to stakeholders
 - [ ] All queues referenced by assignment and escalation rules exist, have at least one active member, and have Case in their Supported Objects list
 - [ ] Case team roles are created before predefined teams; predefined teams contain current active users
+- [ ] `useSystemUserAsDefaultCaseUser` is set explicitly, and its partner element is set with it — `defaultCaseUser` (a real active user) when `false`, `systemUserEmail` (a monitored mailbox) when `true`
 - [ ] Every decomposed `*.businessProcess-meta.xml` / `*.recordType-meta.xml` file's stem is exactly its `<fullName>`, no `<fullName>` contains a space, and every record type's `<businessProcess>` names an existing process stem — `check_case_management_setup.py` rules CMS-STEM-01 / CMS-STEM-02 pass
 - [ ] If entitlements used: Entitlement Management is enabled, entitlement processes are active, business hours are attached to milestones, and automation applies entitlements to new cases
 
@@ -240,7 +243,8 @@ Non-obvious platform behaviors that cause real production problems:
 7. **A deployed picklist value is not a selectable one** — `StandardValueSet` puts the value on the object; the record type's Selected Values list decides whether anyone can pick it. Deploy both, or the new Status appears in metadata and nowhere else. Detail in `references/gotchas.md` #7.
 8. **Web-to-Case cannot name its own owner** — `WebToCaseSettings` has three fields and none is an owner. Unmatched submissions fall to org-level `defaultCaseOwner`, which an Email-to-Case routing address can also overwrite. Detail in `references/gotchas.md` #8.
 9. **`keepRecordTypeOnAssignmentRule` covers manual creation only** — neither inbound channel is "manually created", so it does not protect an intake record type. Detail in `references/gotchas.md` #9.
-10. **A decomposed file's stem is the package member** — in source format the CLI builds the `package.xml` member from the file stem, so a `Support_Process.businessProcess-meta.xml` carrying `<fullName>Support Process</fullName>` fails with `An object 'Case.Support_Process' of type BusinessProcess was named in package.xml, but was not found in zipped directory`. Detail in `references/gotchas.md` #11.
+10. **`useSystemUserAsDefaultCaseUser` needs a partner in both directions** — the guide documents only `false` → `defaultCaseUser`. Setting it `true` with no `<systemUserEmail>` is rejected with `CaseSettings: Enter the system user's email address.` UNVERIFIED (2026-09-12): the `true` half is proven live, not in the guide. Checker rule `CMS-SYSUSER-01`. Detail in `references/gotchas.md` #12.
+11. **A decomposed file's stem is the package member** — in source format the CLI builds the `package.xml` member from the file stem, so a `Support_Process.businessProcess-meta.xml` carrying `<fullName>Support Process</fullName>` fails with `An object 'Case.Support_Process' of type BusinessProcess was named in package.xml, but was not found in zipped directory`. Detail in `references/gotchas.md` #11.
 
 ---
 
@@ -264,7 +268,7 @@ Non-obvious platform behaviors that cause real production problems:
 |---|---|
 | `references/metadata-examples.md` | Writing deployable XML: `CaseOrigin`/`CasePriority`/`CaseStatus` value sets, Case support processes and record types, the source-format stem rule (§2.1), the `webToCase` block, package.xml, deploy order, and the three verification queries |
 | `references/worked-example-case-intake.md` | Building a whole intake solution from requirements: the questions, decisions, ten-section workbook rows, artefact list, tests, and the gaps found |
-| `references/gotchas.md` | Auto-response dependency, escalation reactivation waves, truncation, queue deletion, Web-to-Case validation, invisible picklist values, the default-owner fallback, record-type override, closed-status gaps, the source-format stem rule |
+| `references/gotchas.md` | Auto-response dependency, escalation reactivation waves, truncation, queue deletion, Web-to-Case validation, invisible picklist values, the default-owner fallback, record-type override, closed-status gaps, the source-format stem rule, the `useSystemUserAsDefaultCaseUser` / `systemUserEmail` pair |
 | `references/examples.md` | Diagnosing a live symptom: threading failure, auto-response silence, weekend escalations, case team access |
 | `references/llm-anti-patterns.md` | Reviewing AI-generated case-management guidance before acting on it |
 | `references/well-architected.md` | Justifying a channel or escalation choice, and the source list behind every claim in this package |
