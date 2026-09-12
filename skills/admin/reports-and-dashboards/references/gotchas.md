@@ -248,3 +248,89 @@
 - Enumerate `Report` and `Dashboard` members explicitly, folder-qualified and using developer names: `<members>Revenue_Ops/Open_Cases_By_Owner</members>`.
 - Build the list with two passes of `listMetadata()` — first `ReportFolder` (or `DashboardFolder`) with `folder` = `*` to get folder names, then `Report` (or `Dashboard`) once per folder.
 - Treat a report or dashboard member containing a space as a bug: the manifest wants developer names, and a space almost always means a label was pasted in.
+
+---
+
+## F-49: A Report `description` Over 255 Characters Fails Deploy
+
+**What happens:** A report's `<description>` carries a build note or a UNVERIFIED marker in
+addition to its stated purpose, and the deploy is rejected outright: `Value too long for field:
+Description maximum length is:255`. Nothing in the Metadata API Developer Guide's `Report` field
+table states this limit — it was proven only by a live `sf project deploy start --dry-run`
+against the case-onboarding M5-S01 build (`reports/MOCK-DEPLOY-M5.md`, API 67.0).
+
+**When it occurs:** Any report description used as a scratch pad for build notes, TODOs, or a
+runbook pointer — exactly the kind of thing a UNVERIFIED-marker workflow is tempted to write
+there instead of into `deploy-order.md` or a config workbook.
+
+**How to avoid it:**
+- Keep `<description>` a one- or two-sentence statement of what the report is for. Notes about
+  what's incomplete or deferred belong in the build's own deploy-order/runbook file, not the
+  metadata.
+- Run `python3 scripts/check_report_inventory.py --manifest-dir <dir>` before deploying — RPT-DESC-01
+  fails the run (ERROR) at 256+ characters; RPT-DESC-02 is an advisory INFO at 235+ characters
+  that never fails the run, even under `--strict`.
+
+---
+
+## F-50: A Guessed `reportType` Or Grouping Column Fails Only At Deploy, With No Offline Signal
+
+**What happens:** Three separate guesses on the same report all pass local review and all fail
+live, each pointing to the next: `<reportType>Cases</reportType>` (looks like the obvious API
+name for the standard Case report type) → `invalid report type`. Switching to the correct
+`CaseList` moves the failure to the grouping: `<groupingsDown><field>USERS.NAME</field>` (copied
+from the Metadata API guide's own — unrelated — Report sample) → `Grouping: Invalid value
+specified: USERS.NAME`. Switching the grouping to `OWNER` moves the failure again: `PRIORITY` was
+also listed as a `<columns>` entry → `You can't include groupings in the selected columns list:
+PRIORITY`. All three values were marked UNVERIFIED in this skill's own examples before being
+proven wrong live (`reports/MOCK-DEPLOY-M5.md`, F-50).
+
+**When it occurs:** Any report on a standard object where the report type API name or a
+grouping/column code is typed from familiarity with the object's field API names, rather than
+retrieved. Standard report type API names are not the object name — `CaseList`, not `Cases` (and
+by the same pattern, expect `AccountList`, `OpportunityList` rather than the bare object name;
+confirm each one, don't extrapolate the suffix). A field cannot be both a `groupingsDown`/
+`groupingsAcross` entry and a `columns` entry on the same report — pick one.
+
+**How to avoid it:**
+- Retrieve one working report on the target report type before writing any XML (this skill's own
+  Recommended Workflow step 3). Read the `reportType`, `groupingsDown`/`groupingsAcross`, and
+  `columns` values off that retrieve — don't infer them from field API names or from an unrelated
+  sample.
+- Run `python3 scripts/check_report_inventory.py --manifest-dir <dir>` before deploying:
+  RPT-TYPE-01 (WARN) flags a `reportType` this project has already proven invalid (`Cases`) and
+  suggests the proven replacement; RPT-GRP-01 (ERROR) flags any field present in both a
+  grouping and `<columns>`.
+- A `--dry-run` deploy is not optional verification here — the checker's known-invalid list only
+  grows by what has actually been proven live; a guess that hasn't been tried yet will pass the
+  checker and still fail the org.
+
+---
+
+## F-51: A Report Column Code Can Be Un-Guessable, Not Just Wrong
+
+**What happens:** A Case report needs an `IsEscalated = true` filter. Five plausible column-code
+candidates — `ESCALATED`, `IS_ESCALATED`, `CASES.ESCALATED`, `ISESCALATED`, `CASE_ESCALATED` —
+are each rejected live with `filters-criteriaItems-column: Invalid value specified`
+(`reports/MOCK-DEPLOY-M5.md`, F-51). No cited skill or guide states the correct code, and probing
+by pattern has run out of plausible guesses.
+
+**When it occurs:** Any filter, grouping, or column on a checkbox or non-obvious field where the
+report column code doesn't follow the `FIELD_NAME` pattern seen elsewhere in the same report type
+— checkbox fields in particular are a common miss, since their column code is not reliably the
+upper-cased field name.
+
+**How to avoid it:**
+- Don't keep guessing. This skill's own rule is to retrieve a working report on the same report
+  type and read the code off it (Recommended Workflow step 3) — that is the only reliable source
+  for a code that resists pattern-guessing.
+- When no existing report already uses the field and a retrieve isn't available in the moment,
+  ship the report **without** that criterion and record it as a runbook step: deploy first, then
+  either (a) add the filter in the report builder UI and let it write the code, or (b) build the
+  filter once by hand, retrieve that report, and copy the code into source for next time.
+  Deploying an honestly incomplete filter beats deploying a guessed column code that silently
+  narrows or breaks the report.
+- `python3 scripts/check_report_inventory.py` flags this pattern generically: RPT-COL-01 (INFO)
+  fires on any `criteriaItems`/`columns` code that isn't one of the report's own grouping fields
+  or in its small set of already-confirmed codes — a nudge to retrieve, not a verdict on
+  right-or-wrong, since column codes are report-type-specific and this cannot be settled offline.

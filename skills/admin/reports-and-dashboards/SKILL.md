@@ -29,9 +29,9 @@ triggers:
 inputs: ["reporting question", "audience", "data source objects"]
 outputs: ["report design guidance", "dashboard findings", "visibility recommendations"]
 dependencies: []
-version: 1.1.0
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-12
 ---
 
 You are a Salesforce Admin expert in data visibility and reporting. Your goal is to help build reports and dashboards that give stakeholders accurate, timely, and secure visibility into Salesforce data — and to troubleshoot why reports are returning wrong or missing results.
@@ -63,6 +63,8 @@ Ask these before opening the report builder. Each one maps to a failure document
 | "Does this report type already back other reports?" | Editing a shared custom report type reaches every report built on it; removing a column removes it from those reports | A blast-radius list before the report type is touched, or a new report type instead of an edit |
 | "Is a dashboard going to filter this, and on which field?" | A component only responds to a dashboard filter if it declares `dashboardFilterColumns` for that field | The filter design, and the per-component column mapping that makes it work |
 | "How far back does the answer need to go?" | Historical trending starts collecting the day it is enabled — there is no retroactive data | Either a trend design started now, or an honest "we can show data from today forward" |
+| "Is the report type's API name confirmed from an org retrieve, not typed from memory?" | Standard report type API names are not always the object name — the standard Case report type is `CaseList`, not `Cases`; a wrong guess fails deploy with `invalid report type` (proven live 2026-09-12, see `references/gotchas.md` F-50) | The confirmed API name plus the retrieve/describe output it came from, before any XML is written |
+| "Is every filter, grouping and column code on this report harvested from a retrieved report, not guessed?" | Report column codes are report-type-specific and cannot be derived from field API names — a plausible-looking code (`USERS.NAME`, an `IsEscalated` variant) is rejected only at deploy time, with no way to confirm it offline | The exact column codes as they appear in a retrieved report on the same report type, and an honest gap noted (not guessed) for any code that couldn't be harvested — see `references/gotchas.md` F-51 |
 
 What a proper configuration adds over just building the report: the rows returned match the question asked rather than the running user's accidental slice, the dashboard's audience and its running user agree, the folder grants exactly the access the audience needs, and the whole thing exists as reviewable XML instead of clicks nobody can diff.
 
@@ -157,7 +159,12 @@ In metadata this is a single element with exactly three values — `<dashboardTy
    files, and the `package.xml` — folder-qualified members, no `*` for `Report` or `Dashboard`.
 5. Run `python3 scripts/check_report_inventory.py --manifest-dir force-app/main/default` and clear
    every finding or record why it is accepted. It catches unbounded reports, `SpecifiedUser`
-   dashboards, reports pointing at a report type that isn't in the tree, and `Public` folders.
+   dashboards, reports pointing at a report type that isn't in the tree, `Public` folders, a
+   `Report` description over 255 characters (RPT-DESC-01), a `reportType` proven invalid live
+   (RPT-TYPE-01 — see `references/gotchas.md` F-50), a field that is both a grouping and a column
+   (RPT-GRP-01 — F-50), and a filter/column code this checker cannot verify offline (RPT-COL-01 —
+   harvest it from a retrieve instead, per step 3). Add `--strict` to also fail on WARN-tier
+   findings; ERROR-tier findings fail the run either way, INFO-tier never does.
 6. Deploy with `--dry-run` first, then for real. Verify with the two SOQL queries in section 7 of
    `references/metadata-examples.md` — check `Dashboard.Type`, never `RunningUserId`, when
    confirming the running-user posture landed.
@@ -199,7 +206,7 @@ Surface these WITHOUT being asked:
 | File | Read it when |
 |---|---|
 | `references/metadata-examples.md` | Writing deployable `Report`, `Dashboard`, `ReportType` and folder XML, the `package.xml` (no wildcard), the retrieve/deploy commands, and the post-deploy verification SOQL |
-| `references/gotchas.md` | Fifteen platform behaviours that make a report or dashboard wrong after it deploys — running user, folder vs record access, cross filter vs join, package-installed folder shares, `RunningUserId` false positives |
+| `references/gotchas.md` | Twenty-one platform behaviours that make a report or dashboard wrong after it deploys — running user, folder vs record access, cross filter vs join, package-installed folder shares, `RunningUserId` false positives, and (F-49/F-50/F-51) a description over 255 characters, a guessed `reportType`/grouping/column code, and an un-guessable column code |
 | `references/examples.md` | Looking for a worked design: pipeline dashboard components, a case-aging cross filter, a joined-report churn analysis, bucketing instead of a formula field |
 | `references/llm-anti-patterns.md` | Checking generated report/dashboard output, and for the sourced report and dashboard limits (widgets, groupings, exports, subscriptions, historical trending) |
 | `references/well-architected.md` | Framing the design against Security and Operational Excellence, and for the full source list |

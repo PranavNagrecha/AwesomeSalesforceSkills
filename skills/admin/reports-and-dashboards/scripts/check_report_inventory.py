@@ -5,11 +5,44 @@ Two modes:
 
 * ``--manifest-dir <dir>`` walks a source-format tree (``force-app/main/default``) and checks the
   ``*.report-meta.xml``, ``*.dashboard-meta.xml`` and ``*.reportFolder-meta.xml`` /
-  ``*.dashboardFolder-meta.xml`` files this skill produces.
+  ``*.dashboardFolder-meta.xml`` files this skill produces. A folder file named
+  ``<name>-meta.xml`` (no ``.reportFolder`` / ``.dashboardFolder`` type token) is also recognised
+  as a folder as long as its root element is ``<ReportFolder>`` or ``<DashboardFolder>`` -- an org
+  accepts that filename shape on deploy (proven live, `reports/MOCK-DEPLOY-M5.md`), so the checker
+  parses the root instead of trusting the suffix alone.
 * Positional paths still accept CSV inventory exports (Setup -> Reports list view export) and
   individual metadata files, for auditing an existing estate.
 
 Both modes can be combined. Output is JSON on stdout: ``{"score", "findings", "summary"}``.
+
+Report-body checks added 2026-09-12, all findings proven live in a `sf project deploy start
+--dry-run` against the case-onboarding M5-S01 build (`reports/MOCK-DEPLOY-M5.md`, API 67.0). None
+of these thresholds or names is stated in the Metadata API Developer Guide -- each is
+UNVERIFIED-in-the-guide / proven-live-only, cited as such at the point of use:
+
+* RPT-DESC-01 (ERROR)  a ``Report`` ``<description>`` over 255 characters --
+  ``Value too long for field: Description maximum length is:255``.
+* RPT-DESC-02 (INFO)   a ``<description>`` of 235+ characters -- headroom only, never affects
+  the exit code, even under ``--strict``.
+* RPT-TYPE-01 (WARN)   ``<reportType>`` matches a name proven invalid live (``Cases`` ->
+  ``invalid report type``; use ``CaseList``). Extend the list only with a value proven the same
+  way -- never guessed.
+* RPT-GRP-01 (ERROR)   a field is both a ``groupingsDown``/``groupingsAcross`` entry and a
+  ``columns`` entry -- ``You can't include groupings in the selected columns list: <field>``.
+* RPT-COL-01 (INFO)    a ``criteriaItems``/``columns`` code that is not one of this report's own
+  grouping fields and not in a small set of codes this project has confirmed live for the
+  standard ``CaseList`` report type. Report column codes are report-type-specific (this skill's
+  own rule: retrieve a working report on the same report type and copy its codes) and cannot be
+  verified offline in general, so this is advisory, not a guess at right-or-wrong.
+
+Exit codes (``--strict`` promotes WARN-tier findings; INFO-tier findings never gate the exit
+code, with or without ``--strict``):
+  0 -- no ERROR/CRITICAL/HIGH-tier finding (and no MEDIUM/WARN-tier finding under ``--strict``)
+  1 -- at least one ERROR/CRITICAL/HIGH-tier finding, or at least one MEDIUM/WARN-tier finding
+       under ``--strict``, or the supplied ``--manifest-dir`` does not exist
+A manifest dir (or path set) that exists but contains nothing to scan is not a failure -- it
+exits 0 with zero findings.
+
 Standard library only.
 """
 
@@ -28,14 +61,56 @@ CSV_SUFFIX = ".csv"
 METADATA_SUFFIXES = (".dashboard-meta.xml", ".report-meta.xml")
 FOLDER_SUFFIXES = (".reportFolder-meta.xml", ".dashboardFolder-meta.xml")
 REPORT_TYPE_SUFFIX = ".reportType-meta.xml"
+# Every typed "-meta.xml" suffix this checker already recognises by name. A bare "<name>-meta.xml"
+# folder file (see is_bare_folder_meta) is only ever a file that does NOT end in one of these.
+KNOWN_TYPED_META_SUFFIXES = METADATA_SUFFIXES + FOLDER_SUFFIXES + (REPORT_TYPE_SUFFIX,)
 SEVERITY_WEIGHTS = {
     "CRITICAL": 20,
+    "ERROR": 20,
     "HIGH": 10,
+    "WARN": 10,
     "MEDIUM": 5,
     "LOW": 1,
     "REVIEW": 0,
     "INFO": 0,
 }
+
+# Exit-code tiers. ERROR-tier always fails the run; WARN-tier only fails under --strict;
+# everything else (LOW, REVIEW, INFO) is advisory and never gates the exit code. CRITICAL/HIGH
+# are the pre-existing severities this checker used before the RPT-* rules below were added
+# (unparseable XML, a --manifest-dir that doesn't exist) and are kept at ERROR-tier since they
+# are already hard, deploy-breaking conditions. MEDIUM findings (private folder, SpecifiedUser
+# dashboard, Public folder, ...) are governance flags meant for review, not deploy blockers, so
+# they sit at WARN-tier.
+ERROR_EXIT_TIER = {"CRITICAL", "ERROR", "HIGH"}
+WARN_EXIT_TIER = {"MEDIUM", "WARN"}
+
+# RPT-DESC-01 / RPT-DESC-02. Not documented in the Metadata API Developer Guide's Report field
+# table (grep of api_meta.txt for "Report" + "description" turns up no Limit: clause) -- proven
+# live instead: `sf project deploy start --dry-run` against the case-onboarding M5-S01 build
+# rejected a Report with `Value too long for field: Description maximum length is:255`
+# (reports/MOCK-DEPLOY-M5.md, F-49). 235 is headroom advisory only, chosen the same way the
+# admin/custom-permissions and admin/object-creation-and-design checkers pick a headroom
+# threshold below their own documented ceilings.
+RPT_DESC_MAX_LEN = 255
+RPT_DESC_WARN_LEN = 235
+
+# RPT-TYPE-01. Standard report type API names proven invalid by the same live dry-run --
+# `reportType` `Cases` was rejected with `invalid report type`; `CaseList` was accepted
+# (reports/MOCK-DEPLOY-M5.md, F-50). Not stated anywhere in the Metadata API Developer Guide.
+# Extend this dict only with a value proven the same way -- never guessed by analogy.
+KNOWN_INVALID_REPORT_TYPES = {
+    "Cases": "CaseList",
+}
+
+# RPT-COL-01. Report column codes this project has confirmed live on the standard `CaseList`
+# report type only (reports/MOCK-DEPLOY-M5.md, F-50/F-51 operator probes: `OWNER` accepted where
+# `USERS.NAME` and `OWNER_NAME` were rejected; `STATUS` and `CREATED_DATE` are the filter columns
+# in the same accepted report). This is NOT a claim these codes work on every report type --
+# column codes are report-type-specific (see this skill's own "Retrieve before you write" rule,
+# SKILL.md Recommended Workflow step 3) -- it exists only so this checker doesn't re-flag codes
+# already proven for this specific report type.
+KNOWN_GOOD_COLUMN_CODES = {"STATUS", "PRIORITY", "OWNER", "CREATED_DATE"}
 
 # Report `scope` values that consider every record the running user can see, rather than a
 # narrower "mine"/"my team" slice. Metadata API Developer Guide, Report.scope: valid values
@@ -70,6 +145,30 @@ def first_child(element: ET.Element, *child_names: str) -> ET.Element | None:
 
 def descendants(element: ET.Element, name: str) -> list[ET.Element]:
     return [node for node in element.iter() if local_name(node.tag) == name]
+
+
+def direct_children(element: ET.Element, name: str) -> list[ET.Element]:
+    """Return every direct child matching ``name`` (unlike ``first_child``, all of them)."""
+    return [child for child in element if local_name(child.tag) == name]
+
+
+def is_bare_folder_meta(path: Path) -> bool:
+    """True for a ``<name>-meta.xml`` file whose root element is ReportFolder/DashboardFolder.
+
+    An org accepts a report/dashboard folder deployed under this filename shape -- no
+    ``.reportFolder`` / ``.dashboardFolder`` type token at all -- proven live in the
+    case-onboarding M5-S01 dry-run (`reports/MOCK-DEPLOY-M5.md`). The checker previously
+    recognised folders by suffix only (FOLDER_SUFFIXES), which missed this shape entirely.
+    Every already-typed "-meta.xml" suffix is excluded first so a report, dashboard or report
+    type file is never re-parsed and mis-classified here.
+    """
+    name = path.name
+    if not name.endswith("-meta.xml") or name.endswith(KNOWN_TYPED_META_SUFFIXES):
+        return False
+    root = parse_xml(path)
+    if root is None:
+        return False
+    return local_name(root.tag) in ("ReportFolder", "DashboardFolder")
 
 
 def in_private_folder(path: Path) -> bool:
@@ -117,12 +216,14 @@ def iter_files(paths: list[Path]) -> list[Path]:
                     candidate.name.endswith(CSV_SUFFIX)
                     or candidate.name.endswith(METADATA_SUFFIXES)
                     or candidate.name.endswith(FOLDER_SUFFIXES)
+                    or is_bare_folder_meta(candidate)
                 ):
                     files.append(candidate)
         elif path.is_file() and (
             path.name.endswith(CSV_SUFFIX)
             or path.name.endswith(METADATA_SUFFIXES)
             or path.name.endswith(FOLDER_SUFFIXES)
+            or is_bare_folder_meta(path)
         ):
             files.append(path)
     return sorted(set(files))
@@ -137,13 +238,31 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
-    if normalized:
-        print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+
+    error_count = sum(1 for item in normalized if item["severity"] in ERROR_EXIT_TIER)
+    warn_count = sum(1 for item in normalized if item["severity"] in WARN_EXIT_TIER)
+    info_count = len(normalized) - error_count - warn_count
+
+    # Single-line, literal-severity prints (not a variable-interpolated level) so a log grep for
+    # "ERROR:" / "WARN:" / "INFO:" always finds the right line.
+    if error_count:
+        print(f"ERROR: {error_count} error-tier finding(s) detected; see findings above", file=sys.stderr)
+    elif strict and warn_count:
+        print(f"WARN: {warn_count} warn-tier finding(s) detected; failing under --strict", file=sys.stderr)
+    elif warn_count:
+        print(f"WARN: {warn_count} warn-tier finding(s) detected; pass --strict to fail on these", file=sys.stderr)
+    elif normalized:
+        print(f"INFO: {info_count} info-tier finding(s) detected; advisory only, never fails the run", file=sys.stderr)
+
+    if error_count:
+        return 1
+    if strict and warn_count:
+        return 1
+    return 0
 
 
 def lookup(row: dict[str, str], *candidates: str) -> str:
@@ -210,7 +329,7 @@ def audit_metadata(path: Path) -> list[str]:
         findings.extend(check_dashboard_source(path))
     elif path.name.endswith(".report-meta.xml"):
         findings.extend(check_report_source(path, set()))
-    elif path.name.endswith(FOLDER_SUFFIXES):
+    elif path.name.endswith(FOLDER_SUFFIXES) or is_bare_folder_meta(path):
         findings.extend(check_folder_source(path))
 
     return findings
@@ -265,6 +384,87 @@ def check_report_source(path: Path, known_report_types: set[str]) -> list[str]:
             f"REVIEW {path}::{name}: reportType `{report_type}` has no "
             f"{report_type}{REPORT_TYPE_SUFFIX} in this tree - confirm it is a standard report "
             "type, or add the ReportType to the deployment so it lands before the report"
+        )
+
+    # RPT-DESC-01 / RPT-DESC-02 - description length. Not documented in the Metadata API
+    # Developer Guide's Report field table; proven live only (see module docstring, F-49).
+    description = child_text(root, "description")
+    if description:
+        if len(description) > RPT_DESC_MAX_LEN:
+            findings.append(
+                f"ERROR {path}::{name}: RPT-DESC-01 description is {len(description)} chars - "
+                f"proven live: `Value too long for field: Description maximum length is:255` "
+                f"(reports/MOCK-DEPLOY-M5.md F-49) - the deploy will be rejected"
+            )
+        elif len(description) >= RPT_DESC_WARN_LEN:
+            findings.append(
+                f"INFO {path}::{name}: RPT-DESC-02 description is {len(description)} chars, "
+                f"only {RPT_DESC_MAX_LEN - len(description)} of headroom before the "
+                f"{RPT_DESC_MAX_LEN}-char limit (F-49) - never fails the run, even under --strict"
+            )
+
+    # RPT-TYPE-01 - reportType proven invalid live (F-50). Extend KNOWN_INVALID_REPORT_TYPES
+    # only with a value proven the same way.
+    if report_type in KNOWN_INVALID_REPORT_TYPES:
+        suggestion = KNOWN_INVALID_REPORT_TYPES[report_type]
+        findings.append(
+            f"WARN {path}::{name}: RPT-TYPE-01 reportType `{report_type}` was rejected live "
+            f"with `invalid report type` (reports/MOCK-DEPLOY-M5.md F-50) - use `{suggestion}` "
+            "instead"
+        )
+
+    # RPT-GRP-01 - a field cannot be both a groupingsDown/groupingsAcross entry and a columns
+    # entry. Proven live: `You can't include groupings in the selected columns list: PRIORITY`
+    # (reports/MOCK-DEPLOY-M5.md F-50).
+    column_fields = {
+        child_text(column, "field")
+        for column in direct_children(root, "columns")
+        if child_text(column, "field")
+    }
+    grouping_fields = {
+        child_text(grouping, "field")
+        for grouping_tag in ("groupingsDown", "groupingsAcross")
+        for grouping in direct_children(root, grouping_tag)
+        if child_text(grouping, "field")
+    }
+    for field in sorted(column_fields & grouping_fields):
+        findings.append(
+            f"ERROR {path}::{name}: RPT-GRP-01 `{field}` is both a groupingsDown/"
+            f"groupingsAcross field and a columns entry - proven live: `You can't include "
+            f"groupings in the selected columns list: {field}` (reports/MOCK-DEPLOY-M5.md "
+            "F-50) - drop it from one of the two"
+        )
+
+    # RPT-COL-01 - a criteriaItems/columns code that isn't one of this report's own grouping
+    # fields and isn't in the small set of codes proven live for CaseList. Column codes are
+    # report-type-specific (this skill's own "retrieve before you write" rule) and cannot be
+    # verified offline in general, so this is advisory (INFO), never an ERROR or WARN.
+    known_codes = grouping_fields | KNOWN_GOOD_COLUMN_CODES
+    flagged_codes: set[str] = set()
+    code_sources: list[tuple[str, str]] = [
+        ("columns", code) for code in column_fields
+    ]
+    if filter_el is not None:
+        code_sources.extend(
+            ("filter/criteriaItems", child_text(item, "column"))
+            for item in descendants(filter_el, "criteriaItems")
+            if child_text(item, "column")
+        )
+    for cross_filter in direct_children(root, "crossFilters"):
+        code_sources.extend(
+            ("crossFilters/criteriaItems", child_text(item, "column"))
+            for item in descendants(cross_filter, "criteriaItems")
+            if child_text(item, "column")
+        )
+    for source, code in code_sources:
+        if code in known_codes or code in flagged_codes:
+            continue
+        flagged_codes.add(code)
+        findings.append(
+            f"INFO {path}::{name}: RPT-COL-01 `{code}` ({source}) is not one of this report's "
+            "own grouping fields or a code already confirmed for this report type - column "
+            "codes are report-type-specific and cannot be verified offline; harvest it from a "
+            "retrieve of a working report on the same reportType before deploying"
         )
 
     return findings
@@ -381,6 +581,13 @@ def audit_manifest_dir(manifest_dir: Path) -> tuple[list[str], int]:
             scanned += 1
             findings.extend(check_folder_source(path))
 
+    # Bare "<name>-meta.xml" folder files - see is_bare_folder_meta.
+    for path in sorted(manifest_dir.rglob("*-meta.xml")):
+        if not is_bare_folder_meta(path):
+            continue
+        scanned += 1
+        findings.extend(check_folder_source(path))
+
     return findings, scanned
 
 
@@ -399,6 +606,12 @@ def main() -> int:
         nargs="*",
         help="CSV inventory exports, individual metadata files, or directories",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN-tier findings (e.g. RPT-TYPE-01) too. INFO-tier findings never "
+        "affect the exit code, with or without --strict.",
+    )
     args = parser.parse_args()
 
     findings: list[str] = []
@@ -407,8 +620,9 @@ def main() -> int:
     if args.manifest_dir is not None:
         if not args.manifest_dir.is_dir():
             return emit_result(
-                [f"HIGH {args.manifest_dir}: --manifest-dir is not a directory"],
+                [f"ERROR {args.manifest_dir}: --manifest-dir is not a directory"],
                 "Scanned 0 file(s); the supplied --manifest-dir does not exist.",
+                args.strict,
             )
         manifest_findings, manifest_scanned = audit_manifest_dir(args.manifest_dir)
         findings.extend(manifest_findings)
@@ -427,15 +641,19 @@ def main() -> int:
         parser.error("supply --manifest-dir, one or more paths, or both")
 
     if scanned == 0:
+        # A manifest dir (or path set) that exists but has nothing to scan is not a failure --
+        # e.g. an early milestone with no reports built yet. Only an actually-missing
+        # --manifest-dir (handled above) is an ERROR.
         return emit_result(
-            ["HIGH no report/dashboard metadata or CSV exports found"],
+            [],
             "Scanned 0 report/dashboard file(s); nothing matched the supplied inputs.",
+            args.strict,
         )
 
     summary = (
         f"Scanned {scanned} report/dashboard file(s); {len(findings)} finding(s) detected."
     )
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":
