@@ -19,6 +19,14 @@ Salesforce rejects ISBLANK()/ISNULL() applied directly to a picklist at
 deploy time; TEXT(<field>) first is the fix. Works for standard fields (e.g.
 `Priority`, `StageName`) exactly as well as `__c` fields, since it never
 needs to check a field-type inventory -- it only needs the formula text.
+
+VR-OPP-01 is advisory only (INFO). It flags an Opportunity rule that answers
+"does this deal have products" by naming OpportunityLineItem or a
+product/line-item count field, when the standard read-only boolean
+HasOpportunityLineItem already carries that fact. It stays INFO because a
+genuine count threshold ("more than five lines needs review") is a legitimate
+rule this heuristic cannot tell apart from presence logic -- see
+references/gotchas.md Gotcha 15 and references/examples.md.
 """
 
 from __future__ import annotations
@@ -74,6 +82,85 @@ ISPICKVAL_FIRST_ARG = re.compile(
 DIRECT_BLANK_OR_NULL = re.compile(
     r"IS(?:BLANK|NULL)\s*\(\s*([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*\)", re.IGNORECASE
 )
+
+# VR-OPP-01: "does this Opportunity have products" answered the long way.
+# Object Reference for the Salesforce Platform, Opportunity: HasOpportunityLineItem
+# is a read-only boolean, "Defaulted on create, Filter, Group, Sort", set to true
+# when an OpportunityLineItem is inserted for that Opportunity
+# (knowledge/imports/salesforce-channel-revenue-management.md:3911-3918, :4696).
+# A rule that instead names the child object, or a roll-up/count field over it, is
+# maintaining a second source of truth for a fact the header already holds.
+HAS_LINE_ITEM_FIELD = "HASOPPORTUNITYLINEITEM"
+OPPORTUNITY_LINE_ITEM_TOKEN = re.compile(r"OPPORTUNITY_?LINE_?ITEM", re.IGNORECASE)
+# A `__c` field whose name pairs a product/line-item word with a count word, in
+# either order: Product_Count__c, Line_Item_Count__c, Number_Of_Products__c,
+# Opp_Product_Qty__c, Line_Count__c. Both halves are required, so
+# `Product_Family__c` and `Discount_Total__c` do not match; and the whole check
+# is Opportunity-scoped, so a `Line_Count__c` on an unrelated object is never
+# reached in the first place.
+PRODUCT_COUNT_FIELD = re.compile(
+    r"\b(?:[A-Za-z_]\w*\.)?\w*"
+    r"(?:(?:PRODUCT|LINE_?ITEM|LINE)\w*(?:COUNT|QTY|QUANTITY|NUM|NUMBER|TOTAL_?LINES)"
+    r"|(?:COUNT|NUM|NUMBER|TOTAL)\w*(?:PRODUCT|LINE_?ITEM))"
+    r"\w*__C\b",
+    re.IGNORECASE,
+)
+# TotalOpportunityQuantity is a real roll-up, but comparing it to zero (or
+# blank-testing it) is presence logic wearing a quantity field's clothes.
+TOTAL_QUANTITY_AS_PRESENCE = re.compile(
+    r"(?:IS(?:BLANK|NULL)\s*\(\s*TotalOpportunityQuantity\s*\)"
+    r"|TotalOpportunityQuantity\s*(?:<=|>=|<|>|==|=|<>|!=)\s*0(?:\.0*)?\b)",
+    re.IGNORECASE,
+)
+
+
+def find_line_item_count_logic(formula: str) -> list[str]:
+    """Tokens in `formula` that count Opportunity Products by hand.
+
+    Returns an empty list when the formula already names HasOpportunityLineItem
+    -- a rule that reads the boolean AND a count field is doing something the
+    boolean cannot do, and is not what this check is about.
+    """
+    if HAS_LINE_ITEM_FIELD in formula.upper():
+        return []
+    hits: list[str] = []
+    seen: set[str] = set()
+    for match in (
+        OPPORTUNITY_LINE_ITEM_TOKEN.findall(formula)
+        + PRODUCT_COUNT_FIELD.findall(formula)
+        + TOTAL_QUANTITY_AS_PRESENCE.findall(formula)
+    ):
+        token = match if isinstance(match, str) else match[0]
+        key = token.upper()
+        if key not in seen:
+            seen.add(key)
+            hits.append(token)
+    return hits
+
+
+def audit_opportunity_product_presence(
+    path: Path, rule: Rule, object_name: str | None
+) -> list[str]:
+    """VR-OPP-01 (INFO): Opportunity "has products" logic that skips the
+    standard boolean. Scoped to Opportunity because HasOpportunityLineItem is
+    an Opportunity field; the same shape on any other object is not this
+    finding.
+    """
+    if object_name != "Opportunity":
+        return []
+    hits = find_line_item_count_logic(rule.formula)
+    if not hits:
+        return []
+    return [
+        f"INFO {path}::{rule.full_name}: VR-OPP-01 formula derives an Opportunity "
+        f"line-item count from {', '.join(sorted(set(hits)))} without naming "
+        "HasOpportunityLineItem. If the rule only needs to know whether the deal "
+        "has any products, the platform-set read-only boolean "
+        "NOT(HasOpportunityLineItem) answers it with no roll-up, formula field or "
+        "trigger to maintain -- see references/gotchas.md Gotcha 15. Advisory: a "
+        "genuine count threshold is a legitimate rule and this check cannot tell "
+        "the two apart"
+    ]
 
 
 def find_direct_picklist_blank_calls(formula: str) -> list[str]:
@@ -512,7 +599,10 @@ def main() -> int:
             "inventory and checks standard and custom fields alike. Run over the "
             "whole build/package tree, not one step's "
             "directory, or those references come back as an advisory INFO instead of "
-            "a real answer. A --manifest-dir that does not exist is a HIGH finding "
+            "a real answer. VR-OPP-01 (INFO, advisory) needs no inventory either: it "
+            "flags an Opportunity rule that counts OpportunityLineItem rows by hand "
+            "where the standard read-only boolean HasOpportunityLineItem already says "
+            "whether the deal has products. A --manifest-dir that does not exist is a HIGH finding "
             "(exit 1). One that exists but contains no validation-rule metadata is a "
             "REVIEW advisory (exit 0; --strict promotes it to exit 1) -- an empty "
             "scan is a scope note, not a defect."
@@ -593,6 +683,9 @@ def main() -> int:
             rule_count += 1
             seen_names[rule.full_name].append(str(path))
             findings.extend(audit_rule(path, rule))
+            findings.extend(
+                audit_opportunity_product_presence(path, rule, object_name)
+            )
             ref_findings, inventory_absent = audit_rule_references(
                 path, rule, object_name, fields_by_object, objects_with_inventory,
                 permission_names, permission_dir_found,

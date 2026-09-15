@@ -32,4 +32,5 @@
 - Salesforce Object Reference — Pricebook2: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_pricebook2.htm
 - Salesforce Help — Enable and Configure Product Schedules: https://help.salesforce.com/s/articleView?id=sf.products_schedules_enable.htm
 - Salesforce Help — Considerations for Multiple Currencies: https://help.salesforce.com/s/articleView?id=sf.currencies_multicurrency_considerations.htm
+- Salesforce Object Reference — Opportunity, `HasOpportunityLineItem`: local corpus copy at `knowledge/imports/salesforce-channel-revenue-management.md:3911-3918` (type `boolean`; properties `Defaulted on create, Filter, Group, Sort`; "Read-only field that indicates whether the opportunity has associated line items") and `:4696` ("The Opportunity `HasOpportunityLineItem` field is set to true when an `OpportunityLineItem` is inserted for that Opportunity") — the grounding for Gotcha 8
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

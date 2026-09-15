@@ -192,3 +192,53 @@ Rules:
 ```
 
 **Detection hint:** If the formula uses `=` or `!=` directly on a picklist field instead of `ISPICKVAL()`, the comparison may not work correctly. Regex: `[A-Za-z_]+\s*(!=|==|=)\s*'[^']*'` on a known picklist field. Separately, `ISBLANK(`/`ISNULL(` wrapped directly around a field that is also passed as the first argument to `ISPICKVAL(` in the same formula (with no `TEXT()` in between) is the offline-detectable signature of this defect — `scripts/check_validation_rules.py` flags it as `VR-PICK-01`.
+
+---
+
+## Anti-Pattern 7: Inventing a roll-up, formula field or trigger to count child records the header already counts
+
+**What the LLM generates:** for "an opportunity cannot reach Propose without at least one
+product", a three-part answer — "create a Roll-Up Summary field `Product_Count__c` (COUNT of
+Opportunity Products) on Opportunity, then write the validation rule
+`AND(ISPICKVAL(StageName,'Propose'), Product_Count__c = 0)`" — or, when it remembers that
+roll-ups need a master-detail, an Apex trigger on `OpportunityLineItem` that maintains a counter
+field.
+
+**Why it happens:** validation rules cannot query, so the model reasons correctly that the count
+must be materialised on the parent, and then reaches for the two mechanisms that materialise
+values: roll-up summary and trigger. It skips the cheaper step of checking whether the standard
+object already exposes the fact. Opportunity does: `HasOpportunityLineItem` is a platform-set
+read-only boolean, and the same reflex produces `HasOpenActivity` and `HasOverdueTask`
+re-implementations on Opportunity, and `IsClosed`/`IsWon` re-implementations everywhere.
+
+**Correct pattern:**
+
+```
+Wrong  — needs a new field, a roll-up (or a trigger), and a deployment:
+  AND(ISPICKVAL(StageName, "Propose"), Product_Count__c = 0)
+
+Right  — no new metadata; the platform maintains the boolean:
+  AND(
+    NOT($Permission.Bypass_Opportunity_Sales_Validation),
+    NOT(ISNEW()),
+    ISCHANGED(StageName),
+    ISPICKVAL(StageName, "Propose"),
+    NOT(HasOpportunityLineItem)
+  )
+
+Before materialising a child-record fact on the parent, check the object's
+standard fields. Opportunity ships HasOpportunityLineItem, HasOpenActivity,
+HasOverdueTask, IsClosed and IsWon; a rule that re-derives any of them is
+maintaining a second source of truth for a fact the platform already owns.
+```
+
+The two guards are not decoration: `HasOpportunityLineItem` is `false` on every insert, so
+`ISNEW()` in the fire condition forbids record creation rather than gating it, and without
+`ISCHANGED(StageName)` every later save of an already-non-compliant deal is rejected. See
+Gotcha 15 in `references/gotchas.md` and the worked example in `references/examples.md`.
+
+**Detection hint:** a validation rule on Opportunity whose formula names `OpportunityLineItem`,
+or a `__c` field whose name combines product/line-item with count/number/quantity, and does not
+name `HasOpportunityLineItem`. `scripts/check_validation_rules.py` flags this offline as
+`VR-OPP-01` (INFO — advisory, because a genuine count threshold like "more than five lines
+requires review" is a legitimate rule this heuristic cannot distinguish from presence logic).

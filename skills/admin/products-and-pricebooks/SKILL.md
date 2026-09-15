@@ -40,9 +40,9 @@ outputs:
   - "Product deactivation safe-handling procedure"
   - "Data model explanation and constraint summary"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-09-15
 ---
 
 # Products and Pricebooks
@@ -61,6 +61,27 @@ Gather this context before working on anything in this domain:
 - **Edition and license**: Products and Pricebooks are available in Group, Professional, Enterprise, Performance, Unlimited, and Developer editions. Confirm the org supports the features before designing around them.
 - **Existing Pricebook references**: Check whether any open Opportunities or Quotes reference the Pricebooks you intend to modify or deactivate. A custom Pricebook cannot be deleted while any Opportunity or Quote references it in an active state.
 - **Product Schedule requirements**: Revenue Schedules and Quantity Schedules must be explicitly enabled in Setup > Products > Product Schedules Settings before they appear on product records. Confirm this before designing a schedule-based revenue recognition workflow.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before creating a single `Product2`. Each one traces to a behaviour in
+`references/gotchas.md` that no amount of careful catalog building recovers from afterwards.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which currencies must each product be sellable in?" | Multi-currency does not auto-create `PricebookEntry` records — one entry per product per currency per price book, or the product is simply unselectable in that currency (Gotcha 4) | The full currency × price book matrix, which is the row count of the load, not an afterthought |
+| "Are any of these products already on an open Opportunity or Quote?" | A custom price book cannot be deleted while referenced, and deactivating a `Product2` does not touch line items that already exist (Gotchas 2 and 5) | A decision on whether "retire" means "hide from new deals" or "remove from in-flight deals" — the second needs an explicit `OpportunityLineItem` cleanup |
+| "Do any products bill or ship over time, and what is Collaborative Forecasting's forecast object set to?" | With schedules enabled and the forecast object still set to Opportunity, schedule data is invisible to forecasts; set to Product Schedules, the forecast rolls up per installment instead of per line (Gotcha 7) | The forecast object decision made deliberately and before data exists — changing it later needs a full forecast history rebuild |
+| "Does anything downstream need to know only *whether* a deal has products?" | Opportunity already carries `HasOpportunityLineItem`, a platform-set read-only boolean. A roll-up, formula field or trigger built to answer the same question is a second source of truth (Gotcha 8) | A validation rule or report that reads the standard field instead of a new one — and, where a genuine count or per-line rule is needed, the knowledge that it belongs on `OpportunityLineItem` |
+| "Will Apex tests create products, price book entries or opportunity line items?" | A hardcoded Standard Price Book Id passes in the org it was copied from and fails in every other org and sandbox (Gotcha 6) | `Test.getStandardPricebookId()` in the test factory from the start, rather than a sandbox-refresh incident |
+| "Is there a price the business considers the list price, separate from what each channel sells at?" | Every product needs a Standard Price Book entry before any custom entry can exist; the platform rejects the custom entry outright (Gotcha 3) | The list price, so step 2 of the dependency chain has a real value instead of a placeholder nobody revisits |
+
+What a proper configuration adds over just creating the records: every product is sellable in
+every currency and channel the business actually quotes in, the retirement path for a product is
+decided before the first one is retired, forecasting reflects how revenue is really recognised,
+and nothing in the org maintains a second copy of a fact the platform already owns.
 
 ---
 

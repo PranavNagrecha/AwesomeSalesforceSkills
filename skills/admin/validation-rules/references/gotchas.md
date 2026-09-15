@@ -288,3 +288,76 @@ bug — the deploy itself is rejected.
 - Run `scripts/check_validation_rules.py` before deploying — it flags this pattern as `VR-PICK-01` (HIGH,
   blocking) whenever a field is passed to both `ISBLANK(`/`ISNULL(` directly and to `ISPICKVAL(` as its first
   argument in the same formula.
+
+---
+
+## Gotcha 15: HasOpportunityLineItem Is Platform-Set, Read-Only, and Never True on Insert
+
+**What happens:** "an opportunity cannot reach Propose without products" gets built as a roll-up
+summary of `OpportunityLineItem` onto Opportunity, or a formula field, or a trigger — and then a
+validation rule reads that. All three are unnecessary work, and two of them are actively wrong:
+a roll-up recalculates but, per the "Opportunity Validation Rules Do Not Fire When a Line Item
+Changes the Opportunity" gotcha above, its recalculation does not itself hand the Opportunity
+rule a save to evaluate. The Opportunity already carries the answer:
+
+> `HasOpportunityLineItem` — Type `boolean`; Properties `Defaulted on create, Filter, Group,
+> Sort`. "Read-only field that indicates whether the opportunity has associated line items."
+> — Object Reference for the Salesforce Platform, Opportunity
+> (`knowledge/imports/salesforce-channel-revenue-management.md:3911-3918`); set to true "when an
+> `OpportunityLineItem` is inserted for that Opportunity" (same guide, line 4696).
+
+**Three consequences the `Properties` line alone gives you:**
+
+| Property present | Property absent | What follows |
+|---|---|---|
+| `Filter`, `Group`, `Sort` | — | You can report and filter on it. `skills/admin/pipeline-review-design/references/gotchas.md:91` uses exactly this to put a "has products" column on a pipeline review |
+| — | no `Create`, no `Update` | It is read-only, as the description says outright. You cannot seed it in a data load, default it on a record type, or repair it — the only way to make it true is to insert a line item |
+| `Defaulted on create` | — | It has a value on every insert, and that value is `false`: a line item is inserted *for* an Opportunity, so no line item can exist during the Opportunity's own insert transaction (derived from the line 4696 quote, which does not spell out the insert case) |
+
+**When it bites you:**
+
+- **An `ISNEW()` fire condition bricks record creation.** Because the field is false on every
+  insert, a rule that fires on `AND(ISNEW(), ISPICKVAL(StageName,"Propose"), NOT(HasOpportunityLineItem))`
+  does not gate creation at `Propose` — it forbids it. Reps discover this as "I can't create the
+  deal at all" and start creating at `Qualify` and immediately editing, which is the workflow
+  the rule should have asked for explicitly instead of enforcing by accident.
+- **Quantity and price checks do not live here.** `Quantity`, `UnitPrice` and `TotalPrice` are
+  `OpportunityLineItem` fields. "At least one product" is a header question and
+  `HasOpportunityLineItem` answers it; "every line has a positive quantity" is a line-item
+  question and the rule belongs on `OpportunityLineItem`, where the rep's edit lands.
+- **The gate is on the stage change, not on the product.** The rule evaluates when the
+  Opportunity header is saved. The rep's real sequence is create → add products → change stage,
+  and a rep who moves the stage first is told to go back and add a product. That is the intended
+  flow, but it is a flow the requester has to have agreed to.
+
+**The corpus disagrees with itself about the reverse direction, and it matters here.** Whether
+*deleting the last line item* from a deal already at `Propose` re-fires this rule is not settled
+by the sources this library carries:
+
+| Source | Says |
+|---|---|
+| Apex Developer Guide, Trigger and Order of Execution Considerations (cited in `references/well-architected.md`, and the basis of the line-item gotcha above) | Validation rules don't fire for an opportunity when you modify an opportunity product, even if the opportunity product changes the opportunity |
+| Object Reference, Opportunity → Usage (`knowledge/imports/salesforce-channel-revenue-management.md:4299-4302`) | "On opportunities and opportunity products, the workflow rules, validation rules, and Apex triggers fire when an update to a child opportunity product or schedule causes an update to the parent record" |
+
+> UNVERIFIED (2026-09-15): these two official sources are in direct conflict and no probe in
+> this repo has settled it. Treat the rule as enforcing the **forward** gate only (you cannot
+> move the stage forward without products) and do **not** promise the requester that it prevents
+> a deal from ending up at `Propose` with zero products after a deletion. If that invariant is
+> genuinely required, the surface that certainly sees the deletion is a record-triggered flow or
+> trigger on `OpportunityLineItem` — see `flow/record-triggered-flow-patterns`.
+
+**How to avoid it:**
+
+- Use `NOT(HasOpportunityLineItem)` as the business condition; do not build a roll-up, a formula
+  field or a trigger to count line items. `scripts/check_validation_rules.py` flags the count
+  shapes as `VR-OPP-01` (INFO, advisory).
+- Guard with `NOT(ISNEW())` plus `ISCHANGED(StageName)` so the rule gates the transition and
+  neither forbids creation nor freezes records already sitting at the gated stage.
+- Decide four things with the requester before writing the formula: which stages are gated;
+  whether `Closed Lost` is one of them; whether a deal may be **created** already at a gated
+  stage (if not, the answer is a separate `ISNEW()` rule with its own message, not an `ISNEW()`
+  clause in this one); and whether deletion of the last line item must be caught, which this
+  rule cannot be relied on to do.
+- Before activating, list the deals the rule would block using the field's own filterability —
+  it is reportable, which is why `admin/pipeline-review-design` already recommends it as a
+  column.

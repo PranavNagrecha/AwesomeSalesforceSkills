@@ -133,3 +133,114 @@ AND(
 **Gotcha:** Cross-object validation rules can only traverse one level up (Case → Account is fine; Case → Account → Parent_Account is not). For deeper traversal, use a Flow or Apex trigger instead.
 
 **Performance note:** Cross-object formulas query the parent record on every save. On high-volume objects, this adds latency. Acceptable for Case (typically lower volume), worth noting for very high-volume objects.
+
+---
+
+## Example: At Least One Opportunity Product Before a Late Stage (Opportunity)
+
+**Business requirement:** an Enterprise opportunity cannot move to `Propose` (or any later
+open stage) until the rep has added at least one product line from the price book.
+
+### The mechanism — the header already carries the answer
+
+The naive readings of this requirement are a roll-up summary counting `OpportunityLineItem`
+rows, a formula field over the child records, or a trigger. None is necessary. Opportunity
+carries a standard boolean that the platform maintains for exactly this question:
+
+> `HasOpportunityLineItem` — Type `boolean`; Properties `Defaulted on create, Filter, Group,
+> Sort`. "Read-only field that indicates whether the opportunity has associated line items. A
+> value of `true` means that Opportunity line items have been created for the opportunity."
+> — Object Reference for the Salesforce Platform, Opportunity
+> (`knowledge/imports/salesforce-channel-revenue-management.md:3911-3918`)
+
+> "The Opportunity `HasOpportunityLineItem` field is set to true when an `OpportunityLineItem`
+> is inserted for that Opportunity."
+> — same guide, OpportunityLineItem → Usage
+> (`knowledge/imports/salesforce-channel-revenue-management.md:4696`)
+
+So the business condition is `NOT(HasOpportunityLineItem)`, gated on the stage.
+
+> UNVERIFIED (2026-09-15): the corpus above grounds the field's **existence, type, read-only
+> semantics and when the platform sets it**. It does not say, in so many words, that
+> `HasOpportunityLineItem` is addressable inside a validation-rule `errorConditionFormula`
+> — no fetched source in this repo makes a formula-context claim about it. The `Properties`
+> line establishes it is filterable/groupable/sortable, which is a SOQL and report property,
+> not a formula one. Verify with `sf project deploy start --dry-run` against a sandbox before
+> shipping, exactly as Gotcha 14 was verified. This is the one clause in this example that a
+> dry run can still refute.
+
+### The formula
+
+```
+AND(
+  NOT($Permission.Bypass_Opportunity_Sales_Validation),
+  RecordType.DeveloperName = "Enterprise",
+  NOT(ISNEW()),
+  ISCHANGED(StageName),
+  OR(
+    ISPICKVAL(StageName, "Propose"),
+    ISPICKVAL(StageName, "Negotiate"),
+    ISPICKVAL(StageName, "Closed Won")
+  ),
+  NOT(HasOpportunityLineItem)
+)
+```
+
+Read in the canonical order from `templates/admin/validation-rule-patterns.md` — bypass,
+relevance gate, business condition:
+
+| Clause | Why it is there |
+|---|---|
+| `NOT($Permission.Bypass_Opportunity_Sales_Validation)` | The bypass pattern this skill uses everywhere — Custom Permission, first inside the `AND`, granted by Permission Set. See the "Bypass for Admin/Integration Users via Custom Permission" example above |
+| `RecordType.DeveloperName = "Enterprise"` | Renewals run a different process and must not be gated. `DeveloperName` is text, so it is compared with `=`, never `ISPICKVAL` |
+| `NOT(ISNEW())` | **Load-bearing, not boilerplate.** A line item is inserted *for* an Opportunity that already exists, so `HasOpportunityLineItem` cannot be true during the Opportunity's own insert. An `ISNEW()` fire condition would make creating a deal at `Propose` impossible rather than merely gated |
+| `ISCHANGED(StageName)` | The rule fires on the **transition into** a late stage, not on every later edit. Without it, a deal already sitting at `Propose` with no products is frozen — every save of every other field is rejected, which is the "existing records are trapped" failure the `NOT(ISNEW())` guard in the PRIORVALUE gotcha exists to prevent |
+| `OR(ISPICKVAL(...))` | The stages the requester named. `Closed Lost` is deliberately absent — a deal lost before a quote was ever built has no products and blocking it teaches reps to park dead deals in `Negotiate` |
+| `NOT(HasOpportunityLineItem)` | The business condition. The formula describes the **invalid** state |
+
+For a sharper transition test — fire only when moving *forward* into `Propose` from an earlier
+stage — swap `ISCHANGED(StageName)` for
+`ISPICKVAL(PRIORVALUE(StageName), "Discover")`. `PRIORVALUE` is already safe here because
+`NOT(ISNEW())` is present; see "PRIORVALUE Does Not Work on Insert" in `references/gotchas.md`.
+
+### The metadata
+
+```xml
+<!-- force-app/main/default/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunity_Products_Required_At_Propose</fullName>
+    <active>true</active>
+    <description>Enterprise deals must carry at least one price-book line before Propose. Reads the platform-maintained HasOpportunityLineItem rather than a roll-up count. Owner: RevOps. Bypass: Bypass_Opportunity_Sales_Validation.</description>
+    <errorConditionFormula>AND(
+  NOT($Permission.Bypass_Opportunity_Sales_Validation),
+  RecordType.DeveloperName = "Enterprise",
+  NOT(ISNEW()),
+  ISCHANGED(StageName),
+  OR(
+    ISPICKVAL(StageName, "Propose"),
+    ISPICKVAL(StageName, "Negotiate"),
+    ISPICKVAL(StageName, "Closed Won")
+  ),
+  NOT(HasOpportunityLineItem)
+)</errorConditionFormula>
+    <errorDisplayField>StageName</errorDisplayField>
+    <errorMessage>Add at least one product before moving this opportunity to Propose. Use the Products related list to add a line from the price book, then change the Stage.</errorMessage>
+</ValidationRule>
+```
+
+`errorDisplayField` is `StageName` and not a product field, because `StageName` is the field the
+user just changed and the only field in scope that is on every Opportunity layout. The message is
+written to read correctly at the top of the page too, since `errorDisplayField` relocates
+silently when the field leaves a layout — see `references/gotchas.md`.
+
+### Related coverage
+
+- `references/gotchas.md`, "HasOpportunityLineItem Is Platform-Set…" — read-only semantics,
+  what it cannot do, and the corpus conflict over whether a line-item edit re-fires this rule.
+- `skills/admin/pipeline-review-design/references/gotchas.md:91` — the same field as a **report
+  column**. It is filterable, so a pipeline review can list the deals this rule would now block
+  before the rule is switched on. That is the cleanup query for the "does the data already
+  violate this rule today?" question in `SKILL.md`.
+- `skills/admin/products-and-pricebooks/references/gotchas.md` — the catalog side: do not build a
+  second source of truth for a fact the header already holds.

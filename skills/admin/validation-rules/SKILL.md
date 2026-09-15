@@ -1,6 +1,6 @@
 ---
 name: validation-rules
-description: "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality', 'errorConditionFormula', 'errorDisplayField', 'errorMessage 255 characters', 'ValidationRule metadata', 'validationRule-meta.xml', 'deploy validation rule inactive', 'bypass custom permission', 'FIELD_CUSTOM_VALIDATION_EXCEPTION', 'validation rule on custom metadata type', 'compound field validation rule'. NOT for Flow-based validation — use admin/flow-for-admins for that."
+description: "Use when writing, auditing, or troubleshooting Salesforce Validation Rules. Triggers: 'validation rule', 'required field formula', 'rule fires unexpectedly', 'integration failing validation', 'data quality', 'errorConditionFormula', 'errorDisplayField', 'errorMessage 255 characters', 'ValidationRule metadata', 'validationRule-meta.xml', 'deploy validation rule inactive', 'bypass custom permission', 'FIELD_CUSTOM_VALIDATION_EXCEPTION', 'validation rule on custom metadata type', 'compound field validation rule', 'require at least one child record before a stage', 'HasOpportunityLineItem'. NOT for Flow-based validation — use admin/flow-for-admins for that."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -27,12 +27,14 @@ triggers:
   - "write an apex test that proves the validation rule fires"
   - "cant write a validation rule on the billing address"
   - "check whether a validation rule formula references a field that does not exist"
+  - "require at least one opportunity product before the stage can advance"
+  - "validation rule to check the opportunity has products"
 inputs: ["business rule", "exception path", "integration constraints", "object and field API names", "record types in scope", "which users or integrations must bypass"]
 outputs: ["validation design guidance", "rule review findings", "bypass recommendations", "deployable ValidationRule XML plus package.xml", "Apex tests that assert the rule fires and that the bypass suppresses it"]
 dependencies: []
-version: 1.1.4
+version: 1.2.0
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-09-15
 ---
 
 You are a Salesforce Admin expert in data quality enforcement. Your goal is to write validation rules that enforce the right business rules, fail gracefully for legitimate edge cases, and never block integrations or data migrations unexpectedly.
@@ -61,6 +63,7 @@ Ask these before writing a formula. Each one traces to a behaviour in `reference
 | "Does the message fit in 255 characters and name both the problem and the fix?" | `errorMessage` is capped at 255 characters; a rule that can't say what to do generates a support ticket per occurrence | The final message text, not a placeholder to be filled in at deploy time |
 | "Does the data already violate this rule today?" | Validation rules fire on update as well as insert, so an active rule on dirty data blocks every edit of every violating record except the one that happens to satisfy the rule | A decision to deploy with `active=false` and a named cleanup owner, or a count proving the data is clean |
 | "Does the formula touch an address, a person name, or a dependent picklist?" | Validation rules can't use compound fields as of API version 20.0 | A rewrite against the component fields (`BillingStreet`, `BillingCity`, `FirstName`, `LastName`) before anyone starts typing |
+| "When the rule says 'this deal has products', which stages are gated, and may a deal be *created* already at one of them?" | `HasOpportunityLineItem` is false on every Opportunity insert — a line item is inserted *for* an Opportunity that already exists — so an `ISNEW()` fire condition forbids creation at that stage instead of gating it, and `NOT(ISNEW())` lets a record inserted straight at Propose through until its next stage change | The stage list, whether `Closed Lost` is in it, and an explicit yes/no on direct creation at a gated stage — see Gotcha 15 in `references/gotchas.md` |
 | "Does the formula call `ISBLANK(` or `ISNULL(` directly on a picklist field?" | The org rejects it at deploy time — `ISBLANK`/`ISNULL` don't accept a picklist argument directly; only `TEXT(<picklist>)` does. Proven live via `sf project deploy start --dry-run` (API 67.0, 2026-09-12): "Field StageName is a picklist field. Picklist fields are only supported in certain functions." | `NOT(ISBLANK(TEXT(Field__c)))` instead of `NOT(ISBLANK(Field__c))` — see Gotcha 14 in `references/gotchas.md` |
 
 What a proper configuration adds over just writing the formula: the rule is scoped to the object where the edit actually happens, carries a bypass that data loads and integrations can use without anyone deactivating anything in production, attaches its error to a field that exists on the layout, and ships inactive when the existing data can't yet satisfy it.
@@ -203,7 +206,7 @@ Two version gates that change what you can write: as of **API 20.0** rules can't
 2. **Retrieve what exists.** `sf project retrieve start --metadata "CustomObject:<Object>"` — never a `*` wildcard on `ValidationRule`, which the type does not support. Read the existing `<validationRules>` elements for a rule that already covers this, and for a rule that contradicts it.
 3. **Compose the formula in the canonical order** — bypass, then relevance gate, then business condition — from `templates/admin/validation-rule-patterns.md`. The formula describes the **invalid** state; it fires when it evaluates to TRUE.
 4. **Write the XML** from `references/metadata-examples.md`: `active`, `description` (business justification and bypass name), `errorConditionFormula`, `errorDisplayField`, `errorMessage` under 255 characters. Set `active=false` if existing data would violate the rule.
-5. **Lint it.** `python3 scripts/check_validation_rules.py --manifest-dir force-app/main/default/objects` — it exits 1 on CRITICAL/HIGH findings (empty or over-long error messages, `$Profile.Name` gating, duplicate `fullName`, unguarded `PRIORVALUE`, `ISBLANK`/`ISNULL` applied directly to a picklist field — VR-PICK-01) and reports MEDIUM/LOW/REVIEW advisories (picklist blank guards, missing `$Permission` bypass) without failing; add `--strict` to fail on any finding. A `--manifest-dir` that does not exist is an ERROR (exit 1, not promotable); one that exists but carries no validation-rule metadata is a REVIEW advisory (exit 0; `--strict` promotes it to exit 1) rather than a hard failure — an object with no rules yet is not a defect. When the same scan also carries `objects/<Object>/fields/*.field-meta.xml` and `customPermissions/*.customPermission-meta.xml`, it additionally resolves `__c` field tokens, `errorDisplayField`, and `$Permission` names against that inventory (VR-REF-01/VR-REF-02, both HIGH). Run it over the whole build/package tree — not one step's directory — or every reference comes back as an advisory INFO instead of a real answer; standard fields are never flagged either way.
+5. **Lint it.** `python3 scripts/check_validation_rules.py --manifest-dir force-app/main/default/objects` — it exits 1 on CRITICAL/HIGH findings (empty or over-long error messages, `$Profile.Name` gating, duplicate `fullName`, unguarded `PRIORVALUE`, `ISBLANK`/`ISNULL` applied directly to a picklist field — VR-PICK-01) and reports MEDIUM/LOW/REVIEW advisories (picklist blank guards, missing `$Permission` bypass) and INFO advisories (`VR-OPP-01` — an Opportunity rule counting line items by hand where `HasOpportunityLineItem` would do) without failing; add `--strict` to fail on any finding. A `--manifest-dir` that does not exist is an ERROR (exit 1, not promotable); one that exists but carries no validation-rule metadata is a REVIEW advisory (exit 0; `--strict` promotes it to exit 1) rather than a hard failure — an object with no rules yet is not a defect. When the same scan also carries `objects/<Object>/fields/*.field-meta.xml` and `customPermissions/*.customPermission-meta.xml`, it additionally resolves `__c` field tokens, `errorDisplayField`, and `$Permission` names against that inventory (VR-REF-01/VR-REF-02, both HIGH). Run it over the whole build/package tree — not one step's directory — or every reference comes back as an advisory INFO instead of a real answer; standard fields are never flagged either way.
 6. **Write both tests** from `references/metadata-examples.md`: one that asserts the rule fires and attaches to the right field via `Database.Error.getFields()`, and one under `System.runAs` that asserts the bypass permission suppresses it. Without the second, nothing catches the removal of the bypass clause.
 7. **Validate-only, then deploy, then verify.** `sf project deploy validate` proves the formula compiles; the Tooling API query in `references/metadata-examples.md` proves the rules landed with the intended `Active` state. Record the rule in `templates/validation-rule-template.md` so the next admin knows why it exists.
 
@@ -220,6 +223,7 @@ Two version gates that change what you can write: as of **API 20.0** rules can't
 | Rule order is undefined | Multiple validation rules on the same object can fire in any order. Don't write rules that depend on another rule's outcome. They're evaluated independently. |
 | Blank vs null in formula fields | `ISBLANK(Field__c)` returns TRUE for both blank and null text fields. For number/currency fields, a field with value 0 is NOT blank. `ISNULL(NumberField__c)` catches nulls but not 0. This distinction causes bugs. |
 | Rules fire during data loads | Whether using Data Loader, Data Import Wizard, or API bulk jobs, validation rules fire. Always have a bypass for data migration users. |
+| A child-record count you are about to build may already be a standard field | Opportunity carries `HasOpportunityLineItem`, a platform-set read-only boolean — "has products" needs no roll-up, formula field or trigger. It is false on every insert, which changes how the rule must be guarded. See Gotcha 15 in `references/gotchas.md` and the worked example in `references/examples.md`. |
 | Step-scope lint cannot resolve field tokens — declare the checker at build scope | `check_validation_rules.py`'s VR-REF-01/VR-REF-02 checks need `objects/<Object>/fields/*.field-meta.xml` and `customPermissions/*.customPermission-meta.xml` in the same scan to resolve `__c` field tokens, `errorDisplayField`, and `$Permission` names. Point it at one build step's directory (where the rule lives but the field/permission it depends on doesn't) and every reference comes back as an advisory INFO, not a pass — declare the checker's acceptance test at build/package scope, not step scope. |
 
 ## Proactive Triggers
@@ -234,6 +238,7 @@ Surface these WITHOUT being asked:
 | No bypass mechanism for integration or admin user | Flag: this will block every data migration and every API call that doesn't meet the condition. Add a Custom Permission bypass before go-live. |
 | Error message is a single word or generic phrase | Rewrite it. A bad error message is a support ticket waiting to happen. |
 | PRIORVALUE used without `NOT(ISNEW())` guard | Flag immediately: this formula will behave unexpectedly on record creation. |
+| Requirement is "record must have at least one child before stage X" | Check the parent's standard fields before proposing a roll-up, formula field or trigger. On Opportunity the answer is `NOT(HasOpportunityLineItem)`; flag the guards it needs (`NOT(ISNEW())` + `ISCHANGED`) in the same breath. |
 
 ## Output Artifacts
 
@@ -249,8 +254,8 @@ Surface these WITHOUT being asked:
 | File | Read it when |
 |---|---|
 | `references/metadata-examples.md` | Writing deployable `ValidationRule` XML (both metadata and DX source shapes), the package.xml, the `sf retrieve`/`deploy`/`validate` commands, the Tooling API verification query, and the two Apex tests |
-| `references/gotchas.md` | Fourteen platform behaviours that make a correct-looking rule not run, not block, not compile, or not display where you put it |
-| `references/examples.md` | Formula patterns by requirement shape: conditional-required, date-in-future, record-type-scoped, cross-object, bypass |
+| `references/gotchas.md` | Fifteen platform behaviours that make a correct-looking rule not run, not block, not compile, or not display where you put it |
+| `references/examples.md` | Formula patterns by requirement shape: conditional-required, date-in-future, record-type-scoped, cross-object, bypass, and "at least one child record" via a standard platform boolean |
 | `references/llm-anti-patterns.md` | Self-checking generated output — inverted formulas, missing bypass, and the rest |
 | `references/well-architected.md` | Pillar mapping, governance and review cadence, and the source list behind every claim in this package |
 | `templates/validation-rule-template.md` | Documenting a shipped rule: justification, scope, bypass, test scenarios, change history |
@@ -266,4 +271,5 @@ Surface these WITHOUT being asked:
 - **flow/record-triggered-flow-patterns**: Use when the check belongs on a child object, or when a before-save flow should repair the data at step 3 instead of a rule rejecting it at step 5. NOT for declarative field-level checks on the same record.
 - **admin/permission-sets-vs-profiles**: Use when the bypass model depends on Custom Permissions or persona-based access design. NOT for writing the validation formula itself.
 - **data/data-loader-and-tools**: Use when planning the load that a rule will block, and when deciding whether the bypass permission is assigned for the window or permanently. NOT for rule authoring.
+- **admin/products-and-pricebooks**: Use when the rule gates on whether an Opportunity has product lines, and you need the catalog side — price books, `PricebookEntry`, why a line item can exist at all. NOT for the formula itself.
 - **apex/apex-stripinaccessible-and-fls-enforcement**: Use when you need to understand how hidden or inaccessible fields still affect saves and Apex enforcement. NOT for declarative rule design.

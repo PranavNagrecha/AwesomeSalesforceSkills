@@ -85,3 +85,37 @@ When Revenue or Quantity Schedules are enabled and Collaborative Forecasting is 
 - If schedules are enabled but the forecast type is still set to "Opportunity," schedule data is completely invisible to forecasts.
 
 **Why it matters:** Finance teams often expect both views simultaneously. The forecast type must be set deliberately. Changing the forecast object after forecast data exists requires a full forecast history rebuild.
+
+---
+
+## Gotcha 8: The Opportunity Header Already Knows Whether It Has Products — Do Not Model It Again
+
+The first request that follows a catalog rollout is almost always a gate: "a deal cannot reach
+Propose without at least one product line." The reflex answer is a roll-up summary counting
+`OpportunityLineItem` onto Opportunity, or a formula field, or a trigger maintaining a counter.
+None is needed. Opportunity ships the fact as a standard field:
+
+> `HasOpportunityLineItem` — Type `boolean`; Properties `Defaulted on create, Filter, Group,
+> Sort`. "Read-only field that indicates whether the opportunity has associated line items. A
+> value of `true` means that Opportunity line items have been created for the opportunity."
+> — Object Reference for the Salesforce Platform, Opportunity
+> (`knowledge/imports/salesforce-channel-revenue-management.md:3911-3918`); set to true "when an
+> `OpportunityLineItem` is inserted for that Opportunity" (same guide, line 4696).
+
+**Why it matters:** a hand-built count is a second source of truth for a fact the platform
+already owns and maintains for free. It costs a field, a deployment and — if the object
+relationship will not carry a roll-up summary — Apex that has to stay bulk-safe forever. It also
+fails differently from the standard field, so the day the two disagree nobody knows which is
+right.
+
+**What it does *not* replace:** `Quantity`, `UnitPrice`, `TotalPrice` and `ServiceDate` are
+`OpportunityLineItem` fields. The header boolean answers "are there any lines"; it says nothing
+about what is in them. Per-line invariants ("every line has a positive quantity", "no line is
+priced below the price-book floor") belong on `OpportunityLineItem`, where the rep's edit lands.
+
+**Where to go next:** the formula, its two mandatory guards (`HasOpportunityLineItem` is false on
+every insert, so an `ISNEW()` fire condition forbids record creation rather than gating it), the
+deployable XML and the unresolved question of whether deleting the last line item re-fires the
+rule are all in `skills/admin/validation-rules` — `references/examples.md`, "At Least One
+Opportunity Product Before a Late Stage", and `references/gotchas.md` Gotcha 15. For the
+reporting view of the same field, see `skills/admin/pipeline-review-design/references/gotchas.md:91`.
