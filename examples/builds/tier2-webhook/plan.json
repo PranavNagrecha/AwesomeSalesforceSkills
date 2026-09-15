@@ -1201,7 +1201,14 @@
           "expected": "A reviewer confirms, from the artefacts alone: (a) the deploy order runs ExternalCredential, then NamedCredential, then PermissionSet, then the object and field metadata, then Apex; (b) the build-level package.xml names every ApexClass and ApexTrigger file emitted by M1-S03 and M1-S04 and every metadata member emitted by M1-S01 and M1-S02, with no member lacking a file and no file lacking a member; (c) the deploy-order note states the two steps no deploy performs - a human entering the API key against the OnCall_Tool_EC principal in Setup, and assigning Tier2_Webhook_Admin to the assignee set decision D14 defines."
         }
       ],
-      "report_path": "reports/MILESTONE-M1-REPORT.md"
+      "report_path": "reports/MILESTONE-M1-REPORT.md",
+      "reverifications": [
+        {
+          "at": "2026-09-15T19:09:34Z",
+          "verdict": "verified",
+          "report_path": "reports/MILESTONE-M1-REPORT.md"
+        }
+      ]
     }
   ],
   "steps": [

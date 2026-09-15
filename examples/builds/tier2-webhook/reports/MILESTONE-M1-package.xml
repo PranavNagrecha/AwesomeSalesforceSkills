@@ -30,21 +30,19 @@
         <name>NamedCredential</name>
     </types>
     <types>
-        <members>Tier2_Webhook_Admin</members>
-        <name>PermissionSet</name>
-    </types>
-    <types>
         <members>CaseTriggerHandler</members>
         <members>IntegrationFailureResendTest</members>
         <members>IntegrationFailureTriggerHandler</members>
         <members>MockHttpResponseGenerator</members>
         <members>TestDataFactory</members>
+        <members>TestUserFactory</members>
         <members>Tier2ChannelHealthQueueable</members>
         <members>Tier2ChannelHealthSchedulable</members>
         <members>Tier2ChannelHealthTest</members>
         <members>Tier2EscalationService</members>
         <members>Tier2EscalationServiceTest</members>
         <members>Tier2WebhookFinalizer</members>
+        <members>Tier2WebhookFinalizerTest</members>
         <members>Tier2WebhookQueueable</members>
         <members>Tier2WebhookQueueableTest</members>
         <name>ApexClass</name>
@@ -53,6 +51,10 @@
         <members>CaseTrigger</members>
         <members>IntegrationFailureTrigger</members>
         <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Tier2_Webhook_Admin</members>
+        <name>PermissionSet</name>
     </types>
     <version>67.0</version>
 </Package>

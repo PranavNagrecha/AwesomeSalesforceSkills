@@ -1,0 +1,334 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-15T19-09-47Z",
+  "report_path": ".sfskills/builds/tier2-webhook/envelopes/M1/2026-09-15T19-09-47Z.md",
+  "envelope_path": ".sfskills/builds/tier2-webhook/envelopes/M1/2026-09-15T19-09-47Z.json",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/tier2-webhook",
+    "milestone_id": "M1",
+    "approver_name": null,
+    "scale": "feature",
+    "build_mode": "design-only",
+    "build_status_at_start": "done",
+    "milestone_status_at_start": "accepted",
+    "milestone_gate_status_at_start": "approved",
+    "milestone_gate_resigned_at": "2026-09-12T18:35:37Z",
+    "reason_for_this_run": "re-verification requested after six repair rounds (S2-F-11..S2-F-16) landed post-dating the 33-member reports/MILESTONE-M1-package.xml and the 2026-09-12T12-47-33Z acceptance report"
+  },
+  "summary": "Re-verification of milestone M1 (tier2-webhook), already accepted and gated approved on 2026-09-12T18:35:37Z. Regenerated reports/MILESTONE-M1-package.xml from the current artefacts: 35 members (up from 33), byte-identical to artefacts/M1-S05/package.xml, zero drift. Re-ran the milestone's three declared checker acceptance tests: all three exit 0, same shape of findings as the original run (one new INFO on the permission set's now-longer description; 4 WARN vs the declared description's 2, per S2-F-09, unchanged). Re-ran check_rtm.py: 16 rows, 0 gaps, 0 orphans, unchanged. Independently re-derived run 13's raw mock-deploy coverage data rather than trusting the decision log's prose: 37/37 tests passed, aggregate 89.9%, and every one of the nine covered classes individually clears the 75% floor - this closes finding S2-F-06 (no Apex test had ever executed), which was open at the time of the original report. Re-checked each of S2-F-11..S2-F-16's claimed closures directly against the current artefacts (TestUserFactory + runAs in all four affected test classes, TestDataFactory's null-guarded lookup, the new Tier2_Escalation__e permission grant, Tier2WebhookFinalizerTest present and covered, the retry test's 2xx mock, Tier2EscalationServiceTest's nine methods) - all six hold. S2-F-07 and S2-F-08 (P2, permission-set full-replace unchecked against target; feature cannot deploy dark) remain open, untouched by the repair wave, exactly as they were when the human accepted the milestone. The one deployment-order item (plan.json's own stale M1-S05 step input sequencing PermissionSet before the fields it grants) is unchanged and still resolved as safe. Verdict: ready-with-findings, same as the original pass. No new finding raised by this pass. Recorded via set-milestone, which left milestones[].status at 'accepted' and appended one reverifications[] entry rather than transitioning status, per the CLI's own accepted-milestone handling (F-12) - a code path this agent's own AGENT.md does not document. No gate was touched, nothing was deployed, and this run wrote only under .sfskills/builds/tier2-webhook/.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "AGENT.md Step 10 MEDIUM, same letter as the original run but a narrower reason: the four references that resolve only against the target org (Tier_2_Engineering queue by DeveloperName, the org-wide sender, the scheduling user's PermissionSetAssignment read, the ApiKey half of the $Credential formula) are still unclassifiable. The original run's other MEDIUM pressure - S2-F-06, no Apex test had ever executed - is now closed by run 13's evidence, independently re-derived here. Not LOW: every declared checker exists and ran, no artefact directory is empty, no step is blocked, and the earlier-milestone inventory step is n/a (M1 is the only milestone).",
+  "dimensions_compared": [
+    "reference-resolution",
+    "merged-manifest",
+    "milestone-acceptance-tests",
+    "manual-checklist",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "deploy-order",
+      "state": "partial",
+      "reason": "Same gap as the original run: at scale: feature the workbook is optional and was skipped build-wide, so AGENT.md Step 4's declared source (the doc keeper's recorded workbook-row position) does not exist. Position of record is still each step's deploy-order.md and the compiled table in artefacts/M1-S05/deploy-order.md section 2 - sufficient to re-check every dependency, not the artefact-by-artefact recorded-position cross-check the step names."
+    }
+  ],
+  "findings": [
+    {
+      "id": "S2-F-06",
+      "severity": "P1",
+      "title": "CLOSED this pass: Apex tests have now executed, with per-class coverage independently re-derived above the 75% floor",
+      "detail": "Open at the time of the 2026-09-12T12-47-33Z report (mock-deploy run 5 carried runTestsEnabled: false). reports/mock-deploy/2026-09-12T18-21-32Z/result.json (run 13, MANIFEST mode, --test-level RunSpecifiedTests) records numTestsRun 37, numFailures 0, and nine classes with coverage data; this pass summed each class's numLocations/numLocationsNotCovered directly from the raw JSON rather than reading the summary line, and every class individually clears 75% (lowest: CaseTriggerHandler 83.7%, Tier2ChannelHealthQueueable 84%).",
+      "evidence": {
+        "file": ".sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T18-21-32Z/result.json",
+        "numTestsRun": 37,
+        "numFailures": 0,
+        "aggregate_coverage": "89.9%",
+        "per_class_minimum": "83.7% (CaseTriggerHandler)"
+      },
+      "recommendation": "None outstanding for this milestone. The production-validate step S2-F-06 originally recommended (sf project deploy validate --test-level RunLocalTests) is still the human's step before an actual production deploy, since run 13 is a mock/sandbox validation."
+    },
+    {
+      "id": "S2-F-07",
+      "severity": "P2",
+      "title": "Still open: PermissionSet full-replace was never checked against the target org",
+      "detail": "Unaffected by the repair wave. Tier2_Webhook_Admin's shape changed (the S2-F-13 grant) but the underlying risk - a PermissionSet deploy fully replaces the target record from API v40+, and no step confirmed the target holds no set of that name - is unchanged.",
+      "evidence": {
+        "artefact": ".sfskills/builds/tier2-webhook/artefacts/M1-S02/permissionsets/Tier2_Webhook_Admin.permissionset-meta.xml",
+        "decisions_md_search": "no S2-F-07 closure entry found"
+      },
+      "recommendation": "Unchanged from the original report: retrieve PermissionSet:Tier2_Webhook_Admin from the target before deploying; an empty result clears it."
+    },
+    {
+      "id": "S2-F-08",
+      "severity": "P2",
+      "title": "Still open: the feature cannot be deployed dark",
+      "detail": "Both triggers still declare <status>Active</status>; none of the six repairs touched trigger activation state or added a kill switch.",
+      "evidence": {
+        "files": [
+          ".sfskills/builds/tier2-webhook/artefacts/M1-S03/triggers/CaseTrigger.trigger-meta.xml",
+          ".sfskills/builds/tier2-webhook/artefacts/M1-S03/triggers/IntegrationFailureTrigger.trigger-meta.xml"
+        ]
+      },
+      "recommendation": "Unchanged from the original report: deploy CaseTrigger Inactive and activate after the manual credential/permission-set steps, or deploy off-hours."
+    },
+    {
+      "id": "S2-F-09",
+      "severity": "INFO",
+      "title": "Still applies: milestone acceptance test 3's description undercounts its own findings, now 4 WARN against a manifest that grew",
+      "detail": "check_deployment_manifest.py now scans 62 files (was 58) and still produces 4 WARN (ExternalCredential/NamedCredential named once each in M1-S02/package.xml and M1-S05/package.xml). The declared description still says 'exactly those two WARN findings'. Exit code 0 either way.",
+      "evidence": {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+        "files_scanned": 62,
+        "warn_count": 4,
+        "exit_code": 0
+      },
+      "recommendation": "Prose-only fix to the acceptance test's description; unchanged from the original report."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "repair-quality",
+      "observation": "Each of the six repair-wave closures (S2-F-11..S2-F-16) was re-checked directly against the current artefacts rather than trusted from decisions.md, and all six held on independent inspection.",
+      "evidence": {
+        "method": "grep + line read of the four affected test classes, TestDataFactory.cls, the permission set, and Tier2EscalationServiceTest.cls",
+        "closures_rechecked": 6,
+        "closures_holding": 6
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "deployment",
+      "observation": "The regenerated milestone manifest is byte-identical to artefacts/M1-S05/package.xml, not merely member-for-member equal, confirming the build-level manifest and the merge produce the same file independent of which one is treated as authoritative.",
+      "evidence": {
+        "method": "diff with no output",
+        "members": 35
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "agent-playbook",
+      "observation": "agents/milestone-verifier/AGENT.md Step 9 documents only the first-verdict set-milestone shape and has no branch for a milestone already accepted; the actual behaviour (append to reverifications[], leave status untouched) lives only in scripts/build_plan.py's cmd_set_milestone and its F-12 comment, undocumented in the agent's own playbook.",
+      "evidence": {
+        "file": "scripts/build_plan.py",
+        "function": "cmd_set_milestone",
+        "comment_cited": "F-12"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "agent-playbook",
+      "observation": "standards/build-orchestration.md contains no re-verification concept anywhere in the document (grepped for 'reverif' and 'already approved', zero hits), so a caller relying on that standard alone would not know this scenario is supported at all.",
+      "evidence": {
+        "file": "standards/build-orchestration.md",
+        "grep_terms": ["reverif", "already approved"],
+        "hits": 0
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "agent-playbook",
+      "observation": "AGENT.md Step 1's precondition table lists the in-progress statuses that refuse a run and the blocked-with-reason exception, but has no row for a milestone already at 'accepted' - this run proceeded on the reading that the explicit user ask plus the CLI's own reverifications[] support put it in scope, not on an unambiguous reading of Step 1 itself.",
+      "evidence": {
+        "section": "agents/milestone-verifier/AGENT.md Step 1"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "deployment",
+      "observation": "deployment-risk-scorer would score the now-35-member manifest against a real org, which this design-only build still cannot produce for itself.",
+      "evidence": {
+        "manifest": "reports/MILESTONE-M1-package.xml",
+        "members": 35
+      },
+      "suggested_followup_agent": "deployment-risk-scorer",
+      "followup_reason": "It scores a change set against a live org; the 35-member manifest is ready to hand it, and S2-F-07/S2-F-08 are exactly the pre-deploy questions it would sharpen."
+    }
+  ],
+  "extensions": {
+    "milestone": "M1",
+    "report_path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-REPORT.md",
+    "merged_manifest_path": ".sfskills/builds/tier2-webhook/reports/MILESTONE-M1-package.xml",
+    "passed": false,
+    "verdict": "ready-with-findings",
+    "scale": "feature",
+    "re_verification_of_accepted_milestone": true,
+    "milestone_status_before_and_after": "accepted (unchanged)",
+    "gate_status_before_and_after": "approved (unchanged, re-signed 2026-09-12T18:35:37Z; untouched by this run)",
+    "steps": [
+      {"id": "M1-S01", "status": "documented"},
+      {"id": "M1-S02", "status": "documented", "human_gate": true, "gate": "approved"},
+      {"id": "M1-S03", "status": "documented"},
+      {"id": "M1-S04", "status": "documented"},
+      {"id": "M1-S05", "status": "documented"}
+    ],
+    "blocked_steps": [],
+    "reference_resolution_delta": [
+      {
+        "class": "permission-set object grants",
+        "instances_before": 1,
+        "instances_now": 2,
+        "resolved": 2,
+        "unresolved": 0,
+        "note": "new: Tier2_Escalation__e Create/Read grant (D-M1S02-07, closes S2-F-13); resolves against the M1-S01 CustomObject inventory"
+      }
+    ],
+    "reference_resolution_unchanged_from_original": [
+      "permission-set field grants (12/12)",
+      "apex custom object/field symbols (18/18, TestUserFactory and Tier2WebhookFinalizerTest introduce no new symbol)",
+      "external-credential principal grant (1/1)",
+      "platform-event payload fields (5/5)",
+      "restricted picklist literals (7/7)",
+      "callout: name to Named Credential (1/1)",
+      "Named Credential to External Credential (1/1)"
+    ],
+    "deploy_order_verdict": "unchanged: consistent in the artefacts; the one backwards dependency remains in plan.json steps[M1-S05].inputs.deploy_order (D-M1S05-02), still resolved as safe because the merged manifest deploys as one request and Tier2_Webhook_Admin carries no classAccesses element",
+    "merged_manifest": {
+      "types": 7,
+      "members": 35,
+      "members_before": 33,
+      "new_members": ["TestUserFactory", "Tier2WebhookFinalizerTest"],
+      "version": "67.0",
+      "version_conflict": false,
+      "member_counts": {
+        "CustomObject": 2,
+        "CustomField": 13,
+        "ExternalCredential": 1,
+        "NamedCredential": 1,
+        "ApexClass": 15,
+        "ApexTrigger": 2,
+        "PermissionSet": 1
+      },
+      "drift_vs_M1_S05_package_xml": "none - byte-identical, re-confirmed by diff with no output",
+      "bidirectional_check": "54 defining files, 35 members, no member without a file, no file without a member, no duplicate, no wildcard",
+      "members_in_more_than_one_step_manifest": 18
+    },
+    "acceptance_tests": [
+      {
+        "type": "checker",
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "output": "1 WARN (modifyAllRecords=true on Integration_Failure__c, D12, unchanged) + 1 new INFO (PermissionSet description now 224 characters, approaching the 255-character limit, from the S2-F-13 description text)"
+      },
+      {
+        "type": "checker",
+        "command": "python3 skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "output": "OK: no Named Credential findings. (unchanged)"
+      },
+      {
+        "type": "checker",
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass",
+        "output": "score 80, 4 WARN, 0 blocking, 62 files scanned (was 58); declared description still says two WARNs, S2-F-09 unchanged"
+      },
+      {
+        "type": "checker_not_declared_run_as_support",
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts",
+        "exit_code": 0,
+        "output": "16 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings (unchanged)"
+      },
+      {
+        "type": "manual",
+        "verdict": "collected to the checklist (section 7 of the report, with section 15.7's tick-condition addendum), not ticked by this agent"
+      }
+    ],
+    "mock_deploy_run_13_rederived": {
+      "source": ".sfskills/builds/tier2-webhook/reports/mock-deploy/2026-09-12T18-21-32Z/result.json",
+      "checkOnly": true,
+      "runTestsEnabled": true,
+      "testLevel_declared_in_log": "RunSpecifiedTests",
+      "numTestsRun": 37,
+      "numFailures": 0,
+      "per_class_coverage_pct": {
+        "CaseTrigger": 100.0,
+        "Tier2ChannelHealthSchedulable": 100.0,
+        "Tier2ChannelHealthQueueable": 84.0,
+        "IntegrationFailureTrigger": 100.0,
+        "CaseTriggerHandler": 83.7,
+        "IntegrationFailureTriggerHandler": 84.8,
+        "Tier2WebhookQueueable": 91.3,
+        "Tier2EscalationService": 97.6,
+        "Tier2WebhookFinalizer": 96.1
+      },
+      "aggregate_coverage_pct": 89.9,
+      "all_classes_clear_75_percent": true
+    },
+    "s2_f_11_to_16_recheck": [
+      {"id": "S2-F-11", "closure_holds": true, "evidence": "TestUserFactory + System.runAs present in Tier2EscalationServiceTest, Tier2WebhookQueueableTest, IntegrationFailureResendTest, Tier2ChannelHealthTest"},
+      {"id": "S2-F-12", "closure_holds": true, "evidence": "TestDataFactory.cls: AccountId set only inside `if (accountId != null)` in all three record builders"},
+      {"id": "S2-F-13", "closure_holds": true, "evidence": "Tier2_Webhook_Admin has a second objectPermissions block granting Create/Read on Tier2_Escalation__e"},
+      {"id": "S2-F-14", "closure_holds": true, "evidence": "Tier2WebhookFinalizerTest.cls present, shipped as the 15th ApexClass member, own coverage 96.1% in run 13"},
+      {"id": "S2-F-15", "closure_holds": true, "evidence": "Tier2WebhookFinalizerTest.cls line 236 registers a 200 mock ahead of the retry re-enqueue boundary"},
+      {"id": "S2-F-16", "closure_holds": true, "evidence": "Tier2EscalationServiceTest.cls carries 9 @isTest methods; per-class coverage 97.6% in run 13"}
+    ],
+    "manual_checklist_delta": [
+      "Line 2 (M1-S02) tick condition (d) widened to also require the Tier2_Escalation__e objectPermissions row (allowCreate/allowRead true, allowEdit/allowDelete/modifyAllRecords/viewAllRecords false) - see report section 15.7. Lines 1, 3, 4, 5, 6 unchanged and re-confirmed tickable."
+    ],
+    "requirement_closure": {
+      "rows": 16,
+      "ids": "REQ-001..REQ-016",
+      "status": "In UAT",
+      "released": 0,
+      "open": 0,
+      "coverage_gaps": 0,
+      "orphans": 0,
+      "checker": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts",
+      "exit_code": 0,
+      "note": "unchanged from the original run"
+    },
+    "finding_id_reconciliation": "this pass continues the scenario sequence with no new id (S2-F-06 closed, S2-F-07..S2-F-10 carried forward unchanged); S2-F-11..S2-F-16 were minted by the operator's mock-deploy runs and re-checked, not re-minted, by this pass",
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/tier2-webhook/plan.json M1 --status verified --report-path reports/MILESTONE-M1-REPORT.md",
+    "set_milestone_actual_effect": "milestones[].status stayed 'accepted'; one entry appended to milestones[].reverifications[] ({at: 2026-09-15T19:09:34Z, verdict: verified, report_path: reports/MILESTONE-M1-REPORT.md}); report_path field updated to the same value it already held",
+    "gate_command": null,
+    "gate_command_note": "not printed: milestone:M1 is already approved and this pass found the approval supported by its own cited evidence, so there is no pending approve line to hand the human, and nothing in this pass supports a reject line either",
+    "gate_preconditions_checked": {
+      "plan_gate": "approved",
+      "preceding_milestone_gate": "n/a - M1 is the first and only milestone",
+      "all_steps_documented": true,
+      "blocked_steps_accepted": 0,
+      "milestone_gate_itself": "already approved, re-signed 2026-09-12T18:35:37Z, untouched by this run"
+    },
+    "validate_only_command_optional_human_run": "python3 scripts/mock_deploy.py .sfskills/builds/tier2-webhook/plan.json --org-alias <alias> --milestone M1 --mode manifest",
+    "nothing_deployed": true,
+    "gate_not_approved_by_this_agent": true,
+    "gate_not_touched_by_this_agent": true,
+    "playbook_gaps_this_run_found": [
+      "AGENT.md Step 9 has no branch for a milestone already accepted; the CLI's reverifications[] behaviour (build_plan.py cmd_set_milestone, comment F-12) is undocumented in the agent playbook",
+      "standards/build-orchestration.md has no re-verification concept anywhere (grepped 'reverif' and 'already approved', 0 hits)",
+      "AGENT.md Step 1's precondition table has no row for 'milestone already accepted' - proceeded on the user's explicit ask and the CLI's own support for the scenario",
+      "the Wave 10 generic persistence pair (docs/reports/milestone-verifier/<run_id>.{md,json}) was not written, per this run's explicit build-directory-only instruction; the original 2026-09-12 run also did not write it, so this is a pre-existing gap between DELIVERABLE_CONTRACT.md and this agent's practice, not a new one"
+    ]
+  },
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules: never deploy, never chain, never mutate outside the given paths"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section shape, Process Observations block, confidence rubric, citation schema"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence pair and the atomic-write rule; cited as the standard this run deliberately did not satisfy in full, per the build-directory-only instruction"},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked REFUSAL_OUT_OF_SCOPE and REFUSAL_NEEDS_HUMAN_REVIEW against the precondition and the manifest-version check; neither triggered"},
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "section 2 report-is-written-not-rendered, section 3 gate table and its silence on re-verification, section 3.1 feature tier, section 5 acceptance tests"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "milestone and gate fields read from plan.json"},
+    {"type": "standard", "id": "output-envelope-schema", "path": "agents/_shared/schemas/output-envelope.schema.json", "used_for": "envelope shape, validated by scripts/validate_envelope.py"},
+    {"type": "agent", "id": "milestone-verifier", "path": "agents/milestone-verifier/AGENT.md", "used_for": "this run's own playbook; Step 9's set-milestone shape and Step 10's confidence rubric applied, and its silence on an already-accepted milestone recorded as a playbook gap"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "manifest grammar for the regenerated reports/MILESTONE-M1-package.xml"},
+    {"type": "skill", "id": "devops/permission-set-deployment-ordering", "path": "skills/devops/permission-set-deployment-ordering/SKILL.md", "used_for": "the full-replace semantics behind S2-F-07 and the field-before-permission-set ordering check in section 15.4"},
+    {"type": "skill", "id": "devops/flow-deployment-activation-ordering", "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md", "used_for": "the Apex-trigger-status analogue used to re-confirm S2-F-08's arrival-state finding still holds"},
+    {"type": "skill", "id": "devops/deployment-error-diagnosis", "path": "skills/devops/deployment-error-diagnosis/SKILL.md", "used_for": "confirming the deploy-time error class behind the plan.json ordering item in section 15.4 is unchanged"},
+    {"type": "skill", "id": "devops/pre-deployment-checklist", "path": "skills/devops/pre-deployment-checklist/SKILL.md", "used_for": "the go/no-go framing used to state that S2-F-06's closure is sandbox evidence, not a production go-ahead"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "the tickable-outcome form checked against section 15.7's widened tick condition"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "re-running check_rtm.py rather than reading traceability.md's prose"}
+  ],
+  "followups": [
+    {"agent": "deployment-risk-scorer", "because": "it would score the now-35-member manifest against a real org, which this design-only build still cannot produce for itself, and S2-F-07/S2-F-08 are exactly the pre-deploy questions it would sharpen."}
+  ]
+}

@@ -362,3 +362,240 @@ python3 scripts/build_plan.py gate .sfskills/builds/tier2-webhook/plan.json mile
 `standards/build-orchestration.md` § 3 will check, before writing: `plan` approved (✅), the preceding
 milestone gate approved (✅ n/a — M1 is first), and every step in M1 `documented` or `blocked` with a
 recorded reason (✅ all five `documented`, none blocked). **No blocked step is being accepted.**
+
+---
+
+## 15. Re-verification — 2026-09-15T19-07-06Z
+
+**The `milestone:M1` gate is already `approved`.** It was re-signed (`reject` then `approve`, the
+CLI's only re-sign path) on `2026-09-12T18:35:37Z` and the build's own `status` moved to `done` on
+that same signing. This section does not touch the gate and is not a precondition for one — it is a
+second, independent pass over the evidence the operator's re-sign note cites, run six repair rounds
+(`S2-F-11` … `S2-F-16`, plus the `S2-F-06` closure) after § 1–14 above were written. Nothing here
+supersedes § 1–14; where this pass reaches a different number it says so and keeps both.
+
+### 15.1 Why re-verify an accepted milestone
+
+The re-sign note (`plan.json` `human_gates[]`, `milestone:M1`) states plainly that
+`reports/MILESTONE-M1-package.xml` (33 members, § 5 above) "is stale by two rebuilds and is not
+re-verified (budget) — the build manifest M1-S05 is the release artefact." That is an honest
+disclosure, not a defect, but it means the artefact this agent is the sole writer of was accepted
+into a `done` build without this agent having re-read it. This pass closes that gap.
+
+### 15.2 Merged manifest — regenerated, 35 members, zero drift
+
+`reports/MILESTONE-M1-package.xml` regenerated from the same three step-level fragments as § 5
+(`artefacts/M1-S01/package.xml`, `artefacts/M1-S02/package.xml`, `artefacts/M1-S05/package.xml`),
+same method: union members per type, sort within each `<types>` block, one `<version>` element.
+
+| Type | Members (§ 5, 2026-09-12) | Members (this pass) |
+|---|---|---|
+| `CustomObject` | 2 | 2 |
+| `CustomField` | 13 | 13 |
+| `ExternalCredential` | 1 | 1 |
+| `NamedCredential` | 1 | 1 |
+| `ApexClass` | 13 | **15** (+`TestUserFactory`, +`Tier2WebhookFinalizerTest`) |
+| `ApexTrigger` | 2 | 2 |
+| `PermissionSet` | 1 | 1 |
+| **Total** | **33** | **35** |
+
+- **Drift vs `artefacts/M1-S05/package.xml`: none.** `diff` against the regenerated file is empty —
+  byte-identical, not merely member-for-member equal. This matches the 35-member count `D-M1S05-07`
+  and `reports/MOCK-DEPLOY-M1.md` run 13 already recorded; this pass re-derives it from the artefacts
+  rather than taking the decision log's word for it.
+- **Two-way consistency, re-run over the current tree:** 54 defining files (15 `M1-S01` + 3 `M1-S02` +
+  28 `M1-S03` + 8 `M1-S04`, `.cls`/`.trigger` counted once per class alongside their `-meta.xml`) back
+  35 members with no member lacking a file, no file lacking a member, no duplicate, no wildcard —
+  matching the bidirectional check `D-M1S05-07` recorded, reproduced independently here.
+- **Member collisions: 18** (up from the 18 already reported at 33 members — the two new `ApexClass`
+  members are new *members*, not new collisions, since neither `TestUserFactory` nor
+  `Tier2WebhookFinalizerTest` had a manifest fragment of its own to collide with). Same resolution as
+  § 5: every collision is `M1-S05` aggregating a member already declared by `M1-S01` or `M1-S02`.
+  `TestDataFactory` still appears once, shipped twice (`M1-S03`, `M1-S04`), both copies re-hashed this
+  pass and still identical to each other and to `templates/apex/tests/TestDataFactory.cls`.
+- **Version: no conflict.** All three fragments still declare `67.0`.
+
+### 15.3 Reference resolution — re-checked, one new grant, still zero unresolved
+
+The repair wave added exactly one new cross-artefact reference beyond § 3's table: a second
+`objectPermissions` row on `Tier2_Webhook_Admin.permissionset-meta.xml`, granting Create/Read on
+`Tier2_Escalation__e` (`D-M1S02-07`, closing `S2-F-13`). Re-run against the same resolution method
+as § 3:
+
+| Reference class | Instances now | Resolved | Unresolved | Note |
+|---|---|---|---|---|
+| Permission-set object grants | **2** (was 1) | 2 | 0 | New: `Tier2_Escalation__e`, resolves against the `M1-S01` `CustomObject` inventory. `Integration_Failure__c` grant unchanged |
+| Permission-set field grants | 12 (unchanged) | 12 | 0 | Still excludes `Status__c` — still `<required>true</required>` |
+| Apex → custom object/field symbols | 18 (unchanged) | 18 | 0 | `TestUserFactory.cls` names no custom object or field (only standard `User`, `Group`, `PermissionSetAssignment`); `Tier2WebhookFinalizerTest.cls` names 14 tokens, all already in the § 3 inventory (`Integration_Failure__c` + its 12 fields via the `Case.Tier2_Notified_At__c` alias, no new symbol) |
+
+Everything else in § 3's table is unaffected by the repair wave (no validation rule, assignment rule,
+Flow, entitlement, or layout artefact was touched) and was re-confirmed present and unchanged. **Zero
+unresolved references, before or after the repair wave.**
+
+### 15.4 Deployment order — unchanged conclusion
+
+The one item § 4 raised — `steps[M1-S05].inputs.deploy_order` in `plan.json` still sequences
+`PermissionSet` before the fields it grants, a static plan-input string untouched by any of the six
+repairs — is still present, word for word, and still resolved the same way: safe in the artefacts
+because the merged manifest deploys as one request and `Tier2_Webhook_Admin` carries no
+`classAccesses` element to create a backwards Apex dependency. The new `Tier2_Escalation__e` grant
+does not change this: it is another forward reference into group 1 (§ 4), not a new backwards one.
+No group's position in the sequence changed.
+
+### 15.5 Acceptance tests — re-run against the current artefacts tree
+
+The milestone's three declared `checker` tests, run verbatim from the build directory:
+
+| # | Command | Exit | Verdict |
+|---|---|---|---|
+| 1 | `check_permission_set_architecture.py --manifest-dir artefacts` | **0** | pass — same WARN as § 6 (`modifyAllRecords=true` on `Integration_Failure__c`, D12) plus one new INFO (`PermissionSet description is 224 characters, approaching the 255-character limit` — the S2-F-13 description text pushed it there; not blocking) |
+| 2 | `check_apex_named_credentials_patterns.py --manifest-dir artefacts` | **0** | pass — `OK: no Named Credential findings.` |
+| 3 | `check_deployment_manifest.py --manifest-dir artefacts` | **0** | pass — score 80, **4 WARN** (`ExternalCredential`/`NamedCredential` named once each in `M1-S02/package.xml` and `M1-S05/package.xml`), 0 blocking, 62 manifest/metadata files scanned (was 58 at 33 members — the two new Apex files plus their `-meta.xml` account for the difference). **S2-F-09 still applies unchanged**: the declared description still says "exactly those two WARN findings" |
+
+`check_rtm.py --file traceability.md --manifest-dir artefacts` (verification support, not a declared
+test, same as § 6): **16 rows, 0 coverage gaps, 0 orphans, 0 errors, 0 warnings** — identical to the
+original run.
+
+**What changed since § 6 that this pass can now state as evidence rather than repeat from the note:**
+`reports/MOCK-DEPLOY-M1.md` run 13 (`2026-09-12T18:21:32Z`) is a `MANIFEST`-mode,
+`--test-level RunSpecifiedTests` run against the 35-member manifest: **37 tests run, 37 passed, 0
+failed**, aggregate coverage **89.9%**. Re-derived from `reports/mock-deploy/2026-09-12T18-21-32Z/
+result.json` rather than taken from the summary line: nine classes carry coverage data, and
+**every one individually clears the 75% floor** —
+`Tier2ChannelHealthQueueable` 84/100 (84%), `CaseTriggerHandler` 36/43 (83.7%),
+`IntegrationFailureTriggerHandler` 39/46 (84.8%), `Tier2WebhookQueueable` 167/183 (91.3%),
+`Tier2EscalationService` 40/41 (97.6%), `Tier2WebhookFinalizer` 73/76 (96.1%), `CaseTrigger` 1/1,
+`IntegrationFailureTrigger` 1/1, `Tier2ChannelHealthSchedulable` 2/2 — aggregate 443/493 = 89.9%,
+matching the run's own summary line. **This closes finding `S2-F-06`** (§ 11: "no Apex test has ever
+executed") on evidence this pass re-derived from the raw result, not on the operator's word for it.
+
+### 15.6 Findings — continuing from S2-F-16
+
+`S2-F-11` through `S2-F-16` were minted by the operator's mock-deploy runs 6–11 (`reports/
+MOCK-DEPLOY-M1.md`), not by this agent, and are recorded as closed in `decisions.md` (`D-M1S03-09`,
+`D-M1S03-12`/`D-M1S04-11`, `D-M1S02-07`, `D-M1S03-14`). This pass re-checked each closure against
+the current artefacts directly rather than accepting the decision log's claim:
+
+| id | Closure claimed | Re-checked against | Holds? |
+|---|---|---|---|
+| `S2-F-11` | Tests now run as a `TestUserFactory`-provisioned, permissioned user | `PERM_SET = 'Tier2_Webhook_Admin'` + `System.runAs` present in all four affected test classes (`Tier2EscalationServiceTest`, `Tier2WebhookQueueableTest`, `IntegrationFailureResendTest`, `Tier2ChannelHealthTest`) | **Yes** |
+| `S2-F-12` | `TestDataFactory` sets a lookup only when the caller supplies it | `artefacts/M1-S03/classes/TestDataFactory.cls` lines 37–38, 56–57, 73–74: `if (accountId != null) { …AccountId = accountId; }` in all three record builders | **Yes** |
+| `S2-F-13` | `Tier2_Webhook_Admin` grants Create/Read on `Tier2_Escalation__e` | Second `objectPermissions` block present, `allowCreate=true allowRead=true`, § 15.3 | **Yes** |
+| `S2-F-14` | `Tier2WebhookFinalizerTest` exercises the finalizer's own branches | File present, shipped as a 15th `ApexClass` member (§ 15.2); its own coverage now 96.1% | **Yes** |
+| `S2-F-15` | The re-enqueued job no longer runs to a designed failure inside the test | `Tier2WebhookFinalizerTest.cls` line 236: `Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator().withResponse(200, OK_BODY))` registered ahead of the retry boundary in `transientFailureBelowAttemptCeilingIsRecordedRetryingAndReEnqueuedOnce` | **Yes** |
+| `S2-F-16` | `Tier2EscalationService` gains its own branch tests past the per-class 75% floor | `Tier2EscalationServiceTest.cls` carries 9 `@isTest` methods (was fewer pre-repair); per-class coverage 97.6% in run 13 | **Yes** |
+
+**Findings still open, unaffected by the repair wave — carried forward, not renumbered:**
+
+- **`S2-F-07`** (P2) — `PermissionSet` full-replace against the target org was never checked. Nothing
+  in `decisions.md` closes it; still applies to the now-35-member manifest identically.
+- **`S2-F-08`** (P2) — the feature cannot be deployed dark; both triggers still declare
+  `<status>Active</status>`, and no kill switch was added by any of the six repairs.
+- **`S2-F-09`** (INFO) — still 4 WARN against a description that says 2 (§ 15.5).
+- **`S2-F-10`** (INFO) — the `S2-F-xx` / `S3-F-xx` numbering-namespace note (§ 12) is unaffected.
+
+**No new finding from this pass.** The one candidate considered and rejected: `check_deployment_manifest.py`
+scanned 62 files this run against 58 at 33 members — a pure consequence of two new Apex files (`.cls`
++ `.cls-meta.xml`) entering the tree, not a new condition. `mock_deploy.py`'s own "N total, N+1 ok"
+component-count convention (package.xml counted in "ok" but not "total") is unchanged across every
+run in `reports/mock-deploy/*/summary.md` from run 1 onward, including run 13 — a display convention,
+not a defect surfaced by this pass.
+
+### 15.7 Manual checklist — one line's tick condition widened
+
+§ 7 line 2 (`M1-S02`) is still correct as far as it goes, but `tests/M1-S02/results.json`'s own
+`skipped_manual[]` entry now carries a **RE-TEST NOTE** this report's § 7 table predates: item (d)'s
+tick condition must also cover the new `Tier2_Escalation__e` `objectPermissions` row
+(`allowCreate`/`allowRead` true), per `artefacts/M1-S02/deploy-order.md` § 0b and the permission
+set's own updated `<description>`. Restated here rather than rewriting § 7, which is this agent's own
+prior output and stays as written:
+
+> **§ 7 line 2, superseding tick condition for (d):** `fieldPermissions` carries
+> `Case.Tier2_Notified_At__c` readable+editable and every `Integration_Failure__c` field bar
+> `Status__c`, **and** `objectPermissions` carries `Tier2_Escalation__e` with `allowCreate` and
+> `allowRead` both `true` and `allowEdit`/`allowDelete`/`modifyAllRecords`/`viewAllRecords` all
+> `false`.
+
+The other five checklist lines are unaffected by the repair wave and are re-confirmed tickable as
+written.
+
+### 15.8 Confidence — MEDIUM, unchanged, on a narrower rationale
+
+Per `agents/milestone-verifier/AGENT.md` Step 10, same letter as § 9 but for a different reason now.
+§ 9's MEDIUM rested partly on `S2-F-06` (no Apex test had ever executed) sharpening the letter
+downward; that finding is closed (§ 15.5). What still holds MEDIUM below HIGH is unchanged from § 9
+and untouched by the repair wave: **four references remain unclassifiable** — the `Tier_2_Engineering`
+queue by `DeveloperName`, the org-wide sender, the scheduling user's `PermissionSetAssignment` read,
+and the `ApiKey` half of the `$Credential` formula — each resolving only against the target org.
+Not LOW: every declared checker exists and ran, no artefact directory is empty, no step is blocked.
+Read together with § 9: the repair wave moved this milestone's confidence gap from "behaviourally
+unverified" to "verified in a sandbox, unverified against the four org-only externals" — a real
+improvement that does not cross the HIGH threshold, because the threshold is about reference
+classification, not about how much testing happened.
+
+### 15.9 `set-milestone` on a `done` build, and what the tool does that this AGENT.md does not describe
+
+`agents/milestone-verifier/AGENT.md` Step 9 gives one `set-milestone` invocation shape
+(`--status verified|rejected`) and describes it as recording "a statement about what the checks
+found." It does not describe what happens when the milestone it names is already `accepted` — which
+is exactly this case, and is not this agent's invention to handle silently. Reading
+`scripts/build_plan.py::cmd_set_milestone` before invoking it (required, since the AGENT.md is silent
+here): when `milestone.status == "accepted"` and `--status` is anything else, the command does **not**
+move the milestone away from `accepted` — only a human's `gate … reject` can do that. Instead it
+appends one entry to a `milestones[].reverifications[]` array (`{at, verdict, report_path}`) and
+updates `report_path`, leaving `status: "accepted"` untouched. This is a real, tested code path (its
+inline comment cites `F-12`, "an `accepted` milestone is the human's G3 record"), not a guess this
+report is making about what "if refused" should mean — the command does not refuse, it degrades to a
+recorded re-verification. Invoked below with `--status verified`, matching this pass's verdict
+(§ 15.11).
+
+**What the playbook does not support, stated plainly, per this run's brief:**
+
+- **AGENT.md Step 9 has no branch for a milestone already `accepted`.** It assumes the run it
+  describes is the one that produces the first verdict feeding a still-`pending` gate. The CLI has
+  evidently been extended (`F-12`) to carry a second, later use — recording a re-verification against
+  a decision already on record — but the AGENT.md's prose was not updated alongside it. This report
+  had to read the script source to know what would happen; a caller who only reads AGENT.md would not
+  know `reverifications[]` exists.
+- **`standards/build-orchestration.md` names no re-verification concept at all** — grepped for
+  "reverif" and "already approved" across the whole file, zero hits. § 3's gate table describes one
+  pass from `pending` to `approved`/`rejected` and is silent on a later pass over the same,
+  already-decided milestone.
+- **The Wave 10 generic persistence pair (`docs/reports/milestone-verifier/<run_id>.{md,json}`,
+  `DELIVERABLE_CONTRACT.md`) was not written by this pass**, per this run's explicit instruction to
+  write only inside the build directory. The original 2026-09-12 run did not write it either, so this
+  is a standing gap between the generic contract and this agent's actual practice, not a new
+  deviation introduced here — worth a line rather than a silent repeat.
+- **Step 1's precondition table has no row for "milestone already `accepted`."** It lists the
+  in-progress statuses that block a run and the `blocked`-with-reason exception; an already-`accepted`
+  milestone is neither, and this report proceeded on the reading that verifying an accepted milestone
+  is in scope (the user's explicit ask, and the CLI's own `reverifications[]` support agree) rather
+  than a `REFUSAL_OUT_OF_SCOPE` condition Step 1 lists.
+
+### 15.10 Verdict — this pass
+
+**`ready-with-findings`, unchanged from § 1.** No unresolved reference (§ 15.3), the merged manifest
+rebuilds with zero drift (§ 15.2), all three declared checkers still exit 0 (§ 15.5), and no step is
+blocked — but the one deployment-order contradiction in `plan.json`'s own stale step input (§ 15.4,
+carried from § 4) is still present, which is what keeps this below `ready-for-gate` under Step 9's
+rubric even though every acceptance test now has run-time evidence behind it.
+
+**On the already-approved gate:** the evidence the 2026-09-12T18:35:37Z re-sign note cites —
+run 13's 35-member manifest, `RunSpecifiedTests` success, 37/37 tests, 89.9% coverage, no coverage
+warnings — is independently confirmed by this pass, re-derived from the raw artefacts and the raw
+mock-deploy result rather than taken from the note's prose. The findings the repair wave did not
+touch (`S2-F-07`, `S2-F-08`, the § 4/§ 15.4 ordering item) were already on record and already
+weighed by the human before the re-sign; this pass adds no new item to that weighing. **This pass's
+conclusion is that the currently-approved gate is supported by the evidence its own re-sign note
+cites** — a finding *about* the approval, not a re-opening of it.
+
+```bash
+python3 scripts/build_plan.py set-milestone .sfskills/builds/tier2-webhook/plan.json M1 \
+  --status verified --report-path reports/MILESTONE-M1-REPORT.md
+```
+
+Per § 15.9 this **does not** move `milestones[].status` off `accepted` — it records a
+`reverifications[]` entry and updates `report_path`. **No gate command is printed in this section**:
+`milestone:M1` is already `approved`, re-running the approve line would be meaningless, and nothing
+in this pass gives a human cause to run `gate milestone:M1 reject`. Nothing was deployed and no `sf`
+command or `mock_deploy.py` run was executed by this agent in this pass.
