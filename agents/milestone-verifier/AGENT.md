@@ -90,6 +90,8 @@ One state is verifiable without being complete: a step at `blocked` **with a rec
 
 Confirm too that the preceding milestone's gate is `approved`. Verifying a milestone whose predecessor was never accepted produces a report the human cannot act on.
 
+**Re-verification (the milestone is already `accepted`).** This is in scope, not a refusal: a documented step in an accepted milestone was re-run (a repair after an org finding), so the earlier report and `reports/MILESTONE-<id>-package.xml` are stale. Run every step below as usual, but append a dated `## Re-verification — <timestamp>` section to the existing report instead of replacing it, regenerate the merged manifest, and in Step 9 record with `set-milestone` as normal — on an accepted milestone it appends a `milestones[].reverifications[]` entry and leaves the status and every gate untouched (`standards/build-orchestration.md` § 8). Print no gate line; state instead whether the evidence still supports the approval that stands, and name what the human would have to re-sign if it does not.
+
 ### Step 2 — Build the symbol inventory
 
 Walk the artefacts of this milestone and of every earlier milestone in the plan, and index what they define: object `fullName`s, field `fullName`s (object-qualified), picklist value names, record type names, queue names, group names, permission set names, business hours names, milestone type names, entitlement process names, and Flow API names. Earlier milestones count as defining, because they are already accepted; later milestones do not.

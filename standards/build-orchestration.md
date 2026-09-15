@@ -694,7 +694,16 @@ keeper. Fable is never invoked at run time.
   milestones / steps, in one validated write), `set-verification <plan> --file
   <json> --outcome verified|plan-rejected` (the verifier's block), and
   `set-milestone <plan> <Mk> --status verified|rejected --report-path <path>`
-  (the milestone verifier's verdict and report path).
+  (the milestone verifier's verdict and report path). On a milestone already
+  `accepted`, `set-milestone` does not move its status and touches no gate: it
+  appends a `milestones[].reverifications[]` entry and updates `report_path`.
+  That is the **re-verification** path — run it whenever a documented step in
+  an accepted milestone is re-run (a repair after an org finding), because the
+  earlier report and `reports/MILESTONE-<Mk>-package.xml` are stale from that
+  moment; the verifier appends a dated section to the existing report and
+  regenerates the merged manifest, and the gate is re-signed (reject, then
+  approve with notes naming the new evidence) only if the verdict or the
+  evidence changed what the human accepted.
 - Every agent invocation in the loop is recorded in `plan.json.steps[].runs[]`,
   carrying the envelope path when `--envelope` names one actually written.
   Re-running a step appends a run; it never overwrites history. `set-status …
