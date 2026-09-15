@@ -2510,7 +2510,14 @@
         }
       ],
       "status": "accepted",
-      "report_path": "reports/MILESTONE-M5-REPORT.md"
+      "report_path": "reports/MILESTONE-M5-REPORT.md",
+      "reverifications": [
+        {
+          "at": "2026-09-15T19:10:06Z",
+          "verdict": "rejected",
+          "report_path": "reports/MILESTONE-M5-REPORT.md"
+        }
+      ]
     }
   ],
   "steps": [

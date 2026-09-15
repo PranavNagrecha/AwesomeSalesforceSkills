@@ -1,29 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Merged milestone manifest for milestone M5, written by agents/milestone-verifier
-     (run 2026-09-12T12-52-10Z) per its AGENT.md Step 5. Union of the two package.xml files
-     the M5 steps produced: artefacts/M5-S01/package.xml (ListView x3, Report x2) and
-     artefacts/M5-S05/package.xml (the build-level manifest, which aggregates all sixteen step
-     manifests plus M4-S05's four Apex members per standards/build-orchestration.md section 5,
-     "The Apex exception").
+<!-- Merged milestone manifest for milestone M5, RE-MERGED by agents/milestone-verifier
+     (run 2026-09-15T19-06-22Z) per its AGENT.md Step 5, superseding the 2026-09-12T12-52-10Z
+     merge below. Union of the two package.xml files the M5 steps produce: artefacts/M5-S01/
+     package.xml (ListView x3, Report x2) and artefacts/M5-S05/package.xml (the build-level
+     manifest, which aggregates all sixteen step manifests plus M4-S05's Apex members per
+     standards/build-orchestration.md section 5, "The Apex exception").
+     WHY THIS RE-MERGE: M5-S05 was rebuilt (documented -> running -> documented) after G5 was
+     first signed, because two of its inputs changed post-gate: M4-S05's F-59 test-only repair
+     added a fifth Apex file, classes/TestUserFactory.cls (+ meta, apiVersion 67.0), the
+     permissioned test-running user the repair introduced (artefacts/M4-S05/deploy-order.md
+     section 8; decisions.md D-M4S05-06); and M2-S02's Case_Agent_Core permission set gained
+     seven fieldPermissions entries for F-60 (artefacts/M2-S02/deploy-order.md "Rebuild #3";
+     decisions.md D-M2S02-08) - a content-only change to a member already declared, so it moves
+     no member count. decisions.md D-M5S05-06 records the M5-S05 rebuild itself (+1 ApexClass
+     member, TestUserFactory; 0 removed; 0 renamed) and decisions.md O-M5S05-01 names this file
+     as the one left stale by that rebuild - not this agent's earlier report's fault, since the
+     rebuild happened after that report was written, but this agent's to close now that it has
+     been asked to re-verify.
+     MEMBER DIFF FROM THE 2026-09-12T12-52-10Z MERGE: +1 member (ApexClass:TestUserFactory),
+     0 removed, 0 renamed, 0 types added or removed. 29 types, 57 members (was 56). Verified
+     independently in this run by a member-by-member diff of the old file against
+     artefacts/M5-S05/package.xml - TestUserFactory is the only difference in any type.
      VERSION: no conflict - both M5 step manifests declare 67.0, so 67.0 is written unchanged.
      The build-wide 62.0/67.0 split across the other nine step manifests is recorded in
      decisions.md D-M5S05-05 and artefacts/M5-S05/deploy-order.md section 1.2; it is a property
      of those earlier, accepted manifests, not a conflict inside this merge.
      OVERLAP, not conflict: M5-S01's five members also appear in M5-S05's build-level manifest
      by design - M5-S05 aggregates every step including M5-S01. Five overlapping members,
-     identical on both sides, merged to one entry each.
+     identical on both sides, merged to one entry each. Confirmed this run: all five of
+     M5-S01's members are a subset of M5-S05's ListView and Report blocks.
      NO M5 STEP CONTRIBUTED AND WAS DROPPED: M5-S02 is blocked (borrowed agent requires
      team_size, concurrent_workstreams, release_cadence, data_sensitivity) and produced no
      artefacts at all; M5-S03 and M5-S04 are docs steps whose outputs are markdown and YAML,
      which derive no manifest member.
-     This file is identical to artefacts/M5-S05/package.xml - 29 types, 56 members, version
-     67.0, zero drift, verified member-by-member at MILESTONE-M5-REPORT.md section 5.
+     This file is identical to artefacts/M5-S05/package.xml - 29 types, 57 members, version
+     67.0, zero drift, verified member-by-member at MILESTONE-M5-REPORT.md's 2026-09-15
+     re-verification addendum.
      Nothing here deploys. -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>CaseMilestoneService</members>
         <members>CaseMilestoneServiceTest</members>
         <members>TestDataFactory</members>
+        <members>TestUserFactory</members>
         <name>ApexClass</name>
     </types>
     <types>

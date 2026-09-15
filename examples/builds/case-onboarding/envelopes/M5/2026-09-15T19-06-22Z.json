@@ -1,0 +1,223 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-15T19-06-22Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M5/2026-09-15T19-06-22Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M5/2026-09-15T19-06-22Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "milestone_id": "M5",
+    "approver_name": null,
+    "note": "Re-verification requested because reports/MILESTONE-M5-package.xml and this milestone's F-52..F-58 findings (2026-09-12T12-52-10Z run) predate the M5-S04 re-compile that closed part of section 8, and predate four repairs the first tests-executing dry runs found (F-59..F-62, reports/MOCK-DEPLOY-M5.md runs 4-9). decisions.md O-M5S05-01 independently named the same gap."
+  },
+  "summary": "Re-verified milestone M5 against its current artefacts. Verdict unchanged: not-ready, on the same single ground as the 2026-09-12T12-52-10Z run - M5-S02 is still blocked (borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity). reports/MILESTONE-M5-package.xml was regenerated: 29 types, 57 members (was 56), version 67.0, zero drift against artefacts/M5-S05/package.xml, +1 member (ApexClass:TestUserFactory) versus the superseded file. Both declared milestone acceptance tests were re-run verbatim and both still pass (check_rtm.py exit 0 with 4 Draft-status coverage WARNs plus one new orphan WARN; check_deployment_manifest.py exit 0, score 90, 2 SharingRules WARNs, unchanged). Of the seven prior findings: F-53, F-54 and F-57 are closed (decisions.md D-M5S04-06, D-M5S04-05, re-compile note); F-56 is further partially closed (D-M5S04-08); F-52 is partially closed on nine of ten original members but reopened on its narrowest edge by a new orphan (TestUserFactory, added after the addendum was written); F-55 and F-58 are unchanged and still open. F-59..F-62 (raised and closed entirely between the two verifier runs, in reports/MOCK-DEPLOY-M5.md runs 4-8) are confirmed closed by the org: run 8 is the tests-executing evidence (60/60 components, 4/4 tests passed, 84.4% coverage), run 9 the manifest-level confirmation (61/61 components, F-28 the sole remaining error, tests did not execute in that run because the org stops at F-28 first). Two new findings recorded: F-63 (MEDIUM) - TestUserFactory is a new, tool-confirmed traceability orphan, the member-to-row direction F-52 asked the library to add now being live in check_rtm.py v1.1.5; F-64 (LOW) - the compiled workbook's own CWB-OTHER-042 row still describes the manifest as 56 members, the same compile-before-build-finishes pattern the original report already flagged as Concerning, recurring a third time. set-milestone was run with --status rejected (Step 9's mapping for not-ready); because milestones[M5].status is already 'accepted' (the human's G5 approval), the CLI recorded this as a reverifications[] entry rather than moving status - the gate itself was neither touched nor re-signed. Confidence stays LOW, same Step 10 branch (a step is blocked).",
+  "confidence": "LOW",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 rubric, LOW branch, on the same single trigger as the original run: a step is blocked (M5-S02), unchanged by this delta. No other LOW trigger fires - both declared milestone checkers exist on disk and both ran; no documented step's artefact directory is empty; the earlier-milestone symbol inventory is unaffected (M1-M4 untouched by this delta). MEDIUM's triggers remain mixed exactly as before (ten unclassifiable list-view/report column codes, no member collision requiring report-rather-than-resolve in the regenerated manifest) plus one new consideration this run added: a genuine orphan (F-63) surfaced by tooling that did not exist at the last run, which does not on its own move the score off LOW because the blocking condition (M5-S02) already holds it there.",
+  "dimensions_compared": [
+    "reference-resolution",
+    "deploy-order",
+    "merged-manifest",
+    "milestone-acceptance-tests",
+    "manual-checklist",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "merged-manifest",
+      "state": "partial",
+      "reason": "The manifest was fully regenerated and independently verified against artefacts/M5-S05/package.xml (zero drift, member-by-member) and artefacts/M5-S01/package.xml (subset check). What this run did not re-derive from scratch is the underlying 57-member set itself - it read artefacts/M5-S05/package.xml as authored by metadata-builder's own rebuild (decisions.md D-M5S05-06) rather than re-deriving the whole-tree file/manifest cross-check independently; that whole-tree check is instead read from tests/M5-S05/manifest_check_wholetree.txt (written 2026-09-12T14:36, after the rebuild, so already current) and cited rather than re-run tool-for-tool.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-running the whole-tree file<->manifest cross-check as a fresh command (not reading the cached file) would remove the one step of indirection, at the cost of re-implementing a check the step-tester already ran and recorded."
+    },
+    {
+      "dimension": "manual-checklist",
+      "state": "partial",
+      "reason": "Two of the twelve lines from the original checklist (item 3, assumptions register; item 4 second half, UAT pack) moved from 'not tickable as written' to 'structurally tickable under a named reading' this run, per D-M5S04-05 and D-M5S04-06. The other ten lines are unaffected and this run did not re-verify them beyond confirming nothing in this delta touched their artefacts. This agent ticks none of the twelve.",
+      "confidence_impact": "NONE",
+      "retry_hint": "None needed - the two affected lines are recorded with their exact new state and the ambiguity each still carries."
+    },
+    {
+      "dimension": "reference-resolution",
+      "state": "count-only",
+      "reason": "M5-S01 and M5-S03, the only artefacts M5 itself contributes reference-bearing metadata from, are byte-unchanged since the 2026-09-12T12-52-10Z run (confirmed by filesystem mtime, both last written before 06:30 on 2026-09-12). This run did not re-run the Step 3 grep-based resolution pass; it relies on the prior run's result (0 unresolved, 10 unclassifiable) being unaffected because the inputs to that pass did not change.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Re-running Step 3's grep pass fresh would be zero-cost confirmation, since the two affected steps have not changed; not done here because the mtime check is equally conclusive and cheaper."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-63",
+      "severity": "P2",
+      "title": "TestUserFactory is a live, tool-confirmed traceability orphan; F-52 is reopened on its narrowest edge",
+      "detail": "check_rtm.py's member-to-row orphan direction - the deepening F-52 asked the library to add - is now live (skills/admin/requirements-traceability-matrix v1.1.5, commits 0c585e185/cf9dde917/ef8e10141, all landed after the 2026-09-12T12:52 run). Run against today's artefacts it reports exactly one orphan: ApexClass:TestUserFactory, present in artefacts/M5-S05/package.xml with no row in traceability.md naming it, not even inside an artefact_paths cell. This is not a re-discovery of F-52's original ten: decisions.md D-M5S04-07's addendum still correctly cross-references nine of those ten (the tenth, EmailFolder:case_intake, was always covered via REQ-032). TestUserFactory did not exist when that addendum was compiled (13:15Z) - M4-S05's F-59 repair added it roughly four hours later (~17:00Z) - so the addendum could not have named it. The milestone's declared check_rtm.py test carries no --strict flag and the orphan rule is a WARN regardless of --strict, so the test still exits 0; the gap surfaces only because this run reads the WARN text, not just the exit code.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/traceability.md",
+        "count": 1,
+        "grounded_in": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts, this run, orphan report naming ApexClass:TestUserFactory (evidenced by M4-S05/classes/TestUserFactory.cls-meta.xml); artefacts/M5-S04/traceability.md's own addendum (does not name TestUserFactory); decisions.md D-M4S05-06 (repair timestamp), D-M5S04-07 (addendum timestamp)"
+      },
+      "recommendation": "Accept as an extension of F-52's known gap; the G5 gate is already approved and this does not reopen it. At the next build-doc-keeper touch on M5-S04 or the next traceability.md write on M4-S05, add TestUserFactory to the existing addendum or to REQ-044's artefact_paths cell (REQ-044 already names the trigger the other three Apex classes serve, and TestUserFactory's fixture exists to prove the same trigger's behaviour). No further checker work needed - the tool already does its job."
+    },
+    {
+      "id": "F-64",
+      "severity": "INFO",
+      "title": "CWB-OTHER-042's own prose is stale by one member, in the same pattern the original report already named Concerning",
+      "detail": "artefacts/M5-S04/configuration-workbook.md's row CWB-OTHER-042 (added by the same 13:15Z re-compile that closed F-57) describes artefacts/M5-S05/package.xml as '29 types, 56 members' - true when written, false as of the 18:29Z M5-S05 rebuild that no re-compile has seen since. This is the identical structural cause the original report's section 13 already flagged as Concerning ('the compile ran before the build finished, twice over, in two different severities' - F-54 and F-57), recurring a third time, in the one row whose entire content is a number this re-verification exists to check.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/configuration-workbook.md",
+        "count": 1,
+        "grounded_in": "direct read of CWB-OTHER-042's text ('29 types, 56 members') against artefacts/M5-S05/package.xml's current 57 members, this run"
+      },
+      "recommendation": "No independent action. Folding the CWB-OTHER-042 correction into whatever future compile closes F-63 (which touches the same file) closes this at no extra cost. The number a release owner actually deploys from is artefacts/M5-S05/package.xml itself, read directly, not this compiled description of it."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The build's own decisions.md named the exact gap this re-verification exists to close, before any human asked for it, in the last entry written before this run.",
+      "domain": "process-discipline",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "scripts/build_plan.py's set-milestone handler already implements a safe re-verification path for an already-accepted milestone: it records the new verdict and report path in a reverifications[] array without moving status away from accepted or touching the gate, so a re-verification cannot accidentally unmake a human approval.",
+      "domain": "tooling",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "The same structural cause named Concerning in the original report's section 13 - a compile step running before every input that feeds it has landed - produced a second, independently discoverable instance one rebuild later (F-63/F-64), on files the M5-S04 re-compile had just finished repairing for the prior instance of the same cause.",
+      "domain": "plan-shape",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/deploy-order.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "check_rtm.py's orphan rule has no --strict-promotable severity of its own (unlike its coverage-gap rule), so a real, tool-confirmed traceability gap and a routine WARN read identically at the exit-code level; a reviewer who checks only the exit code would not see F-63 at all.",
+      "domain": "checker-design",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "A fresh milestone-verifier pass over M4 would be the natural companion to this one: G4 was re-signed by the operator against the same runs 4-8 this report reads, and decisions.md O-M5S05-01 names that re-pass as still outstanding for M4 specifically.",
+      "domain": "plan-shape",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because O-M5S05-01 names the M4 re-pass as the sibling gap this M5 re-verification does not itself close, and it is the same agent's job on the milestone one step earlier",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/decisions.md",
+        "count": 1
+      }
+    }
+  ],
+  "extensions": {
+    "milestone": "M5",
+    "milestone_title": "Agent surfaces, sandbox proof and the deploy package",
+    "run_kind": "milestone re-verification (final milestone of a done build), superseding the 2026-09-12T12-52-10Z run",
+    "report_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-REPORT.md",
+    "report_path_disambiguation": "The acceptance report's own top-level path is reports/MILESTONE-M5-REPORT.md; this envelope's own markdown twin is the different report_path/envelope_path pair above under envelopes/M5/.",
+    "merged_manifest_path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-package.xml",
+    "verdict": "not-ready",
+    "passed": false,
+    "passed_note": "Unchanged from the 2026-09-12 run: passed is false whenever any step in the milestone is not documented. M5-S02 remains blocked.",
+    "verdict_grounds": "M5-S02 blocked, reason unchanged: borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity.",
+    "blocked_steps": [
+      {"step_id": "M5-S02", "reason": "borrowed agent requires team_size, concurrent_workstreams, release_cadence, data_sensitivity"},
+      {"step_id": "M3-S05", "reason": "deferred: Q32, Q33, Q34, Q35", "note": "earlier milestone, accepted at G3 with this gap; carried forward, not a precondition of this gate"}
+    ],
+    "manifest_diff_vs_prior_merge": {
+      "old_types": 29, "old_members": 56, "new_types": 29, "new_members": 57,
+      "added": ["ApexClass:TestUserFactory"], "removed": [], "renamed": [],
+      "version": "67.0", "version_conflict": false,
+      "drift_vs_m5_s05_package_xml": "zero, verified member-by-member this run"
+    },
+    "acceptance_tests_rerun": [
+      {"command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts", "exit": 0, "result": "PASS", "delta": "one new orphan WARN (ApexClass:TestUserFactory) versus the 2026-09-12 run's 0 orphans; 4 coverage-gap WARNs unchanged"},
+      {"command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts", "exit": 0, "result": "PASS", "delta": "identical: score 90, 2 SharingRules WARNs, F-58's undercount still applies"},
+      {"type": "manifest (always-on, whole-tree)", "result": "PASS", "detail": "119 files, 57 deployable, 57 manifest members, 0 missing either direction (tests/M5-S05/manifest_check_wholetree.txt, written after the M5-S05 rebuild)"}
+    ],
+    "findings_disposition": {
+      "F-52": "partially closed (9 of 10 original members) — reopened on its narrowest edge, see F-63",
+      "F-53": "closed — decisions.md D-M5S04-06",
+      "F-54": "closed — decisions.md D-M5S04-05",
+      "F-55": "unchanged, still open",
+      "F-56": "further partially closed — decisions.md D-M5S04-08",
+      "F-57": "closed — re-compile note in artefacts/M5-S04/configuration-workbook.md",
+      "F-58": "unchanged, still open"
+    },
+    "org_findings_closed": {
+      "F-59": {"closed_by": "M4-S05 test-only repair (TestUserFactory + runAs)", "found": "reports/MOCK-DEPLOY-M5.md run 4", "confirmed": "run 8 (part of the 4/4 passing set)"},
+      "F-60": {"closed_by": "M2-S02 access-model repair (7 fieldPermissions on Case_Agent_Core)", "found": "reports/MOCK-DEPLOY-M5.md run 5", "confirmed": "run 6"},
+      "F-61": {"closed_by": "M4-S05 test-only repair (named-process filter)", "found": "reports/MOCK-DEPLOY-M5.md run 6", "confirmed": "run 7"},
+      "F-62": {"closed_by": "M4-S05 shipped-code repair (WITH SYSTEM_MODE / AccessLevel.SYSTEM_MODE)", "found": "reports/MOCK-DEPLOY-M5.md run 7", "confirmed": "run 8: 60/60 components, 4/4 tests passed, 84.4% coverage"}
+    },
+    "manifest_confirmation_run_9": "reports/MOCK-DEPLOY-M5.md run 9 — MANIFEST mode, the rebuilt 57-member manifest as shipped: 61/61 components ok, one error (AutoResponseRule Case.Case_Acknowledgement, F-28, unchanged, the named org prerequisite). Component-level only — tests did not execute because the org stops at F-28 before test execution in this run; run 8 remains the tests-executing evidence.",
+    "manual_checklist_deltas": [
+      {"line": 3, "was": "NOT TICKABLE AS WRITTEN (F-54)", "now": "structurally tickable, subject to the human confirming the 28-not-25 and joined-not-native-owner readings (decisions.md D-M5S04-05)"},
+      {"line": "4 (second half)", "was": "FAILS (F-53)", "now": "structurally tickable under the narrowed reading 'carries no case that can be mistaken for runnable' (decisions.md D-M5S04-06)"}
+    ],
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/case-onboarding/plan.json M5 --status rejected --report-path reports/MILESTONE-M5-REPORT.md",
+    "set_milestone_result": "milestone M5: status stays 'accepted' (human gate on record); re-verification 'rejected' recorded with report -> reports/MILESTONE-M5-REPORT.md. plan.json.milestones[M5].reverifications[] gained one entry (at 2026-09-15T19:10:06Z, verdict rejected, report_path reports/MILESTONE-M5-REPORT.md). Three pre-existing WARNs printed by validate_plan on write (non-standard checker argument forms on M5-S02/M5-S04 tests) are unrelated to this run and unchanged from every prior write to this plan.",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/case-onboarding/plan.json milestone:M5 approve --by \"<name>\"",
+    "gate_command_note": "Not run and not needed: milestone:M5 is already approved (2026-09-12T18:50:26Z). This re-verification does not touch the gate in either direction.",
+    "playbook_gap": "agents/milestone-verifier/AGENT.md Step 9 describes set-milestone as recording verdict + report path with no mention of an already-'accepted' milestone or a build at status 'done'. The CLI (scripts/build_plan.py cmd_set_milestone) has its own, more specific handling for that case (append to reverifications[], leave status alone) that the AGENT.md text does not name. The playbook was not refused by this case; the CLI's own richer behavior covered it. Recorded here because the invocation asked explicitly whether the playbook permits recording on a done build, and the honest answer is 'the CLI permits it via a mechanism the AGENT.md prose does not describe.'",
+    "files_written_by_this_run": [
+      "reports/MILESTONE-M5-package.xml (rewritten: 29 types, 57 members, superseding the 56-member file)",
+      "reports/MILESTONE-M5-REPORT.md (section 15 appended; sections 1-14 untouched)",
+      "envelopes/M5/2026-09-15T19-06-22Z.json / .md (this run)",
+      "plan.json (milestones[M5].reverifications[] and .report_path, via set-milestone only)"
+    ],
+    "nothing_else_touched": "No gate record in human_gates[] was written or modified. No artefact, test result, workbook slice, decision record or envelope written by another agent was edited, moved or deleted. No org was contacted; no sf or mock_deploy.py command was run.",
+    "severity_mapping_note": "findings[].severity uses the envelope schema's P0/P1/P2/INFO enum. P2 = MEDIUM (F-63), INFO = LOW (F-64). The report prose uses HIGH/MEDIUM/LOW.",
+    "build_evidence_consulted": [
+      "decisions.md O-M5S05-01 — the open item that named this re-verification's exact scope before it was requested",
+      "decisions.md D-M4S05-06..09, D-M2S02-08, D-M5S05-06, D-M5S04-05..08 — the recorded repair decisions this run confirms rather than re-derives",
+      "reports/MOCK-DEPLOY-M5.md runs 4-9 — the org evidence closing F-59..F-62, read not re-run",
+      "artefacts/M4-S05/deploy-order.md sections 8-11 — the four repair records in full",
+      "artefacts/M2-S02/deploy-order.md Rebuild #3 — the F-60 field-permission repair record",
+      "artefacts/M5-S05/deploy-order.md section 0 — the manifest rebuild record this run's merge reproduces",
+      "tests/M5-S05/manifest_check_wholetree.txt — the post-rebuild whole-tree file<->manifest cross-check, cited rather than re-run"
+    ]
+  },
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules for this invocation: never write to an org, never chain, run-time agent roster and section-shape rules"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section shape, Process Observations schema, confidence rubric, citations shape"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "atomic-write rule and the persistence-path override used for this run's report pair"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "the refusal enum — checked and not triggered"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "section 2 (report written not rendered; set-milestone --report-path; plan.json as the only shared state), section 3 (G3/G5 preconditions; blocked-with-a-reason; re-planning is a new version, not relevant here since no plan rewrite occurred), section 4 (borrowed-agent rule behind M5-S02's block; the four input sources a step's rebuild reads), section 5 (milestone scope is always build; the Apex exception; checker argument/exit-policy forms), section 7 (workflow shape)"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "milestone / gate / step fields read; the reverifications[] shape set-milestone writes"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "how closure is stated; the Draft-status waiver rule; the member-to-row orphan direction now live in check_rtm.py behind F-63"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "the form a manual test must take to be tickable by someone who was not in the build loop — re-read against the F-53/F-54 narrowed readings"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "manifest grammar and the <version> element, applied to the regenerated merge"},
+    {"type": "skill", "id": "devops/permission-set-deployment-ordering", "path": "skills/devops/permission-set-deployment-ordering/SKILL.md", "used_for": "the fieldPermissions-before-the-field failure shape, checked for and not found in the F-60 repair's placement (PermissionSet still deploys after the fields it grants)"},
+    {"type": "skill", "id": "devops/flow-deployment-activation-ordering", "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md", "used_for": "confirming TestUserFactory's arrival at ApexClass slot 15 introduces no new automation-before-routing ordering issue"},
+    {"type": "skill", "id": "devops/deployment-error-diagnosis", "path": "skills/devops/deployment-error-diagnosis/SKILL.md", "used_for": "the deploy-time error shape an unresolved reference or ordering violation would produce — checked and none found in this delta"},
+    {"type": "skill", "id": "devops/pre-deployment-checklist", "path": "skills/devops/pre-deployment-checklist/SKILL.md", "used_for": "the go/no-go framing this re-verification's findings continue to feed"}
+  ],
+  "followups": [
+    {"agent": "milestone-verifier", "because": "decisions.md O-M5S05-01 names a matching re-pass over M4 as still outstanding, for the same reason this M5 re-pass was requested"},
+    {"agent": "release-readiness-reviewer", "because": "M5 is the last milestone before a release and this delta closed four org-facing Apex findings, sharpening the evidence that agent would weigh"}
+  ]
+}

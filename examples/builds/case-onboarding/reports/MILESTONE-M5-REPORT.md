@@ -980,5 +980,284 @@ matter. **Recommendations only — this agent invoked neither and will not.**
 
 ---
 
-*End of report. The G5 decision is the human's. This agent verified, recorded a verdict, merged a
-manifest, and printed a command it did not run.*
+## 15. Re-verification — 2026-09-15T19-06-22Z
+
+Written by `agents/milestone-verifier` (run `2026-09-15T19-06-22Z`), invoked to re-verify M5
+because `reports/MILESTONE-M5-package.xml` above and this report's § 8 findings predate four
+repairs the first tests-executing dry runs found (`reports/MOCK-DEPLOY-M5.md` runs 4–9), and
+predate the M5-S04 re-compile that closed part of § 8. `decisions.md` **O-M5S05-01** — written by
+`metadata-builder`'s own rebuild pass, the last entry in this build's decision log before this
+section — names exactly this gap: G4 and G5 were both re-signed by the dry-run operator against
+runs 4–9 directly, and "a `milestone-verifier` re-pass over `M4` and `M5` was in scope for every
+one of these six runs and was not run." This section is that re-pass, scoped to `M5` per this
+agent's one-milestone-per-invocation rule.
+
+**This section does not replace §§ 1–14 above.** It re-runs Steps 1–10 of
+`agents/milestone-verifier/AGENT.md` against the artefacts as they stand today, states what moved
+and what did not, and appends new findings continuing from F-58. §§ 1–14 remain the record of the
+2026-09-12T12-52-10Z run and are left exactly as written, including the numbers they measured at
+the time — this section states where those numbers are now stale rather than editing them in
+place, per `standards/build-orchestration.md` § 2's rule that a written report is not silently
+rewritten.
+
+### 15.1 What changed since the 2026-09-12T12-52-10Z run
+
+Three artefacts this report depends on were rebuilt after that run, none of them M5-S01 or
+M5-S03 (both unchanged — confirmed by filesystem `mtime`, both last written before 06:30 on
+2026-09-12, well before the 12:52 run):
+
+| Artefact | Change | Cause | Record |
+|---|---|---|---|
+| `artefacts/M4-S05/classes/*` | Four sequential test-only repairs, then one shipped-code repair | F-59 (no test ran as a permissioned user), F-60 (the fixture insert itself failed FLS as the persona), F-61 (the milestone process was found by luck, not by name), F-62 (the milestone-completion query/DML needed an explicit system-mode boundary) | `artefacts/M4-S05/deploy-order.md` §§ 8–11; `decisions.md` **D-M4S05-06…09** |
+| `artefacts/M2-S02/permissionsets/Case_Agent_Core.permissionset-meta.xml` | Content-only: seven `fieldPermissions` added (`AccountId`, `ContactId`, `Description`, `Origin`, `Priority`, `Subject`, `SuppliedEmail`) | F-60's fix, carried in `M2-S02` because the grant belongs to the access step, not the test step | `artefacts/M2-S02/deploy-order.md` "Rebuild #3"; `decisions.md` **D-M2S02-08** |
+| `artefacts/M5-S05/package.xml` + `deploy-order.md` | Rebuilt: `+1 ApexClass` member, `TestUserFactory` (F-59's fixture wrote it; the Apex exception in `standards/build-orchestration.md` § 5 puts it in this manifest); `Case_Agent_Core`'s content change moved no member | Both of the above landing after `M5-S05` was first built and documented | `artefacts/M5-S05/deploy-order.md` § 0; `decisions.md` **D-M5S05-06** (discharges **O-M4S05-01**) |
+| `artefacts/M5-S04/*` | Re-compile: Assumptions Register added (F-54), two blocked-step UAT cases marked `phase: 2` / `blocked_on: <step>` (F-53), a ten-member traceability addendum added (F-52, partial), a reconciled org-prerequisites table + `CWB-DATA-001` added (F-56, partial), `CWB-OTHER-037`–`043` now included (F-57) | The M5 gate's own § 8 findings, worked by `build-doc-keeper` in a re-compile that ran **before** the `M5-S05` rebuild above (13:15Z vs. 18:29Z) | `decisions.md` **D-M5S04-05…08** |
+
+The ordering matters for § 15.3 below: `M5-S04`'s re-compile (13:15Z) closed what it could see at
+the time, and `M5-S05`'s rebuild (18:29Z) happened **after** it — so the traceability addendum
+that closed nine of ten pre-existing orphaned members, and the `CWB-OTHER-042` row that describes
+the manifest, both describe the **pre-rebuild** 56-member manifest, not the 57-member one this
+section verifies.
+
+### 15.2 Precondition (Step 1), re-checked — unchanged
+
+`M5-S02` is still `blocked`, reason unchanged (`borrowed agent requires team_size,
+concurrent_workstreams, release_cadence, data_sensitivity`); every other M5 step —
+`M5-S01`, `M5-S03`, `M5-S04`, `M5-S05` — is `documented` (each returned to `documented` after its
+own repair cycle: `plan.json` step run counts today are `M4-S05` 14, `M2-S02` 11, `M5-S04` 10,
+`M5-S05` 7, `M5-S01` 8, `M5-S03` 4). `milestone:M4`'s gate is **approved**, re-signed
+2026-09-12T18:50:26Z on the run 4–8 evidence (`plan.json.human_gates[milestone:M4].notes`). Step
+1's refusal condition does not fire, for the same reason it did not fire on 2026-09-12.
+
+### 15.3 The manifest — regenerated, not assumed
+
+`reports/MILESTONE-M5-package.xml` **has been rewritten by this run.** Its prior form (29 types,
+56 members) is superseded; its header now records the supersession and the reason. Re-merged from
+`artefacts/M5-S01/package.xml` (5 members, unchanged) and `artefacts/M5-S05/package.xml` (now 29
+types, **57** members):
+
+```text
+Member diff, old merge vs. new merge:  +1 (ApexClass:TestUserFactory) · -0 · renamed 0
+Types: 29 = 29 (unchanged)
+Version: 67.0 = 67.0 (no conflict)
+Drift vs. artefacts/M5-S05/package.xml: ZERO — verified member-by-member, this run, not by file
+hash (the two files carry different header comments, as before)
+M5-S01's 5 members: all present in the new merge (subset check, this run)
+```
+
+This matches `decisions.md` **D-M5S05-06**'s own accounting of the `M5-S05` rebuild exactly — the
+same single-member diff, independently re-derived here from the current files rather than taken on
+trust from the decision record. No new conflict, no new type, no member removed.
+
+### 15.4 The two declared milestone acceptance tests, re-run verbatim
+
+Run from the build directory, exactly as declared in `plan.json`, nothing rewritten:
+
+**Test 0 — `check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts`:**
+
+```text
+WARN: row 56: coverage gap: REQ-055 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 57: coverage gap: REQ-056 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 58: coverage gap: REQ-057 has no test id (status 'Draft') — waived by decision NONE
+WARN: row 59: coverage gap: REQ-058 has no artefact and no test id (status 'Draft') — waived by decision NONE
+WARN: orphan artefacts: 1 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 58 row(s), build schema, 4 coverage gap(s), 1 orphan(s), 0 error(s), 5 warning(s)
+```
+
+**Exit 0 — the test still passes**, exactly as declared (`expected: exit 0`, no `--strict`,
+no severity floor on a WARN). But the output is not the one on file: `tests/M5-S04/check_rtm.out`
+(written 2026-09-12T12:04, three hours before the `M5-S05` rebuild that introduced the orphan) still
+reads `0 orphan(s)`, and that cached file is what `M5-S04`'s own step-level test record shows as
+passing. Re-running the milestone-scoped command live, against today's artefacts, is what surfaces
+the drift — see **F-63** below. `skills/admin/requirements-traceability-matrix` version `1.1.5`
+(confirmed via its own change history: commit `0c585e185`, "check_rtm.py — a row's artefact_paths
+entries cover the components their files produce") is why this checker can see the gap at all: the
+member-to-row orphan direction F-52 asked the library to add is now live, which is why this is a
+genuine new finding rather than a re-discovery of F-52 itself.
+
+**Test 1 — `check_deployment_manifest.py --manifest-dir artefacts`:**
+
+```text
+2 finding(s) detected (0 blocking)
+{"score": 90, "findings": [
+  {"severity":"WARN","location":"artefacts/M2-S05/package.xml","message":"manifest includes SharingRules; require explicit review and smoke tests"},
+  {"severity":"WARN","location":"artefacts/M5-S05/package.xml","message":"manifest includes SharingRules; require explicit review and smoke tests"}],
+ "summary": "Scanned 119 manifest or metadata file(s); 2 finding(s) detected."}
+```
+
+**Identical result to the 2026-09-12 run** (same score, same two WARNs, exit 0) apart from the file
+count (119 vs. the tree's prior size), which moves only because more files now exist under
+`artefacts/M4-S05/` and `artefacts/M5-S05/`. F-58 (the test's declared outcome undercounts the
+WARNs by one) still applies, unchanged.
+
+**The always-on `manifest` test** (member↔file, whole-tree): re-verified independently of the two
+checkers above using `tests/M5-S05/manifest_check_wholetree.txt` (written 2026-09-12T14:36, **after**
+the `M5-S05` rebuild, so it already reflects 57 members) — `119` total files, `57` deployable, `57`
+manifest members, **zero missing in either direction.** Consistent with § 15.3.
+
+**3/3 runnable milestone acceptance tests still pass.** No declared checker is missing.
+
+### 15.5 F-52 … F-58 — disposition today
+
+| Finding | Severity | Disposition | Grounds |
+|---|---|---|---|
+| F-52 | MEDIUM | **Not closed — partially addressed, then partially reopened.** `D-M5S04-07`'s addendum cross-references the ten members that were orphaned at compile time. But `TestUserFactory` did not exist yet when that addendum was written (13:15Z), and it is orphaned too — confirmed live by § 15.4 test 0. The addendum's nine `ApexClass`/`Group`/`PermissionSetGroup`/`Report`-folder cross-references still stand for the members they cover. See **F-63**. |
+| F-53 | MEDIUM | **Closed.** `D-M5S04-06`: `TC-M3-S05-2` and `TC-M5-S02-2` now carry `phase: 2` and `blocked_on: <step>` — verified directly in `artefacts/M5-S04/uat-test-cases.yaml` this run. The narrowed reading ("carries no case that can be mistaken for runnable") is a human judgment call at the gate, not a re-opened defect. |
+| F-54 | HIGH | **Closed.** `D-M5S04-05`: the compiled workbook now carries an **Assumptions Register** with all 28 `plan.json` assumptions, each naming its constrained steps, with an owner column populated by a compile-time join against the naming clarification's `owner_role`/`owner_hint` — verified present in `artefacts/M5-S04/configuration-workbook.md` this run. The 28-not-25 and joined-not-native readings are named in the decision record as a human confirmation, not a re-opened defect. |
+| F-55 | MEDIUM | **Unchanged — still open.** `reports/MILESTONE-M1-package.xml` still declares the bare `<members>Case_Intake</members>` `CompactLayout` member the org rejected — confirmed by direct read this run. No repair in this delta touched it; it was never in scope for the F-59…F-62 or F-52…F-58-closure work. |
+| F-56 | MEDIUM | **Partially closed**, exactly as `D-M5S04-08` states: `M5-S05` § 5.2's six-item numbering was adopted as canonical in `M5-S04`'s compiled `deploy-order.md`, `CWB-DATA-001` (the F-41 Entitlement-per-Account prerequisite) now appears in the compiled workbook. `story-backlog.md`'s independent P-labels are **not** renumbered — an explicit, named follow-up to `story-drafter`, not done here or in the M5-S04 re-compile. |
+| F-57 | LOW | **Closed.** `CWB-OTHER-037`–`043` are present in `artefacts/M5-S04/configuration-workbook.md`'s "Other configuration" section — confirmed by direct read this run. One residual, see **F-64**. |
+| F-58 | LOW | **Unchanged — still open.** Test 1's declared description still reads "the SharingRules WARN" (singular); the checker still prints two. Confirmed identical in § 15.4. No action was in scope for this delta; `AGENT.md`'s own recommendation (fix by `amend-step --prose-only` if the description is ever touched) still stands. |
+
+### 15.6 F-59 … F-62 — closed by the org
+
+None of these four appeared in the original report; all four were raised and closed entirely within
+`reports/MOCK-DEPLOY-M5.md` runs 4–8, after this agent's 2026-09-12T12:52 run. Recorded here because
+the re-verification's job is to confirm the closure, not to re-litigate it:
+
+| Finding | What it was | Closed by | Evidence |
+|---|---|---|---|
+| F-59 | No `CaseMilestoneServiceTest` method ran inside a permissioned `System.runAs`; every method ran as the deploying user | `M4-S05` test-only repair: `TestUserFactory` + `runAs` of a Tier 1 persona (`Case_Agent_Core` + `Case_Tier1`) | Run 4 found it (3/3 failed on FLS); run 8 confirms closed |
+| F-60 | The Tier 1 persona could create a Case but not write `Subject`/`Origin`/`Priority`/`AccountId`/`EntitlementId` — `Case_Agent_Core` granted object Create with field permissions on exactly one field | `M2-S02` access-model repair: seven `fieldPermissions` added for the fields the layouts and intake process actually use; `EntitlementId` deliberately excluded (platform-stamped, not persona-written) | Run 5 found it; run 6 confirms closed |
+| F-61 | `requireActiveProcess()` selected `WHERE IsActive = true LIMIT 1` with no name filter; the target org's own pre-existing `SlaProcess` (no First Response milestone) was returned instead of the deployed one | `M4-S05` test-only repair: filter on `Name IN ('First_Response_Standard', 'First Response Standard')`, assert exactly one row | Run 6 found it; run 7 confirms closed |
+| F-62 | `CaseMilestoneService`'s `CaseMilestone` query and `Database.update` ran in (default) user mode; no permission set in the build grants any `CaseMilestone` access, so the update silently failed for a subset of rows via `allOrNone=false` | `M4-S05` **shipped-code** repair: `WITH SYSTEM_MODE` on the query, `AccessLevel.SYSTEM_MODE` on the update, both with a `// reason:` comment; three new `Assert.areEqual(0, result.failures.size(), …)` calls close the silent-swallow gap | Run 7 found it; **run 8 is the closing evidence: 60/60 components ok, tests run 4 · passed 4 · failed 0 · coverage 84.4%, no coverage warnings** |
+
+**Run 9** (`reports/MOCK-DEPLOY-M5.md`, MANIFEST mode, the rebuilt 57-member manifest as shipped)
+is the manifest-level confirmation that nothing about the `TestUserFactory` addition or the
+`Case_Agent_Core` content change introduced a new component error: **61/61 components ok, one
+error — `AutoResponseRule Case.Case_Acknowledgement` (F-28, unchanged, the named org
+prerequisite)**. Run 9 is component-level only — the org stops at F-28 before tests execute in that
+run — so **run 8, not run 9, is the tests-executing evidence** for F-59…F-62, exactly as
+`plan.json.human_gates[milestone:M5].notes` already states.
+
+**Nothing here is this agent's own finding.** All four were found and closed by the dry-run
+operator's own probes, entirely between the two `milestone-verifier` runs. This section confirms
+the closure against the current artefacts; it did not re-run any `sf` command or `mock_deploy.py`
+invocation, consistent with this agent's own scope (§ 6.1 and § 11 above).
+
+### 15.7 New findings, continuing from F-58
+
+#### F-63 — MEDIUM — `TestUserFactory` is a live, tool-confirmed traceability orphan; F-52 is reopened on its narrowest edge
+
+`skills/admin/requirements-traceability-matrix`'s `check_rtm.py` now implements the member→row
+orphan direction F-52 asked the library to add (visible in the skill's own commit history —
+`0c585e185`, `cf9dde917`, `ef8e10141` — landed after the 2026-09-12T12:52 run). Run against
+today's artefacts (§ 15.4, test 0), it reports exactly what F-52 predicted a future run would find
+once the direction existed: **one orphan, `ApexClass:TestUserFactory`**, present in the manifest
+(`artefacts/M5-S05/package.xml`) with no row in `traceability.md` naming it, not even inside an
+`artefact_paths` cell.
+
+This is not a re-discovery of F-52's original ten — `D-M5S04-07`'s addendum still correctly covers
+nine of those ten (the tenth, `EmailFolder:case_intake`, was always covered via `REQ-032`). It is a
+new instance of the same root cause on a file that did not exist when the addendum was written:
+`TestUserFactory` was added by `M4-S05`'s F-59 repair at approximately 2026-09-12T17:00Z; the
+`M5-S04` re-compile that wrote the addendum ran at 13:15Z, three to four hours earlier. The
+addendum could not have named a file that had not been created yet.
+
+**Why the exit code does not catch it.** The milestone's own declared test carries no `--strict`
+flag, and this checker's orphan rule is a WARN regardless of `--strict` (unlike its coverage-gap
+rule, which `--strict` would promote — not tested here since `--strict` is not declared). The test
+still exits 0, so nothing in the acceptance-test gate blocks on this finding; it surfaces only
+because this run reads the WARN text rather than the exit code alone.
+
+**Not a deploy risk.** `TestUserFactory` is in the manifest with a file behind it — confirmed in
+§ 15.3 and independently in `tests/M5-S05/manifest_check_wholetree.txt`. The gap is purely one of
+traceability: a reviewer asking "which requirement asked for the test-running user factory" gets
+no answer from the compiled matrix, the same shape of gap F-52 named for the three permission-set
+groups and three groups.
+
+**Recommendation:** accept at G5 (already approved; this is recorded for the next reader, not to
+reopen the gate) as an extension of F-52's known gap. At the next `build-doc-keeper` touch on
+`M5-S04` or the next `traceability.md` write on `M4-S05`, add `TestUserFactory` to the existing
+addendum or to a row's `artefact_paths` cell (`REQ-044`, which already names the trigger the other
+three Apex classes serve, is the natural home — it is the requirement `CaseMilestoneServiceTest`'s
+own fixture exists to prove). No further checker work is needed; the tool already does its job.
+
+#### F-64 — LOW — `CWB-OTHER-042`'s own prose is stale by one member, in the same pattern the original report already named as Concerning
+
+`artefacts/M5-S04/configuration-workbook.md`'s row `CWB-OTHER-042` (added by the same 13:15Z
+re-compile that closed F-57) describes `artefacts/M5-S05/package.xml` as *"29 types, 56 members"*
+— true when that row was written, false as of the 18:29Z `M5-S05` rebuild four re-compiles never
+saw. This is the identical structural cause the original report's § 13 already flagged as
+**Concerning** — *"the compile ran before the build finished, twice over, in two different
+severities"* (F-54 and F-57) — recurring a third time, in the one row whose entire content is a
+number this re-verification exists to check.
+
+**Not a deploy risk and not a new root cause** — it is the same one, restated. **Recommendation:**
+no independent action; folding the `CWB-OTHER-042` correction into whatever future compile closes
+F-63 (which touches the same file) closes this at no extra cost. Filed to keep the count honest,
+not because it changes anything a release owner would do differently — the number a release owner
+actually deploys from is `artefacts/M5-S05/package.xml` itself, read directly, not this compiled
+description of it.
+
+### 15.8 Manual checklist — items 3 and 4, re-read
+
+Item 3 (assumptions register) and item 4 (UAT pack second half) from § 7's table are affected by
+this delta:
+
+- **Item 3 — now structurally tickable**, subject to the human confirming the 28-not-25 and
+  joined-not-native-owner readings `decisions.md` **D-M5S04-05** names explicitly. This is a
+  narrower ask than the original "⚠ NOT TICKABLE AS WRITTEN."
+- **Item 4 (second half) — now structurally tickable** under the narrowed reading `decisions.md`
+  **D-M5S04-06** names ("carries no case that can be mistaken for runnable"), because both
+  `TC-M3-S05-2` and `TC-M5-S02-2` now carry `phase: 2` / `blocked_on: <step>` markers — confirmed
+  in `artefacts/M5-S04/uat-test-cases.yaml` this run.
+
+Every other line in § 7's table is unaffected: items 1, 2, 5–9 and 11–12 depend on nothing this
+delta touched, and item 10's last clause (owner + due date for all 25 deferred clarifications) is
+still not tickable — the Assumptions Register discloses an owner per assumption, not per
+clarification, and still carries no due date field at all.
+
+### 15.9 Verdict — unchanged
+
+**`not-ready`, on the same single ground: `M5-S02` is `blocked`.** Nothing in this delta closed or
+worsened that block — the four missing inputs (`team_size`, `concurrent_workstreams`,
+`release_cadence`, `data_sensitivity`) are exactly as absent today as on 2026-09-12. Every other
+Step 9 trigger remains clear: reference resolution unaffected (M5-S01/M5-S03 untouched), no new
+deployment-order contradiction (`TestUserFactory` slots into the existing Apex block at slot 15,
+per `artefacts/M5-S05/deploy-order.md` § 3.1, row 15 — cited by name), no failing acceptance test
+(3/3 pass, § 15.4), zero manifest drift (§ 15.3). Confidence stays **LOW** on the same Step 10
+branch (a step is blocked) — the two new findings (F-63, F-64) are MEDIUM/LOW respectively and do
+not independently threaten HIGH; they are recorded because a re-verification that regenerates the
+manifest and re-runs the checkers, and then does not report what it found, would defeat its own
+purpose.
+
+### 15.10 `set-milestone` — this run's one plan write
+
+`agents/milestone-verifier/AGENT.md` Step 9 says `--status rejected` for a `not-ready` verdict.
+`plan.json`'s `milestones[M5].status` is currently `accepted` (the human's G5 approval is on
+record). `scripts/build_plan.py`'s own `set-milestone` handler treats that combination as a
+**re-verification of an already-accepted milestone**, not a status change: it does not move
+`status` away from `accepted` — only `gate milestone:M5 reject` could do that, and this agent never
+runs `gate` — and instead appends a `reverifications[]` entry (verdict, timestamp, report path)
+while updating `report_path` to this same file. This is the playbook permitting exactly the
+"record with `set-milestone` … on a done build" the invocation asked for: the command is not
+refused, and it does not silently reinterpret `rejected` as an unmake of the human's G5 approval.
+
+```bash
+$ python3 scripts/build_plan.py set-milestone .sfskills/builds/case-onboarding/plan.json M5 \
+    --status rejected --report-path reports/MILESTONE-M5-REPORT.md
+```
+
+Output and result are recorded in this run's envelope (`extensions.set_milestone_result`) rather
+than duplicated here, per this agent's own `report_path` collision rule (§ Output Contract).
+
+### 15.11 Files this run wrote — and nothing else
+
+| Path | What |
+|---|---|
+| `reports/MILESTONE-M5-package.xml` | re-merged: 29 types, 57 members, `67.0`, superseding the 56-member file |
+| `reports/MILESTONE-M5-REPORT.md` | this section, appended — §§ 1–14 untouched |
+| `envelopes/M5/2026-09-15T19-06-22Z.json` / `.md` | this run's envelope and its markdown twin |
+| `plan.json` | `milestones[M5].reverifications[]` and `.report_path`, via `set-milestone` only |
+
+No gate was written or touched. No artefact, test result, workbook slice, decision record or
+envelope written by another agent was edited, moved or deleted. No org was contacted. Nothing was
+deployed.
+
+---
+
+*End of report. The G5 decision is the human's and was already made — this re-verification changes
+no gate. This agent regenerated a stale manifest, confirmed four org-closed findings and five
+prior findings' dispositions, found two new ones, and recorded a re-verification without moving the
+milestone off its human-approved status.*
