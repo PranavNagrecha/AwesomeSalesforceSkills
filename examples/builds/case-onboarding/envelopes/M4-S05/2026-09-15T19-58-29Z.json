@@ -1,0 +1,170 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-15T19-58-29Z",
+  "report_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-15T19-58-29Z.md",
+  "envelope_path": ".sfskills/builds/case-onboarding/envelopes/M4-S05/2026-09-15T19-58-29Z.json",
+  "summary": "Documentation-only touch on the case-onboarding build (status: done) to close F-63 and record F-64 from reports/MILESTONE-M5-REPORT.md section 15.7. Read REQ-044's row in the build's own traceability.md before doing anything, and found artefacts/M4-S05/classes/TestUserFactory.cls already present as the fifth entry in its artefact_paths cell (written during the F-59 documentation pass, envelopes/M4-S05/2026-09-12T18-12-57Z.json). Running the exact command check_rtm.py --file traceability.md --manifest-dir artefacts from the build directory, before and after this pass, both return 0 orphans -- byte-identical output -- so no edit was made to traceability.md: writing the path a second time into a cell that already carries it would duplicate rather than fix. The orphan F-63 actually reports lives in a different file: the M5 milestone's own declared test reads the compiled snapshot artefacts/M5-S04/traceability.md (frozen at M5-S04's 13:15Z compile, three-plus hours before TestUserFactory existed), and re-running the same checker against that snapshot this pass reproduces 1 orphan exactly as the milestone report found. That snapshot is M5-S04's compiled output, not this agent's to hand-edit outside a compile run, so it is left as-is -- the same reasoning F-64 itself states for CWB-OTHER-042's stale member count in the same compile output. One observation (O-M4S05-02) was appended to decisions.md, re-reading the file's tail immediately before the append, recording F-63 closed at the canonical file and F-64 left for a future M5-S04 compile to pick up. No step status was changed and no gate was touched.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every claim traces to a file read this run (traceability.md's REQ-044 row, two verbatim check_rtm.py runs, plan.json's status fields, reports/MILESTONE-M5-REPORT.md section 15), and the one write (decisions.md) is append-only and keyed to a finding id not already present. Held at MEDIUM, not HIGH, because the task as given instructed adding the path to traceability.md and this agent instead determined -- by direct inspection -- that the path was already there and made no such edit; that is a judgment call substituting verified fact for a literal instruction, and a human should confirm the reading is correct rather than this agent deciding unilaterally that the requested edit was moot.",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/case-onboarding",
+    "target_row": "REQ-044 in traceability.md",
+    "target_path": "artefacts/M4-S05/classes/TestUserFactory.cls",
+    "reason": "close F-63 and record F-64 from reports/MILESTONE-M5-REPORT.md section 15.7",
+    "constraint": "documentation-only; no step status transition; no gate touched; write only inside the build directory"
+  },
+  "findings": [],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The milestone-level orphan check (plan.json's declared M5 acceptance test) reads a compiled snapshot, artefacts/M5-S04/traceability.md, that is now permanently stale relative to any traceability.md edit made after M5-S04's compile ran -- the same structural gap F-64 already names for the compiled workbook's member count, but here it affects a milestone acceptance test's own input file rather than a prose cell.",
+      "domain": "build-orchestration-coverage-gap",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/artefacts/M5-S04/traceability.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The task instruction assumed traceability.md needed an edit; direct inspection and a live check_rtm.py run showed REQ-044's artefact_paths cell already named the file and the checker already reported 0 orphans against the canonical traceability.md. This agent chose not to force a duplicating edit, but that is a deviation from a literal instruction that a human should confirm rather than this agent deciding alone.",
+      "domain": "instruction-vs-verified-state",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/traceability.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_rtm.py's member-to-row orphan direction, once it existed (skill version 1.1.5), correctly distinguished the live traceability.md (already correct) from the compiled M5-S04 snapshot (stale) -- the tool did its job precisely, and the gap it found is real for exactly one of the two files, not both.",
+      "domain": "tooling",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/case-onboarding/reports/MILESTONE-M5-REPORT.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "F-64 and the artefacts/M5-S04/traceability.md staleness this run confirms are both discharged by the same future action: a re-compile of the M5-S04 docs step.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/case-onboarding/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a compile run on M5-S04 (this agent's own Step 10) is the only sanctioned writer of artefacts/M5-S04/configuration-workbook.md and artefacts/M5-S04/traceability.md, and it would correct CWB-OTHER-042's member count and the compiled traceability snapshot's TestUserFactory coverage in one collation pass."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S05",
+    "mode": "docs-touch-no-status-transition",
+    "mode_note": "Neither of agents/build-doc-keeper/AGENT.md's two documented modes (per-step, requiring the step to be 'tested'; compile, requiring a 'docs' step the runner has claimed as 'running') fits this invocation: M4-S05 is already 'documented' and no step is being re-run or claimed. The playbook names no third mode for correcting an already-documented step's traceability/decisions record without a status transition. Treated as a playbook gap -- see the Escalation section of this envelope's markdown twin -- and handled by applying Step 7's read-before-write and Step 8's idempotence rules (the only parts of the Plan that generalize) without invoking Step 1's precondition or Step 9's set-status call.",
+    "playbook_gap": true,
+    "files_updated": [
+      "decisions.md"
+    ],
+    "workbook_rows": [],
+    "traceability_rows": [],
+    "decisions_appended": [
+      {
+        "id": "O-M4S05-02",
+        "step_id": "M4-S05",
+        "date": "2026-09-15",
+        "kind": "observation",
+        "summary": "F-63 closed against the live traceability.md (REQ-044 already names artefacts/M4-S05/classes/TestUserFactory.cls; check_rtm.py reports 0 orphans before and after); F-64 left as-is, both deferred to a future M5-S04 compile."
+      }
+    ],
+    "rows_replaced": [],
+    "no_edit_made": {
+      "target": "traceability.md REQ-044 artefact_paths",
+      "reason": "artefacts/M4-S05/classes/TestUserFactory.cls was already the fifth pipe-delimited entry in that cell prior to this run; adding it again would duplicate an existing entry in violation of Step 8's replace-not-duplicate rule.",
+      "verified_by": [
+        "direct read of traceability.md line carrying the REQ-044 row",
+        "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts (0 orphans, run before and after this pass, byte-identical)"
+      ]
+    },
+    "check_rtm_runs": [
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts",
+        "when": "before this pass wrote anything",
+        "result": "traceability.md: 58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts",
+        "when": "after appending to decisions.md",
+        "result": "traceability.md: 58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)"
+      },
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts",
+        "when": "this pass, for comparison only -- not edited",
+        "result": "traceability.md: 58 row(s), build schema, 4 coverage gap(s), 1 orphan(s), 0 error(s), 5 warning(s) -- the stale compiled snapshot the M5 milestone test actually reads"
+      }
+    ]
+  },
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation, including the prohibition on mutating files outside owned paths"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations requirement, confidence rubric"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and atomic-write rule for the envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirmed this run is not a refusal case before proceeding"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (rendered/compiled views are never hand-edited -- why artefacts/M5-S04/traceability.md is left alone), section 4 (docs step ownership), section 8 (set-milestone re-verification path, cited for how the M5 re-verification that filed F-63/F-64 fits the layer)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "canonical RTM column set and the artefact_paths convention that check_rtm.py's coverage logic reads"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "what makes a decisions.md entry reviewable months later -- a date, the decision, the alternative considered and the source it rests on"
+    },
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "own playbook -- Step 7 (traceability write convention), Step 8 (idempotence, replace-not-duplicate), Step 10 (compile-run scope, why a compiled document is not hand-patched)"
+    },
+    {
+      "type": "agent",
+      "id": "milestone-verifier",
+      "path": "agents/milestone-verifier/AGENT.md",
+      "used_for": "confirmed the M5 re-verification section this touch responds to (reports/MILESTONE-M5-REPORT.md section 15) is that agent's own output, not this agent's to re-run or re-litigate"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "a future compile run on the M5-S04 docs step is the only sanctioned writer of both stale compiled artefacts (CWB-OTHER-042's member count and artefacts/M5-S04/traceability.md's TestUserFactory coverage), and both would close in the same collation pass."
+    }
+  ]
+}

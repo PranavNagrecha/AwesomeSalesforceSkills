@@ -4862,3 +4862,80 @@ runs 4–9; `plan.json.human_gates[milestone:M4]`, `[milestone:M5]` (no re-sign 
 individually beyond the milestone note); suggested follow-up: `milestone-verifier`, because
 re-signing G4/G5 against the current manifest and the run 8/9 evidence — rather than against the
 pre-rebuild snapshot — is exactly its job, not this agent's.
+
+## O-M4S05-02 — F-63 closed against the live `traceability.md`; the orphan the M5 re-verification found lives only in the `M5-S04` compiled snapshot, and this pass leaves that snapshot alone
+
+`reports/MILESTONE-M5-REPORT.md` § 15.7 **F-63** reports `ApexClass:TestUserFactory` as a
+member→row orphan: present in the manifest (`artefacts/M5-S05/package.xml`) with no row in
+`traceability.md` naming it. Read against the build's own canonical `traceability.md` (this
+file, at the build root — the one `agents/build-doc-keeper` writes and Step 7 governs), that is
+not the current state: `REQ-044`'s `artefact_paths` cell already carries
+`` `artefacts/M4-S05/classes/TestUserFactory.cls` `` as its fifth entry, alongside the trigger,
+the service class, the test class and `TestDataFactory.cls`. It was written there during the
+F-59 documentation pass on `M4-S05` (`envelopes/M4-S05/2026-09-12T18-12-57Z.json`) — the class
+was recorded as an artefact path at that time even though the same pass correctly flagged, in
+what became **O-M4S05-01**, that the class was *not yet in the step's declared `outputs[]`* and
+therefore owed a manifest member. `O-M4S05-01` was discharged by `D-M5S05-06` (the `M5-S05`
+rebuild that added the fifth `ApexClass` member); the `artefact_paths` cell was never the gap —
+the manifest member was.
+
+**Confirmed, not assumed, before and after — same command, same result, run from the build
+directory:**
+
+```text
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts
+...
+WARN: row 56–59: [the four pre-existing REQ-055…REQ-058 Draft-status coverage gaps, unrelated]
+traceability.md: 58 row(s), build schema, 4 coverage gap(s), 0 orphan(s), 0 error(s), 4 warning(s)
+```
+
+Run before this pass touched anything and run again after, byte-identical: **0 orphans**, both
+times. No edit to `traceability.md` was made, because none was needed — writing the path a
+second time into a cell that already carries it would violate `agents/build-doc-
+keeper/AGENT.md` Step 8's replace-not-duplicate rule for no gain.
+
+**Where the reported orphan actually lives.** The `M5` milestone's own declared test (`plan.json`
+milestone acceptance test, quoted verbatim in `reports/MILESTONE-M5-REPORT.md` § 15.4 Test 0) is
+`check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts` — it reads the
+**compiled snapshot** `build-doc-keeper` wrote during `M5-S04`'s compile run at 13:15Z, not the
+live file this entry just re-ran the same checker against. `TestUserFactory` was added to the
+live file's `REQ-044` row by the F-59 pass at approximately 17:00–18:12Z, three to four hours
+*after* that compile — so the snapshot was frozen before the fix existed and still lacks it.
+Re-running the identical checker against that snapshot, this pass, reproduces the finding
+exactly:
+
+```text
+$ python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M5-S04/traceability.md --manifest-dir artefacts
+...
+WARN: orphan artefacts: 1 component(s) in the manifest are named by no requirement — see the orphan report
+traceability.md: 58 row(s), build schema, 4 coverage gap(s), 1 orphan(s), 0 error(s), 5 warning(s)
+```
+
+**F-63 is closed at the source `build-doc-keeper` owns and left open, by design, at the compiled
+copy `build-doc-keeper` does not hand-edit** — `artefacts/M5-S04/traceability.md` is `M5-S04`'s
+compiled output, per `standards/build-orchestration.md` § 4's `docs` row and this agent's own
+Step 10 (compile runs collate from sources, and a compiled document is rewritten in full from
+those sources, never patched in place). The same reasoning this build's own **F-64** already
+applies to `CWB-OTHER-042`'s stale member count in the same `M5-S04` compile output governs this
+snapshot too: the next `M5-S04` compile re-run picks up both the corrected member count and the
+now-present `TestUserFactory` row-coverage in one collation pass, sourced from the live
+`traceability.md` this entry confirms is already correct. No compile re-run is made here — the
+build is `status: done` (`plan.json`), no step is being re-run, and this touch does not cross
+into `M5-S04`'s own output.
+
+**F-64** — `CWB-OTHER-042`'s "29 types, 56 members" line in
+`artefacts/M5-S04/configuration-workbook.md` — is left exactly as `reports/MILESTONE-M5-
+REPORT.md` § 15.7 recommends: not independently repaired, because the compiled workbook is
+`M5-S04`'s output and a compile re-run is not warranted for one stale number on a `done` build. A
+future compile of `M5-S04` corrects it in the same pass that would refresh the compiled
+`traceability.md` snapshot above.
+
+**Evidence:** `traceability.md` `REQ-044` row (`artefact_paths` cell, fifth entry); this pass's
+own two `check_rtm.py` runs (quoted verbatim above, root file vs. compiled snapshot);
+`reports/MILESTONE-M5-REPORT.md` §§ 15.3, 15.4 Test 0, 15.7 (F-63, F-64); `envelopes/M4-
+S05/2026-09-12T18-12-57Z.json` (the F-59 pass that wrote the `artefact_paths` cell);
+`decisions.md` **O-M4S05-01**, **D-M5S05-06** (the manifest-membership half of this same gap,
+already discharged); `plan.json` (`status: "done"`, `steps[M4-S05].status: "documented"`). No
+suggested follow-up beyond the one `reports/MILESTONE-M5-REPORT.md` already names for its own
+recompile — filed here as the record of why this touch made no `traceability.md` edit rather than
+a second one.
