@@ -12,6 +12,9 @@ assignment-and-auto-response-rules-designer,runtime,stable,agents/assignment-and
 audit-router,runtime,stable,agents/audit-router/AGENT.md,1.0.0,P03;P07;P10;P12,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 automation-migration-router,runtime,stable,agents/automation-migration-router/AGENT.md,1.0.0,P05,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 automation-transaction-profiler,runtime,stable,agents/automation-transaction-profiler/AGENT.md,,P05,promote-native-product-agent,true,Export as focused Cursor subagent for P05.
+build-doc-keeper,runtime,stable,agents/build-doc-keeper/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
+build-planner,runtime,stable,agents/build-planner/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
+build-step-runner,runtime,stable,agents/build-step-runner/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 bulk-migration-planner,runtime,stable,agents/bulk-migration-planner/AGENT.md,1.0.0,P09,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 business-hours-and-holidays-configurator,runtime,stable,agents/business-hours-and-holidays-configurator/AGENT.md,1.0.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 case-escalation-auditor,runtime,deprecated,agents/case-escalation-auditor/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
@@ -50,6 +53,8 @@ list-view-and-search-layout-auditor,runtime,deprecated,agents/list-view-and-sear
 lwc-auditor,runtime,stable,agents/lwc-auditor/AGENT.md,1.1.0,P04;P06,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 lwc-builder,runtime,stable,agents/lwc-builder/AGENT.md,1.1.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 lwc-debugger,runtime,stable,agents/lwc-debugger/AGENT.md,1.1.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
+metadata-builder,runtime,stable,agents/metadata-builder/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
+milestone-verifier,runtime,stable,agents/milestone-verifier/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 multi-org-drift-analyzer,runtime,stable,agents/multi-org-drift-analyzer/AGENT.md,,P12,promote-native-product-agent,true,Export as focused Cursor subagent for P12.
 my-domain-and-session-security-auditor,runtime,deprecated,agents/my-domain-and-session-security-auditor/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
 object-designer,runtime,stable,agents/object-designer/AGENT.md,1.2.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
@@ -62,6 +67,7 @@ org-health-assessor-v2,runtime,stable,agents/org-health-assessor-v2/AGENT.md,,P1
 path-designer,runtime,stable,agents/path-designer/AGENT.md,1.0.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 permission-set-architect,runtime,stable,agents/permission-set-architect/AGENT.md,1.1.0,P03;P07,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 picklist-governor,runtime,deprecated,agents/picklist-governor/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
+plan-verifier,runtime,stable,agents/plan-verifier/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 process-flow-mapper,runtime,stable,agents/process-flow-mapper/AGENT.md,1.0.0,P05,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 profile-to-permset-migrator,runtime,stable,agents/profile-to-permset-migrator/AGENT.md,1.1.0,P03;P07,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 prompt-library-governor,runtime,deprecated,agents/prompt-library-governor/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
@@ -72,6 +78,7 @@ release-readiness-reviewer,runtime,stable,agents/release-readiness-reviewer/AGEN
 release-train-planner,runtime,stable,agents/release-train-planner/AGENT.md,1.0.0,P06,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 report-and-dashboard-auditor,runtime,deprecated,agents/report-and-dashboard-auditor/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
 reports-and-dashboards-folder-sharing-auditor,runtime,deprecated,agents/reports-and-dashboards-folder-sharing-auditor/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
+requirements-clarifier,runtime,stable,agents/requirements-clarifier/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 sales-stage-designer,runtime,stable,agents/sales-stage-designer/AGENT.md,1.1.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 sandbox-strategy-designer,runtime,stable,agents/sandbox-strategy-designer/AGENT.md,1.1.0,P06,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 security-posture-reviewer,runtime,stable,agents/security-posture-reviewer/AGENT.md,,P07,promote-native-product-agent,true,Export as focused Cursor subagent for P07.
@@ -79,6 +86,7 @@ security-scanner,runtime,stable,agents/security-scanner/AGENT.md,1.1.0,P03;P07,r
 security-skill-builder,build,stable,agents/security-skill-builder/AGENT.md,1.0.0,,preserve-maintainer-agent,false,Keep outside the default product runtime; validate independently.
 sharing-audit-agent,runtime,deprecated,agents/sharing-audit-agent/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
 soql-optimizer,runtime,stable,agents/soql-optimizer/AGENT.md,1.1.0,P04;P05;P10,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
+step-tester,runtime,stable,agents/step-tester/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 story-drafter,runtime,stable,agents/story-drafter/AGENT.md,1.0.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 task-mapper,build,stable,agents/task-mapper/AGENT.md,1.0.0,,preserve-maintainer-agent,false,Keep outside the default product runtime; validate independently.
 test-class-generator,runtime,stable,agents/test-class-generator/AGENT.md,1.1.0,P02;P06,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
