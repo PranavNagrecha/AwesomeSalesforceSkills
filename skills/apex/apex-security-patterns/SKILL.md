@@ -30,9 +30,9 @@ outputs:
   - "review findings for sharing, CRUD/FLS, and system-context risks"
   - "secure service-layer pattern for reads and writes"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-09-16
 ---
 
 Use this skill when Apex security needs to be explicit rather than assumed. The purpose is to choose the right sharing model, enforce CRUD and FLS deliberately on reads and writes, and prevent user-facing entry points from silently operating in broader system context than intended.
@@ -42,6 +42,24 @@ Use this skill when Apex security needs to be explicit rather than assumed. The 
 - What is the actual entry point: `@AuraEnabled`, REST resource, invocable action, trigger helper, Queueable, or Batch?
 - Should the code honor the caller’s record visibility, or is there a documented reason it must run with elevated access?
 - Does the code only read data, mutate data, or dynamically choose fields or objects?
+
+## Questions to Ask Before Configuring
+
+Ask these before writing or reviewing an Apex security boundary. Each one traces to a
+behaviour in `references/gotchas.md` that a keyword choice alone cannot recover from afterwards.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Is the risk row visibility, object/field permissions, or both?" | `with sharing` only addresses rows; CRUD and FLS need a separate enforcement path (`with sharing` Is Not A Full Security Model) | A split design: sharing keyword for visibility, `WITH USER_MODE` / `stripInaccessible` / describe checks for CRUD/FLS |
+| "Which class in the call chain, if any, is allowed to widen record access?" | A safe controller still leaks when a downstream helper is `without sharing` (`without sharing` Deep In The Call Stack Still Matters) | A named elevation boundary with a documented reason, kept narrow and purpose-built |
+| "Does this path only read, or does it also write — and how is each half enforced?" | Securing SOQL does not sanitize DML (Secure Reads And Secure Writes Need Different Controls) | An explicit write pattern (`stripInaccessible`, `AccessLevel.USER_MODE`, or describe checks) beside the read pattern |
+| "What is the class or trigger's `.cls-meta.xml` / `.trigger-meta.xml` `apiVersion`?" | At 67.0+ undeclared classes default to `with sharing` and SOQL/DML default to user mode; below 67.0 both defaults differ (The Default Sharing Mode Changed In API 67.0; The Default Access Mode Flipped In API 67.0) | The version row before any "is this secure?" claim, plus an inventory of operations that still need `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` with a `// reason:` |
+| "For a trigger, are you judging the sharing context or the access mode of each operation?" | Triggers are always implicitly `without sharing`, but body operations follow the version-gated access-mode default (A Trigger's `without sharing` Context Says Nothing About Its Access Mode) | Per-operation elevation only where needed, with accurate comments — not a blanket "triggers run in system mode" claim |
+| "Will a comment mention `WITH SECURITY_ENFORCED` or system mode without the keyword appearing in code?" | Scanners that read comments as code raise false CRITICALs; stale system-mode comments mislead reviewers (A Checker That Reads Comments As Code Flags Safe Classes) | Comments that either omit removed clauses, negate old defaults, or sit next to real `SYSTEM_MODE` / `insertAsSystem` elevation |
+
+What a proper configuration adds over just picking keywords: every public class declares its sharing intent, every elevation carries a reason tied to the statement that elevates, CRUD/FLS is enforced on the write path as deliberately as on the read path, and comments match the `apiVersion` the metadata actually pins.
+
+---
 
 ## Core Concepts
 
@@ -134,6 +152,26 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] `without sharing` usage is narrow, justified, and documented.
 - [ ] Dynamic field or object access is allowlisted through Schema describe or equivalent validation.
 - [ ] Secure write paths inspect or log stripped fields when that matters operationally.
+- [ ] Every `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` at apiVersion ≥ 67.0 carries a nearby `// reason:` comment (checker rule `elevation-without-reason`).
+- [ ] Comments at apiVersion ≥ 67.0 do not still claim `run(s) in system mode` / `system mode by default` unless they negate the claim (checker rule `stale-system-mode-claim`).
+
+## Checker Rules
+
+`scripts/check_apex_security_patterns.py` scans `.cls` / `.trigger` trees. Code-facing rules run on text with `//` comments, `/* … */` comments, and single-quoted literals blanked (same length) so explanatory comments cannot raise CRITICAL/HIGH/MEDIUM.
+
+| Severity | Rule | When it fires |
+|---|---|---|
+| CRITICAL | `with-security-enforced-removed` | `WITH SECURITY_ENFORCED` in code at apiVersion ≥ 67.0 |
+| MEDIUM | `with-security-enforced-legacy` | `WITH SECURITY_ENFORCED` in code below 67.0 |
+| HIGH / MEDIUM | `undeclared-sharing` | public/global class with no sharing keyword (HIGH below 67.0, MEDIUM at 67.0+) |
+| HIGH | `without-sharing` | `without sharing` present |
+| HIGH | `entry-point-no-sharing` | `@AuraEnabled` / `@InvocableMethod` / `@RestResource` without sharing declaration |
+| HIGH | `entry-point-no-read-enforcement` | entry point lacks obvious read enforcement |
+| HIGH | `entry-point-no-write-enforcement` | entry point DML lacks obvious write enforcement |
+| HIGH | `entry-point-system-mode` | entry point opts out to system mode |
+| REVIEW | `trigger-system-mode` | trigger-body operation opts out to system mode |
+| REVIEW | `elevation-without-reason` | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` at ≥ 67.0 with no nearby `// reason:` |
+| REVIEW | `stale-system-mode-claim` | comment at ≥ 67.0 asserts system-mode default without negating the claim, and with no nearby explicit elevation (`SYSTEM_MODE` / `insertAsSystem` / `as system`) |
 
 ## Salesforce-Specific Gotchas
 

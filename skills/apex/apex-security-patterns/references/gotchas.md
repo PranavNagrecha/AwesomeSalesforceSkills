@@ -79,3 +79,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Teams rely on implicit defaults instead of declaring `with`, `without`, or `inherited sharing`.
 
 **How to avoid:** Declare the sharing model explicitly, even when the logic seems obvious.
+
+---
+
+## A Checker That Reads Comments As Code Flags Safe Classes
+
+**What happens:** A class that documents why it does *not* use `WITH SECURITY_ENFORCED` — for example `// WITH SECURITY_ENFORCED is not used: it was removed at 67.0` — still draws `CRITICAL: WITH SECURITY_ENFORCED at apiVersion 67.0 … no longer compiles` from a scanner that runs regexes on raw text. The org compiled and ran the class; the finding is a false positive from the comment.
+
+**When it occurs:** Any static checker that matches security clauses, elevation keywords, or access-mode claims against the full file buffer, including `//` line comments, `/* … */` block comments, and string literals. The case-onboarding `CaseMilestoneService` and tier2-webhook `Tier2ChannelHealthQueueable` both carried this comment shape after the API 67.0 uplift.
+
+**How to avoid:** Blank comments and single-quoted literals (same length, newlines kept) before every code-facing rule. Keep two review rules that *do* read original comments on purpose: (1) at apiVersion ≥ 67.0, each `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` needs a nearby `// reason:` explaining why the operation ignores the running user's FLS/sharing (gotcha: The Default Access Mode Flipped In API 67.0); (2) at apiVersion ≥ 67.0, a comment that still claims code `run(s) in system mode` or `system mode by default` — without `not` / `no longer` / `66` qualifying the claim — is stale and must be corrected with the code or rewritten.

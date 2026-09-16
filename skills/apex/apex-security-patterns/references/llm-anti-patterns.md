@@ -231,3 +231,37 @@ return Database.getQueryLocator(
 If the `.cls-meta.xml` is not in scope, say which row you assumed rather than picking a default. The matrix is [Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
 
 **Detection hint:** Any answer containing "Apex runs in system mode by default" or "Apex runs in user mode by default" with no `apiVersion` cited in the same answer. Also flag advice that adds `WITH USER_MODE` "for security" to a class already at 67.0+ (a no-op), and elevated-access classes bumped to 67.0 with no `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` added.
+
+---
+
+## Anti-Pattern 8: Asserting system mode in a comment instead of in code
+
+**What the LLM generates:**
+
+```apex
+trigger CaseBeforeInsert on Case (before insert) {
+    // triggers run in system mode, so FLS is not checked here
+    for (Case c : Trigger.new) {
+        c.Subject = c.Subject == null ? 'Untitled' : c.Subject;
+    }
+}
+```
+
+**Why it happens:** Older docs and blog posts compressed "triggers always run implicitly without sharing" into "triggers run in system mode." Models copy that sentence into a comment and then skip `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` on the actual SOQL or DML. At apiVersion 67.0+ the comment is false: database operations in the trigger body run in user mode unless elevation is stated in code. Reviewers who trust the comment ship unenforced assumptions; checkers that only read comments as documentation miss the gap, and checkers that read comments as code may also false-positive on explanatory `WITH SECURITY_ENFORCED` notes elsewhere.
+
+**Correct pattern:**
+
+```apex
+trigger CaseBeforeInsert on Case (before insert) {
+    // reason: platform default Subject stamp; Case FLS is not granted to every creator.
+    for (Case c : [
+        SELECT Id, Subject FROM Case WHERE Id IN :Trigger.new WITH SYSTEM_MODE
+    ]) {
+        // …
+    }
+}
+```
+
+Or drop the elevation and keep the comment accurate: at 67.0+ this body runs in user mode. Do not leave a system-mode claim in a comment when the code does not carry the keyword.
+
+**Detection hint:** In a `.cls` / `.trigger` pinned to apiVersion ≥ 67.0, a comment matching `run(s) in system mode` or `system mode by default` without a claim-negating `not` / `no longer` / `66` in the same comment. Flagged REVIEW by `check_apex_security_patterns.py` (`stale-system-mode-claim`).
