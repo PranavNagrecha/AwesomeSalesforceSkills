@@ -638,6 +638,11 @@ types.
    that run, not assume tests ran. The summary lists coverage per class and
    marks any class under 75%, the threshold RunSpecifiedTests/RunLocalTests
    apply per class, not only in aggregate.
+   `--probe` is for org-facing diagnosis against an altered temporary copy of
+   the build (drop a known-failing component with `--without TYPE:Member`, or
+   swap a file with `--patch`). Its `summary.md` / `result.json` under that
+   copy's `reports/mock-deploy/<ts>/` are never gate evidence. A probe run
+   writes nothing into the real build directory.
 2. **Checker shape.** A `checker` test's `command` must match
    `^python3 skills/[a-z]+/[a-z0-9-]+/scripts/check_[a-z0-9_]+\.py\b`, and the
    file must exist on disk. A checker that does not exist is an ERROR at plan

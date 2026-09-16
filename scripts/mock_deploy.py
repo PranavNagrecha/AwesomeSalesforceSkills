@@ -76,6 +76,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import NamedTuple
@@ -86,6 +87,333 @@ DEFAULT_API_VERSION = "62.0"
 DEFAULT_STATUSES = ("built", "tested", "documented")
 TEST_LEVELS = ("NoTestRun", "RunSpecifiedTests", "RunLocalTests")
 DEFAULT_TEST_LEVEL = "NoTestRun"
+
+
+# --------------------------------------------------------------------------
+# Probe mode — type → source-format path map (types seen in the four
+# committed example builds only; unknown types refuse before the org is hit)
+# --------------------------------------------------------------------------
+
+class ProbeAlteration(NamedTuple):
+    """What a --probe run changed on the temporary copy before assembly."""
+
+    without: list[str]  # TYPE:Member specs, as given
+    patched: list[str]  # "relpath=source" specs, as given
+    copy_dir: str
+
+
+class WithoutResolution(NamedTuple):
+    """Resolved --without TYPE:Member: files to delete (relative path
+    suffixes under any artefacts/<step>/) and (type, member) pairs to strip
+    from every package.xml in the probe copy.
+    """
+
+    spec: str
+    file_suffixes: list[str]
+    manifest_removals: list[tuple[str, str]]
+
+
+# Singular deploy-result type → (package.xml container type, directory, suffix).
+# Deploy JSON reports AutoResponseRule Case.Case_Acknowledgement; source format
+# ships the container AutoResponseRules file autoResponseRules/Case.…-meta.xml
+# and package.xml names the object member under AutoResponseRules.
+_RULE_CONTAINER: dict[str, tuple[str, str, str]] = {
+    "AutoResponseRule": ("AutoResponseRules", "autoResponseRules", ".autoResponseRules-meta.xml"),
+    "AssignmentRule": ("AssignmentRules", "assignmentRules", ".assignmentRules-meta.xml"),
+    "EscalationRule": ("EscalationRules", "escalationRules", ".escalationRules-meta.xml"),
+}
+
+# Flat types: member is the file stem (no Object. prefix).
+_FLAT_META: dict[str, tuple[str, str]] = {
+    "ApexClass": ("classes", ".cls"),
+    "ApexTrigger": ("triggers", ".trigger"),
+    "AssignmentRules": ("assignmentRules", ".assignmentRules-meta.xml"),
+    "AutoResponseRules": ("autoResponseRules", ".autoResponseRules-meta.xml"),
+    "CustomPermission": ("customPermissions", ".customPermission-meta.xml"),
+    "EntitlementProcess": ("entitlementProcesses", ".entitlementProcess-meta.xml"),
+    "EscalationRules": ("escalationRules", ".escalationRules-meta.xml"),
+    "ExternalCredential": ("externalCredentials", ".externalCredential-meta.xml"),
+    "Flow": ("flows", ".flow-meta.xml"),
+    "FlowTest": ("flowtests", ".flowtest-meta.xml"),
+    "Group": ("groups", ".group-meta.xml"),
+    "Layout": ("layouts", ".layout-meta.xml"),
+    "MilestoneType": ("milestoneTypes", ".milestoneType-meta.xml"),
+    "NamedCredential": ("namedCredentials", ".namedCredential-meta.xml"),
+    "PermissionSet": ("permissionsets", ".permissionset-meta.xml"),
+    "PermissionSetGroup": ("permissionsetgroups", ".permissionsetgroup-meta.xml"),
+    "Profile": ("profiles", ".profile-meta.xml"),
+    "Queue": ("queues", ".queue-meta.xml"),
+    "Settings": ("settings", ".settings-meta.xml"),
+    "SharingRules": ("sharingRules", ".sharingRules-meta.xml"),
+    "StandardValueSet": ("standardValueSets", ".standardValueSet-meta.xml"),
+}
+
+# Object.Child types under objects/<Object>/<subdir>/<Child>.<suffix>
+_OBJECT_CHILD: dict[str, tuple[str, str]] = {
+    "BusinessProcess": ("businessProcesses", ".businessProcess-meta.xml"),
+    "CompactLayout": ("compactLayouts", ".compactLayout-meta.xml"),
+    "CustomField": ("fields", ".field-meta.xml"),
+    "ListView": ("listViews", ".listView-meta.xml"),
+    "RecordType": ("recordTypes", ".recordType-meta.xml"),
+    "ValidationRule": ("validationRules", ".validationRule-meta.xml"),
+}
+
+
+def _split_type_member(spec: str) -> tuple[str, str]:
+    if ":" not in spec:
+        raise ValueError(
+            f"invalid --without {spec!r}: expected TYPE:Member (e.g. "
+            "AutoResponseRule:Case.Case_Acknowledgement)"
+        )
+    type_name, member = spec.split(":", 1)
+    type_name, member = type_name.strip(), member.strip()
+    if not type_name or not member:
+        raise ValueError(
+            f"invalid --without {spec!r}: expected TYPE:Member (e.g. "
+            "AutoResponseRule:Case.Case_Acknowledgement)"
+        )
+    return type_name, member
+
+
+def component_file_suffixes(type_name: str, member: str) -> list[str]:
+    """Relative path suffixes (under artefacts/<step>/) for TYPE:Member.
+
+    Covers every metadata type that appears in the four committed example
+    builds. Raises ValueError when the type is unknown to this map.
+    """
+    if type_name in _RULE_CONTAINER:
+        _container, directory, suffix = _RULE_CONTAINER[type_name]
+        obj = member.split(".", 1)[0]
+        return [f"{directory}/{obj}{suffix}"]
+
+    if type_name in _FLAT_META:
+        directory, suffix = _FLAT_META[type_name]
+        paths = [f"{directory}/{member}{suffix}"]
+        if type_name == "ApexClass":
+            paths.append(f"{directory}/{member}.cls-meta.xml")
+        elif type_name == "ApexTrigger":
+            paths.append(f"{directory}/{member}.trigger-meta.xml")
+        return paths
+
+    if type_name in _OBJECT_CHILD:
+        if "." not in member:
+            raise ValueError(
+                f"unmappable --without {type_name}:{member}: expected Object.Name member"
+            )
+        obj, name = member.split(".", 1)
+        subdir, suffix = _OBJECT_CHILD[type_name]
+        return [f"objects/{obj}/{subdir}/{name}{suffix}"]
+
+    if type_name == "CustomObject":
+        return [
+            f"objects/{member}.object-meta.xml",
+            f"objects/{member}/{member}.object-meta.xml",
+        ]
+
+    if type_name == "EmailFolder":
+        return [f"email/{member}.emailFolder-meta.xml"]
+
+    if type_name == "EmailTemplate":
+        if "/" not in member:
+            raise ValueError(
+                f"unmappable --without EmailTemplate:{member}: expected Folder/Name"
+            )
+        folder, name = member.split("/", 1)
+        return [
+            f"email/{folder}/{name}.email",
+            f"email/{folder}/{name}.email-meta.xml",
+        ]
+
+    if type_name == "Report":
+        if "/" in member:
+            folder, name = member.split("/", 1)
+            return [f"reports/{folder}/{name}.report-meta.xml"]
+        return [f"reports/{member}-meta.xml"]
+
+    raise ValueError(
+        f"unmappable metadata type {type_name!r}: --without cannot map this type "
+        "(supported: types that appear in the four committed example builds)"
+    )
+
+
+def resolve_without_spec(spec: str) -> WithoutResolution:
+    """Parse TYPE:Member into file suffixes + package.xml removals."""
+    type_name, member = _split_type_member(spec)
+    suffixes = component_file_suffixes(type_name, member)
+    removals: list[tuple[str, str]] = [(type_name, member)]
+    if type_name in _RULE_CONTAINER:
+        container, _, _ = _RULE_CONTAINER[type_name]
+        obj = member.split(".", 1)[0]
+        removals.append((container, obj))
+        if member != obj:
+            # Also drop an exact Object.Rule member under the container type if present.
+            removals.append((container, member))
+    return WithoutResolution(spec=spec, file_suffixes=suffixes, manifest_removals=removals)
+
+
+def package_xml_from_types(types: dict[str, set[str]], version: str) -> str:
+    """Serialize a {type: {members}} map to a package.xml document."""
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<Package xmlns="http://soap.sforce.com/2006/04/metadata">',
+    ]
+    for name in sorted(types):
+        if not types[name]:
+            continue
+        lines.append("    <types>")
+        for member in sorted(types[name]):
+            lines.append(f"        <members>{escape(member)}</members>")
+        lines.append(f"        <name>{escape(name)}</name>")
+        lines.append("    </types>")
+    lines.append(f"    <version>{escape(version)}</version>")
+    lines.append("</Package>")
+    return "\n".join(lines) + "\n"
+
+
+def scrub_package_xml(path: Path, removals: set[tuple[str, str]]) -> bool:
+    """Drop matching <members> from a package.xml; drop empty <types> blocks.
+
+    Returns True when the file was rewritten. Malformed/missing files are left
+    alone (returns False).
+    """
+    if not path.is_file() or not removals:
+        return False
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError:
+        return False
+    types = _types_from_root(root)
+    version_el = root.find(f"{METADATA_NS}version")
+    version = (
+        version_el.text.strip()
+        if version_el is not None and version_el.text and version_el.text.strip()
+        else DEFAULT_API_VERSION
+    )
+    changed = False
+    for type_name, member in removals:
+        bucket = types.get(type_name)
+        if bucket and member in bucket:
+            bucket.discard(member)
+            changed = True
+            if not bucket:
+                del types[type_name]
+    if not changed:
+        return False
+    path.write_text(package_xml_from_types(types, version), encoding="utf-8")
+    return True
+
+
+def delete_component_files(copy_dir: Path, file_suffixes: list[str]) -> list[Path]:
+    """Delete every file under copy_dir whose path ends with one of the
+    source-format suffixes (matched on the relative posix path).
+    """
+    deleted: list[Path] = []
+    suffix_set = {s.replace("\\", "/") for s in file_suffixes}
+    for path in sorted(copy_dir.rglob("*")):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(copy_dir).as_posix()
+        if any(rel == s or rel.endswith("/" + s) for s in suffix_set):
+            path.unlink()
+            deleted.append(path)
+    return deleted
+
+
+def iter_package_xml_files(copy_dir: Path) -> list[Path]:
+    """Every package.xml under the probe copy — step manifests (`package.xml`)
+    and milestone reports (`reports/MILESTONE-*-package.xml`), plus any other
+    path whose name ends in `package.xml`.
+    """
+    return sorted(
+        p for p in copy_dir.rglob("*package.xml")
+        if p.is_file() and p.name.endswith("package.xml")
+    )
+
+
+def apply_probe_without(copy_dir: Path, specs: list[str]) -> list[WithoutResolution]:
+    """Resolve and apply every --without on the probe copy (files + manifests)."""
+    resolved = [resolve_without_spec(s) for s in specs]
+    removals: set[tuple[str, str]] = set()
+    for item in resolved:
+        removals.update(item.manifest_removals)
+        delete_component_files(copy_dir, item.file_suffixes)
+    for pkg in iter_package_xml_files(copy_dir):
+        scrub_package_xml(pkg, removals)
+    return resolved
+
+
+def apply_probe_patches(copy_dir: Path, specs: list[str]) -> list[tuple[str, str]]:
+    """Apply every --patch relpath=localfile on the probe copy.
+
+    Returns the list of (relpath, source) pairs applied. Raises ValueError on
+    a bad spec or a missing source/destination.
+    """
+    applied: list[tuple[str, str]] = []
+    for spec in specs:
+        if "=" not in spec:
+            raise ValueError(
+                f"invalid --patch {spec!r}: expected <relative artefact path>=<local file>"
+            )
+        rel, src = spec.split("=", 1)
+        rel, src = rel.strip(), src.strip()
+        if not rel or not src:
+            raise ValueError(
+                f"invalid --patch {spec!r}: expected <relative artefact path>=<local file>"
+            )
+        source = Path(src).expanduser().resolve()
+        if not source.is_file():
+            raise ValueError(f"--patch source not found: {source}")
+        dest = (copy_dir / rel).resolve()
+        try:
+            dest.relative_to(copy_dir.resolve())
+        except ValueError as exc:
+            raise ValueError(f"--patch path escapes probe copy: {rel}") from exc
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, dest)
+        applied.append((rel, str(source)))
+    return applied
+
+
+def _probe_copy_ignore(source_root: Path):
+    """Ignore envelopes/ and reports/mock-deploy/ when cloning a build for --probe."""
+
+    source_root = source_root.resolve()
+
+    def _ignore(directory: str, names: list[str]) -> set[str]:
+        ignored: set[str] = set()
+        dir_path = Path(directory).resolve()
+        name_set = set(names)
+        if dir_path == source_root:
+            if "envelopes" in name_set:
+                ignored.add("envelopes")
+            if ".git" in name_set:
+                ignored.add(".git")
+        if dir_path.name == "reports" and "mock-deploy" in name_set:
+            ignored.add("mock-deploy")
+        return ignored
+
+    return _ignore
+
+
+def create_probe_copy(build_dir: Path, probe_dir: Path | None) -> Path:
+    """Copy the build into a temporary (or chosen) directory for --probe."""
+    build_dir = build_dir.resolve()
+    if probe_dir is None:
+        dest = Path(tempfile.mkdtemp(prefix="sfskills-mock-deploy-probe-"))
+    else:
+        dest = probe_dir.resolve()
+        if dest.exists():
+            if any(dest.iterdir()):
+                raise ValueError(
+                    f"--probe-dir is not empty: {dest} (pass an empty or new directory)"
+                )
+        else:
+            dest.mkdir(parents=True, exist_ok=True)
+    # mkdtemp / mkdir leave an empty dest; copytree needs dirs_exist_ok.
+    shutil.copytree(
+        build_dir, dest, dirs_exist_ok=True, ignore=_probe_copy_ignore(build_dir)
+    )
+    return dest
 
 
 # --------------------------------------------------------------------------
@@ -395,19 +723,7 @@ def merge_package_xml(paths: list[Path], version: str) -> str:
         for name, members in _types_from_root(root).items():
             types.setdefault(name, set()).update(members)
 
-    lines = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<Package xmlns="http://soap.sforce.com/2006/04/metadata">',
-    ]
-    for name in sorted(types):
-        lines.append("    <types>")
-        for member in sorted(types[name]):
-            lines.append(f"        <members>{escape(member)}</members>")
-        lines.append(f"        <name>{escape(name)}</name>")
-        lines.append("    </types>")
-    lines.append(f"    <version>{escape(version)}</version>")
-    lines.append("</Package>")
-    return "\n".join(lines) + "\n"
+    return package_xml_from_types(types, version)
 
 
 def diff_manifest_types(
@@ -784,8 +1100,21 @@ def render_summary(
     tests: TestSummary | None = None,
     planned_test_level: str | None = None,
     planned_tests: list[str] | None = None,
+    probe: ProbeAlteration | None = None,
 ) -> str:
-    lines = ["# Mock deploy result", "", f"- org: `{org_alias}`", f"- mode: `{mode}`"]
+    lines = ["# Mock deploy result", ""]
+    if probe is not None:
+        lines.append(
+            f"- PROBE: {len(probe.without)} component(s) removed, {len(probe.patched)} "
+            "file(s) patched — this run validated an altered copy; it is not evidence "
+            "for a gate"
+        )
+        for spec in probe.without:
+            lines.append(f"- removed: `{spec}`")
+        for spec in probe.patched:
+            lines.append(f"- patched: `{spec}`")
+        lines.append("")
+    lines += [f"- org: `{org_alias}`", f"- mode: `{mode}`"]
 
     if api_version is not None:
         lines.append(f"- api version: `{api_version}` ({api_version_source})")
@@ -1001,12 +1330,38 @@ def build_arg_parser() -> argparse.ArgumentParser:
              "summary.md with 'status: not run (--plan-only)'. Useful to "
              "inspect manifest drift without contacting an org.",
     )
+    parser.add_argument(
+        "--probe", action="store_true",
+        help="Validate an altered temporary copy of the build (never writes "
+             "into the real build; summary is not gate evidence). Use with "
+             "--without / --patch.",
+    )
+    parser.add_argument(
+        "--without", action="append", default=[], metavar="TYPE:Member",
+        help="--probe only. Remove TYPE:Member from the copy before assembly "
+             "(repeatable). Deletes the source-format file(s) and strips the "
+             "member from every package.xml in the copy.",
+    )
+    parser.add_argument(
+        "--patch", action="append", default=[], metavar="PATH=FILE",
+        help="--probe only. Replace <relative artefact path> in the copy with "
+             "the contents of <local file> before assembly (repeatable).",
+    )
+    parser.add_argument(
+        "--probe-dir", default=None, metavar="DIR",
+        help="--probe only. Directory for the temporary build copy "
+             "(must be new or empty). Default: a fresh directory under the "
+             "system temp dir.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_arg_parser()
     args = parser.parse_args(argv)
+
+    if not args.probe and (args.without or args.patch or args.probe_dir):
+        parser.error("--without/--patch/--probe-dir require --probe")
 
     plan_path = Path(args.plan).resolve()
     if not plan_path.is_file():
@@ -1018,8 +1373,47 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: could not parse plan.json: {exc}", file=sys.stderr)
         return 2
 
-    build_dir = plan_path.parent
+    real_build_dir = plan_path.parent
+    build_dir = real_build_dir
     artefacts_root = plan.get("artefacts_root", "artefacts")
+    probe_alteration: ProbeAlteration | None = None
+
+    if args.probe:
+        # Resolve --without before touching the copy or the org so an
+        # unmappable type fails fast with no subprocess.run call.
+        try:
+            for spec in args.without:
+                resolve_without_spec(spec)
+            for spec in args.patch:
+                if "=" not in spec or not spec.split("=", 1)[0].strip() or not spec.split("=", 1)[1].strip():
+                    raise ValueError(
+                        f"invalid --patch {spec!r}: expected "
+                        "<relative artefact path>=<local file>"
+                    )
+                src = Path(spec.split("=", 1)[1].strip()).expanduser().resolve()
+                if not src.is_file():
+                    raise ValueError(f"--patch source not found: {src}")
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+
+        try:
+            probe_dir = create_probe_copy(
+                real_build_dir,
+                Path(args.probe_dir) if args.probe_dir else None,
+            )
+            apply_probe_without(probe_dir, args.without)
+            patched = apply_probe_patches(probe_dir, args.patch)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+
+        probe_alteration = ProbeAlteration(
+            without=list(args.without),
+            patched=[f"{rel}={src}" for rel, src in patched],
+            copy_dir=str(probe_dir),
+        )
+        build_dir = probe_dir
 
     selected = select_steps(plan, args.milestone, args.step)
     if not selected:
@@ -1033,6 +1427,19 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.out:
         out_dir = Path(args.out).resolve()
+        if probe_alteration is not None:
+            try:
+                out_dir.relative_to(real_build_dir.resolve())
+            except ValueError:
+                pass  # out_dir is outside the real build — fine
+            else:
+                print(
+                    f"error: --probe refuses --out under the real build ({out_dir}); "
+                    "omit --out to use the copy's reports/mock-deploy/, or pass a "
+                    "path outside the build",
+                    file=sys.stderr,
+                )
+                return 2
     else:
         timestamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
         out_dir = build_dir / "reports" / "mock-deploy" / timestamp
@@ -1108,9 +1515,14 @@ def main(argv: list[str] | None = None) -> int:
             copy_result=copy_result, api_version=api_version, api_version_source=api_version_source,
             planned_test_level=test_level,
             planned_tests=resolved_tests if test_level == "RunSpecifiedTests" else None,
+            probe=probe_alteration,
         )
-        (out_dir / "summary.md").write_text(summary, encoding="utf-8")
+        summary_path = out_dir / "summary.md"
+        summary_path.write_text(summary, encoding="utf-8")
         print(summary)
+        if probe_alteration is not None:
+            print(f"probe copy: {probe_alteration.copy_dir}")
+            print(f"summary: {summary_path}")
         print(f"output: {out_dir}")
         return 0
 
@@ -1134,6 +1546,17 @@ def main(argv: list[str] | None = None) -> int:
                     "raw_stdout": raw_stdout,
                     "raw_stderr": raw_stderr,
                     "api_version": api_version_record,
+                    **(
+                        {
+                            "probe": {
+                                "without": probe_alteration.without,
+                                "patched": probe_alteration.patched,
+                                "copy_dir": probe_alteration.copy_dir,
+                            }
+                        }
+                        if probe_alteration is not None
+                        else {}
+                    ),
                 },
                 indent=2,
             )
@@ -1175,14 +1598,20 @@ def main(argv: list[str] | None = None) -> int:
     if isinstance(parsed, dict):
         # `parsed` is this run's own in-memory copy of the sf CLI's JSON — safe
         # to extend before we serialize it. "api_version"/"tests"/
-        # "missing_members" are not keys `sf` itself ever emits, so none can
-        # collide with or shadow one of its existing keys (status, result,
+        # "missing_members"/"probe" are not keys `sf` itself ever emits, so none
+        # can collide with or shadow one of its existing keys (status, result,
         # warnings, ...).
         parsed["api_version"] = api_version_record
         parsed["tests"] = tests_record
         parsed["missing_members"] = [
             {"type": t, "member": m} for t, m in missing_members
         ]
+        if probe_alteration is not None:
+            parsed["probe"] = {
+                "without": probe_alteration.without,
+                "patched": probe_alteration.patched,
+                "copy_dir": probe_alteration.copy_dir,
+            }
 
     (out_dir / "result.json").write_text(json.dumps(parsed, indent=2) + "\n", encoding="utf-8")
 
@@ -1192,9 +1621,14 @@ def main(argv: list[str] | None = None) -> int:
     summary = render_summary(
         parsed, args.mode, args.org_alias, manifest_resolution, copy_result=copy_result,
         api_version=api_version, api_version_source=api_version_source, tests=test_summary,
+        probe=probe_alteration,
     )
-    (out_dir / "summary.md").write_text(summary, encoding="utf-8")
+    summary_path = out_dir / "summary.md"
+    summary_path.write_text(summary, encoding="utf-8")
     print(summary)
+    if probe_alteration is not None:
+        print(f"probe copy: {probe_alteration.copy_dir}")
+        print(f"summary: {summary_path}")
     print(f"output: {out_dir}")
 
     return exit_code_for_status(status)

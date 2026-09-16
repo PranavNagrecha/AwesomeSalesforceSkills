@@ -10,6 +10,7 @@ the real ``sf`` CLI.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -1717,3 +1718,359 @@ def test_cli_test_level_choices_exclude_run_all_tests_in_org():
     test_level_action = next(a for a in parser._actions if a.dest == "test_level")
     assert set(test_level_action.choices) == {"NoTestRun", "RunSpecifiedTests", "RunLocalTests"}
     assert test_level_action.default == "NoTestRun"
+
+
+# --------------------------------------------------------------------------
+# --probe: altered-copy validation that never writes into the real build
+# --------------------------------------------------------------------------
+
+
+def _tree_sha256(root: Path) -> str:
+    """Content hash of every file under root (path + bytes), for probe invariants."""
+    h = hashlib.sha256()
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        rel = path.relative_to(root).as_posix().encode()
+        h.update(rel)
+        h.update(b"\0")
+        h.update(path.read_bytes())
+        h.update(b"\0")
+    return h.hexdigest()
+
+
+def make_probe_build(tmp_path: Path) -> Path:
+    """Build fixture with AutoResponseRule Case.Case_Acknowledgement in a step
+    package.xml and in reports/MILESTONE-M1-package.xml, plus an Apex class to
+    patch.
+    """
+    build_dir = make_build(tmp_path)
+    rule_xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<AutoResponseRules xmlns="http://soap.sforce.com/2006/04/metadata">\n'
+        "    <autoResponseRule>\n"
+        "        <fullName>Case_Acknowledgement</fullName>\n"
+        "        <active>true</active>\n"
+        "    </autoResponseRule>\n"
+        "</AutoResponseRules>\n"
+    )
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "autoResponseRules"
+        / "Case.autoResponseRules-meta.xml",
+        rule_xml,
+    )
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "classes" / "X.cls",
+        "public class X {}\n",
+    )
+    # Step manifest names the singular deploy-result type + Object.Rule member
+    # (and the container member), matching how the org reports F-28.
+    _write(
+        build_dir / "artefacts" / "M1-S01" / "package.xml",
+        """<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Case.Severity__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Case.Case_Acknowledgement</members>
+        <name>AutoResponseRule</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>AutoResponseRules</name>
+    </types>
+    <types>
+        <members>X</members>
+        <name>ApexClass</name>
+    </types>
+    <version>61.0</version>
+</Package>
+""",
+    )
+    milestone_xml = """<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Case.Case_Acknowledgement</members>
+        <name>AutoResponseRule</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>AutoResponseRules</name>
+    </types>
+    <types>
+        <members>Case-Case Support Layout</members>
+        <name>Layout</name>
+    </types>
+    <version>62.0</version>
+</Package>
+"""
+    _write(build_dir / "reports" / "MILESTONE-M1-package.xml", milestone_xml)
+    # Pre-existing reports noise that must stay untouched on the real build.
+    _write(build_dir / "reports" / "mock-deploy" / "preexisting" / "summary.md", "old\n")
+    return build_dir
+
+
+def test_probe_without_autoresponse_removes_file_and_manifest_members(tmp_path, monkeypatch):
+    # (a) --without AutoResponseRule:Case.Case_Acknowledgement
+    build_dir = make_probe_build(tmp_path)
+    before = _tree_sha256(build_dir)
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+    probe_dir = tmp_path / "probe-a"
+    out_dir = tmp_path / "out-a"
+    rc = mock_deploy.main(
+        [
+            str(build_dir / "plan.json"),
+            "--org-alias", "sfskills-dev",
+            "--milestone", "M1",
+            "--mode", "manifest",
+            "--probe",
+            "--without", "AutoResponseRule:Case.Case_Acknowledgement",
+            "--probe-dir", str(probe_dir),
+            "--plan-only",
+            "--out", str(out_dir),
+        ]
+    )
+    assert rc == 0
+    assert _tree_sha256(build_dir) == before  # real build unchanged
+
+    rule_rel = Path("artefacts/M1-S01/autoResponseRules/Case.autoResponseRules-meta.xml")
+    assert not (probe_dir / rule_rel).exists()
+    assert (build_dir / rule_rel).is_file()
+
+    # Step manifest: singular member and container form both gone; empty <types> dropped.
+    step_pkg_path = probe_dir / "artefacts" / "M1-S01" / "package.xml"
+    assert step_pkg_path.is_file()
+    step_pkg = step_pkg_path.read_text(encoding="utf-8")
+    assert "Case.Case_Acknowledgement" not in step_pkg
+    assert "<name>AutoResponseRule</name>" not in step_pkg
+    assert "AutoResponseRules" not in step_pkg
+
+    # Milestone report under reports/ — same scrub (not only artefacts/*/package.xml).
+    milestone_pkg_path = probe_dir / "reports" / "MILESTONE-M1-package.xml"
+    assert milestone_pkg_path.is_file()
+    milestone_pkg = milestone_pkg_path.read_text(encoding="utf-8")
+    assert "Case.Case_Acknowledgement" not in milestone_pkg
+    assert "<name>AutoResponseRule</name>" not in milestone_pkg
+    assert "AutoResponseRules" not in milestone_pkg
+    assert "<members>Case</members>" not in milestone_pkg
+
+    assembled = (out_dir / "package.xml").read_text(encoding="utf-8")
+    assert "Case.Case_Acknowledgement" not in assembled
+    assert "AutoResponseRules" not in assembled
+    assert mock_deploy.find_missing_manifest_members(assembled, out_dir / "force-app" / "main" / "default") == []
+    # Nothing new under the real build's reports/.
+    assert {p.name for p in (build_dir / "reports" / "mock-deploy").iterdir()} == {"preexisting"}
+
+
+def test_probe_patch_replaces_only_copy(tmp_path, monkeypatch):
+    # (b) --patch artefacts/.../X.cls=<tmp file>
+    build_dir = make_probe_build(tmp_path)
+    before = _tree_sha256(build_dir)
+    patch_src = tmp_path / "patched.cls"
+    patch_src.write_text("// patched bytes\n", encoding="utf-8")
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+    probe_dir = tmp_path / "probe-b"
+    rc = mock_deploy.main(
+        [
+            str(build_dir / "plan.json"),
+            "--org-alias", "sfskills-dev",
+            "--milestone", "M1",
+            "--probe",
+            "--patch", f"artefacts/M1-S01/classes/X.cls={patch_src}",
+            "--probe-dir", str(probe_dir),
+            "--plan-only",
+            "--out", str(tmp_path / "out-b"),
+        ]
+    )
+    assert rc == 0
+    assert _tree_sha256(build_dir) == before
+    assert (probe_dir / "artefacts" / "M1-S01" / "classes" / "X.cls").read_text(encoding="utf-8") == "// patched bytes\n"
+    assert (build_dir / "artefacts" / "M1-S01" / "classes" / "X.cls").read_text(encoding="utf-8") == "public class X {}\n"
+
+
+def test_probe_summary_and_result_json_record_probe(tmp_path, monkeypatch):
+    # (c) summary.md PROBE line + result.json.probe; nothing new under real reports/
+    build_dir = make_probe_build(tmp_path)
+    before_reports = _tree_sha256(build_dir / "reports")
+    patch_src = tmp_path / "patched.cls"
+    patch_src.write_text("// patched\n", encoding="utf-8")
+    payload = {
+        "result": {
+            "status": "Succeeded",
+            "checkOnly": True,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda cmd, cwd, capture_output, text: _fake_completed_process(payload),
+    )
+    probe_dir = tmp_path / "probe-c"
+    out_dir = tmp_path / "out-c"
+    rc = mock_deploy.main(
+        [
+            str(build_dir / "plan.json"),
+            "--org-alias", "sfskills-dev",
+            "--milestone", "M1",
+            "--probe",
+            "--without", "AutoResponseRule:Case.Case_Acknowledgement",
+            "--patch", f"artefacts/M1-S01/classes/X.cls={patch_src}",
+            "--probe-dir", str(probe_dir),
+            "--out", str(out_dir),
+        ]
+    )
+    assert rc == 0
+    summary = (out_dir / "summary.md").read_text(encoding="utf-8")
+    lines = summary.splitlines()
+    assert lines[0] == "# Mock deploy result"
+    assert lines[1] == ""
+    assert lines[2].startswith("- PROBE: 1 component(s) removed, 1 file(s) patched")
+    assert "not evidence for a gate" in lines[2]
+    assert "- removed: `AutoResponseRule:Case.Case_Acknowledgement`" in summary
+    assert "- patched: `artefacts/M1-S01/classes/X.cls=" in summary
+
+    result_json = json.loads((out_dir / "result.json").read_text(encoding="utf-8"))
+    assert result_json["probe"]["without"] == ["AutoResponseRule:Case.Case_Acknowledgement"]
+    assert result_json["probe"]["copy_dir"] == str(probe_dir.resolve())
+    assert any(p.startswith("artefacts/M1-S01/classes/X.cls=") for p in result_json["probe"]["patched"])
+    assert _tree_sha256(build_dir / "reports") == before_reports
+
+
+def test_without_without_probe_is_argparse_error_and_unmappable_skips_sf(tmp_path, monkeypatch):
+    # (d) --without without --probe → argparse error; unmappable type never calls sf
+    build_dir = make_probe_build(tmp_path)
+    with pytest.raises(SystemExit) as exc:
+        mock_deploy.main(
+            [
+                str(build_dir / "plan.json"),
+                "--org-alias", "sfskills-dev",
+                "--without", "AutoResponseRule:Case.Case_Acknowledgement",
+            ]
+        )
+    assert exc.value.code == 2
+
+    called = {"sf": False}
+
+    def fake_run(*a, **k):
+        called["sf"] = True
+        raise AssertionError("sf must not be invoked for unmappable --without")
+
+    monkeypatch.setattr(mock_deploy.subprocess, "run", fake_run)
+    rc = mock_deploy.main(
+        [
+            str(build_dir / "plan.json"),
+            "--org-alias", "sfskills-dev",
+            "--probe",
+            "--without", "TotallyFakeType:Foo",
+            "--probe-dir", str(tmp_path / "probe-d"),
+            "--out", str(tmp_path / "out-d"),
+        ]
+    )
+    assert rc == 2
+    assert called["sf"] is False
+    assert not (tmp_path / "probe-d").exists() or not any((tmp_path / "probe-d").iterdir())
+
+
+def test_probe_plan_only_assembles_without_sf(tmp_path, monkeypatch):
+    # (e) --plan-only --probe assembles the copy and writes the manifest, no sf
+    build_dir = make_probe_build(tmp_path)
+    monkeypatch.setattr(
+        mock_deploy.subprocess, "run",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("sf must not be invoked with --plan-only")),
+    )
+    probe_dir = tmp_path / "probe-e"
+    out_dir = tmp_path / "out-e"
+    rc = mock_deploy.main(
+        [
+            str(build_dir / "plan.json"),
+            "--org-alias", "sfskills-dev",
+            "--milestone", "M1",
+            "--mode", "manifest",
+            "--probe",
+            "--without", "AutoResponseRule:Case.Case_Acknowledgement",
+            "--probe-dir", str(probe_dir),
+            "--plan-only",
+            "--out", str(out_dir),
+        ]
+    )
+    assert rc == 0
+    assert (out_dir / "package.xml").is_file()
+    assert (out_dir / "summary.md").is_file()
+    assert not (out_dir / "result.json").exists()
+    assert (out_dir / "force-app" / "main" / "default" / "layouts"
+            / "Case-Case Support Layout.layout-meta.xml").is_file()
+    assert not (out_dir / "force-app" / "main" / "default" / "autoResponseRules"
+                / "Case.autoResponseRules-meta.xml").exists()
+
+
+def test_probe_honours_milestone_step_and_manifest_mode(tmp_path, monkeypatch):
+    # (f) --milestone/--step and --mode manifest work inside a probe
+    build_dir = make_probe_build(tmp_path)
+    payload = {
+        "result": {
+            "status": "Succeeded",
+            "checkOnly": True,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    captured = {}
+
+    def fake_run(cmd, cwd, capture_output, text):
+        captured["cmd"] = cmd
+        captured["cwd"] = cwd
+        return _fake_completed_process(payload)
+
+    monkeypatch.setattr(mock_deploy.subprocess, "run", fake_run)
+    probe_dir = tmp_path / "probe-f"
+    out_dir = tmp_path / "out-f"
+    rc = mock_deploy.main(
+        [
+            str(build_dir / "plan.json"),
+            "--org-alias", "sfskills-dev",
+            "--step", "M1-S01",
+            "--mode", "manifest",
+            "--probe",
+            "--without", "AutoResponseRule:Case.Case_Acknowledgement",
+            "--probe-dir", str(probe_dir),
+            "--out", str(out_dir),
+        ]
+    )
+    assert rc == 0
+    assert "--manifest" in captured["cmd"]
+    assert "--dry-run" in captured["cmd"]
+    manifest = (out_dir / "package.xml").read_text(encoding="utf-8")
+    assert "CustomField" in manifest
+    assert "Layout" not in manifest  # M1-S02 not selected
+    assert "Case.Case_Acknowledgement" not in manifest
+    # Only M1-S01 artefacts were assembled.
+    assert (out_dir / "force-app" / "main" / "default" / "objects" / "Case" / "fields"
+            / "Severity__c.field-meta.xml").is_file()
+    assert not (out_dir / "force-app" / "main" / "default" / "layouts"
+                / "Case-Case Support Layout.layout-meta.xml").exists()
+
+
+def test_probe_resolve_without_autoresponse_maps_container_file():
+    resolved = mock_deploy.resolve_without_spec("AutoResponseRule:Case.Case_Acknowledgement")
+    assert resolved.file_suffixes == ["autoResponseRules/Case.autoResponseRules-meta.xml"]
+    assert ("AutoResponseRule", "Case.Case_Acknowledgement") in resolved.manifest_removals
+    assert ("AutoResponseRules", "Case") in resolved.manifest_removals
+
+
+def test_existing_cli_flags_still_present_unchanged():
+    # Non-probe help surface for existing flags stays intact.
+    parser = mock_deploy.build_arg_parser()
+    dest = {a.dest: a for a in parser._actions}
+    assert dest["org_alias"].option_strings == ["--org-alias"]
+    assert dest["mode"].choices == ["source", "manifest"]
+    assert set(dest["test_level"].choices) == set(mock_deploy.TEST_LEVELS)
+    assert dest["plan_only"].option_strings == ["--plan-only"]
+    assert "deploy" not in dest
+    assert "dry_run" not in dest
+    assert dest["probe"].option_strings == ["--probe"]
+
