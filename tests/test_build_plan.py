@@ -3402,6 +3402,73 @@ def test_validate_no_warn_when_assumption_because_names_question(tmp_path, fixtu
     assert "inputs.answers:" not in out
 
 
+def _repo_with_demo_thing_checker(tmp_path: Path, fixture_repo: Path) -> Path:
+    """Repo root with skills/demo/thing and its check_thing.py (fixture is function-scoped)."""
+    # fixture_repo already has agents/templates/trees; add the cited skill under it.
+    skill = fixture_repo / "skills" / "demo" / "thing"
+    (skill / "scripts").mkdir(parents=True, exist_ok=True)
+    (skill / "SKILL.md").write_text("# demo/thing\n", encoding="utf-8")
+    (skill / "scripts" / "check_thing.py").write_text("print('ok')\n", encoding="utf-8")
+    return fixture_repo
+
+
+def test_validate_warns_undeclared_checker_of_cited_skill(tmp_path, fixture_repo, capsys):
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    sid = "M1-S01"
+    mid = "M1"
+    plan = plan_dict([step(sid, mid, skills=["demo/thing"])])
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert (
+        f"step {sid} skills: demo/thing ships check_thing.py but no checker test "
+        f"on the step or on milestone {mid} runs it — declare it in "
+        f"acceptance_tests[] (or on the milestone, if it needs cross-step "
+        f"scope) or drop the skill from skills[] (§ 5)"
+    ) in out
+
+
+def test_validate_no_warn_when_checker_declared_on_step(tmp_path, fixture_repo, capsys):
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    sid = "M1-S01"
+    command = "python3 skills/demo/thing/scripts/check_thing.py --manifest-dir artefacts/M1-S01"
+    plan = plan_dict([step(sid, "M1", skills=["demo/thing"], tests=[
+        {"type": "xml", "description": "every artefact parses"},
+        {"type": "checker", "command": command},
+    ])])
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "ships check_thing.py but no checker test" not in out
+
+
+def test_validate_no_warn_when_checker_declared_on_milestone(tmp_path, fixture_repo, capsys):
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    sid = "M1-S01"
+    mid = "M1"
+    command = "python3 skills/demo/thing/scripts/check_thing.py --manifest-dir artefacts"
+    steps = [step(sid, mid, skills=["demo/thing"])]
+    plan = plan_dict(steps, milestones=[{
+        "id": mid,
+        "title": "Milestone M1",
+        "steps": [sid],
+        "acceptance_tests": [
+            {"type": "manifest", "description": "package.xml consistent"},
+            {"type": "checker", "command": command},
+        ],
+    }])
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "ships check_thing.py but no checker test" not in out
+
+
 def test_validate_warns_feature_scale_shape_mismatch(tmp_path, fixture_repo, capsys):
     steps = [step(f"M1-S0{i}", "M1", depends_on=([f"M1-S0{i - 1}"] if i > 1 else []))
              for i in range(1, 7)]

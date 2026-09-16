@@ -942,6 +942,52 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
                         f"the question (§ 3.1)",
                     ))
 
+    # --- cited-skill checkers not declared on step or milestone (§ 5) -----
+    # A step that lists a skill in skills[] is asserting that skill's
+    # guidance applies. When the skill ships scripts/check_*.py, at least
+    # one checker-type acceptance_tests[] entry on the step (or on the
+    # milestone the step belongs to, for cross-step scope) must run it —
+    # otherwise the planner declared coverage it never tests. Never ERROR;
+    # missing skill dirs are already an ERROR above.
+    milestone_by_id = {
+        m.get("id"): m for m in milestones if isinstance(m, dict) and m.get("id") is not None
+    }
+    for step in steps:
+        if step.get("status") == "blocked":
+            continue
+        sid = step.get("id", "<no id>")
+        mid = step.get("milestone")
+        milestone = milestone_by_id.get(mid) if mid is not None else None
+        checker_commands: list[str] = []
+        for test in (step.get("acceptance_tests") or []):
+            if isinstance(test, dict) and test.get("type") == "checker":
+                checker_commands.append(test.get("command") or "")
+        if isinstance(milestone, dict):
+            for test in (milestone.get("acceptance_tests") or []):
+                if isinstance(test, dict) and test.get("type") == "checker":
+                    checker_commands.append(test.get("command") or "")
+        skills = step.get("skills") if isinstance(step.get("skills"), list) else []
+        for skill in skills:
+            if not isinstance(skill, str):
+                continue
+            skill_dir = repo_root / "skills" / skill
+            if not skill_dir.is_dir():
+                continue
+            scripts_dir = skill_dir / "scripts"
+            if not scripts_dir.is_dir():
+                continue
+            for checker in sorted(scripts_dir.glob("check_*.py"), key=lambda p: p.name):
+                basename = checker.name
+                if any(basename in cmd for cmd in checker_commands):
+                    continue
+                issues.append((
+                    "WARN",
+                    f"step {sid} skills: {skill} ships {basename} but no checker test "
+                    f"on the step or on milestone {mid} runs it — declare it in "
+                    f"acceptance_tests[] (or on the milestone, if it needs cross-step "
+                    f"scope) or drop the skill from skills[] (§ 5)",
+                ))
+
     return issues
 
 
