@@ -20,6 +20,8 @@ WARN   template-class-not-shipped a referenced `templates/apex/tests` class with
                                   in the manifest directory (the deploy would fail)
 WARN   hardcoded-id           a 15/18-character Salesforce-style Id literal in a test
 WARN   coverage-only-assert   `System.assert(true)` / `System.assertEquals(true, true)`
+WARN   fixture-seeded-as-persona  plain fixture DML inside a permissioned `System.runAs`
+                                  (Gotcha 15: seed in system mode; act as the persona)
 
 Exit codes
 ----------
@@ -90,6 +92,21 @@ SELF_USER_VAR_RE = re.compile(
     re.IGNORECASE,
 )
 VERSION_ARG_RE = re.compile(r"^new(?:System\.)?Version\(", re.IGNORECASE)
+KEYWORD_DML_RE = re.compile(r"\b(insert|update|upsert)\s+", re.IGNORECASE)
+DATABASE_DML_RE = re.compile(r"\bDatabase\.(insert|update|upsert)\s*\(", re.IGNORECASE)
+SYSTEM_MODE_ARG_RE = re.compile(r"AccessLevel\s*\.\s*SYSTEM_MODE", re.IGNORECASE)
+NEW_EXPR_RE = re.compile(r"\bnew\s+[A-Za-z_]\w*", re.IGNORECASE)
+CREATE_CALL_ASSIGN_RE = re.compile(
+    r"\b(\w+)\s*=\s*(?:[\w.]+\.)?(create\w+)\s*\(",
+    re.IGNORECASE,
+)
+FACTORY_CALL_ASSIGN_RE = re.compile(
+    r"\b(\w+)\s*=\s*(?:[\w.]*Factory[\w.]*)\s*\(",
+    re.IGNORECASE,
+)
+NEW_ASSIGN_RE = re.compile(r"\b(\w+)\s*=\s*new\s+[A-Za-z_]\w*", re.IGNORECASE)
+LEADING_IDENT_RE = re.compile(r"^(\w+)\b")
+CALL_NAME_RE = re.compile(r"(?:[\w.]+\.)?(\w+)\s*\(")
 
 # Canonical shared test classes (templates/apex/tests). A test that names one of
 # these must ship it — see agents/apex-builder/AGENT.md Step 6 provenance check.
@@ -138,6 +155,55 @@ def strip_literals(src: str) -> str:
                 j += 2 if src[j] == "\\" else 1
             out.append("''")
             i = j + 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def strip_comments(src: str) -> str:
+    """Blank `//` line and `/* … */` block comments to spaces, preserving length.
+
+    Newlines inside block comments stay newlines so structure is unchanged. Single-quoted
+    string literals are copied through so a `//` or `/*` inside a string is not treated as
+    a comment. Offsets of non-comment code therefore match `src` — required by the
+    startTest/stopTest span logic in `fixture-seeded-as-persona`.
+    """
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "'":
+            j = i + 1
+            while j < n and src[j] != "'":
+                j += 2 if src[j] == "\\" else 1
+            if j < n:
+                j += 1
+            out.append(src[i:j])
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append(" ")
+                j += 1
+            i = j
             continue
         out.append(ch)
         i += 1
@@ -224,6 +290,25 @@ def runas_arguments(text: str) -> list[str]:
     return args
 
 
+def self_user_names(text: str) -> set[str]:
+    """Variable names bound to `new User(Id = UserInfo.getUserId())`."""
+    return {m.group(1) for m in SELF_USER_VAR_RE.finditer(strip_literals(text))}
+
+
+def is_permissioned_runas_arg(arg: str, self_users: set[str]) -> bool:
+    """True when a `System.runAs` argument is a real persona, not a self-user or Version."""
+    flat = re.sub(r"\s+", "", arg)
+    if not flat:
+        return False
+    if "UserInfo.getUserId()" in flat:
+        return False
+    if flat in self_users:
+        return False
+    if VERSION_ARG_RE.match(flat):
+        return False
+    return True
+
+
 def has_permissioned_runas(text: str) -> bool:
     """True when at least one `System.runAs` block runs as somebody other than the
     user executing the test.
@@ -233,19 +318,203 @@ def has_permissioned_runas(text: str) -> bool:
     context and grants no permission. `System.runAs(System.Version)` switches the
     managed-package version, not the user (apexdev L41417)."""
     stripped = strip_literals(text)
-    self_users = {m.group(1) for m in SELF_USER_VAR_RE.finditer(stripped)}
-    for arg in runas_arguments(stripped):
-        flat = re.sub(r"\s+", "", arg)
-        if not flat:
+    self_users = self_user_names(stripped)
+    return any(is_permissioned_runas_arg(arg, self_users) for arg in runas_arguments(stripped))
+
+
+def runas_blocks(text: str) -> list[tuple[str, str]]:
+    """Return `(arg, body)` for every `System.runAs(...) { ... }` in `text`."""
+    stripped = strip_literals(text)
+    blocks: list[tuple[str, str]] = []
+    for match in RUNAS_CALL_RE.finditer(stripped):
+        depth = 1
+        i = match.end()
+        n = len(stripped)
+        while i < n and depth:
+            if stripped[i] == "(":
+                depth += 1
+            elif stripped[i] == ")":
+                depth -= 1
+            i += 1
+        arg = stripped[match.end() : max(match.end(), i - 1)]
+        j = i
+        while j < n and stripped[j] in " \t\r\n":
+            j += 1
+        if j >= n or stripped[j] != "{":
             continue
-        if "UserInfo.getUserId()" in flat:
-            continue
-        if flat in self_users:
-            continue
-        if VERSION_ARG_RE.match(flat):
-            continue
+        depth = 0
+        body_start = j + 1
+        k = j
+        while k < n:
+            if stripped[k] == "{":
+                depth += 1
+            elif stripped[k] == "}":
+                depth -= 1
+                if depth == 0:
+                    blocks.append((arg, stripped[body_start:k]))
+                    break
+            k += 1
+    return blocks
+
+
+def read_expr_to_semicolon(text: str, start: int) -> tuple[str, int]:
+    """Read from `start` through the next top-level `;`, tracking paren/bracket/brace depth."""
+    depth_paren = depth_bracket = depth_brace = 0
+    i = start
+    n = len(text)
+    while i < n:
+        ch = text[i]
+        if ch == "(":
+            depth_paren += 1
+        elif ch == ")":
+            depth_paren -= 1
+        elif ch == "[":
+            depth_bracket += 1
+        elif ch == "]":
+            depth_bracket -= 1
+        elif ch == "{":
+            depth_brace += 1
+        elif ch == "}":
+            depth_brace -= 1
+        elif ch == ";" and depth_paren == depth_bracket == depth_brace == 0:
+            return text[start:i].strip(), i + 1
+        i += 1
+    return text[start:].strip(), n
+
+
+def read_paren_contents(text: str, open_idx: int) -> tuple[str, int]:
+    """Given the index of `(`, return the inside text and the index after the matching `)`."""
+    depth = 0
+    i = open_idx
+    n = len(text)
+    while i < n:
+        if text[i] == "(":
+            depth += 1
+        elif text[i] == ")":
+            depth -= 1
+            if depth == 0:
+                return text[open_idx + 1 : i], i + 1
+        i += 1
+    return text[open_idx + 1 :], n
+
+
+def first_top_level_arg(args: str) -> str:
+    depth = 0
+    for idx, ch in enumerate(args):
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            return args[:idx].strip()
+    return args.strip()
+
+
+def start_stop_spans(body: str) -> list[tuple[int, int]]:
+    """Byte spans covering each `Test.startTest()` … `Test.stopTest()` pair in `body`.
+
+    Matches only outside comments (`strip_comments`), so a mention of `Test.startTest()`
+    in a `//` or `/* … */` comment never opens a span. Length is preserved, so offsets
+    still line up with DML matches on the same comment-stripped text.
+    """
+    code = strip_comments(body)
+    spans: list[tuple[int, int]] = []
+    for start_m in START_TEST_RE.finditer(code):
+        stop_m = STOP_TEST_RE.search(code, start_m.end())
+        if stop_m:
+            spans.append((start_m.start(), stop_m.end()))
+    return spans
+
+
+def in_spans(pos: int, spans: list[tuple[int, int]]) -> bool:
+    return any(start <= pos < end for start, end in spans)
+
+
+def fixture_vars_in(scope: str) -> set[str]:
+    """Names assigned from `new Type(...)` or a create*/Factory call in this method/setup."""
+    names: set[str] = set()
+    for match in NEW_ASSIGN_RE.finditer(scope):
+        names.add(match.group(1))
+    for match in CREATE_CALL_ASSIGN_RE.finditer(scope):
+        names.add(match.group(1))
+    for match in FACTORY_CALL_ASSIGN_RE.finditer(scope):
+        names.add(match.group(1))
+    return names
+
+
+def call_is_fixture_builder(name: str) -> bool:
+    lower = name.lower()
+    return lower.startswith("create") or "factory" in lower
+
+
+def is_fixture_operand(operand: str, fixture_vars: set[str]) -> bool:
+    """True when the DML target was built by `new Type(` or a create*/Factory call."""
+    op = operand.strip()
+    if not op:
+        return False
+    if NEW_EXPR_RE.search(op):
+        return True
+    call = CALL_NAME_RE.search(op)
+    if call and call_is_fixture_builder(call.group(1)):
+        return True
+    leading = LEADING_IDENT_RE.match(op)
+    if leading and leading.group(1) in fixture_vars:
         return True
     return False
+
+
+def plain_fixture_dml_in_runas(runas_body: str, fixture_vars: set[str]) -> bool:
+    """True when `runas_body` has plain fixture DML outside any startTest/stopTest span."""
+    # Comment-stripped copy keeps offsets aligned with `runas_body` non-comment code, so
+    # start/stop spans and DML matches share one coordinate space and ignore comment text.
+    code = strip_comments(runas_body)
+    spans = start_stop_spans(code)
+
+    for match in KEYWORD_DML_RE.finditer(code):
+        if in_spans(match.start(), spans):
+            continue
+        operand, _ = read_expr_to_semicolon(code, match.end())
+        if is_fixture_operand(operand, fixture_vars):
+            return True
+
+    for match in DATABASE_DML_RE.finditer(code):
+        if in_spans(match.start(), spans):
+            continue
+        # match ends at the character after `(`, so open paren is match.end() - 1
+        args, _ = read_paren_contents(code, match.end() - 1)
+        if SYSTEM_MODE_ARG_RE.search(args):
+            continue
+        operand = first_top_level_arg(args)
+        if is_fixture_operand(operand, fixture_vars):
+            return True
+
+    return False
+
+
+def find_fixture_seeded_as_persona(text: str) -> str | None:
+    """Return the permissioned `runAs` arg when the class seeds fixtures as the persona.
+
+    Heuristic (WARN): a permissioned `System.runAs` body performs plain insert/update/upsert
+    (or `Database.*` without `AccessLevel.SYSTEM_MODE`) on a factory/`new Type` operand
+    outside `Test.startTest()`/`Test.stopTest()`, and the class also calls `Test.startTest()`
+    somewhere. `insertAsSystem(...)` is not keyword DML and never matches. Mentions of
+    `Test.startTest()` inside comments do not satisfy the class-level gate.
+    """
+    stripped = strip_literals(text)
+    if not START_TEST_RE.search(strip_comments(stripped)):
+        return None
+
+    self_users = self_user_names(stripped)
+    scopes = [body for _, _, body in method_bodies(text)] + testsetup_bodies(text)
+    for scope in scopes:
+        scope_s = strip_literals(scope)
+        vars_ = fixture_vars_in(scope_s)
+        for arg, body in runas_blocks(scope_s):
+            if not is_permissioned_runas_arg(arg, self_users):
+                continue
+            if plain_fixture_dml_in_runas(body, vars_):
+                return re.sub(r"\s+", " ", arg.strip())
+    return None
 
 
 def seealldata_is_justified(lines: list[str], idx: int) -> bool:
@@ -370,6 +639,17 @@ def audit_class(
                 "`Test.startTest()` / `Test.stopTest()` boundary",
                 line_no,
             )
+
+    seeded_arg = find_fixture_seeded_as_persona(text)
+    if seeded_arg is not None:
+        add(
+            "WARN",
+            "fixture-seeded-as-persona",
+            f"{path.stem} seeds records with plain DML inside System.runAs({seeded_arg}) — at API 67.0 "
+            "that insert runs in the persona's user context and needs Create FLS on every populated "
+            "field (Gotcha 15: seed with Database.insert(records, AccessLevel.SYSTEM_MODE) or "
+            "TestDataFactory.insertAsSystem outside runAs; keep only the action under test inside it)",
+        )
 
     return findings
 

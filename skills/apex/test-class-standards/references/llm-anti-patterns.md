@@ -372,4 +372,4 @@ static void agentEscalatesCase() {
 }
 ```
 
-**Detection hint:** a permission-set edit made in direct response to a test failure, where the added field does not appear in the layout, compact layout, or intake process cited anywhere in the same PR or build step. Cross-check against `skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py`'s `PSVP-FLS-01` finding history — a field added to silence a test failure without a matching layout citation is the tell.
+**Detection hint:** a permission-set edit made in direct response to a test failure, where the added field does not appear in the layout, compact layout, or intake process cited anywhere in the same PR or build step. Cross-check against `skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py`'s `PSVP-FLS-01` finding history — a field added to silence a test failure without a matching layout citation is the tell. The seed shape itself is `fixture-seeded-as-persona` (WARN) in `check_test_class_standards.py`: plain factory/`new` DML inside a permissioned `System.runAs` outside `Test.startTest()`/`Test.stopTest()`.

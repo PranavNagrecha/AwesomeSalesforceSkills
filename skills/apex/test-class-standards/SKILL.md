@@ -35,9 +35,9 @@ outputs:
   - "review findings for test hygiene and coverage quality"
   - "test class scaffold with factory, assertions, and mocks"
 dependencies: []
-version: 1.3.2
+version: 1.3.3
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-09-16
 ---
 
 Use this skill when Apex tests need to prove behavior instead of merely satisfying deployment coverage. The objective is deterministic, isolated tests that verify positive paths, negative paths, bulk behavior, async execution, and callout behavior without depending on org data.
@@ -140,7 +140,7 @@ Callouts never belong in real tests. Use `Test.setMock(HttpCalloutMock.class, mo
 3. **Write the four mandatory methods:** a bulk-200 method modelled on `templates/apex/tests/BulkTestPattern.cls`, a negative method that names the expected exception, an access method wrapped in `System.runAs`, and — whenever the path calls out — a mock method built on `templates/apex/tests/MockHttpResponseGenerator.cls`, ordered DML, `Test.startTest()`, `Test.setMock(...)`, action, `Test.stopTest()`.
    **If the code under test enforces user mode** — `WITH USER_MODE` on a query, `as user` on a DML statement, `AccessLevel.USER_MODE` on a `Database` method, `Security.stripInaccessible`, or a legacy `WITH SECURITY_ENFORCED` clause — `System.runAs` stops being one method's concern and becomes the shape of the whole class: mint the user in `@TestSetup` with `TestUserFactory`, assign the permission set(s) the deployment ships, and put every body that touches the code under test inside `System.runAs(testUser)`. Skipping it does not weaken the suite, it breaks the deploy (Gotcha 13). Worked example: `references/examples.md` Example 5.
 4. **Ship every template class the test names.** A test that references `TestDataFactory` and deploys without `TestDataFactory.cls` fails with `Variable does not exist`. Copy each template verbatim with its `-meta.xml` and record it in the deploy order.
-5. **Run the checker** — `python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir <class directory>`. Exit 1 means an ERROR rule fired (missing assertion, unjustified `SeeAllData=true`, unmocked callout); add `--strict` in CI to fail on WARN findings too.
+5. **Run the checker** — `python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir <class directory>`. Exit 1 means an ERROR rule fired (missing assertion, unjustified `SeeAllData=true`, unmocked callout, user-mode code with no permissioned `System.runAs`); add `--strict` in CI to fail on WARN findings too (including `fixture-seeded-as-persona` — plain fixture DML inside a permissioned `runAs`, Gotcha 15).
 6. **Deploy dry.** `sf project deploy start --manifest package.xml --dry-run --test-level RunSpecifiedTests --tests <TestClass>` compiles the package and runs the tests without persisting metadata — the last check that the provenance set is complete. UNVERIFIED (2026-09-12): the `sf` CLI flag spellings are not corpus-grounded — check `sf project deploy start --help` before using this command in a runbook.
 7. **Record what you could not prove.** Any behaviour left untested because the record is not creatable, or the member is not stubbable, belongs in a comment beside the test, not in the commit message.
 
@@ -157,6 +157,7 @@ A full worked package — service, Queueable, test class, `-meta.xml`, `package.
 - [ ] Bulk-sensitive code has multi-record tests, not only single-record happy paths.
 - [ ] Callout code uses mocks and verifies error handling as well as success.
 - [ ] Tests for user-mode code run inside `System.runAs` of a user holding the permission set(s) the deployment ships — not the deploying admin, and not `runAs(new User(Id = UserInfo.getUserId()))`.
+- [ ] Fixture seed DML uses `Database.insert(records, AccessLevel.SYSTEM_MODE)` or `TestDataFactory.insertAsSystem` outside the persona `runAs`; only the action under test sits inside it (Gotcha 15 / `fixture-seeded-as-persona`).
 
 ## Salesforce-Specific Gotchas
 
@@ -165,6 +166,7 @@ A full worked package — service, Queueable, test class, `-meta.xml`, `package.
 3. **Mixed DML still affects tests** — creating Users and setup-related data in the wrong sequence can fail test methods even when business logic is correct.
 4. **One assertion at the end is not enough** — bulk, negative, and security-sensitive behaviors need focused assertions, not just a single record-count check.
 5. **User-mode code makes the test suite a deployment gate** — when the running user cannot see a field that shipped in the same request, the tests fail during `--dry-run` validation rather than merely passing for the wrong reason. See `references/gotchas.md` Gotcha 13.
+6. **Fixture fields are not persona grants** — a plain `insert` inside `System.runAs(persona)` at API 67.0+ checks Create FLS on every populated field; seed with `AccessLevel.SYSTEM_MODE` / `insertAsSystem` and keep only the action under test inside `runAs` (Gotcha 15 / `fixture-seeded-as-persona`).
 
 ## Output Artifacts
 
