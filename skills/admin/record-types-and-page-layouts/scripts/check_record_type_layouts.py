@@ -34,6 +34,15 @@ Checks (each grounded in the Metadata API Developer Guide, v62):
    the latter is a distinct XML location from the `recordTypeVisibilities`
    entries and was previously left unchecked (F-19, 2026-09-11) even though it
    was already counted in the "unresolvable at this scope" INFO tally.
+8. RTL-MERGE-01 (REVIEW). Two or more layouts for the same object whose content
+   is identical after normalisation (parse XML, drop the layout's own name if it
+   appears inside, serialise with element order and whitespace ignored). One
+   finding per identical group — merge candidates (SKILL.md Mode 2 step 2).
+9. RTL-ASSIGN-01 (INFO; REVIEW under --require-assignment). An active record type
+   that no Profile `layoutAssignments` entry names as `recordType` and no
+   Profile/PermissionSet `recordTypeVisibilities` entry names at all — deployable
+   but unselectable in this tree. When the scanned tree holds no Profile or
+   PermissionSet file, emit one INFO for the whole run instead of per-type lines.
 
 Layout-required standard fields (RL-REQ-01 .. RL-REQ-03). Some standard fields are
 required *on the layout itself*: a Layout that omits one fails to deploy, and a
@@ -65,8 +74,9 @@ validated layouts under examples/builds/case-onboarding/reports/mock-deploy-fixe
 Severities and exit codes:
   CRITICAL / ERROR / HIGH   deploy-breaking; exit 1
   MEDIUM / LOW              review; printed, exit 0
-  INFO / ADVISORY           scope, discovery, and unverified-heuristic notes;
-                            printed, exit 0
+  INFO / ADVISORY / REVIEW  scope, discovery, merge candidates, and unverified-heuristic
+                            notes; printed, exit 0 (--require-assignment promotes
+                            RTL-ASSIGN-01 from INFO to REVIEW; --strict fails on any)
 
   0 -- no CRITICAL/HIGH finding (and no finding at all when --strict is passed)
   1 -- at least one CRITICAL/HIGH, or any finding under --strict
@@ -74,6 +84,7 @@ Severities and exit codes:
 Usage:
     check_record_type_layouts.py --manifest-dir force-app/main/default
     check_record_type_layouts.py --manifest-dir force-app/main/default --strict
+    check_record_type_layouts.py --manifest-dir force-app/main/default --require-assignment
     check_record_type_layouts.py path/to/objects path/to/layouts
 """
 
@@ -83,6 +94,7 @@ import argparse
 import json
 import sys
 import xml.etree.ElementTree as ET
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -129,6 +141,8 @@ CASE_LAYOUT_REQUIRED_BEHAVIOR_FIELD = "Status"
 # rather than a claim about what a given object requires.
 NAME_LIKE_FIELDS = ("Name", "Subject", "LastName", "Title", "CaseNumber")
 
+LAYOUT_IDENTITY_TAGS = frozenset({"fullName", "name"})
+
 
 def local_name(tag: str) -> str:
     return tag.split("}", 1)[-1]
@@ -155,6 +169,42 @@ def child_text(element: ET.Element, child_name: str) -> str:
 
 def children(element: ET.Element, child_name: str) -> list[ET.Element]:
     return [child for child in element if local_name(child.tag) == child_name]
+
+
+def layout_drop_values(developer_name: str) -> frozenset[str]:
+    """Names that identify this layout file and should not affect content equality."""
+    values = {developer_name}
+    _head, sep, tail = developer_name.partition("-")
+    if sep and tail.strip():
+        values.add(tail.strip())
+    return frozenset(values)
+
+
+def layout_canonical_form(root: ET.Element, developer_name: str) -> tuple:
+    """Normalise a Layout root for content comparison (RTL-MERGE-01).
+
+    Drops the layout's own name when it appears as a ``fullName`` / ``name`` element,
+    strips whitespace from text nodes, and sorts children so element order does not
+    affect equality. A single differing field, section, or related list still differs.
+    """
+    drop_values = layout_drop_values(developer_name)
+
+    def walk(elem: ET.Element) -> tuple | None:
+        tag = local_name(elem.tag)
+        text = (elem.text or "").strip()
+        if tag in LAYOUT_IDENTITY_TAGS and text in drop_values:
+            return None
+        attrs = tuple(sorted((local_name(key), value) for key, value in elem.attrib.items()))
+        child_forms = []
+        for child in elem:
+            form = walk(child)
+            if form is not None:
+                child_forms.append(form)
+        child_forms.sort()
+        return (tag, attrs, text, tuple(child_forms))
+
+    form = walk(root)
+    return form if form is not None else ("Layout", (), "", ())
 
 
 def iter_metadata_files(paths: list[Path]) -> list[Path]:
@@ -219,6 +269,10 @@ class Model:
         self.layout_required_counts: dict[str, int] = {}
         # layout developer name -> {field API name: that item's behavior text ("" if unset)}
         self.layout_item_behaviors: dict[str, dict[str, str]] = {}
+        # layout developer name -> canonical content form for RTL-MERGE-01
+        self.layout_canonical: dict[str, tuple] = {}
+        # True when at least one Profile or PermissionSet file was scanned
+        self.access_metadata_present: bool = False
         # record type full names referenced by any recordTypeVisibilities entry
         self.visible_record_types: set[str] = set()
         # (source path, layout name, record type full name or "")
@@ -266,6 +320,7 @@ def collect(model: Model, path: Path, root: ET.Element) -> None:
     elif root_type == "Layout":
         dev_name = layout_developer_name(path)
         model.layouts[dev_name] = path
+        model.layout_canonical[dev_name] = layout_canonical_form(root, dev_name)
         required = 0
         behaviors: dict[str, str] = {}
         for section in children(root, "layoutSections"):
@@ -284,6 +339,7 @@ def collect(model: Model, path: Path, root: ET.Element) -> None:
         model.layout_item_behaviors[dev_name] = behaviors
 
     elif root_type in {"Profile", "PermissionSet"}:
+        model.access_metadata_present = True
         for node in children(root, "recordTypeVisibilities"):
             rt = child_text(node, "recordType")
             if rt:
@@ -297,7 +353,7 @@ def collect(model: Model, path: Path, root: ET.Element) -> None:
                 model.layout_assignments.append((path, layout, rt))
 
 
-def run_checks(model: Model) -> list[str]:
+def run_checks(model: Model, require_assignment: bool = False) -> list[str]:
     findings: list[str] = []
 
     # 1. assignment or visibility pointing at an inactive record type
@@ -442,6 +498,52 @@ def run_checks(model: Model) -> list[str]:
             f"assignment was cross-checked. Re-run over the tree that also carries layouts/"
         )
 
+    # 8. RTL-MERGE-01 — identical layouts on the same object (merge candidates)
+    merge_groups: dict[tuple, list[str]] = defaultdict(list)
+    for dev_name in sorted(model.layouts):
+        obj = layout_object_name(dev_name)
+        if not obj:
+            continue
+        form = model.layout_canonical.get(dev_name)
+        if form is None:
+            continue
+        merge_groups[(obj, form)].append(dev_name)
+    for (obj, _form), names in sorted(merge_groups.items(), key=lambda item: (item[0][0], item[1])):
+        if len(names) < 2:
+            continue
+        names_sorted = sorted(names)
+        first_path = model.layouts[names_sorted[0]]
+        listed = ", ".join(names_sorted)
+        findings.append(
+            f"REVIEW {first_path}: layouts {listed} on {obj} are identical after "
+            f"normalisation — merge candidates (SKILL.md workflow step 2); if two record "
+            f"types must differ, differentiate the layouts or share one."
+        )
+
+    # 9. RTL-ASSIGN-01 — record type with neither layout assignment nor visibility
+    if model.record_types:
+        if not model.access_metadata_present:
+            findings.append(
+                "INFO no Profile/PermissionSet in scope — assignment coverage not checked"
+            )
+        else:
+            named_in_layout = {
+                rt for _path, _layout, rt in model.layout_assignments if rt
+            }
+            named_in_visibility = {rt for _path, rt, _root in model.visibility_entries}
+            severity = "REVIEW" if require_assignment else "INFO"
+            for qualified, info in sorted(model.record_types.items()):
+                if not info["active"]:
+                    continue
+                if qualified in named_in_layout or qualified in named_in_visibility:
+                    continue
+                findings.append(
+                    f"{severity} {info['path']}: record type '{qualified}' has no layout "
+                    f"assignment and no visibility in this tree — deployable but unselectable "
+                    f"until a Profile/PermissionSet assigns it; if that lives in a later step, "
+                    f"say so in deploy-order.md"
+                )
+
     return findings
 
 
@@ -494,6 +596,11 @@ def main() -> int:
         action="store_true",
         help="Exit 1 on MEDIUM/LOW/INFO/ADVISORY findings as well as CRITICAL/ERROR/HIGH.",
     )
+    parser.add_argument(
+        "--require-assignment",
+        action="store_true",
+        help="Promote RTL-ASSIGN-01 from INFO to REVIEW (assignment required in this tree).",
+    )
     args = parser.parse_args()
 
     targets = [Path(value) for value in list(args.manifest_dir) + list(args.paths)]
@@ -518,7 +625,7 @@ def main() -> int:
             continue
         collect(model, path, root)
 
-    findings.extend(run_checks(model))
+    findings.extend(run_checks(model, require_assignment=args.require_assignment))
 
     summary = (
         f"Scanned {len(files)} metadata file(s): {len(model.record_types)} record type(s), "

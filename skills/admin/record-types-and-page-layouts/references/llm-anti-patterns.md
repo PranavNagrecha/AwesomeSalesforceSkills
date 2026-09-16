@@ -192,3 +192,31 @@ starts with `Case-`, and check that the `Status` item's `behavior` is `Required`
 `Edit`. `scripts/check_record_type_layouts.py` does exactly this as RL-REQ-01 and RL-REQ-02
 (both ERROR, exit 1). A generated layout that was never run through it, or through a
 `--dry-run`, has not been checked for this at all.
+
+---
+
+## Anti-Pattern 7: Creating a layout per record type by reflex
+
+**What the LLM generates:** one `Layout` file per new record type, copied from the first layout and renamed — `Opportunity-Opportunity Enterprise Layout`, `Opportunity-Opportunity Renewal Layout` — with no field, section, or related-list difference between them.
+
+**Why it happens:** the model treats "record type ⇒ page layout" as a 1:1 reflex (related to Anti-Pattern 3's matrix blind spot, but worse: the layouts are content-identical). Nothing in the requirement differentiated the pages, so the second file is a clone. The package deploys; users see the same page on every record type; Mode 2 merge candidates go unnoticed until a human compares the XML.
+
+**Correct pattern:**
+
+```
+Before writing layout N+1 for the same object:
+1. Write the one sentence that differentiates it from layout N
+   (a field, a section, a related list). If you cannot, stop.
+2. Prefer: one shared layout assigned to both record types, or
+   drop the extra record type and use Dynamic Forms / picklists.
+3. Profile × Record Type → Layout is a matrix — multiple record
+   types may share one layout; one record type may use different
+   layouts per profile. Do not invent a layout just because a
+   record type exists.
+
+Checker: RTL-MERGE-01 (REVIEW) flags two or more *.layout-meta.xml
+files for the same object whose content is identical after
+normalisation (element order and whitespace ignored).
+```
+
+**Detection hint:** If the output creates one layout file per record type and the bodies match aside from filename (or only differ by whitespace / element order), it is this anti-pattern. Search for duplicated `layoutSections` / `relatedLists` across `Object-*.layout-meta.xml` on the same object, or run `check_record_type_layouts.py` and look for `RTL-MERGE-01`.

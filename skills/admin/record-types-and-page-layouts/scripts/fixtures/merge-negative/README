@@ -1,0 +1,1 @@
+Proves RTL-MERGE-01 does not fire when one of two otherwise-similar Opportunity layouts adds a related list. Expected: no RTL-MERGE-01.

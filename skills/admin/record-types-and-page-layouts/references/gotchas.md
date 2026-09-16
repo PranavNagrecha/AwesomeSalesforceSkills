@@ -205,3 +205,29 @@ Verified by `sf project deploy start --dry-run` against a Summer '26 developer o
 - On Case, `Status` is `<behavior>Required</behavior>`, full stop. A validation rule on `Status` may still be worth having for API and Flow save paths (gotchas #11 is unaffected), but it does not buy an exemption from the layout behavior.
 - Which fields carry this constraint on objects other than Case is `UNVERIFIED (2026-09-09)`. Do not generalise `Status` to `StageName` on Opportunity or `Status` on Lead without a dry run against the target org.
 - When reviewing a generated answer to "enforce at field/validation level, not on the layout", check whether the fields it demotes to `Edit` include a platform-required one. That is the regression this gotcha exists to catch.
+
+---
+
+## 14. Identical Page Layouts After a Record-Type Split With Nothing Differentiating Them
+
+**What happens:** A requirement asks for two Opportunity record types — Enterprise and Renewal — and the answers never say which fields, sections, or related lists differ. The build ships two layout files with different names and byte-identical (or only whitespace / element-order different) content. Users pick a record type and see the same page either way; the only cost is twice the layout assignment matrix and a merge nobody scheduled.
+
+**When it bites you:** Any record-type split justified by "different process" without a field-, picklist-, or related-list-level answer. Mode 2 of this skill already calls identical layouts merge candidates (workflow step 2); the checker encodes that as REVIEW `RTL-MERGE-01`.
+
+**How to avoid it:**
+- Before authoring a second layout, write the one sentence that differentiates it (a field, a section, a related list). If you cannot, share one layout across both record types or drop a record type.
+- Run `python3 scripts/check_record_type_layouts.py --manifest-dir force-app/main/default` — `RTL-MERGE-01` names every layout in an identical group after normalisation.
+- Whitespace and child-element order do not count as a difference; a single differing field, section, or related list does.
+
+---
+
+## 15. An Unassigned Record Type Deploys Cleanly and Nobody Can Select It
+
+**What happens:** A milestone deploys two active record types with no Profile `layoutAssignments` entry naming them and no Profile/PermissionSet `recordTypeVisibilities` entry at all. The package validates. In the org, the create dialog never offers those types. The assignment was "planned for a later step"; only a human note in the build log carried that, and the first person who asks where the new type went asks in production.
+
+**When it bites you:** Step-scoped builds that author objects and layouts before profiles, package installs that add record types without touching profiles, and any LLM output that creates a record type and stops. Deployable ≠ selectable.
+
+**How to avoid it:**
+- Treat assignment as part of the same deliverable, or say explicitly in `deploy-order.md` that visibility and layout assignment land in a later step.
+- Run the checker over a tree that includes Profile/PermissionSet metadata. `RTL-ASSIGN-01` (INFO by default; REVIEW under `--require-assignment`) flags each active record type that neither a layout assignment nor a visibility entry names. When the scanned tree has no Profile or PermissionSet file at all, the checker emits one INFO — `no Profile/PermissionSet in scope — assignment coverage not checked` — instead of one line per type, so a metadata-only step is not spammed.
+- Do not confuse this with check 3 (active but not visible): that only runs when visibility entries exist and looks at visibility alone. `RTL-ASSIGN-01` requires both layout assignment and visibility to be absent.

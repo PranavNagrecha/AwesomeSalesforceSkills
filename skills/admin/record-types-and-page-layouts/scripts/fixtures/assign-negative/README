@@ -1,0 +1,1 @@
+Proves RTL-ASSIGN-01 is cleared when a PermissionSet names the record type in recordTypeVisibilities. Expected: no RTL-ASSIGN-01.

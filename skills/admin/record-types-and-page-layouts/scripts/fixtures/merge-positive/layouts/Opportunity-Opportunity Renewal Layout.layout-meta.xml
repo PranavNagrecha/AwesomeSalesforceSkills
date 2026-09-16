@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <layoutSections>
+        <style>TwoColumnsTopToBottom</style>
+        <label>Opportunity Information</label>
+        <editHeading>true</editHeading>
+        <detailHeading>true</detailHeading>
+        <customLabel>true</customLabel>
+        <layoutColumns>
+            <layoutItems>
+                <field>StageName</field>
+                <behavior>Edit</behavior>
+            </layoutItems>
+            <layoutItems>
+                <field>CloseDate</field>
+                <behavior>Edit</behavior>
+            </layoutItems>
+        </layoutColumns>
+        <layoutColumns>
+            <layoutItems>
+                <field>Amount</field>
+                <behavior>Edit</behavior>
+            </layoutItems>
+            <layoutItems>
+                <field>Name</field>
+                <behavior>Required</behavior>
+            </layoutItems>
+        </layoutColumns>
+    </layoutSections>
+</Layout>

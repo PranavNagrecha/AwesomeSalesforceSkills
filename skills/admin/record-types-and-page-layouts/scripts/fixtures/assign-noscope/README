@@ -1,0 +1,1 @@
+Proves RTL-ASSIGN-01 no-scope: record types present but no Profile/PermissionSet file. Expected: INFO no Profile/PermissionSet in scope — assignment coverage not checked (and no per-type RTL-ASSIGN-01).
