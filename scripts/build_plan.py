@@ -3389,9 +3389,45 @@ def cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
+_STEP_WARN_RE = re.compile(r"^step (\S+)")
+
+
+def _bucket_status_warnings(
+    issues: list[tuple[str, str]], steps: list[dict]
+) -> tuple[dict[str, list[str]], list[str], int]:
+    """Split validate WARNs into per-step buckets (plan order) and build-level.
+
+    Step-scoped messages match ``^step (\\S+)``; a trailing ``:`` on the
+    capture is stripped so ``step M1-S01: …`` and ``step M1-S01 skills: …``
+    land on the same step id. Anything else is build-level. Returns
+    ``(by_step, build_msgs, error_count)``.
+    """
+    step_ids = [s.get("id") for s in steps if s.get("id")]
+    by_step: dict[str, list[str]] = {sid: [] for sid in step_ids}
+    build_msgs: list[str] = []
+    error_count = 0
+    for level, msg in issues:
+        if level == "ERROR":
+            error_count += 1
+            continue
+        if level != "WARN":
+            continue
+        m = _STEP_WARN_RE.match(msg)
+        if m:
+            sid = m.group(1).rstrip(":")
+            if sid in by_step:
+                by_step[sid].append(msg)
+                continue
+        build_msgs.append(msg)
+    return by_step, build_msgs, error_count
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     plan = read_plan(Path(args.plan))
     steps = plan.get("steps") or []
+    schema = load_schema(args.schema)
+    issues = validate_plan(plan, Path(args.repo_root), schema)
+    by_step, build_msgs, error_count = _bucket_status_warnings(issues, steps)
     print(f"{plan['title']}  [{plan['build_id']}]")
     print(f"status: {plan['status']}  ·  plan version: {plan['version']}  ·  "
           f"created: {plan['created']}")
@@ -3421,14 +3457,19 @@ def cmd_status(args: argparse.Namespace) -> int:
     print(f"build mode: {mode}  ·  scale: {scale_cell}"
           + (f"  ·  org alias: {alias}" if alias else ""))
     print(f"steps: {len(steps)}  ·  milestones: {len(plan.get('milestones') or [])}")
+    if error_count:
+        print(f"validate: {error_count} ERROR(s) — run `build_plan.py validate`")
     print("")
     order = ["pending", "running", "built", "tested", "documented", "failed", "blocked"]
-    print("milestone   " + "  ".join(f"{s[:4]:>5}" for s in order) + "   gate")
+    print("milestone   " + "  ".join(f"{s[:4]:>5}" for s in order)
+          + "  " + f"{'warn':>5}" + "   gate")
     for milestone in plan.get("milestones") or []:
         mid = milestone.get("id")
         mine = [s for s in steps if s.get("milestone") == mid]
         counts = [sum(1 for s in mine if s.get("status") == st) for st in order]
+        warn_n = sum(len(by_step.get(s.get("id"), [])) for s in mine)
         print(f"{mid:<11} " + "  ".join(f"{c:>5}" for c in counts)
+              + "  " + f"{warn_n:>5}"
               + f"   {gate_status(plan, f'milestone:{mid}')}")
     print("")
     print("gates:")
@@ -3454,6 +3495,27 @@ def cmd_status(args: argparse.Namespace) -> int:
               f"{step.get('blocked_reason') or step.get('title')}")
     for clar in open_blocking:
         print(f"  {clar.get('id')} [blocking question unanswered] {clar.get('question')}")
+    step_warn_total = sum(len(msgs) for msgs in by_step.values())
+    warn_total = step_warn_total + len(build_msgs)
+    if warn_total == 0:
+        print("warnings: 0")
+    else:
+        print(f"warnings: {warn_total} ({len(build_msgs)} build-level)")
+    if getattr(args, "warnings", False):
+        print("")
+        print("warnings:")
+        for step in steps:
+            sid = step.get("id")
+            msgs = by_step.get(sid) or []
+            if not msgs:
+                continue
+            print(f"  {sid}: {len(msgs)}")
+            for msg in msgs:
+                print(f"    {msg}")
+        if build_msgs:
+            print(f"  build: {len(build_msgs)}")
+            for msg in build_msgs:
+                print(f"    {msg}")
     return 0
 
 
@@ -3501,7 +3563,8 @@ Walkthrough:
  13. set-milestone       the milestone verifier's verdict + report path
  14. gate milestone:M1 approve --by <who>        G3 — refused until every step is
                          documented (or blocked with a reason); last milestone → 'done'
- 15. status              one-screen summary: step counts per milestone, gates, blockers
+ 15. status              one-screen summary: step counts per milestone, warn
+                         column, gates, blockers; --warnings lists WARNs by step
  16. export              copy the finished build out of gitignored .sfskills/ into a
                          committable directory (validate must pass first)
 
@@ -3722,17 +3785,23 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_export)
 
     p = sub.add_parser("status", parents=[common], help="one-screen build summary",
-                       description="One-screen summary: step counts per milestone, gates, "
-                                   "blockers. § 3.1: the build-mode line also prints "
-                                   "'scale: <tier>' (absent scale reads as 'project', its "
-                                   "contract default). When status is 'plan-rejected' or "
-                                   "'verified', prints a 'verification: <outcome> · blockers: "
-                                   "<ids>' line right under the status line — the verification "
-                                   "block's own blockers, which are not the same thing as a "
-                                   "step's blocked/failed status, so a rejected plan whose steps "
-                                   "are all still pending never reads as 'blockers: none' with "
-                                   "nothing else said about why it was rejected.")
+                       description="One-screen summary: step counts per milestone, a warn "
+                                   "column (validate WARNs summed per milestone's steps), "
+                                   "gates, blockers, and a warnings total. § 3.1: the "
+                                   "build-mode line also prints 'scale: <tier>' (absent scale "
+                                   "reads as 'project', its contract default). When status is "
+                                   "'plan-rejected' or 'verified', prints a 'verification: "
+                                   "<outcome> · blockers: <ids>' line right under the status "
+                                   "line — the verification block's own blockers, which are "
+                                   "not the same thing as a step's blocked/failed status, so a "
+                                   "rejected plan whose steps are all still pending never "
+                                   "reads as 'blockers: none' with nothing else said about why "
+                                   "it was rejected. --warnings prints each WARN under its "
+                                   "step (plan order), then build-level.")
     p.add_argument("plan", help="path to plan.json")
+    p.add_argument("--warnings", action="store_true",
+                   help="after the summary, list each validate WARN grouped by step "
+                        "(plan order), then build-level")
     p.set_defaults(func=cmd_status)
 
     p = sub.add_parser("ensure-gates", parents=[common],

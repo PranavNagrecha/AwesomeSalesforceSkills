@@ -3972,6 +3972,67 @@ def test_status_prints_scale_on_the_build_mode_line(tmp_path, fixture_repo, caps
     assert "scale: ask" in line
 
 
+def test_status_warn_column_counts_step_validate_warns(tmp_path, fixture_repo, capsys):
+    """One step with two validate WARNs → warn 2 on the milestone row, warnings: 2."""
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    # scale ask + human_gate + undeclared cited checker → two step-scoped WARNs
+    # on M1-S01 (shape is fine with a single step).
+    steps = [step("M1-S01", "M1", skills=["demo/thing"], human_gate=True)]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--repo-root", str(repo)) == 0
+    out = capsys.readouterr().out
+    header = next(l for l in out.splitlines() if l.startswith("milestone"))
+    assert header.split() == [
+        "milestone", "pend", "runn", "buil", "test", "docu", "fail", "bloc", "warn", "gate",
+    ]
+    m1 = next(l for l in out.splitlines() if l.startswith("M1 "))
+    cells = m1.split()
+    assert cells[0] == "M1"
+    assert cells[-2] == "2"
+    assert "warnings: 2 (0 build-level)" in out
+
+
+def test_status_warnings_flag_lists_messages_by_step(tmp_path, fixture_repo, capsys):
+    """--warnings prints M1-S01: with both WARN messages (no leading WARN prefix)."""
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    steps = [step("M1-S01", "M1", skills=["demo/thing"], human_gate=True)]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--warnings", "--repo-root", str(repo)) == 0
+    out = capsys.readouterr().out
+    lines = out.splitlines()
+    detail_idx = max(i for i, l in enumerate(lines) if l == "warnings:")
+    assert lines[detail_idx + 1].startswith("  M1-S01:")
+    assert "2" in lines[detail_idx + 1]
+    body = "\n".join(lines[detail_idx + 2:])
+    assert "human_gate: true at scale 'ask'" in body
+    assert "ships check_thing.py but no checker test" in body
+    assert not any(l.lstrip().startswith("WARN ") for l in lines[detail_idx + 2:])
+
+
+def test_status_clean_plan_prints_warn_zero(tmp_path, fixture_repo, capsys):
+    """A clean plan: warn 0 on every row, warnings: 0, --warnings has no step headings."""
+    steps = [step("M1-S01", "M1")]
+    plan = plan_dict(steps, scale="ask")
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    assert run("status", str(path), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    m1 = next(l for l in out.splitlines() if l.startswith("M1 "))
+    cells = m1.split()
+    assert cells[-2] == "0"
+    assert "warnings: 0" in out
+    assert "build-level" not in out
+
+    capsys.readouterr()
+    assert run("status", str(path), "--warnings", "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert not any(l.startswith("  M1-S01:") for l in out.splitlines())
+
+
 def test_status_prints_project_as_the_effective_default_scale(tmp_path, fixture_repo, capsys):
     steps = [step("M1-S01", "M1")]
     plan = plan_dict(steps)  # no 'scale' key

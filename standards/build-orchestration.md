@@ -128,6 +128,8 @@ which copies the whole build directory across and refuses to run until
 wipe-and-copy must not discard the operator's prose about the example.
 When nothing is kept, export writes a generated README.md stub from the plan (title, tier, status, gates, counts, reports) for the operator to edit.
 
+status counts validate's warnings per milestone in a warn column and lists them by step with --warnings, so a gate is signed with the warnings in view.
+
 ## 3. Lifecycle and human gates
 
 | Stage | Who runs it | Produces | Gate (human) |
