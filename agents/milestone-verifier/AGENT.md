@@ -165,7 +165,7 @@ Finally print the gate command for the human to run — this agent never runs it
 python3 scripts/build_plan.py gate <build_dir>/plan.json milestone:<milestone_id> approve --by "<name>"
 ```
 
-That command is itself gated: § 3 refuses it unless the plan gate and `milestone:M<k-1>` are both approved and every step in this milestone is documented, or blocked with a recorded reason (which it prints). If the report names a blocked step, say plainly in the report that approving anyway accepts that gap.
+That command is itself gated: § 3 refuses it unless the plan gate and `milestone:M<k-1>` are both approved and every step in this milestone is documented, or blocked with a recorded reason (which it prints). If the report names a blocked step, say plainly in the report that approving anyway accepts that gap. The gate line may also point the human at `python3 scripts/build_plan.py brief <build_dir>/plan.json <milestone_id>` so they sign against one rendered page rather than six separate documents.
 
 ### Step 10 — Confidence
 

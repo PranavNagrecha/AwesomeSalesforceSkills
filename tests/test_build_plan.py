@@ -17,6 +17,7 @@ out on disk.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -4394,3 +4395,130 @@ def test_help_mentions_the_new_scale_flag_and_aliases():
             with pytest.raises(SystemExit):
                 build_plan.main(argv)
         assert needle in buf.getvalue(), f"{argv}: --help does not mention {needle!r}"
+
+
+# --------------------------------------------------------------------------
+# brief — one-page gate decision brief (read-only rendered view)
+# --------------------------------------------------------------------------
+
+def _tree_hash(root: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        digest.update(path.relative_to(root).as_posix().encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def _brief_fixture(tmp_path: Path, fixture_repo: Path, *, with_evidence: bool = True) -> Path:
+    """Two-step M1 build with one deferred manual, one BLOCKING open item, optional mock-deploy."""
+    steps = [
+        step("M1-S01", "M1", status="documented",
+             title="Object model for the claim"),
+        step("M1-S02", "M1", status="documented", depends_on=["M1-S01"],
+             title="Page layout for the claim"),
+    ]
+    plan = plan_dict(steps, status="building")
+    path = write_plan_file(tmp_path / "brief-build", plan)
+    build = path.parent
+    write_json(build / "tests" / "M1-S01" / "results.json", {
+        "step_id": "M1-S01",
+        "passed": True,
+        "skipped_manual": ["Given a claim, when saved, then the layout shows Status."],
+        "results": [],
+    })
+    write_json(build / "tests" / "M1-S02" / "results.json", {
+        "step_id": "M1-S02",
+        "passed": True,
+        "skipped_manual": [],
+        "results": [],
+    })
+    (build / "decisions.md").write_text(
+        "# Decisions log\n\n"
+        "## O-M1S02-01 — layout missing a required field\n\n"
+        "detail\n\n"
+        "## O-M1S01-01 — BLOCKING: OpportunityStage must be merged before deploy\n\n"
+        "detail\n\n"
+        "## O-M2S01-01 — other milestone item\n\n"
+        "detail\n",
+        encoding="utf-8",
+    )
+    if with_evidence:
+        run_dir = build / "reports" / "mock-deploy" / "2026-09-16T12-00-00Z"
+        run_dir.mkdir(parents=True)
+        (run_dir / "result.json").write_text('{"status": 0}\n', encoding="utf-8")
+        (run_dir / "summary.md").write_text(
+            "# Mock deploy result\n\n"
+            "- status: **Succeeded**\n"
+            "- components: 3 total, 3 ok, 0 error(s)\n"
+            "- tests: level NoTestRun · run 0 · passed 0 · failed 0 · coverage n/a\n",
+            encoding="utf-8",
+        )
+    return path
+
+
+def test_brief_renders_eight_sections_with_blocking_first(tmp_path, fixture_repo, capsys):
+    path = _brief_fixture(tmp_path, fixture_repo)
+    assert run("brief", str(path), "M1", "--repo-root", str(fixture_repo)) == 0
+    text = capsys.readouterr().out
+    for heading in (
+        "## Steps",
+        "## Warnings",
+        "## Open items",
+        "## Deferred manual tests",
+        "## Latest org evidence",
+        "## Verifier",
+        "## Next command",
+    ):
+        assert heading in text, f"missing section {heading}"
+    assert any(ln.startswith("# Gate brief —") for ln in text.splitlines())
+    assert "## Open items" in text
+    open_block = text.split("## Open items", 1)[1].split("## Deferred", 1)[0]
+    open_lines = [ln for ln in open_block.splitlines() if ln.startswith("- O-")]
+    assert open_lines, open_block
+    assert open_lines[0].startswith("- O-M1S01-01 — BLOCKING"), open_lines
+    assert "Given a claim, when saved, then the layout shows Status." in text
+    assert "- status: **Succeeded**" in text
+    assert "milestone:M1 approve" in text
+    assert "- build-level open items: 1" in open_block
+
+
+def test_brief_unknown_milestone_exits_1(tmp_path, fixture_repo, capsys):
+    path = _brief_fixture(tmp_path, fixture_repo)
+    assert run("brief", str(path), "M9", "--repo-root", str(fixture_repo)) == 1
+    err = capsys.readouterr().err
+    assert "unknown milestone" in err
+    assert "M9" in err
+
+
+def test_brief_out_writes_banner_and_leaves_stdout_empty(tmp_path, fixture_repo, capsys):
+    path = _brief_fixture(tmp_path, fixture_repo)
+    out_path = tmp_path / "gate-brief.md"
+    assert run("brief", str(path), "M1", "--out", str(out_path),
+               "--repo-root", str(fixture_repo)) == 0
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    written = out_path.read_text(encoding="utf-8")
+    assert written.splitlines()[0] == build_plan.BRIEF_BANNER
+    assert "## Steps" in written
+
+
+def test_brief_is_read_only_tree_hash_unchanged(tmp_path, fixture_repo, capsys):
+    path = _brief_fixture(tmp_path, fixture_repo)
+    before = _tree_hash(path.parent)
+    assert run("brief", str(path), "M1", "--repo-root", str(fixture_repo)) == 0
+    capsys.readouterr()
+    after = _tree_hash(path.parent)
+    assert before == after
+
+
+def test_brief_absent_decisions_and_mock_deploy(tmp_path, fixture_repo, capsys):
+    path = _brief_fixture(tmp_path, fixture_repo, with_evidence=False)
+    (path.parent / "decisions.md").unlink()
+    assert run("brief", str(path), "M1", "--repo-root", str(fixture_repo)) == 0
+    text = capsys.readouterr().out
+    assert "(decisions.md absent)" in text
+    assert "(not run)" in text
+    assert "## Latest org evidence" in text
+    assert "## Open items" in text

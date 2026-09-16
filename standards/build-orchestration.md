@@ -191,6 +191,14 @@ milestone re-verified after a repair (the § 8 re-verification path) when the
 verdict did not change. Use `approve` / `reject` only when the decision itself
 changes.
 
+Before signing a milestone gate, regenerate a one-page decision brief with
+`scripts/build_plan.py brief <plan> <Mk>` (optionally `--out <path>`). It is a
+§ 2 rendered view — pulled on demand from `plan.json`, `decisions.md`,
+`tests/<step>/results.json`, the newest `reports/mock-deploy/*/`, and
+`reports/MILESTONE-<Mk>-REPORT.md` — never hand-edited and never a substitute
+for those sources; it only gathers the facts the human was already reading
+across six places so the gate ceremony itself stays short.
+
 ## 3.1 Ceremony scales to the ask
 
 § 3 is one shape and its guarantees are not negotiable. What varies is how much
