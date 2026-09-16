@@ -2511,7 +2511,9 @@ def test_export_copies_the_whole_build_directory(tmp_path, fixture_repo, capsys)
     assert json.loads((dest / "plan.json").read_text()) == json.loads(path.read_text())
 
     out = capsys.readouterr().out
-    expected = len([p for p in path.parent.rglob("*") if p.is_file()])
+    # Export seeds a README.md stub after the copy; dest has one more file
+    # than the source build directory.
+    expected = len([p for p in path.parent.rglob("*") if p.is_file()]) + 1
     assert f"{expected} file(s)" in out, out
 
 
@@ -2531,6 +2533,35 @@ def test_export_refuses_an_existing_destination_unless_forced(tmp_path, fixture_
     assert (dest / "plan.json").is_file()
 
 
+def test_export_writes_readme_stub_on_first_export(tmp_path, fixture_repo, capsys):
+    """A first export to an empty destination seeds README.md from the plan."""
+    path = _exportable_build(tmp_path, fixture_repo)
+    plan = json.loads(path.read_text())
+    dest = tmp_path / "examples" / "builds" / "case-onboarding"
+    capsys.readouterr()
+    assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 0
+    out = capsys.readouterr().out
+    assert "wrote README.md (generated stub — edit it)" in out
+
+    readme = (dest / "README.md").read_text(encoding="utf-8")
+    assert readme.startswith(
+        f"# Worked example — {plan['title']} (project (default) tier, "
+        f"status `{plan['status']}`)"
+    )
+    assert "## Gates" in readme
+    for gate in plan["human_gates"]:
+        assert f"| {gate['name']} | {gate['status']} |" in readme
+    n_steps = len(plan["steps"])
+    n_milestones = len(plan["milestones"])
+    assert (f"- Milestones: {n_milestones} · Steps: {n_steps} "
+            f"(0 documented, 0 blocked, {n_steps} other)") in readme
+    assert (
+        f"`python3 scripts/build_plan.py export "
+        f".sfskills/builds/{plan['build_id']}/plan.json {dest} --force`"
+    ) in readme
+    assert "## Regenerate" in readme
+
+
 def test_export_force_preserves_a_hand_written_readme(tmp_path, fixture_repo, capsys):
     """The build never produces a README.md; --force must not wipe the
     operator's hand-written one at dest-dir's root (item 2, today's regression:
@@ -2538,10 +2569,10 @@ def test_export_force_preserves_a_hand_written_readme(tmp_path, fixture_repo, ca
     path = _exportable_build(tmp_path, fixture_repo)
     dest = tmp_path / "out"
     assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 0
-    assert not (dest / "README.md").exists()
+    assert (dest / "README.md").is_file(), "first export seeds a stub"
 
-    (dest / "README.md").write_text("# Case Onboarding\n\nHand-written notes.\n",
-                                     encoding="utf-8")
+    hand_written = "# Case Onboarding\n\nHand-written notes.\n"
+    (dest / "README.md").write_text(hand_written, encoding="utf-8")
     stale = dest / "artefacts" / "M1-S01" / "Gone.object-meta.xml"
     stale.write_text("<CustomObject/>\n", encoding="utf-8")
 
@@ -2549,10 +2580,30 @@ def test_export_force_preserves_a_hand_written_readme(tmp_path, fixture_repo, ca
     assert run("export", str(path), str(dest), "--force",
                "--repo-root", str(fixture_repo)) == 0
     assert not stale.exists(), "--force still replaces everything else"
-    assert (dest / "README.md").read_text(encoding="utf-8") == (
-        "# Case Onboarding\n\nHand-written notes.\n"
-    ), "README.md must survive --force untouched"
-    assert "kept README.md" in capsys.readouterr().out
+    assert (dest / "README.md").read_bytes() == hand_written.encode("utf-8"), (
+        "README.md must survive --force untouched"
+    )
+    out = capsys.readouterr().out
+    assert "kept README.md" in out
+    assert "wrote README.md" not in out
+
+
+def test_export_readme_stub_without_requirement_summary(tmp_path, fixture_repo, capsys):
+    """Missing summary + no requirement.md still exports; stub uses the placeholder."""
+    path = _exportable_build(tmp_path, fixture_repo)
+    plan = json.loads(path.read_text())
+    # Schema requires summary minLength 1; whitespace strips to empty for the stub.
+    plan["requirement"]["summary"] = " "
+    path.write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
+    (path.parent / "requirement.md").unlink()
+
+    dest = tmp_path / "out-no-summary"
+    capsys.readouterr()
+    assert run("export", str(path), str(dest), "--repo-root", str(fixture_repo)) == 0
+    assert "wrote README.md (generated stub — edit it)" in capsys.readouterr().out
+    readme = (dest / "README.md").read_text(encoding="utf-8")
+    assert "(no requirement summary recorded)" in readme
+    assert not (dest / "requirement.md").exists()
 
 
 def test_export_refuses_an_invalid_plan(tmp_path, fixture_repo):

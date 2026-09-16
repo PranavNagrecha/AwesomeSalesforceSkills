@@ -126,6 +126,7 @@ which copies the whole build directory across and refuses to run until
 `validate` passes. `--force` preserves a hand-written `README.md` at
 `dest-dir`'s root across the replace — the build never produces one, so a
 wipe-and-copy must not discard the operator's prose about the example.
+When nothing is kept, export writes a generated README.md stub from the plan (title, tier, status, gates, counts, reports) for the operator to edit.
 
 ## 3. Lifecycle and human gates
 
