@@ -631,7 +631,9 @@ types.
    validation rather than only compile (S2-F-06: every prior tier2-webhook run
    carried `runTestsEnabled: false`), so a milestone report resting on a
    `mock_deploy.py` run should cite the test-level `summary.md` recorded for
-   that run, not assume tests ran.
+   that run, not assume tests ran. The summary lists coverage per class and
+   marks any class under 75%, the threshold RunSpecifiedTests/RunLocalTests
+   apply per class, not only in aggregate.
 2. **Checker shape.** A `checker` test's `command` must match
    `^python3 skills/[a-z]+/[a-z0-9-]+/scripts/check_[a-z0-9_]+\.py\b`, and the
    file must exist on disk. A checker that does not exist is an ERROR at plan

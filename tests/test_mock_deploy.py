@@ -1209,6 +1209,45 @@ def test_extract_test_summary_computes_coverage_and_failures():
     ]
 
 
+def test_extract_test_summary_builds_per_class_sorted_by_pct():
+    parsed = {
+        "result": {
+            "numberTestsCompleted": 2,
+            "numberTestErrors": 0,
+            "details": {
+                "runTestResult": {
+                    "codeCoverage": [
+                        {
+                            "name": "FullCoverage",
+                            "type": "Class",
+                            "numLocations": 10,
+                            "numLocationsNotCovered": 0,
+                        },
+                        {
+                            "name": "HalfCoverage",
+                            "type": "Class",
+                            "numLocations": 20,
+                            "numLocationsNotCovered": 10,
+                        },
+                        {
+                            "name": "EmptyClass",
+                            "type": "Trigger",
+                            "numLocations": 0,
+                            "numLocationsNotCovered": 0,
+                        },
+                    ],
+                }
+            },
+        }
+    }
+    summary = mock_deploy.extract_test_summary(parsed, "RunSpecifiedTests", None)
+    assert summary.per_class == [
+        ("HalfCoverage", "Class", 20, 10, 50.0),
+        ("FullCoverage", "Class", 10, 0, 100.0),
+        ("EmptyClass", "Trigger", 0, 0, None),
+    ]
+
+
 def test_extract_test_summary_reads_coverage_warnings():
     parsed = {
         "result": {
@@ -1257,6 +1296,7 @@ def test_render_summary_prints_coverage_warnings_heading():
              "Test coverage of selected Apex Class is 53.659%, at least 75% test "
              "coverage is required"),
         ],
+        per_class=[],
     )
     summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
     assert "## Coverage warnings" in summary
@@ -1268,6 +1308,56 @@ def test_render_summary_prints_coverage_warnings_heading():
         "- reason: no component errors and no test failures — the org refused "
         "on coverage (see Coverage warnings / the coverage line above)" in summary
     )
+
+
+def test_render_summary_prints_coverage_by_class_table():
+    parsed = {
+        "result": {
+            "status": "Failed", "checkOnly": True, "success": False,
+            "numberComponentErrors": 0,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    tests = mock_deploy.TestSummary(
+        level="RunSpecifiedTests", requested_tests=["HalfCoverageTest"],
+        run=2, passed=2, failed=0, coverage_pct=75.0,
+        failures=[], coverage_warnings=[],
+        per_class=[
+            ("HalfCoverage", "Class", 20, 10, 50.0),
+            ("FullCoverage", "Class", 10, 0, 100.0),
+            ("EmptyClass", "Trigger", 0, 0, None),
+        ],
+    )
+    summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
+    assert "## Coverage by class" in summary
+    assert (
+        "| HalfCoverage | Class | 20 | 10 | 50.0% | UNDER 75% |" in summary
+    )
+    assert "| FullCoverage | Class | 10 | 0 | 100.0% |  |" in summary
+    assert "| EmptyClass | Trigger | 0 | 0 | n/a |  |" in summary
+    assert summary.count("UNDER 75%") == 1
+    assert (
+        "- classes under 75%: 1 (RunSpecifiedTests and RunLocalTests require "
+        "every class at 75% — see Coverage warnings)" in summary
+    )
+
+
+def test_render_summary_omits_coverage_by_class_when_empty():
+    parsed = {
+        "result": {
+            "status": "Succeeded", "checkOnly": True, "success": True,
+            "numberComponentErrors": 0,
+            "details": {"componentSuccesses": [], "componentFailures": []},
+        }
+    }
+    tests = mock_deploy.TestSummary(
+        level="NoTestRun", requested_tests=None,
+        run=0, passed=0, failed=0, coverage_pct=None,
+        failures=[], coverage_warnings=[], per_class=[],
+    )
+    summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
+    assert "## Coverage by class" not in summary
+    assert "classes under 75%" not in summary
 
 
 def test_render_summary_reason_line_for_aggregate_under_floor_without_warnings():
@@ -1283,7 +1373,7 @@ def test_render_summary_reason_line_for_aggregate_under_floor_without_warnings()
     tests = mock_deploy.TestSummary(
         level="RunSpecifiedTests", requested_tests=["FooTest"],
         run=30, passed=30, failed=0, coverage_pct=70.8,
-        failures=[], coverage_warnings=[],
+        failures=[], coverage_warnings=[], per_class=[],
     )
     summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
     assert "## Coverage warnings" not in summary
@@ -1306,7 +1396,7 @@ def test_render_summary_reason_line_falls_back_when_coverage_is_fine():
     tests = mock_deploy.TestSummary(
         level="RunSpecifiedTests", requested_tests=["FooTest"],
         run=10, passed=10, failed=0, coverage_pct=90.0,
-        failures=[], coverage_warnings=[],
+        failures=[], coverage_warnings=[], per_class=[],
     )
     summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
     assert "- reason: see result.json — not a component or test failure" in summary
@@ -1324,7 +1414,7 @@ def test_render_summary_no_reason_line_when_succeeded():
     tests = mock_deploy.TestSummary(
         level="RunSpecifiedTests", requested_tests=["FooTest"],
         run=10, passed=10, failed=0, coverage_pct=90.0,
-        failures=[], coverage_warnings=[],
+        failures=[], coverage_warnings=[], per_class=[],
     )
     summary = mock_deploy.render_summary(parsed, "manifest", "sfskills-dev", tests=tests)
     assert "- reason:" not in summary
@@ -1410,6 +1500,7 @@ def test_render_summary_with_tests_shows_line_and_failures_table():
              "Class.CaseServiceTest.itFails: line 10, column 1"),
         ],
         coverage_warnings=[],
+        per_class=[],
     )
     summary = mock_deploy.render_summary(parsed, "source", "sfskills-dev", tests=tests)
     assert (

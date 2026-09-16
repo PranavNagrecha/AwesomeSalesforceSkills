@@ -658,6 +658,11 @@ class TestSummary(NamedTuple):
       run can show a healthy aggregate and still fail because one class
       individually falls short, and that reason previously lived only in
       the raw `result.json`, never in `summary.md`.
+    * per_class — `(name, type, locations, not_covered, pct)` per
+      `codeCoverage` entry, sorted by `pct` ascending then name; `pct` is
+      `None` when `numLocations` is 0 (those rows sort last). Surfaced in
+      `summary.md` and `result.json` so an operator can see which class is
+      under the 75% floor without reading the raw CLI payload.
     """
 
     level: str
@@ -668,6 +673,7 @@ class TestSummary(NamedTuple):
     coverage_pct: float | None
     failures: list[tuple[str, str, str, str]]
     coverage_warnings: list[tuple[str, str]]
+    per_class: list[tuple[str, str, int, int, float | None]]
 
 
 def extract_test_summary(
@@ -702,6 +708,22 @@ def extract_test_summary(
         not_covered = sum(int(c.get("numLocationsNotCovered") or 0) for c in code_coverage)
         coverage_pct = round(100.0 * (total_locations - not_covered) / total_locations, 1)
 
+    per_class: list[tuple[str, str, int, int, float | None]] = []
+    for c in code_coverage:
+        name = str(c.get("name") or "")
+        typ = str(c.get("type") or "")
+        locations = int(c.get("numLocations") or 0)
+        not_covered_n = int(c.get("numLocationsNotCovered") or 0)
+        pct = (
+            None
+            if locations == 0
+            else round(100.0 * (locations - not_covered_n) / locations, 1)
+        )
+        per_class.append((name, typ, locations, not_covered_n, pct))
+    per_class.sort(
+        key=lambda t: (t[4] is None, t[4] if t[4] is not None else 0.0, t[0])
+    )
+
     failures: list[tuple[str, str, str, str]] = []
     for f in run_test_result.get("failures") or []:
         stack = f.get("stackTrace") or ""
@@ -726,6 +748,7 @@ def extract_test_summary(
         coverage_pct=coverage_pct,
         failures=failures,
         coverage_warnings=coverage_warnings,
+        per_class=per_class,
     )
 
 
@@ -839,6 +862,33 @@ def render_summary(
                 for name, message in tests.coverage_warnings:
                     label = f"{name} — {message}" if name else message
                     lines.append(f"- {label}")
+
+            if tests.per_class:
+                lines += [
+                    "",
+                    "## Coverage by class",
+                    "",
+                    "| Class | Type | Lines | Uncovered | Coverage | |",
+                    "|---|---|---|---|---|---|",
+                ]
+                under_75 = 0
+                for name, typ, locations, not_covered_n, pct in tests.per_class:
+                    if pct is not None and pct < 75.0:
+                        under_75 += 1
+                        flag = "UNDER 75%"
+                    else:
+                        flag = ""
+                    cov = f"{pct}%" if pct is not None else "n/a"
+                    lines.append(
+                        f"| {name} | {typ} | {locations} | {not_covered_n} | {cov} | {flag} |"
+                    )
+                if under_75 > 0:
+                    lines.append(
+                        f"- classes under 75%: {under_75} (RunSpecifiedTests and "
+                        "RunLocalTests require every class at 75% — see Coverage warnings)"
+                    )
+                else:
+                    lines.append("- classes under 75%: 0")
 
             # S2-F-21: a run with zero component errors and zero test
             # failures can still report `status: Failed` on coverage alone
@@ -1109,6 +1159,16 @@ def main(argv: list[str] | None = None) -> int:
         ],
         "coverage_warnings": [
             {"name": n, "message": msg} for n, msg in test_summary.coverage_warnings
+        ],
+        "per_class": [
+            {
+                "name": n,
+                "type": t,
+                "locations": loc,
+                "not_covered": nc,
+                "pct": pct,
+            }
+            for n, t, loc, nc, pct in test_summary.per_class
         ],
     }
 
