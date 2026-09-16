@@ -439,7 +439,9 @@ found after testing goes `tested → failed → pending → running` with a real
 failure reason, not a fabricated one used to route around this table. `next`
 still offers `pending` steps only — steps whose `depends_on` are all
 `documented`, in the current (approved) milestone, excluding any step whose
-`step:<id>` human gate is not approved.
+`step:<id>` human gate is not approved. `next` also prints, on stderr, which
+cited checkers each offered step has not declared and the exact amend-step
+`--add-checker` command that declares them.
 
 ## 5. Acceptance tests
 

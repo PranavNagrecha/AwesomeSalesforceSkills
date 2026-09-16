@@ -1104,6 +1104,56 @@ def test_next_respects_gates_and_depends_on(tmp_path, fixture_repo, capsys):
     assert [s["id"] for s in json.loads(capsys.readouterr().out)] == ["M1-S02"]
 
 
+def test_next_stderr_advice_for_undeclared_cited_checker(tmp_path, fixture_repo, capsys):
+    """Offered step citing a skill with an undeclared checker: stdout stays
+    parseable JSON; stderr carries the advice block and amend-step command."""
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", skills=["demo/thing"])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, repo)
+    capsys.readouterr()
+
+    assert run("next", str(path), "--repo-root", str(repo)) == 0
+    captured = capsys.readouterr()
+    runnable = json.loads(captured.out)
+    assert [s["id"] for s in runnable] == ["M1-S01"]
+    assert "advice step M1-S01: 1 cited checker(s) not declared" in captured.err
+    assert "check_thing.py (demo/thing)" in captured.err
+    assert (
+        f"declare: python3 scripts/build_plan.py amend-step {path} M1-S01 "
+        f"--add-checker demo/thing"
+    ) in captured.err
+
+
+def test_next_no_stderr_advice_when_cited_checker_declared(tmp_path, fixture_repo, capsys):
+    """Same offered step after the checker is declared: no advice on stderr."""
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    command = ("python3 skills/demo/thing/scripts/check_thing.py "
+               "--manifest-dir artefacts/M1-S01")
+    plan = plan_dict([step("M1-S01", "M1", skills=["demo/thing"], tests=[
+        {"type": "xml", "description": "every artefact parses"},
+        {"type": "checker", "command": command},
+    ])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, repo)
+    capsys.readouterr()
+
+    assert run("next", str(path), "--repo-root", str(repo)) == 0
+    captured = capsys.readouterr()
+    assert [s["id"] for s in json.loads(captured.out)] == ["M1-S01"]
+    assert "advice step" not in captured.err
+    assert "cited checker(s) not declared" not in captured.err
+
+
+def test_undeclared_checkers_empty_for_blocked_step(tmp_path, fixture_repo):
+    """Blocked steps carry no undeclared-checker obligation (validate skips them)."""
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    blocked = step("M1-S01", "M1", skills=["demo/thing"],
+                   status="blocked", blocked_reason="skill-gap")
+    plan = plan_dict([blocked])
+    assert build_plan.undeclared_checkers(blocked, plan, repo) == []
+
+
 def test_next_refuses_a_milestone_whose_predecessor_gate_is_open(tmp_path, fixture_repo, capsys):
     plan = plan_dict([step("M1-S01", "M1", status="documented"), step("M2-S01", "M2")])
     plan["human_gates"] = [

@@ -951,46 +951,65 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
     # milestone the step belongs to, for cross-step scope) must run it —
     # otherwise the planner declared coverage it never tests. Never ERROR;
     # missing skill dirs are already an ERROR above.
+    for step in steps:
+        sid = step.get("id", "<no id>")
+        mid = step.get("milestone")
+        for skill, basename in undeclared_checkers(step, plan, repo_root):
+            issues.append((
+                "WARN",
+                f"step {sid} skills: {skill} ships {basename} but no checker test "
+                f"on the step or on milestone {mid} runs it — declare it in "
+                f"acceptance_tests[] (or on the milestone, if it needs cross-step "
+                f"scope) or drop the skill from skills[] (§ 5)",
+            ))
+
+    return issues
+
+
+def undeclared_checkers(
+    step: dict, plan: dict, repo_root: Path
+) -> list[tuple[str, str]]:
+    """Cited skills' check_*.py not declared on the step or its milestone.
+
+    Returns (skill_id, basename) pairs in skills[] order then filename order —
+    the same order validate uses for its WARN lines. Empty when the step is
+    blocked (no coverage obligation while blocked) or when every shipped
+    checker is already named in a checker-type acceptance test on the step
+    or its milestone (§ 5).
+    """
+    if step.get("status") == "blocked":
+        return []
+    milestones = plan.get("milestones") or []
     milestone_by_id = {
         m.get("id"): m for m in milestones if isinstance(m, dict) and m.get("id") is not None
     }
-    for step in steps:
-        if step.get("status") == "blocked":
-            continue
-        sid = step.get("id", "<no id>")
-        mid = step.get("milestone")
-        milestone = milestone_by_id.get(mid) if mid is not None else None
-        checker_commands: list[str] = []
-        for test in (step.get("acceptance_tests") or []):
+    mid = step.get("milestone")
+    milestone = milestone_by_id.get(mid) if mid is not None else None
+    checker_commands: list[str] = []
+    for test in (step.get("acceptance_tests") or []):
+        if isinstance(test, dict) and test.get("type") == "checker":
+            checker_commands.append(test.get("command") or "")
+    if isinstance(milestone, dict):
+        for test in (milestone.get("acceptance_tests") or []):
             if isinstance(test, dict) and test.get("type") == "checker":
                 checker_commands.append(test.get("command") or "")
-        if isinstance(milestone, dict):
-            for test in (milestone.get("acceptance_tests") or []):
-                if isinstance(test, dict) and test.get("type") == "checker":
-                    checker_commands.append(test.get("command") or "")
-        skills = step.get("skills") if isinstance(step.get("skills"), list) else []
-        for skill in skills:
-            if not isinstance(skill, str):
+    found: list[tuple[str, str]] = []
+    skills = step.get("skills") if isinstance(step.get("skills"), list) else []
+    for skill in skills:
+        if not isinstance(skill, str):
+            continue
+        skill_dir = repo_root / "skills" / skill
+        if not skill_dir.is_dir():
+            continue
+        scripts_dir = skill_dir / "scripts"
+        if not scripts_dir.is_dir():
+            continue
+        for checker in sorted(scripts_dir.glob("check_*.py"), key=lambda p: p.name):
+            basename = checker.name
+            if any(basename in cmd for cmd in checker_commands):
                 continue
-            skill_dir = repo_root / "skills" / skill
-            if not skill_dir.is_dir():
-                continue
-            scripts_dir = skill_dir / "scripts"
-            if not scripts_dir.is_dir():
-                continue
-            for checker in sorted(scripts_dir.glob("check_*.py"), key=lambda p: p.name):
-                basename = checker.name
-                if any(basename in cmd for cmd in checker_commands):
-                    continue
-                issues.append((
-                    "WARN",
-                    f"step {sid} skills: {skill} ships {basename} but no checker test "
-                    f"on the step or on milestone {mid} runs it — declare it in "
-                    f"acceptance_tests[] (or on the milestone, if it needs cross-step "
-                    f"scope) or drop the skill from skills[] (§ 5)",
-                ))
-
-    return issues
+            found.append((skill, basename))
+    return found
 
 
 def required_gate_names(plan: dict) -> list[str]:
@@ -2118,6 +2137,30 @@ def cmd_next(args: argparse.Namespace) -> int:
             continue
         runnable.append(step)
     print(json.dumps(runnable, indent=2, ensure_ascii=False))
+    plan_path = args.plan
+    repo_root = Path(args.repo_root)
+    for step in runnable:
+        missing = undeclared_checkers(step, plan, repo_root)
+        if not missing:
+            continue
+        sid = step.get("id") or "<no id>"
+        n = len(missing)
+        listed = ", ".join(f"{basename} ({skill})" for skill, basename in missing)
+        print(
+            f"advice step {sid}: {n} cited checker(s) not declared — {listed}",
+            file=sys.stderr,
+        )
+        skills_once: list[str] = []
+        for skill, _basename in missing:
+            if skill not in skills_once:
+                skills_once.append(skill)
+        add_flags = " ".join(f"--add-checker {s}" for s in skills_once)
+        print(
+            f"  declare: python3 scripts/build_plan.py amend-step {plan_path} {sid} "
+            f"{add_flags} --by \"<who>\" --reason "
+            f"\"declare cited checkers before the runner\"",
+            file=sys.stderr,
+        )
     for reason in gated:
         print(f"reason: {reason}", file=sys.stderr)
     if not runnable and not gated:
@@ -3575,7 +3618,10 @@ def build_parser() -> argparse.ArgumentParser:
                                    "milestone:<id> gate is approved (that milestone is done "
                                    "being actionable, not next); it runs only if its "
                                    "predecessor gate is approved. Prints [] on stdout and the "
-                                   "reason on stderr when blocked or skipped.")
+                                   "reason on stderr when blocked or skipped. Also prints, on "
+                                   "stderr, which cited checkers each offered step has not "
+                                   "declared and the exact amend-step --add-checker command "
+                                   "that declares them.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("--milestone", default=None, help="force a milestone id, e.g. M2")
     p.set_defaults(func=cmd_next)
