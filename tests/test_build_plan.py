@@ -2682,6 +2682,65 @@ def test_the_dry_run_envelope_validates():
         assert ve.validate_envelope(payload) == [], f"{path} does not validate"
 
 
+def test_envelope_run_id_matching_injected_now_passes():
+    pytest.importorskip("jsonschema")
+    from datetime import datetime, timezone
+    from scripts import validate_envelope as ve
+
+    now = datetime(2026, 9, 12, 21, 40, 0, tzinfo=timezone.utc)
+    envelope = dict(MINIMAL_ENVELOPE)
+    envelope["run_id"] = "2026-09-12T21-40-00Z"
+    assert ve.validate_envelope(envelope, now=now) == []
+
+
+def test_envelope_run_id_one_hour_in_the_future_fails():
+    pytest.importorskip("jsonschema")
+    from datetime import datetime, timezone
+    from scripts import validate_envelope as ve
+
+    now = datetime(2026, 9, 12, 21, 40, 0, tzinfo=timezone.utc)
+    envelope = dict(MINIMAL_ENVELOPE)
+    envelope["run_id"] = "2026-09-12T22-40-00Z"
+    errors = ve.validate_envelope(envelope, now=now)
+    assert any("is in the future" in msg for msg in errors), errors
+
+
+def test_envelope_run_id_with_colons_is_not_a_utc_timestamp():
+    pytest.importorskip("jsonschema")
+    from datetime import datetime, timezone
+    from scripts import validate_envelope as ve
+
+    now = datetime(2026, 9, 12, 21, 40, 0, tzinfo=timezone.utc)
+    envelope = dict(MINIMAL_ENVELOPE)
+    envelope["run_id"] = "2026-09-12T21:40:00Z"
+    errors = ve.validate_envelope(envelope, now=now)
+    assert any("not a UTC timestamp" in msg for msg in errors), errors
+
+
+def test_envelope_file_stem_must_match_run_id(tmp_path):
+    pytest.importorskip("jsonschema")
+    from datetime import datetime, timezone
+    from scripts import validate_envelope as ve
+
+    now = datetime(2026, 9, 16, 12, 0, 0, tzinfo=timezone.utc)
+    envelope = dict(MINIMAL_ENVELOPE)
+    envelope["run_id"] = "2026-09-12T11-00-00Z"
+    body = json.dumps(envelope)
+
+    mismatch = tmp_path / "2026-09-12T10-00-00Z.json"
+    mismatch.write_text(body, encoding="utf-8")
+    errors = ve.validate_envelope_file(mismatch, now=now)
+    assert any("does not match the file name" in msg for msg in errors), errors
+
+    matched = tmp_path / "2026-09-12T11-00-00Z.json"
+    matched.write_text(body, encoding="utf-8")
+    assert ve.validate_envelope_file(matched, now=now) == []
+
+    suffixed = tmp_path / "2026-09-12T11-00-00Z-runner.json"
+    suffixed.write_text(body, encoding="utf-8")
+    assert ve.validate_envelope_file(suffixed, now=now) == []
+
+
 # --------------------------------------------------------------------------
 # decisions: the cited branch must really be in the cited tree
 # --------------------------------------------------------------------------

@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -82,17 +83,54 @@ def build_validator(schemas_dir: Path | None = None) -> Any:
         return jsonschema.Draft202012Validator(schema, resolver=resolver)
 
 
-def validate_envelope(envelope: Any, schemas_dir: Path | None = None) -> list[str]:
+_RUN_ID_FORMAT = "%Y-%m-%dT%H-%M-%SZ"
+
+
+def _utc_now(now: datetime | None) -> datetime:
+    clock = datetime.now(timezone.utc) if now is None else now
+    if clock.tzinfo is None:
+        return clock.replace(tzinfo=timezone.utc)
+    return clock.astimezone(timezone.utc)
+
+
+def _run_id_clock_errors(run_id: str, clock: datetime) -> list[str]:
+    try:
+        parsed = datetime.strptime(run_id, _RUN_ID_FORMAT).replace(tzinfo=timezone.utc)
+    except ValueError:
+        return [
+            f"run_id: '{run_id}' is not a UTC timestamp of the form YYYY-MM-DDTHH-MM-SSZ"
+        ]
+    if parsed > clock + timedelta(minutes=5):
+        now_stamp = clock.strftime(_RUN_ID_FORMAT)
+        return [
+            f"run_id: '{run_id}' is in the future (now {now_stamp}) — take the "
+            "timestamp from the clock (date -u), never estimate it."
+        ]
+    return []
+
+
+def validate_envelope(
+    envelope: Any,
+    schemas_dir: Path | None = None,
+    now: datetime | None = None,
+) -> list[str]:
     """Return a list of human-readable errors. Empty list means valid."""
     validator = build_validator(schemas_dir)
     errors: list[str] = []
     for err in sorted(validator.iter_errors(envelope), key=lambda e: list(e.absolute_path)):
         pointer = "/".join(str(part) for part in err.absolute_path) or "<root>"
         errors.append(f"{pointer}: {err.message}")
+    run_id = envelope.get("run_id") if isinstance(envelope, dict) else None
+    if isinstance(run_id, str):
+        errors.extend(_run_id_clock_errors(run_id, _utc_now(now)))
     return errors
 
 
-def validate_envelope_file(path: Path, schemas_dir: Path | None = None) -> list[str]:
+def validate_envelope_file(
+    path: Path,
+    schemas_dir: Path | None = None,
+    now: datetime | None = None,
+) -> list[str]:
     """Load one envelope file and validate it. A parse failure is one error."""
     try:
         envelope = _load(path)
@@ -100,7 +138,16 @@ def validate_envelope_file(path: Path, schemas_dir: Path | None = None) -> list[
         return [f"<file>: no such file: {path}"]
     except json.JSONDecodeError as exc:
         return [f"<file>: not valid JSON: {exc}"]
-    return validate_envelope(envelope, schemas_dir)
+    errors = validate_envelope(envelope, schemas_dir, now=now)
+    run_id = envelope.get("run_id") if isinstance(envelope, dict) else None
+    if isinstance(run_id, str):
+        stem = path.stem
+        if stem != run_id and not stem.startswith(f"{run_id}-"):
+            errors.append(
+                f"run_id '{run_id}' does not match the file name '{stem}' — "
+                "the file is named by its run_id (an optional -suffix may follow)."
+            )
+    return errors
 
 
 def main(argv: list[str] | None = None) -> int:
