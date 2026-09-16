@@ -3250,6 +3250,69 @@ def test_validate_warns_ask_scale_shape_mismatch(tmp_path, fixture_repo, capsys)
     assert "§ 3.1" in out
 
 
+def test_validate_warns_open_answer_without_assumption(tmp_path, fixture_repo, capsys):
+    sid = "M1-S01"
+    steps = [step(sid, "M1", inputs={"object": "Case", "answers": ["Q1"]})]
+    plan = plan_dict(
+        steps,
+        clarifications=[{"id": "Q1", "question": "Which queue?", "kind": "informational",
+                         "status": "open"}],
+        assumptions=[],
+    )
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert (
+        f"step {sid} inputs.answers: Q1 is status 'open' and no assumptions[] row "
+        f"applies it to this step — record the applied default as an assumption "
+        f"(because names Q1, steps names {sid}) and list it under "
+        f"inputs.defaults_applied, or answer the question (§ 3.1)"
+    ) in out
+
+
+def test_validate_no_warn_when_defaults_applied_names_assumption(tmp_path, fixture_repo, capsys):
+    sid = "M1-S01"
+    steps = [step(sid, "M1", inputs={
+        "object": "Case",
+        "answers": ["Q1"],
+        "defaults_applied": {"Q1": "A1"},
+    })]
+    plan = plan_dict(
+        steps,
+        clarifications=[{"id": "Q1", "question": "Which queue?", "kind": "informational",
+                         "status": "open"}],
+        assumptions=[{"id": "A1", "text": "x", "because": "Q1 open", "risk": "low",
+                      "steps": [sid]}],
+    )
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "inputs.answers:" not in out
+
+
+def test_validate_no_warn_when_assumption_because_names_question(tmp_path, fixture_repo, capsys):
+    sid = "M1-S01"
+    steps = [step(sid, "M1", inputs={"object": "Case", "answers": ["Q1"]})]
+    plan = plan_dict(
+        steps,
+        clarifications=[{"id": "Q1", "question": "Which queue?", "kind": "informational",
+                         "status": "open"}],
+        assumptions=[{"id": "A1", "text": "x",
+                      "because": "Q1 informational, left open at G1; …",
+                      "risk": "low", "steps": [sid]}],
+    )
+    path = write_plan_file(tmp_path / "b", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "inputs.answers:" not in out
+
+
 def test_validate_warns_feature_scale_shape_mismatch(tmp_path, fixture_repo, capsys):
     steps = [step(f"M1-S0{i}", "M1", depends_on=([f"M1-S0{i - 1}"] if i > 1 else []))
              for i in range(1, 7)]

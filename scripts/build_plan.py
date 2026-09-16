@@ -886,6 +886,62 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
         issues.append(("WARN", f"{open_blocking} blocking question(s) still open — G1 cannot "
                                f"pass until they are answered or deferred"))
 
+    # --- open inputs.answers without an applied assumption (§ 3.1) ---------
+    # A step that lists a clarification under inputs.answers asserts that
+    # answer exists. When the clarification is still status 'open', the step
+    # must either record the applied default (defaults_applied + assumptions[]
+    # row) or name the question in an assumptions[].because that applies to
+    # this step. Absent clarifications/assumptions keys: skip (nothing to
+    # check against). Never ERROR — the plan shape is still valid.
+    if "clarifications" in plan and "assumptions" in plan:
+        clar_by_id = {
+            c.get("id"): c
+            for c in (plan.get("clarifications") or [])
+            if isinstance(c, dict) and c.get("id") is not None
+        }
+        assumptions = [a for a in (plan.get("assumptions") or []) if isinstance(a, dict)]
+        assum_by_id = {a.get("id"): a for a in assumptions if a.get("id") is not None}
+        for step in steps:
+            sid = step.get("id", "<no id>")
+            inputs = step.get("inputs") if isinstance(step.get("inputs"), dict) else {}
+            answers = inputs.get("answers")
+            if not isinstance(answers, list):
+                answers = []
+            defaults_applied = inputs.get("defaults_applied")
+            if not isinstance(defaults_applied, dict):
+                defaults_applied = {}
+            for qid in answers:
+                clar = clar_by_id.get(qid)
+                if not clar or clar.get("status") != "open":
+                    continue
+                covered = False
+                aid = defaults_applied.get(qid)
+                if aid is not None:
+                    assum = assum_by_id.get(aid)
+                    if assum is not None:
+                        a_steps = assum.get("steps")
+                        if isinstance(a_steps, list) and sid in a_steps:
+                            covered = True
+                if not covered:
+                    qid_re = re.compile(rf"\b{re.escape(str(qid))}\b")
+                    for assum in assumptions:
+                        because = assum.get("because")
+                        if not isinstance(because, str) or not qid_re.search(because):
+                            continue
+                        a_steps = assum.get("steps")
+                        if isinstance(a_steps, list) and sid in a_steps:
+                            covered = True
+                            break
+                if not covered:
+                    issues.append((
+                        "WARN",
+                        f"step {sid} inputs.answers: {qid} is status 'open' and no "
+                        f"assumptions[] row applies it to this step — record the applied "
+                        f"default as an assumption (because names {qid}, steps names "
+                        f"{sid}) and list it under inputs.defaults_applied, or answer "
+                        f"the question (§ 3.1)",
+                    ))
+
     return issues
 
 
