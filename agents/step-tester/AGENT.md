@@ -138,6 +138,8 @@ Write `<build_dir>/tests/<step_id>/results.json`:
 
 `passed` is `true` only when `failed` is empty. Manual tests never appear in `failed` — an untickable manual test is reported in the summary and in Process Observations, not counted as a failure of the build step.
 
+- Include `artefact_hashes` from `python3 scripts/build_plan.py check-outputs <build_dir>/plan.json <step_id> --hashes` (paste the JSON object as the top-level key) so `set-status … tested` can refuse a stale pass after the outputs change.
+
 This file is a precondition, not a record: `set-status <step> tested` requires `tests/<step-id>/results.json` to exist with `"passed": true`, so writing it before Step 6 is what makes Step 6 possible. Write it truthfully and let the transition fail; never adjust `passed` to make a status move.
 
 Alongside it write `<build_dir>/tests/<step_id>/summary.md`: one table of test name, type, result, and the first line of any failure output. Keep raw checker stdout in sibling files rather than inlining it into the summary.

@@ -53,6 +53,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import os
 import re
@@ -1122,12 +1123,33 @@ def check_outputs(plan: dict, step: dict, build_dir: Path) -> dict:
     }
 
 
+def artefact_hashes_for_step(build_dir: Path, step: dict) -> dict[str, str]:
+    """SHA-256 hex digests of each declared output file that exists on disk.
+
+    Keys are the strings in the step's ``outputs[]``, relative to the build
+    directory. Outputs that are directories or missing are skipped —
+    ``check-outputs`` already reports those.
+    """
+    hashes: dict[str, str] = {}
+    for out in step.get("outputs") or []:
+        target = build_dir / out
+        if not target.is_file():
+            continue
+        try:
+            raw = target.read_bytes()
+        except OSError:
+            continue
+        hashes[out] = hashlib.sha256(raw).hexdigest()
+    return hashes
+
+
 def _results_path(plan: dict, step_id: str, build_dir: Path) -> Path:
     tests_dir = (plan.get("docs") or {}).get("tests") or "tests/"
     return build_dir / tests_dir.rstrip("/") / step_id / "results.json"
 
 
-def _results_problem(plan: dict, step_id: str, build_dir: Path) -> str | None:
+def _results_problem(plan: dict, step_id: str, build_dir: Path,
+                     step: dict | None = None) -> str | None:
     """Why `tests/<step-id>/results.json` does not license status 'tested'."""
     path = _results_path(plan, step_id, build_dir)
     if not path.is_file():
@@ -1140,6 +1162,28 @@ def _results_problem(plan: dict, step_id: str, build_dir: Path) -> str | None:
     if results.get("passed") is not True:
         return (f"{path} records passed={results.get('passed')!r} — only a passing test run "
                 f"moves a step to 'tested'")
+    recorded = results.get("artefact_hashes")
+    if recorded is None:
+        return None
+    if step is None or not isinstance(recorded, dict):
+        return None
+    current = artefact_hashes_for_step(build_dir, step)
+    changed: list[str] = []
+    seen: set[str] = set()
+    for out_path, digest in recorded.items():
+        if out_path not in current or current[out_path] != digest:
+            if out_path not in seen:
+                seen.add(out_path)
+                changed.append(out_path)
+    for out_path in current:
+        if out_path not in recorded and out_path not in seen:
+            seen.add(out_path)
+            changed.append(out_path)
+    if changed:
+        n = len(changed)
+        return (f"step {step_id}: results.json was written against different artefacts — "
+                f"{n} output(s) changed since the tester ran (first: {changed[0]}); "
+                f"re-run the tester (§ 5).")
     return None
 
 
@@ -2120,8 +2164,11 @@ def cmd_set_status(args: argparse.Namespace) -> int:
                  f"disk under {build_dir} — {detail} "
                  f"(run `build_plan.py check-outputs {plan_path} {args.step_id}`)")
     if new == "tested":
-        problem = _results_problem(plan, args.step_id, build_dir)
+        problem = _results_problem(plan, args.step_id, build_dir, step=step)
         if problem:
+            # Hash-drift messages are already the full _die body (contract § 5).
+            if problem.startswith(f"step {args.step_id}:"):
+                _die(problem)
             _die(f"{args.step_id} may not move to 'tested': {problem}")
 
     step["status"] = new
@@ -2483,6 +2530,10 @@ def cmd_check_outputs(args: argparse.Namespace) -> int:
     step = next((s for s in plan.get("steps") or [] if s.get("id") == args.step_id), None)
     if step is None:
         _die(f"no step {args.step_id!r} in {plan_path}")
+    if args.hashes:
+        hashes = artefact_hashes_for_step(plan_path.parent, step)
+        print(json.dumps(hashes, indent=2, ensure_ascii=False))
+        return 0
     report = check_outputs(plan, step, plan_path.parent)
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0 if report["ok"] else 1
@@ -3462,9 +3513,15 @@ def build_parser() -> argparse.ArgumentParser:
                                    "JSON and exits 1 when not ok. `set-status <step> built` runs "
                                    "the same check, so a runner that wrote nothing cannot "
                                    "advance. A step that declares no outputs has nothing to "
-                                   "check and is ok (validate WARNs about it separately).")
+                                   "check and is ok (validate WARNs about it separately). "
+                                   "With --hashes, prints {output_path: sha256_hex} for each "
+                                   "existing file output instead (for results.json "
+                                   "artefact_hashes); missing/directory outputs are skipped.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("step_id", metavar="step-id", help="e.g. M1-S01")
+    p.add_argument("--hashes", action="store_true",
+                   help="print SHA-256 digests of existing output files as JSON "
+                        "({path: hex}) for pasting into results.json artefact_hashes")
     p.set_defaults(func=cmd_check_outputs)
 
     p = sub.add_parser("set-scale", parents=[common],

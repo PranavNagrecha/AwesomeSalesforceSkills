@@ -647,6 +647,7 @@ transitions depend on it:
   runner whose owning agent wrote nothing cannot advance the step.
 - `set-status <step> tested` additionally requires
   `tests/<step-id>/results.json` to exist with `"passed": true`.
+  `results.json` records the hashes of the artefacts it tested (`artefact_hashes`), and `tested` is refused when they have changed.
 
 ## 6. Roles (new run-time agents, Tier 4 — Orchestration)
 

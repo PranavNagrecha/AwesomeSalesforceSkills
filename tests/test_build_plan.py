@@ -1008,6 +1008,62 @@ def test_tested_needs_a_passing_results_json(tmp_path, fixture_repo):
                "--repo-root", str(fixture_repo)) == 0
 
 
+def test_tested_accepts_matching_artefact_hashes(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    advance(path, fixture_repo, "M1-S01", upto="built")
+    capsys.readouterr()
+    assert run("check-outputs", str(path), "M1-S01", "--hashes",
+               "--repo-root", str(fixture_repo)) == 0
+    hashes = json.loads(capsys.readouterr().out)
+    assert set(hashes) == set(json.loads(path.read_text())["steps"][0]["outputs"])
+    for digest in hashes.values():
+        assert isinstance(digest, str) and len(digest) == 64
+        assert all(c in "0123456789abcdef" for c in digest)
+    write_json(path.parent / "tests" / "M1-S01" / "results.json",
+               {"step": "M1-S01", "passed": True, "artefact_hashes": hashes})
+    assert run("set-status", str(path), "M1-S01", "tested",
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["steps"][0]["status"] == "tested"
+
+
+def test_tested_refuses_stale_artefact_hashes(tmp_path, fixture_repo, capsys):
+    plan = plan_dict([step("M1-S01", "M1", outputs=[
+        "artefacts/M1-S01/Case.object-meta.xml",
+        "artefacts/M1-S01/notes.md",
+    ])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    advance(path, fixture_repo, "M1-S01", upto="built")
+    step_body = json.loads(path.read_text())["steps"][0]
+    out_rel = "artefacts/M1-S01/notes.md"
+    hashes = build_plan.artefact_hashes_for_step(path.parent, step_body)
+    write_json(path.parent / "tests" / "M1-S01" / "results.json",
+               {"step": "M1-S01", "passed": True, "artefact_hashes": hashes})
+    # Keep the file non-empty and valid so check-outputs still passes; only the digest drifts.
+    (path.parent / out_rel).write_bytes((path.parent / out_rel).read_bytes() + b"x")
+    before = path.read_text()
+    assert run("set-status", str(path), "M1-S01", "tested",
+               "--repo-root", str(fixture_repo)) == 1
+    err = capsys.readouterr().err
+    assert f"ERROR step M1-S01: results.json was written against different artefacts — " \
+           f"1 output(s) changed since the tester ran (first: {out_rel}); " \
+           f"re-run the tester (§ 5)." in err
+    assert path.read_text() == before
+    assert json.loads(before)["steps"][0]["status"] == "built"
+
+
+def test_tested_accepts_results_without_artefact_hashes(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    advance(path, fixture_repo, "M1-S01", upto="built")
+    write_results(path, "M1-S01", passed=True)
+    assert run("set-status", str(path), "M1-S01", "tested",
+               "--repo-root", str(fixture_repo)) == 0
+
+
 def test_blocked_requires_a_reason(tmp_path, fixture_repo):
     plan = plan_dict([step("M1-S01", "M1")])
     path = write_plan_file(tmp_path / "b", plan)
