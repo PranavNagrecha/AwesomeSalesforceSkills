@@ -2724,11 +2724,87 @@ def _prose_only_violation(current_tests: list, new_tests: list) -> str | None:
     return None
 
 
+def _declared_checker_commands(step: dict, plan: dict) -> list[str]:
+    """Commands of type:checker tests on the step or its milestone (§ 5)."""
+    commands: list[str] = []
+    for test in (step.get("acceptance_tests") or []):
+        if isinstance(test, dict) and test.get("type") == "checker":
+            commands.append(test.get("command") or "")
+    mid = step.get("milestone")
+    for milestone in plan.get("milestones") or []:
+        if not isinstance(milestone, dict) or milestone.get("id") != mid:
+            continue
+        for test in (milestone.get("acceptance_tests") or []):
+            if isinstance(test, dict) and test.get("type") == "checker":
+                commands.append(test.get("command") or "")
+        break
+    return commands
+
+
+def _add_checker_entries(
+    step: dict,
+    plan: dict,
+    skill_ids: list[str],
+    repo_root: Path,
+    utc_date: str,
+) -> tuple[list[dict], list[tuple[str, str]]]:
+    """Build acceptance_tests entries for --add-checker.
+
+    Returns (new_acceptance_tests, added) where added is
+    [(basename, skill_id), ...] for each appended entry. Exits via _die on
+    precondition failures. Prints the per-skill 'nothing to add' line when a
+    skill's checkers are already all declared.
+    """
+    sid = step.get("id") or "<no id>"
+    cited = step.get("skills") if isinstance(step.get("skills"), list) else []
+    declared = _declared_checker_commands(step, plan)
+    new_tests = copy.deepcopy(step.get("acceptance_tests") or [])
+    added: list[tuple[str, str]] = []
+    for skill_id in skill_ids:
+        if skill_id not in cited:
+            _die(f"step {sid}: --add-checker {skill_id} is not in the step's skills[] — "
+                 f"cite the skill first")
+        scripts_dir = repo_root / "skills" / skill_id / "scripts"
+        checkers = sorted(scripts_dir.glob("check_*.py"), key=lambda p: p.name) if scripts_dir.is_dir() else []
+        if not checkers:
+            _die(f"step {sid}: --add-checker {skill_id} ships no scripts/check_*.py")
+        skill_added = 0
+        for checker in checkers:
+            basename = checker.name
+            if any(basename in cmd for cmd in declared):
+                continue
+            if any(basename in (t.get("command") or "")
+                   for t in new_tests
+                   if isinstance(t, dict) and t.get("type") == "checker"):
+                continue
+            entry = {
+                "type": "checker",
+                "command": (f"python3 skills/{skill_id}/scripts/{basename} "
+                            f"--manifest-dir artefacts/{sid}"),
+                "scope": "step",
+                "expected": "exit 0",
+                "description": (
+                    f"Added by amend-step --add-checker on {utc_date}: the step cites "
+                    f"{skill_id}, whose checker was not declared (validate § 5 warning). "
+                    f"Argument form is the library default --manifest-dir; if this checker "
+                    f"takes a different form, correct the command with amend-step --file."
+                ),
+            }
+            new_tests.append(entry)
+            declared.append(entry["command"])
+            added.append((basename, skill_id))
+            skill_added += 1
+        if skill_added == 0:
+            print(f"step {sid}: {skill_id} — nothing to add (all checkers declared)")
+    return new_tests, added
+
+
 def cmd_amend_step(args: argparse.Namespace) -> int:
     plan_path = Path(args.plan)
     schema = load_schema(args.schema)
     plan = read_plan_on_schema(plan_path, schema)
     prose_only = bool(getattr(args, "prose_only", False))
+    add_checkers = getattr(args, "add_checker", None) or None
 
     status = plan.get("status")
     draft_mode = status in AMEND_STEP_DRAFT_STATUSES
@@ -2778,54 +2854,63 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
              f"(or pass --prose-only: prose does not invalidate a signature, so an approved "
              f"gate does not block it)")
 
-    doc = _read_json_file(Path(args.file))
-    if not isinstance(doc, dict):
-        if prose_only:
-            allowed = PROSE_ONLY_FIELDS
-        elif draft_mode:
-            allowed = AMEND_STEP_DRAFT_FIELDS
-        else:
-            allowed = AMENDABLE_STEP_FIELDS
-        _die(f"{args.file} must be a JSON object with any of: {', '.join(allowed)}")
-
-    if prose_only:
-        unknown = sorted(set(doc) - set(PROSE_ONLY_FIELDS))
-        if unknown:
-            _die(f"{args.file}: --prose-only writes only {', '.join(PROSE_ONLY_FIELDS)} — "
-                 f"refusing {', '.join(unknown)} (a prose-only amendment may reword text, not "
-                 f"change a structural field; drop --prose-only to amend {', '.join(unknown)})")
-        if not doc:
-            _die(f"{args.file} names neither of {', '.join(PROSE_ONLY_FIELDS)} — nothing to amend")
-        if "notes" in doc and not isinstance(doc["notes"], str):
-            _die(f"{args.file}: notes must be a string under --prose-only")
-        if "acceptance_tests" in doc:
-            new_tests = doc["acceptance_tests"]
-            if not isinstance(new_tests, list):
-                _die(f"{args.file}: acceptance_tests must be an array under --prose-only")
-            current_tests = step.get("acceptance_tests") or []
-            violation = _prose_only_violation(current_tests, new_tests)
-            if violation:
-                _die(f"{args.file}: {violation}")
-    elif draft_mode:
-        unknown = sorted(set(doc) - set(AMEND_STEP_DRAFT_FIELDS))
-        if unknown:
-            _die(f"{args.file}: a '{status}' plan may amend-step only "
-                 f"{', '.join(AMEND_STEP_DRAFT_FIELDS)} — refusing {', '.join(unknown)} (a plan "
-                 f"nobody has gated yet is a draft, but not an unverified one — `set-plan` is "
-                 f"where the rest of the step's shape is rewritten, at this status or later)")
-        if not doc:
-            _die(f"{args.file} names none of the fields amendable at status '{status}' "
-                 f"({', '.join(AMEND_STEP_DRAFT_FIELDS)}) — nothing to amend")
+    added_checkers: list[tuple[str, str]] = []
+    if add_checkers:
+        utc_date = _now(args.at)[:10]
+        new_tests, added_checkers = _add_checker_entries(
+            step, plan, add_checkers, Path(args.repo_root), utc_date)
+        if not added_checkers:
+            return 0
+        doc = {"acceptance_tests": new_tests}
     else:
-        unknown = sorted(set(doc) - set(AMENDABLE_STEP_FIELDS))
-        if unknown:
-            _die(f"{args.file}: amend-step writes only {', '.join(AMENDABLE_STEP_FIELDS)} — "
-                 f"refusing {', '.join(unknown)} (id/milestone/type/agent are structural; "
-                 f"status/runs/blocked_reason belong to set-status; depends_on and human_gate "
-                 f"are not amendable)")
-        if not doc:
-            _die(f"{args.file} names none of the amendable fields "
-                 f"({', '.join(AMENDABLE_STEP_FIELDS)}) — nothing to amend")
+        doc = _read_json_file(Path(args.file))
+        if not isinstance(doc, dict):
+            if prose_only:
+                allowed = PROSE_ONLY_FIELDS
+            elif draft_mode:
+                allowed = AMEND_STEP_DRAFT_FIELDS
+            else:
+                allowed = AMENDABLE_STEP_FIELDS
+            _die(f"{args.file} must be a JSON object with any of: {', '.join(allowed)}")
+
+        if prose_only:
+            unknown = sorted(set(doc) - set(PROSE_ONLY_FIELDS))
+            if unknown:
+                _die(f"{args.file}: --prose-only writes only {', '.join(PROSE_ONLY_FIELDS)} — "
+                     f"refusing {', '.join(unknown)} (a prose-only amendment may reword text, not "
+                     f"change a structural field; drop --prose-only to amend {', '.join(unknown)})")
+            if not doc:
+                _die(f"{args.file} names neither of {', '.join(PROSE_ONLY_FIELDS)} — nothing to amend")
+            if "notes" in doc and not isinstance(doc["notes"], str):
+                _die(f"{args.file}: notes must be a string under --prose-only")
+            if "acceptance_tests" in doc:
+                new_tests = doc["acceptance_tests"]
+                if not isinstance(new_tests, list):
+                    _die(f"{args.file}: acceptance_tests must be an array under --prose-only")
+                current_tests = step.get("acceptance_tests") or []
+                violation = _prose_only_violation(current_tests, new_tests)
+                if violation:
+                    _die(f"{args.file}: {violation}")
+        elif draft_mode:
+            unknown = sorted(set(doc) - set(AMEND_STEP_DRAFT_FIELDS))
+            if unknown:
+                _die(f"{args.file}: a '{status}' plan may amend-step only "
+                     f"{', '.join(AMEND_STEP_DRAFT_FIELDS)} — refusing {', '.join(unknown)} (a plan "
+                     f"nobody has gated yet is a draft, but not an unverified one — `set-plan` is "
+                     f"where the rest of the step's shape is rewritten, at this status or later)")
+            if not doc:
+                _die(f"{args.file} names none of the fields amendable at status '{status}' "
+                     f"({', '.join(AMEND_STEP_DRAFT_FIELDS)}) — nothing to amend")
+        else:
+            unknown = sorted(set(doc) - set(AMENDABLE_STEP_FIELDS))
+            if unknown:
+                _die(f"{args.file}: amend-step writes only {', '.join(AMENDABLE_STEP_FIELDS)} — "
+                     f"refusing {', '.join(unknown)} (id/milestone/type/agent are structural; "
+                     f"status/runs/blocked_reason belong to set-status; depends_on and human_gate "
+                     f"are not amendable)")
+            if not doc:
+                _die(f"{args.file} names none of the amendable fields "
+                     f"({', '.join(AMENDABLE_STEP_FIELDS)}) — nothing to amend")
 
     before = {field: copy.deepcopy(step[field]) for field in doc if field in step}
     for field, value in doc.items():
@@ -2867,6 +2952,8 @@ def cmd_amend_step(args: argparse.Namespace) -> int:
     for msg in step_warnings:
         print(f"WARN {msg}")
     _atomic_write(plan_path, plan_json(plan))
+    for basename, skill_id in added_checkers:
+        print(f"step {args.step_id}: added checker {basename} ({skill_id})")
     gate_note = (f" (gate '{gate_name}' stays approved — prose does not invalidate a signature)"
                  if prose_only and gate_already_approved else "")
     print(f"step {args.step_id}: amended {', '.join(fields)} by {args.by}"
@@ -3605,7 +3692,12 @@ def build_parser() -> argparse.ArgumentParser:
                        description="Replace one or more of a step's amendable fields "
                                    f"({', '.join(AMENDABLE_STEP_FIELDS)}) from a JSON object in "
                                    "--file; each named key REPLACES that field wholesale (no "
-                                   "merge). Refused unless the build status is 'building' or "
+                                   "merge). Or pass --add-checker <skill-id> (repeatable) to append "
+                                   "the standard checker test for each undeclared scripts/check_*.py "
+                                   "of a skill already in the step's skills[] — the § 5 warning's "
+                                   "remedy without hand-writing the acceptance_tests array. "
+                                   "--add-checker is mutually exclusive with --file and "
+                                   "--prose-only. Refused unless the build status is 'building' or "
                                    "'approved' ('verified' is corrected with set-plan; 'done' has "
                                    "no pending steps left), the step's own status is 'pending' or "
                                    "'blocked' (a step already run is rebuilt via documented -> "
@@ -3629,9 +3721,16 @@ def build_parser() -> argparse.ArgumentParser:
                                    "and an already-approved step gate does not block it.")
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("step_id", metavar="step-id", help="e.g. M1-S01")
-    p.add_argument("--file", required=True,
-                   help=f"JSON object of amendable step fields ({', '.join(AMENDABLE_STEP_FIELDS)}"
-                        f"; with --prose-only, only {', '.join(PROSE_ONLY_FIELDS)})")
+    amend_mode = p.add_mutually_exclusive_group(required=True)
+    amend_mode.add_argument(
+        "--file",
+        help=f"JSON object of amendable step fields ({', '.join(AMENDABLE_STEP_FIELDS)}"
+             f"; with --prose-only, only {', '.join(PROSE_ONLY_FIELDS)})")
+    amend_mode.add_argument(
+        "--add-checker", action="append", dest="add_checker", metavar="skill-id",
+        help="append one acceptance_tests[] checker entry per undeclared "
+             "scripts/check_*.py of a skill already in the step's skills[] "
+             "(repeatable). Mutually exclusive with --file and --prose-only.")
     p.add_argument("--by", required=True, help="who is making the correction")
     p.add_argument("--reason", required=True, help="why the step is being amended")
     p.add_argument("--at", default=None, help="ISO timestamp (default: UTC now)")
@@ -3678,7 +3777,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if (getattr(args, "func", None) is cmd_amend_step
+            and getattr(args, "add_checker", None)
+            and getattr(args, "prose_only", False)):
+        parser.error("argument --add-checker: not allowed with argument --prose-only")
     return args.func(args)
 
 

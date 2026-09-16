@@ -74,6 +74,8 @@ when, why, which fields, their prior values) in the step's `amendments[]`
 before re-validating the whole plan, refusing the write if the result carries
 any ERROR.
 
+amend-step --add-checker <skill-id> appends the standard checker test for a cited skill's scripts/check_*.py (the § 5 warning's remedy) without hand-writing the array.
+
 `--prose-only` is a narrower mode for the case that keeps recurring once a
 build has steps behind it: a test's `description` or a step's `notes` turns
 out to have narrated the wrong outcome, even though the test itself (its

@@ -1894,6 +1894,109 @@ def test_amend_step_still_refused_at_verified_and_done(tmp_path, fixture_repo):
         assert path.read_bytes() == before
 
 
+def test_amend_step_add_checker_appends_entry_and_clears_warn(tmp_path, fixture_repo, capsys):
+    """--add-checker appends the standard checker entry for a cited skill."""
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", skills=["demo/thing"])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    before_tests = json.loads(path.read_text())["steps"][0]["acceptance_tests"]
+
+    capsys.readouterr()
+    rc = run("amend-step", str(path), "M1-S01",
+             "--add-checker", "demo/thing",
+             "--by", "pranav", "--reason", "declare cited checker",
+             "--at", "2026-09-16T12:00:00Z", "--repo-root", str(repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "step M1-S01: added checker check_thing.py (demo/thing)" in out
+
+    after = json.loads(path.read_text())
+    s1 = after["steps"][0]
+    assert len(s1["acceptance_tests"]) == len(before_tests) + 1
+    entry = s1["acceptance_tests"][-1]
+    assert entry == {
+        "type": "checker",
+        "command": ("python3 skills/demo/thing/scripts/check_thing.py "
+                    "--manifest-dir artefacts/M1-S01"),
+        "scope": "step",
+        "expected": "exit 0",
+        "description": (
+            "Added by amend-step --add-checker on 2026-09-16: the step cites "
+            "demo/thing, whose checker was not declared (validate § 5 warning). "
+            "Argument form is the library default --manifest-dir; if this checker "
+            "takes a different form, correct the command with amend-step --file."
+        ),
+    }
+    assert len(s1["amendments"]) == 1
+    record = s1["amendments"][0]
+    assert record["fields"] == ["acceptance_tests"]
+    assert record["before"] == {"acceptance_tests": before_tests}
+    assert record["by"] == "pranav"
+    assert record["reason"] == "declare cited checker"
+
+    capsys.readouterr()
+    assert run("validate", str(path), "--repo-root", str(repo)) == 0
+    validate_out = capsys.readouterr().out
+    assert "ships check_thing.py but no checker test" not in validate_out
+
+
+def test_amend_step_add_checker_refused_when_skill_not_cited(tmp_path, fixture_repo):
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1")])  # skills[] is fake-object-design
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    before = path.read_bytes()
+
+    rc = run("amend-step", str(path), "M1-S01",
+             "--add-checker", "demo/thing",
+             "--by", "pranav", "--reason", "missing cite",
+             "--repo-root", str(repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_step_add_checker_nothing_to_add_when_already_declared(
+        tmp_path, fixture_repo, capsys):
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    command = ("python3 skills/demo/thing/scripts/check_thing.py "
+               "--manifest-dir artefacts/M1-S01")
+    plan = plan_dict([step("M1-S01", "M1", skills=["demo/thing"], tests=[
+        {"type": "xml", "description": "every artefact parses"},
+        {"type": "checker", "command": command, "expected": "exit 0"},
+    ])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    before = path.read_bytes()
+
+    capsys.readouterr()
+    rc = run("amend-step", str(path), "M1-S01",
+             "--add-checker", "demo/thing",
+             "--by", "pranav", "--reason", "already there",
+             "--repo-root", str(repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "step M1-S01: demo/thing — nothing to add (all checkers declared)" in out
+    assert path.read_bytes() == before
+
+
+def test_amend_step_add_checker_mutually_exclusive_with_file(tmp_path, fixture_repo):
+    repo = _repo_with_demo_thing_checker(tmp_path, fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", skills=["demo/thing"])])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    before = path.read_bytes()
+    amendment = write_json(tmp_path / "amend.json", {"notes": "nope"})
+
+    rc = run("amend-step", str(path), "M1-S01",
+             "--file", str(amendment),
+             "--add-checker", "demo/thing",
+             "--by", "pranav", "--reason", "both",
+             "--repo-root", str(repo))
+    assert rc == 2
+    assert path.read_bytes() == before
+
+
 def test_set_verification_records_both_outcomes(tmp_path, fixture_repo):
     plan = plan_dict([step("M1-S01", "M1")])
     path = write_plan_file(tmp_path / "b", plan)
