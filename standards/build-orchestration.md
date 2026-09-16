@@ -176,6 +176,16 @@ Rules:
   it, marks it `blocking` or `informational`, and proposes a default. The human
   may accept all defaults in one action.
 
+Gate records keep a per-gate `history[]` of prior states (oldest first): whenever
+`gate` overwrites an already-decided record, the previous `{status, by, at,
+notes}` is appended first, so a re-sign never erases the original signature
+from the machine record. `gate <plan> <gate> resign --by … --notes …` records
+new evidence for a standing approval without changing any decision (status stays
+`approved`; no milestone, build, or step status moves) — it is the path for a
+milestone re-verified after a repair (the § 8 re-verification path) when the
+verdict did not change. Use `approve` / `reject` only when the decision itself
+changes.
+
 ## 3.1 Ceremony scales to the ask
 
 § 3 is one shape and its guarantees are not negotiable. What varies is how much

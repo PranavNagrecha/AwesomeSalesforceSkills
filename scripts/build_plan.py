@@ -2183,6 +2183,25 @@ def _approval_refusal(plan: dict, name: str) -> tuple[str | None, list[str]]:
     return None, notes
 
 
+def _push_gate_prior(gate: dict) -> None:
+    """Append the current decision onto ``history[]`` before overwriting it.
+
+    Pending records have no prior human decision, so they leave no ``history``
+    key. Prior entries are a flat ``{status, by, at, notes?}`` — never nest
+    ``history`` inside ``history``.
+    """
+    if gate.get("status") not in ("approved", "rejected"):
+        return
+    prior: dict = {
+        "status": gate["status"],
+        "by": gate.get("by"),
+        "at": gate.get("at"),
+    }
+    if "notes" in gate:
+        prior["notes"] = gate["notes"]
+    gate.setdefault("history", []).append(prior)
+
+
 def _gate_precondition(plan: dict, gate_name: str, decision: str) -> tuple[str | None, list[str]]:
     """Whether `decision` may be recorded for `gate_name` against `plan` right now.
 
@@ -2212,6 +2231,38 @@ def _gate_precondition(plan: dict, gate_name: str, decision: str) -> tuple[str |
     return None, []
 
 
+def _gate_resign(plan_path: Path, schema: dict, repo_root: Path, gate_name: str,
+                 by: str, notes: str | None, at: str) -> int:
+    """Re-sign an already-approved gate with new evidence; decision unchanged.
+
+    Legal only while the gate's current status is ``approved``. Touches only
+    that gate record (``history[]``, ``by``, ``at``, ``notes``) — never
+    milestone status, build status, or step status.
+    """
+    plan = read_plan_on_schema(plan_path, schema)
+    gate = next((g for g in plan.get("human_gates") or [] if g.get("name") == gate_name), None)
+    if gate is None:
+        _die(f"no gate {gate_name!r} in this plan — required gates are "
+             f"{', '.join(required_gate_names(plan))}; run `ensure-gates` to add the missing ones")
+    status = gate.get("status")
+    if status != "approved":
+        _die(f"gate '{gate_name}' is '{status}', not 'approved' — resign records new "
+             f"evidence for a standing approval; use approve/reject to change the decision.")
+    _push_gate_prior(gate)
+    gate["status"] = "approved"
+    gate["by"] = by
+    gate["at"] = at
+    if notes is not None:
+        gate["notes"] = notes
+    rc = write_plan(plan_path, plan, repo_root, schema)
+    if rc:
+        return rc
+    kept = len(gate.get("history") or [])
+    print(f"gate {gate_name}: re-signed by {by} at {at} — decision unchanged (approved); "
+          f"{kept} prior record(s) kept.")
+    return 0
+
+
 def _gate_once(plan_path: Path, schema: dict, repo_root: Path, gate_name: str,
               decision: str, by: str, notes: str | None, at: str) -> int:
     """Record one human gate decision. The body `cmd_gate` used to inline.
@@ -2235,6 +2286,7 @@ def _gate_once(plan_path: Path, schema: dict, repo_root: Path, gate_name: str,
     snapshot = copy.deepcopy(plan)
     snapshot.pop("history", None)
 
+    _push_gate_prior(gate)
     gate["status"] = "approved" if approving else "rejected"
     gate["by"] = by
     gate["at"] = at
@@ -2303,6 +2355,15 @@ def cmd_gate(args: argparse.Namespace) -> int:
     schema = load_schema(args.schema)
     repo_root = Path(args.repo_root)
     alias = args.gate
+
+    if args.decision == "resign":
+        # § 3: resign is a real-gate-name action only — go/accept aliases
+        # fold multiple decisions and must not re-sign standing approvals.
+        if alias in GATE_ALIASES:
+            _die(f"gate '{alias}' does not accept resign — use the real gate name "
+                 f"({', '.join(GATE_ALIASES[alias])}) to re-sign a standing approval")
+        return _gate_resign(plan_path, schema, repo_root, alias,
+                            args.by, args.notes, _now(args.at))
 
     if alias in GATE_ALIASES:
         # § 3.1: 'go' and 'accept' are shorthand for more than one real gate
@@ -3042,6 +3103,9 @@ def cmd_status(args: argparse.Namespace) -> int:
             line += f"  by {gate['by']}"
         if gate.get("at"):
             line += f" at {gate['at']}"
+        prior = gate.get("history") or []
+        if prior:
+            line += f"  (re-signed ×{len(prior)})"
         print(line)
     blockers = [s for s in steps if s.get("status") in {"blocked", "failed"}]
     open_blocking = [c for c in plan.get("clarifications") or []
@@ -3287,7 +3351,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("plan", help="path to plan.json")
     p.add_argument("gate", help="clarifications | plan | milestone:M1 | step:M1-S01 | "
                                 "go | accept (go/accept: scale 'ask' only, see description)")
-    p.add_argument("decision", choices=["approve", "reject"])
+    p.add_argument("decision", choices=["approve", "reject", "resign"],
+                   help="approve/reject change the decision; resign records new evidence "
+                        "for a standing approval (real gate names only — not go/accept)")
     p.add_argument("--by", required=True, help="the human who decided")
     p.add_argument("--notes", default=None)
     p.add_argument("--at", default=None, help="ISO timestamp (default: UTC now)")

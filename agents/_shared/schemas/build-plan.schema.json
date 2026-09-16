@@ -479,6 +479,37 @@
           },
           "notes": {
             "type": "string"
+          },
+          "history": {
+            "type": "array",
+            "description": "Section 3: prior gate states, oldest first. Written when approve/reject/resign overwrites an already-decided record; absent when the gate has never been decided. Each entry is {status, by, at, notes?} — never nests history.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "by",
+                "at"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "approved",
+                    "rejected"
+                  ]
+                },
+                "by": {
+                  "type": "string"
+                },
+                "at": {
+                  "type": "string"
+                },
+                "notes": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }

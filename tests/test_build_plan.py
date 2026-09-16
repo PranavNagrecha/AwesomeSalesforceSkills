@@ -1168,6 +1168,95 @@ def test_gate_flow_end_to_end(tmp_path, fixture_repo, capsys):
     assert "case-onboarding" in summary and "M1" in summary
 
 
+def test_gate_history_approve_reject_approve(tmp_path, fixture_repo):
+    """Re-deciding a gate archives each prior state into history[], oldest first."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+
+    assert run("gate", str(path), "clarifications", "approve", "--by", "alice",
+               "--notes", "first yes", "--at", "2026-09-05T10:00:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+    assert run("gate", str(path), "clarifications", "reject", "--by", "bob",
+               "--notes", "changed mind", "--at", "2026-09-05T10:10:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+    assert run("gate", str(path), "clarifications", "approve", "--by", "carol",
+               "--notes", "final yes", "--at", "2026-09-05T10:20:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+
+    gate = next(g for g in json.loads(path.read_text())["human_gates"]
+                if g["name"] == "clarifications")
+    assert gate["status"] == "approved"
+    assert gate["by"] == "carol"
+    assert gate["at"] == "2026-09-05T10:20:00Z"
+    assert gate["notes"] == "final yes"
+    assert [h["status"] for h in gate["history"]] == ["approved", "rejected"]
+    assert gate["history"][0] == {"status": "approved", "by": "alice",
+                                  "at": "2026-09-05T10:00:00Z", "notes": "first yes"}
+    assert gate["history"][1] == {"status": "rejected", "by": "bob",
+                                  "at": "2026-09-05T10:10:00Z", "notes": "changed mind"}
+    assert all("history" not in h for h in gate["history"])
+
+
+def test_gate_resign_on_done_build(tmp_path, fixture_repo):
+    """resign keeps approved + build done; only history/by/at/notes move."""
+    plan = plan_dict([step("M1-S01", "M1", status="documented")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    assert run("gate", str(path), "milestone:M1", "approve", "--by", "alice",
+               "--notes", "original acceptance", "--at", "2026-09-05T13:00:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["status"] == "done"
+
+    assert run("gate", str(path), "milestone:M1", "resign", "--by", "codex",
+               "--notes", "re-verified after repair", "--at", "2026-09-05T14:00:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+
+    after = json.loads(path.read_text())
+    assert after["status"] == "done"
+    assert after["milestones"][0]["status"] == "accepted"
+    gate = next(g for g in after["human_gates"] if g["name"] == "milestone:M1")
+    assert gate["status"] == "approved"
+    assert gate["by"] == "codex"
+    assert gate["at"] == "2026-09-05T14:00:00Z"
+    assert gate["notes"] == "re-verified after repair"
+    assert len(gate["history"]) == 1
+    assert gate["history"][0] == {"status": "approved", "by": "alice",
+                                  "at": "2026-09-05T13:00:00Z",
+                                  "notes": "original acceptance"}
+
+
+def test_gate_resign_refused_when_not_approved(tmp_path, fixture_repo, capsys):
+    """resign on a pending gate exits 1 and leaves the plan file untouched."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    before = path.read_bytes()
+
+    assert run("gate", str(path), "milestone:M1", "resign", "--by", "codex",
+               "--notes", "should not land", "--repo-root", str(fixture_repo)) == 1
+    assert path.read_bytes() == before
+    err = capsys.readouterr().err
+    assert "gate 'milestone:M1' is 'pending', not 'approved'" in err
+    assert "resign records new evidence for a standing approval" in err
+    assert "use approve/reject to change the decision" in err
+
+
+def test_gate_history_plan_still_validates(tmp_path, fixture_repo):
+    """A plan whose gates carry history[] still passes validate."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("gate", str(path), "clarifications", "approve", "--by", "alice",
+               "--notes", "first yes", "--at", "2026-09-05T10:00:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+    assert run("gate", str(path), "clarifications", "reject", "--by", "bob",
+               "--notes", "changed mind", "--at", "2026-09-05T10:10:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+    assert run("gate", str(path), "clarifications", "approve", "--by", "carol",
+               "--notes", "final yes", "--at", "2026-09-05T10:20:00Z",
+               "--repo-root", str(fixture_repo)) == 0
+
+    assert run("validate", str(path), "--repo-root", str(fixture_repo)) == 0
+
+
 def test_middle_milestone_gate_sets_building_not_done(tmp_path, fixture_repo):
     plan = plan_dict([step("M1-S01", "M1", status="documented"), step("M2-S01", "M2")])
     path = write_plan_file(tmp_path / "b", plan)
