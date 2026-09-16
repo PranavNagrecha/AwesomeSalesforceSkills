@@ -113,9 +113,10 @@ public class TestDataFactory {
         };
     }
 
-    // Seed fixtures in system mode so FLS on fixture-only fields (e.g. an admin-set
-    // lookup) never blocks setup; run only the action under test as the persona.
     public static Database.SaveResult[] insertAsSystem(List<SObject> records) {
+        // reason: fixtures are seeded in system mode by design so FLS on fixture-only fields
+        // (e.g. an admin-set lookup) never blocks setup; only the action under test runs as
+        // the persona (apex/test-class-standards Gotcha 15).
         return Database.insert(records, AccessLevel.SYSTEM_MODE);
     }
 
