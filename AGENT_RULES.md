@@ -42,7 +42,7 @@ python3 scripts/bootstrap.py
 The FTS5 index is gitignored. Without it, `search_index()` returns `[]` and
 `search_knowledge.py` reports no coverage for every query while exiting 0. Step
 1 below is worthless until this has run. Verify cheaply with
-`python3 scripts/bootstrap.py --verify-only`.
+`python3 scripts/bootstrap.py --verify-only`. Exit 1 means retrieval is broken; exit 2 means retrieval is fine and only this machine's slash-command install is stale (run install_local_commands.py).
 
 ## Required Workflow For Any New Skill
 

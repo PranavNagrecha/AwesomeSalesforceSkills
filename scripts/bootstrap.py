@@ -36,8 +36,10 @@ What it deliberately does NOT do
   records whenever the embedding backend is unavailable).
   Net effect: `git status` is still clean when this finishes.
 
-Exit codes: 0 success, 1 verification failed, 2 refused to start (bad Python,
-missing dependency, or --with-embeddings against a config that disables them).
+Exit codes: 0 success; 1 retrieval verification failed (or other hard verify
+failure); 2 refused to start (bad Python, missing dependency, or
+--with-embeddings against a config that disables them) OR --verify-only found
+retrieval healthy but this machine's slash-command install out of sync.
 """
 
 from __future__ import annotations
@@ -358,6 +360,44 @@ def install_commands() -> int:
 # phase 6 — verification (the gate)
 # --------------------------------------------------------------------------
 
+def classify_verify(
+    retrieval_ok: bool,
+    installed: "int | None",
+    source: "int | None",
+    check_commands: bool,
+) -> "tuple[int, str, str]":
+    """Decide --verify-only exit code, stderr headline, and detail line.
+
+    Returns (exit_code, headline, detail). Headline is empty on success.
+    Exit 2 means retrieval is fine and only the local slash-command install
+    is stale — never framed as BOOTSTRAP FAILED.
+    """
+    if not retrieval_ok:
+        return (
+            1,
+            "BOOTSTRAP FAILED: retrieval self-test did not return the expected skill — "
+            "rebuild with: python3 scripts/bootstrap.py",
+            "",
+        )
+    if (
+        check_commands
+        and installed is not None
+        and source is not None
+        and installed != source
+    ):
+        return (
+            2,
+            (
+                f"RETRIEVAL OK — slash commands out of sync "
+                f"({installed} installed, {source} in commands/); the library works, "
+                "only this machine's Claude Code shortcuts are stale. "
+                "Run: python3 scripts/install_local_commands.py"
+            ),
+            f"FAIL  {installed} slash commands installed, {source} in commands/",
+        )
+    return (0, "", "")
+
+
 def verify(check_commands: bool) -> int:
     step(f"phase 6/{PHASE_COUNT}  verifying retrieval")
 
@@ -414,22 +454,23 @@ def verify(check_commands: bool) -> int:
     # retuned; asserting it would make this gate spuriously red.
     detail(f"OK  {SMOKE_QUERY!r} -> {top_id}", force=True)
 
+    installed: "int | None" = None
+    source: "int | None" = None
     if check_commands:
-        source = sorted((ROOT / "commands").glob("*.md"))
-        installed = sorted((ROOT / ".claude" / "commands").glob("*.md"))
-        if len(installed) != len(source):
-            detail(
-                f"FAIL  {len(installed)} slash commands installed, {len(source)} in commands/",
-                force=True,
-            )
-            fail(
-                "slash commands are out of sync. Run: "
-                "python3 scripts/install_local_commands.py"
-            )
-            return 1
-        detail(f"OK  {len(installed)} slash commands installed in .claude/commands/", force=True)
+        source = len(sorted((ROOT / "commands").glob("*.md")))
+        installed = len(sorted((ROOT / ".claude" / "commands").glob("*.md")))
+        if installed == source:
+            detail(f"OK  {installed} slash commands installed in .claude/commands/", force=True)
 
-    return 0
+    code, headline, detail_msg = classify_verify(
+        True, installed, source, check_commands
+    )
+    if detail_msg:
+        detail(detail_msg, force=True)
+    if code != 0:
+        with _PRINT_LOCK:
+            print(f"\n{headline}", file=sys.stderr, flush=True)
+    return code
 
 
 # --------------------------------------------------------------------------
