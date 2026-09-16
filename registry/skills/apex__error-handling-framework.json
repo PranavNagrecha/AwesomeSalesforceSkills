@@ -16,6 +16,7 @@
     "0d00f80afb7acd4289b2",
     "0f510b1e6d366db18e28",
     "10d1411542df54e28ece",
+    "129f26066ed20c5dd6ef",
     "1375fc9c7374e078fde0",
     "14e8417d6b4ce6125f82",
     "15d5e5dae55a8db6e567",
@@ -27,6 +28,7 @@
     "1a5b36cca95170a2a824",
     "1b02b7747a58442ceac7",
     "1dadb0a022c459e0b7f8",
+    "1f65fb479e16abe7866f",
     "1faccb6b71a178ffb974",
     "2088fecdfe38e7ad9c22",
     "20d4c5fe4f29e8666a7a",
@@ -65,6 +67,7 @@
     "3f55ae22788f1790850e",
     "426bae0eaabdceed8b83",
     "4445582a443a0cf463b4",
+    "44adf37af8f17733f912",
     "45d644cebf926f41b0b2",
     "4607488c32ca2a7ee05e",
     "468fe507c1ed69cbb98d",
@@ -93,6 +96,7 @@
     "679a3025dd60178cb598",
     "681f4c234ac3ff1bb983",
     "68438869af4b74ed6bae",
+    "6acf494f7e4ae24e171c",
     "6d107e32bcde44a6eb41",
     "7017a8d9bf52be07c73a",
     "70c0ca86a2334aec0662",
@@ -196,7 +200,7 @@
     "fc0b2103c737100e9e99",
     "ffacce4d4f4bd60b89fe"
   ],
-  "content_hash": "cdaa1f2789be333291b751465eeedf4b93aed616d62a836e0bc2cc84966ff311",
+  "content_hash": "c522eaba623f8b6ffc12580c467ba57a79097c466ea2d98c74d1701141521ef4",
   "dependencies": [],
   "description": "Use when designing a cross-cutting Apex error handling framework: custom exception hierarchies, centralized rollback-safe logging via Platform Events, BatchApexErrorEvent processing, correlation ID threading across async, Error_Log__c design, AuraHandledException boundary. NOT for a single try/catch or DmlException question \u2014 use apex/exception-handling. NOT for dead-letter, circuit-breaker and event-replay design in an integration \u2014 use integration/error-handling-in-integrations.",
   "file_location": "skills/apex/error-handling-framework",
@@ -239,7 +243,10 @@
     "skills/apex/error-handling-framework/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py"
+    "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py",
+    "skills/apex/error-handling-framework/scripts/fixtures/comment-only/CommentOnlyErrorHandling.cls",
+    "skills/apex/error-handling-framework/scripts/fixtures/real-aura-outside-controller/FooService.cls",
+    "skills/apex/error-handling-framework/scripts/fixtures/real-aura-outside-controller/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -255,7 +262,7 @@
   "templates": [
     "skills/apex/error-handling-framework/templates/error-handling-framework-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

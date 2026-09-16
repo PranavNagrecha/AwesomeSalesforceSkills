@@ -35,9 +35,9 @@ triggers:
   - "delay a queueable job retry instead of scheduling apex"
   - "queueable job shows completed in Apex Jobs but nothing changed"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-16
 ---
 
 # Apex Queueable Patterns

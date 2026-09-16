@@ -40,9 +40,9 @@ outputs:
   - "refactor pattern for service, selector, domain, or factory layers"
   - "a deployable handler / domain / service / selector / strategy set plus its bulk test class"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-16
 ---
 
 Use this skill when Apex code needs structure that will survive more than one sprint. The goal is not to import a framework blindly. It is to separate orchestration, querying, business rules, and replaceable dependencies so triggers, controllers, and invocables stay thin and tests can isolate behavior.

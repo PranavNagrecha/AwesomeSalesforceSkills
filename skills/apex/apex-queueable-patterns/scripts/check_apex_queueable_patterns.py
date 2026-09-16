@@ -103,34 +103,62 @@ STOP_TEST_RE = re.compile(r"\bTest\.stopTest\s*\(", re.I)
 # --------------------------------------------------------------------------
 
 def strip_noise(text: str) -> str:
-    """Blank out string literals and comments so keywords inside them do not match.
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
 
-    Single left-to-right pass, so a quote inside a comment cannot open a string
-    and a `/*` inside a string cannot open a comment. Newlines are preserved so
-    line numbers stay correct.
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `text`; newlines in block comments stay newlines so line numbers stay aligned.
     """
     out: list[str] = []
     i, n = 0, len(text)
     while i < n:
         ch = text[i]
+        if ch == "/" and i + 1 < n and text[i + 1] == "/":
+            j = i
+            while j < n and text[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (text[j] == "*" and text[j + 1] == "/"):
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
         if ch == "'":
-            j = i + 1
-            while j < n and text[j] != "'":
-                j += 2 if text[j] == "\\" else 1
-            out.append(" " * (min(j, n - 1) - i + 1))
-            i = j + 1
-            continue
-        if text.startswith("//", i):
-            j = text.find("\n", i)
-            j = n if j < 0 else j
-            out.append(" " * (j - i))
-            i = j
-            continue
-        if text.startswith("/*", i):
-            j = text.find("*/", i + 2)
-            j = n if j < 0 else j + 2
-            out.append("".join(c if c == "\n" else " " for c in text[i:j]))
-            i = j
+            out.append(" ")
+            i += 1
+            while i < n:
+                if text[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if text[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if text[i] == "'":
+                    if i + 1 < n and text[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
             continue
         out.append(ch)
         i += 1

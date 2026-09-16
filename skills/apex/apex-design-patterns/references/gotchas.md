@@ -159,3 +159,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** On the first use of the class in a transaction. "Before an object of a class is created, all static member variables in a class are initialized, and all static initialization code blocks are executed. These items are handled in the order in which they appear in the class." (Apex Developer Guide L3733–3734.) "Similar to other static code, a static initialization code block is only initialized one time on the first use of the class" (L3858), and code blocks execute in the order they appear in the file (L3859–3860).
 
 **How to avoid:** Do not build derived static state in a static block. Use lazy initialisation behind a method — `if (cache != null) { return cache; }` — as `TriggerControl.getCache()` and the strategy factory's `classNames()` both do. Lazy initialisation also gives you the reset hook the rollback gotcha above requires.
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

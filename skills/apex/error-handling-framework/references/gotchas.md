@@ -109,3 +109,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** Any compensating-transaction design: take a savepoint, attempt the write, roll back on failure, then retry with corrected values or write a failure record built from the same sObject instances. It also bites the log write itself when the framework holds a pre-built log sObject from before the rollback.
 
 **How to avoid:** After a rollback, re-query or rebuild the sObjects rather than reusing the instances. Build failure records after the rollback, from the `DmlException` accessors (`getDmlId`, `getDmlMessage`, `getDmlFieldNames`, `getNumDml` — `apexdev L40018-40023`) rather than from the rolled-back instances. And keep savepoint use rare: "Each savepoint you set counts against the governor limit for DML statements" (`apexdev L8691`), so one savepoint per transaction, never one per record.
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

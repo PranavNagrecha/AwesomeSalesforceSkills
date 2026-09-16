@@ -33,9 +33,9 @@ outputs:
   - Custom Metadata mapping for config-driven IDs
   - Test class that inserts data instead of hardcoding IDs
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-09-16
 ---
 
 # Apex Hardcoded ID Elimination
@@ -51,6 +51,20 @@ The fix is to look IDs up by something stable — DeveloperName, MasterLabel via
 - **Identify the ID kind.** RecordType IDs come from the describe API. Profile, Group, Queue, UserRole IDs come from SOQL by `DeveloperName`. Configurable IDs (a default Account, a routing User) belong in Custom Metadata.
 - **Confirm DeveloperName, not Name.** "System Administrator" has been renamed to "Standard System Administrator" in some orgs; DeveloperName (`SysAdmin`) is the API-stable identifier. For Profile, the canonical predicate is `Name`, but the value differs across org versions — Custom Metadata is safer for any cross-org code.
 - **Audit tests.** A test class that hardcodes a sandbox-specific ID will not run in scratch orgs or new sandboxes.
+
+## Questions to Ask Before Configuring
+
+Ask these before replacing a literal Id. Skipping them ships a describe lookup against the wrong stable key or a cache that never warms in scratch orgs.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What kind of Id is this — RecordType, Profile, Queue, Group, UserRole, or a business record?" | Each kind has a different canonical lookup (describe vs name-based SOQL vs Custom Metadata) | The right mechanism from the table in Core Concepts, not a one-size-fits-all SOQL |
+| "Which orgs must this code run in — prod only, named sandboxes, scratch orgs, CI?" | Ids differ across every topology; scratch orgs have no pre-existing rows | Whether Custom Metadata or describe is mandatory instead of a one-time SOQL |
+| "What is the stable API name — DeveloperName, Name, or a CMDT key?" | Labels rename; DeveloperName and CMDT keys survive refresh | The predicate for `getRecordTypeInfosByDeveloperName()` or the cache key for Profile/Queue lookups |
+| "Is this Id referenced from production code, tests, or both?" | Tests must `insert` and capture `.Id`; production literals are P0 defects | Separate fixtures: seeded data in tests, describe/CMDT in production |
+| "Does the lookup run per call or once per transaction?" | Uncached `[SELECT Id FROM Profile WHERE Name = …]` is a P1 finding | A `static Map<String, Id>` helper sized before the first hot path |
+
+What a proper Id elimination adds over swapping literals: code survives sandbox refresh and scratch-org CI, caches avoid SOQL-101 on hot paths, and subscribers can retarget configurable Ids through Custom Metadata without a redeploy.
 
 ---
 

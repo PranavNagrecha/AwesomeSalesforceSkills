@@ -41,9 +41,9 @@ outputs:
   - "CronTrigger SOQL query for monitoring and audit"
   - "Guidance on abort-and-reschedule pattern, deployment considerations, and testing approach"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-09-16
 ---
 
 # Apex Scheduled Jobs

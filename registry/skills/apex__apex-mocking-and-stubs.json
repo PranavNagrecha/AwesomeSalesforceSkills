@@ -2,6 +2,7 @@
   "category": "apex",
   "chunk_ids": [
     "034a5185c309897a0742",
+    "03da72166064abca625d",
     "07dd55cb59cbea009f6d",
     "088f5e772ad81695ac26",
     "08eaa4028f1e6555114d",
@@ -15,6 +16,7 @@
     "1ca20ed1e194d9019406",
     "1ed27736e2e70d513d98",
     "21eb93f82b2c025ebf81",
+    "2201de02e731b5b26e32",
     "23c0f7f8bcadd7b8b983",
     "257587a7f886d6cc4fe5",
     "27cdf552939442319587",
@@ -30,6 +32,7 @@
     "36bc54bb7c61c940f9d3",
     "39d135dd32c0a19f65d8",
     "3a21a7af618e5a81a3ae",
+    "3a483fa2895e189944b7",
     "3a6c99618a37b50b88d6",
     "3d30f04f0d60a4466659",
     "44f1098481c4c336b2fb",
@@ -114,6 +117,7 @@
     "c823389a69f727afdca0",
     "ca56dbd55638b5764847",
     "caffb3848414493e80bb",
+    "cb6bde6062f887c38b41",
     "cc006b6222837700a551",
     "cfc1de330e8b8947af45",
     "d06bedf6d0f1e3a067c0",
@@ -141,7 +145,7 @@
     "fb72e9f49048bd1363b4",
     "fc54a4f00c95491df164"
   ],
-  "content_hash": "1fa989e30ef4f9024e24f06f557b19aad3f20e7a3ae201d29d5517b888642dc0",
+  "content_hash": "4863f4d87f83ae4640cbd4b7aa61e1fcf8370cbaaf4b9efe017ba4e696321b23",
   "dependencies": [],
   "description": "Choosing and implementing Apex test doubles \u2014 `Test.setMock` and `StubProvider` \u2014 and designing the code seams they need. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for multi-response or per-endpoint HTTP mocks \u2014 use apex/apex-http-callout-mocking. NOT for general test design \u2014 use apex/test-class-standards. Also covers the documented Stub API cannot-mock list, dependency-injection seams, and recording stub providers.",
   "file_location": "skills/apex/apex-mocking-and-stubs",
@@ -175,7 +179,10 @@
     "skills/apex/apex-mocking-and-stubs/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py"
+    "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py",
+    "skills/apex/apex-mocking-and-stubs/scripts/fixtures/comment-only/CommentOnlyMocking.cls",
+    "skills/apex/apex-mocking-and-stubs/scripts/fixtures/real-is-running-test/IsRunningTestBranch.cls",
+    "skills/apex/apex-mocking-and-stubs/scripts/fixtures/real-is-running-test/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -188,7 +195,7 @@
   "templates": [
     "skills/apex/apex-mocking-and-stubs/templates/apex-mocking-and-stubs-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

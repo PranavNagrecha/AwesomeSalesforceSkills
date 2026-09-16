@@ -147,3 +147,13 @@ UNVERIFIED (2026-09-05): the exact retention window per event type (and whether 
 **When it occurs:** No `PlatformEventSubscriberConfig` exists for the trigger. *"By default, the platform event trigger runs as the Automated Process entity."* Setting `user` gives you: *"Records are created or modified as this user. Records with `OwnerId` fields have their `OwnerId` fields populated to this user when created or modified. Debug logs for the trigger execution are created by this user. You can send email from the trigger, which isn't supported with the default Automated Process user."* (`api_meta` L96453–96462).
 
 **How to avoid:** Ship a `PlatformEventSubscriberConfig` alongside every `__e` trigger that writes records, names an owner, sends notifications, or will ever need a debug log. Deploy it last — it *"references an Apex trigger, which depends on a platform event ... If the referenced trigger and platform event don't exist in the org, include their definitions in the package. Otherwise, the deployment fails."* (`api_meta` L96482–96499). The XML is in `references/code-examples.md`, Artifact 5.
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

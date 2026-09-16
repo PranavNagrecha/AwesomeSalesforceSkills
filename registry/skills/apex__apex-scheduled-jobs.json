@@ -9,6 +9,7 @@
     "0a6d3d746f75af9ded66",
     "0a8d19ca4a2f6c912dde",
     "0b19bfde4bd4ff6dc0a6",
+    "0ca98690d283e3f65de7",
     "0e4ed63ff5597452478a",
     "0efdd9fdacf9f23c90af",
     "1001543438c88f10df83",
@@ -26,6 +27,7 @@
     "1fac625da424fd230195",
     "22269874bf1298f3bccc",
     "2292a34f5235def81bf6",
+    "23aae028eac5d192fb19",
     "258c73d48e54e52dc629",
     "29d077643dc277ea3e08",
     "2addb4fa416ceb03538a",
@@ -34,6 +36,7 @@
     "2e35177607725a0fcc58",
     "2fbae83418e5817bbfe3",
     "30531ec2dd3ee7a4b949",
+    "3061445019a6fabd35b3",
     "30949607628325d0882f",
     "32cb507a110a3a3fb142",
     "32dbc53fe4299cda240c",
@@ -68,6 +71,7 @@
     "56737209f623d175dabf",
     "56746d9b7e933fe48cd1",
     "5a742da731aa18b1a495",
+    "5ac8acc6635245a9ef04",
     "5c6111ec1f087be569c6",
     "5fa1122b3bcb6b630ce8",
     "607b615f3938ca73e4f4",
@@ -139,6 +143,7 @@
     "a8cdff1b4e873d9aac5b",
     "a8f93ab77fdfe243f2d5",
     "aa77bd7d0737e25d8693",
+    "aad9b00754f03779e780",
     "acf31ba1bd2d386f3e23",
     "af2f9762da40abbbf7f9",
     "af4d3e25a428a4fafdd1",
@@ -206,7 +211,7 @@
     "ff1cc3e278a4967c463f",
     "ffe3f2f9e270ec9beb9b"
   ],
-  "content_hash": "a8073b29e9812a4bcc6fe5e7f432d5b42c05e9679e0726bcab8dface2735ee3b",
+  "content_hash": "c62ff2ae5cd8beabbc23059b7b7b577befad76fbbe77af7b06a1e116fc644d21",
   "dependencies": [],
   "description": "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. Triggers: 'run this code every night', 'schedule a class to run daily', 'nightly Apex job', 'run at 2am', 'cron expression for a daily job', 'how do I schedule Apex'. NOT for writing the Batch Apex class a schedule invokes \u2014 use apex/batch-apex-patterns. NOT for org-wide job monitoring and failure alerting in Setup \u2014 use admin/batch-job-scheduling-and-monitoring. NOT for alerting when a scheduled job fails silently \u2014 use apex/scheduled-apex-failure-detection-and-monitoring. Also covers: SchedulableContext.getTriggerId, System.abortJob, System.scheduleBatch, CronTrigger.State, CronJobDetail.JobType, TimesTriggered, NextFireTime, the 100-scheduled-Apex ceiling, the schedulable-class deploy lock, and the unschedule-deploy-reschedule runbook.",
   "file_location": "skills/apex/apex-scheduled-jobs",
@@ -245,7 +250,11 @@
   ],
   "scripts": [
     "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled.py",
-    "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py"
+    "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py",
+    "skills/apex/apex-scheduled-jobs/scripts/fixtures/comment-only/CommentOnlySchedulable.cls",
+    "skills/apex/apex-scheduled-jobs/scripts/fixtures/real-callout-in-schedulable/CalloutInSchedulable.cls",
+    "skills/apex/apex-scheduled-jobs/scripts/fixtures/real-callout-in-schedulable/CalloutInSchedulable.cls-meta.xml",
+    "skills/apex/apex-scheduled-jobs/scripts/fixtures/real-callout-in-schedulable/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -259,7 +268,7 @@
   "templates": [
     "skills/apex/apex-scheduled-jobs/templates/apex-scheduled-jobs-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

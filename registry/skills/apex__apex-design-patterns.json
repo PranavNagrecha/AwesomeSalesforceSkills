@@ -18,6 +18,7 @@
     "192c7e52cf676c12933f",
     "1a717015aaffa57e60a2",
     "1ad7730566367b3b6994",
+    "1c496a8162a6e74cfb77",
     "1c79ff401ee52fbc6c1a",
     "1d2f613f697dcf23bd28",
     "1dd08c2fd14b57295e68",
@@ -45,6 +46,7 @@
     "3c9212e64e66a2a4de9b",
     "3d504ca8b5b9d6f40325",
     "3d7716e6d5237a399817",
+    "3e0d93136d6ccf7aaf7b",
     "3ebcbb35affd3c777e9f",
     "3f747cf7ce3de2dbc0c6",
     "40148116e3ce1565ac67",
@@ -67,6 +69,7 @@
     "510c2b5971aa8d5bf361",
     "51aec07e0c1f71d3fed9",
     "534c999645bd896f49c3",
+    "5538181e2ed0a4ee0d0d",
     "55ccd77c99438178e5ac",
     "57399015be8fb26893d9",
     "58edfebe83dcc2868930",
@@ -90,8 +93,10 @@
     "7127996fd95f6d6e7d3c",
     "7281af4a5cd1d176af7b",
     "738cf87f4323a93ace9d",
+    "73bcb6929cad920b0841",
     "747866fe58567543e18a",
     "74f6cc67ece14f7e328b",
+    "754e301721cffa1540af",
     "772207498615c4f68902",
     "775dc7b7e7dbd3a0ca44",
     "775ebe39c841d5f7e4bc",
@@ -155,6 +160,7 @@
     "de75d7dae2550ded8838",
     "e100d37e093e67d455ed",
     "e23688222a2627c920d7",
+    "e554ff098ae5715b1ca1",
     "e65788799e3158af9d68",
     "e78769604f78d7c7a7c6",
     "e932ef7104365748cc12",
@@ -167,12 +173,13 @@
     "f1c43058b201ceae22cb",
     "f31e194c8170c3e3f9c1",
     "f3ae898983ac20d61d1c",
+    "f483cb06c644757cc0b8",
     "f5b6184f6760663f5909",
     "f8777b64beefd101c577",
     "f902c81a26c6c5995ca8",
     "ff2aec9312459c364911"
   ],
-  "content_hash": "978eb682a08ca73e8f4c44e2a5b78a3ff74054e1996926b502095e23a420ff13",
+  "content_hash": "556ec501697fc4522a8aa7f3cfe947077b2fbfc0fcb0dd611a09e1775a3b4a4e",
   "dependencies": [],
   "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller', 'unit of work', 'strategy pattern in Apex', 'Type.forName factory', 'static cache singleton', 'savepoint rollback in a service'. NOT for the fflib library \u2014 use apex/fflib-enterprise-patterns. NOT for splitting one class \u2014 use apex/apex-class-decomposition-pattern.",
   "file_location": "skills/apex/apex-design-patterns",
@@ -211,7 +218,10 @@
     "skills/apex/apex-design-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py"
+    "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py",
+    "skills/apex/apex-design-patterns/scripts/fixtures/comment-only/CommentOnlyPatterns.cls",
+    "skills/apex/apex-design-patterns/scripts/fixtures/real-query-outside-selector/AccountService.cls",
+    "skills/apex/apex-design-patterns/scripts/fixtures/real-query-outside-selector/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -226,7 +236,7 @@
   "templates": [
     "skills/apex/apex-design-patterns/templates/apex-design-patterns-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

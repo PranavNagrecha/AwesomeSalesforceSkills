@@ -168,37 +168,63 @@ def child_text(parent, local: str) -> str | None:
 
 
 def strip_apex(src: str) -> str:
-    """Blank out string literals and comments in one left-to-right pass.
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
 
-    Done in source order so a ``/*`` inside a string never opens a phantom
-    comment and an apostrophe inside a comment never opens a phantom string.
-    Replaces rather than deletes so that character offsets are preserved and a
-    match can still be turned back into a line number.
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Replaces rather than deletes so character offsets are preserved and a match can
+    still be turned back into a line number.
     """
     out: list[str] = []
     i, n = 0, len(src)
     while i < n:
         ch = src[i]
-        if ch == "'":
-            j = i + 1
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
             out.append(" ")
-            while j < n and src[j] != "'":
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
                 out.append("\n" if src[j] == "\n" else " ")
-                j += 2 if src[j] == "\\" else 1
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
             out.append(" ")
-            i = j + 1
-            continue
-        if src.startswith("//", i):
-            j = src.find("\n", i)
-            end = n if j < 0 else j
-            out.append(" " * (end - i))
-            i = end
-            continue
-        if src.startswith("/*", i):
-            j = src.find("*/", i + 2)
-            end = n if j < 0 else j + 2
-            out.append("".join("\n" if c == "\n" else " " for c in src[i:end]))
-            i = end
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
             continue
         out.append(ch)
         i += 1
@@ -542,7 +568,7 @@ def check_bypass(all_sources: list[tuple[Path, str, str]]) -> list[Finding]:
     """TF-BYPASS-01 -- tree-level activation bypass reachable?"""
     if not all_sources:
         return []
-    joined = "\n".join(raw for _p, raw, _r in all_sources)
+    joined = "\n".join(strip_apex(raw) for _p, raw, _r in all_sources)
     if any(sig in joined for sig in ACTIVATION_SIGNALS):
         return []
     return [

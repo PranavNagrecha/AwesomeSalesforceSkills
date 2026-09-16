@@ -40,6 +40,7 @@
     "39ddc8a7ed87f6520891",
     "39fa2779b622407b7157",
     "3bd981b0cb6319b55aa6",
+    "40f2cadaf3a32e8900d2",
     "4293294b70022b4b77bf",
     "43e8f2b498bac18d6e24",
     "4b19b4f4f33bdb2684df",
@@ -56,6 +57,7 @@
     "6291e03ba934cd1c4c17",
     "63969df0dd9ff626ca61",
     "6790964b5350ba835f65",
+    "6805d4fc037156a70c5d",
     "69cc0a8020ff0694ac37",
     "6b2539a00efe369af156",
     "6b734c77996c1397c393",
@@ -73,6 +75,7 @@
     "7c81af06a6cbf0102c72",
     "7e53ef4a59f7867b1fb3",
     "8011a873707084afd556",
+    "812314945ff9b1f2d934",
     "82fd5eb3e2e31241e34a",
     "8332f9f250c0a601a6f2",
     "83febf36d729d5ca1451",
@@ -99,6 +102,7 @@
     "9deb1c897ad9061d904d",
     "9e3c791909fb49fdd559",
     "a046dfad3d05ab36060b",
+    "a24103db697ec014becb",
     "a3f641472dfadd3fc5c9",
     "a43fdb644cbefd9e5400",
     "a4912e90ddf05c2019ee",
@@ -153,13 +157,15 @@
     "edc7af0850b39fd5825c",
     "ee64b541117ff7bda662",
     "ee774c97b6a07e78a0e1",
+    "f048303a3af09645fbaf",
     "f27121143876c9f73435",
     "f609fd1b0e3bf6b6e15b",
+    "f84d03db15b8df2595cd",
     "f89618ac6a18b29f7364",
     "fc1f50a69ab2c9fe45b7",
     "fc8d2950e83e52233d22"
   ],
-  "content_hash": "8a1b791754a2af0c348556c7454d6f4c007f5522d6d092defe28dc247e52f144",
+  "content_hash": "7a0c6afd3c35ff8b5f46e1f06e64b117e98666bbdb56f74dd20469fce5f11ddb",
   "dependencies": [],
   "description": "Use when building, reviewing, or debugging outbound Apex HTTP callouts, Named Credentials, request/response handling, timeout behavior, or mock-based tests. Triggers: 'HttpRequest', 'Named Credential', 'callout exception', 'uncommitted work pending', 'HttpCalloutMock', 'uncommitted work pending', 'Database.AllowsCallouts', 'callout:', 'setTimeout', 'CalloutException', 'idempotency key', 'retry on 500'. NOT for exposing Apex as an inbound REST endpoint \u2014 use apex/apex-rest-services. NOT for SOAP callouts generated from a WSDL \u2014 use apex/apex-wsdl2apex-patterns. NOT for the per-transaction callout ceiling or moving callouts async to stay under it \u2014 use integration/callout-limits-and-async-patterns.",
   "file_location": "skills/apex/callouts-and-http-integrations",
@@ -190,7 +196,10 @@
     "skills/apex/callouts-and-http-integrations/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py"
+    "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py",
+    "skills/apex/callouts-and-http-integrations/scripts/fixtures/comment-only/CommentOnlyCallouts.cls",
+    "skills/apex/callouts-and-http-integrations/scripts/fixtures/real-literal-endpoint/LiteralHttpEndpoint.cls",
+    "skills/apex/callouts-and-http-integrations/scripts/fixtures/real-literal-endpoint/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -203,7 +212,7 @@
   "templates": [
     "skills/apex/callouts-and-http-integrations/templates/callouts-and-http-integrations-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

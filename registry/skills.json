@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "1be738a55d2feeece7488980aed56e5dbf96ceaa19bfdc8fc8d4cfce8ceb3b1b",
+  "generated_from_hash": "b729801b3cf05f7c2dc138aa3cc3a4375e9659041ef638ef41463810f0b5f301",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -58742,6 +58742,7 @@
         "192c7e52cf676c12933f",
         "1a717015aaffa57e60a2",
         "1ad7730566367b3b6994",
+        "1c496a8162a6e74cfb77",
         "1c79ff401ee52fbc6c1a",
         "1d2f613f697dcf23bd28",
         "1dd08c2fd14b57295e68",
@@ -58769,6 +58770,7 @@
         "3c9212e64e66a2a4de9b",
         "3d504ca8b5b9d6f40325",
         "3d7716e6d5237a399817",
+        "3e0d93136d6ccf7aaf7b",
         "3ebcbb35affd3c777e9f",
         "3f747cf7ce3de2dbc0c6",
         "40148116e3ce1565ac67",
@@ -58791,6 +58793,7 @@
         "510c2b5971aa8d5bf361",
         "51aec07e0c1f71d3fed9",
         "534c999645bd896f49c3",
+        "5538181e2ed0a4ee0d0d",
         "55ccd77c99438178e5ac",
         "57399015be8fb26893d9",
         "58edfebe83dcc2868930",
@@ -58814,8 +58817,10 @@
         "7127996fd95f6d6e7d3c",
         "7281af4a5cd1d176af7b",
         "738cf87f4323a93ace9d",
+        "73bcb6929cad920b0841",
         "747866fe58567543e18a",
         "74f6cc67ece14f7e328b",
+        "754e301721cffa1540af",
         "772207498615c4f68902",
         "775dc7b7e7dbd3a0ca44",
         "775ebe39c841d5f7e4bc",
@@ -58879,6 +58884,7 @@
         "de75d7dae2550ded8838",
         "e100d37e093e67d455ed",
         "e23688222a2627c920d7",
+        "e554ff098ae5715b1ca1",
         "e65788799e3158af9d68",
         "e78769604f78d7c7a7c6",
         "e932ef7104365748cc12",
@@ -58891,12 +58897,13 @@
         "f1c43058b201ceae22cb",
         "f31e194c8170c3e3f9c1",
         "f3ae898983ac20d61d1c",
+        "f483cb06c644757cc0b8",
         "f5b6184f6760663f5909",
         "f8777b64beefd101c577",
         "f902c81a26c6c5995ca8",
         "ff2aec9312459c364911"
       ],
-      "content_hash": "978eb682a08ca73e8f4c44e2a5b78a3ff74054e1996926b502095e23a420ff13",
+      "content_hash": "556ec501697fc4522a8aa7f3cfe947077b2fbfc0fcb0dd611a09e1775a3b4a4e",
       "dependencies": [],
       "description": "Use when structuring Apex into service, selector, domain, factory, and dependency-injection layers for maintainability and testability. Triggers: 'service layer', 'selector pattern', 'domain layer', 'dependency injection', 'fat trigger/controller', 'unit of work', 'strategy pattern in Apex', 'Type.forName factory', 'static cache singleton', 'savepoint rollback in a service'. NOT for the fflib library \u2014 use apex/fflib-enterprise-patterns. NOT for splitting one class \u2014 use apex/apex-class-decomposition-pattern.",
       "file_location": "skills/apex/apex-design-patterns",
@@ -58935,7 +58942,10 @@
         "skills/apex/apex-design-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py"
+        "skills/apex/apex-design-patterns/scripts/check_apex_design_patterns.py",
+        "skills/apex/apex-design-patterns/scripts/fixtures/comment-only/CommentOnlyPatterns.cls",
+        "skills/apex/apex-design-patterns/scripts/fixtures/real-query-outside-selector/AccountService.cls",
+        "skills/apex/apex-design-patterns/scripts/fixtures/real-query-outside-selector/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -58950,9 +58960,9 @@
       "templates": [
         "skills/apex/apex-design-patterns/templates/apex-design-patterns-template.md"
       ],
-      "updated": "2026-09-05",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -60065,30 +60075,34 @@
       "chunk_ids": [
         "01c465b89e48ddc448fd",
         "03983de090474bfb71dc",
-        "0659b42e07bd8c143cec",
+        "0dbb439c5090e45ffa77",
+        "0f67bd4267c896ac4db6",
+        "1228a27f140d69face1e",
         "1972da016aeb2700d61f",
         "1b40598f13fe1628d717",
         "1c1d758be3c37ab0da70",
         "1dd1ce72dd226c736216",
-        "1fc4a6f964aa4b4e2341",
         "2172119fc3833cd9a04a",
         "2218056da4572f5b0d2d",
-        "279a4c9ce0b28f590939",
-        "27ed89ab2aa5f54a06db",
+        "232f04e7763da863523f",
         "2811f5f028825e1017dd",
         "2f8c669daf4e3dd1660e",
+        "300eec3a4d9fe27be940",
+        "303656f0c883d85e947e",
+        "32ed9261b35f6d08da63",
+        "334b4e4b809d18a2dcaa",
         "359a422bb400975a0169",
-        "38ca799c74b307bea858",
+        "3a2dbe876ee8e46522f1",
         "3cf6b1d7ad0c9df254bb",
         "3fe84d6ba2ce6b7afe47",
-        "410994f48985a64748ab",
         "4199ceee55764297c836",
         "4458a2daf7fc3c5eba4e",
-        "4717682250de50743412",
-        "47f9557d373f2a583a2a",
-        "4db57a5c563fb68b7cfb",
+        "44d995718e3bd860bfda",
+        "4a8ebe882841726bf218",
         "4efbe8289814860800a8",
         "52b064c3449438f841be",
+        "5676b22de4faf8558f75",
+        "57a7becb5f8a3531754a",
         "57db9eee103433d42fb3",
         "5a2b395ca01848495497",
         "5a82473825ddf1a17f23",
@@ -60098,60 +60112,65 @@
         "64716a27fbe2eebbd8d0",
         "6e281367cac400a90b90",
         "6e2d910ab48eb2e0f041",
-        "71370f17c6f5b1f2549e",
-        "75c783ca50b5b7d4f3af",
-        "7fd8df9765f527a29887",
+        "75bb73561d3a07570fd7",
         "8016bfc9b9bd7b7bbbc9",
         "8080404686d2bc5fb5d3",
         "81a3a0b086a557d64f1c",
         "82ab0f568d605b59206c",
         "83974dd1ad6c4afbf6e6",
+        "88519946950ea93c5b60",
         "89f25114ac68ab9a7a0f",
-        "8a8ebbb49e8b4bda54ec",
         "8b2a5b8ef78c4debeda4",
         "8f98f2348cceb11feeb8",
-        "955f0785b113bf6bd336",
+        "96b841b791113edd29f6",
         "970c70c14f3b2d555bb5",
         "97e762faeaccf70de1c3",
         "99f7bf09a46d4d3eaf78",
         "9cc44fccf6763fc829fa",
         "9e13e031414827908aa9",
+        "9e83bb10bfa9f65b0470",
+        "a1d469062030c446b865",
         "a4d4ba260f4ae331d10b",
-        "a6d55a62b905d1b99f1e",
         "a89fc38d7e9ec18880c9",
+        "ab39a874788050ce2dc3",
         "ac4f95da274ecaa9eb00",
         "adee306f7508840b7126",
+        "adf58e4ef59e33facd5f",
         "ae6f406b20085f238584",
+        "b04e60eb73bfe3baea9e",
+        "b0d55ba36ba6b0537c1f",
+        "b13135d08607ddba1b21",
         "b3ffa6ae8c62bd8b96bf",
-        "ba305f2b32050555105a",
+        "b50923eab5f62013b2a0",
+        "b87443e22514352700ae",
+        "bb1db294e1862114452c",
         "bb8438704244569ae7b4",
         "bd0884fedca49e620f10",
         "bd169ea9583d0ad284d1",
         "bd8178d1d6cf0774efe0",
         "bed01a4d84d70a5f8aba",
         "bedac387c05f493bfcbd",
-        "c6a08cbbc2ee825a792b",
+        "c48f0fa8a4c9a6d0c48c",
         "c9309e30d5f6a53cdfaa",
         "cad554757f5c3724b682",
         "cbae8952f2cfb96a2529",
-        "d26955b10e3ea5968442",
-        "d2db1612f1305c734b9d",
         "d3ba536a1ed26f72b2e8",
         "d4b7d50a9438ab332bf5",
         "d57eaf75b890bb28f3ec",
+        "d5c7bc75a2708eea010d",
         "da660645047f71097fdf",
         "dc1d004ae5065b862d67",
         "dec24c7acd577c6f1685",
         "df7ffdf4ff2f70f72354",
-        "e5ac20300126e8ce816e",
-        "e91902fc87d6fab646ba",
+        "e089a6ccf241af26584a",
         "ea4825f1ea11c21c78b9",
         "f425dc447ee6f8cdd86f",
-        "f5e69ef0d57e75d21674",
         "fa0940948661e43eba26",
-        "ff9b11b65d283ecc79c6"
+        "fa570c07858ae6b76522",
+        "ff9b11b65d283ecc79c6",
+        "fff8af70a77dcf332594"
       ],
-      "content_hash": "fd765083eccfe9ec3fd132d3de1a49033139452556b7926a0c771548662efe66",
+      "content_hash": "83ead7929b492292fd8d75836f0e532f2807e28eb63f2bd52d581da855ff6d61",
       "dependencies": [],
       "description": "Remove hardcoded Salesforce record IDs (Profile, RecordType, User, Queue, custom) from Apex and replace with describe-API, name-based SOQL, or Custom Metadata-driven lookups. NOT for record type IDs in Flow, formulas or LWC \u2014 use admin/record-type-id-management. NOT for storing the config values themselves \u2014 use apex/custom-metadata-in-apex.",
       "file_location": "skills/apex/apex-hardcoded-id-elimination",
@@ -60189,7 +60208,10 @@
         "skills/apex/apex-hardcoded-id-elimination/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-hardcoded-id-elimination/scripts/check_apex_hardcoded_id_elimination.py"
+        "skills/apex/apex-hardcoded-id-elimination/scripts/check_apex_hardcoded_id_elimination.py",
+        "skills/apex/apex-hardcoded-id-elimination/scripts/fixtures/comment-only/CommentOnlyIds.cls",
+        "skills/apex/apex-hardcoded-id-elimination/scripts/fixtures/real-hardcoded-id/HardcodedAccountId.cls",
+        "skills/apex/apex-hardcoded-id-elimination/scripts/fixtures/real-hardcoded-id/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -60203,9 +60225,9 @@
       "templates": [
         "skills/apex/apex-hardcoded-id-elimination/templates/apex-hardcoded-id-elimination-template.md"
       ],
-      "updated": "2026-07-07",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -61064,6 +61086,7 @@
       "category": "apex",
       "chunk_ids": [
         "034a5185c309897a0742",
+        "03da72166064abca625d",
         "07dd55cb59cbea009f6d",
         "088f5e772ad81695ac26",
         "08eaa4028f1e6555114d",
@@ -61077,6 +61100,7 @@
         "1ca20ed1e194d9019406",
         "1ed27736e2e70d513d98",
         "21eb93f82b2c025ebf81",
+        "2201de02e731b5b26e32",
         "23c0f7f8bcadd7b8b983",
         "257587a7f886d6cc4fe5",
         "27cdf552939442319587",
@@ -61092,6 +61116,7 @@
         "36bc54bb7c61c940f9d3",
         "39d135dd32c0a19f65d8",
         "3a21a7af618e5a81a3ae",
+        "3a483fa2895e189944b7",
         "3a6c99618a37b50b88d6",
         "3d30f04f0d60a4466659",
         "44f1098481c4c336b2fb",
@@ -61176,6 +61201,7 @@
         "c823389a69f727afdca0",
         "ca56dbd55638b5764847",
         "caffb3848414493e80bb",
+        "cb6bde6062f887c38b41",
         "cc006b6222837700a551",
         "cfc1de330e8b8947af45",
         "d06bedf6d0f1e3a067c0",
@@ -61203,7 +61229,7 @@
         "fb72e9f49048bd1363b4",
         "fc54a4f00c95491df164"
       ],
-      "content_hash": "1fa989e30ef4f9024e24f06f557b19aad3f20e7a3ae201d29d5517b888642dc0",
+      "content_hash": "4863f4d87f83ae4640cbd4b7aa61e1fcf8370cbaaf4b9efe017ba4e696321b23",
       "dependencies": [],
       "description": "Choosing and implementing Apex test doubles \u2014 `Test.setMock` and `StubProvider` \u2014 and designing the code seams they need. Triggers: 'StubProvider', 'Test.createStub', 'HttpCalloutMock', 'StaticResourceCalloutMock', 'mocking infrastructure'. NOT for multi-response or per-endpoint HTTP mocks \u2014 use apex/apex-http-callout-mocking. NOT for general test design \u2014 use apex/test-class-standards. Also covers the documented Stub API cannot-mock list, dependency-injection seams, and recording stub providers.",
       "file_location": "skills/apex/apex-mocking-and-stubs",
@@ -61237,7 +61263,10 @@
         "skills/apex/apex-mocking-and-stubs/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py"
+        "skills/apex/apex-mocking-and-stubs/scripts/check_apex_mocking_and_stubs.py",
+        "skills/apex/apex-mocking-and-stubs/scripts/fixtures/comment-only/CommentOnlyMocking.cls",
+        "skills/apex/apex-mocking-and-stubs/scripts/fixtures/real-is-running-test/IsRunningTestBranch.cls",
+        "skills/apex/apex-mocking-and-stubs/scripts/fixtures/real-is-running-test/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -61250,9 +61279,9 @@
       "templates": [
         "skills/apex/apex-mocking-and-stubs/templates/apex-mocking-and-stubs-template.md"
       ],
-      "updated": "2026-09-05",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -61307,6 +61336,7 @@
         "401a01e931f8342137a8",
         "40bf6f0ffadebba18270",
         "420e49c031ae8f2e4921",
+        "42f483e234d502a6dead",
         "43013f53d2c019a54c3f",
         "43f46e28392ffa8f738d",
         "43f84425b44c81080989",
@@ -61320,6 +61350,7 @@
         "4be0c9cf2c801d505a8c",
         "4c0a584198dee61e7a1d",
         "4c4c6e08886333610551",
+        "4e888541399b99ef5310",
         "5032061680918b00d00c",
         "50e9e255a868dd62306f",
         "5151c6ab7a2ad54372ec",
@@ -61334,6 +61365,7 @@
         "5805b8b120cffe8327e6",
         "584b21d78039543e4d6e",
         "5d2ed6c1e70f6ffa4e3b",
+        "5df7f140b8f9463090d9",
         "5f4fe1c45c4b69817355",
         "5fe84ddfb0132640df6b",
         "61cf86327d341f5609ea",
@@ -61417,6 +61449,7 @@
         "b06c14ae83e91911bf5c",
         "b0f0616f194d9a69a629",
         "b0f3d4c3b186a7821ab8",
+        "b1ab9531fa019e803b8b",
         "b3fda09399b4f15fa432",
         "b74654f92867642881bf",
         "ba69c40f21215dea048b",
@@ -61469,6 +61502,7 @@
         "ecbde08a9d5403e63667",
         "edf52db0c939ac1629c6",
         "f132bc1be1c585994b25",
+        "f17f5ce1f14c489cf899",
         "f1c4e94eafed3068bf47",
         "f25ff6be8219e0125996",
         "f33ef7e59d76fecf1e9f",
@@ -61481,7 +61515,7 @@
         "fde4182defd4f7e10302",
         "ff7a06af019b9e1b329c"
       ],
-      "content_hash": "3c43d57a4dde231bb64c213de2d646bf98cbd317235382588845964215013d0d",
+      "content_hash": "a21d3c8ec7e0c40ef3dd7500baf888721db638b8a1b633eb85e61cc2330e55ec",
       "dependencies": [],
       "description": "Use when writing Apex that calls out to external endpoints via Named Credentials, working with custom header formula tokens ({!$Credential.OAuthToken}), querying per-user auth state through the UserExternalCredential SObject, or diagnosing why Named Credential callouts fail. Trigger keywords: 'callout: prefix', 'named credential header formula', 'UserExternalCredential', 'External Credential per-user principal', 'Named Credential oauth token apex', 'namedCredentialType SecuredEndpoint', 'externalCredentialPrincipalAccesses', 'generateAuthorizationHeader', 'allowMergeFieldsInHeader', 'migrate legacy named credential', 'Remote Site Setting vs Named Credential'. NOT for Named Credential setup in the Salesforce Setup UI \u2014 use integration/named-credentials-setup. NOT for general HTTP callout mechanics (HttpRequest, HttpResponse, mock patterns) \u2014 use apex/callouts-and-http-integrations.",
       "file_location": "skills/apex/apex-named-credentials-patterns",
@@ -61521,7 +61555,13 @@
         "skills/apex/apex-named-credentials-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py"
+        "skills/apex/apex-named-credentials-patterns/scripts/check_apex_named_credentials_patterns.py",
+        "skills/apex/apex-named-credentials-patterns/scripts/fixtures/comment-only/CommentOnlyNamedCredentials.cls",
+        "skills/apex/apex-named-credentials-patterns/scripts/fixtures/real-auth-in-source/AuthInSource.cls",
+        "skills/apex/apex-named-credentials-patterns/scripts/fixtures/real-auth-in-source/README.md",
+        "skills/apex/apex-named-credentials-patterns/scripts/fixtures/real-literal-endpoint/Foo.namedCredential-meta.xml",
+        "skills/apex/apex-named-credentials-patterns/scripts/fixtures/real-literal-endpoint/LiteralEndpoint.cls",
+        "skills/apex/apex-named-credentials-patterns/scripts/fixtures/real-literal-endpoint/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -61534,23 +61574,28 @@
       "templates": [
         "skills/apex/apex-named-credentials-patterns/templates/apex-named-credentials-patterns-template.md"
       ],
-      "updated": "2026-09-12",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "apex",
       "chunk_ids": [
         "0e10910557c759fe4160",
-        "16e8e5adc768e8925e84",
         "178528419c8b08a2a21f",
         "1b468f1e9203d1b1e72b",
         "1c041e8eed38c6a81aa9",
+        "1c4e40f31d2a11cd6100",
         "1f59fd36cb85852b387b",
+        "21825ea7d7907e86f91d",
+        "29423d07ad739bed9bf5",
+        "30768baa21fe2da57c46",
         "30ef03b31d07e5f4b727",
         "32636516d52a8c7514f4",
         "39108fc2ca60ebe29b4c",
-        "4ee59bc0d5319a2b0dc9",
+        "3a5651a50f82588fc7c6",
+        "446bb741eb389adef9e0",
+        "4f3efc681c07a1f28fca",
         "5256aeb33c116e19f50a",
         "53a02863f22db356ac4d",
         "545eed3622100691b822",
@@ -61561,20 +61606,22 @@
         "605f85d4062f5895e463",
         "6494d1116913715e2d42",
         "671cbc08245089831ea0",
-        "67b90b7149351dd60e0f",
+        "6bec846b943bdee274a7",
         "7199b8dc1f53b21188eb",
         "77d723dc99ea8ccffc73",
         "79371a5bc748d6a4a89f",
         "79c2a2c473fbdbd65f52",
-        "7c93099b50d175b6bfc6",
+        "7c2c601eac9d07aee51b",
         "7ef86774114232469061",
         "80e86b311b708a451b0d",
+        "8189f173dc75cfe9f49a",
         "81e6ef17901aba0b02f0",
-        "8443b7499f30a0e18c1f",
         "8a124c226334ae299d19",
         "8e5dc5adb05aabe28884",
         "93a60a38e405b40bcd20",
         "978b178d9658e737b673",
+        "a18b6c8e5479fc28f3b4",
+        "a3687b2ed49f716b84b5",
         "afbb924de95b54fab1e8",
         "b23767ef105f3d2172aa",
         "b7b66ffff3df456fe848",
@@ -61594,14 +61641,17 @@
         "d474e9d31486885ccdaa",
         "e0d04dbcc8fbc05b6094",
         "e1451784214df50259a4",
+        "e41e167bdf2926dd9266",
+        "e8133059d7ecdcdc8563",
         "e93aedf7b6aad7113c81",
+        "e9c3ac4d5520b9eebcb8",
         "ea260c2c06c342def3c8",
-        "f063d211eaf221817e7a",
         "f8404a91bcb2474b5160",
-        "f8bfbe1155b86ee881ae",
+        "fab976652028ca4aef1d",
+        "fb8436995aded29c96ed",
         "fde756eb307f1900971b"
       ],
-      "content_hash": "9d1b6a7b0e57aa38f0fc2d20678323b7ef183ddd99ebcdb23e0e9d1c3c15cd5d",
+      "content_hash": "4ef288d7619e7c92dd501c5d03150580be7d965050a86d25b1177eef3d8e4178",
       "dependencies": [],
       "description": "Apex outbound email via Messaging.SingleEmailMessage \u2014 OrgWideEmailAddress, ReplyTo and Reply-To header semantics, EmailTemplate merging with whatId/targetObjectId, attachment patterns, daily governor limits, and transactional sends vs Email Alerts. NOT for processing email that arrives into Salesforce \u2014 use apex/apex-email-services. NOT for Marketing Cloud sends \u2014 use apex/marketing-cloud-api.",
       "file_location": "skills/apex/apex-outbound-email-patterns",
@@ -61634,7 +61684,10 @@
         "skills/apex/apex-outbound-email-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-outbound-email-patterns/scripts/check_apex_outbound_email_patterns.py"
+        "skills/apex/apex-outbound-email-patterns/scripts/check_apex_outbound_email_patterns.py",
+        "skills/apex/apex-outbound-email-patterns/scripts/fixtures/comment-only/CommentOnlyOutboundEmail.cls",
+        "skills/apex/apex-outbound-email-patterns/scripts/fixtures/real-discarded-send/DiscardedSend.cls",
+        "skills/apex/apex-outbound-email-patterns/scripts/fixtures/real-discarded-send/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -61647,9 +61700,9 @@
       "templates": [
         "skills/apex/apex-outbound-email-patterns/templates/apex-outbound-email-patterns-template.md"
       ],
-      "updated": "2026-05-05",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "apex",
@@ -61918,6 +61971,7 @@
         "2a7d41d3552aeb556c1b",
         "2aae6123abb471f1a0d5",
         "2d6eea2772df5d8d19fa",
+        "2d8bcc99e782c6d7d730",
         "2e74d85bb5263ced2a04",
         "2efc6a2999a3cd17ad23",
         "31183fcb23bd6fad6eca",
@@ -62007,6 +62061,7 @@
         "96d4dfb597f5f793762f",
         "993a1be0c95e6a0f82b1",
         "9a686b02aa479d7f56a7",
+        "a133efbd38c6484d6fb6",
         "a172c7be7bcb2870a099",
         "a1ee13288a55a6b427c5",
         "a30cb5a04ae24c14464c",
@@ -62019,6 +62074,7 @@
         "aa63023d0332175024a0",
         "aaece4a4c9e4f59a6a85",
         "ac14096749a5a43fb968",
+        "ad717193749d21aba26e",
         "b06020fd82a38a1e8774",
         "b075336a11d8f8dec369",
         "b0941f35a9a624466359",
@@ -62077,7 +62133,7 @@
         "fa4cac3fa6d07d646873",
         "fcd4f4cf63ffa7c5fcf5"
       ],
-      "content_hash": "a22ee3ae79fe0ccab16e70523a2d461271e1797173797a5a0d7cc6f90e5b7afc",
+      "content_hash": "c518e1c91b9236e90b719682803df009337de05dd2c15c56d7c7b67057fa0a24",
       "dependencies": [],
       "description": "Use when designing, implementing, reviewing, or debugging Queueable Apex jobs that chain, use the Finalizer interface, pass state across transactions, or need controlled async depth. Trigger keywords: 'Queueable', 'System.enqueueJob', 'Finalizer', 'QueueableContext', 'AsyncOptions', 'stack depth', 'chained queueable', 'DuplicateMessageException', 'QueueableDuplicateSignature', 'AsyncInfo', 'MinimumQueueableDelayInMinutes', 'attachFinalizer', 'AsyncApexJob'. NOT for choosing Queueable vs Batch \u2014 use apex/async-apex. NOT for large-volume chunked record processing \u2014 use apex/batch-apex-patterns.",
       "file_location": "skills/apex/apex-queueable-patterns",
@@ -62113,7 +62169,10 @@
         "skills/apex/apex-queueable-patterns/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py"
+        "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py",
+        "skills/apex/apex-queueable-patterns/scripts/fixtures/comment-only/CommentOnlyQueueable.cls",
+        "skills/apex/apex-queueable-patterns/scripts/fixtures/real-enqueue-in-loop/EnqueueInLoop.cls",
+        "skills/apex/apex-queueable-patterns/scripts/fixtures/real-enqueue-in-loop/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -62127,9 +62186,9 @@
       "templates": [
         "skills/apex/apex-queueable-patterns/templates/apex-queueable-patterns-template.md"
       ],
-      "updated": "2026-09-05",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -62865,6 +62924,7 @@
         "0a6d3d746f75af9ded66",
         "0a8d19ca4a2f6c912dde",
         "0b19bfde4bd4ff6dc0a6",
+        "0ca98690d283e3f65de7",
         "0e4ed63ff5597452478a",
         "0efdd9fdacf9f23c90af",
         "1001543438c88f10df83",
@@ -62882,6 +62942,7 @@
         "1fac625da424fd230195",
         "22269874bf1298f3bccc",
         "2292a34f5235def81bf6",
+        "23aae028eac5d192fb19",
         "258c73d48e54e52dc629",
         "29d077643dc277ea3e08",
         "2addb4fa416ceb03538a",
@@ -62890,6 +62951,7 @@
         "2e35177607725a0fcc58",
         "2fbae83418e5817bbfe3",
         "30531ec2dd3ee7a4b949",
+        "3061445019a6fabd35b3",
         "30949607628325d0882f",
         "32cb507a110a3a3fb142",
         "32dbc53fe4299cda240c",
@@ -62924,6 +62986,7 @@
         "56737209f623d175dabf",
         "56746d9b7e933fe48cd1",
         "5a742da731aa18b1a495",
+        "5ac8acc6635245a9ef04",
         "5c6111ec1f087be569c6",
         "5fa1122b3bcb6b630ce8",
         "607b615f3938ca73e4f4",
@@ -62995,6 +63058,7 @@
         "a8cdff1b4e873d9aac5b",
         "a8f93ab77fdfe243f2d5",
         "aa77bd7d0737e25d8693",
+        "aad9b00754f03779e780",
         "acf31ba1bd2d386f3e23",
         "af2f9762da40abbbf7f9",
         "af4d3e25a428a4fafdd1",
@@ -63062,7 +63126,7 @@
         "ff1cc3e278a4967c463f",
         "ffe3f2f9e270ec9beb9b"
       ],
-      "content_hash": "a8073b29e9812a4bcc6fe5e7f432d5b42c05e9679e0726bcab8dface2735ee3b",
+      "content_hash": "c62ff2ae5cd8beabbc23059b7b7b577befad76fbbe77af7b06a1e116fc644d21",
       "dependencies": [],
       "description": "Scheduling Apex classes using the Schedulable interface: implementing execute(), cron expressions, System.schedule(), monitoring CronTrigger records, job limits, and job chaining patterns. Triggers: 'run this code every night', 'schedule a class to run daily', 'nightly Apex job', 'run at 2am', 'cron expression for a daily job', 'how do I schedule Apex'. NOT for writing the Batch Apex class a schedule invokes \u2014 use apex/batch-apex-patterns. NOT for org-wide job monitoring and failure alerting in Setup \u2014 use admin/batch-job-scheduling-and-monitoring. NOT for alerting when a scheduled job fails silently \u2014 use apex/scheduled-apex-failure-detection-and-monitoring. Also covers: SchedulableContext.getTriggerId, System.abortJob, System.scheduleBatch, CronTrigger.State, CronJobDetail.JobType, TimesTriggered, NextFireTime, the 100-scheduled-Apex ceiling, the schedulable-class deploy lock, and the unschedule-deploy-reschedule runbook.",
       "file_location": "skills/apex/apex-scheduled-jobs",
@@ -63101,7 +63165,11 @@
       ],
       "scripts": [
         "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled.py",
-        "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py"
+        "skills/apex/apex-scheduled-jobs/scripts/check_apex_scheduled_jobs.py",
+        "skills/apex/apex-scheduled-jobs/scripts/fixtures/comment-only/CommentOnlySchedulable.cls",
+        "skills/apex/apex-scheduled-jobs/scripts/fixtures/real-callout-in-schedulable/CalloutInSchedulable.cls",
+        "skills/apex/apex-scheduled-jobs/scripts/fixtures/real-callout-in-schedulable/CalloutInSchedulable.cls-meta.xml",
+        "skills/apex/apex-scheduled-jobs/scripts/fixtures/real-callout-in-schedulable/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -63115,9 +63183,9 @@
       "templates": [
         "skills/apex/apex-scheduled-jobs/templates/apex-scheduled-jobs-template.md"
       ],
-      "updated": "2026-09-12",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "apex",
@@ -64426,6 +64494,7 @@
       "category": "apex",
       "chunk_ids": [
         "00423ef91eec3de7e735",
+        "0128ce42ef2830b8d1c0",
         "0873f84770d4118c6ad1",
         "0964c29ed3ad74ecd569",
         "0a3ecc29ecf314bb4540",
@@ -64444,6 +64513,7 @@
         "1dbac6b53d75feec05b3",
         "1ef591c6171b691a6146",
         "20ff2e15cb9c4fa16a1b",
+        "21ad34eb28043013f536",
         "230d7923f3eb490c172f",
         "25e89c398f1c51382e04",
         "25f451f0e9745e731417",
@@ -64453,6 +64523,7 @@
         "2d130ad2f26233815b6c",
         "2e4af1c365f168ffca92",
         "2e5a135b16b1241339e1",
+        "335ee02aba663c3d4e55",
         "33a610949019b29181cb",
         "3aefa7c7b2f2ffa8f722",
         "3c43a162ed532c4d766a",
@@ -64544,6 +64615,7 @@
         "c0160b5036aa0616f2f4",
         "c01f34ee513933927880",
         "c08916e1dbb400f9fb2b",
+        "c3b1bcd9a08460a67bcb",
         "c3fb09362399d84a01be",
         "c46f34376cf9d5496b45",
         "c5bfbbf100f2e5da16c3",
@@ -64587,7 +64659,7 @@
         "ff4368b079048a11c259",
         "ff76529704b5f7fe2a8a"
       ],
-      "content_hash": "b59b0a67233904e36b16ab356236a836e68eea02010eea09b38aaae14159024c",
+      "content_hash": "2ca05f475fbc115c658c113964384b598040703b780adbfc4bc17d7354123509",
       "dependencies": [
         "apex-queueable-patterns"
       ],
@@ -64624,7 +64696,10 @@
         "skills/apex/apex-transaction-finalizers/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/apex-transaction-finalizers/scripts/check_apex_transaction_finalizers.py"
+        "skills/apex/apex-transaction-finalizers/scripts/check_apex_transaction_finalizers.py",
+        "skills/apex/apex-transaction-finalizers/scripts/fixtures/comment-only/CommentOnlyFinalizers.cls",
+        "skills/apex/apex-transaction-finalizers/scripts/fixtures/real-attach-outside-queueable/AttachOutsideQueueable.cls",
+        "skills/apex/apex-transaction-finalizers/scripts/fixtures/real-attach-outside-queueable/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -64637,9 +64712,9 @@
       "templates": [
         "skills/apex/apex-transaction-finalizers/templates/apex-transaction-finalizers-template.md"
       ],
-      "updated": "2026-09-05",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -65957,6 +66032,7 @@
         "39ddc8a7ed87f6520891",
         "39fa2779b622407b7157",
         "3bd981b0cb6319b55aa6",
+        "40f2cadaf3a32e8900d2",
         "4293294b70022b4b77bf",
         "43e8f2b498bac18d6e24",
         "4b19b4f4f33bdb2684df",
@@ -65973,6 +66049,7 @@
         "6291e03ba934cd1c4c17",
         "63969df0dd9ff626ca61",
         "6790964b5350ba835f65",
+        "6805d4fc037156a70c5d",
         "69cc0a8020ff0694ac37",
         "6b2539a00efe369af156",
         "6b734c77996c1397c393",
@@ -65990,6 +66067,7 @@
         "7c81af06a6cbf0102c72",
         "7e53ef4a59f7867b1fb3",
         "8011a873707084afd556",
+        "812314945ff9b1f2d934",
         "82fd5eb3e2e31241e34a",
         "8332f9f250c0a601a6f2",
         "83febf36d729d5ca1451",
@@ -66016,6 +66094,7 @@
         "9deb1c897ad9061d904d",
         "9e3c791909fb49fdd559",
         "a046dfad3d05ab36060b",
+        "a24103db697ec014becb",
         "a3f641472dfadd3fc5c9",
         "a43fdb644cbefd9e5400",
         "a4912e90ddf05c2019ee",
@@ -66070,13 +66149,15 @@
         "edc7af0850b39fd5825c",
         "ee64b541117ff7bda662",
         "ee774c97b6a07e78a0e1",
+        "f048303a3af09645fbaf",
         "f27121143876c9f73435",
         "f609fd1b0e3bf6b6e15b",
+        "f84d03db15b8df2595cd",
         "f89618ac6a18b29f7364",
         "fc1f50a69ab2c9fe45b7",
         "fc8d2950e83e52233d22"
       ],
-      "content_hash": "8a1b791754a2af0c348556c7454d6f4c007f5522d6d092defe28dc247e52f144",
+      "content_hash": "7a0c6afd3c35ff8b5f46e1f06e64b117e98666bbdb56f74dd20469fce5f11ddb",
       "dependencies": [],
       "description": "Use when building, reviewing, or debugging outbound Apex HTTP callouts, Named Credentials, request/response handling, timeout behavior, or mock-based tests. Triggers: 'HttpRequest', 'Named Credential', 'callout exception', 'uncommitted work pending', 'HttpCalloutMock', 'uncommitted work pending', 'Database.AllowsCallouts', 'callout:', 'setTimeout', 'CalloutException', 'idempotency key', 'retry on 500'. NOT for exposing Apex as an inbound REST endpoint \u2014 use apex/apex-rest-services. NOT for SOAP callouts generated from a WSDL \u2014 use apex/apex-wsdl2apex-patterns. NOT for the per-transaction callout ceiling or moving callouts async to stay under it \u2014 use integration/callout-limits-and-async-patterns.",
       "file_location": "skills/apex/callouts-and-http-integrations",
@@ -66107,7 +66188,10 @@
         "skills/apex/callouts-and-http-integrations/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py"
+        "skills/apex/callouts-and-http-integrations/scripts/check_callouts_and_http_integrations.py",
+        "skills/apex/callouts-and-http-integrations/scripts/fixtures/comment-only/CommentOnlyCallouts.cls",
+        "skills/apex/callouts-and-http-integrations/scripts/fixtures/real-literal-endpoint/LiteralHttpEndpoint.cls",
+        "skills/apex/callouts-and-http-integrations/scripts/fixtures/real-literal-endpoint/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -66120,9 +66204,9 @@
       "templates": [
         "skills/apex/callouts-and-http-integrations/templates/callouts-and-http-integrations-template.md"
       ],
-      "updated": "2026-09-05",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -69662,6 +69746,8 @@
         "183da3338e4b1286df75",
         "185f84f4484c2452487a",
         "1888d68e3298fb5d9b4a",
+        "18fcd127305f7fcd6ae2",
+        "1af4de3f7d61eacecf26",
         "1b5aa605d236c7b2df10",
         "1dfaa082dac892ed2cd6",
         "20792a565c5d38829f09",
@@ -69745,6 +69831,7 @@
         "81cbbfa3087061fee6cc",
         "81f88539e9ce30ca4305",
         "8426c5286bc2c1710ab1",
+        "84f6c307163de620148e",
         "854d58d811395838442c",
         "89986bb07199ceee245d",
         "8cc447d1eec7a2f860cf",
@@ -69814,6 +69901,7 @@
         "d3de44ca5d15f6706dd1",
         "d5694e17f4668bb20525",
         "d63ef25d4216d5ff98c3",
+        "d84342919c490a3198c7",
         "d89e41c5afdb3a01e508",
         "d9e36d381004c22cd1f6",
         "d9f01ade62f918558d97",
@@ -69845,7 +69933,7 @@
         "feb7bb89f35ad66886bd",
         "fee371612cb032cf54a5"
       ],
-      "content_hash": "b9c4ee122f1399f723581cadd43e65515a8193e8b0328a03106bb562096b2bd7",
+      "content_hash": "06e1cf67e2dc1b336686bf033bc0c202bfce2eef040b176711bb0610f2bea3b6",
       "dependencies": [],
       "description": "Apex triggers and classes that read or write CaseMilestone records: completing milestones, detecting violations, reacting to SLA state changes. Trigger keywords: CaseMilestone trigger, auto-complete milestone Apex, milestone violation polling, CompletionDate write pattern. NOT for entitlement auto-association or assignment rules in a Case trigger \u2014 use apex/case-trigger-patterns. NOT for entitlement process and milestone setup in Setup \u2014 use admin/entitlements-and-milestones.",
       "file_location": "skills/apex/entitlement-apex-hooks",
@@ -69880,7 +69968,11 @@
         "skills/apex/entitlement-apex-hooks/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py"
+        "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py",
+        "skills/apex/entitlement-apex-hooks/scripts/fixtures/comment-only/CommentOnlyEntitlementHooks.cls",
+        "skills/apex/entitlement-apex-hooks/scripts/fixtures/real-security-enforced/README.md",
+        "skills/apex/entitlement-apex-hooks/scripts/fixtures/real-security-enforced/RealSecurityEnforced.cls",
+        "skills/apex/entitlement-apex-hooks/scripts/fixtures/real-security-enforced/RealSecurityEnforced.cls-meta.xml"
       ],
       "status": "stable",
       "tags": [
@@ -69894,9 +69986,9 @@
       "templates": [
         "skills/apex/entitlement-apex-hooks/templates/entitlement-apex-hooks-template.md"
       ],
-      "updated": "2026-09-12",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.2"
+      "version": "1.1.3"
     },
     {
       "category": "apex",
@@ -69916,6 +70008,7 @@
         "0d00f80afb7acd4289b2",
         "0f510b1e6d366db18e28",
         "10d1411542df54e28ece",
+        "129f26066ed20c5dd6ef",
         "1375fc9c7374e078fde0",
         "14e8417d6b4ce6125f82",
         "15d5e5dae55a8db6e567",
@@ -69927,6 +70020,7 @@
         "1a5b36cca95170a2a824",
         "1b02b7747a58442ceac7",
         "1dadb0a022c459e0b7f8",
+        "1f65fb479e16abe7866f",
         "1faccb6b71a178ffb974",
         "2088fecdfe38e7ad9c22",
         "20d4c5fe4f29e8666a7a",
@@ -69965,6 +70059,7 @@
         "3f55ae22788f1790850e",
         "426bae0eaabdceed8b83",
         "4445582a443a0cf463b4",
+        "44adf37af8f17733f912",
         "45d644cebf926f41b0b2",
         "4607488c32ca2a7ee05e",
         "468fe507c1ed69cbb98d",
@@ -69993,6 +70088,7 @@
         "679a3025dd60178cb598",
         "681f4c234ac3ff1bb983",
         "68438869af4b74ed6bae",
+        "6acf494f7e4ae24e171c",
         "6d107e32bcde44a6eb41",
         "7017a8d9bf52be07c73a",
         "70c0ca86a2334aec0662",
@@ -70096,7 +70192,7 @@
         "fc0b2103c737100e9e99",
         "ffacce4d4f4bd60b89fe"
       ],
-      "content_hash": "cdaa1f2789be333291b751465eeedf4b93aed616d62a836e0bc2cc84966ff311",
+      "content_hash": "c522eaba623f8b6ffc12580c467ba57a79097c466ea2d98c74d1701141521ef4",
       "dependencies": [],
       "description": "Use when designing a cross-cutting Apex error handling framework: custom exception hierarchies, centralized rollback-safe logging via Platform Events, BatchApexErrorEvent processing, correlation ID threading across async, Error_Log__c design, AuraHandledException boundary. NOT for a single try/catch or DmlException question \u2014 use apex/exception-handling. NOT for dead-letter, circuit-breaker and event-replay design in an integration \u2014 use integration/error-handling-in-integrations.",
       "file_location": "skills/apex/error-handling-framework",
@@ -70139,7 +70235,10 @@
         "skills/apex/error-handling-framework/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py"
+        "skills/apex/error-handling-framework/scripts/check_error_handling_framework.py",
+        "skills/apex/error-handling-framework/scripts/fixtures/comment-only/CommentOnlyErrorHandling.cls",
+        "skills/apex/error-handling-framework/scripts/fixtures/real-aura-outside-controller/FooService.cls",
+        "skills/apex/error-handling-framework/scripts/fixtures/real-aura-outside-controller/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -70155,9 +70254,9 @@
       "templates": [
         "skills/apex/error-handling-framework/templates/error-handling-framework-template.md"
       ],
-      "updated": "2026-09-12",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -75928,6 +76027,7 @@
         "bf0c540b31b89e4d454b",
         "bff63d03dfd5d978cbf7",
         "c24bfa2a76daecfac9fe",
+        "c256fcd7ec36b61c845c",
         "c4eb26c32610199fc402",
         "c51ad04c99e996fd16b6",
         "c5854c82688dd3d76685",
@@ -75943,6 +76043,7 @@
         "dc33c462c940b6ad6247",
         "dc37043f1891ca0a5b2e",
         "df8c3b5d8c871d30adb4",
+        "dfa091847b6ee7f67bc8",
         "dfecde85bd91f83ae4e1",
         "e11b7be3df18bd91c4f6",
         "e175670f4734cd4dbcc5",
@@ -75974,7 +76075,7 @@
         "fb1414d2eff46c73760e",
         "fd852e2107b16fa43cb4"
       ],
-      "content_hash": "20346bf0544f6c75d65512d996596344e2678c43a2c92a4000bb3301fccbe694",
+      "content_hash": "7330eff01b8a08e7d4b495b63e13a586a0e9a3e2745552e5fa447db2bd10df37",
       "dependencies": [],
       "description": "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event', 'publishBehavior', 'PublishAfterCommit', 'EventBus.RetryableException', 'Test.getEventBus().deliver()', 'EventBusSubscriber', 'PlatformEventSubscriberConfig', 'publish callback'. NOT for external publishers or subscribers \u2014 use integration/platform-events-integration. NOT for subscriber batch size and retries \u2014 use apex/apex-event-bus-subscriber.",
       "file_location": "skills/apex/platform-events-apex",
@@ -76010,7 +76111,10 @@
         "skills/apex/platform-events-apex/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py"
+        "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py",
+        "skills/apex/platform-events-apex/scripts/fixtures/comment-only/CommentOnlyPlatformEvents.cls",
+        "skills/apex/platform-events-apex/scripts/fixtures/real-discarded-publish/DiscardedPublish.cls",
+        "skills/apex/platform-events-apex/scripts/fixtures/real-discarded-publish/README.md"
       ],
       "status": "stable",
       "tags": [
@@ -76023,9 +76127,9 @@
       "templates": [
         "skills/apex/platform-events-apex/templates/platform-events-apex-template.md"
       ],
-      "updated": "2026-09-12",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "apex",
@@ -80597,6 +80701,7 @@
         "6492662f6694202ddd64",
         "677a7329b078429eac14",
         "6a3b20da7197fe4a0984",
+        "6b6b25cb87a233d9c3e1",
         "6c58a1da5a625428b74d",
         "6c7e5bdfe6b2481e2ce7",
         "6e794ee16e7e78e82acf",
@@ -80624,6 +80729,7 @@
         "9ca18ba1c85dd202ca46",
         "9ea890f2c4f3d8f6d97b",
         "9ec1bf920e5eb61fcda7",
+        "a44c2234843fec9c4d74",
         "a64cc8f67d0f89cae305",
         "a658a8e3aa57b679dbe7",
         "a7bc9f3597baa20ea6f4",
@@ -80695,7 +80801,7 @@
         "fec92903433d7c7f92b8",
         "ff60b9249abc7c197308"
       ],
-      "content_hash": "d4e331b7fc95cee4910234b59adf808afa1180e3de096a2aa3affd95d506d025",
+      "content_hash": "a9f309f940faf9b853ac1de5bb765a0e0539f8d8d3a86f0ba796c41f6771bcbd",
       "dependencies": [],
       "description": "Use when writing, reviewing, or designing Apex triggers. Triggers: 'trigger', 'trigger handler', 'trigger framework', 'recursion', 'before insert', 'after update', 'one trigger per object'. NOT for Flow-based automation \u2014 use admin/flow-for-admins for declarative automation decisions.",
       "file_location": "skills/apex/trigger-framework",
@@ -80731,7 +80837,12 @@
         "skills/apex/trigger-framework/references/well-architected.md"
       ],
       "scripts": [
-        "skills/apex/trigger-framework/scripts/check_trigger_framework.py"
+        "skills/apex/trigger-framework/scripts/check_trigger_framework.py",
+        "skills/apex/trigger-framework/scripts/fixtures/comment-only/CommentOnlyTrigger.trigger",
+        "skills/apex/trigger-framework/scripts/fixtures/comment-only/CommentOnlyTrigger.trigger-meta.xml",
+        "skills/apex/trigger-framework/scripts/fixtures/real-logic-in-trigger/README.md",
+        "skills/apex/trigger-framework/scripts/fixtures/real-logic-in-trigger/RealLogicCase.trigger",
+        "skills/apex/trigger-framework/scripts/fixtures/real-logic-in-trigger/RealLogicCase.trigger-meta.xml"
       ],
       "status": "stable",
       "tags": [
@@ -80745,9 +80856,9 @@
         "skills/apex/trigger-framework/templates/trigger_body.trigger",
         "skills/apex/trigger-framework/templates/trigger_handler.cls"
       ],
-      "updated": "2026-09-12",
+      "updated": "2026-09-16",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "apex",

@@ -2,6 +2,7 @@
   "category": "apex",
   "chunk_ids": [
     "00423ef91eec3de7e735",
+    "0128ce42ef2830b8d1c0",
     "0873f84770d4118c6ad1",
     "0964c29ed3ad74ecd569",
     "0a3ecc29ecf314bb4540",
@@ -20,6 +21,7 @@
     "1dbac6b53d75feec05b3",
     "1ef591c6171b691a6146",
     "20ff2e15cb9c4fa16a1b",
+    "21ad34eb28043013f536",
     "230d7923f3eb490c172f",
     "25e89c398f1c51382e04",
     "25f451f0e9745e731417",
@@ -29,6 +31,7 @@
     "2d130ad2f26233815b6c",
     "2e4af1c365f168ffca92",
     "2e5a135b16b1241339e1",
+    "335ee02aba663c3d4e55",
     "33a610949019b29181cb",
     "3aefa7c7b2f2ffa8f722",
     "3c43a162ed532c4d766a",
@@ -120,6 +123,7 @@
     "c0160b5036aa0616f2f4",
     "c01f34ee513933927880",
     "c08916e1dbb400f9fb2b",
+    "c3b1bcd9a08460a67bcb",
     "c3fb09362399d84a01be",
     "c46f34376cf9d5496b45",
     "c5bfbbf100f2e5da16c3",
@@ -163,7 +167,7 @@
     "ff4368b079048a11c259",
     "ff76529704b5f7fe2a8a"
   ],
-  "content_hash": "b59b0a67233904e36b16ab356236a836e68eea02010eea09b38aaae14159024c",
+  "content_hash": "2ca05f475fbc115c658c113964384b598040703b780adbfc4bc17d7354123509",
   "dependencies": [
     "apex-queueable-patterns"
   ],
@@ -200,7 +204,10 @@
     "skills/apex/apex-transaction-finalizers/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-transaction-finalizers/scripts/check_apex_transaction_finalizers.py"
+    "skills/apex/apex-transaction-finalizers/scripts/check_apex_transaction_finalizers.py",
+    "skills/apex/apex-transaction-finalizers/scripts/fixtures/comment-only/CommentOnlyFinalizers.cls",
+    "skills/apex/apex-transaction-finalizers/scripts/fixtures/real-attach-outside-queueable/AttachOutsideQueueable.cls",
+    "skills/apex/apex-transaction-finalizers/scripts/fixtures/real-attach-outside-queueable/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -213,7 +220,7 @@
   "templates": [
     "skills/apex/apex-transaction-finalizers/templates/apex-transaction-finalizers-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

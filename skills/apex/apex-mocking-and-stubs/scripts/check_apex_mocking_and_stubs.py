@@ -128,16 +128,67 @@ def iter_files(root: Path) -> list[Path]:
     )
 
 
-def strip_comments(text: str) -> str:
-    """Blank out comments while preserving line count, so reported line numbers
-    still match the file on disk."""
+def strip_comments_and_literals(text: str) -> str:
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
 
-    def blank(match: re.Match) -> str:
-        return "\n" * match.group(0).count("\n")
-
-    text = re.sub(r"/\*.*?\*/", blank, text, flags=re.DOTALL)
-    text = re.sub(r"//[^\n]*", "", text)
-    return text
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `text`; newlines in block comments stay newlines so line numbers stay aligned.
+    """
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        ch = text[i]
+        if ch == "/" and i + 1 < n and text[i + 1] == "/":
+            j = i
+            while j < n and text[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (text[j] == "*" and text[j + 1] == "/"):
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if text[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if text[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if text[i] == "'":
+                    if i + 1 < n and text[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 def line_of(text: str, index: int) -> int:
@@ -375,7 +426,7 @@ def main() -> int:
             args.fail_on,
         )
     sources = {
-        path: strip_comments(path.read_text(encoding="utf-8", errors="ignore"))
+        path: strip_comments_and_literals(path.read_text(encoding="utf-8", errors="ignore"))
         for path in files
     }
     global_index = build_global_index(sources)

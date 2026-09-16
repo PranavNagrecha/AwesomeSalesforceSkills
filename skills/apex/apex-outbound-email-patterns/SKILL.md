@@ -30,9 +30,9 @@ outputs:
   - "Decision: SingleEmailMessage vs Email Alert (Flow) vs MassEmailMessage"
   - "Daily-limit handling and partial-success error parsing"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-09-16
 ---
 
 # Apex Outbound Email Patterns
@@ -61,6 +61,20 @@ every send (a 4-recipient send burns 4 from the bucket). Second,
 sending email is treated as a non-transactional side effect — if
 your transaction rolls back, the email still goes out. That last
 part traps every team at least once.
+
+## Questions to Ask Before Configuring
+
+Ask these before choosing `Messaging.SingleEmailMessage` over a Flow Email Alert. Skipping them produces sends that roll back with the transaction, burn the daily cap, or show merge syntax literally in the body.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who receives the email — User Id, Contact/Lead Id, raw address, or a list?" | Recipient shape drives bulkification, governor cost, and whether `setTargetObjectId` is valid | Single vs list send pattern and whether to batch with partial-success handling |
+| "Is this transactional (one record context) or operational/bulk?" | Daily external-email limit counts every recipient; trigger loops are a checker finding | Flow Email Alert vs Apex, or a queueable/batch sender for bulk |
+| "What should appear as From, and where should replies land?" | Visible From is `OrgWideEmailAddress`; Reply-To is separate | `setOrgWideEmailAddressId` plus `setReplyTo` wired before template merge |
+| "Does the body need EmailTemplate merge fields, and against which object?" | `setHtmlBody('{!…}')` sends merge syntax literally; non-CLU targets need `renderStoredEmailTemplate` | `renderStoredEmailTemplate` with the right `whatId` instead of `setTargetObjectId(account.Id)` |
+| "Must the send survive a transaction rollback?" | Email is a non-transactional side effect — rollback does not unsend | Whether the send belongs after commit, in async, or as an explicit business acceptance of the risk |
+
+What a proper outbound-email design adds over a bare `sendEmail` call: audited activity timeline entries, predictable From/Reply-To, template merge that actually resolves, and error handling that surfaces per-recipient failures instead of discarding the `Messaging.SendEmailResult`.
 
 ## Recommended Workflow
 

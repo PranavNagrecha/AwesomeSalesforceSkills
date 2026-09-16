@@ -47,26 +47,69 @@ WARN = "WARN"
 # Source normalisation
 # --------------------------------------------------------------------------
 
-_BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
-_LINE_COMMENT = re.compile(r"//[^\n]*")
-_STRING = re.compile(r"'(?:\\.|[^'\\])*'")
-
-
-def _blank_out(match: re.Match) -> str:
-    """Replace a matched span with spaces, preserving newlines and offsets."""
-    return "".join("\n" if ch == "\n" else " " for ch in match.group(0))
-
 
 def strip_noise(source: str) -> str:
-    """Blank comments and string literals so regexes never match inside them.
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
 
+    Comments first so a possessive apostrophe inside a comment never opens a string.
     Offsets and line numbers are preserved, so a hit in the stripped text maps
     back to the same line in the original file.
     """
-    stripped = _BLOCK_COMMENT.sub(_blank_out, source)
-    stripped = _LINE_COMMENT.sub(_blank_out, stripped)
-    stripped = _STRING.sub(_blank_out, stripped)
-    return stripped
+    out: list[str] = []
+    i, n = 0, len(source)
+    while i < n:
+        ch = source[i]
+        if ch == "/" and i + 1 < n and source[i + 1] == "/":
+            j = i
+            while j < n and source[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and source[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (source[j] == "*" and source[j + 1] == "/"):
+                out.append("\n" if source[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if source[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if source[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if source[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if source[i] == "'":
+                    if i + 1 < n and source[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 def line_of(source: str, offset: int) -> int:

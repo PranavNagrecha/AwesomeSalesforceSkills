@@ -36,9 +36,9 @@ outputs:
   - "review findings for security, transaction safety, and testability"
   - "Apex callout scaffold using Named Credentials and mocks"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-16
 ---
 
 Use this skill when an Apex integration needs to leave Salesforce safely. The aim is to use Named Credentials correctly, keep authentication and endpoint management out of code, separate callouts from unsafe transaction contexts, and make failure modes visible and testable.

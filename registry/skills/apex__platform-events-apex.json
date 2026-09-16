@@ -127,6 +127,7 @@
     "bf0c540b31b89e4d454b",
     "bff63d03dfd5d978cbf7",
     "c24bfa2a76daecfac9fe",
+    "c256fcd7ec36b61c845c",
     "c4eb26c32610199fc402",
     "c51ad04c99e996fd16b6",
     "c5854c82688dd3d76685",
@@ -142,6 +143,7 @@
     "dc33c462c940b6ad6247",
     "dc37043f1891ca0a5b2e",
     "df8c3b5d8c871d30adb4",
+    "dfa091847b6ee7f67bc8",
     "dfecde85bd91f83ae4e1",
     "e11b7be3df18bd91c4f6",
     "e175670f4734cd4dbcc5",
@@ -173,7 +175,7 @@
     "fb1414d2eff46c73760e",
     "fd852e2107b16fa43cb4"
   ],
-  "content_hash": "20346bf0544f6c75d65512d996596344e2678c43a2c92a4000bb3301fccbe694",
+  "content_hash": "7330eff01b8a08e7d4b495b63e13a586a0e9a3e2745552e5fa447db2bd10df37",
   "dependencies": [],
   "description": "Use when publishing or subscribing to Salesforce Platform Events from Apex, comparing Platform Events with Change Data Capture, or designing event-triggered error handling and monitoring. Triggers: 'EventBus.publish', 'platform event trigger', 'CDC vs Platform Events', 'replay ID', 'high-volume event', 'publishBehavior', 'PublishAfterCommit', 'EventBus.RetryableException', 'Test.getEventBus().deliver()', 'EventBusSubscriber', 'PlatformEventSubscriberConfig', 'publish callback'. NOT for external publishers or subscribers \u2014 use integration/platform-events-integration. NOT for subscriber batch size and retries \u2014 use apex/apex-event-bus-subscriber.",
   "file_location": "skills/apex/platform-events-apex",
@@ -209,7 +211,10 @@
     "skills/apex/platform-events-apex/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py"
+    "skills/apex/platform-events-apex/scripts/check_platform_events_apex.py",
+    "skills/apex/platform-events-apex/scripts/fixtures/comment-only/CommentOnlyPlatformEvents.cls",
+    "skills/apex/platform-events-apex/scripts/fixtures/real-discarded-publish/DiscardedPublish.cls",
+    "skills/apex/platform-events-apex/scripts/fixtures/real-discarded-publish/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -222,7 +227,7 @@
   "templates": [
     "skills/apex/platform-events-apex/templates/platform-events-apex-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

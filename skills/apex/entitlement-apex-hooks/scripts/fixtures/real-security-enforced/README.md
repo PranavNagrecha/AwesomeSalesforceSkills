@@ -1,0 +1,1 @@
+Expected: ERROR EAH005 — WITH SECURITY_ENFORCED at apiVersion 67.0+.

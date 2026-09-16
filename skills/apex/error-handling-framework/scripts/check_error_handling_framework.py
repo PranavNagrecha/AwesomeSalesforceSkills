@@ -70,6 +70,69 @@ _FOR_LOOP_START = re.compile(r"\bfor\s*\(", re.IGNORECASE)
 # ---------------------------------------------------------------------------
 
 
+def _strip_comments_and_literals(src: str) -> str:
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
+
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `src`; newlines in block comments stay newlines so line numbers stay aligned.
+    """
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def _apex_files(manifest_dir: Path) -> list[Path]:
     """Return all .cls and .trigger files under manifest_dir."""
     results: list[Path] = []
@@ -130,10 +193,11 @@ def check_file(path: Path) -> list[str]:
     """Return a list of issue strings for a single Apex source file."""
     issues: list[str] = []
     try:
-        content = path.read_text(encoding="utf-8", errors="replace")
+        raw = path.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
         return [f"{path}: cannot read file — {exc}"]
 
+    content = _strip_comments_and_literals(raw)
     rel = path.name
 
     # 1. AuraHandledException thrown outside a controller file

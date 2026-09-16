@@ -77,11 +77,126 @@ def is_test_file(path: Path, contents: str) -> bool:
 
 
 def strip_comments(src: str) -> str:
-    """Drop `//` line comments and `/* ... */` block comments so we don't
-    flag IDs that appear only in commented-out examples."""
-    src = re.sub(r"/\*.*?\*/", "", src, flags=re.DOTALL)
-    src = re.sub(r"//[^\n]*", "", src)
-    return src
+    """Blank `//` and `/* … */` comments to spaces; leave string literal contents intact.
+
+    P0 matches quoted Salesforce Id literals, so literal text must survive. Comments
+    are recognized before literals so a possessive apostrophe inside a comment never
+    opens a string. Same length as `src`; newlines in block comments stay newlines.
+    """
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append("'")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(src[i])
+                    out.append(src[i + 1])
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append("'")
+                        out.append("'")
+                        i += 2
+                        continue
+                    out.append("'")
+                    i += 1
+                    break
+                out.append(src[i])
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def strip_comments_and_literals(src: str) -> str:
+    """Blank comments and `'…'` literals to spaces (same length; newlines preserved)."""
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 def scan_file(path: Path) -> Tuple[List[str], List[str], List[str]]:
@@ -96,11 +211,13 @@ def scan_file(path: Path) -> Tuple[List[str], List[str], List[str]]:
         return ([f"{path}: cannot read file ({exc})"], [], [])
 
     is_test = is_test_file(path, raw)
-    code = strip_comments(raw)
+    # P0 needs quoted Id text; P1/P2 are keyword/shape matches that must ignore strings.
+    code_lit = strip_comments(raw)
+    code = strip_comments_and_literals(raw)
+    lines_lit = code_lit.splitlines()
     lines = code.splitlines()
 
-    for line_no, line in enumerate(lines, start=1):
-        # P0: Salesforce ID literal in non-test code.
+    for line_no, line in enumerate(lines_lit, start=1):
         if not is_test:
             for match in ID_LITERAL.finditer(line):
                 literal = match.group(2)
@@ -109,7 +226,7 @@ def scan_file(path: Path) -> Tuple[List[str], List[str], List[str]]:
                     f"'{literal}' (use Schema describe / SOQL by DeveloperName / Custom Metadata)"
                 )
 
-        # P1: Name-based ID SOQL outside a static cache.
+    for line_no, line in enumerate(lines, start=1):
         if NAME_LOOKUP_SOQL.search(line):
             window_start = max(0, line_no - 30)
             window = "\n".join(lines[window_start:line_no])
@@ -119,7 +236,6 @@ def scan_file(path: Path) -> Tuple[List[str], List[str], List[str]]:
                     f"Map<String, Id> cache (wrap in a cached helper)"
                 )
 
-        # P2: String-typed variable holding an ID.
         for match in STRING_ID_VAR.finditer(line):
             name = match.group(1)
             p2.append(

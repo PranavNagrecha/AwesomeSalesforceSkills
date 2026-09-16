@@ -99,3 +99,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** "If an Apex transaction rolls back, any queueable jobs queued for execution by the transaction aren't processed" (apexdev L15961). This bites when the enqueue happens inside a trigger or a controller that later throws, or inside a `Database.rollback(savepoint)` path — the enqueue looks committed because `System.enqueueJob` already returned an ID.
 
 **How to avoid:** enqueue after the risky DML, not before, and never treat the ID returned by `System.enqueueJob` as proof the job exists. If the work must survive a caller rollback, publish a Platform Event instead and subscribe with the Queueable — see apex/apex-queueable-patterns.
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

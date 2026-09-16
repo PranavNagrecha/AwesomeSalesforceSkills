@@ -33,9 +33,9 @@ outputs:
   - "Review checklist confirming Finalizer constraints are respected"
 dependencies:
   - apex-queueable-patterns
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-16
 ---
 
 # Apex Transaction Finalizers

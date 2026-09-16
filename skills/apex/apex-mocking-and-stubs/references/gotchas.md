@@ -119,3 +119,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** A `System.runAs` test that passes on an old class version and fails after the class is bumped to 67.0, or vice versa. Inside a `runAs` block, the sharing mode enforced for a user-defined method is that of the class where the method is *defined*, not the test class — so the test class's own `with sharing` tells you nothing.
 
 **How to avoid:** Put an explicit `with sharing` / `inherited sharing` / `without sharing` declaration on every class with SOQL or DML, including the ones you intend to stub, so the stub's behaviour is not a function of the class's API version. Grounded: Apex Developer Guide L42052 (anonymous subclasses), L4961–4967 ("Versioned Behavior Changes"), L41328–41332 (`runAs` sharing note).
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

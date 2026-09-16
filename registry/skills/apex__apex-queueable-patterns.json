@@ -25,6 +25,7 @@
     "2a7d41d3552aeb556c1b",
     "2aae6123abb471f1a0d5",
     "2d6eea2772df5d8d19fa",
+    "2d8bcc99e782c6d7d730",
     "2e74d85bb5263ced2a04",
     "2efc6a2999a3cd17ad23",
     "31183fcb23bd6fad6eca",
@@ -114,6 +115,7 @@
     "96d4dfb597f5f793762f",
     "993a1be0c95e6a0f82b1",
     "9a686b02aa479d7f56a7",
+    "a133efbd38c6484d6fb6",
     "a172c7be7bcb2870a099",
     "a1ee13288a55a6b427c5",
     "a30cb5a04ae24c14464c",
@@ -126,6 +128,7 @@
     "aa63023d0332175024a0",
     "aaece4a4c9e4f59a6a85",
     "ac14096749a5a43fb968",
+    "ad717193749d21aba26e",
     "b06020fd82a38a1e8774",
     "b075336a11d8f8dec369",
     "b0941f35a9a624466359",
@@ -184,7 +187,7 @@
     "fa4cac3fa6d07d646873",
     "fcd4f4cf63ffa7c5fcf5"
   ],
-  "content_hash": "a22ee3ae79fe0ccab16e70523a2d461271e1797173797a5a0d7cc6f90e5b7afc",
+  "content_hash": "c518e1c91b9236e90b719682803df009337de05dd2c15c56d7c7b67057fa0a24",
   "dependencies": [],
   "description": "Use when designing, implementing, reviewing, or debugging Queueable Apex jobs that chain, use the Finalizer interface, pass state across transactions, or need controlled async depth. Trigger keywords: 'Queueable', 'System.enqueueJob', 'Finalizer', 'QueueableContext', 'AsyncOptions', 'stack depth', 'chained queueable', 'DuplicateMessageException', 'QueueableDuplicateSignature', 'AsyncInfo', 'MinimumQueueableDelayInMinutes', 'attachFinalizer', 'AsyncApexJob'. NOT for choosing Queueable vs Batch \u2014 use apex/async-apex. NOT for large-volume chunked record processing \u2014 use apex/batch-apex-patterns.",
   "file_location": "skills/apex/apex-queueable-patterns",
@@ -220,7 +223,10 @@
     "skills/apex/apex-queueable-patterns/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py"
+    "skills/apex/apex-queueable-patterns/scripts/check_apex_queueable_patterns.py",
+    "skills/apex/apex-queueable-patterns/scripts/fixtures/comment-only/CommentOnlyQueueable.cls",
+    "skills/apex/apex-queueable-patterns/scripts/fixtures/real-enqueue-in-loop/EnqueueInLoop.cls",
+    "skills/apex/apex-queueable-patterns/scripts/fixtures/real-enqueue-in-loop/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -234,7 +240,7 @@
   "templates": [
     "skills/apex/apex-queueable-patterns/templates/apex-queueable-patterns-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

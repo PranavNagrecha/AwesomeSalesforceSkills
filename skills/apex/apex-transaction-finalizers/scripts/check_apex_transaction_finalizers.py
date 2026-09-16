@@ -52,10 +52,6 @@ from pathlib import Path
 # Lexical helpers
 # --------------------------------------------------------------------------
 
-BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
-LINE_COMMENT = re.compile(r"//[^\n]*")
-STRING_LITERAL = re.compile(r"'(?:\\.|[^'\\])*'")
-
 CLASS_DECL = re.compile(
     r"^[ \t]*(?:@\w+(?:\([^)]*\))?[ \t]*)*"
     r"(?P<mods>(?:(?:global|public|private|protected|virtual|abstract|with\s+sharing"
@@ -85,10 +81,66 @@ PLATFORM_RETRY_CAP = 5
 
 
 def strip_noise(src: str) -> str:
-    """Remove comments and string literals so keywords in prose don't match."""
-    src = BLOCK_COMMENT.sub(lambda m: "\n" * m.group(0).count("\n"), src)
-    src = LINE_COMMENT.sub("", src)
-    return STRING_LITERAL.sub("''", src)
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
+
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `src`; newlines in block comments stay newlines so line numbers stay aligned.
+    """
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 def matching_brace(src: str, open_idx: int) -> int:

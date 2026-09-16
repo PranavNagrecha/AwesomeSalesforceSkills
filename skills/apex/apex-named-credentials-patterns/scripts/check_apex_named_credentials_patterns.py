@@ -529,6 +529,69 @@ def check_remote_sites(tree: Tree, creds: dict) -> list[Finding]:
 # --------------------------------------------------------------------------
 
 
+def strip_comments_only(src: str) -> str:
+    """Blank `//` and `/* … */` comments to spaces; leave string literal contents intact.
+
+    Apex rules inspect callout: / URL / Authorization literal text. Comments first so a
+    possessive apostrophe inside a comment never opens a string. Same length as `src`.
+    """
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append("'")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(src[i])
+                    out.append(src[i + 1])
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append("'")
+                        out.append("'")
+                        i += 2
+                        continue
+                    out.append("'")
+                    i += 1
+                    break
+                out.append(src[i])
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def _authorization_values(source: str) -> list[str]:
     return [m.group("value") for m in AUTH_HEADER_RE.finditer(source)]
 
@@ -551,9 +614,10 @@ def check_apex(tree: Tree, creds: dict) -> list[Finding]:
 
     for path in tree.apex:
         try:
-            source = path.read_text(encoding="utf-8", errors="replace")
+            raw = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
+        source = strip_comments_only(raw)
         where = tree.rel(path)
 
         literal_endpoints = [m.group(2) for m in LITERAL_ENDPOINT_RE.finditer(source)]

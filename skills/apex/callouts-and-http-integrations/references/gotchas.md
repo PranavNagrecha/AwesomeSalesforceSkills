@@ -241,3 +241,13 @@ differently in a full sandbox, or a request hangs on a header nobody wrote delib
 
 **How to avoid:** run load-shaped tests in a sandbox that matches the production edition, and never
 set `Expect` explicitly unless the remote system has confirmed it honours the handshake.
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

@@ -41,9 +41,9 @@ outputs:
   - "Guidance on Enhanced vs. Legacy model differences affecting Apex code"
   - "Deployable ExternalCredential + NamedCredential + PermissionSet metadata with deploy order"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-09-16
 ---
 
 # Apex Named Credentials Patterns

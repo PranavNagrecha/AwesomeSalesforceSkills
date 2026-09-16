@@ -27,6 +27,8 @@
     "183da3338e4b1286df75",
     "185f84f4484c2452487a",
     "1888d68e3298fb5d9b4a",
+    "18fcd127305f7fcd6ae2",
+    "1af4de3f7d61eacecf26",
     "1b5aa605d236c7b2df10",
     "1dfaa082dac892ed2cd6",
     "20792a565c5d38829f09",
@@ -110,6 +112,7 @@
     "81cbbfa3087061fee6cc",
     "81f88539e9ce30ca4305",
     "8426c5286bc2c1710ab1",
+    "84f6c307163de620148e",
     "854d58d811395838442c",
     "89986bb07199ceee245d",
     "8cc447d1eec7a2f860cf",
@@ -179,6 +182,7 @@
     "d3de44ca5d15f6706dd1",
     "d5694e17f4668bb20525",
     "d63ef25d4216d5ff98c3",
+    "d84342919c490a3198c7",
     "d89e41c5afdb3a01e508",
     "d9e36d381004c22cd1f6",
     "d9f01ade62f918558d97",
@@ -210,7 +214,7 @@
     "feb7bb89f35ad66886bd",
     "fee371612cb032cf54a5"
   ],
-  "content_hash": "b9c4ee122f1399f723581cadd43e65515a8193e8b0328a03106bb562096b2bd7",
+  "content_hash": "06e1cf67e2dc1b336686bf033bc0c202bfce2eef040b176711bb0610f2bea3b6",
   "dependencies": [],
   "description": "Apex triggers and classes that read or write CaseMilestone records: completing milestones, detecting violations, reacting to SLA state changes. Trigger keywords: CaseMilestone trigger, auto-complete milestone Apex, milestone violation polling, CompletionDate write pattern. NOT for entitlement auto-association or assignment rules in a Case trigger \u2014 use apex/case-trigger-patterns. NOT for entitlement process and milestone setup in Setup \u2014 use admin/entitlements-and-milestones.",
   "file_location": "skills/apex/entitlement-apex-hooks",
@@ -245,7 +249,11 @@
     "skills/apex/entitlement-apex-hooks/references/well-architected.md"
   ],
   "scripts": [
-    "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py"
+    "skills/apex/entitlement-apex-hooks/scripts/check_entitlement_apex_hooks.py",
+    "skills/apex/entitlement-apex-hooks/scripts/fixtures/comment-only/CommentOnlyEntitlementHooks.cls",
+    "skills/apex/entitlement-apex-hooks/scripts/fixtures/real-security-enforced/README.md",
+    "skills/apex/entitlement-apex-hooks/scripts/fixtures/real-security-enforced/RealSecurityEnforced.cls",
+    "skills/apex/entitlement-apex-hooks/scripts/fixtures/real-security-enforced/RealSecurityEnforced.cls-meta.xml"
   ],
   "status": "stable",
   "tags": [
@@ -259,7 +267,7 @@
   "templates": [
     "skills/apex/entitlement-apex-hooks/templates/entitlement-apex-hooks-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-09-16",
   "vector_embedding": null,
-  "version": "1.1.2"
+  "version": "1.1.3"
 }

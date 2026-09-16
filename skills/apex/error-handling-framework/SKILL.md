@@ -36,9 +36,9 @@ outputs:
   - "correlation ID threading pattern for Queueable and Batch contexts"
   - "code review findings against the error framework review checklist"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-09-16
 ---
 
 # Error Handling Framework

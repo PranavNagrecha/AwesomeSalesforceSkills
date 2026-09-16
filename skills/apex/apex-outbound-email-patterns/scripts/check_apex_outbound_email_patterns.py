@@ -47,6 +47,124 @@ def _line_no(text: str, pos: int) -> int:
     return text[:pos].count("\n") + 1
 
 
+def _strip_comments_only(src: str) -> str:
+    """Blank comments; keep string literal contents (setBody merge-field rule needs them)."""
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append("'")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(src[i])
+                    out.append(src[i + 1])
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append("'")
+                        out.append("'")
+                        i += 2
+                        continue
+                    out.append("'")
+                    i += 1
+                    break
+                out.append(src[i])
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def _strip_comments_and_literals(src: str) -> str:
+    """Blank comments and `'…'` literals to spaces (same length; newlines preserved)."""
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def _block_end(text: str, brace_pos: int) -> int:
     depth = 1
     i = brace_pos + 1
@@ -62,13 +180,16 @@ def _block_end(text: str, brace_pos: int) -> int:
 def _scan_apex(path: Path) -> list[str]:
     findings: list[str] = []
     try:
-        text = path.read_text(encoding="utf-8", errors="ignore")
+        raw = path.read_text(encoding="utf-8", errors="ignore")
     except OSError as exc:
         return [f"could not read {path}: {exc}"]
 
-    for m in _LITERAL_MERGE_RE.finditer(text):
+    text_lit = _strip_comments_only(raw)
+    text = _strip_comments_and_literals(raw)
+
+    for m in _LITERAL_MERGE_RE.finditer(text_lit):
         findings.append(
-            f"{path}:{_line_no(text, m.start())}: setHtmlBody/"
+            f"{path}:{_line_no(text_lit, m.start())}: setHtmlBody/"
             "setPlainTextBody literal contains '{!' — merge syntax is "
             "only honored by renderStoredEmailTemplate, not setBody "
             "(references/llm-anti-patterns.md § 2)"

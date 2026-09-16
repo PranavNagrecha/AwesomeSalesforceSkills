@@ -39,9 +39,9 @@ outputs:
   - "Apex publish and subscribe pattern with error handling"
   - "deployable __e object XML, publisher class, subscriber trigger, PlatformEventSubscriberConfig, test class and package.xml"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-09-16
 ---
 
 Use this skill when a design is moving toward event-driven integration and Apex is involved on the publishing or subscriber side. The goal is to publish events deliberately, consume them in a decoupled way, and separate Platform Events from Change Data Capture instead of treating them as interchangeable.

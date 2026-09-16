@@ -94,10 +94,6 @@ TRIGGER_HANDLER_HINT_RE = re.compile(
     re.IGNORECASE,
 )
 
-BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
-LINE_COMMENT_RE = re.compile(r"//[^\n]*")
-STRING_RE = re.compile(r"'(?:\\.|[^'\\])*'")
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -120,15 +116,126 @@ def parse_args() -> argparse.Namespace:
 # --- source helpers -----------------------------------------------------------------
 
 
+def strip_comments_only(text: str) -> str:
+    """Blank comments; leave string literal contents intact (endpoint URL rule needs them)."""
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        ch = text[i]
+        if ch == "/" and i + 1 < n and text[i + 1] == "/":
+            j = i
+            while j < n and text[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (text[j] == "*" and text[j + 1] == "/"):
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append("'")
+            i += 1
+            while i < n:
+                if text[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if text[i] == "\\" and i + 1 < n:
+                    out.append(text[i])
+                    out.append(text[i + 1])
+                    i += 2
+                    continue
+                if text[i] == "'":
+                    if i + 1 < n and text[i + 1] == "'":
+                        out.append("'")
+                        out.append("'")
+                        i += 2
+                        continue
+                    out.append("'")
+                    i += 1
+                    break
+                out.append(text[i])
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
 def strip_noise(text: str) -> str:
-    """Blank out comments and string literals, preserving offsets and line breaks."""
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
 
-    def blank(match: re.Match) -> str:
-        return "".join("\n" if ch == "\n" else " " for ch in match.group(0))
-
-    text = BLOCK_COMMENT_RE.sub(blank, text)
-    text = LINE_COMMENT_RE.sub(blank, text)
-    return STRING_RE.sub(blank, text)
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `text`; newlines in block comments stay newlines so line numbers stay aligned.
+    """
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        ch = text[i]
+        if ch == "/" and i + 1 < n and text[i + 1] == "/":
+            j = i
+            while j < n and text[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and text[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (text[j] == "*" and text[j + 1] == "/"):
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if text[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if text[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if text[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if text[i] == "'":
+                    if i + 1 < n and text[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 def line_of(text: str, index: int) -> int:
@@ -173,6 +280,7 @@ def enclosing_blocks(spans: list[tuple[int, int]], index: int) -> list[tuple[int
 def audit_file(path: Path, raw: str) -> list[dict]:
     findings: list[dict] = []
     clean = strip_noise(raw)
+    lit = strip_comments_only(raw)
 
     def add(severity: str, index: int, message: str) -> None:
         findings.append(
@@ -194,8 +302,8 @@ def audit_file(path: Path, raw: str) -> list[dict]:
     is_test = bool(ISTEST_RE.search(clean))
     spans = method_bodies(clean)
 
-    # --- 3. literal endpoints (runs on the raw text: the URL is inside a string literal) ---
-    for match in ENDPOINT_RE.finditer(raw):
+    # --- 3. literal endpoints (comment-stripped; URL lives inside a string literal) ---
+    for match in ENDPOINT_RE.finditer(lit):
         endpoint = match.group(2).strip()
         idx = match.start()
         if endpoint.lower().startswith(("http://", "https://")):
@@ -329,9 +437,9 @@ def audit_file(path: Path, raw: str) -> list[dict]:
                 break
 
         # 9. body on a GET
-        # setMethod's argument is a string literal, which strip_noise blanks -- read raw.
-        # strip_noise preserves length, so offsets are interchangeable.
-        methods = {m.group(2).upper() for m in SET_METHOD_RE.finditer(raw[start:end])}
+        # setMethod's argument is a string literal, which strip_noise blanks -- read lit.
+        # strip helpers preserve length, so offsets are interchangeable.
+        methods = {m.group(2).upper() for m in SET_METHOD_RE.finditer(lit[start:end])}
         body_hit = SET_BODY_RE.search(clean[start:end])
         if body_hit and methods == {"GET"}:
             add(

@@ -106,3 +106,13 @@ for (Profile p : [SELECT Id, Name FROM Profile WHERE Name IN :names]) {
 ## 7. Test classes that hardcode IDs cannot run in scratch orgs
 
 Scratch orgs are spun fresh per CI run; no record exists at any specific ID. Tests must `insert` seed data and use the returned `.Id`.
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

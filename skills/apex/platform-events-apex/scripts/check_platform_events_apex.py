@@ -126,35 +126,64 @@ def emit_result(findings: list[str], summary: str, exit_code: int) -> int:
 
 
 def strip_noise(src: str) -> str:
-    """Blank comments and string literals, preserving line count and offsets."""
-    out = list(src)
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
+
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `src`; newlines in block comments stay newlines so line numbers stay aligned.
+    """
+    out: list[str] = []
     i, n = 0, len(src)
     while i < n:
         ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
         if ch == "'":
-            j = i + 1
-            while j < n and src[j] != "'":
-                j += 2 if src[j] == "\\" else 1
-            for k in range(i, min(j + 1, n)):
-                if out[k] != "\n":
-                    out[k] = " "
-            i = j + 1
+            out.append(" ")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
             continue
-        if src.startswith("//", i):
-            j = src.find("\n", i)
-            j = n if j < 0 else j
-            for k in range(i, j):
-                out[k] = " "
-            i = j
-            continue
-        if src.startswith("/*", i):
-            j = src.find("*/", i + 2)
-            j = n if j < 0 else j + 2
-            for k in range(i, min(j, n)):
-                if out[k] != "\n":
-                    out[k] = " "
-            i = j
-            continue
+        out.append(ch)
         i += 1
     return "".join(out)
 

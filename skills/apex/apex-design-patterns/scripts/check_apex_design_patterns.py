@@ -108,10 +108,6 @@ RESET_HOOK_RE = re.compile(
     r"\bvoid\s+(reset|clearCache|clear|flushCache)\s*\(\s*\)", re.IGNORECASE
 )
 
-BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
-LINE_COMMENT_RE = re.compile(r"//[^\n]*")
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Check an Apex source tree for layering, sharing, and dynamic-factory defects."
@@ -142,12 +138,130 @@ def emit_result(findings: list[str], summary: str) -> int:
     return 1 if normalized else 0
 
 
-def strip_comments(text: str) -> str:
-    """Blank out comments while preserving line numbering."""
-    def blank(match: re.Match) -> str:
-        return re.sub(r"[^\n]", " ", match.group(0))
+def strip_comments_only(src: str) -> str:
+    """Blank `//` and `/* … */` comments to spaces; leave string literal contents intact.
 
-    return LINE_COMMENT_RE.sub(blank, BLOCK_COMMENT_RE.sub(blank, text))
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `src`; newlines in block comments stay newlines.
+    """
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append("'")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(src[i])
+                    out.append(src[i + 1])
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append("'")
+                        out.append("'")
+                        i += 2
+                        continue
+                    out.append("'")
+                    i += 1
+                    break
+                out.append(src[i])
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def strip_comments_and_literals(src: str) -> str:
+    """Blank `//` line comments, `/* … */` block comments, and `'…'` literals to spaces.
+
+    Comments first so a possessive apostrophe inside a comment never opens a string.
+    Same length as `src`; newlines in block comments stay newlines so line numbers stay aligned.
+    """
+    out: list[str] = []
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            j = i
+            while j < n and src[j] != "\n":
+                out.append(" ")
+                j += 1
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            out.append(" ")
+            out.append(" ")
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            if j + 1 < n:
+                out.append(" ")
+                out.append(" ")
+                j += 2
+            elif j < n:
+                out.append("\n" if src[j] == "\n" else " ")
+                j += 1
+            i = j
+            continue
+        if ch == "'":
+            out.append(" ")
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    out.append("\n")
+                    i += 1
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    out.append(" ")
+                    out.append(" ")
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        out.append(" ")
+                        out.append(" ")
+                        i += 2
+                        continue
+                    out.append(" ")
+                    i += 1
+                    break
+                out.append(" ")
+                i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 def line_of(text: str, index: int) -> int:
@@ -377,7 +491,9 @@ def audit_legacy(path: Path, code: str, line_count: int) -> list[str]:
 
 def audit_file(path: Path, cmdt_values: set[str], has_cmdt: bool) -> list[str]:
     raw = path.read_text(encoding="utf-8", errors="ignore")
-    code = strip_comments(raw)
+    code = strip_comments_and_literals(raw)
+    # Type.forName('Literal') needs the literal text; blank comments only for that rule.
+    code_lit = strip_comments_only(raw)
     is_test = TEST_CLASS_RE.search(code) is not None
     line_count = raw.count("\n") + 1
 
@@ -387,7 +503,7 @@ def audit_file(path: Path, cmdt_values: set[str], has_cmdt: bool) -> list[str]:
     findings: list[str] = []
     findings += audit_sharing(path, code)
     findings += audit_query_placement(path, code, is_test)
-    findings += audit_dynamic_factory(path, code, cmdt_values, has_cmdt)
+    findings += audit_dynamic_factory(path, code_lit, cmdt_values, has_cmdt)
     findings += audit_access_modifiers(path, code)
     findings += audit_static_state(path, code, is_test)
     if not is_test:

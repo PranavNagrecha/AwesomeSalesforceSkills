@@ -457,3 +457,13 @@ itself needs an explicit access-level boundary before the `SaveResult` loop has 
 correct to report on. `apex/test-class-standards` Gotcha 15 draws the same
 seed-in-system-mode-act-as-persona line for test fixtures; this gotcha draws it for shipped
 service code.
+
+---
+
+## Checker Ignores Comments And String Literals
+
+**What happens:** The skill checker flags a keyword that appears only in a comment or a string literal (for example a note that `WITH SECURITY_ENFORCED` is not used, or an assertion message that mentions `EventBus.publish`).
+
+**When it occurs:** Before the checker blanked `//` line comments, `/* … */` block comments, and `'…'` string literals to spaces (same length, newlines preserved) for code-pattern rules.
+
+**How to avoid:** Trust the checker on executable code only. Mentions inside comments and string literals are ignored for pattern matches; rules that intentionally read comments (for example a `// reason:` search) still read the original text.

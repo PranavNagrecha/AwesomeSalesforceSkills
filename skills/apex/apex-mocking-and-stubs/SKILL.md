@@ -37,9 +37,9 @@ outputs:
   - "review findings for missing seams or weak test doubles"
   - "test double scaffold for callouts or service collaborators"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-16
 ---
 
 Use this skill when the main problem is not “write more tests” but “make this dependency replaceable in tests.” Apex mocking is split across transport-level mocks like `HttpCalloutMock` and seam-level stubs via `StubProvider`. The right choice depends on what is being replaced and whether the production code already has a clean boundary.
