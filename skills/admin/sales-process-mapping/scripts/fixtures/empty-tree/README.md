@@ -1,0 +1,1 @@
+expected: `--manifest-dir empty-tree` → "Scanned 0 file(s) — nothing asserted; check --manifest-dir", exit 0. No `*.yaml`/`*.yml`/`*.csv` sales-process map and no `standardValueSets/`/`globalValueSets/` OpportunityStage file exist anywhere in the tree, so this must never print "No issues found." — that phrase asserts a clean scan, and this fixture had no scan at all.

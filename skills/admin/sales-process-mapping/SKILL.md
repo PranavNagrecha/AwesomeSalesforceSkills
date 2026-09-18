@@ -45,9 +45,9 @@ outputs:
   - "Machine-readable stage map (YAML or CSV) that scripts/check_sales_process_mapping.py --map lints"
   - "Handoff brief for the opportunity-management skill (stage names, process count, record type needs)"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-09-18
 ---
 
 # Sales Process Mapping

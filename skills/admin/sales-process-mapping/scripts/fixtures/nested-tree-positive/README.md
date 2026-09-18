@@ -1,0 +1,1 @@
+expected: `--manifest-dir nested-tree-positive` → 1 ERROR (forecastCategory `Commit` is not a member of the ForecastCategories enumeration), exit 1. The value set lives one level down at `M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml`, not at the fixture root, to prove the checker scans build-manifest depth, not just root-level files.

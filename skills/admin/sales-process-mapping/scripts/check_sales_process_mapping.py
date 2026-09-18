@@ -17,9 +17,11 @@ Three inputs, any combination:
   --doc    the Markdown mapping document (narrative form).
 
   --manifest-dir
-           a directory. Scans it for *.yaml / *.yml / *.csv sales-process maps
-           (any file with a `stages:` key or a stage-map CSV header row) and
-           for a retrieved OpportunityStage standard value set.
+           a directory. Scans it, at any depth, for *.yaml / *.yml / *.csv
+           sales-process maps (any file with a `stages:` key or a stage-map
+           CSV header row) and for a retrieved OpportunityStage standard
+           value set. A manifest-dir scan that matches zero files prints
+           that plainly instead of a misleading "No issues found."
 
 The Markdown document checks cover:
   - All required sections present in the mapping document
@@ -177,8 +179,9 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=None,
         help=(
-            "Directory to scan: any *.yaml/*.yml/*.csv sales-process map inside it is "
-            "linted, and a retrieved OpportunityStage standard value set is checked."
+            "Directory to scan recursively: any *.yaml/*.yml/*.csv sales-process map "
+            "at any depth inside it is linted, and a retrieved OpportunityStage "
+            "standard value set at any depth is checked."
         ),
     )
     parser.add_argument(
@@ -741,109 +744,122 @@ def discover_stage_maps(root: Path) -> list[Path]:
 # Metadata-level checks
 # ---------------------------------------------------------------------------
 
-def check_stage_metadata(manifest_dir: Path) -> tuple[list[str], list[str]]:
-    """Check deployed OpportunityStage XML metadata for constraint violations.
+# Filename -> required immediate parent directory name. This is the shape the
+# Metadata API retrieves an OpportunityStage value set in; a build step may
+# nest it at any depth under the manifest directory, so the parent-name check
+# is what keeps this from matching an unrelated file with the same name.
+STAGE_METADATA_FILENAMES = {
+    "OpportunityStage.standardValueSet-meta.xml": "standardValueSets",
+    "OpportunityStage.globalValueSet-meta.xml": "globalValueSets",
+}
 
-    Returns (errors, warnings).
+
+def discover_stage_metadata_files(root: Path) -> list[Path]:
+    """Find deployed OpportunityStage value-set metadata anywhere under root.
+
+    Walks the whole tree (a build manifest directory nests each step's
+    metadata under its own step folder) rather than pinning the lookup to
+    root's immediate children.
+    """
+    found: list[Path] = []
+    for filename, parent_name in STAGE_METADATA_FILENAMES.items():
+        for path in root.rglob(filename):
+            if path.is_file() and path.parent.name == parent_name:
+                found.append(path)
+    return sorted(found)
+
+
+def check_stage_metadata(stage_files: list[Path]) -> tuple[list[str], list[str]]:
+    """Check deployed OpportunityStage XML metadata file(s) for constraint violations.
+
+    Returns (errors, warnings). Not finding any file is advisory (the caller
+    decides how to report a manifest-dir scan that matched nothing).
     """
     errors: list[str] = []
     warnings: list[str] = []
 
-    candidate_paths = [
-        manifest_dir / "standardValueSets" / "OpportunityStage.standardValueSet-meta.xml",
-        manifest_dir / "globalValueSets" / "OpportunityStage.globalValueSet-meta.xml",
-    ]
-
-    stage_file: Path | None = None
-    for path in candidate_paths:
-        if path.exists():
-            stage_file = path
-            break
-
-    if stage_file is None:
-        return errors, warnings  # Not finding the file is advisory
-
-    try:
-        tree = ET.parse(stage_file)
-        root = tree.getroot()
-    except ET.ParseError as exc:
-        errors.append(f"Could not parse stage metadata {stage_file}: {exc}")
-        return errors, warnings
-
-    value_tag = (
-        _sf_tag("standardValue")
-        if "standardValueSet" in stage_file.name
-        else _sf_tag("customValue")
-    )
-    all_values = root.findall(f".//{value_tag}")
-    if not all_values:
-        all_values = root.findall(f".//{_sf_tag('standardValue')}") or root.findall(
-            f".//{_sf_tag('customValue')}"
-        )
-
-    active_names: list[str] = []
-    generic_names = {
-        "Stage 1", "Stage 2", "Stage 3", "Stage 4", "Stage 5",
-        "Step 1", "Step 2", "Step 3", "Phase 1", "Phase 2",
-    }
-
-    for el in all_values:
-        label = _find_text(el, "fullName") or _find_text(el, "label")
-        is_active_text = _find_text(el, "isActive")
-        is_active = is_active_text.lower() != "false" if is_active_text else True
-
-        if not is_active or not label:
+    for stage_file in stage_files:
+        try:
+            tree = ET.parse(stage_file)
+            root = tree.getroot()
+        except ET.ParseError as exc:
+            errors.append(f"Could not parse stage metadata {stage_file}: {exc}")
             continue
 
-        active_names.append(label)
-
-        # The XML element is typed as the ForecastCategories enumeration
-        # (api_meta.txt:47578-47585), NOT as ForecastCategoryName. Checking the
-        # XML against the UI labels flags every correct file, so use the tokens.
-        forecast_category = _find_text(el, "forecastCategory")
-        if forecast_category and forecast_category not in METADATA_FORECAST_ENUM:
-            hint = ""
-            for token, ui_label in METADATA_FORECAST_TOKENS.items():
-                if forecast_category == ui_label:
-                    hint = f" Did you mean <forecastCategory>{token}</forecastCategory>?"
-            errors.append(
-                f"Stage '{label}': <forecastCategory>{forecast_category}</forecastCategory> is not "
-                f"a member of the ForecastCategories enumeration. Must be one of: "
-                f"{', '.join(sorted(METADATA_FORECAST_ENUM))}.{hint}"
+        value_tag = (
+            _sf_tag("standardValue")
+            if "standardValueSet" in stage_file.name
+            else _sf_tag("customValue")
+        )
+        all_values = root.findall(f".//{value_tag}")
+        if not all_values:
+            all_values = root.findall(f".//{_sf_tag('standardValue')}") or root.findall(
+                f".//{_sf_tag('customValue')}"
             )
 
-        # <won> is the only won/closed flag documented for the opportunity Stage
-        # picklist: "Indicates whether this value is associated with a closed or
-        # won status ... only relevant for the standard Stage field in
-        # opportunities" (api_meta.txt:47611-47614). <closed> is documented as
-        # relevant only to the case and task Status fields, up to API 36.0
-        # (api_meta.txt:47542-47546), so its absence here is normal and is NOT
-        # an error. Only a file that carries both and contradicts itself is.
-        won_text = _find_text(el, "won").lower()
-        closed_el = el.find(_sf_tag("closed"))
-        if won_text == "true" and closed_el is not None:
-            closed_text = (closed_el.text or "").strip().lower()
-            if closed_text == "false":
+        active_names: list[str] = []
+        generic_names = {
+            "Stage 1", "Stage 2", "Stage 3", "Stage 4", "Stage 5",
+            "Step 1", "Step 2", "Step 3", "Phase 1", "Phase 2",
+        }
+
+        for el in all_values:
+            label = _find_text(el, "fullName") or _find_text(el, "label")
+            is_active_text = _find_text(el, "isActive")
+            is_active = is_active_text.lower() != "false" if is_active_text else True
+
+            if not is_active or not label:
+                continue
+
+            active_names.append(label)
+
+            # The XML element is typed as the ForecastCategories enumeration
+            # (api_meta.txt:47578-47585), NOT as ForecastCategoryName. Checking the
+            # XML against the UI labels flags every correct file, so use the tokens.
+            forecast_category = _find_text(el, "forecastCategory")
+            if forecast_category and forecast_category not in METADATA_FORECAST_ENUM:
+                hint = ""
+                for token, ui_label in METADATA_FORECAST_TOKENS.items():
+                    if forecast_category == ui_label:
+                        hint = f" Did you mean <forecastCategory>{token}</forecastCategory>?"
                 errors.append(
-                    f"Stage '{label}': <won>true</won> with <closed>false</closed>. "
-                    "A won stage cannot be open; remove the <closed> element or set it to true."
+                    f"Stage '{label}': <forecastCategory>{forecast_category}</forecastCategory> is not "
+                    f"a member of the ForecastCategories enumeration. Must be one of: "
+                    f"{', '.join(sorted(METADATA_FORECAST_ENUM))}.{hint}"
                 )
 
-        # Invalid picklist characters
-        if INVALID_PICKLIST_CHARS_PATTERN.search(label):
-            errors.append(
-                f"Stage name '{label}' in deployed metadata contains character(s) "
-                "not valid in Salesforce picklist values."
-            )
+            # <won> is the only won/closed flag documented for the opportunity Stage
+            # picklist: "Indicates whether this value is associated with a closed or
+            # won status ... only relevant for the standard Stage field in
+            # opportunities" (api_meta.txt:47611-47614). <closed> is documented as
+            # relevant only to the case and task Status fields, up to API 36.0
+            # (api_meta.txt:47542-47546), so its absence here is normal and is NOT
+            # an error. Only a file that carries both and contradicts itself is.
+            won_text = _find_text(el, "won").lower()
+            closed_el = el.find(_sf_tag("closed"))
+            if won_text == "true" and closed_el is not None:
+                closed_text = (closed_el.text or "").strip().lower()
+                if closed_text == "false":
+                    errors.append(
+                        f"Stage '{label}': <won>true</won> with <closed>false</closed>. "
+                        "A won stage cannot be open; remove the <closed> element or set it to true."
+                    )
 
-    # Advisory: generic names risk cross-BU collisions
-    generic_found = [n for n in active_names if n in generic_names]
-    if generic_found:
-        warnings.append(
-            f"Generic stage name(s) found in deployed metadata: {', '.join(generic_found)}. "
-            "Generic names risk cross-business-unit collisions in shared orgs. "
-            "Consider prefixing with the business unit or motion name."
-        )
+            # Invalid picklist characters
+            if INVALID_PICKLIST_CHARS_PATTERN.search(label):
+                errors.append(
+                    f"Stage name '{label}' in deployed metadata contains character(s) "
+                    "not valid in Salesforce picklist values."
+                )
+
+        # Advisory: generic names risk cross-BU collisions
+        generic_found = [n for n in active_names if n in generic_names]
+        if generic_found:
+            warnings.append(
+                f"Generic stage name(s) found in deployed metadata: {', '.join(generic_found)}. "
+                "Generic names risk cross-business-unit collisions in shared orgs. "
+                "Consider prefixing with the business unit or motion name."
+            )
 
     return errors, warnings
 
@@ -872,6 +888,11 @@ def main() -> int:
     all_errors: list[str] = []
     all_warnings: list[str] = []
 
+    # Set only when --manifest-dir is given and the directory exists, so the
+    # summary below can tell a manifest-dir scan that matched nothing apart
+    # from a manifest-dir scan that was never requested.
+    manifest_dir_scanned_count: int | None = None
+
     if args.stage_map:
         errors, warnings = check_stage_map(Path(args.stage_map))
         all_errors.extend(errors)
@@ -887,17 +908,24 @@ def main() -> int:
         if not manifest_dir.exists():
             all_errors.append(f"Manifest directory not found: {manifest_dir}")
         else:
-            for map_path in discover_stage_maps(manifest_dir):
+            stage_maps = discover_stage_maps(manifest_dir)
+            for map_path in stage_maps:
                 errors, warnings = check_stage_map(map_path)
                 all_errors.extend(errors)
                 all_warnings.extend(warnings)
 
-            errors, warnings = check_stage_metadata(manifest_dir)
+            stage_metadata_files = discover_stage_metadata_files(manifest_dir)
+            errors, warnings = check_stage_metadata(stage_metadata_files)
             all_errors.extend(errors)
             all_warnings.extend(warnings)
 
+            manifest_dir_scanned_count = len(stage_maps) + len(stage_metadata_files)
+
     if not all_errors and not all_warnings:
-        print("No issues found.")
+        if manifest_dir_scanned_count == 0:
+            print("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
+        else:
+            print("No issues found.")
         return 0
 
     for warning in all_warnings:

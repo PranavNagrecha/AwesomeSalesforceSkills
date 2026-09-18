@@ -1,0 +1,1 @@
+expected: `--manifest-dir nested-tree-negative` → "No issues found.", exit 0. Same nested layout as `nested-tree-positive/` (`M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml`), all forecastCategory values valid, so the checker scans 1 file and asserts nothing wrong.
