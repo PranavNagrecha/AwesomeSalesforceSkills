@@ -24,7 +24,10 @@ for p, e in builders:  # merge open items across every build/repair pass, oldest
         key = item.get("id") if isinstance(item, dict) and item.get("id") else str(item)[:120]
         if key in seen: continue
         seen.add(key); open_items.append(item)
-ext = builder.get("extensions", {}); artefacts = ext.get("artefacts") or []
+ext = builder.get("extensions", {})
+# apex-builder and lwc-builder envelopes list artefacts under other keys (or not at all); the plan's declared
+# outputs are the contract either way, so fall back to them (northwind M3-S03 got 0 rows without this).
+artefacts = ext.get("artefacts") or [o if isinstance(o, str) else o.get("path") for o in (step.get("outputs") or [])]
 checker_lines = []
 for c in ext.get("checker_results") or []:
     if isinstance(c, dict): checker_lines.append(f"`{(c.get('command') or c.get('checker') or '?')[:80]}` exit {c.get('exit_code', c.get('exit','?'))}")
