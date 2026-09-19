@@ -317,14 +317,14 @@ def has_permissioned_runas(text: str) -> bool:
     is the mixed-DML idiom (apexdev L8931-L8942) — it re-enters the *same* user's
     context and grants no permission. `System.runAs(System.Version)` switches the
     managed-package version, not the user (apexdev L41417)."""
-    stripped = strip_literals(text)
+    stripped = strip_literals(strip_comments(text))  # comments first: prose runAs and apostrophes must not count
     self_users = self_user_names(stripped)
     return any(is_permissioned_runas_arg(arg, self_users) for arg in runas_arguments(stripped))
 
 
 def runas_blocks(text: str) -> list[tuple[str, str]]:
     """Return `(arg, body)` for every `System.runAs(...) { ... }` in `text`."""
-    stripped = strip_literals(text)
+    stripped = strip_literals(strip_comments(text))
     blocks: list[tuple[str, str]] = []
     for match in RUNAS_CALL_RE.finditer(stripped):
         depth = 1
@@ -500,14 +500,14 @@ def find_fixture_seeded_as_persona(text: str) -> str | None:
     somewhere. `insertAsSystem(...)` is not keyword DML and never matches. Mentions of
     `Test.startTest()` inside comments do not satisfy the class-level gate.
     """
-    stripped = strip_literals(text)
-    if not START_TEST_RE.search(strip_comments(stripped)):
+    stripped = strip_literals(strip_comments(text))
+    if not START_TEST_RE.search(stripped):
         return None
 
     self_users = self_user_names(stripped)
     scopes = [body for _, _, body in method_bodies(text)] + testsetup_bodies(text)
     for scope in scopes:
-        scope_s = strip_literals(scope)
+        scope_s = strip_literals(strip_comments(scope))
         vars_ = fixture_vars_in(scope_s)
         for arg, body in runas_blocks(scope_s):
             if not is_permissioned_runas_arg(arg, self_users):

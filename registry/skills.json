@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "098992794eefbe7e463b14b7b3faea762796ee765ffb4f5762c3d7290b8b4b71",
+  "generated_from_hash": "7ad60bf3336ce521ee17c1c5f47b86e215efce785b4d3b4db02416be6de9265a",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -80033,6 +80033,7 @@
         "d58a8d99774416f9b159",
         "d7764163d2baa8dc5b43",
         "d88198d89a4a8fcfa7e5",
+        "d8bf3a81001f5ba82f69",
         "d958f569795f27824ceb",
         "d9b8b3b6f13624ae358f",
         "da710c231f01b48fc4e9",
@@ -80046,6 +80047,7 @@
         "e402468ec71d6f21ac80",
         "e42a2cd5984df7ad0eb6",
         "e48120c887ccc0259df6",
+        "e58ff6ac34be9a08ea6b",
         "e8832281f14392235699",
         "e89ab4791eaabfc22148",
         "e8cf99e4642d81fbb0d8",
@@ -80068,7 +80070,7 @@
         "fe8cf1d029d92cbff293",
         "fefdf60b97efe8f9d5ec"
       ],
-      "content_hash": "e374c4fe74d37021ffa31f6cbbb411cc0fcbf229911c3acdcec45020202d11d5",
+      "content_hash": "21611eec4298b59dae85f0648a350d5a978210808a5799ee3a3348e9154820ea",
       "dependencies": [],
       "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for the factory class itself \u2014 use apex/test-data-factory-patterns. NOT for the mock class itself \u2014 use apex/apex-http-callout-mocking.",
       "file_location": "skills/apex/test-class-standards",
@@ -80111,6 +80113,9 @@
       ],
       "scripts": [
         "skills/apex/test-class-standards/scripts/check_test_class_standards.py",
+        "skills/apex/test-class-standards/scripts/fixtures/apostrophes-before-runas/ApostrophesBeforeRunAsTest.cls",
+        "skills/apex/test-class-standards/scripts/fixtures/apostrophes-before-runas/OppService.cls",
+        "skills/apex/test-class-standards/scripts/fixtures/apostrophes-before-runas/README.md",
         "skills/apex/test-class-standards/scripts/fixtures/negative-action-inside-boundary/NegativeActionInsideBoundaryTest.cls",
         "skills/apex/test-class-standards/scripts/fixtures/negative-action-inside-boundary/README.md",
         "skills/apex/test-class-standards/scripts/fixtures/negative-mixed-dml-fence/NegativeMixedDmlFenceTest.cls",
@@ -80122,7 +80127,10 @@
         "skills/apex/test-class-standards/scripts/fixtures/negative-system-mode-seed/TestDataFactory.cls",
         "skills/apex/test-class-standards/scripts/fixtures/positive-plain-insert-in-runas/PositivePlainInsertInRunAsTest.cls",
         "skills/apex/test-class-standards/scripts/fixtures/positive-plain-insert-in-runas/README.md",
-        "skills/apex/test-class-standards/scripts/fixtures/positive-plain-insert-in-runas/TestDataFactory.cls"
+        "skills/apex/test-class-standards/scripts/fixtures/positive-plain-insert-in-runas/TestDataFactory.cls",
+        "skills/apex/test-class-standards/scripts/fixtures/runas-in-comment-only/OppService.cls",
+        "skills/apex/test-class-standards/scripts/fixtures/runas-in-comment-only/README.md",
+        "skills/apex/test-class-standards/scripts/fixtures/runas-in-comment-only/RunAsInCommentOnlyTest.cls"
       ],
       "status": "stable",
       "tags": [
@@ -80135,9 +80143,9 @@
       "templates": [
         "skills/apex/test-class-standards/templates/test-class-standards-template.md"
       ],
-      "updated": "2026-09-16",
+      "updated": "2026-09-19",
       "vector_embedding": null,
-      "version": "1.3.3"
+      "version": "1.3.4"
     },
     {
       "category": "apex",

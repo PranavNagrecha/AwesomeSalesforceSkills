@@ -229,3 +229,11 @@ The permissioned user holds every permission set the persona is meant to hold. T
 **Where this came from:** `case-onboarding` build F-60 follow-on (M5 run 5/6): once the Tier 1 persona's permission sets were reviewed against F-60, the fixture still needed `EntitlementId` populated to exercise milestone logic, and the honest fix was a system-mode seed, not a wider grant. `.sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md` run 5.
 
 **See also:** Gotcha 13 gets the *action* under test into `System.runAs` with a permissioned user; Gotcha 14 stops the factory from volunteering fields nobody asked for; this gotcha draws the line between what the fixture needs to exist and what the persona is allowed to write, and puts each on the correct side of `System.runAs`.
+
+---
+
+## Gotcha 16: The runAs Scan Reads Code, Not Comments — In Both Directions
+
+**What happens:** until 2026-09-19 the checker's `System.runAs` detection (`has_permissioned_runas`, `runas_blocks`, `find_fixture_seeded_as_persona`) blanked string literals on the raw file without blanking comments first. Two failures followed, found by the northwind-sales M3-S03 builder: a `System.runAs(rep)` spelled out in a class header comment satisfied the `user-mode-test-without-runas` ERROR on its own (a false pass), and an odd number of possessive apostrophes in ordinary comments — "the rep's manager's approval" — opened a phantom literal that blanked every real `System.runAs` below it (a false fail: seven real calls measured as zero).
+
+**How to avoid:** comments are now stripped before literals at all four sites, with offsets preserved. Fixtures `runas-in-comment-only/` (1 ERROR expected) and `apostrophes-before-runas/` (0 expected) pin both directions. One honest consequence: a runAs block that apostrophes used to hide is now scanned, so a class may gain a `fixture-seeded-as-persona` WARN it never showed before (tier2-webhook M1-S03 gained one). Do not remove apostrophes from comments to satisfy a checker; if a result surprises you, read the rule.

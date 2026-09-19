@@ -1,0 +1,1 @@
+expected: 0 ERROR — a real permissioned `System.runAs(rep)` follows comments full of possessive apostrophes. (Old checker: ERROR user-mode-test-without-runas, a false fail — the apostrophes blanked the real call.)
