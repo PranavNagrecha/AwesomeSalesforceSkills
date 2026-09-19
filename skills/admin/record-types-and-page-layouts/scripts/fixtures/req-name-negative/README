@@ -1,0 +1,5 @@
+RTL-REQ-02 negative. Name, StageName and CloseDate all Required, Probability
+present -- the exact four-item shape the org accepted in run 4. Expect 0
+findings.
+
+  python3 ../../check_record_type_layouts.py --manifest-dir .

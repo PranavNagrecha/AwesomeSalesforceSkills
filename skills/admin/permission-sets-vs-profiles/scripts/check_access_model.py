@@ -407,6 +407,53 @@ def check_permission_set_holds_profile_only(path: Path, root: ET.Element) -> lis
     return findings
 
 
+def check_profile_record_type_default(path: Path, root: ET.Element) -> list[str]:
+    """Check 9 (PSVP-RT-DEFAULT-01, ERROR) -- visible record types with no default.
+
+    Org-verified 2026-09-19 (sfskills-dev, validate-only deploy at API 62.0,
+    .sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M2.md run 1): a Profile
+    that states recordTypeVisibilities for an object must name exactly one
+    default among the entries it makes visible -- or make every listed entry
+    invisible, which hands the default back to --Master--. A partial profile
+    fragment (the usual output of an agent that wrote the block by hand rather
+    than retrieving and merging the org's) trips this every time.
+
+    Only Profile is checked. PermissionSet.recordTypeVisibilities has no
+    `default` child at all, so the same shape is not an error there.
+    """
+    findings: list[str] = []
+    # object -> {"visible": bool, "default": bool}
+    by_object: dict[str, dict[str, bool]] = {}
+    for node in root:
+        if local_name(node.tag) != "recordTypeVisibilities":
+            continue
+        record_type = child_text(node, "recordType")
+        if not record_type:
+            continue
+        object_name = record_type.split(".", 1)[0]
+        state = by_object.setdefault(object_name, {"visible": False, "default": False})
+        if is_true(node, "visible"):
+            state["visible"] = True
+        if is_true(node, "default"):
+            state["default"] = True
+
+    profile_name = api_name(path)
+    for object_name, state in sorted(by_object.items()):
+        if state["visible"] and not state["default"]:
+            findings.append(
+                f"ERROR {path}: PSVP-RT-DEFAULT-01 profile `{profile_name}` states "
+                f"record-type visibility for {object_name} with no default -- the "
+                f"platform requires one default among the visible types, or every "
+                f'listed type invisible ("No default record type specified for '
+                f"recordTypeVisibility: {object_name}. To make the '--master--' record "
+                f'type the default, set visible on all record types to false.", '
+                f"org-verified 2026-09-19); either name the org's existing default "
+                f"entry (retrieve-and-merge) or drop the block and grant visibility "
+                f"from a permission set"
+            )
+    return findings
+
+
 def check_standard_profile_edited(path: Path, root: ET.Element) -> list[str]:
     """Check 4 -- object-permission edits on a standard (`custom=false`) profile."""
     findings: list[str] = []
@@ -611,6 +658,7 @@ def audit_file(path: Path) -> tuple[list[str], list[str]]:
     if root_type == "Profile":
         findings.extend(check_profile_carries_migratable_grants(path, root))
         findings.extend(check_standard_profile_edited(path, root))
+        findings.extend(check_profile_record_type_default(path, root))
     elif root_type == "PermissionSet":
         findings.extend(check_permission_set_holds_profile_only(path, root))
         findings.extend(check_permission_set_object_grant_without_standard_fls(path, root))

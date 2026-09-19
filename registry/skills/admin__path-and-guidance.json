@@ -30,6 +30,7 @@
     "1b92cc4442555d00b4d8",
     "1d094683836aa9f5fad5",
     "1d24eb197757a91d292c",
+    "1ddce285a41cfab2b719",
     "1e5614bd16c61e391112",
     "20249a87f7cdd66f21d5",
     "2328498ac7cafd183d11",
@@ -77,6 +78,7 @@
     "542a920c8fc62ce4e8e7",
     "550a201b4be79eace808",
     "56f094cc1996ea9d2c10",
+    "58d7b169af579ce91c0b",
     "58dea5ad2c918a009b10",
     "58fe931f4e95250fe2ba",
     "59c52dfb01fb3c5ee46b",
@@ -210,7 +212,7 @@
     "fe3d600d96dd3cd1507e",
     "ff77d70cec03c441b159"
   ],
-  "content_hash": "76941e7eb08e53a2a7369066a5277fa77c2f11bf0d0317bcbf025b3776a107f2",
+  "content_hash": "f396c4a8cfb702868a0ee164d6129451b8e40e93a7870981f8295646b431b671",
   "dependencies": [],
   "description": "Use when setting up, customizing, or troubleshooting the Salesforce Path component on Opportunity, Lead, Case, or custom objects. Triggers: 'add guidance to stages', 'key fields on path', 'celebrate closed won', 'path not showing', 'configure path steps', 'confetti on stage change'. NOT for creating the stage picklist \u2014 use admin/opportunity-management. NOT for in-app prompts \u2014 use admin/in-app-guidance-and-walkthroughs. Metadata: PathAssistant, PathAssistantStep, PathAssistantSettings, pathAssistantEnabled, canOverrideAutoPathCollapseWithUserPref, runtime_sales_pathassistant:pathAssistant, picklistValueName, recordTypeName, BusinessProcess.",
   "file_location": "skills/admin/path-and-guidance",
@@ -248,7 +250,8 @@
     "skills/admin/path-and-guidance/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py"
+    "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py",
+    "skills/admin/path-and-guidance/scripts/fixtures/empty-tree/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -263,7 +266,7 @@
   "templates": [
     "skills/admin/path-and-guidance/templates/path-and-guidance-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-09-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.2"
 }

@@ -1,0 +1,7 @@
+OM-BP-DEFAULT-01 negative. The same Opportunity process with the <default>
+removed, plus a Case business process that DOES carry a default: the org
+message names Opportunity, and Case/Lead/Solution were never put to the org,
+so OM-BP-DEFAULT-01 must stay silent on them. Expect 0 OM-BP-DEFAULT-01
+findings.
+
+  python3 ../../check_opportunity_management.py --manifest-dir .

@@ -1,0 +1,6 @@
+RTL-REQ-02, CloseDate arm. CloseDate is behavior=Edit. Expect 1 INFO carrying
+UNVERIFIED (2026-09-18), NOT a HIGH: run 4 proves the four-item set is
+accepted, not that CloseDate is required -- the platform reports one required
+field per run and never named CloseDate. Exit 0.
+
+  python3 ../../check_record_type_layouts.py --manifest-dir .

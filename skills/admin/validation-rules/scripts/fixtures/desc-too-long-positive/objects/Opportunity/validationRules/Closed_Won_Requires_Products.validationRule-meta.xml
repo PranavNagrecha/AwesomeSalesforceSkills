@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Closed_Won_Requires_Products</fullName>
+    <active>true</active>
+    <description>Blocks Closed Won when the Opportunity carries no line items, so revenue reporting never sees a won deal with no products. Blocks Closed Won when the Opportunity carries no line items, so revenue reporting never sees a won deal with no products. Blocks Closed Won when the Opportunity carries no line</description>
+    <errorConditionFormula>AND(ISPICKVAL(StageName, &quot;Closed Won&quot;), NOT(HasOpportunityLineItem))</errorConditionFormula>
+    <errorDisplayField>StageName</errorDisplayField>
+    <errorMessage>Add at least one product before moving this Opportunity to Closed Won.</errorMessage>
+</ValidationRule>

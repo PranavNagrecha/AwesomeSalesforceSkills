@@ -206,3 +206,23 @@ Root cause, concretely, from the `case-onboarding` build (F-60, M5 run 5 mock-de
 - The gap survives object-CRUD review, PSG composition review, and a compile-only or metadata-only deploy validation. It only surfaces when something inserts a record **as the persona** — which is precisely why Apex tests must run inside `System.runAs` of a user holding the shipped permission sets (see `skills/apex/test-class-standards/references/gotchas.md` Gotcha 13), and why a validate-only deploy with `runTestsEnabled: false` proves nothing about field-level access.
 
 **Where this came from:** `case-onboarding` build, F-60 (HIGH, design — "the most consequential finding of this build" per the mock-deploy log), `.sfskills/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md` run 5.
+
+---
+
+## A Profile That Makes Record Types Visible And Names No Default Fails The Deploy
+
+**What happens:** a profile fragment is written by hand (or generated) with one `recordTypeVisibilities` entry per new record type, each `visible=true`, and no `default` anywhere. The deploy comes back:
+
+> No default record type specified for recordTypeVisibility: Opportunity. To make the '--master--' record type the default, set visible on all record types to false.
+
+Org-verified 2026-09-19 against `sfskills-dev` (validate-only deploy at API 62.0, `.sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M2.md` run 1, `Profile Sales User`).
+
+**When it bites you:** exactly when someone writes the block instead of retrieving it. The org's existing profile already names a default — often `--Master--`, often a record type that is not in your package at all — and a hand-written fragment silently drops it. The platform will not merge: the `recordTypeVisibilities` block you deploy is the whole story for that object.
+
+**How to avoid it:**
+- Retrieve the target profile first and merge into it, so the existing default survives.
+- Or name a default yourself: exactly one `<default>true</default>` among the entries you make visible.
+- Or make every listed entry `visible=false`, which hands the default back to `--Master--` — the second half of the org's own message.
+- Or, better, do not put record-type visibility on the profile at all. Grant it from a permission set, where the element has no `default` child and this failure mode does not exist.
+- `scripts/check_access_model.py` catches it as `PSVP-RT-DEFAULT-01` (ERROR, exit 1), per object, on `.profile-meta.xml` only. Fixtures: `scripts/fixtures/rt-default-positive/`, `scripts/fixtures/rt-default-negative/`.
+

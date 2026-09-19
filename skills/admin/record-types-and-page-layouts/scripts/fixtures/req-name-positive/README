@@ -1,0 +1,5 @@
+RTL-REQ-02 positive. Opportunity layout whose Name item is behavior=Edit.
+Expect 1 HIGH. Org-verified 2026-09-18: "Field:Name must be Required"
+(northwind-sales MOCK-DEPLOY-M1.md run 2; run 3 gave the same for StageName).
+
+  python3 ../../check_record_type_layouts.py --manifest-dir .

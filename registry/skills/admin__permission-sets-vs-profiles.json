@@ -93,6 +93,7 @@
     "75edc70624e1924c928c",
     "76c6354ad098536128b2",
     "793ec367bf6491e696a0",
+    "7d1ef5c5575d9c49796a",
     "7e5969a4f761e9faa832",
     "7ea6807d1df1c6954dc5",
     "7ef101ff5916495ec75d",
@@ -101,6 +102,7 @@
     "834417a0789a3726860e",
     "86adcdffadbbbd11b410",
     "86ecc7a668564d5431f8",
+    "8801a9f8e4043e67dc54",
     "8874425ca6ce7442af93",
     "8992b92de62a017c8e80",
     "89c27c36359b4d673488",
@@ -119,6 +121,7 @@
     "9cb7fc4d393861cb0354",
     "9d526027e43ec540a2e9",
     "9d5a25b66e2145cd051e",
+    "9fe23a023aac0d43fecd",
     "a006fa5a51ff4d5bef83",
     "a190bcf682804717f020",
     "a3b890e86429fc22bf65",
@@ -159,6 +162,7 @@
     "c3f828e28a693ca79f2f",
     "c499ca9a0a4ee0c099c1",
     "c4f596d50d107832701f",
+    "c5d38433ac6b3e84e3b6",
     "c70a02dee0162bbfc449",
     "c7f07177a96b78d7f837",
     "c871f3e7fc7a25d4f6e5",
@@ -184,6 +188,7 @@
     "e5f14c3dd3b55d607c7d",
     "e647335b15d8696c3545",
     "e6af6caae9540ceeba62",
+    "ea254d19ff596c159dfd",
     "ea69d628fd175a35a0f4",
     "ebb887f0a17eb1b11933",
     "ed0e9400aed1aff8b45f",
@@ -196,7 +201,7 @@
     "f97bf6ffb1aa03e59d6a",
     "fae908b2fc5b22968f67"
   ],
-  "content_hash": "76c5e8e96aa54f2f010ff32ede7d115ca920518d18d332e17a53d77697090ad2",
+  "content_hash": "6b833aeaba716365b8ba1964eebc496b979ac9dc9aa4db84cc8804c380ea99f3",
   "dependencies": [],
   "description": "Use when designing or auditing Salesforce access control \u2014 deciding between Profiles, Permission Sets, and Permission Set Groups. Triggers: 'user can't see field', 'too many profiles', 'permission model', 'least privilege', 'profile migration', 'what stays on the profile', 'profile only settings', 'login hours permission set', 'layout assignment permission set', 'IsOwnedByProfile', 'profile retrieve empty'. NOT for sharing rules or record-level access \u2014 use admin/sharing-and-visibility for that.",
   "file_location": "skills/admin/permission-sets-vs-profiles",
@@ -231,7 +236,12 @@
     "skills/admin/permission-sets-vs-profiles/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py"
+    "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+    "skills/admin/permission-sets-vs-profiles/scripts/fixtures/rt-default-negative/README",
+    "skills/admin/permission-sets-vs-profiles/scripts/fixtures/rt-default-negative/profiles/Layouts_Only.profile-meta.xml",
+    "skills/admin/permission-sets-vs-profiles/scripts/fixtures/rt-default-negative/profiles/Sales_User.profile-meta.xml",
+    "skills/admin/permission-sets-vs-profiles/scripts/fixtures/rt-default-positive/README",
+    "skills/admin/permission-sets-vs-profiles/scripts/fixtures/rt-default-positive/profiles/Sales_User.profile-meta.xml"
   ],
   "status": "stable",
   "tags": [
@@ -244,7 +254,7 @@
   "templates": [
     "skills/admin/permission-sets-vs-profiles/templates/permission-set-design-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-09-19",
   "vector_embedding": null,
-  "version": "1.2.3"
+  "version": "1.2.4"
 }

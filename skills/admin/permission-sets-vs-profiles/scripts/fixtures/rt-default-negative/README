@@ -1,0 +1,8 @@
+PSVP-RT-DEFAULT-01 negative. Two files:
+  Sales_User.profile-meta.xml  - one of the two visible types carries
+                                 <default>true</default>.
+  Layouts_Only.profile-meta.xml - layoutAssignments only, no
+                                 recordTypeVisibilities block at all.
+Expect 0 PSVP-RT-DEFAULT-01 findings from either.
+
+  python3 ../../check_access_model.py --manifest-dir .

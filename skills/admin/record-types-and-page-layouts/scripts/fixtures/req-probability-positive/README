@@ -1,0 +1,6 @@
+RTL-REQ-01 positive. One Opportunity layout with no Probability layout item.
+Expect 1 HIGH. Org-verified 2026-09-18: "Layout must contain an item for
+required layout field: Probability" (sfskills-dev, validate-only deploy at API
+62.0, .sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md run 1).
+
+  python3 ../../check_record_type_layouts.py --manifest-dir .

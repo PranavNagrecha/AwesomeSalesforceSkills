@@ -18,6 +18,7 @@
     "12b8fe286d9c6faa71ea",
     "16f7b8ed98ac67a89b70",
     "17fffcd412bba0602bcb",
+    "1883631dcce50eb4d678",
     "1a2dfe60a58ad34372cb",
     "1b4b4ccd417df6396432",
     "1ba24f1e847fb99bd4b2",
@@ -27,6 +28,7 @@
     "1f4f150cd51a68eaba98",
     "2251519136b8f71e9bce",
     "22c6d844a7687a194921",
+    "231799a70175dc64b66f",
     "2468004254d674e31160",
     "24babac9efc79ec4c9c4",
     "26f7eefd59407eb976b3",
@@ -90,10 +92,12 @@
     "759df0f54d7ec978702d",
     "7648432b323e32485259",
     "769f51b0b408e44ef915",
+    "76ba185674c2cd24e870",
     "7a9ac959b9deb222d897",
     "7b84f1f56ddb6d6985f4",
     "7cfbd03ee18d6bcc4016",
     "7d04074d86faac0c9994",
+    "7e58aaf2d9d2e5ba07f0",
     "7ede6a365da1293f7231",
     "7f51b6ebb014830f7112",
     "80b85ba1e2929b786c42",
@@ -140,6 +144,7 @@
     "c404905847de94e9f395",
     "c4e9a4d05697fc52a73c",
     "c58bf9e70b1061242d31",
+    "c78eff1d6ce2cefcb622",
     "c879d71e9bdff4a66b86",
     "c8b6643ce18c242c272f",
     "cae38d398a744c0021ec",
@@ -184,7 +189,7 @@
     "fd0bb56071a2af3192e4",
     "fedd94002cc1a428b0de"
   ],
-  "content_hash": "409aaee968ca6229c4fcb792f1da18f9a9ea6bcd1ab9e9ec385399e800a07e1a",
+  "content_hash": "e41cbd53875085caa77a23b3d10bdca900fd60c1dfca73028b29d6f5764dc31d",
   "dependencies": [],
   "description": "Configuring Salesforce opportunity management: sales stages, sales processes, opportunity record types, Path configuration, opportunity teams, opportunity splits, and forecasting categories. Use when setting up or restructuring the opportunity lifecycle for Sales Cloud. NOT for forecast types, rollup methods, quotas or manager adjustments \u2014 use admin/collaborative-forecasts. NOT for agreeing what the stages and exit criteria should be before any build \u2014 use admin/sales-process-mapping. NOT for CPQ pricing or product configuration. Keywords: BusinessProcess, sales process, OpportunityStage, ForecastCategoryName, PathAssistant, OpportunitySplit, OpportunitySplitType, OpportunityTeamMember, Opportunity.settings, enableOpportunityTeam, IsClosed, IsWon, IsPrivate.",
   "file_location": "skills/admin/opportunity-management",
@@ -228,7 +233,12 @@
     "skills/admin/opportunity-management/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/opportunity-management/scripts/check_opportunity_management.py"
+    "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+    "skills/admin/opportunity-management/scripts/fixtures/bp-default-negative/README",
+    "skills/admin/opportunity-management/scripts/fixtures/bp-default-negative/objects/Case/businessProcesses/Support_Process.businessProcess-meta.xml",
+    "skills/admin/opportunity-management/scripts/fixtures/bp-default-negative/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml",
+    "skills/admin/opportunity-management/scripts/fixtures/bp-default-positive/README",
+    "skills/admin/opportunity-management/scripts/fixtures/bp-default-positive/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml"
   ],
   "status": "stable",
   "tags": [
@@ -247,7 +257,7 @@
   "templates": [
     "skills/admin/opportunity-management/templates/opportunity-management-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-09-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

@@ -1,0 +1,7 @@
+OM-BP-DEFAULT-01 positive. One Opportunity business process whose opening
+<values> entry carries <default>true</default>. Expect 1 ERROR naming
+'Qualification'. Org-verified 2026-09-18: "Cannot specify a default on:
+Opportunity" (sfskills-dev, validate-only deploy at API 62.0,
+.sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md run 1).
+
+  python3 ../../check_opportunity_management.py --manifest-dir .

@@ -213,6 +213,7 @@ class Rule:
     error_message: str
     error_display_field: str
     has_error_message_element: bool
+    description: str = ""
 
 
 def read_rule(element: ET.Element, fallback_name: str) -> Rule:
@@ -223,6 +224,7 @@ def read_rule(element: ET.Element, fallback_name: str) -> Rule:
         error_message=child_text(element, "errorMessage"),
         error_display_field=child_text(element, "errorDisplayField"),
         has_error_message_element=has_child(element, "errorMessage"),
+        description=child_text(element, "description"),
     )
 
 
@@ -480,6 +482,11 @@ def audit_rule_references(
 # Metadata API Developer Guide, ValidationRule: "The message must be 255
 # characters or less."
 ERROR_MESSAGE_MAX = 255
+# VR-DESC-01. Same 255 ceiling on the other free-text element. Org-verified
+# 2026-09-19 (sfskills-dev, validate-only deploy at API 62.0, northwind-sales
+# M2 run 1): "Validation rule description cannot be longer than 255 characters
+# long." description and errorMessage are capped independently.
+DESCRIPTION_MAX = 255
 
 
 def audit_rule(path: Path, rule: Rule) -> list[str]:
@@ -498,6 +505,16 @@ def audit_rule(path: Path, rule: Rule) -> list[str]:
     elif not rule.has_error_message_element:
         findings.append(
             f"HIGH {path}::{name}: no errorMessage element; the deploy will be rejected"
+        )
+
+    # --- VR-DESC-01: description is capped at 255 too ------------------------
+    if len(rule.description) > DESCRIPTION_MAX:
+        findings.append(
+            f"HIGH {path}::{name}: VR-DESC-01 description is {len(rule.description)} "
+            f"characters; the platform cap is {DESCRIPTION_MAX} and the deploy is "
+            f"rejected with 'Validation rule description cannot be longer than "
+            f"{DESCRIPTION_MAX} characters long.' (org-verified 2026-09-19). "
+            f"description and errorMessage are capped independently"
         )
 
     if len(message) > ERROR_MESSAGE_MAX:

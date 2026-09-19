@@ -66,6 +66,7 @@
     "656313d36c108adcffab",
     "68544aedb2dc3a400358",
     "690aeaf1e79e3c5917c4",
+    "6ccf51cc4ff3fc180b3d",
     "6f2d09296cccb630cc45",
     "6f5d6c2f3c6ff7b10e53",
     "6fe0772bc5069bb4adf1",
@@ -158,7 +159,7 @@
     "f7d7441c78c52d2c468d",
     "fe8c81f125c005a1d895"
   ],
-  "content_hash": "beba58c7e753b250654061b31756dc57b02408d34f7e1a8bbda52162db33e6db",
+  "content_hash": "06286a7fb3997671d044879090c4b4b49c4b2671cb3422dc88b41611ccd1ed82",
   "dependencies": [],
   "description": "Use when creating, assigning, or checking custom permissions to control feature access beyond CRUD and FLS. Trigger keywords: 'custom permission', 'FeatureManagement.checkPermission', '$Permission global variable', 'feature gate', 'named access grant', 'beta feature flag', 'SetupEntityAccess', 'requiredPermission', 'who has this custom permission'. NOT for gating Apex service code and its tests \u2014 use apex/apex-custom-permissions-check. NOT for permission set design \u2014 use admin/permission-set-architecture.",
   "file_location": "skills/admin/custom-permissions",
@@ -195,7 +196,8 @@
     "skills/admin/custom-permissions/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/custom-permissions/scripts/check_custom_permissions.py"
+    "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+    "skills/admin/custom-permissions/scripts/fixtures/empty-tree/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -208,7 +210,7 @@
   "templates": [
     "skills/admin/custom-permissions/templates/custom-permissions-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-09-19",
   "vector_embedding": null,
-  "version": "1.2.1"
+  "version": "1.2.2"
 }

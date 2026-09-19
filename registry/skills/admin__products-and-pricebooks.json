@@ -3,6 +3,7 @@
   "chunk_ids": [
     "006b6a0a61b1103fb283",
     "019e3a7953507d42289e",
+    "0eeda9c84af3f087808f",
     "1094f85cbf61a35ed817",
     "114b5623f93c561cd57b",
     "13a8dadf6e899f980138",
@@ -38,6 +39,7 @@
     "66794384e31aae31a04e",
     "6752afcdbcf7e9e929a4",
     "675564f44189b3ef7878",
+    "6dcd23bfbfe7109d45f4",
     "6fe3bc970359ef91c3ad",
     "7283412714564a415bcf",
     "73ca5fda3d6049f4b756",
@@ -82,6 +84,7 @@
     "ccdb82b7a45922a53a8b",
     "d18df0f6407bfecea8af",
     "d2e91f5ae35ed5f99bbf",
+    "d5a6b0c6275eedf0d87c",
     "d837cc78dab6b0d6d96a",
     "dbbdec2d3c46f8670ee2",
     "e0841d6b181ccd1c9c1f",
@@ -100,7 +103,7 @@
     "fea005c622a9f121bc60",
     "ffb54494810b2bca924e"
   ],
-  "content_hash": "2cffd38888cfab1d9e2601b2e7a2b2eace7186eb64de40e87279ba7437b5007c",
+  "content_hash": "3b358791a1c1d36935692f8a9b58df3d48d564b467e6e3b7fc07fb1e146bfed3",
   "dependencies": [],
   "description": "Use when configuring the Salesforce product catalog and pricing structure: creating Product2 records, setting up Standard and custom Pricebooks, managing PricebookEntry junction records, enabling multi-currency pricing, configuring Product Schedules (Revenue and Quantity), or troubleshooting incorrect prices on Opportunity line items and Quotes. Triggers: 'add product to pricebook', 'pricebook entry', 'standard pricebook', 'product catalog', 'multi-currency product pricing', 'product schedule', 'revenue schedule', 'quantity schedule', 'deactivate product'. NOT for bulk catalog loads \u2014 use data/product-catalog-data-model. NOT for CPQ bundles and product rules \u2014 use admin/cpq-product-catalog-setup.",
   "file_location": "skills/admin/products-and-pricebooks",
@@ -138,7 +141,8 @@
     "skills/admin/products-and-pricebooks/references/well-architected.md"
   ],
   "scripts": [
-    "skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py"
+    "skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py",
+    "skills/admin/products-and-pricebooks/scripts/fixtures/empty-tree/README.md"
   ],
   "status": "stable",
   "tags": [
@@ -154,7 +158,7 @@
   "templates": [
     "skills/admin/products-and-pricebooks/templates/products-and-pricebooks-template.md"
   ],
-  "updated": "2026-09-15",
+  "updated": "2026-09-19",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

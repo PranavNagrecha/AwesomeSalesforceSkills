@@ -136,6 +136,21 @@ CASE_LAYOUT_REQUIRED_ITEMS = ("ContactId", "Description", "SuppliedEmail")
 CASE_LAYOUT_REQUIRED_BEHAVIOR = "Required"
 CASE_LAYOUT_REQUIRED_BEHAVIOR_FIELD = "Status"
 
+# RTL-REQ-01 / RTL-REQ-02. Verified by `sf project deploy start --dry-run` against
+# sfskills-dev at API 62.0 on 2026-09-18
+# (.sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md, runs 1-4). Run 1 gave
+# "Layout must contain an item for required layout field: Probability"; run 2, once
+# Probability was present, gave "Field:Name must be Required"; run 3 gave the same for
+# StageName. CloseDate went Required in the same pass as StageName and the org never
+# named it -- run 4 succeeded, which proves the four-item set is ACCEPTED, not that
+# CloseDate is required. Opportunity only; do not extend to another object without a
+# dry run.
+OPPORTUNITY_LAYOUT_REQUIRED_ITEM = "Probability"
+OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR = "Required"
+OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR_FIELDS = ("Name", "StageName")
+# Accepted as Required, never demanded by the org. INFO + UNVERIFIED, not HIGH.
+OPPORTUNITY_LAYOUT_UNVERIFIED_BEHAVIOR_FIELD = "CloseDate"
+
 # RL-REQ-03 heuristic only. The per-object required set is UNVERIFIED (2026-09-09),
 # so this is a "does the layout carry any identifying field at all" smoke test
 # rather than a claim about what a given object requires.
@@ -434,7 +449,43 @@ def run_checks(model: Model, require_assignment: bool = False) -> list[str]:
                     f"{CASE_LAYOUT_REQUIRED_BEHAVIOR}'. This one is not the layout-vs-field "
                     f"enforcement choice; it is a deploy precondition"
                 )
-        elif not obj.endswith("__c"):
+        if obj == "Opportunity":
+            # RTL-REQ-01 -- Probability must be on the layout at all.
+            if OPPORTUNITY_LAYOUT_REQUIRED_ITEM not in behaviors:
+                findings.append(
+                    f"HIGH {path}: RTL-REQ-01 Opportunity layout '{dev_name}' has no "
+                    f"layout item for {OPPORTUNITY_LAYOUT_REQUIRED_ITEM} - the platform "
+                    f"requires it on every Opportunity layout (\"Layout must contain an "
+                    f"item for required layout field: {OPPORTUNITY_LAYOUT_REQUIRED_ITEM}\", "
+                    f"org-verified 2026-09-18)"
+                )
+            # RTL-REQ-02 -- Name and StageName, when present, must be Required.
+            for field in OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR_FIELDS:
+                behavior = behaviors.get(field)
+                if behavior is None or behavior == OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR:
+                    continue
+                findings.append(
+                    f"HIGH {path}: RTL-REQ-02 Opportunity layout '{dev_name}' has "
+                    f"{field} with behavior {behavior or 'unset'} - the platform requires "
+                    f"{field} to be {OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR} "
+                    f"(\"Field:{field} must be {OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR}\", "
+                    f"org-verified 2026-09-18)"
+                )
+            close_behavior = behaviors.get(OPPORTUNITY_LAYOUT_UNVERIFIED_BEHAVIOR_FIELD)
+            if (
+                close_behavior is not None
+                and close_behavior != OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR
+            ):
+                findings.append(
+                    f"INFO {path}: RTL-REQ-02 Opportunity layout '{dev_name}' has "
+                    f"{OPPORTUNITY_LAYOUT_UNVERIFIED_BEHAVIOR_FIELD} as "
+                    f"{close_behavior or 'unset'} - UNVERIFIED (2026-09-18): the org has "
+                    f"not judged {OPPORTUNITY_LAYOUT_UNVERIFIED_BEHAVIOR_FIELD}; "
+                    f"{OPPORTUNITY_LAYOUT_REQUIRED_BEHAVIOR} is known to be accepted"
+                )
+
+        # RL-REQ-03 keeps its original scope: standard objects other than Case.
+        if obj != "Case" and not obj.endswith("__c"):
             if not any(field in behaviors for field in NAME_LIKE_FIELDS):
                 findings.append(
                     f"ADVISORY {path}: RL-REQ-03 standard-object layout '{dev_name}' carries "

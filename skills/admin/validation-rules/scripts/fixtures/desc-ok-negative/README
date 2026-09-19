@@ -1,0 +1,4 @@
+VR-DESC-01 negative. The same rule with a 200-character description.
+Expect 0 VR-DESC-01 findings.
+
+  python3 ../../check_validation_rules.py --manifest-dir .

@@ -339,7 +339,13 @@ by the sources this library carries:
 | Apex Developer Guide, Trigger and Order of Execution Considerations (cited in `references/well-architected.md`, and the basis of the line-item gotcha above) | Validation rules don't fire for an opportunity when you modify an opportunity product, even if the opportunity product changes the opportunity |
 | Object Reference, Opportunity → Usage (`knowledge/imports/salesforce-channel-revenue-management.md:4299-4302`) | "On opportunities and opportunity products, the workflow rules, validation rules, and Apex triggers fire when an update to a child opportunity product or schedule causes an update to the parent record" |
 
-> UNVERIFIED (2026-09-15): these two official sources are in direct conflict and no probe in
+> org-verified 2026-09-19 (checkOnly compile; re-firing after a line-item deletion remains
+> UNVERIFIED — a checkOnly deploy exercises no deletion). What the org settled on 2026-09-19 is
+> narrower than the conflict below: northwind-sales M2 dry run 1
+> (2026-09-19T14:56Z, `.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/`)
+> compiled a formula reading `HasOpportunityLineItem` with only a description-length error, so
+> the field is addressable in validation-rule formula context. The deletion question is
+> untouched: these two official sources are still in direct conflict and no probe in
 > this repo has settled it. Treat the rule as enforcing the **forward** gate only (you cannot
 > move the stage forward without products) and do **not** promise the requester that it prevents
 > a deal from ending up at `Propose` with zero products after a deletion. If that invariant is
@@ -361,3 +367,20 @@ by the sources this library carries:
 - Before activating, list the deals the rule would block using the field's own filterability —
   it is reportable, which is why `admin/pipeline-review-design` already recommends it as a
   column.
+
+---
+
+## Gotcha 17: `description` Is Capped at 255 Characters Too, Independently of `errorMessage`
+
+**What happens:** the rule's `errorMessage` is carefully kept short and actionable, and the `description` is written as the full rationale — owner, bypass, the story behind the gate. The deploy comes back:
+
+> Validation rule description cannot be longer than 255 characters long.
+
+Org-verified 2026-09-19 against `sfskills-dev` (validate-only deploy at API 62.0, `.sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M2.md` run 1).
+
+**When it bites you:** on any rule whose description carries the documentation this skill asks for (owner, bypass permission, why the gate exists). The two caps are independent — a 40-character `errorMessage` buys no headroom for a 300-character `description`, and the platform checks the description whether the rule is active or not.
+
+**How to avoid it:**
+- Keep the description under 255 characters: owner, bypass name, one clause of rationale. The long-form rationale belongs in the build's workbook or an ADR, not in the metadata element.
+- `scripts/check_validation_rules.py` catches it as `VR-DESC-01` (HIGH, exit 1) and prints the actual length. Fixtures: `scripts/fixtures/desc-too-long-positive/` (300 characters), `scripts/fixtures/desc-ok-negative/` (200).
+

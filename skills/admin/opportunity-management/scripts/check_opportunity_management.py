@@ -213,13 +213,32 @@ def collect_stages(manifest_dir: Path, findings: list[Finding]) -> dict[str, dic
     return stages
 
 
+def _default_values(element: ET.Element) -> list[str]:
+    """fullNames of <values> entries carrying <default>true</default>.
+
+    OM-BP-DEFAULT-01. Opportunity is the only object the org has judged; see
+    check_business_processes.
+    """
+    defaults: list[str] = []
+    for value in element.findall(_tag("values")):
+        if _bool(value, "default", False):
+            defaults.append(_text(value, "fullName") or "(unnamed value)")
+    return defaults
+
+
 def collect_business_processes(
     manifest_dir: Path, findings: list[Finding]
 ) -> dict[str, dict]:
     """Return {process fullName: {'values':[str], 'active':bool, 'source':str}}."""
     processes: dict[str, dict] = {}
 
-    def add(name: str, values: list[str], active: bool, source: str) -> None:
+    def add(
+        name: str,
+        values: list[str],
+        active: bool,
+        source: str,
+        defaults: list[str] | None = None,
+    ) -> None:
         if not name:
             return
         if name in processes:
@@ -233,7 +252,12 @@ def collect_business_processes(
                 )
             )
             return
-        processes[name] = {"values": values, "active": active, "source": source}
+        processes[name] = {
+            "values": values,
+            "active": active,
+            "source": source,
+            "defaults": list(defaults or []),
+        }
 
     def read_element(element: ET.Element, source: str) -> None:
         values = [
@@ -241,7 +265,14 @@ def collect_business_processes(
             for v in element.findall(_tag("values"))
             if _text(v, "fullName")
         ]
-        add(_text(element, "fullName"), values, _bool(element, "isActive", True), source)
+        defaults = _default_values(element)
+        add(
+            _text(element, "fullName"),
+            values,
+            _bool(element, "isActive", True),
+            source,
+            defaults,
+        )
 
     # DX decomposed form
     bp_dir = manifest_dir / "objects" / "Opportunity" / "businessProcesses"
@@ -259,7 +290,13 @@ def collect_business_processes(
             name = _text(root, "fullName") or bp_file.name.split(
                 ".businessProcess-meta.xml"
             )[0]
-            add(name, values, _bool(root, "isActive", True), bp_file.name)
+            add(
+                name,
+                values,
+                _bool(root, "isActive", True),
+                bp_file.name,
+                _default_values(root),
+            )
 
     # MDAPI nested form
     for obj_file in _object_files(manifest_dir):
@@ -431,6 +468,23 @@ def check_business_processes(
 ) -> None:
     for name, process in sorted(processes.items()):
         source = process["source"]
+
+        # OM-BP-DEFAULT-01. Org-verified 2026-09-18 (sfskills-dev, validate-only
+        # deploy at API 62.0, northwind-sales M1 run 1). Opportunity only: the
+        # platform message names the object, and Lead/Case/Solution processes
+        # were never put to the org.
+        for value in process["defaults"]:
+            findings.append(
+                Finding(
+                    ERROR,
+                    source,
+                    f"Opportunity business process '{name}' sets "
+                    f"<default>true</default> on '{value}' -- the platform refuses a "
+                    'default on Opportunity business processes ("Cannot specify a '
+                    'default on: Opportunity", org-verified 2026-09-18); remove the '
+                    "element; the stage a new Opportunity opens at is not set here.",
+                )
+            )
 
         if not process["values"]:
             findings.append(

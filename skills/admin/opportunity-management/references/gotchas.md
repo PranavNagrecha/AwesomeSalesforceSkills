@@ -221,3 +221,24 @@ The UI behaves differently: "performing this same action in the user interface a
 1. Pair every bulk owner change with a follow-up pass over `OpportunityTeamMember` for the departing owners, and delete the rows that should not persist.
 2. Note that `OpportunityTeamMember` deletion does not go to the Recycle Bin: "An `OpportunityTeamMember` that is deleted isn't moved to the Recycle Bin and can't be undeleted, unless the record was cascade-deleted when deleting a related Opportunity. For directly deleted `OpportunityTeamMember` records, don't use the `isDeleted` field to detect deleted records in SOQL queries. Instead, use `getDeleted()`" (object_reference.txt:195669–195671, 195683). Get the list right before you run it.
 3. Do not validate an API-driven ownership change by performing it once in the UI — the two paths have different documented behaviour.
+
+---
+
+## Gotcha 17: A `<default>` Inside an Opportunity Business Process Fails the Deploy
+
+**What happens:** The business process is authored the way every other picklist-bearing element is authored — the first stage gets `<default>true</default>`, the rest get `<default>false</default>` — and the deploy comes back:
+
+> Cannot specify a default on: Opportunity
+
+Org-verified 2026-09-18 against `sfskills-dev` (validate-only deploy at API 62.0, `.sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md` run 1, `BusinessProcess Opportunity.Enterprise_Sales_Process`).
+
+**When it bites you:** On the first deploy of any hand-written or generated Opportunity business process. The `BusinessProcess` entry in the Metadata API guide does not carry the restriction, and the `values` element is a `PicklistValue`, which *does* have a `default` child — so the shape parses, validates locally, and is refused by the platform. The element is also what almost every worked example on the internet shows.
+
+**Why the platform is right:** a business process says *which* stages a record type exposes and in what order. Which stage a new record opens at is a property of the record type's `picklistValues` entry for `StageName`, not of the process. Two different elements, one of which the org accepts.
+
+**How to avoid it:**
+- Emit no `<default>` child — neither `true` nor `false` — inside `businessProcesses/values` on Opportunity.
+- `scripts/check_opportunity_management.py` catches it as `OM-BP-DEFAULT-01` (ERROR, exit 1). Fixtures: `scripts/fixtures/bp-default-positive/`, `scripts/fixtures/bp-default-negative/`.
+- **Only Opportunity is verified.** The org message names the object, and Lead, Case and Solution business processes have never been put to this org. `OM-BP-DEFAULT-01` deliberately stays silent on them, and the negative fixture pins that behaviour with a Case process that *does* carry a default. Do not generalise without a dry run — `UNVERIFIED (2026-09-18)` for the other three objects.
+- The record type's own `picklistValues` default for `StageName` is a different element the org has not judged: `UNVERIFIED (2026-09-18)`. Leave it as it is.
+

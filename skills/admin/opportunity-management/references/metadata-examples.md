@@ -102,11 +102,17 @@ you to track separate sales, support, and lead lifecycles" (api_meta.txt:42956â€
         <isActive>true</isActive>
         <values>
             <fullName>Prospecting</fullName>
-            <default>true</default>
+            <!-- No <default> here. The platform rejects the deploy with
+                 "Cannot specify a default on: Opportunity" (org-verified
+                 2026-09-18, sfskills-dev at API 62.0). A business process
+                 lists which stages a record type exposes and in what order;
+                 it does not set the stage a new Opportunity opens at. That
+                 comes from the default on the StageName picklist value for
+                 the record type. OM-BP-DEFAULT-01 in
+                 scripts/check_opportunity_management.py catches it. -->
         </values>
         <values>
             <fullName>Needs Analysis</fullName>
-            <default>false</default>
         </values>
         <values>
             <fullName>Proposal/Price Quote</fullName>

@@ -1,0 +1,8 @@
+PSVP-RT-DEFAULT-01 positive. A profile fragment that makes two Opportunity
+record types visible and names no default. Expect 1 ERROR. Org-verified
+2026-09-19: "No default record type specified for recordTypeVisibility:
+Opportunity. To make the '--master--' record type the default, set visible on
+all record types to false." (sfskills-dev, validate-only deploy at API 62.0,
+.sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M2.md run 1).
+
+  python3 ../../check_access_model.py --manifest-dir .

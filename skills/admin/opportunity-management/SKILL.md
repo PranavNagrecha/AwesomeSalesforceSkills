@@ -41,9 +41,9 @@ outputs:
   - "Validation rules approach for enforcing stage progression"
   - "Forecast category mapping for each stage"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-09-19
 ---
 
 # Opportunity Management
@@ -197,7 +197,7 @@ Adding a user to a team is a sharing change. `OpportunityTeamMember.OpportunityA
 4. **Write the `BusinessProcess` per motion, then bind the record types**, following §2 of `references/metadata-examples.md`. Watch the two `fullName` forms — bare inside `<CustomObject>`, object-qualified in `package.xml`.
 5. **Add the `PathAssistant`** per §3, one per record type, with every `picklistValueName` drawn from that record type's business process. Note separately which of those steps need validation-rule enforcement; Path enforces nothing.
 6. **Decide splits and teams explicitly.** Deploy `enableOpportunityTeam` (§1); record the split types someone must build by hand in each org (§6); set the per-role `OpportunityAccessLevel`.
-7. **Run the checker and the verification queries.** `python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir force-app/main/default`, then queries 8a–8d and the Setup-only check 8e in `references/metadata-examples.md` §8. Clear every ERROR before deploying; triage WARN and INFO.
+7. **Run the checker and the verification queries.** `python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir force-app/main/default`, then queries 8a–8d and the Setup-only check 8e in `references/metadata-examples.md` §8. Clear every ERROR before deploying; triage WARN and INFO. One ERROR is a platform fact rather than a style opinion: `OM-BP-DEFAULT-01` — a `<default>true</default>` inside a `businessProcesses/values` entry, which the org refuses with "Cannot specify a default on: Opportunity" (org-verified 2026-09-18). Opportunity only; the rule is silent on Lead/Case/Solution processes, which are `UNVERIFIED (2026-09-18)`. See `references/gotchas.md` Gotcha 17.
 
 ---
 

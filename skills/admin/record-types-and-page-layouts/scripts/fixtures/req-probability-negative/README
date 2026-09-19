@@ -1,0 +1,8 @@
+RTL-REQ-01 negative. Two files:
+  Opportunity-Opportunity Enterprise Layout - Probability present.
+  Case-Case Support Layout                  - a CASE layout with no
+      Probability item. The org message names Opportunity; Case was never put
+      to the org for this field, so RTL-REQ-01 must stay silent on it.
+Expect 0 RTL-REQ-01/02 findings.
+
+  python3 ../../check_record_type_layouts.py --manifest-dir .

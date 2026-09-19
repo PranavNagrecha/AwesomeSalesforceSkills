@@ -160,14 +160,15 @@ carries a standard boolean that the platform maintains for exactly this question
 
 So the business condition is `NOT(HasOpportunityLineItem)`, gated on the stage.
 
-> UNVERIFIED (2026-09-15): the corpus above grounds the field's **existence, type, read-only
-> semantics and when the platform sets it**. It does not say, in so many words, that
-> `HasOpportunityLineItem` is addressable inside a validation-rule `errorConditionFormula`
-> — no fetched source in this repo makes a formula-context claim about it. The `Properties`
-> line establishes it is filterable/groupable/sortable, which is a SOQL and report property,
-> not a formula one. Verify with `sf project deploy start --dry-run` against a sandbox before
-> shipping, exactly as Gotcha 14 was verified. This is the one clause in this example that a
-> dry run can still refute.
+> org-verified 2026-09-19 (checkOnly compile; re-firing after a line-item deletion remains
+> UNVERIFIED — a checkOnly deploy exercises no deletion). The corpus cited above grounds the
+> field's existence, type, read-only semantics and when the platform sets it, but made no
+> formula-context claim; the dry run settled that part. northwind-sales M2 dry run 1
+> (2026-09-19T14:56Z, `.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/`)
+> compiled this `errorConditionFormula` with only a description-length error returned — so
+> `HasOpportunityLineItem` **is** addressable in validation-rule formula context. What the run
+> did not and could not test is whether the rule re-fires when a line item is deleted off an
+> Opportunity already at `Propose`: a checkOnly deploy runs no DML. See Gotcha 15.
 
 ### The formula
 

@@ -42,11 +42,16 @@ for lead, opportunity, solution, and case record types.
         <isActive>true</isActive>
         <values>
             <fullName>Qualification</fullName>
-            <default>true</default>
+            <!-- No <default> inside a businessProcess <values> entry on
+                 Opportunity: the deploy is rejected with "Cannot specify a
+                 default on: Opportunity" (org-verified 2026-09-18,
+                 sfskills-dev at API 62.0,
+                 .sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md
+                 run 1). The business process says which stages the record
+                 type exposes, not which one a new record opens at. -->
         </values>
         <values>
             <fullName>Proposal/Price Quote</fullName>
-            <default>false</default>
         </values>
         <values>
             <fullName>Negotiation/Review</fullName>
@@ -71,6 +76,11 @@ for lead, opportunity, solution, and case record types.
             <values>
                 <fullName>Qualification</fullName>
                 <default>true</default>
+                <!-- UNVERIFIED (2026-09-18): the org has not judged a StageName
+                     default inside recordTypes/picklistValues. This is a
+                     different element from the businessProcess <values> above,
+                     which the org did reject; leave it as it is until a dry run
+                     says otherwise. -->
             </values>
             <values>
                 <fullName>Proposal/Price Quote</fullName>

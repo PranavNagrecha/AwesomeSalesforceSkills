@@ -206,6 +206,14 @@ Verified by `sf project deploy start --dry-run` against a Summer '26 developer o
 - Which fields carry this constraint on objects other than Case is `UNVERIFIED (2026-09-09)`. Do not generalise `Status` to `StageName` on Opportunity or `Status` on Lead without a dry run against the target org.
 - When reviewing a generated answer to "enforce at field/validation level, not on the layout", check whether the fields it demotes to `Edit` include a platform-required one. That is the regression this gotcha exists to catch.
 
+**Opportunity now has an answer too (org-verified 2026-09-18).** The bullet above said not to generalise `Status` to `StageName` on Opportunity without a dry run. The dry run has been done — `sfskills-dev`, validate-only at API 62.0, `.sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md` runs 1–4 — and it answered in two parts:
+
+- Run 1: `Layout must contain an item for required layout field: Probability`. Every Opportunity layout must carry a `Probability` **item**, whatever its behavior. `RTL-REQ-01` (HIGH).
+- Run 2, once `Probability` was present: `Field:Name must be Required`. Run 3: the same for `StageName`. `RTL-REQ-02` (HIGH) for those two fields.
+- `CloseDate` went `Required` in the same pass as `StageName` and the org **never named it**. Run 4 succeeded, which proves the four-item set is *accepted*, not that `CloseDate` is *required* — the platform reports one required field per run, so a passing run cannot distinguish "required" from "harmless". `RTL-REQ-02` therefore emits an INFO carrying `UNVERIFIED (2026-09-18)` for `CloseDate`, never a HIGH. Flip it to `Edit` and re-run `--dry-run` if you want the real answer.
+
+Fixtures: `scripts/fixtures/req-probability-positive|negative/`, `scripts/fixtures/req-name-positive|negative/`, `scripts/fixtures/req-closedate-unverified/`. Case and Opportunity are now the two objects with a verified set; every other object stays `UNVERIFIED (2026-09-09)` and `RL-REQ-03` stays the advisory heuristic it was.
+
 ---
 
 ## 14. Identical Page Layouts After a Record-Type Split With Nothing Differentiating Them
