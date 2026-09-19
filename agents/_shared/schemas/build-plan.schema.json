@@ -306,7 +306,7 @@
     },
     "decisions": {
       "type": "array",
-      "description": "Section 1.2: each decision cites the decision-tree branch that resolved it, or \u2014 when no tree covers the choice \u2014 the skill reference that did, in source_reference, with adr_required: true.",
+      "description": "Section 1.2: each decision cites the decision-tree branch that resolved it, or — when no tree covers the choice — the skill reference that did, in source_reference, with adr_required: true.",
       "items": {
         "type": "object",
         "additionalProperties": true,
@@ -329,7 +329,7 @@
           },
           "branch": {
             "type": "string",
-            "description": "The tree step that resolved the choice, e.g. 'Q3'. scripts/build_plan.py validate reads decision_tree off disk and ERRORs unless the tree actually heads a step with this id ('Q3. <question>', '## Q3', '**Q3**', 'Q3 \u2014' or an explicit anchor) \u2014 a branch id nobody can find in the tree is a citation of something that was never read."
+            "description": "The tree step that resolved the choice, e.g. 'Q3'. scripts/build_plan.py validate reads decision_tree off disk and ERRORs unless the tree actually heads a step with this id ('Q3. <question>', '## Q3', '**Q3**', 'Q3 —' or an explicit anchor) — a branch id nobody can find in the tree is a citation of something that was never read."
           },
           "branch_quote": {
             "type": "string",
@@ -437,6 +437,13 @@
                 }
               }
             }
+          },
+          "amendments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/amendment"
+            },
+            "description": "History of `build_plan.py amend-milestone` prose corrections to this milestone's acceptance_tests[].description, oldest first. Never written by hand."
           }
         }
       }
@@ -696,7 +703,7 @@
             "step",
             "build"
           ],
-          "description": "Checker tests only; default 'step'. Declared INTENT, not a path source: step-tester runs the command string verbatim and substitutes no path, so the tree the checker reads is the one written into the command's own --manifest-dir. 'step' declares that the command carries --manifest-dir artefacts/<step-id>/ (the one step's artefacts); 'build' declares that it carries --manifest-dir artefacts (the whole artefacts root), which is the only honest scope for a cross-referential checker \u2014 one that asserts relationships across components a single step does not own (check_escalation_rules.py, check_omni_channel_routing_setup.py, check_list_views_and_compact_layouts.py, check_permission_set_architecture.py). The declared scope and the command's --manifest-dir must name the same tree; scripts/build_plan.py validate WARNs on the disagreement, and WARNs when one of those four checkers is declared with step scope on a routing/sla/access step. At milestone level every checker test is build-scoped by definition, so scope is redundant there."
+          "description": "Checker tests only; default 'step'. Declared INTENT, not a path source: step-tester runs the command string verbatim and substitutes no path, so the tree the checker reads is the one written into the command's own --manifest-dir. 'step' declares that the command carries --manifest-dir artefacts/<step-id>/ (the one step's artefacts); 'build' declares that it carries --manifest-dir artefacts (the whole artefacts root), which is the only honest scope for a cross-referential checker — one that asserts relationships across components a single step does not own (check_escalation_rules.py, check_omni_channel_routing_setup.py, check_list_views_and_compact_layouts.py, check_permission_set_architecture.py). The declared scope and the command's --manifest-dir must name the same tree; scripts/build_plan.py validate WARNs on the disagreement, and WARNs when one of those four checkers is declared with step scope on a routing/sla/access step. At milestone level every checker test is build-scoped by definition, so scope is redundant there."
         },
         "expected": {
           "type": "string",

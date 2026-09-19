@@ -4522,3 +4522,67 @@ def test_brief_absent_decisions_and_mock_deploy(tmp_path, fixture_repo, capsys):
     assert "(not run)" in text
     assert "## Latest org evidence" in text
     assert "## Open items" in text
+
+
+def test_amend_milestone_rewords_description_and_records_amendment(tmp_path, fixture_repo, capsys):
+    """Milestone-level test prose can be corrected while the build is running,
+    the structure is untouched, and the record says prose_only."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)  # status -> approved
+    current = json.loads(path.read_text())["milestones"][0]["acceptance_tests"]
+    fixed = copy.deepcopy(current)
+    fixed[0]["description"] = "package.xml consistent - M1-S01 is no longer blocked"
+    amendment = write_json(tmp_path / "amend-m.json", {"acceptance_tests": fixed})
+    capsys.readouterr()
+    rc = run("amend-milestone", str(path), "M1", "--file", str(amendment),
+             "--by", "dry-run operator (Fable)", "--reason", "friction 42",
+             "--at", "2026-09-19T16:00:00Z", "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "milestone M1: amended acceptance_tests by dry-run operator (Fable) (prose-only)" in out
+    after = json.loads(path.read_text())
+    m1 = after["milestones"][0]
+    assert m1["acceptance_tests"][0]["description"] == "package.xml consistent - M1-S01 is no longer blocked"
+    assert m1["acceptance_tests"][0]["type"] == current[0]["type"]
+    assert len(m1["amendments"]) == 1
+    assert m1["amendments"][0]["prose_only"] is True
+    assert m1["amendments"][0]["before"] == {"acceptance_tests": current}
+    assert after["status"] == "approved", "amend-milestone never touches status or gates"
+
+
+def test_amend_milestone_refused_when_structure_differs(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    before = path.read_bytes()
+    current = json.loads(before)["milestones"][0]["acceptance_tests"]
+    changed = copy.deepcopy(current)
+    changed[0]["type"] = "manual"
+    amendment = write_json(tmp_path / "amend-m.json", {"acceptance_tests": changed})
+    rc = run("amend-milestone", str(path), "M1", "--file", str(amendment),
+             "--by", "pranav", "--reason", "sneaking a type change", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+    extra = write_json(tmp_path / "amend-m2.json", {"acceptance_tests": current + [{"type": "xml", "description": "x"}]})
+    rc = run("amend-milestone", str(path), "M1", "--file", str(extra),
+             "--by", "pranav", "--reason", "adding a test", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before
+
+
+def test_amend_milestone_refuses_other_fields_and_unknown_milestone(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    before = path.read_bytes()
+    goal = write_json(tmp_path / "amend-goal.json", {"goal": "new goal"})
+    rc = run("amend-milestone", str(path), "M1", "--file", str(goal),
+             "--by", "pranav", "--reason", "goal", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    current = json.loads(before)["milestones"][0]["acceptance_tests"]
+    ok = write_json(tmp_path / "amend-ok.json", {"acceptance_tests": current})
+    rc = run("amend-milestone", str(path), "M9", "--file", str(ok),
+             "--by", "pranav", "--reason", "no such milestone", "--repo-root", str(fixture_repo))
+    assert rc == 1
+    assert path.read_bytes() == before

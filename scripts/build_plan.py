@@ -3143,6 +3143,77 @@ def _next_gate_hint(plan: dict, plan_path: Path, *, milestone_id: str | None = N
     return f"`build_plan.py gate {plan_path} {alias} approve --by <who>`"
 
 
+
+def cmd_amend_milestone(args: argparse.Namespace) -> int:
+    """Reword a milestone's acceptance_tests[].description mid-build.
+
+    The milestone-level twin of `amend-step --prose-only`, and prose-only by
+    construction: a milestone's structure (its steps, its tests' type, command,
+    expected and scope) is `set-plan`'s to change. It exists because both
+    northwind-sales M2 gates were signed against milestone tests that still
+    described a step as blocked four days after it was unblocked, and nothing
+    in this file could correct that text while the build was `building`
+    (driver's log friction 42). Prose does not invalidate a signature, so an
+    approved milestone gate does not block it; a 'done' build does.
+    """
+    plan_path = Path(args.plan)
+    schema = load_schema(args.schema)
+    plan = read_plan_on_schema(plan_path, schema)
+    if plan.get("status") == "done":
+        _die("refusing to amend a milestone of a 'done' build — nothing is left to gate")
+    milestone = next((m for m in plan.get("milestones") or []
+                      if isinstance(m, dict) and m.get("id") == args.milestone_id), None)
+    if milestone is None:
+        _die(f"no milestone {args.milestone_id!r} in {plan_path}")
+    try:
+        doc = json.loads(Path(args.file).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _die(f"cannot read {args.file}: {exc}")
+    if not isinstance(doc, dict):
+        _die(f"{args.file}: expected a JSON object")
+    unknown = sorted(set(doc) - {"acceptance_tests"})
+    if unknown:
+        _die(f"{args.file}: amend-milestone writes only acceptance_tests[].description — "
+             f"refusing {', '.join(unknown)} (a milestone's structure is set-plan's to change)")
+    new_tests = doc.get("acceptance_tests")
+    if not isinstance(new_tests, list):
+        _die(f"{args.file}: acceptance_tests must be an array")
+    current_tests = milestone.get("acceptance_tests") or []
+    violation = _prose_only_violation(current_tests, new_tests)
+    if violation:
+        _die(f"{args.file}: {violation}")
+    if new_tests == current_tests:
+        _die(f"{args.file}: no description differs from the plan — nothing to amend")
+    before = {"acceptance_tests": copy.deepcopy(current_tests)}
+    milestone["acceptance_tests"] = new_tests
+    milestone.setdefault("amendments", []).append({
+        "at": _now(args.at), "by": args.by, "reason": args.reason,
+        "fields": ["acceptance_tests"], "before": before, "prose_only": True,
+    })
+    hard = schema_errors(plan, schema, schema)
+    if hard:
+        print(f"refusing to write {plan_path} — the result would be off-schema:", file=sys.stderr)
+        for msg in hard:
+            print(f"  ERROR {msg}", file=sys.stderr)
+        return 1
+    issues = semantic_issues(plan, Path(args.repo_root))
+    errors = [msg for level, msg in issues if level == "ERROR"]
+    if errors:
+        print(f"refusing to amend {args.milestone_id} — the plan would become invalid:",
+              file=sys.stderr)
+        for msg in errors:
+            print(f"  ERROR {msg}", file=sys.stderr)
+        return 1
+    _atomic_write(plan_path, plan_json(plan))
+    gate = next((g for g in plan.get("human_gates") or []
+                 if g.get("name") == f"milestone:{args.milestone_id}"), None)
+    gate_note = (f" (gate 'milestone:{args.milestone_id}' stays approved — prose does not "
+                 f"invalidate a signature)" if gate and gate.get("status") == "approved" else "")
+    print(f"milestone {args.milestone_id}: amended acceptance_tests by {args.by} "
+          f"(prose-only){gate_note}")
+    print("next: `build_plan.py render`")
+    return 0
+
 def cmd_set_verification(args: argparse.Namespace) -> int:
     plan_path = Path(args.plan)
     plan = read_plan(plan_path)
@@ -4372,6 +4443,25 @@ def build_parser() -> argparse.ArgumentParser:
                         "does not change what runs; in exchange, allow any step status except "
                         "'running' and do not block on an already-approved step gate")
     p.set_defaults(func=cmd_amend_step)
+
+    p = sub.add_parser("amend-milestone", parents=[common],
+                       help="reword one milestone's acceptance_tests[].description mid-build",
+                       description="The milestone-level twin of `amend-step --prose-only`, and "
+                                   "prose-only by construction: --file holds an acceptance_tests "
+                                   "array of the same length with the same type/command/expected/"
+                                   "scope at every index and only description changed. A "
+                                   "milestone's structure is set-plan's to change. Records "
+                                   "who/when/why/prior text in the milestone's amendments[]; an "
+                                   "approved milestone gate does not block it (prose does not "
+                                   "invalidate a signature); a 'done' build does.")
+    p.add_argument("plan", help="path to plan.json")
+    p.add_argument("milestone_id", metavar="milestone-id", help="e.g. M2")
+    p.add_argument("--file", required=True,
+                   help="JSON object {\"acceptance_tests\": [...]} with descriptions reworded")
+    p.add_argument("--by", required=True, help="who is making the correction")
+    p.add_argument("--reason", required=True, help="why the milestone's test prose is being amended")
+    p.add_argument("--at", default=None, help="ISO timestamp (default: UTC now)")
+    p.set_defaults(func=cmd_amend_milestone)
 
     p = sub.add_parser("set-verification", parents=[common],
                        help="record the plan verifier's outcome",

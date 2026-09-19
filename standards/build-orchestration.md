@@ -88,6 +88,20 @@ already-approved `step:<id>` gate to be rejected first — prose does not
 invalidate a signature. The amendment record carries `"prose_only": true` so
 `amendments[]` distinguishes a text correction from a substantive one.
 
+The same correction exists one level up. A milestone's own
+`acceptance_tests[]` are written at planning time and age just as fast: both
+northwind-sales M2 gates were signed against milestone tests that still
+described a step as blocked days after it was unblocked, and nothing could
+correct that text while the build was `building`. `build_plan.py
+amend-milestone <plan> <milestone-id> --file <json> --by <who> --reason <why>`
+is prose-only by construction: `--file` holds only an `acceptance_tests`
+array of the same length with every index's structural fields unchanged. It
+records the correction in the milestone's `amendments[]` with
+`"prose_only": true`, never touches status or gates, is not blocked by an
+approved `milestone:<id>` gate, and is refused on a `done` build. A
+milestone's structure (its steps, its tests' type, command, expected and
+scope) remains `set-plan`'s to change.
+
 ### Build mode
 
 `plan.json` carries a required `build_mode`, and it decides which agents may
