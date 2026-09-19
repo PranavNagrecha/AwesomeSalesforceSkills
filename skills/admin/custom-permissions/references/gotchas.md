@@ -109,3 +109,11 @@ This extra step is required because Flow evaluates `$Permission` only inside for
 **When it occurs:** Any custom permission whose description reads like a design note instead of a consumer list. The Metadata API Developer Guide states the limit directly in the `CustomPermission` field table: "The custom permission description. Limit: 255 characters" (`api_meta.txt` L46651-46652). It is a headroom problem more than an edge case — `Bypass_Case_Intake_Validation` in `examples/builds/case-onboarding/artefacts/M2-S01` sits at 250 characters today, six characters from the limit, with only a consumer list and an owner name in it.
 
 **How to avoid:** Keep `description` to the consumer list and nothing else; if the list itself does not fit, the permission is doing too much and should split (the "if the sentence needs an 'and'" test in `## Questions to Ask Before Configuring`). Put rationale — approval history, retirement date, who to ask — in the build's `deploy-order.md` or the configuration workbook. `scripts/check_custom_permissions.py` flags this before deploy: `CP-DESC-01` (ERROR) at 255+ characters, `CP-DESC-02` (INFO, headroom only — never fails the run, even under `--strict`) at 200+.
+
+---
+
+## Gotcha 11: Three Zero Counts Are Not A Pass
+
+**What happens:** on a directory with no custom permission, permission set, profile or consumer file, the checker printed three zero counts and `Summary: 0 error(s), 0 warning(s), 0 info.` — a line that reads as a pass and asserts nothing.
+
+**How to avoid:** the run now ends with `Scanned 0 file(s) — nothing asserted; check --manifest-dir` whenever no file was opened and there are no findings (2026-09-19). Only a Summary preceded by a non-zero "Custom permissions defined" or "Permission sets / profiles parsed" count says anything about your metadata.

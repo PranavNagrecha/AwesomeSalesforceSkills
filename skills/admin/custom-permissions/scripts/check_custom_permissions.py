@@ -28,6 +28,11 @@ Scans a Salesforce DX metadata tree and reports, by severity:
          the tree grants it. Often intentional (the grant lives in another
          package), so it is not an error.
 
+A run that read no files at all prints "Scanned 0 file(s)" rather than a
+summary of zero findings: a tree with no custom permission, no permission
+set or profile and no consumer file in it has not been cleared, it has not
+been checked.
+
 Exit codes:
   0 -- no ERROR (and no WARN when --strict is passed)
   1 -- at least one ERROR, or at least one WARN under --strict
@@ -131,7 +136,9 @@ def is_consumer_file(path: Path) -> bool:
     return any(path.name.endswith(suffix) for suffix in _CONSUMER_SUFFIXES)
 
 
-def scan_consumer_references(manifest_dir: Path) -> dict[str, list[tuple[str, int]]]:
+def scan_consumer_references(
+    manifest_dir: Path, scanned: list[Path]
+) -> dict[str, list[tuple[str, int]]]:
     """Return {custom-permission-name: [(relative path, line number), ...]}.
 
     Namespaced references (containing ``__``) are skipped: they belong to an
@@ -152,6 +159,7 @@ def scan_consumer_references(manifest_dir: Path) -> dict[str, list[tuple[str, in
             text = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
+        scanned.append(path)
         for lineno, line in enumerate(text.splitlines(), start=1):
             for match in _RE_VISIBILITY.finditer(line):
                 record(match.group(1), path, lineno)
@@ -173,7 +181,7 @@ def scan_consumer_references(manifest_dir: Path) -> dict[str, list[tuple[str, in
 
 
 def parse_custom_permissions(
-    manifest_dir: Path,
+    manifest_dir: Path, scanned: list[Path]
 ) -> tuple[dict[str, dict], list[str]]:
     """Return ({api name: {description, required}}, parse errors)."""
     defined: dict[str, dict] = {}
@@ -182,6 +190,7 @@ def parse_custom_permissions(
     for cp_file in sorted(manifest_dir.rglob("*.customPermission-meta.xml")):
         name = cp_file.name.replace(".customPermission-meta.xml", "")
         rel = str(cp_file.relative_to(manifest_dir))
+        scanned.append(cp_file)
         record: dict = {"file": rel, "description": None, "required": []}
         try:
             root = ET.parse(cp_file).getroot()
@@ -201,7 +210,9 @@ def parse_custom_permissions(
     return defined, parse_errors
 
 
-def parse_grants(manifest_dir: Path) -> tuple[dict[str, list[str]], list[str]]:
+def parse_grants(
+    manifest_dir: Path, scanned: list[Path]
+) -> tuple[dict[str, list[str]], list[str]]:
     """Return ({granting container: [permission names]}, parse errors).
 
     Covers ``*.permissionset-meta.xml`` and ``*.profile-meta.xml`` -- Profile
@@ -218,6 +229,7 @@ def parse_grants(manifest_dir: Path) -> tuple[dict[str, list[str]], list[str]]:
     for glob, suffix, kind in patterns:
         for ps_file in sorted(manifest_dir.rglob(glob)):
             label = f"{kind} '{ps_file.name.replace(suffix, '')}'"
+            scanned.append(ps_file)
             try:
                 root = ET.parse(ps_file).getroot()
             except ET.ParseError as exc:
@@ -404,9 +416,12 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Scanning: {manifest_dir.resolve()}")
     print()
 
-    defined, cp_parse_errors = parse_custom_permissions(manifest_dir)
-    grants, grant_parse_errors = parse_grants(manifest_dir)
-    consumer_refs = scan_consumer_references(manifest_dir)
+    # Every file actually opened lands here, so a run that read nothing can
+    # say so instead of printing a summary of zero findings as if it passed.
+    scanned: list[Path] = []
+    defined, cp_parse_errors = parse_custom_permissions(manifest_dir, scanned)
+    grants, grant_parse_errors = parse_grants(manifest_dir, scanned)
+    consumer_refs = scan_consumer_references(manifest_dir, scanned)
 
     print(f"Custom permissions defined:        {len(defined)}")
     print(f"Permission sets / profiles parsed: {len(grants)}")
@@ -432,6 +447,9 @@ def main(argv: list[str] | None = None) -> int:
         f"Summary: {len(errors)} error(s), {len(warnings)} warning(s), "
         f"{len(infos)} info."
     )
+
+    if not scanned and not errors and not warnings and not infos:
+        print("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
 
     if errors:
         return 1

@@ -1,0 +1,1 @@
+expected: `--manifest-dir empty-tree` → "No PathAssistant metadata found under … — nothing to check.", then "Scanned 0 file(s) — nothing asserted; check --manifest-dir", exit 0. No `*.pathAssistant-meta.xml` exists anywhere in the tree, so the run asserted nothing about any Path and must not be read as a clean check.

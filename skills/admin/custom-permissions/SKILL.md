@@ -36,9 +36,9 @@ outputs:
   - "SetupEntityAccess verification query proving who holds the permission today"
   - "component visibility filter using {!$Permission.CustomPermission.X}"
 dependencies: []
-version: 1.2.1
+version: 1.2.2
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-09-19
 ---
 
 # Custom Permissions

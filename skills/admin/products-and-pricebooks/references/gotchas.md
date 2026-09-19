@@ -119,3 +119,11 @@ deployable XML and the unresolved question of whether deleting the last line ite
 rule are all in `skills/admin/validation-rules` — `references/examples.md`, "At Least One
 Opportunity Product Before a Late Stage", and `references/gotchas.md` Gotcha 15. For the
 reporting view of the same field, see `skills/admin/pipeline-review-design/references/gotchas.md:91`.
+
+---
+
+## Gotcha 9: A Scan That Read Nothing Is Not A Clean Scan
+
+**What happens:** `check_products_and_pricebooks.py --manifest-dir <build root>` used to print "No issues found." while reading nothing: it inspects only `classes/`, `triggers/`, `settings/`, `flows/`, `profiles/` and `objects/` directly under the directory it is given, and a multi-step build nests each step's metadata one level down. A control run on an empty directory printed the identical line (northwind-sales M2-S04, 2026-09-19).
+
+**How to avoid:** the checker now prints `Scanned 0 file(s) — nothing asserted; check --manifest-dir` when it opened no file and has no findings; "No issues found." is reserved for a scan that read something. Point `--manifest-dir` at the step directory. The checker is still not recursive — that is the next change, with its own fixtures.

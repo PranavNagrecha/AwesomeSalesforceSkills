@@ -613,6 +613,9 @@ def main() -> int:
 
     if path_count == 0:
         print(f"No PathAssistant metadata found under {manifest_dir} — nothing to check.")
+        # Same fact, in the line every checker in this library prints when a
+        # run inspected nothing, so a build log can be grepped for it.
+        print("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
         return 0
 
     check_settings(index, path_count, issues, notes)

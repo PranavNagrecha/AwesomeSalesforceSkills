@@ -131,3 +131,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems wi
 **When it occurs:** Whenever a picklist value arrives through the Metadata API rather than through the record type UI. The `StandardValueSet` note is explicit: "When setting `standardValue` on Record Types, including person account record types, new picklist values loaded into your organization through the Metadata API don't display in the picklist UI by default. For users to see the new values, go to the Record Types list for the object containing the picklist field, click Edit, and add the new value to the Selected Fields list" (api_meta.txt L130774–130779).
 
 **How to avoid:** Deploy the record type's `picklistValues` block in the same change as the value set, so the value is both defined and selected — see `references/metadata-examples.md` § 1, where the same five values appear in both the business process and the record type. Then verify from the record side, not the value-set side: `SELECT ApiName, MasterLabel, IsActive FROM OpportunityStage ORDER BY SortOrder` shows what exists, but only the record type's selected list decides what a user of that record type can pick — and therefore what the Path can render.
+
+---
+
+## Gotcha 14: A Directory With No Path Metadata Prints The Sentinel, Not A Pass
+
+**What happens:** `check_path_and_guidance.py --manifest-dir <dir>` on a tree with no `*.pathAssistant-meta.xml` printed only `No PathAssistant metadata found … — nothing to check.` and exited 0, which a build log reads as a pass.
+
+**How to avoid:** the run now also prints `Scanned 0 file(s) — nothing asserted; check --manifest-dir` (2026-09-19), the one string every admin checker uses for a scan that read nothing. `Checked N path(s)` is the only output that asserts anything about your Paths. Exit code unchanged.

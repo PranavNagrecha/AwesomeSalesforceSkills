@@ -279,7 +279,9 @@ def collect_muted_keys(root: ET.Element) -> set[str]:
     return keys
 
 
-def check_permission_set_architecture(manifest_dir: Path, max_objects: int) -> list[tuple[str, str]]:
+def check_permission_set_architecture(
+    manifest_dir: Path, max_objects: int, scanned: list[Path] | None = None
+) -> list[tuple[str, str]]:
     issues: list[tuple[str, str]] = []
 
     if not manifest_dir.exists():
@@ -289,6 +291,11 @@ def check_permission_set_architecture(manifest_dir: Path, max_objects: int) -> l
     muting_sets = sorted(manifest_dir.rglob("*.mutingpermissionset-meta.xml"))
     groups = sorted(manifest_dir.rglob("*.permissionsetgroup-meta.xml"))
     profiles = sorted(manifest_dir.rglob("*.profile-meta.xml"))
+
+    if scanned is not None:
+        # Every file this run will read. An empty list means the run asserted
+        # nothing, which the caller reports rather than calling it clean.
+        scanned.extend(permission_sets + muting_sets + groups + profiles)
 
     if not (permission_sets or muting_sets or groups or profiles):
         # Nothing to check is not a failure, but it must never read as a pass:
@@ -413,16 +420,25 @@ def check_permission_set_architecture(manifest_dir: Path, max_objects: int) -> l
 
 def main() -> int:
     args = parse_args()
-    issues = check_permission_set_architecture(Path(args.manifest_dir), args.max_objects)
+    scanned: list[Path] = []
+    issues = check_permission_set_architecture(
+        Path(args.manifest_dir), args.max_objects, scanned
+    )
 
     if not issues:
-        print("No issues found.")
+        if not scanned:
+            print("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
+        else:
+            print("No issues found.")
         return 0
 
     for severity in SEVERITIES:
         for level, message in issues:
             if level == severity:
                 print(f"{severity}: {message}")
+
+    if not scanned:
+        print("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
 
     return 1 if any(level == "ERROR" for level, _ in issues) else 0
 

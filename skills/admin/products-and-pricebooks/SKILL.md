@@ -40,9 +40,9 @@ outputs:
   - "Product deactivation safe-handling procedure"
   - "Data model explanation and constraint summary"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-09-15
+updated: 2026-09-19
 ---
 
 # Products and Pricebooks

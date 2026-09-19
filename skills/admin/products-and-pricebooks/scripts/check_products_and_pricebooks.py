@@ -8,6 +8,10 @@ Uses stdlib only — no pip dependencies.
 Usage:
     python3 check_products_and_pricebooks.py [--help]
     python3 check_products_and_pricebooks.py --manifest-dir path/to/metadata
+
+A run that inspected no files says so ("Scanned 0 file(s)") rather than
+printing "No issues found." -- a directory with nothing in it for this
+checker to read has not been cleared, it has not been checked.
 """
 
 from __future__ import annotations
@@ -33,11 +37,22 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _inspect(path: Path, scanned: list[Path]) -> str:
+    """Read a file's text and record that it was actually inspected.
+
+    Every read goes through here so the run can tell "read files and found
+    nothing wrong" apart from "read nothing at all". The second must never
+    print as a clean pass.
+    """
+    scanned.append(path)
+    return path.read_text(encoding="utf-8", errors="replace")
+
+
 # ---------------------------------------------------------------------------
 # Individual checks
 # ---------------------------------------------------------------------------
 
-def check_apex_hardcoded_standard_pricebook_id(manifest_dir: Path) -> list[str]:
+def check_apex_hardcoded_standard_pricebook_id(manifest_dir: Path, scanned: list[Path]) -> list[str]:
     """Detect Apex classes and test classes that hardcode the Standard Pricebook ID."""
     issues: list[str] = []
     apex_dirs = [
@@ -52,7 +67,7 @@ def check_apex_hardcoded_standard_pricebook_id(manifest_dir: Path) -> list[str]:
         if not apex_dir.exists():
             continue
         for apex_file in sorted(apex_dir.glob("*.cls")):
-            content = apex_file.read_text(encoding="utf-8", errors="replace")
+            content = _inspect(apex_file, scanned)
             if hardcoded_pattern.search(content):
                 issues.append(
                     f"POTENTIAL ISSUE [{apex_file.name}]: Possible hardcoded "
@@ -64,7 +79,7 @@ def check_apex_hardcoded_standard_pricebook_id(manifest_dir: Path) -> list[str]:
     return issues
 
 
-def check_product_schedules_settings(manifest_dir: Path) -> list[str]:
+def check_product_schedules_settings(manifest_dir: Path, scanned: list[Path]) -> list[str]:
     """Check if Product Schedules Settings are referenced in any object or settings config."""
     issues: list[str] = []
     settings_dir = manifest_dir / "settings"
@@ -75,7 +90,7 @@ def check_product_schedules_settings(manifest_dir: Path) -> list[str]:
     if not product_settings_file.exists():
         return issues
 
-    content = product_settings_file.read_text(encoding="utf-8", errors="replace")
+    content = _inspect(product_settings_file, scanned)
     has_revenue = "<enableRevenueSchedules>true</enableRevenueSchedules>" in content
     has_quantity = "<enableQuantitySchedules>true</enableQuantitySchedules>" in content
 
@@ -89,7 +104,7 @@ def check_product_schedules_settings(manifest_dir: Path) -> list[str]:
     return issues
 
 
-def check_pricebook_flow_assignment(manifest_dir: Path) -> list[str]:
+def check_pricebook_flow_assignment(manifest_dir: Path, scanned: list[Path]) -> list[str]:
     """Check for Flows that set Pricebook2Id on Opportunity."""
     issues: list[str] = []
     flow_dir = manifest_dir / "flows"
@@ -98,7 +113,7 @@ def check_pricebook_flow_assignment(manifest_dir: Path) -> list[str]:
 
     pricebook_assignment_found = False
     for flow_file in sorted(flow_dir.glob("*.flow-meta.xml")):
-        content = flow_file.read_text(encoding="utf-8", errors="replace")
+        content = _inspect(flow_file, scanned)
         if "Pricebook2Id" in content and "<object>Opportunity</object>" in content:
             pricebook_assignment_found = True
             break
@@ -113,7 +128,7 @@ def check_pricebook_flow_assignment(manifest_dir: Path) -> list[str]:
     return issues
 
 
-def check_product_object_fls(manifest_dir: Path) -> list[str]:
+def check_product_object_fls(manifest_dir: Path, scanned: list[Path]) -> list[str]:
     """Warn if Product2, Pricebook2, or PricebookEntry FLS is not visible in any profile."""
     issues: list[str] = []
     profiles_dir = manifest_dir / "profiles"
@@ -126,7 +141,7 @@ def check_product_object_fls(manifest_dir: Path) -> list[str]:
     for profile_file in sorted(profiles_dir.glob("*.profile-meta.xml")):
         if "Admin" in profile_file.name or "System" in profile_file.name:
             continue  # skip admin profiles — focus on sales user profiles
-        content = profile_file.read_text(encoding="utf-8", errors="replace")
+        content = _inspect(profile_file, scanned)
         for obj in required_objects:
             if obj in content:
                 objects_checked.add(obj)
@@ -143,7 +158,7 @@ def check_product_object_fls(manifest_dir: Path) -> list[str]:
     return issues
 
 
-def check_validation_rules_on_opportunity_line_items(manifest_dir: Path) -> list[str]:
+def check_validation_rules_on_opportunity_line_items(manifest_dir: Path, scanned: list[Path]) -> list[str]:
     """Flag validation rules on OpportunityLineItem referencing pricebook-sensitive fields."""
     issues: list[str] = []
     objects_dir = manifest_dir / "objects"
@@ -164,7 +179,7 @@ def check_validation_rules_on_opportunity_line_items(manifest_dir: Path) -> list
     }
 
     for xml_file in sorted(val_dir.glob("*.validationRule-meta.xml")):
-        content = xml_file.read_text(encoding="utf-8", errors="replace")
+        content = _inspect(xml_file, scanned)
         for field in pricebook_fields:
             if field in content:
                 issues.append(
@@ -178,7 +193,7 @@ def check_validation_rules_on_opportunity_line_items(manifest_dir: Path) -> list
     return issues
 
 
-def check_cpq_and_standard_pricebook_coexistence(manifest_dir: Path) -> list[str]:
+def check_cpq_and_standard_pricebook_coexistence(manifest_dir: Path, scanned: list[Path]) -> list[str]:
     """Warn if CPQ metadata is present alongside standard product-catalog customizations."""
     issues: list[str] = []
     objects_dir = manifest_dir / "objects"
@@ -198,6 +213,9 @@ def check_cpq_and_standard_pricebook_coexistence(manifest_dir: Path) -> list[str
         if (objects_dir / "PricebookEntry").exists() else []
     )
 
+    scanned.extend(standard_product_customizations)
+    scanned.extend(standard_pbe_customizations)
+
     if standard_product_customizations or standard_pbe_customizations:
         issues.append(
             "INFO: CPQ (SBQQ) metadata detected alongside custom fields on Product2 "
@@ -213,20 +231,24 @@ def check_cpq_and_standard_pricebook_coexistence(manifest_dir: Path) -> list[str
 # Main runner
 # ---------------------------------------------------------------------------
 
-def check_products_and_pricebooks(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
+def check_products_and_pricebooks(manifest_dir: Path, scanned: list[Path]) -> list[str]:
+    """Return a list of issue strings found in the manifest directory.
+
+    ``scanned`` collects every file actually inspected, so the caller can
+    report a scan that read nothing instead of calling it clean.
+    """
     issues: list[str] = []
 
     if not manifest_dir.exists():
         issues.append(f"Manifest directory not found: {manifest_dir}")
         return issues
 
-    issues.extend(check_apex_hardcoded_standard_pricebook_id(manifest_dir))
-    issues.extend(check_product_schedules_settings(manifest_dir))
-    issues.extend(check_pricebook_flow_assignment(manifest_dir))
-    issues.extend(check_product_object_fls(manifest_dir))
-    issues.extend(check_validation_rules_on_opportunity_line_items(manifest_dir))
-    issues.extend(check_cpq_and_standard_pricebook_coexistence(manifest_dir))
+    issues.extend(check_apex_hardcoded_standard_pricebook_id(manifest_dir, scanned))
+    issues.extend(check_product_schedules_settings(manifest_dir, scanned))
+    issues.extend(check_pricebook_flow_assignment(manifest_dir, scanned))
+    issues.extend(check_product_object_fls(manifest_dir, scanned))
+    issues.extend(check_validation_rules_on_opportunity_line_items(manifest_dir, scanned))
+    issues.extend(check_cpq_and_standard_pricebook_coexistence(manifest_dir, scanned))
 
     return issues
 
@@ -234,10 +256,16 @@ def check_products_and_pricebooks(manifest_dir: Path) -> list[str]:
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    issues = check_products_and_pricebooks(manifest_dir)
+    scanned: list[Path] = []
+    issues = check_products_and_pricebooks(manifest_dir, scanned)
 
     if not issues:
-        print("No issues found.")
+        if not scanned:
+            # Nothing was read, so nothing was asserted. Saying "No issues
+            # found." here is the false pass this checker must not print.
+            print("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
+        else:
+            print("No issues found.")
         return 0
 
     for issue in issues:
