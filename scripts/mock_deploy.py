@@ -671,6 +671,12 @@ def write_sfdx_project(out_dir: Path, api_version: str) -> Path:
     }
     path = out_dir / "sfdx-project.json"
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    # The standard SFDX .forceignore. Without it the org compiles an LWC bundle's
+    # __tests__/*.test.js as a module and rejects every `getRecord.emit(...)` with
+    # LWC1503 — northwind-sales M3 run 3 (2026-09-19) failed a correct bundle on
+    # thirteen such lines. Same list `sf project generate` writes.
+    (out_dir / ".forceignore").write_text(
+        "package.xml\n**/jsconfig.json\n**/.eslintrc.json\n**/__tests__/**\n", encoding="utf-8")
     return path
 
 

@@ -280,6 +280,9 @@ def test_write_sfdx_project_content(tmp_path):
     payload = json.loads(path.read_text(encoding="utf-8"))
     assert payload["sourceApiVersion"] == "61.0"
     assert payload["packageDirectories"] == [{"path": "force-app", "default": True}]
+    ignore = (out_dir / ".forceignore").read_text(encoding="utf-8").splitlines()
+    assert "**/__tests__/**" in ignore, "Jest test folders must never reach the org (LWC1503 on getRecord.emit)"
+    assert "**/jsconfig.json" in ignore and "**/.eslintrc.json" in ignore
 
 
 # --------------------------------------------------------------------------
