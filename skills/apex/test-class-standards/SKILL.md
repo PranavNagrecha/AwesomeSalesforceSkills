@@ -35,9 +35,9 @@ outputs:
   - "review findings for test hygiene and coverage quality"
   - "test class scaffold with factory, assertions, and mocks"
 dependencies: []
-version: 1.3.4
+version: 1.3.5
 author: Pranav Nagrecha
-updated: 2026-09-19
+updated: 2026-10-02
 ---
 
 Use this skill when Apex tests need to prove behavior instead of merely satisfying deployment coverage. The objective is deterministic, isolated tests that verify positive paths, negative paths, bulk behavior, async execution, and callout behavior without depending on org data.

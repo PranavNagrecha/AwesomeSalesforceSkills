@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "7ad60bf3336ce521ee17c1c5f47b86e215efce785b4d3b4db02416be6de9265a",
+  "generated_from_hash": "8b2fde0d2f2c5188a872d6ddd3cf4310683e0a51a5dd2898fd8f41a5fa1f328f",
   "schema_version": 1,
   "skill_count": 1035,
   "skills": [
@@ -79923,6 +79923,7 @@
         "25c14201da1a6f54629e",
         "25dc94ae7f3b91d33802",
         "26726413f4525a2d4020",
+        "2730d3c539ecd328b319",
         "2771faee79bcb50265fc",
         "27968ade6531438d739a",
         "28e49bc4c18558e0d090",
@@ -79959,6 +79960,7 @@
         "65165761cb77de0695d5",
         "667355330cfad8ee8488",
         "66a1cb20b5b143d827ab",
+        "676c9bfbccfe72de44ae",
         "6941f41646a8d8ed8a71",
         "6a0c227017a36330a450",
         "6b484a68aac037add694",
@@ -80070,7 +80072,7 @@
         "fe8cf1d029d92cbff293",
         "fefdf60b97efe8f9d5ec"
       ],
-      "content_hash": "21611eec4298b59dae85f0648a350d5a978210808a5799ee3a3348e9154820ea",
+      "content_hash": "ac4680b67100cfe12045d9f64e321e06d4f270694aaa8d5b31da83f3fcfc029b",
       "dependencies": [],
       "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for the factory class itself \u2014 use apex/test-data-factory-patterns. NOT for the mock class itself \u2014 use apex/apex-http-callout-mocking.",
       "file_location": "skills/apex/test-class-standards",
@@ -80143,9 +80145,9 @@
       "templates": [
         "skills/apex/test-class-standards/templates/test-class-standards-template.md"
       ],
-      "updated": "2026-09-19",
+      "updated": "2026-10-02",
       "vector_embedding": null,
-      "version": "1.3.4"
+      "version": "1.3.5"
     },
     {
       "category": "apex",
