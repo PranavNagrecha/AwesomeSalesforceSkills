@@ -38,7 +38,7 @@ now = datetime.datetime.now(datetime.timezone.utc); run_id = now.strftime("%Y-%m
 # ---- decisions.md: O- entries (append-only), plus operator D- entries from file
 dec = ((B/"decisions.md").read_text() if (B/"decisions.md").exists() else "# Decisions\n"); add = ""
 if args.extra_decisions: add += "\n\n" + pathlib.Path(args.extra_decisions).read_text().strip()
-existing = set(re.findall(rf"^## (O-{sid}-\d+)", dec, flags=re.M)); n = len(existing)
+existing = set(re.findall(rf"^## (O-{sid}-\d+)", dec + add, flags=re.M)); n = max([0] + [int(x.rsplit("-", 1)[1]) for x in existing])  # number past every id already on file, including the operator's extra entries
 for item in open_items:
     n += 1; oid = f"O-{sid}-{n:02d}"
     if isinstance(item, dict):
