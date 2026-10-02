@@ -29,11 +29,16 @@ ext = builder.get("extensions", {})
 # apex-builder and lwc-builder envelopes list artefacts under other keys (or not at all); the plan's declared
 # outputs are the contract either way, so fall back to them (northwind M3-S03 got 0 rows without this).
 artefacts = ext.get("artefacts") or [o if isinstance(o, str) else o.get("path") for o in (step.get("outputs") or [])]
+# Verification text comes from the TESTER's record (results.json), which is the run that set `tested`;
+# the builder envelope's checker_results vary in shape across agents and narrated "exit ?" / stale exits
+# on northwind M2-S02 and M3-S03 (driver's log friction 66).
 checker_lines = []
-for c in ext.get("checker_results") or []:
-    if isinstance(c, dict): checker_lines.append(f"`{(c.get('command') or c.get('checker') or '?')[:80]}` exit {c.get('exit_code', c.get('exit','?'))}")
-    else: checker_lines.append(str(c)[:120])
-verified = "; ".join(checker_lines) or "declared tests per tests/%s/results.json" % step_id
+for x in (res.get("tests") or res.get("results") or []):
+    if isinstance(x, dict) and x.get("type") == "checker":
+        cmd = (x.get("command") or x.get("name") or x.get("id") or "checker")[:80]
+        ex = x.get("exit_code", x.get("exit"))
+        checker_lines.append(f"`{cmd}` exit {ex}" if ex is not None else f"`{cmd}` {x.get('verdict') or x.get('status') or 'pass'}")
+verified = "; ".join(checker_lines) or f"declared tests per tests/{step_id}/results.json (passed: true)"
 now = datetime.datetime.now(datetime.timezone.utc); run_id = now.strftime("%Y-%m-%dT%H-%M-%SZ"); today = now.strftime("%Y-%m-%d")
 # ---- decisions.md: O- entries (append-only), plus operator D- entries from file
 dec = ((B/"decisions.md").read_text() if (B/"decisions.md").exists() else "# Decisions\n"); add = ""
@@ -49,7 +54,7 @@ for item in open_items:
     add += f"\n\n## {oid} — {topic}\n\n- **Date:** {today} · **Recorded by:** dry-run operator (Fable), from the builder's envelope (`{bpath.relative_to(B)}`)\n- {body}\n"
 (B/"decisions.md").write_text(dec.rstrip("\n") + add + "\n")
 # ---- workbook rows, one per artefact
-(B/"workbook").mkdir(exist_ok=True); wb = (B/"workbook"/args.workbook); w = wb.read_text() if wb.exists() else "| row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |\n|---|---|---|---|---|---|---|---|---|\n"
+(B/"workbook").mkdir(exist_ok=True); wb = (B/"workbook"/args.workbook); w = wb.read_text() if wb.exists() else f"## {args.workbook.split('-',1)[1].rsplit('.',1)[0].replace('-',' ').capitalize()}\n\n| row_id | target_value | owner | source_req_id | source_story_id | recommended_agent | recommended_skills | status | notes |\n|---|---|---|---|---|---|---|---|---|\n"
 owner = args.owner; skills = args.skills or "; ".join(step.get("skills") or [])
 rows = []; k = args.row_start
 for art in artefacts:
