@@ -6,11 +6,12 @@ Deterministic parts: workbook rows per artefact (from the builder envelope's ext
 import json, pathlib, datetime, subprocess, sys, argparse, re
 a = argparse.ArgumentParser(); a.add_argument("step"); a.add_argument("--build-dir", required=True); a.add_argument("--repo-root", default="."); a.add_argument("--owner", default="Build owner (role; the plan names no individual)"); a.add_argument("--req", required=True); a.add_argument("--source", required=True); a.add_argument("--requirement", required=True)
 a.add_argument("--workbook", required=True); a.add_argument("--row-prefix", required=True); a.add_argument("--row-start", type=int, required=True); a.add_argument("--extra-decisions"); a.add_argument("--skills", default="")
+a.add_argument("--backfill", action="store_true", help="the step's REQ row already exists (a re-documentation or a pass whose rows were missed): write workbook rows, decisions and the envelope; skip the traceability row; flip tested -> documented only if the step is tested")
 args = a.parse_args()
 B = pathlib.Path(args.build_dir); R = pathlib.Path(args.repo_root); HERE = pathlib.Path(__file__).resolve().parent; step_id = args.step; sid = step_id.replace("-", "")
 plan = json.loads((B/"plan.json").read_text()); step = next(s for s in plan["steps"] if s["id"]==step_id)
 build_id = plan.get("build_id") or plan.get("id") or B.name
-assert step["status"]=="tested", step["status"]
+assert step["status"] in (("tested", "documented") if args.backfill else ("tested",)), step["status"]
 res = json.loads((B/f"tests/{step_id}/results.json").read_text()); assert res.get("passed") is True
 envs = sorted((B/f"envelopes/{step_id}").glob("*.json"))
 builder = None; open_items = []; seen = set()
@@ -60,14 +61,20 @@ for art in artefacts:
     rows.append(f"| {rid} | `{art}` | {owner} | {args.req} | none (no story-drafter step in this build) | {builder.get('agent')} | {skills} | executed | {notes} |")
 wb.write_text(w.rstrip("\n") + "\n" + "\n".join(rows) + "\n")
 # ---- traceability row
-tr = (B/"traceability.md"); t = tr.read_text() if tr.exists() else "# Traceability\n\n| req_id | source | requirement | step_id | artefact | agent | decision_ref | test_id | test_type | status | artefact_paths | test_result |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| REQ-000 | - | (header row placeholder) | - | - | - | - | - | - | - | - | - |"; assert f"| {args.req} " not in t
+tr = (B/"traceability.md"); t = tr.read_text() if tr.exists() else "# Traceability\n\n| req_id | source | requirement | step_id | artefact | agent | decision_ref | test_id | test_type | status | artefact_paths | test_result |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| REQ-000 | - | (header row placeholder) | - | - | - | - | - | - | - | - | - |"
+if args.backfill and f"| {args.req} " in t:
+    write_req_row = False
+else:
+    assert f"| {args.req} " not in t, f"{args.req} already in traceability.md — pass --backfill for a re-documentation"
+    write_req_row = True
 tests = res.get("tests") or res.get("results") or []
 tid = next((x.get("id") or x.get("test_id") for x in tests if isinstance(x,dict) and x.get("type")=="checker"), f"{step_id}-T1")
 line = (f"| {args.req} | {args.source} | {args.requirement} | {step_id} | " + "; ".join(f"`{a}`" for a in artefacts if not a.endswith(('package.xml','deploy-order.md'))) +
         f" | {builder.get('agent')} | see decisions.md D-{sid}-* | {tid} | checker | In UAT | `artefacts/{step_id}/` | pass — {verified}; `manifest`; `xml`. Open items O-{sid}-01..{n:02d} in `decisions.md`; manual tests outstanding at the milestone gate (`tests/{step_id}/results.json` → `skipped_manual`). |")
-lines = t.split("\n"); last = max(i for i,l in enumerate(lines) if l.startswith("| REQ-0")); lines.insert(last+1, line); tr.write_text("\n".join(lines))
+if write_req_row:
+    lines = t.split("\n"); last = max(i for i,l in enumerate(lines) if l.startswith("| REQ-0")); lines.insert(last+1, line); tr.write_text("\n".join(lines))
 # ---- envelope pair, built from scratch on the output-envelope schema
-summary = (f"Documented {step_id} by render_step_docs.py: {len(rows)} workbook rows in {args.workbook}, {args.req} minted, {n - len(existing)} open items carried from the builder envelope(s) to decisions.md" + (", operator D- entries appended" if args.extra_decisions else "") + f". Set {step_id} tested -> documented.")
+summary = ((f"Backfilled {step_id} by render_step_docs.py:" if args.backfill else f"Documented {step_id} by render_step_docs.py:") + f" {len(rows)} workbook rows in {args.workbook}, {args.req} minted, {n - len(existing)} open items carried from the builder envelope(s) to decisions.md" + (", operator D- entries appended" if args.extra_decisions else "") + f". " + ("Set " + step_id + " tested -> documented." if step["status"] == "tested" else "Status unchanged (already documented)."))
 rel = lambda p: str(p) if not str(p).startswith(str(R)) else str(pathlib.Path(p).relative_to(R))
 env = {
   "agent": "build-doc-keeper", "mode": "single", "run_id": run_id,
@@ -85,6 +92,8 @@ env = {
 r = subprocess.run([sys.executable, str(HERE/"validate_envelope.py"), f"{B}/envelopes/{step_id}/{run_id}.json"], capture_output=True, text=True); print(r.stdout.strip() or r.stderr.strip())
 if r.returncode != 0:
     print(f"refusing to set {step_id} documented: the renderer's own envelope failed validation (rows and decisions were written; fix the envelope and run set-status by hand)", file=sys.stderr); sys.exit(1)
+if step["status"] != "tested":
+    print(f"{step_id} is already documented — rows/decisions/envelope written, no status change (backfill)"); sys.exit(0)
 r = subprocess.run([sys.executable, str(HERE/"build_plan.py"), "set-status", str(B/"plan.json"), step_id, "documented", "--run-agent", "build-doc-keeper", "--envelope", f"envelopes/{step_id}/{run_id}.json", "--result", summary[:200], "--repo-root", str(R)], capture_output=True, text=True)
 print([l for l in (r.stdout+r.stderr).splitlines() if not l.startswith("WARN")][-1:])
 subprocess.run([sys.executable, str(HERE/"build_plan.py"), "render", str(B/"plan.json"), "--repo-root", str(R)], capture_output=True, text=True)
