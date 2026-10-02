@@ -334,3 +334,76 @@ upper-cased field name.
   fires on any `criteriaItems`/`columns` code that isn't one of the report's own grouping fields
   or in its small set of already-confirmed codes — a nudge to retrieve, not a verdict on
   right-or-wrong, since column codes are report-type-specific and this cannot be settled offline.
+
+---
+
+## N4-F-03: A Chart Dashboard Component Without `<sortBy>` Fails Deploy, Though the Guide Never Requires It
+
+**What happens:** A validate-only deploy to org `sfskills-dev` (2026-10-02T17:53Z, northwind-sales
+M4-S02, `reports/MOCK-DEPLOY-M4.md` run 1) refused `Dashboard Enterprise_Sales/Enterprise_Pipeline`
+with this message, verbatim:
+
+> Chart dashboard components require the sortBy attribute
+
+The refused component was a `Column` chart with a `groupingColumn`, `useReportChart` `false`,
+and no `<sortBy>`. The Metadata API Developer Guide (v67.0, Summer '26, `DashboardComponent`)
+describes `sortBy` only as "The sort option for the dashboard component" and never marks it
+required. Every chart in the guide's own Dashboard samples does carry one
+(`<sortBy>RowLabelAscending</sortBy>`). Run 2 (18:00:02Z) accepted the added `sortBy`. It then
+refused the same component again with "Chart dashboard components require the chartAxisRange
+attribute" (N4-F-04). The guide does not mark `chartAxisRange` required either. It describes the
+field as "A manual or automatic axis range for bar or line charts", yet the org demanded it on a
+`Column` chart.
+
+**When it occurs:** Any hand-written chart component. A chart here is a `componentType` that
+contains Bar, Column, Line, Pie, Donut, Funnel or Scatter. From the guide's enumeration that is:
+`Bar`, `BarGrouped`, `BarStacked`, `BarStacked100`, `Column`, `ColumnGrouped`, `ColumnLine`,
+`ColumnLineGrouped`, `ColumnLineStacked`, `ColumnLineStacked100`, `ColumnStacked`,
+`ColumnStacked100`, `Donut`, `Funnel`, `Line`, `LineCumulative`, `LineGrouped`,
+`LineGroupedCumulative`, `Pie`, `Scatter` and `ScatterGrouped`. `Metric`, `Table`, `Gauge` and
+`FlexTable` are not charts. The defect reads as optional because the field table has no
+"Required." and because alphabetical element order puts `sortBy` far below `componentType`.
+
+**How to avoid it:**
+- Give every chart component both `<sortBy>` (`RowLabelAscending`, `RowLabelDescending`,
+  `RowValueAscending` or `RowValueDescending`, from the `DashboardComponentFilter` enumeration)
+  and `<chartAxisRange>`. Better still, copy the component from a retrieve of a working dashboard.
+- Run `python3 scripts/check_report_inventory.py --manifest-dir <dir>`. RPT-DASH-SORT-01 (HIGH)
+  flags a chart component with no `<sortBy>`, in classic `<components>` and in grid
+  `<dashboardComponent>` alike. The checker does **not** flag a missing `chartAxisRange` yet.
+- Still UNVERIFIED (2026-10-02), so do not rely on them:
+  - The guide says a component with groupings stores its sort in `groupingSortProperties` from
+    API 46.0, "otherwise, it is stored in the sortBy field". It is unproven whether
+    `groupingSortProperties` alone satisfies the org; the refused component had a grouping and
+    the org still asked for `sortBy`.
+  - It is unproven whether `useReportChart` `true` exempts a component. The checker fires either
+    way.
+  - `chartAxisRange` casing. The `DashboardComponent` field table lists `auto` / `manual`. The
+    `ChartRangeType` enumeration and every guide sample write `Auto` / `Manual`, which is what
+    `references/metadata-examples.md` uses. The org has not yet judged either form.
+  - `isAutoSelectFromReport` vs `autoselectColumnsFromReport`. The guide's `chartSummary` row
+    says it is "Required if isAutoSelectFromReport is set to false". Neither name has its own row
+    in the field table. The guide's grid-layout sample writes `<autoselectColumnsFromReport>`.
+  - `summaryAxisRange` is not a dashboard field. It belongs to the `Report` `chart` element,
+    where the guide marks it "Required" for bar, line and column charts. The report example now
+    carries it. No org has confirmed that requirement yet.
+
+---
+
+## N4-F-04 / RPT-DASH-AXIS-01: The Org Names One Missing Chart Attribute Per Run
+
+**What happens:** northwind-sales M4 run 1 refused a `Column` dashboard component for a missing `<sortBy>`; run 2, with `sortBy` present, refused the same component: "Chart dashboard components require the chartAxisRange attribute" (org-verified 2026-10-02). The guide marks neither as required; every sample carries both. The skill's own § 3 example carries both too — the builder misread it as a different component.
+
+**How to avoid:** a chart component carries `<sortBy>` and `<chartAxisRange>` (`Auto` is the casing the samples and the org accept). The checker now flags both (RPT-DASH-SORT-01, RPT-DASH-AXIS-01). Copy the whole component block from § 3, not one element.
+
+## N4-F-05: A Custom Report Type's Record-Type Column Is The Lookup's Relationship Name Alone
+
+**What happens:** three forms were tried for an Opportunity record-type column on a custom report type. `<field>RecordTypeId</field>` — "Could not find field RecordTypeId in table Opportunity". `<field>RecordType.Name</field>` — "Could not find field Name in table Record Type". `<field>RecordType</field>` with `<table>Opportunity</table>` — accepted (org-verified 2026-10-02). The guide's only lookup-column sample (`obj_lookup__c.Id` / `.Name`) misleads here; a read-only retrieve of twelve custom report types in the validating org found no example to copy. The matching report column code is `Opportunity$RecordType`.
+
+**How to avoid:** name a record-type column by the lookup's relationship name, nothing appended. Filter values on it: UNVERIFIED (2026-10-02) whether the label or the developer name is matched — an empty report, not a failed deploy, is the symptom.
+
+## N4-F-06: A Report On A New Custom Report Type Cannot Be Validated In The Same Deployment
+
+**What happens:** with the report type accepted in the same package, the report still fails checkOnly with "invalid report type", and a dashboard on that report fails with "no Report named … found" (org-verified 2026-10-02). The type does not exist when the report is validated.
+
+**How to avoid:** deploy the ReportType first, then the Report and Dashboard. A validate-only loop can never show the second half green; the gate accepts it on the checker, the manual tests and the type's own validation, and the runbook orders the deploy. This is the same split M4-S01's column-code probe needs, so plan it once.

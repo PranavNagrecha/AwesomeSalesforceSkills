@@ -161,6 +161,7 @@ suffixes above are the source-format equivalents the `sf` CLI reads and writes.
         <legendPosition>Bottom</legendPosition>
         <location>CHART_TOP</location>
         <size>Medium</size>
+        <summaryAxisRange>Auto</summaryAxisRange>
     </chart>
     <columns>
         <field>ACCOUNT_NAME</field>
@@ -261,6 +262,11 @@ suffixes above are the source-format equivalents the `sf` CLI reads and writes.
   between needs both. `nullTreatment` is `z` (empty = zero) or `n`. `developerName` must start
   with `BucketField_` and is what `columns`, `groupingsDown` and `chart/groupingColumn` reference.
 - `rowLimit` exists but is not compatible with historical trend reports.
+- `chart/summaryAxisRange` is **Required** for bar, line and column charts (guide, `ReportChart`);
+  the values are `Auto` / `Manual` (`ChartRangeType`), and every guide sample writes
+  `<summaryAxisRange>Auto</summaryAxisRange>` right after `<size>`. This is a `Report` chart
+  field. `DashboardComponent` has no such field. Taken from the guide; no org has refused a report
+  chart for lacking it yet (UNVERIFIED live, 2026-10-02).
 
 ---
 
@@ -367,6 +373,14 @@ suffixes above are the source-format equivalents the `sf` CLI reads and writes.
 - `componentType` is required. Valid values include `Bar`, `Column`, `Donut`, `Funnel`, `Gauge`,
   `Line`, `Metric`, `Pie`, `Table`, `FlexTable`, `Scatter`, `Image`, `RichText`,
   `PulseMetricCard`, `LightningWebComponent`, `VisualforcePage`, `SControl`.
+- **Every chart component needs `<sortBy>` and `<chartAxisRange>`.** The org refuses a chart
+  without either: "Chart dashboard components require the sortBy attribute", then "... the
+  chartAxisRange attribute" (`references/gotchas.md` N4-F-03). The guide marks neither as
+  required. In this example both sit inside the `Bar` component. Elements are in alphabetical
+  order, so `sortBy` lands 14 lines below `componentType`, and it is easy to read as belonging to
+  the next component. `Metric`, `Table` and `Gauge` components need neither.
+  `check_report_inventory.py` RPT-DASH-SORT-01 catches a missing `sortBy`. A missing
+  `chartAxisRange` is not checked yet.
 - `drillDownUrl` overrides `drillEnabled`, which in turn overrides `drillToDetailEnabled`. Setting
   all three does not combine them; the highest-precedence one wins.
 

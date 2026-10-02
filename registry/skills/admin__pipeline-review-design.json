@@ -231,7 +231,7 @@
     "fa658e0be38473a3f645",
     "fc8d1d1a33a98a311966"
   ],
-  "content_hash": "115bfdc44ecf36154604aeab184b689300662747eccdcd5f35e68ea658bd37e6",
+  "content_hash": "78870c04df825f09d1fa35f2ba718d91be92b7a0c9057a649c462571b9a749c2",
   "dependencies": [],
   "description": "Configuring and running Pipeline Inspection in Sales Cloud: enabling the feature, mapping forecast categories into the inspection view, Days in Stage and other deal-change metrics, and pipeline review cadence for sales managers. Use when designing or improving how a team monitors deal health and pipeline movement. NOT for the Revenue Intelligence app, Einstein deal insights, or forecast-accuracy dashboards \u2014 use admin/revenue-intelligence-setup. NOT for forecast types, quotas, or forecast hierarchy setup \u2014 use admin/collaborative-forecasts. Keywords: pipeline review, coverage ratio, stage conversion, slippage, stale deals, days in stage, LastStageChangeInDays, LastStageChangeDate, AgeInDays, PushCount, ForecastCategoryName, enablePipelineInspection, PipelineInspMetricConfig, OpportunitySettings, review cadence, commit call.",
   "file_location": "skills/admin/pipeline-review-design",
@@ -296,7 +296,7 @@
     "skills/admin/pipeline-review-design/templates/.gitkeep",
     "skills/admin/pipeline-review-design/templates/pipeline-review-spec-template.yaml"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-02",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

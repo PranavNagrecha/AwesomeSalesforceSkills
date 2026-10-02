@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dashboard xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- RPT-DASH-SORT-01 positive: a Column chart with no <sortBy>. Expect exactly 1 HIGH. Shape
+         of northwind-sales M4-S02 Enterprise_Pipeline, refused live 2026-10-02 with "Chart
+         dashboard components require the sortBy attribute". -->
+    <backgroundEndColor>#FFFFFF</backgroundEndColor>
+    <backgroundFadeDirection>Diagonal</backgroundFadeDirection>
+    <backgroundStartColor>#FFFFFF</backgroundStartColor>
+    <dashboardType>LoggedInUser</dashboardType>
+    <leftSection>
+        <columnSize>Wide</columnSize>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartSummary>
+                <aggregate>Sum</aggregate>
+                <axisBinding>y</axisBinding>
+                <column>AMOUNT</column>
+            </chartSummary>
+            <componentType>Column</componentType>
+            <sortBy>RowLabelAscending</sortBy>
+            <displayUnits>Auto</displayUnits>
+            <groupingColumn>CLOSE_DATE</groupingColumn>
+            <header>Open pipeline</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>Sales_Fixture/Open_Pipeline</report>
+            <showValues>true</showValues>
+            <title>By close month</title>
+            <useReportChart>false</useReportChart>
+        </components>
+    </leftSection>
+    <rightSection>
+        <columnSize>Narrow</columnSize>
+    </rightSection>
+    <textColor>#000000</textColor>
+    <title>Pipeline No Sort</title>
+    <titleColor>#000000</titleColor>
+    <titleSize>12</titleSize>
+</Dashboard>

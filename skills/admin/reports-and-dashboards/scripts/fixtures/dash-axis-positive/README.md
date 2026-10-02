@@ -1,0 +1,1 @@
+expected: 1 HIGH RPT-DASH-AXIS-01 — a Column chart with sortBy but no <chartAxisRange> ("Chart dashboard components require the chartAxisRange attribute", org-verified 2026-10-02). 0 RPT-DASH-SORT-01.

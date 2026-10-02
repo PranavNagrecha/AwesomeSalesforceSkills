@@ -48,9 +48,9 @@ outputs:
   - "Data-hygiene rules expressed as validation-rule intent for admin/validation-rules"
   - "Cadence and RACI table naming the Salesforce role that owns each artefact"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-02
 ---
 
 # Pipeline Review Design

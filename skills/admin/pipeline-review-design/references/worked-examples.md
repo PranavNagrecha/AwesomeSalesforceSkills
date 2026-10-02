@@ -385,6 +385,8 @@ never declared, and a Report XML that is not well-formed. It exits 1 on any of t
         <columnSize>Medium</columnSize>
         <components>
             <componentType>Donut</componentType>
+        <chartAxisRange>Auto</chartAxisRange>
+        <sortBy>RowValueDescending</sortBy>
             <dashboardFilterColumns>
                 <column>BucketField_DealSize</column>
             </dashboardFilterColumns>

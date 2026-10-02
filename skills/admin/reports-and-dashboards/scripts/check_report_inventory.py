@@ -35,6 +35,15 @@ UNVERIFIED-in-the-guide / proven-live-only, cited as such at the point of use:
   own rule: retrieve a working report on the same report type and copy its codes) and cannot be
   verified offline in general, so this is advisory, not a guess at right-or-wrong.
 
+Dashboard-body check added 2026-10-02, proven live in a validate-only deploy to org `sfskills-dev`
+(northwind-sales M4-S02, `reports/MOCK-DEPLOY-M4.md` run 1). The guide never marks the field
+required, so this one is also proven-live-only:
+
+* RPT-DASH-SORT-01 (HIGH)  a chart dashboard component (``componentType`` contains Chart, Bar,
+  Column, Line, Pie, Donut, Funnel or Scatter -- see CHART_COMPONENT_TOKENS) with no ``<sortBy>``
+  -- ``Chart dashboard components require the sortBy attribute``. Metric, Table, Gauge and the
+  other non-chart types never fire.
+
 Exit codes (``--strict`` promotes WARN-tier findings; INFO-tier findings never gate the exit
 code, with or without ``--strict``):
   0 -- no ERROR/CRITICAL/HIGH-tier finding (and no MEDIUM/WARN-tier finding under ``--strict``)
@@ -117,6 +126,30 @@ KNOWN_GOOD_COLUMN_CODES = {"STATUS", "PRIORITY", "OWNER", "CREATED_DATE"}
 # depend on the report type; the guide's own sample report uses `organization`, and the field
 # description gives MyAccounts / MyTeamsAccounts / AllAccounts as the Accounts-report values.
 ORG_WIDE_SCOPES = {"organization", "everything", "allaccounts"}
+
+# RPT-DASH-SORT-01. The org refuses a chart component with no <sortBy>: "Chart dashboard
+# components require the sortBy attribute" (org sfskills-dev, validate-only deploy,
+# 2026-10-02T17:53Z, .sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M4.md run 1). The
+# Metadata API Developer Guide (v67.0, Summer '26, DashboardComponent) describes sortBy only as
+# "The sort option for the dashboard component" and never marks it required, so this is
+# proven-live-only. Every chart in the guide's own Dashboard samples does carry one.
+# A componentType is a chart when it contains one of these tokens (case-sensitive). Against the
+# guide's DashboardComponentType enumeration that selects exactly these 21 values: Bar, BarGrouped,
+# BarStacked, BarStacked100, Column, ColumnGrouped, ColumnLine, ColumnLineGrouped,
+# ColumnLineStacked, ColumnLineStacked100, ColumnStacked, ColumnStacked100, Donut, Funnel, Line,
+# LineCumulative, LineGrouped, LineGroupedCumulative, Pie, Scatter, ScatterGrouped. The other 10
+# never fire: FlexTable, Gauge, Image, LightningWebComponent, Metric, PulseMetricCard, RichText,
+# SControl, Table, VisualforcePage. "Chart" matches no value today; it is kept so a future
+# *Chart value is caught instead of skipped.
+CHART_COMPONENT_TOKENS = ("Chart", "Bar", "Column", "Line", "Pie", "Donut", "Funnel", "Scatter")
+# Classic sections hold each component in <components> (DashboardComponentSection); the Lightning
+# grid holds one in each <dashboardComponent> (DashboardGridComponent). "dashboardComponents" is
+# not an element name in the guide; it is accepted so a hand-written variant is not skipped.
+DASHBOARD_COMPONENT_TAGS = {"components", "dashboardComponent", "dashboardComponents"}
+
+
+def is_chart_component_type(component_type: str) -> bool:
+    return any(token in component_type for token in CHART_COMPONENT_TOKENS)
 
 
 def local_name(tag: str) -> str:
@@ -442,7 +475,7 @@ def check_report_source(path: Path, known_report_types: set[str]) -> list[str]:
     known_codes = grouping_fields | KNOWN_GOOD_COLUMN_CODES
     flagged_codes: set[str] = set()
     code_sources: list[tuple[str, str]] = [
-        ("columns", code) for code in column_fields
+        ("columns", code) for code in sorted(column_fields)  # deterministic finding order
     ]
     if filter_el is not None:
         code_sources.extend(
@@ -521,6 +554,30 @@ def check_dashboard_source(path: Path) -> list[str]:
                     f"dashboardFilterColumns for {filter_count} dashboard filter(s) - the "
                     "undeclared filters render but do not affect this component"
                 )
+
+    # RPT-DASH-SORT-01 / RPT-DASH-AXIS-01 - a chart component with no <sortBy> or no <chartAxisRange> is refused live.
+    # Proven live only; see CHART_COMPONENT_TOKENS for the source and the types that count.
+    for component in root.iter():
+        if local_name(component.tag) not in DASHBOARD_COMPONENT_TAGS:
+            continue
+        component_type = child_text(component, "componentType")
+        if not component_type or not is_chart_component_type(component_type):
+            continue
+        label = child_text(component, "header") or child_text(component, "report") or "<untitled>"
+        if not child_text(component, "sortBy"):
+            findings.append(
+                f"HIGH {path}: dashboard component '{label}' of type {component_type} has no "
+                "<sortBy> \u2014 the platform refuses chart components without it (\"Chart dashboard "
+                "components require the sortBy attribute\", org-verified 2026-10-02)"
+            )
+        # RPT-DASH-AXIS-01 - the org names the next missing attribute on the next run (northwind
+        # M4 run 2): "Chart dashboard components require the chartAxisRange attribute".
+        if not child_text(component, "chartAxisRange"):
+            findings.append(
+                f"HIGH {path}: dashboard component '{label}' of type {component_type} has no "
+                "<chartAxisRange> \u2014 the platform refuses chart components without it (\"Chart "
+                "dashboard components require the chartAxisRange attribute\", org-verified 2026-10-02)"
+            )
 
     return findings
 

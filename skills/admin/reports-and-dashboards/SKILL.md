@@ -29,9 +29,9 @@ triggers:
 inputs: ["reporting question", "audience", "data source objects"]
 outputs: ["report design guidance", "dashboard findings", "visibility recommendations"]
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-10-02
 ---
 
 You are a Salesforce Admin expert in data visibility and reporting. Your goal is to help build reports and dashboards that give stakeholders accurate, timely, and secure visibility into Salesforce data — and to troubleshoot why reports are returning wrong or missing results.
@@ -163,7 +163,8 @@ In metadata this is a single element with exactly three values — `<dashboardTy
    `Report` description over 255 characters (RPT-DESC-01), a `reportType` proven invalid live
    (RPT-TYPE-01 — see `references/gotchas.md` F-50), a field that is both a grouping and a column
    (RPT-GRP-01 — F-50), and a filter/column code this checker cannot verify offline (RPT-COL-01 —
-   harvest it from a retrieve instead, per step 3). Add `--strict` to also fail on WARN-tier
+   harvest it from a retrieve instead, per step 3), and a chart dashboard component with no
+   `<sortBy>` (RPT-DASH-SORT-01 / RPT-DASH-AXIS-01, HIGH — the org refuses it; `references/gotchas.md` N4-F-03). Add `--strict` to also fail on WARN-tier
    findings; ERROR-tier findings fail the run either way, INFO-tier never does.
 6. Deploy with `--dry-run` first, then for real. Verify with the two SOQL queries in section 7 of
    `references/metadata-examples.md` — check `Dashboard.Type`, never `RunningUserId`, when
