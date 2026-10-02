@@ -16,7 +16,7 @@ res = json.loads((B/f"tests/{step_id}/results.json").read_text()); assert res.ge
 envs = sorted((B/f"envelopes/{step_id}").glob("*.json"))
 builder = None; open_items = []; seen = set()
 builders = [(p, json.loads(p.read_text())) for p in envs]
-builders = [(p, e) for p, e in builders if e.get("agent") in ("metadata-builder","apex-builder","lwc-builder","build-step-runner")]
+builders = [(p, e) for p, e in builders if e.get("agent") in ("metadata-builder","apex-builder","lwc-builder","build-step-runner", step.get("agent")) and not (e.get("agent") == "build-doc-keeper" and "render_step_docs" in (e.get("summary") or ""))]  # the step's own agent is its builder (a docs step is built by build-doc-keeper); never this script's own envelopes
 assert builders, "no builder envelope"
 bpath, builder = builders[-1]
 for p, e in builders:  # merge open items across every build/repair pass, oldest first, dedupe by id or text
