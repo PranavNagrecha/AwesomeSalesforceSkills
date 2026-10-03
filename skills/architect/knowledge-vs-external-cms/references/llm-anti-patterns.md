@@ -102,6 +102,8 @@ sharing rules or record-level access. Configure:
 Standard sharing rules do not apply to Knowledge articles.
 ```
 
+Correction (2026-10-03): the last line holds only for orgs on data-category visibility. The Knowledge Guide (Classic), "Work with Data Categories", says standard Salesforce sharing for Lightning Knowledge has been available since Summer '20, and switching to it changes how data categories and article access work. Ask which model the org uses before designing visibility.
+
 **Detection hint:** Recommendations mentioning "sharing rules," "org-wide defaults," or "record-level security" for Knowledge article access.
 
 ---
@@ -126,3 +128,40 @@ external CMS and deliver via CMS Connect or headless API.
 ```
 
 **Detection hint:** Claims that Knowledge handles "rich media," "interactive content," or "complex layouts" without caveats about the editor's limitations.
+
+---
+
+## Anti-Pattern 7: Inverting Data Category Visibility Inheritance
+
+**What the LLM generates:** "Granting a portal role access to the France category only exposes French articles; parent categories stay hidden."
+
+**Why it happens:** The model assumes least-privilege inheritance, the way role hierarchies grant upward only.
+
+**Correct pattern:** The Knowledge Guide (Classic), "Visibility Setting Enforcement", says visibility is broadly interpreted: a visible category exposes its ancestors, immediate parent, children, and other descendants. With France visible, users see Europe-level and French-city articles. Keep internal-only content off any ancestor of a category external users can see, or in a separate category group or channel.
+
+**Detection hint:** A visibility design that classifies internal articles at a parent level while granting portal users a child category.
+
+---
+
+## Anti-Pattern 8: Arguing for a CMS With Capabilities Knowledge Already Has
+
+**What the LLM generates:** "Move to Contentful because Knowledge cannot schedule publishing or send articles to translators in bulk."
+
+**Why it happens:** The model compares against an older picture of Knowledge.
+
+**Correct pattern:** The Knowledge Guide (Classic) documents scheduled publication and a translation path through per-language translation queues, Export Articles for Translation (50 exports per 24 hours, 15 pending) and Import Translated Articles. Base the CMS case on real gaps: structured multi-channel content, rich media and DAM, branching drafts, and authoring experience.
+
+**Detection hint:** A decision memo whose "Knowledge cannot" list includes scheduling or batch translation.
+
+---
+
+## Anti-Pattern 9: Promising Deflection Metrics for CMS or Guest Content
+
+**What the LLM generates:** "CMS Connect content on the case form will count toward your case deflection rate."
+
+**Why it happens:** Deflection is treated as a property of any content shown near the case form.
+
+**Correct pattern:** The *Experience Cloud Developer Guide* deflection signal records an article or discussion ID as its destination, comes from the Case Deflection component in an Aura site, and is reported only for authenticated users. Keep deflection-critical content in Knowledge and measure CMS or guest deflection separately.
+
+**Detection hint:** A deflection KPI that includes CMS Connect content or anonymous visitors.
+

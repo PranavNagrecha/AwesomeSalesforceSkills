@@ -179,3 +179,39 @@ patterns that lack proper escaping.
 ```
 
 **Detection hint:** Search for `Database.query(`, `Database.queryWithBinds(`, and `Search.query(` calls that use string concatenation with variables that could contain user input. Flag any that do not use bind variables or `escapeSingleQuotes()`.
+
+---
+
+## Anti-Pattern 7: Claiming an Object Can Be More Open Externally Than Internally
+
+**What the LLM generates:** "Your Case OWD is Private internally, but the external OWD may still be Public Read Only, so portal users can see every case."
+
+**Why it happens:** The model knows the two columns are separate and assumes they are independent.
+
+**Correct pattern:** The Security Guide says the external access level cannot be more permissive than the internal level. The real exposure is in orgs created before Spring '20, where external defaults were copied from the original (often Public) internal defaults, while newer orgs default external access to Private. Check the org's creation date and both columns, and look for other external paths (guest sharing rules, sharing sets).
+
+**Detection hint:** A finding that pairs a Private internal default with a more open external default on the same object.
+
+---
+
+## Anti-Pattern 8: Recommending "Protected Custom Metadata" as a Secrets Store
+
+**What the LLM generates:** "Move the API key into a protected custom metadata type so users can't read it."
+
+**Why it happens:** "Protected" sounds like access control.
+
+**Correct pattern:** The Apex Developer Guide says protection applies inside a managed package (protected metadata is readable only by Apex in the same namespace), and that outside a managed package secrets belong in named credentials or encrypted custom fields. For an unpackaged org, recommend a named credential with an external credential and key rotation.
+
+**Detection hint:** Any remediation that stores a password, token, or key in custom metadata or custom settings in an org that is not building a managed package.
+
+---
+
+## Anti-Pattern 9: Recommending New Connected Apps in a 2026 Remediation Plan
+
+**What the LLM generates:** "Create a separate connected app for each integration with the minimum OAuth scopes."
+
+**Why it happens:** Connected apps were the standard answer for years.
+
+**Correct pattern:** The Security Guide says connected app creation is restricted as of Spring '26 and recommends external client apps; existing connected apps keep working, and creating new ones needs Salesforce Support. Write least-privilege remediation as external client app work, and keep auditing the existing connected apps (`ConnectedApplication`, `OauthToken` in the Object Reference).
+
+**Detection hint:** A remediation step that creates a new connected app without mentioning the Spring '26 restriction or external client apps.

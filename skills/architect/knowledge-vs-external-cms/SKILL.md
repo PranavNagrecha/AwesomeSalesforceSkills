@@ -1,6 +1,6 @@
 ---
 name: knowledge-vs-external-cms
-description: "Use when deciding between Salesforce Knowledge, an external CMS (Contentful, WordPress, AEM), or a hybrid content strategy. Triggers: 'should we use Salesforce Knowledge or a CMS', 'content federation across Salesforce and headless CMS', 'CMS Connect for Experience Cloud', 'agent-facing vs customer-facing content architecture'. NOT for setting up CMS workspaces, content types or publishing — use admin/experience-cloud-cms-content. NOT for building a React or mobile frontend on the CMS delivery API — use lwc/headless-experience-cloud."
+description: "Use when deciding between Salesforce Knowledge, an external CMS (Contentful, WordPress, AEM), or a hybrid content strategy. Triggers: 'should we use Salesforce Knowledge or a CMS', 'content federation across Salesforce and headless CMS', 'CMS Connect for Experience Cloud', 'agent-facing vs customer-facing content architecture', 'decide where our help articles should live'. NOT for setting up CMS workspaces, content types or publishing — use admin/experience-cloud-cms-content. NOT for building a React or mobile frontend on the CMS delivery API — use lwc/headless-experience-cloud."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -12,6 +12,8 @@ triggers:
   - "how do I federate content between Salesforce and a headless CMS like Contentful"
   - "what is the best content architecture for agent-facing and customer-facing articles"
   - "when does CMS Connect make sense vs building a custom integration"
+  - "decide whether to move our help center articles out of Salesforce Knowledge"
+  - "plan a content architecture where agents and customers read different articles"
 tags:
   - knowledge-vs-external-cms
   - salesforce-knowledge
@@ -29,9 +31,9 @@ outputs:
   - "hybrid content topology showing which content lives where and how it is federated"
   - "search strategy recommendation covering both agent console and public-facing channels"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-03
 ---
 
 # Knowledge vs External CMS
@@ -47,6 +49,24 @@ Gather this context before working on anything in this domain:
 - Who consumes the content? Service agents via the console, customers via a portal, marketing audiences via a public site, or a mix?
 - Does the organization already own a CMS with established authoring workflows, localization pipelines, or headless delivery APIs?
 - Is Einstein article recommendation or case-deflection a requirement? These features depend on Knowledge being the content source.
+- Is Knowledge licensed? The Knowledge Guide (Classic) says Salesforce Knowledge is included in Essentials and Unlimited Editions with Service Cloud and costs extra in Professional, Enterprise, Performance, and Developer Editions.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before assigning any content type to a platform. Each traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What a proper design adds over just doing it |
+|---|---|---|---|
+| "Which surfaces must show this content: agent console, Experience Cloud site, public website, mobile app?" | CMS Connect feeds Experience Builder sites only (Gotcha 1) | A surface-by-content-type matrix | No promise that external content will appear in the console |
+| "Which external audiences read it, and what licenses do they hold?" | Customer and Partner channels need specific community licenses (Gotcha 7) | Audience, license, and channel per content type | Every intended reader can actually open the article |
+| "How many languages, how many updates a month, and who translates?" | Knowledge translation runs through queues with export limits (Gotcha 2) | Translation volume against 50 exports per 24 hours | The localization system of record is chosen on volume, not preference |
+| "Does Knowledge here use data-category visibility or standard sharing, and which facets do people filter on?" | Data categories cap at 5 groups (3 active), 100 categories, 5 levels (Gotcha 6); visibility spreads up and down the tree (Gotcha 3); some orgs use standard sharing instead (Gotcha 10) | Facets split between data categories and custom fields | No internal article leaks through an ancestor category |
+| "Do we need deflection metrics or article recommendations for this content?" | Deflection signals record only articles and discussions from authenticated users (Gotcha 8) | The list of content that must live in Knowledge | Reporting promises match what the platform measures |
+| "What exactly does the current CMS do that Knowledge cannot?" | Knowledge already schedules publishing and keeps versions (Gotcha 9) | A short, true list of CMS-only capabilities | The decision rests on real gaps, not outdated ones |
+
+What a proper decision adds over "just picking the tool the content team likes": each content type lands where its readers and its required platform features are, visibility and licensing are checked per audience, and the case for an external CMS names gaps that are actually there.
 
 ---
 
@@ -56,7 +76,7 @@ The decision between Knowledge and an external CMS is not a feature comparison. 
 
 ### Salesforce Knowledge Strengths
 
-Salesforce Knowledge is a native object tightly coupled to the Service Cloud agent experience. Articles surface inside the console via Einstein Search and article recommendations. Data categories control visibility by audience segment. Knowledge supports approval workflows and article versioning (draft, published, archived lifecycle). Case deflection works out of the box in Experience Cloud when Knowledge is the source. The limitation is authoring: the rich-text editor is basic compared to modern CMS platforms, rich media support is constrained, and localization workflows are minimal beyond basic multi-language article translation.
+Salesforce Knowledge is a native object tightly coupled to the Service Cloud agent experience. In Lightning Knowledge the concrete objects are `Knowledge__ka` and `Knowledge__kav`, with record types describing article structure (Knowledge Developer Guide, "Knowledge Object Model"). Articles surface inside the console via Einstein Search and article recommendations. Data categories control visibility by audience segment. Knowledge supports approval workflows, article versioning (Draft, Online, Archived), and scheduled publication (documented in the Knowledge Guide (Classic); confirm in Lightning Knowledge). Case deflection works out of the box in Experience Cloud when Knowledge is the source. The limitation is authoring: the rich-text editor is basic compared to modern CMS platforms, rich media support is constrained, and localization workflows are minimal beyond basic multi-language article translation.
 
 ### External CMS Strengths
 
@@ -64,7 +84,9 @@ Platforms like Contentful, WordPress, and AEM offer structured content modeling,
 
 ### CMS Connect and Content Federation
 
-CMS Connect is the Salesforce-provided bridge that brings external CMS content into Experience Cloud sites. It supports connections to headless CMS APIs, allowing external articles to render inside Salesforce-hosted portals without migrating content. This enables a hybrid model where the CMS is the system of record for customer-facing content, but that content still appears in the Salesforce portal. CMS Connect does not feed content into the agent console or Einstein recommendations -- that path still requires Knowledge.
+CMS Connect is the Salesforce-provided bridge that brings external CMS content into Experience Cloud sites. Its metadata type, `CMSConnectSource`, is defined per site (network) and lists the supported source types as AEM, Drupal, WordPress, SDL, Sitecore, and Other, with `Public` or `Authenticated` (named credential) connections, language mappings, and personalization for AEM only (Metadata API Developer Guide). It supports connections to headless CMS APIs, allowing external articles to render inside Salesforce-hosted portals without migrating content. This enables a hybrid model where the CMS is the system of record for customer-facing content, but that content still appears in the Salesforce portal. CMS Connect does not feed content into the agent console or Einstein recommendations -- that path still requires Knowledge.
+
+Experience Cloud also has a second, built-in option: Salesforce CMS, which the *Experience Cloud Developer Guide* (Chapter 7) describes as built into the org for creating and organizing content across channels. Consider it before adding a third-party CMS for site content that has no existing home.
 
 ### Search Strategy Across Boundaries
 
@@ -145,10 +167,10 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Einstein recommendations only index Knowledge** -- If articles live in an external CMS and are not synced into Knowledge, Einstein article recommendations and suggested articles on cases will not surface them. There is no workaround short of syncing content into Knowledge records.
+1. **Einstein recommendations only index Knowledge** -- If articles live in an external CMS and are not synced into Knowledge, Einstein article recommendations and suggested articles on cases will not surface them. There is no workaround short of syncing content into Knowledge records. (UNVERIFIED 2026-10-03: the Einstein Article Recommendations source rules are Help-only; the grounded parallel is that case deflection signals record only article and discussion IDs.)
 2. **CMS Connect content is read-only in Experience Cloud** -- CMS Connect renders external content but does not support inline editing, commenting, or case attachment from within Salesforce. Users cannot interact with CMS Connect content the way they interact with Knowledge articles.
-3. **Knowledge article versioning is linear, not branching** -- Unlike modern CMS platforms that support content branches, scheduled publishing, and variant testing, Knowledge articles follow a single draft-to-published-to-archived lifecycle. Teams accustomed to CMS branching workflows will find this restrictive.
-4. **Data categories have a depth limit of 5 levels** -- Organizations that map complex content taxonomies into Knowledge data categories hit the 5-level nesting limit. Deep hierarchies must be flattened or supplemented with custom fields.
+3. **Knowledge article versioning is linear, not branching** -- Unlike modern CMS platforms that support content branches and variant testing, Knowledge articles follow a single draft-to-published-to-archived lifecycle. Correction (2026-10-03): earlier text listed scheduled publishing as a CMS-only capability; the Knowledge Guide (Classic) documents scheduled publication. Teams accustomed to CMS branching workflows will find the single lifecycle restrictive.
+4. **Data categories have a depth limit of 5 levels** -- Organizations that map complex content taxonomies into Knowledge data categories hit the 5-level nesting limit (confirmed in the Knowledge Guide (Classic), "Data Category Limits", alongside 5 groups with 3 active, 100 categories per group, and 8 categories per group per article). Deep hierarchies must be flattened or supplemented with custom fields.
 5. **CMS Connect requires Experience Cloud** -- CMS Connect is only available in Experience Cloud sites. It cannot bring external CMS content into the agent console, internal Lightning pages, or other Salesforce surfaces.
 
 ---
@@ -166,12 +188,13 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- service-cloud-architecture -- Use when the broader service architecture (not just content) needs design, including routing, entitlements, and agent workspace layout
-- multi-channel-service-architecture -- Use when the content decision is part of a larger omnichannel service strategy spanning chat, voice, email, and self-service
+- `architect/service-cloud-architecture` -- Use when the broader service architecture (not just content) needs design, including routing, entitlements, and agent workspace layout
+- `architect/multi-channel-service-architecture` -- Use when the content decision is part of a larger omnichannel service strategy spanning chat, voice, email, and self-service
+- `admin/experience-cloud-cms-content` -- Use for setting up CMS workspaces, content types, and publishing once the decision is made
+- `lwc/headless-experience-cloud` -- Use when a React or mobile frontend reads the CMS delivery API
 
 ---
 
 ## Official Sources Used
 
-- Salesforce Knowledge Overview -- https://help.salesforce.com/s/articleView?id=sf.knowledge_whatis.htm
-- CMS Connect for Experience Cloud -- https://help.salesforce.com/s/articleView?id=sf.cms_connect.htm
+See `references/well-architected.md` for the full list with the sections read on 2026-10-03.

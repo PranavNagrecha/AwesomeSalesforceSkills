@@ -7,12 +7,12 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** Instructions to set up Live Agent chat buttons, `LiveChatTranscript` objects, and legacy snap-in code for new chat channel deployments.
 
-**Why it happens:** Training data overwhelmingly contains Live Agent documentation and examples from before Spring '24. LLMs default to the most frequently seen pattern, which is the legacy approach.
+**Why it happens:** Training data overwhelmingly contains Live Agent documentation and examples from before Messaging for In-App and Web existed. LLMs default to the most frequently seen pattern, which is the legacy approach.
 
 **Correct pattern:**
 
 ```text
-Use Messaging for In-App and Web (GA Spring '24) for all new chat implementations.
+Use Messaging for In-App and Web for all new chat implementations. The Object Reference states the legacy chat product "is in maintenance-only mode, and we won't continue to build new features" (UNVERIFIED (2026-10-03): the "GA Spring '24" date used here before was not confirmed).
 Configure an Embedded Service deployment with a Messaging channel.
 The object model uses MessagingSession, MessagingEndUser, and MessagingChannel.
 Live Agent (LiveChatTranscript, LiveChatButton) is legacy and should only
@@ -25,15 +25,18 @@ appear in migration plans, not new designs.
 
 ## Anti-Pattern 2: Treating All Channels as Equal Capacity
 
-**What the LLM generates:** Omni-Channel configuration advice that assigns the same capacity weight (e.g., 10) to all Service Channels, or omits capacity weight configuration entirely.
+**What the LLM generates:** Omni-Channel configuration advice that assigns the same capacity weight (e.g., 10) to every channel, puts the weight on the Service Channel, or omits capacity configuration entirely.
 
 **Why it happens:** LLMs generate generic Omni-Channel setup steps without accounting for the fact that different channels consume agent bandwidth differently. Phone calls are full-attention; chats allow concurrency.
 
 **Correct pattern:**
 
 ```text
-Assign capacity weights reflecting actual agent bandwidth consumption:
-  - VoiceCall (phone): weight 100 (full agent capacity)
+Set capacity on each routing configuration (QueueRoutingConfig.capacityWeight
+or capacityPercentage), with the agent total on the presence configuration
+(PresenceUserConfig.capacity), reflecting actual bandwidth consumption:
+  - VoiceCall (phone): full capacity, required by the platform
+    ("Voice calls must have a capacity percentage of 100")
   - MessagingSession (chat): weight 25-33 (3-4 concurrent sessions)
   - Case from Email-to-Case: weight 10-15 (background work)
   - Case from Social: weight 20-25 (similar to chat)
@@ -43,7 +46,7 @@ Agent total capacity: 100 units.
 Tune weights based on observed average handle time per channel.
 ```
 
-**Detection hint:** All Service Channels sharing identical capacity weight values, or capacity weight not mentioned in multi-channel Omni-Channel guidance.
+**Detection hint:** All routing configurations sharing identical capacity values, a capacity value described as a Service Channel field, a voice weight below full capacity, or capacity not mentioned in multi-channel Omni-Channel guidance.
 
 ---
 
@@ -86,7 +89,7 @@ requirement for org-wide.
 **Correct pattern:**
 
 ```text
-Social Studio is retiring. For social media service channels:
+Social Studio is retiring (UNVERIFIED (2026-10-03): the retirement is not documented in a fetched source). For social media service channels:
   - Use Social Customer Service to create Cases from social media posts
   - Social Customer Service integrates with Twitter/X and Facebook
   - Cases created from social posts route through Omni-Channel like any other case
@@ -145,3 +148,28 @@ components for all channel types.
 ```
 
 **Detection hint:** Multi-channel design that describes channel setup without mentioning Case as the unifying object or "unified timeline" / "single customer view."
+
+---
+
+## Anti-Pattern 7: Expecting Agents To Answer Chats While On A Call
+
+**What the LLM generates:** A blended-agent design that sets the voice work item to 50% or 60% of capacity "so agents can pick up a chat during long calls".
+
+**Why it happens:** Capacity math looks uniform across channels, so the model applies concurrency everywhere. The Metadata API says otherwise: "Voice calls must have a capacity percentage of 100", and with unit capacity "voice calls must use the entire capacity weight."
+
+**Correct pattern:** Treat voice as exclusive. Size blended staffing so voice peaks are covered by agents who are not also counted for messaging concurrency, and use after-conversation work time on the voice and messaging channels for wrap-up.
+
+**Detection hint:** A voice capacity value below full capacity, or a staffing model that counts the same agent minutes twice across voice and digital.
+
+---
+
+## Anti-Pattern 8: Ordering Channels By Reordering Queues
+
+**What the LLM generates:** "To answer phones first, list the phone queue first" or "give phone a higher capacity weight".
+
+**Why it happens:** The model maps business priority to the most visible configuration. Cross-channel priority is `QueueRoutingConfig.routingPriority`, and lower values are routed first.
+
+**Correct pattern:** Set `routingPriority` per routing configuration (for example voice 0, messaging 1, email 2) and use the service channel's `secondaryRoutingPriorityField` for ordering within a channel.
+
+**Detection hint:** A priority requirement with no `routingPriority` values in the design.
+

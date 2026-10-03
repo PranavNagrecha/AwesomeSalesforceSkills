@@ -5,7 +5,7 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Recommending SOQL Without Considering Selectivity
 
-**What the LLM generates:** Queries like `SELECT Id, Name FROM Opportunity WHERE Custom_Status__c = 'Active'` on a table with 5 million records, without checking whether `Custom_Status__c` is indexed or whether the filter returns fewer than 10% of rows.
+**What the LLM generates:** Queries like `SELECT Id, Name FROM Opportunity WHERE Custom_Status__c = 'Active'` on a table with 5 million records, without checking whether `Custom_Status__c` is indexed or whether the filter is under the index threshold for that table size.
 
 **Why it happens:** LLMs generate syntactically correct SOQL based on the field name and filter value without awareness of table size, index existence, or the selectivity threshold. Training data rarely includes selectivity commentary.
 
@@ -14,7 +14,9 @@ These patterns help the consuming agent self-check its own output.
 ```
 -- Before writing the query, verify:
 -- 1. Is Custom_Status__c indexed? (Standard fields have default indexes; custom fields do not unless requested)
--- 2. Does the filter return < 10% of total records (standard index) or < 5% (custom index)?
+-- 2. Is the filter under the tiered threshold? Custom index: < 10% of the first
+--    million rows + 5% of the rest (300,000 at 5M rows). Standard index: < 30% + 15%.
+--    (Best Practices for Deployments with Large Data Volumes, Indexes)
 -- 3. If not selective, add a conjunction with an indexed field:
 SELECT Id, Name FROM Opportunity
 WHERE Custom_Status__c = 'Active'
@@ -65,25 +67,27 @@ AND CloseDate >= LAST_N_DAYS:90
 
 ---
 
-## Anti-Pattern 4: Assuming Big Objects Support Synchronous SOQL
+## Anti-Pattern 4: Assuming Big Objects Need Async SOQL, Or That They Accept Any SOQL
 
-**What the LLM generates:** Code that queries a Big Object with standard SOQL in a Lightning controller or trigger, expecting inline results:
-```apex
-List<Archived_Opportunity__b> results = [SELECT Name__c FROM Archived_Opportunity__b WHERE Account__c = :accountId];
-```
+**What the LLM generates:** One of two errors. Either "big objects can only be read with Async SOQL into a target object", or a query that filters a big object on a non-leading index field, uses `LIKE` or `!=`, or runs `SELECT COUNT()` to reconcile an archive.
 
-**Why it happens:** LLMs treat Big Objects like standard custom objects because the SOQL syntax looks identical. Training data rarely distinguishes between standard SOQL and Async SOQL execution contexts. The LLM does not know that Big Object queries in Apex are limited to the composite index fields and that large-scale reads require Async SOQL.
+**Why it happens:** Older material centered big object reads on Async SOQL, and big object SOQL looks identical to ordinary SOQL. The current Big Objects Implementation Guide (v66.0) documents synchronous SOQL through the SOQL, Bulk, Chatter, and SOAP APIs, and the SOQL reference documents the shape rules.
 
 **Correct pattern:**
 
 ```
--- Big Objects support limited standard SOQL only on indexed fields (composite key).
--- For analytical queries, use Async SOQL which writes results to a target object:
--- System.enqueueJob() with an Async SOQL request, results land in a custom object.
--- For UI access, query a pre-populated summary custom object, not the Big Object directly.
+-- Index on Archived_Opportunity__b: Account__c, Close_Date__c, Opportunity_Id__c
+-- Valid: filter on index fields in order, = on earlier fields, range on the last
+SELECT Name__c, Amount__c, Close_Date__c
+FROM Archived_Opportunity__b
+WHERE Account__c = :accountId AND Close_Date__c >= :fromDate
+
+-- Not valid: skips Account__c; LIKE; COUNT()
+-- Count archive rows with batch Apex instead (Big Objects guide, Aggregate Queries).
+-- Serve reps through a summary custom object: big objects have no record-level sharing.
 ```
 
-**Detection hint:** Standard SOQL brackets `[SELECT ... FROM ...__b]` used in synchronous Apex contexts like Aura/LWC controllers or triggers.
+**Detection hint:** "Async SOQL" in a 2026 design, or big object SOQL whose first filter is not the first index field, or any aggregate function against a `__b` object.
 
 ---
 
@@ -96,10 +100,11 @@ List<Archived_Opportunity__b> results = [SELECT Name__c FROM Archived_Opportunit
 **Correct pattern:**
 
 ```
--- When a report is slow on a table with >200K records:
+-- When a report is slow on a table with millions of records:
 -- 1. Check filter fields for index coverage using Query Plan tool
 -- 2. Calculate selectivity: filter result count / total record count
--- 3. If not selective, request a custom index via Salesforce Support
+-- 3. If not selective, request a custom index via Salesforce Support (or CustomIndex
+--    metadata once Support enables it); consider an External ID if the field is a key
 -- 4. If object is wide (200+ fields), request a skinny table
 -- Only after index/skinny table are in place, optimize the report layout
 ```
@@ -125,3 +130,16 @@ List<Archived_Opportunity__b> results = [SELECT Name__c FROM Archived_Opportunit
 ```
 
 **Detection hint:** Mentions of "storage limit", "buy more storage", or "storage utilization" in the context of query performance advice.
+
+---
+
+## Anti-Pattern 7: Archiving Opportunities Without Carrying The Security Model
+
+**What the LLM generates:** An archival design that copies every Opportunity field, including Shield-encrypted ones, into a big object and grants the sales profile read access "so reps can see history".
+
+**Why it happens:** The model treats the big object as a cheaper copy of the source object. The Big Objects guide says big objects "support only object and field permissions, not regular or standard sharing rules" and that encrypted source data "is stored as clear text on the big object".
+
+**Correct pattern:** Limit big object access to a reporting or compliance group. Give reps a summary custom object with normal sharing. Exclude or tokenize encrypted fields, or keep encrypted-field records out of the archive, and record the decision.
+
+**Detection hint:** A big object archive design with no access-group line and no mention of encrypted fields.
+

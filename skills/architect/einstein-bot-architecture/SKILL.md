@@ -13,6 +13,8 @@ triggers:
   - "how many utterances do I need for intent training"
   - "how do I surface knowledge articles from an Einstein Bot"
   - "should I migrate from Einstein Bots to Agentforce Agents"
+  - "design what the bot does when transfer to an agent fails after hours"
+  - "roll back a bad Einstein Bot release without breaking the intent model"
 tags:
   - einstein-bot-architecture
   - agentforce
@@ -34,9 +36,9 @@ outputs:
   - "escalation path diagram showing bot-to-agent transfer triggers and context passing"
   - "bot analytics measurement plan with deflection, containment, and CSAT metrics"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-03
 ---
 
 # Einstein Bot Architecture
@@ -52,6 +54,24 @@ Gather this context before working on anything in this domain:
 - Which bot platform is the org on? Einstein Bots (legacy, Setup-driven) and Agentforce Agents (current, Agent Builder) have different dialog models and capabilities. Agentforce uses Topics and Actions rather than Dialogs and Dialog Steps.
 - What channels does the bot serve? Web chat, Messaging for In-App and Web, WhatsApp, SMS, and Slack all have different UI constraints that affect dialog design (e.g., rich cards are not available on SMS).
 - Is Omni-Channel already configured with routing rules and agent skills? The handoff design depends entirely on the existing queue and skill-based routing setup.
+- Which messaging product carries the bot? Legacy chat (`LiveChatTranscript`) is "in maintenance-only mode" per the Object Reference; Messaging for In-App and Web uses `MessagingSession`.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Is this an Einstein Bot or an Agentforce agent, and on legacy chat or Messaging for In-App and Web?" | One `BotDefinition` object, two design models; legacy chat gets no new features (Gotchas 6, 7) | The design model and the channel object the context will land on | No redesign forced six months after launch |
+| "Which customer facts must reach the bot and the rep, from which fields, on which channels?" | Context arrives only through per-channel context variable mappings (Gotcha 1) | A mapping table: variable, channel type, sObject field | The rep never asks the customer to repeat themselves |
+| "What happens when a transfer fails or no rep is online?" | A failed transfer without a designed path leaves silence (Gotcha 4) | A `TransferFailed` dialog and an `agentRequired` decision per channel | After-hours conversations end in a case or callback, not a dead session |
+| "How will we roll back a bad release?" | Versions share one intent set; reactivating a version does not restore intents (Gotchas 2, 12) | Intent-set backups and a redeploy procedure | Rollback that actually rolls back |
+| "How strict must intent matching be, and is `intentThreshold` enabled here?" | Strictness is a 1-to-5 setting that Support enables, not a 0.7 confidence value (Gotcha 3) | Overlap fixed in the taxonomy first; strictness set only if needed | Fewer silent misroutes without guessing at a non-existent field |
+| "Which parts of the bot cannot be deployed by metadata?" | Messaging channel links must be set in the UI (Gotcha 5) | A manual post-deploy step in the runbook | Production bots that are actually connected to their channels |
+
+What proper configuration adds over "just building dialogs": context that survives the handoff, a designed failure path, and releases that can be reversed.
 
 ---
 
@@ -65,15 +85,15 @@ Einstein Bots (legacy) use a Dialog-and-Step model where each dialog is a linear
 
 ### Intent Model and NLU Training
 
-Both platforms use intent classification to route user input. Each intent requires a minimum of 20 utterances for reliable training, but 50+ utterances per intent is the practical target for production accuracy. Utterances must reflect real customer language, not agent jargon. The intent taxonomy should be flat rather than deeply nested: 15-30 well-scoped intents outperform 100 overlapping ones. Salesforce recommends retraining the model whenever you add or modify intents, and monitoring confidence scores to detect model drift.
+Both platforms use intent classification to route user input. Practitioners aim for 20 utterances per intent as a floor and 50+ for production accuracy (UNVERIFIED (2026-10-03): neither figure appears in a fetched Salesforce source). All versions of an Einstein Bot share one intent set (`Bot.botMlDomain`), so intent changes affect every version. Utterances must reflect real customer language, not agent jargon. The intent taxonomy should be flat rather than deeply nested: 15-30 well-scoped intents outperform 100 overlapping ones. Retrain the model whenever you add or modify intents, and review misroutes to detect drift. Matching strictness is controlled by `BotVersion.intentThreshold`, a 1-to-5 scale that Salesforce Customer Support must enable (Metadata API v67.0).
 
 ### Bot-to-Agent Handoff via Omni-Channel
 
-When the bot cannot resolve a request, it transfers the conversation to a human agent through Omni-Channel. The handoff is not just a routing event; it must pass context. Bot variables (collected answers, intent detected, conversation history) transfer to the agent's console as pre-chat data or custom fields on the LiveChatTranscript or MessagingSession record. Pre-chat form data flows into bot variables at session start. The architecture must define which variables transfer, how they map to case or transcript fields, and what the agent sees on accept.
+When the bot cannot resolve a request, it transfers the conversation to a human agent through Omni-Channel. The handoff is not just a routing event; it must pass context. Bot variables (collected answers, intent detected, conversation history) reach the agent's console through fields on the `LiveChatTranscript` or `MessagingSession` record. Inbound facts flow into context variables only where a `ConversationContextVariableMapping` binds the variable to an sObject field for that channel type. The architecture must define which variables transfer, how they map to case or transcript fields, and what the agent sees on accept.
 
 ### Analytics and Continuous Improvement
 
-The Einstein Bot Analytics dashboard tracks deflection rate (conversations resolved without agent), containment rate (conversations that stay in the bot flow), average handle time, and CSAT scores. These metrics drive architectural decisions: low deflection on a specific intent means the dialog needs redesign or knowledge gaps exist; high transfer rates at a particular step reveal a dialog dead-end. Architects should define target metrics before launch and build the feedback loop into the operating model.
+Bot analytics should track deflection rate (conversations resolved without an agent), containment rate (conversations that stay in the bot flow), average handle time, and CSAT (UNVERIFIED (2026-10-03): the exact metrics on the standard Einstein Bot analytics dashboard were not confirmed). Define goals on the bot version (`conversationGoals`, BotStep type `GoalStep`) so resolution is recorded, not inferred. These metrics drive architectural decisions: low deflection on a specific intent means the dialog needs redesign or knowledge gaps exist; high transfer rates at a particular step reveal a dialog dead-end. Architects should define target metrics before launch and build the feedback loop into the operating model.
 
 ---
 
@@ -134,11 +154,11 @@ The Einstein Bot Analytics dashboard tracks deflection rate (conversations resol
 
 Step-by-step instructions for an AI agent or practitioner designing a conversational AI architecture:
 
-1. **Assess the platform baseline.** Confirm whether the org runs Einstein Bots (legacy) or Agentforce Agents. Check the Salesforce edition (Einstein Bots require Service Cloud; Agentforce requires the Agentforce add-on). Verify that Omni-Channel is enabled and configured.
+1. **Assess the platform baseline.** Run the inventory query in `references/examples.md` to see each `BotDefinition` with its `Type` and active `BotVersion`. Confirm licensing (UNVERIFIED (2026-10-03): "Einstein Bots require Service Cloud; Agentforce requires the Agentforce add-on" is from earlier material). The Bot metadata type is "available only if Chat and Einstein Bots are enabled". Verify that Omni-Channel is enabled and configured.
 2. **Analyze historical case data.** Pull the top case reasons by volume from the Case object. Group them into candidate intents. Validate that each intent can be expressed with 20+ distinct utterances from real customer language.
 3. **Design the intent taxonomy.** Create 15-25 well-bounded intents. Map each to a resolution path: knowledge article, self-service action, or agent handoff. Document the fallback intent behavior.
 4. **Design the dialog/topic structure.** For Einstein Bots, map each intent to a dialog with clear steps. For Agentforce, define topics with descriptions and map available actions. In both cases, keep conversation depth under 5 turns for simple requests.
-5. **Design the handoff architecture.** Define which bot variables transfer to the agent. Map variables to LiveChatTranscript or MessagingSession fields. Configure Skills-Based Routing so the bot routes to the correct agent team. Build the agent console layout to surface transferred context.
+5. **Design the handoff architecture.** Define which bot variables transfer to the agent and map them per channel to `LiveChatTranscript` or `MessagingSession` fields. Assign a `TransferFailed` dialog. Configure Skills-Based Routing so the bot routes to the correct agent team. Build the agent console layout to surface transferred context. Add the manual channel-connection step to the deployment runbook.
 6. **Define the analytics measurement plan.** Set target deflection rate (typically 30-50% for a mature bot), containment rate, and CSAT thresholds. Configure the Bot Analytics dashboard. Plan a monthly review cadence to retrain intents and adjust dialogs based on metrics.
 7. **Plan the rollout.** Start with 3-5 high-volume, low-complexity intents. Measure for 2-4 weeks. Expand intent coverage incrementally. Do not launch with the full intent taxonomy; iterate based on real performance data.
 
@@ -162,15 +182,14 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full detail and sources in `references/gotchas.md`. The short list, with two corrections to earlier versions of this skill:
 
-1. **Intent confidence threshold defaults are too permissive** — The default confidence threshold for intent matching is low enough to route ambiguous input to the wrong dialog. Set the threshold to at least 0.7 in production and route anything below to the fallback intent. Failing to tune this causes silent misroutes that damage CSAT.
-2. **Bot variables do not automatically transfer on handoff** — Setting a value in a bot variable does not mean the agent sees it. Each variable must be explicitly mapped to a LiveChatTranscript or MessagingSession field in the Transfer action configuration. Architects who skip this step deliver a bot that transfers customers to agents who have no idea what the conversation was about.
-3. **Utterance retraining is not incremental** — When you add utterances to an existing intent or add a new intent, you must retrain the entire model. The old model stays active until the new one completes training. During training, the bot continues to use the old model, which means newly added intents are invisible until training finishes.
-4. **Rich message components fail silently on SMS/WhatsApp** — Carousels, quick replies with images, and rich cards render only on web chat and in-app messaging. On SMS and WhatsApp they either degrade to plain text or disappear entirely. The bot does not throw an error; the customer simply sees nothing.
-5. **Agentforce topic descriptions are the new dialog design** — In Agentforce, the topic description is what the LLM uses to decide whether a topic applies. A vague description ("handle customer issues") causes the agent to match too broadly. A description must be as precise as an intent definition: specific about what is in scope and what is not.
-
----
+1. Intent strictness is `BotVersion.intentThreshold`, a 1-to-5 scale that Support enables. The earlier "set the threshold to 0.7" advice is withdrawn.
+2. All versions of a bot share one intent set; reactivating an old version does not roll back intents. The earlier "each version keeps its own trained model" statement is withdrawn.
+3. Context reaches the bot only through per-channel context variable mappings.
+4. Assign a `TransferFailed` dialog; a failed transfer otherwise leaves the customer waiting.
+5. Messaging channel links are set in the UI and do not deploy with Bot metadata.
+6. Legacy chat is in maintenance-only mode; design new bots on Messaging for In-App and Web.
 
 ## Output Artifacts
 
@@ -194,5 +213,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Official Sources Used
 
+- Metadata API Developer Guide and Object Reference, Version 67.0 (full list in `references/well-architected.md`)
 - Einstein Bots Overview — https://help.salesforce.com/s/articleView?id=sf.bots_service_intro.htm
 - Agentforce Overview — https://help.salesforce.com/s/articleView?id=sf.agentforce_overview.htm

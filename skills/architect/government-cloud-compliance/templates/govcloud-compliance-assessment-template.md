@@ -4,12 +4,12 @@
 
 | Property | Value |
 |----------|-------|
-| **Program / Agency** | TODO |
-| **Salesforce Org ID** | TODO |
-| **Assessment Date** | TODO |
-| **Assessor(s)** | TODO |
-| **Current GovCloud Offering** | TODO: GovCloud / GovCloud Plus / Hyperforce GovCloud / Not yet deployed |
-| **ATO Status** | TODO: No ATO / ATO in progress / Active ATO (expiry: TODO) / Continuous authorization |
+| **Program / Agency** | <fill in> |
+| **Salesforce Org ID** | <fill in> |
+| **Assessment Date** | <fill in> |
+| **Assessor(s)** | <fill in> |
+| **Current GovCloud Offering** | <fill in: Government Cloud Plus / Government Cloud Plus - Defense / Hyperforce Government Cloud / Not yet deployed> |
+| **ATO Status** | <fill in: No ATO / ATO in progress / Active ATO (expiry: <fill in>) / Continuous authorization> |
 
 ---
 
@@ -19,12 +19,12 @@
 
 | Data Element | Confidentiality | Integrity | Availability |
 |-------------|----------------|-----------|-------------|
-| TODO: data type | Low / Moderate / High | Low / Moderate / High | Low / Moderate / High |
-| TODO: data type | Low / Moderate / High | Low / Moderate / High | Low / Moderate / High |
+| <fill in: data type> | Low / Moderate / High | Low / Moderate / High | Low / Moderate / High |
+| <fill in: data type> | Low / Moderate / High | Low / Moderate / High | Low / Moderate / High |
 
-**Overall FISMA Impact Level:** TODO: Low / Moderate / High
+**Overall FISMA Impact Level:** <fill in: Low / Moderate / High>
 
-**Rationale:** TODO: explain why the highest impact level across all data elements determines the system categorization
+**Rationale:** <fill in: explain why the highest impact level across all data elements determines the system categorization>
 
 ### DoD Impact Level (if applicable)
 
@@ -41,7 +41,7 @@
 - [ ] DFARS 252.204-7012 / NIST 800-171 (DoD contractor systems)
 - [ ] IRS Publication 1075 (tax information handling)
 - [ ] CJIS (Criminal Justice Information)
-- [ ] Other: TODO
+- [ ] Other: <fill in>
 
 ---
 
@@ -53,24 +53,24 @@ Based on the authorization level determination above:
 
 | Requirement | Recommended Offering | Rationale |
 |-------------|---------------------|-----------|
-| FISMA Moderate | Salesforce Government Cloud | FedRAMP Moderate ATO |
-| FISMA High (civilian) | Salesforce Government Cloud Plus | FedRAMP High ATO |
+| FISMA Moderate | Salesforce Government Cloud | FedRAMP Moderate ATO (confirm the offering is still sold; the Spring '26 Government Cloud guide lists only Government Cloud Plus and Government Cloud Plus - Defense) |
+| FISMA High (civilian) | Salesforce Government Cloud Plus | FedRAMP High P-ATO (JAB) |
 | DoD IL4 | Salesforce Government Cloud Plus | FedRAMP High minimum for IL4 |
-| DoD IL5 | Hyperforce GovCloud (AWS GovCloud) + CMEK | Additional IL5 controls required |
+| DoD IL5 | Salesforce Government Cloud Plus - Defense | DoD IL5 PA on dedicated DoD infrastructure (Government Cloud guide) |
 
-**Selected Offering:** TODO
+**Selected Offering:** <fill in>
 
-**Justification:** TODO: explain why this offering was selected
+**Justification:** <fill in: explain why this offering was selected>
 
 ### Feature Availability Gap Analysis
 
 | Required Feature | Available in Selected Offering? | Alternative / Notes |
 |-----------------|--------------------------------|---------------------|
-| TODO: feature | Yes / No / Confirm needed | TODO |
-| TODO: feature | Yes / No / Confirm needed | TODO |
-| TODO: feature | Yes / No / Confirm needed | TODO |
-| Einstein / AI features | TODO: verify current GovCloud authorization | TODO |
-| AppExchange packages (list): TODO | TODO: verify each on GovCloud authorized list | TODO |
+| <fill in: feature> | Yes / No / Confirm needed | <fill in> |
+| <fill in: feature> | Yes / No / Confirm needed | <fill in> |
+| <fill in: feature> | Yes / No / Confirm needed | <fill in> |
+| Einstein / AI features | <fill in: verify current GovCloud authorization> | <fill in> |
+| AppExchange packages (list): <fill in> | <fill in: verify each on GovCloud authorized list> | <fill in> |
 
 ---
 
@@ -80,14 +80,14 @@ Based on the authorization level determination above:
 
 | Data Element | Classification | Source System | Destination | Residency Compliant? |
 |-------------|---------------|--------------|-------------|---------------------|
-| TODO | CUI / PHI / PII / Public | TODO | TODO | Yes / No / Needs review |
-| TODO | CUI / PHI / PII / Public | TODO | TODO | Yes / No / Needs review |
+| <fill in> | CUI / PHI / PII / Public | <fill in> | <fill in> | Yes / No / Needs review |
+| <fill in> | CUI / PHI / PII / Public | <fill in> | <fill in> | Yes / No / Needs review |
 
 ### Residency Compliance Gaps
 
 | Gap | Risk | Remediation |
 |-----|------|-------------|
-| TODO: e.g., middleware on non-FedRAMP platform | High / Medium / Low | TODO |
+| <fill in: e.g., middleware on non-FedRAMP platform> | High / Medium / Low | <fill in> |
 
 ---
 
@@ -111,16 +111,16 @@ Based on the authorization level determination above:
 
 | Control | Description | Implementation Status | Evidence Location |
 |---------|-------------|----------------------|------------------|
-| AC-2 | Account Management | TODO: Implemented / Partial / Not implemented | TODO |
-| AC-6 | Least Privilege | TODO | TODO |
-| AU-2 | Event Logging | TODO | TODO |
-| AU-11 | Audit Record Retention | TODO | TODO |
-| IA-2(1) | MFA for Privileged Users | TODO | TODO |
-| IA-2(2) | MFA for Non-Privileged Users | TODO | TODO |
-| SC-28 | Protection of Information at Rest | TODO | TODO |
-| CM-3 | Configuration Change Control | TODO | TODO |
-| CM-6 | Configuration Settings | TODO | TODO |
-| IR-6 | Incident Reporting | TODO | TODO |
+| AC-2 | Account Management | <fill in: Implemented / Partial / Not implemented> | <fill in> |
+| AC-6 | Least Privilege | <fill in> | <fill in> |
+| AU-2 | Event Logging | <fill in> | <fill in> |
+| AU-11 | Audit Record Retention | <fill in> | <fill in> |
+| IA-2(1) | MFA for Privileged Users | <fill in> | <fill in> |
+| IA-2(2) | MFA for Non-Privileged Users | <fill in> | <fill in> |
+| SC-28 | Protection of Information at Rest | <fill in> | <fill in> |
+| CM-3 | Configuration Change Control | <fill in> | <fill in> |
+| CM-6 | Configuration Settings | <fill in> | <fill in> |
+| IR-6 | Incident Reporting | <fill in> | <fill in> |
 
 ---
 
@@ -128,14 +128,14 @@ Based on the authorization level determination above:
 
 | Integration / System | FedRAMP Status | Authorization Level | Action Required |
 |---------------------|---------------|--------------------| --------------|
-| TODO: system name | Authorized / Not authorized / Pending | Moderate / High / N/A | TODO |
-| TODO: system name | Authorized / Not authorized / Pending | Moderate / High / N/A | TODO |
-| TODO: system name | Authorized / Not authorized / Pending | Moderate / High / N/A | TODO |
+| <fill in: system name> | Authorized / Not authorized / Pending | Moderate / High / N/A | <fill in> |
+| <fill in: system name> | Authorized / Not authorized / Pending | Moderate / High / N/A | <fill in> |
+| <fill in: system name> | Authorized / Not authorized / Pending | Moderate / High / N/A | <fill in> |
 
 **Integrations with compliance gaps (require remediation before ATO):**
 
-- TODO: describe gap and remediation approach
-- TODO: FedRAMP-authorized alternative if the current system is not authorized
+- <fill in: describe gap and remediation approach>
+- <fill in: FedRAMP-authorized alternative if the current system is not authorized>
 
 ---
 
@@ -148,8 +148,8 @@ Based on the authorization level determination above:
 - [ ] LoginEvent export to SIEM configured
 - [ ] ReportEvent and ContentDistributionEvent export configured
 - [ ] ApiEvent and BulkApiResultEvent export configured
-- [ ] SIEM platform: TODO (confirm FedRAMP-authorized: Yes / No)
-- [ ] Log retention period configured to meet AU-11 requirements: TODO days/years
+- [ ] SIEM platform: <fill in> (confirm FedRAMP-authorized: Yes / No)
+- [ ] Log retention period configured to meet AU-11 requirements: <fill in> days/years
 
 ### Automated Control Evidence Collection
 
@@ -162,10 +162,11 @@ Based on the authorization level determination above:
 ### Platform Encryption (if required for SC-28)
 
 - [ ] Platform Encryption licensed
-- [ ] Fields containing CUI / PHI / CDI encrypted (list fields: TODO)
-- [ ] Key rotation schedule set to: TODO (90 days recommended for FedRAMP High)
-- [ ] BYOK configured (required for IL5): Yes / No / N/A
-- [ ] Key storage location (BYOK): TODO
+- [ ] Fields containing CUI / PHI / CDI encrypted (list fields: <fill in>)
+- [ ] Key rotation schedule set to: <fill in> (90 days recommended for FedRAMP High)
+- [ ] BYOK configured (program requirement, not stated by the Government Cloud guide for IL5): Yes / No / N/A
+- [ ] Deterministic-encryption fields listed with AO risk acceptance (deterministic is not FIPS-validated): <fill in>
+- [ ] Key storage location (BYOK): <fill in>
 
 ---
 
@@ -176,26 +177,26 @@ Based on the authorization level determination above:
 | Activity | Frequency | Responsible Party | Evidence Artifact |
 |----------|-----------|------------------|------------------|
 | Vulnerability scanning (infrastructure) | Monthly | Salesforce (inherited) | Salesforce scan reports |
-| Vulnerability scanning (customer middleware/integration) | Monthly | TODO | TODO |
-| POA&M review and update | Monthly | TODO | POA&M document |
-| Monthly report to agency AO | Monthly | TODO | Monthly status report |
-| Control assessment (rotating subset) | Annual | TODO 3PAO | SAR update |
-| Contingency plan test | Annual | TODO | CP-4 test report |
-| Significant change review | Per change | TODO | Change assessment record |
+| Vulnerability scanning (customer middleware/integration) | Monthly | <fill in> | <fill in> |
+| POA&M review and update | Monthly | <fill in> | POA&M document |
+| Monthly report to agency AO | Monthly | <fill in> | Monthly status report |
+| Control assessment (rotating subset) | Annual | <fill in> 3PAO | SAR update |
+| Contingency plan test | Annual | <fill in> | CP-4 test report |
+| Significant change review | Per change | <fill in> | Change assessment record |
 
 ### Current POA&M Summary
 
 | POA&M ID | Control | Weakness | Risk Rating | Due Date | Status |
 |----------|---------|----------|-------------|----------|--------|
-| TODO | TODO | TODO | High / Moderate / Low | TODO | Open / In progress / Closed |
+| <fill in> | <fill in> | <fill in> | High / Moderate / Low | <fill in> | Open / In progress / Closed |
 
 ### Significant Change Notification Procedure
 
-1. Proposed change submitted to: TODO (change control board / security team)
-2. Significant change determination by: TODO
+1. Proposed change submitted to: <fill in> (change control board / security team)
+2. Significant change determination by: <fill in>
 3. AO notification required: Yes / No / TBD
 4. Partial re-assessment required: Yes / No / TBD
-5. Pre-deployment approval gate: TODO process
+5. Pre-deployment approval gate: <fill in> process
 
 ---
 
@@ -216,14 +217,14 @@ Based on the authorization level determination above:
 
 | ID | Area | Finding | Risk | Recommendation | Target Date |
 |----|------|---------|------|----------------|------------|
-| GOV-001 | TODO | TODO | High / Medium / Low | TODO | TODO |
-| GOV-002 | TODO | TODO | High / Medium / Low | TODO | TODO |
+| GOV-001 | <fill in> | <fill in> | High / Medium / Low | <fill in> | <fill in> |
+| GOV-002 | <fill in> | <fill in> | High / Medium / Low | <fill in> | <fill in> |
 
 ### Architecture Decisions Required
 
 | Decision | Options Considered | Recommended | Decision Owner | Decision Due |
 |----------|-------------------|-------------|----------------|-------------|
-| TODO | TODO | TODO | TODO | TODO |
+| <fill in> | <fill in> | <fill in> | <fill in> | <fill in> |
 
 ---
 
@@ -231,6 +232,6 @@ Based on the authorization level determination above:
 
 | Role | Name | Date | Signature |
 |------|------|------|-----------|
-| Lead Assessor | TODO | TODO | TODO |
-| Agency ISO / Security Officer | TODO | TODO | TODO |
-| Authorizing Official (AO) | TODO | TODO | TODO |
+| Lead Assessor | <fill in> | <fill in> | <fill in> |
+| Agency ISO / Security Officer | <fill in> | <fill in> | <fill in> |
+| Authorizing Official (AO) | <fill in> | <fill in> | <fill in> |

@@ -118,13 +118,18 @@ side-effects on first migration into a real target.
 records between the two orgs."
 
 **Why it happens.** Salesforce-to-Salesforce shows up in older
-training data as the recommended cross-org sync product. It's been
-deprecated for years; Salesforce Connect, Platform Events, or
-external middleware are the modern answers.
+training data as the recommended cross-org sync product. The objects
+still exist (the Object Reference v67.0 still documents
+`PartnerNetworkConnection`), but it is not where current cross-org
+investment goes (UNVERIFIED (2026-10-03): a formal deprecation notice was
+not found in a fetched source). Salesforce Connect, Platform Events, or
+external middleware are the current answers.
 
 **Correct pattern.** Choose based on the crossing:
-- Real-time read of records in the other org → Salesforce Connect
-- Eventual-consistency sync → Platform Events + Apex subscriber
+- Real-time read of records in the other org → Salesforce Connect with
+  the cross-org adapter (`SfdcOrg`; not OData; cannot reach big objects)
+- Eventual-consistency sync → Platform Events + Apex subscriber, with a
+  watermark resync because replay resets on org migration or refresh
 - Bulk batch sync → MuleSoft / middleware / Heroku Connect
 
 **Detection hint.** Any reference to "Salesforce-to-Salesforce" or
@@ -175,3 +180,26 @@ acceptable.
 **Detection hint.** Any cross-region merge / split plan that doesn't
 mention Hyperforce regions or data-residency review is missing a
 compliance layer.
+
+---
+
+## Anti-Pattern 9: Loading migrated records without preserving audit fields
+
+**What the LLM generates.** A migration load plan that maps business
+fields only, so every migrated Case, Opportunity, and custom record shows
+the load date as `CreatedDate` and the integration user as creator.
+
+**Why it happens.** Audit fields are read-only in everyday work, so the
+model does not consider them loadable. The Object Reference documents a
+specific procedure that makes them settable on create.
+
+**Correct pattern.** Before the first wave, enable "Set Audit Fields upon
+Record Creation" and "Update Records with Inactive Owners", grant the
+permission to the migration user, and map `CreatedDate`, `CreatedById`,
+`LastModifiedDate`, and `LastModifiedById` on insert. Note that it works
+only on create, only for the documented objects, and never for
+`SystemModstamp`.
+
+**Detection hint.** A load mapping with no audit-field columns for objects
+whose age or creator drives reports, SLAs, or audit.
+

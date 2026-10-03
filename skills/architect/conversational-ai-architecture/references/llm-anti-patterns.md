@@ -32,6 +32,8 @@ Not in scope: changing payment methods (route to Account Management topic),
 technical service issues that caused an unexpected charge (route to Technical Support topic).
 ```
 
+**Platform note (2026-10-03):** the Generative AI guide defines the classification description as 1–3 sentences, with the job description in a separate `scope` field. Sample utterances, if wanted, go in the `GenAiPlugin` field `aiPluginUtterances`, not in the description.
+
 **Detection hint:** Any Agentforce topic description containing a bullet list of short phrases beginning with first-person verbs ("What is", "Why did", "I want to", "Show me") is likely the utterance anti-pattern. Correct descriptions are continuous prose, not phrase lists.
 
 ---
@@ -154,7 +156,7 @@ Routing Configuration:
 // Assumes Agentforce agents consume capacity units like human agents
 ```
 
-**Why it happens:** LLMs model Omni-Channel capacity management patterns that apply to human agents and generalize them to all Omni-Channel queues, unaware that Agentforce agents are not capacity objects.
+**Why it happens:** LLMs model Omni-Channel capacity management patterns that apply to human agents and generalize them to all Omni-Channel queues, unaware that Agentforce agents are not capacity objects. UNVERIFIED (2026-10-03): "Agentforce agents are not capacity objects" has no fetched source; confirm in a sandbox before relying on it either way.
 
 **Correct pattern:**
 
@@ -172,3 +174,40 @@ Routing Configuration:
 ```
 
 **Detection hint:** Any routing design that assigns a numeric capacity value to an Agentforce queue, or that references Omni-Channel capacity counts as a throttle condition for Agentforce, is likely this anti-pattern.
+
+---
+
+## Anti-Pattern 6: Building a Custom Topic That Transfers to a Human
+
+**What the LLM generates:** A "Billing Expert Handoff" custom topic with an instruction such as "Transfer the customer to the billing team queue when they ask about payment plans."
+
+**Why it happens:** The model treats escalation as one more capability that any topic can own, the way any Einstein Bot dialog can contain a transfer.
+
+**Correct pattern:** The Generative AI guide ("Agent Topic: Escalation") says only the standard Escalation topic can invoke the outbound Omni Flow that routes to live reps, and a custom topic cannot be configured to do so. Customize the Escalation topic's classification description and instructions to cover the payment-plan case, add a custom pre-transfer action (create the Case), and put queue selection in the outbound Omni Flow.
+
+**Detection hint:** Any topic other than Escalation whose instructions mention transferring, routing to a queue, or connecting to a human.
+
+---
+
+## Anti-Pattern 7: Enforcing Business Rules in Topic Instructions
+
+**What the LLM generates:** "Add the instruction: Never refund orders older than 30 days. Always verify the customer's date of birth before discussing the account."
+
+**Why it happens:** Instructions look like configuration, so the model treats them as enforceable policy.
+
+**Correct pattern:** The Generative AI guide says instructions are nondeterministic and should not hold sensitive or deterministic business rules; its own example moves a 30-day refund rule into a flow-based agent action. Put eligibility checks and identity verification inside the action (or in an Einstein Bot dialog for the verification step), and keep instructions for guidance such as which action to call first.
+
+**Detection hint:** Instructions containing amounts, day counts, eligibility thresholds, or verification steps with no matching action logic.
+
+---
+
+## Anti-Pattern 8: Recommending an Agent the Org or Channel Cannot Run
+
+**What the LLM generates:** "Deploy Agentforce on your Government Cloud org's citizen portal" or "Connect your Agentforce employee agent to WhatsApp."
+
+**Why it happens:** The model assumes feature parity across clouds and agent types.
+
+**Correct pattern:** The Generative AI guide ("Considerations for Agents") says agents are not available for Government Cloud and only Agentforce Service Agent connects to enhanced Messaging channels and Bring Your Own Channel. Ask for the org type and channel list first. For Government Cloud, design with Einstein Bots and human routing. For customer messaging, specify the Service Agent type.
+
+**Detection hint:** A design that names Agentforce without stating the org type, or that pairs a non-Service agent type with a customer messaging channel.
+

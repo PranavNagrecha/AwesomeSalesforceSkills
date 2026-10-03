@@ -1,91 +1,145 @@
 # Gotchas — Einstein Bot Architecture
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious Salesforce platform behaviors that cause real production problems in this domain. Each gotcha names its source. Claims that could not be confirmed from a fetched source carry an inline `UNVERIFIED (2026-10-03):` marker. "Metadata API" below means the Metadata API Developer Guide, Version 67.0 (Summer '26); "Object Reference" means the Object Reference, Version 67.0.
 
-## Gotcha 1: Pre-Chat Form Data Does Not Automatically Populate Bot Variables
+## Gotcha 1: Customer Facts Reach The Bot Only Through Mapped Context Variables
 
-**What happens:** Pre-chat form fields (name, email, case subject) are submitted by the customer but the bot greets them with "What is your name?" because the pre-chat data was not mapped to bot variables.
+**What happens:** Pre-chat or channel data (name, email, case subject) is captured, but the bot greets the customer with "What is your name?" The data sits on the session record and the bot has no variable bound to it.
 
-**When it occurs:** When the Embedded Service deployment uses a pre-chat form but the bot configuration does not explicitly map pre-chat fields to bot variables using the Init rule or context variable bindings. The data exists on the LiveChatTranscript record but the bot has no access to it during the conversation.
+**When it occurs:** When context variables are not mapped for the channel type in use. A mapping is per channel: a Messaging for In-App and Web mapping (`EmbeddedMessaging`) does not cover WhatsApp or SMS (`Text`).
 
-**How to avoid:** In the bot's Menu version settings, map each pre-chat field to a corresponding bot variable. For Agentforce Agents, use the session context to access pre-chat data. Test with the pre-chat form enabled in a sandbox before deploying.
+**How to avoid:** For every fact the bot needs, define a context variable and map it per channel type to the sObject field that holds it (`MessagingSession`, `MessagingEndUser`, or `LiveChatTranscript`). Test with the real channel, not the builder preview.
 
----
-
-## Gotcha 2: Model Retraining Blocks New Intent Availability
-
-**What happens:** A new intent is added to the bot, utterances are entered, and the bot is activated. Customers who trigger the new intent still hit the fallback because the new intent model has not finished training.
-
-**When it occurs:** Every time intents or utterances are modified. The model trains asynchronously and the old model serves traffic until training completes. Training time scales with the number of intents and utterances; large models can take 15-30 minutes.
-
-**How to avoid:** Retrain the model in a sandbox first and verify intent matching before promoting to production. Schedule intent changes during low-traffic windows. Never add a new intent and activate it in production without confirming the model training has completed (check the Bot Training Status in Setup).
+**Source:** Metadata API, Bot: `contextVariables`, "context variables that enable your bot to gather customer information regardless of channel"; ConversationContextVariableMapping: `fieldName`, `messageType` (`EmbeddedMessaging`, `WhatsApp`, `Text`, `WebChat`, and others), `SObjectType` (`LiveChatTranscript`, `MessagingEndUser`, `MessagingSession`).
 
 ---
 
-## Gotcha 3: Transfer to Agent Fails Silently When No Agents Are Available
+## Gotcha 2: Bot Versions Share One Intent Set, So Reactivating An Old Version Does Not Roll Back Intents
 
-**What happens:** The bot executes a Transfer to Agent step, but no agents are online or all agents are at capacity. The customer sees no message and the conversation appears to hang. No error is thrown in the bot flow.
+**What happens:** A release adds and edits intents, performs worse, and the team reactivates the previous version expecting the old intent model to come back. Only one version can be active, and all versions of a bot share the same intent set. The reactivated version still sees the edited intents.
 
-**When it occurs:** Outside of business hours, during traffic spikes that exceed agent capacity, or when the Omni-Channel routing configuration does not match the bot's target queue/skill.
+**When it occurs:** When versioning is treated like a code branch. The earlier statement in this skill that each version keeps its own trained model is contradicted by the Metadata API description of `botMlDomain`.
 
-**How to avoid:** Always add a check before the transfer step. Use the "Check Agent Availability" system action (Einstein Bots) or equivalent logic to verify agents are available. If none are available, branch to an alternative path: create a case, offer a callback, or display business hours. Never let the transfer be the only exit path.
+**How to avoid:** Treat intents and utterances as shared data with their own change control. Keep an exported copy (retrieved `Bot` metadata) of the intent set before every change, and roll back intents by redeploying that copy, not by switching versions. Use version switching only for dialog changes.
 
----
-
-## Gotcha 4: WhatsApp 24-Hour Session Window Breaks Long Conversations
-
-**What happens:** A customer starts a conversation with the bot over WhatsApp, leaves for more than 24 hours, and returns. The bot cannot send a follow-up message because the WhatsApp session has expired. The conversation context is lost.
-
-**When it occurs:** WhatsApp Business API enforces a 24-hour messaging window from the last customer message. If the customer does not respond within 24 hours, the business cannot send further messages without an approved template message.
-
-**How to avoid:** Design bot dialogs for WhatsApp to be completable in a single session. For processes that require customer action (uploading a document, checking a reference number), send a proactive template message reminder within the 24-hour window. Architect long-running processes to create a Case and use email or SMS follow-up instead of relying on the WhatsApp session.
+**Source:** Metadata API, Bot: "Only one version can be active"; `botMlDomain`: "All Einstein Bot versions under the same bot now share an intent set" (API 44.0+). Object Reference, BotVersion `Status`: "Only one version for a related BotDefinition can be active at once."
 
 ---
 
-## Gotcha 5: Bot Variable Limits Constrain Complex Conversations
+## Gotcha 3: Intent Strictness Is A 1-to-5 Setting That Support Must Enable
 
-**What happens:** The bot stops collecting data mid-conversation because it has hit the maximum number of custom bot variables (250 per bot version in Einstein Bots).
+**What happens:** A design tells the admin to "set the confidence threshold to 0.7". No such field exists in that form. The documented control is `intentThreshold`, which "specifies how strictly a user message must match with a bot intent", takes values from 1 (least strict) to 5 (most strict), and must be turned on by Salesforce Customer Support. This corrects the earlier 0.7 guidance in this skill.
 
-**When it occurs:** When the bot serves many use cases and each dialog collects multiple pieces of data. Variable sprawl happens when teams create new variables for each dialog instead of reusing context variables across dialogs.
+**When it occurs:** When misroutes are blamed on a "default threshold" and the fix is written from generic NLU knowledge.
 
-**How to avoid:** Design a variable naming convention and reuse generic variables (e.g., `collected_id`, `collected_date`) across dialogs where the data is consumed and discarded within the same dialog. Archive unused variables when decommissioning dialogs. For Agentforce Agents, session context is more flexible but should still be managed deliberately.
+**How to avoid:** Fix overlapping intents first; strictness cannot separate intents whose utterances overlap. If stricter matching is still needed, request the feature, set `intentThreshold`, and route low-confidence input to a fallback dialog.
 
----
-
-## Gotcha 6: Bot Versioning Does Not Support Rollback
-
-**What happens:** A team activates a new bot version with updated dialogs and intents. The new version performs worse than the previous one (higher fallback rate, lower deflection). They attempt to reactivate the previous version but find that only one version can be active at a time, and the previous version's intent model must be retrained since the training state is tied to the version.
-
-**When it occurs:** When teams treat bot versioning like code deployment with instant rollback. Einstein Bot versions are not git branches — activating an older version requires retraining the intent model for that version, which takes time and leaves the bot in a degraded state during the transition.
-
-**How to avoid:** Always test a new bot version thoroughly in sandbox before promoting. Keep the previous version's intent model trained and validated in a sandbox mirror. If a rollback is needed, understand that there will be a 15-30 minute window while the old version's model retrains. Plan a rollback procedure in advance that includes a static fallback dialog (transfer all to agent) during the retraining window.
+**Source:** Metadata API, BotVersion: `intentThreshold`, "Valid values are between 1 and 5 ... To turn on this feature, contact Salesforce Customer Support. This field is available in API version 63.0 and later."
 
 ---
 
-## Gotcha 7: Embedded Service Deployment Configuration Overrides Bot Behavior
+## Gotcha 4: A Failed Transfer Needs A Designed Path
 
-**What happens:** The bot works correctly in the bot builder preview but behaves differently when deployed through Embedded Service on the actual website. Common symptoms include: pre-chat fields not reaching the bot, the bot greeting message not appearing, or the chat window styling breaking the bot's rich message components.
+**What happens:** The bot runs a transfer when no rep is online or the routing target is wrong. Without a designed path, the customer waits in silence.
 
-**When it occurs:** When the Embedded Service deployment snippet or configuration has settings that conflict with the bot configuration. The Embedded Service deployment has its own pre-chat form settings, branding overrides, and feature toggles that take precedence over what is configured in the bot builder.
+**When it occurs:** Outside business hours, during spikes, or when the channel's routing does not match the transfer target. UNVERIFIED (2026-10-03): the "Check Agent Availability" system action named in earlier versions of this skill could not be found in the Metadata API.
 
-**How to avoid:** Always test the bot through the actual Embedded Service deployment in a sandbox, not just in the bot builder preview. Verify that pre-chat form field names in the Embedded Service configuration exactly match the bot variable mappings. Check that the Embedded Service deployment's Chat Settings do not override bot-level settings like session timeout or auto-greeting.
+**How to avoid:** Assign a dialog to the `TransferFailed` system event that creates a case with the collected context, offers a callback, or shows business hours. Decide per channel whether the bot runs only while reps are online (`agentRequired` on the channel provider). For Agentforce Service Agents, set `defaultOutboundFlow` as the fallback escalation.
 
----
-
-## Gotcha 8: Entity Extraction Requires Exact System Entity Names
-
-**What happens:** The bot fails to extract structured data (dates, numbers, currencies, locations) from customer input even though the customer provided the information clearly. The bot variable remains null and the dialog proceeds without the expected data.
-
-**When it occurs:** When the dialog step uses a Question element with entity extraction but references the wrong system entity name or uses a custom entity that has not been trained. Einstein Bots provide system entities (DateTime, Date, Money, Number, Person, Location, Organization, Text) and each must be referenced by its exact API name. A common mistake is configuring a question to extract a "date" when the system entity is "DateTime" or "Date" (case-sensitive in some configurations).
-
-**How to avoid:** Use the exact system entity names as documented. For custom entities, verify that the entity has been trained with sufficient examples (at least 10 annotation examples per entity value). Test entity extraction with varied input formats: "January 5th", "1/5/2025", "next Tuesday", "tomorrow" should all be tested for date extraction. If extraction fails, fall back to a direct question ("Please enter the date in MM/DD/YYYY format") rather than silently proceeding with null data.
+**Source:** Metadata API, ConversationSystemDialog types (`ErrorHandling`, `KnowledgeAction`, `KnowledgeFallback`, `TransferFailed`); BotNavigation type `TransferToAgent`; ConversationDefinitionChannelProvider `agentRequired`; Bot `defaultOutboundFlow` (API 65.0+).
 
 ---
 
-## Gotcha 9: Conversation Timeout Behavior Differs by Channel
+## Gotcha 5: Messaging Channel Links Do Not Travel In Metadata
 
-**What happens:** A customer pauses their conversation and returns after a few minutes. On web chat, the conversation has ended and the bot starts fresh. On messaging channels (In-App, WhatsApp), the conversation resumes where it left off but the bot's dialog state may have been lost while the messaging session remains open.
+**What happens:** A bot deploys cleanly to production but is not connected to its messaging channel. The channel link was set in the sandbox UI and never left it.
 
-**When it occurs:** Web chat (Live Agent) sessions have a configurable inactivity timeout (default 5 minutes in many configurations) after which the session ends. Messaging channels (Messaging for In-App and Web, WhatsApp, SMS) have persistent sessions that do not timeout the same way — the messaging session stays open but the bot's dialog context may expire independently.
+**When it occurs:** On the first deployment of a bot to a new org, and on every sandbox refresh pipeline that expects metadata to rebuild the org.
 
-**How to avoid:** Design timeout behavior explicitly for each channel. For web chat, set the inactivity timeout in Chat Settings and configure the bot to send a warning message before timeout. For messaging channels, implement a "session resumption" dialog that detects when the customer returns after inactivity and either resumes context or restarts gracefully. Store critical collected data (account number, intent) in the MessagingSession record fields so it survives bot dialog context expiry.
+**How to avoid:** Add a manual post-deploy step to the runbook: connect each messaging channel to the bot in Setup, then test through the channel. Do not rely on `conversationChannelProviders` for messaging channels.
+
+**Source:** Metadata API, Bot, ConversationDefinitionChannelProvider note: "To add, edit, or remove a messaging channel, you must use the UI. If you deploy a bot with messaging channel providers, those providers aren't visible in Metadata API."
+
+---
+
+## Gotcha 6: Einstein Bots And Agentforce Agents Share A Definition Object, Not A Design Model
+
+**What happens:** Teams assume "migrating to Agentforce" is a new metadata type and a new deployment pipeline, or the reverse, that because the object is shared the dialogs convert. The definition object is shared: `BotDefinition` represents "Einstein Bots or Agentforce Agents", with `Type` values `Bot`, `ExternalCopilot`, and `InternalCopilot`. The design model is not: dialogs and steps versus topics and actions.
+
+**When it occurs:** During migration planning and when reporting on "how many bots we have".
+
+**How to avoid:** Inventory with `BotDefinition.Type` and `AgentType` (query in `references/examples.md`). Plan migration as a redesign of the conversation, and reuse the deployment pipeline. Note that Bot metadata deployment and retrieval are not supported for Lead Nurturing and Sales Coach agents.
+
+**Source:** Object Reference, BotDefinition: "Represents a top level object for Einstein Bots or Agentforce Agents", `Type` and `AgentType` fields. Metadata API, Bot: `type` values and the special access rule on Lead Nurturing and Sales Coach agents.
+
+---
+
+## Gotcha 7: Bots On Legacy Chat Sit On A Product That Gets No New Features
+
+**What happens:** A new bot is designed on the legacy chat channel because the org already has chat buttons. Its context lands on `LiveChatTranscript`, and the channel will not gain capabilities.
+
+**When it occurs:** In orgs that adopted chat before Messaging for In-App and Web.
+
+**How to avoid:** Design new bots for Messaging for In-App and Web (`MessagingSession`). If a bot must stay on legacy chat, record that in a decision record with a migration trigger. UNVERIFIED (2026-10-03): a legacy chat retirement date was not found in a fetched source.
+
+**Source:** Object Reference, ConversationEntry, Usage: "The legacy chat product is in maintenance-only mode, and we won't continue to build new features."
+
+---
+
+## Gotcha 8: Idle Timeout Is A Bot Setting; Channel Windows Are Separate
+
+**What happens:** A customer returns after a pause. On one channel the bot restarts; on another the messaging session is still open but the bot has dropped its dialog state. On WhatsApp, the business may be unable to message the customer at all after a long gap.
+
+**When it occurs:** When idle behavior is left at defaults and the same dialog serves web and asynchronous messaging channels. UNVERIFIED (2026-10-03): the WhatsApp 24-hour customer-service window is Meta platform policy and is not documented in a fetched Salesforce source.
+
+**How to avoid:** Set the bot's `sessionTimeout` deliberately and design a resume dialog for asynchronous channels. Store facts the conversation must not lose (account number, detected intent) on `MessagingSession` fields through context variables.
+
+**Source:** Metadata API, Bot: `sessionTimeout`, "the maximum amount of minutes that a bot session can be idle" (API 58.0+).
+
+---
+
+## Gotcha 9: Variable Types And Limits Constrain Complex Conversations
+
+**What happens:** A dialog collects many values, each in its own variable, until the bot hits a variable ceiling or a value will not fit the declared type. UNVERIFIED (2026-10-03): the "250 custom variables per bot version" ceiling quoted in earlier versions of this skill was not found in a fetched source.
+
+**When it occurs:** When every dialog creates its own variables instead of reusing a small, typed set.
+
+**How to avoid:** Define a naming convention and reuse typed variables across dialogs. Declared types are limited to `Text`, `Number`, `Boolean`, `Object`, `Date`, `DateTime`, `Currency`, and `Id`; choose them deliberately because the type drives what the variable can hold and pass to actions.
+
+**Source:** Metadata API, ConversationContextVariable and PageContextVariable `dataType` values; BotVersion `conversationVariables`.
+
+---
+
+## Gotcha 10: Entity Extraction Depends On The Entity Definition, Not On What The Customer Typed
+
+**What happens:** The customer gives a date or an order number clearly, and the variable stays empty. The question step's entity did not match the input format.
+
+**When it occurs:** With custom entities that have few examples, and with system entities referenced under the wrong name. UNVERIFIED (2026-10-03): the system entity list (DateTime, Date, Money, Number, Person, Location, Organization, Text) and the "10 examples per value" guidance are not in a fetched source; entities appear in metadata as `mlSlotClasses` on the intent set.
+
+**How to avoid:** Test extraction with varied formats ("5 January", "1/5", "next Tuesday"). On a failed extraction, ask a constrained follow-up question instead of continuing with an empty variable.
+
+**Source:** Metadata API, Bot, LocalMlDomain: `mlIntents` and `mlSlotClasses` ("List of entities associated with this local intent set").
+
+---
+
+## Gotcha 11: The Embedded Service Deployment Has Its Own Settings
+
+**What happens:** The bot works in the builder preview but behaves differently on the website: pre-chat fields do not arrive, the greeting does not appear, or styling breaks rich components.
+
+**When it occurs:** When the Embedded Service deployment's own form, branding, and channel settings disagree with the bot configuration. UNVERIFIED (2026-10-03): that deployment settings take precedence over bot-level settings such as greeting and timeout is stated in earlier versions of this skill and in Salesforce Help, not in a fetched source.
+
+**How to avoid:** Test through the deployed Embedded Service snippet in a sandbox. Check that form field names in the deployment match the context variable mappings from Gotcha 1. Version the deployment metadata alongside the bot.
+
+**Source:** Metadata API: Embedded Service deployments are their own metadata types (`EmbeddedServiceConfig`, "a setup node for creating an Embedded Service for Web deployment", with related `EmbeddedServiceBranding` and `EmbeddedServiceForm` types), separate from `Bot`.
+
+---
+
+## Gotcha 12: New Intents Are Invisible Until The Model Finishes Training
+
+**What happens:** A new intent and its utterances are added and the bot is activated. Customers who say the new thing still reach the fallback, because the intent model has not finished training and the previous model is still serving.
+
+**When it occurs:** On every intent or utterance change. UNVERIFIED (2026-10-03): the asynchronous training behavior, the "15-30 minutes for large models" duration, and the training status indicator in Setup are stated in earlier versions of this skill and in Salesforce Help only.
+
+**How to avoid:** Train and verify in a sandbox first. Schedule intent changes for low-traffic windows and confirm training has completed before announcing the new capability. Because versions share the intent set (Gotcha 2), a training change affects every version of the bot at once.
+
+**Source:** Metadata API, Bot `botMlDomain` (shared intent set). Training duration and status: UNVERIFIED as noted.

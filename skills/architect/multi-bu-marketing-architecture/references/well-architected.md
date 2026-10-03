@@ -20,11 +20,26 @@
 
 1. **Attempting brand separation within a single BU via folder restrictions** — Folder-level role restrictions within a BU do not provide platform-enforced data isolation. Administrators and some standard roles can bypass folder restrictions through direct API access or cross-BU tooling. Use separate Child BUs for genuine brand separation.
 2. **Creating deeply nested BU hierarchies to mirror org charts** — The org chart and the Marketing Cloud BU structure need not be identical. Hierarchy depth should be determined by operational and data segregation requirements, not by reporting relationships. Two or more tiers of Children introduce disproportionate admin complexity relative to their operational benefit.
-3. **Assuming the All Subscribers enterprise list provides global suppression** — The enterprise All Subscribers list is a subscriber record store, not a send-time suppression enforcement mechanism across all BUs. Global suppression must be explicitly configured through Shared DE permissions and referenced in each BU's send activities.
+3. **Assuming the All Subscribers enterprise list decides global suppression**: Master unsubscribe scope is a per-BU setting (`MasterUnsubscribeBehavior`: `ENTIRE_ENTERPRISE` or `BUSINESS_UNIT_ONLY`). Set it deliberately on every BU, and use a Shared DE referenced in each BU's sends for suppression rules the setting does not express.
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-03), Marketing Cloud Engagement developer guide:
+
+- BusinessUnit object: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/businessunit.html. `MasterUnsubscribeBehavior` (`ENTIRE_ENTERPRISE`, `BUSINESS_UNIT_ONLY`), `SubscriberFilter`, `DefaultSendClassification`, `ParentID`, `Children`, edition IDs for Enterprise 2.0 and Enterprise 2.0 Business Unit.
+- AccountUser object: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/accountuser.html. `AssociatedBusinessUnits`, `DefaultBusinessUnit`.
+- Account object: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/account.html. Parent and child account properties for Enterprise and Enterprise 2.0.
+- Integration Considerations: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/integration-considerations.html. Single-BU token context, per-BU server-to-server enablement, `account_id`, package-owning BUs must stay active, deleted BUs cannot be recovered.
+- Access Token for Server-to-Server Integrations: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/access-token-s2s.html. `v2/token` request, `account_id` (target BU MID), 20-minute token lifetime.
+- Authenticate Your SOAP API Calls: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/authenticate-soap-api.html. `fueloauth` header; a token "doesn't flow down through child accounts".
+- Installed Package Types: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/installed-package-types.html. Legacy versus enhanced packages, credential sets per BU.
+- RetrieveRequest object and Retrieve method: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/retrieverequest.html and https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/retrieve.html. `ObjectType`, `Properties`, `QueryAllAccounts`, `MoreDataAvailable` above 2,500 records.
+- Content Builder Sharing and Shared Categories: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/sharing.html and https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/shared-categories.html. Enterprise 1.0 versus 2.0 sharing, up to 100 MIDs, `view`, `edit`, and `local` sharing types, enterprise-owned shared categories.
+- Your Subdomain and Your Tenant's Endpoints: https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/your-subdomain-tenant-specific-endpoints.html. One tenant for the top-level Enterprise account and its business units.
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-06-16).
+
+Listed in the original version; Salesforce Help does not fetch, so these were not re-read and claims resting only on them are marked UNVERIFIED in `gotchas.md`:
+
 - Salesforce Help: Business Units in Marketing Cloud Engagement — https://help.salesforce.com/s/articleView?id=sf.mc_overview_business_units.htm
 - Salesforce Help: Shared Data Extensions in Enterprise 2.0 — https://help.salesforce.com/s/articleView?id=sf.mc_es_shared_data_extensions.htm
 - Salesforce Help: Set Enterprise 2.0 Shared Data Extension Permissions — https://help.salesforce.com/s/articleView?id=sf.mc_es_set_enterprise_20_shared_data_extension_permissions.htm

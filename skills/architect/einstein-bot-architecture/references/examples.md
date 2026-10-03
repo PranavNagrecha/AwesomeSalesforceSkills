@@ -35,7 +35,7 @@ Tier 3 — Agent Handoff (everything else + failed Tier 1/2)
 
 **Key architectural decisions:**
 - WhatsApp dialogs are text-only; no carousels or rich cards. Article surfacing sends a plain-text summary with a link rather than an embedded card.
-- Agent availability is checked before every Tier 3 transfer. If no agents are available, the bot creates a Case with all collected context and offers a callback.
+- Every Tier 3 transfer has a designed failure path: a dialog assigned to the `TransferFailed` system event creates a Case with all collected context and offers a callback.
 - The fallback intent offers the top 3 most common intents as quick-reply suggestions before escalating, reducing the fallback-to-agent rate by 22%.
 
 ---
@@ -145,3 +145,94 @@ Handoff Routing:
 **What goes wrong:** Low-volume intents have sparse training data and overlap with adjacent intents, causing misroutes. The team spends the first month triaging false matches instead of improving the high-value intents. Customer satisfaction drops because the bot confidently routes to the wrong dialog.
 
 **Correct approach:** Launch with 3-5 high-volume intents that cover 60-70% of case volume. Each intent has 50+ utterances from real customer language. Add new intents incrementally, one or two at a time, only after the existing intents stabilize with confidence scores above 0.8. Monitor the fallback intent volume to identify which new intents to add next.
+
+---
+
+## Example 4: Inventory Queries and a Decision Record for Handoff and Rollback
+
+**Context:** A utility runs one Einstein Bot on legacy chat and has started an Agentforce Service Agent pilot. Before a redesign, the architect needs an accurate inventory and a written handoff and rollback design.
+
+**Step 1: inventory.** `BotDefinition` covers both Einstein Bots and Agentforce agents; `BotVersion` (API 63.0+) shows which version is active.
+
+```soql
+-- Q1. Every bot and agent, and what kind it is
+SELECT Id, DeveloperName, MasterLabel, Type, AgentType
+FROM BotDefinition
+
+-- Q2. The active version of each (only one per BotDefinition can be active)
+SELECT BotDefinition.DeveloperName, DeveloperName, Status
+FROM BotVersion
+WHERE Status = 'Active'
+
+-- Q3. Conversation volume by channel for the last 90 days (Messaging channels)
+SELECT ChannelType, COUNT(Id) sessions
+FROM MessagingSession
+WHERE CreatedDate = LAST_N_DAYS:90
+GROUP BY ChannelType
+```
+
+`BotDefinition` requires Agents to be enabled in the org. UNVERIFIED (2026-10-03): whether `BotDefinition.Type` returns `Bot` for every legacy Einstein Bot in an org that never enabled agents was not tested.
+
+**Step 2: the decision record** at `docs/adr/0084-bot-handoff-and-rollback.md`. It names the metadata the build will deploy (`Bot` with its `BotVersion`, and `EmbeddedServiceConfig`) and the one step that cannot be deployed.
+
+```markdown
+# ADR-0084: Move the service bot to Messaging for In-App and Web; design handoff and rollback
+
+## Status
+Accepted (2026-10-03), Service Design Authority
+
+## Context
+- Q1/Q2: one Einstein Bot (Type = Bot) active on legacy chat; one
+  Agentforce Service Agent (Type = ExternalCopilot) in pilot.
+- Legacy chat is "in maintenance-only mode" (Object Reference,
+  ConversationEntry).
+- Context today arrives on LiveChatTranscript. On Messaging it arrives
+  on MessagingSession, through per-channel context variable mappings.
+- All versions of a bot share one intent set (Metadata API, Bot
+  botMlDomain); reactivating a version does not restore intents.
+- Messaging channel links must be set in the UI; they are not visible
+  in Metadata API.
+
+## Decision
+1. Rebuild the Einstein Bot's channel on Messaging for In-App and Web.
+   Map AccountNumber__c and Intent__c context variables for
+   EmbeddedMessaging and Text (SMS) channel types.
+2. Assign a TransferFailed dialog that creates a case and offers a
+   callback. agentRequired = false: the bot runs 24x7.
+3. Before every intent change, retrieve the Bot metadata and store the
+   intent set in the repo. Rollback = redeploy that copy and retrain.
+4. Runbook: after each deploy, connect the messaging channel in Setup
+   and run the channel test script.
+
+## Consequences
+### Positive
+- Context survives the handoff on the channel that keeps gaining
+  features.
+### Negative
+- One manual post-deploy step per environment.
+- Intent rollback is a redeploy plus retraining, not a click.
+- Reports on LiveChatTranscript must be rebuilt on MessagingSession.
+
+## Alternatives Considered
+### Stay on legacy chat until the Agentforce pilot ends
+Rejected: builds new context mappings on a channel with no roadmap.
+### Replace the Einstein Bot with the Agentforce agent now
+Deferred: pilot topics cover 3 of 11 intents. Review at pilot end.
+
+## Review Trigger
+Agentforce pilot covers 80% of intent volume. Owner: Service Architect.
+
+## Date
+2026-10-03
+```
+
+**Package.xml member forms** for the build team (member names are this org's placeholders):
+
+| Component | Type | Member form |
+|---|---|---|
+| Service bot and its versions | `Bot` | `<members>Service_Bot</members><name>Bot</name>` |
+| Web deployment | `EmbeddedServiceConfig` | `<members>Service_Web</members><name>EmbeddedServiceConfig</name>` |
+| Messaging channel link | none | Manual step in Setup (not visible in Metadata API) |
+
+**Why it works:** the record states facts the platform enforces (shared intent set, one active version, UI-only channel links) and turns each into a design step with a cost.
+

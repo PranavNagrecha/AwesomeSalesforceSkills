@@ -1,6 +1,6 @@
 ---
 name: user-management
-description: "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for designing the permission set / PSG model — use admin/permission-set-architecture. NOT for who can see which records — use admin/sharing-and-visibility. Also covers: bulk user loads by CSV, Bulk API 2.0 upsert on Username, the UserLogin freeze object, licence and permission-set-licence reclamation, Role metadata deployment, and the offboarding checklist as SOQL."
+description: "Use this skill to create, deactivate, freeze, or manage Salesforce users, assign user licenses and feature licenses, configure profiles and roles, set login hours and IP restrictions, and set up delegated administration. Triggers: 'add a new user in Salesforce', 'create a user and assign a licence', adding a new user, deactivating a departing employee, license assignment, freezing a user account, delegated admin setup. NOT for designing the permission set / PSG model — use admin/permission-set-architecture. NOT for who can see which records — use admin/sharing-and-visibility. Also covers: bulk user loads by CSV, Bulk API 2.0 upsert on Username, the UserLogin freeze object, licence and permission-set-licence reclamation, Role metadata deployment, and the offboarding checklist as SOQL."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -39,9 +39,9 @@ outputs:
   - "Login restriction settings (hours and IP ranges per profile)"
   - "User deactivation or freeze checklist with reassignment steps"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-03
 ---
 
 # User Management

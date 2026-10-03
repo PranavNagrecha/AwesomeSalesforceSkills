@@ -10,9 +10,9 @@ Common mistakes AI coding assistants make when generating or advising on hybrid 
 
 **Why it happens:** IP allowlisting is a well-known network security pattern and LLMs apply it without checking the Hyperforce IP stability constraint.
 
-**The correct pattern:** Hyperforce IP ranges are ephemeral and not stable. Salesforce documentation explicitly states they should not be used for authentication. Use mTLS (client certificate) or Salesforce Private Connect instead.
+**The correct pattern:** Correction (2026-10-03): Hyperforce ranges are published and versioned at `ip-ranges.salesforce.com/ip-ranges.json`, not ephemeral. They change between versions and are shared by every org in the region, so they cannot authenticate a caller. Use mTLS (client certificate), OAuth, or Salesforce Private Connect for identity; automate any supplementary allowlist from the feed.
 
-**Detection hint:** Any recommendation to allowlist Salesforce IPs for a Hyperforce org is incorrect. The org's Hyperforce status can be confirmed in Setup > Company Information.
+**Detection hint:** Any recommendation that relies on allowlisting Salesforce IPs as the only control for a Hyperforce org is incorrect. The org's Hyperforce status can be confirmed in Setup > Company Information.
 
 ---
 
@@ -34,7 +34,7 @@ Common mistakes AI coding assistants make when generating or advising on hybrid 
 
 **Why it happens:** LLMs generate plausible Setup navigation paths without knowing the actual provisioning requirements.
 
-**The correct pattern:** Salesforce Private Connect requires (a) an add-on license purchased separately, and (b) a support case to opt the org in. It is not visible in Setup by default and is not self-serve. Plan 2-4 weeks for the full provisioning cycle.
+**The correct pattern:** Salesforce Private Connect requires (a) an add-on license purchased separately, and (b) a support case to opt the org in (both UNVERIFIED 2026-10-03, Help-only). It is not visible in Setup by default and is not self-serve. Plan 2-4 weeks for the full provisioning cycle. Once enabled, the Metadata API shows each connection starting `Unprovisioned` and reaching `Ready` only after an admin's Provision action and acceptance on the AWS side.
 
 **Detection hint:** If a response suggests activating Private Connect through Setup without mentioning the license and support case, the provisioning path is incorrect.
 
@@ -73,3 +73,40 @@ Common mistakes AI coding assistants make when generating or advising on hybrid 
 **The correct pattern:** The primary pattern for DMZ relay connectivity is outbound-only from the DMZ host. The relay polls Salesforce Platform Events or subscribes to the Streaming API over an outbound persistent connection. MuleSoft Runtime Manager uses an outbound agent connection to the control plane — no inbound port required. Require inbound ports only if the architecture genuinely requires server-push and document the security exception.
 
 **Detection hint:** Any architecture that requires opening inbound TCP from the internet to a DMZ relay host should be questioned — most relay patterns can be redesigned as outbound-initiated from the relay side.
+
+---
+
+## Anti-Pattern 7: Adding Remote Site Settings Next to a Named Credential
+
+**What the LLM generates:** "Create a Named Credential for the relay, then add the relay URL to Remote Site Settings."
+
+**Why it happens:** Older tutorials paired the two, and the model repeats both steps.
+
+**The correct pattern:** The Apex Developer Guide ("Invoking Callouts Using Apex") says a callout that uses a named credential as its endpoint needs no remote site setting. Leave the Remote Site Setting out so code cannot call the relay without the named credential's authentication.
+
+**Detection hint:** A hybrid design that lists both a Named Credential and a Remote Site Setting for the same host.
+
+---
+
+## Anti-Pattern 8: Assuming Private Connect Covers Every Callout Once It Is Ready
+
+**What the LLM generates:** "After Private Connect is provisioned, all traffic from your org to the VPC stays on the AWS backbone."
+
+**Why it happens:** The model treats Private Connect as a network-level setting rather than a per-credential routing choice.
+
+**The correct pattern:** The Metadata API Developer Guide (`NamedCredential`) routes callouts privately only when the named credential's `namedCredentialType` is `PrivateEndpoint` and it references the `OutboundNetworkConnection`. Inventory every callout to the target and move each onto that named credential.
+
+**Detection hint:** A Private Connect design with no named credential inventory, or with Apex that calls the target by raw URL.
+
+---
+
+## Anti-Pattern 9: Hand-Coding WS-Security Headers in Apex
+
+**What the LLM generates:** A WSDL2Apex class edited to build `wsse:Security` headers with a username token for an on-premises SOAP service.
+
+**Why it happens:** It is the most direct code-level answer to "the service needs WS-Security".
+
+**The correct pattern:** *Integration Patterns and Practices* says Salesforce does not support WS-Security and does not recommend hand-coded headers because of build effort and maintenance on every release. Inject WS-Security at a DMZ security or XML gateway, or use transport-level two-way SSL agreed with the service owner.
+
+**Detection hint:** Apex that serializes WS-Security XML by hand.
+

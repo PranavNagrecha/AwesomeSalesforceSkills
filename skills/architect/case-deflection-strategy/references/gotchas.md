@@ -1,51 +1,97 @@
 # Gotchas — Case Deflection Strategy
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious Salesforce platform behaviors that cause real production problems in this domain. Each gotcha names the source it rests on. Claims that could not be confirmed from a fetched source carry an inline `UNVERIFIED (2026-10-03):` marker.
 
-## Gotcha 1: Bot Session Timeout Counts as Containment, Not Deflection
+## Gotcha 1: An Abandoned Bot Session Looks Like Containment
 
-**What happens:** When a bot session times out because the customer stopped responding, the session is marked as "contained" (no agent transfer occurred) in standard Einstein Bot analytics. Teams report containment rate as their deflection KPI and show inflated numbers. In reality, a timed-out session means the customer gave up, not that they were deflected.
+**What happens:** A customer stops replying and the bot session closes on its idle timeout. No transfer happened, so any metric defined as "sessions without a transfer" counts it as contained. Teams report that number as deflection and overstate the program.
 
-**When it occurs:** Any time a bot deployment uses containment rate as a proxy for deflection rate and does not separately track goal completion rate. Common in first-generation bot programs where KPIs were not defined before launch.
+**When it occurs:** When the KPI framework uses containment alone. UNVERIFIED (2026-10-03): that standard Einstein Bot analytics label a timed-out session as contained could not be confirmed from a fetched source; test it in your org before relying on either reading.
 
-**How to avoid:** Always track goal completion rate (GCR) alongside containment rate. Use bot session end surveys or post-session CSAT to distinguish between resolved sessions and abandoned sessions. Report GCR as the primary quality KPI and containment rate as a secondary efficiency metric.
+**How to avoid:** Define goals on the bot version and mark the dialog step that proves the goal was met, so goal completion is recorded by the platform rather than inferred from the absence of a transfer. Report goal completion rate as the quality KPI and containment as an efficiency KPI. Set the bot's idle timeout deliberately so "abandoned" has a known definition.
 
----
-
-## Gotcha 2: Einstein Conversation Mining Does Not Analyze Email-to-Case or Web-to-Case
-
-**What happens:** ECM analyzes Messaging and Chat transcripts. It does not process Email-to-Case message bodies or Web-to-Case subject/description fields. Orgs that receive the majority of their contact volume via email will see a sparse or misleading ECM topic list because the tool is analyzing only the chat subset of their volume.
-
-**When it occurs:** When the ECM report is used to prioritize deflection topics for an org where email is the dominant channel. The report will make high-email-volume topics appear low-priority because they are rarely discussed in chat.
-
-**How to avoid:** Supplement ECM with a case report analysis: export Case Subject or Description text and use keyword frequency or a simple text clustering approach to identify topic distribution across all channels before setting the deflection roadmap.
+**Source:** Metadata API Developer Guide v67.0, BotVersion: `conversationGoals` (API 57.0+) and BotStep type `GoalStep`; Bot: `sessionTimeout`, "the maximum amount of minutes that a bot session can be idle" (API 58.0+).
 
 ---
 
-## Gotcha 3: Data Category Inheritance Is Downward Only
+## Gotcha 2: Einstein Conversation Mining Sees Only Conversation Transcripts
 
-**What happens:** Assigning a user profile or Experience Cloud channel access to a parent data category does NOT make articles assigned exclusively to child categories visible. Conversely, granting access to a child category does not surface articles assigned only to the parent. Each article must be assigned to the appropriate level, and visibility grants must match.
+**What happens:** The topic list produced by Einstein Conversation Mining reflects the chat and messaging slice of volume. In an email-heavy org the top email reasons look minor or absent, and the deflection roadmap targets the wrong topics.
 
-**When it occurs:** When the knowledge team assigns all articles to a top-level data category for convenience, then sub-teams create child categories and assign new articles there without re-assigning the old articles. Guest user profiles that were set up against the parent category can no longer see new child-category articles.
+**When it occurs:** When the mining report is the only topic source for an org whose dominant Case Origin is Email or Web. UNVERIFIED (2026-10-03): the exact data sources Conversation Mining reads, and the often-quoted 90-day transcript minimum, are documented only in Salesforce Help, which does not fetch.
 
-**How to avoid:** Audit data category assignments end-to-end before launching any deflection channel. Test as a guest user (not an admin) with the Experience Cloud site preview. Confirm that a test article assigned to each child category is visible via search and direct URL on the target channel.
+**How to avoid:** Pull the Case Origin and Case Reason distribution first (query in `references/examples.md`). Use mining output for the conversational channels and case text analysis for email and web. Confirm the feature is on before planning around it: it is the `enableConversationMining` setting.
 
----
-
-## Gotcha 4: Einstein Article Recommendations in Bots Use Channel-Scoped Visibility
-
-**What happens:** When a bot uses Einstein Article Recommendations to return articles during a conversation, it searches only the articles visible to the Experience Cloud site context the bot is embedded in — not all published articles in the org. This means articles that are published and visible in Setup but not assigned to the correct data categories for the guest user profile on that specific site will never be returned by the bot.
-
-**When it occurs:** When bot article search is tested in the agent desktop or Setup test environment (where the tester is an authenticated admin) and shows correct results, but guest users on the public-facing site get "no articles found." The admin sees all articles; the guest user sees only articles with matching data category visibility grants.
-
-**How to avoid:** Always test bot article search using the Experience Cloud site preview in guest user mode, not in the bot builder test harness. The test harness runs as the admin context and bypasses data category visibility rules.
+**Source:** Metadata API Developer Guide v67.0, ConversationalIntelligenceSettings: `enableConversationMining`, "Indicates whether Einstein Conversation Mining is enabled" (API 61.0+). Object Reference v67.0, Case: `Origin` ("The source of the case, such as Email, Phone, or Web") and `Reason` are filterable and groupable picklists.
 
 ---
 
-## Gotcha 5: Deflection Rate Calculation Varies — Align on a Definition Before Reporting
+## Gotcha 3: Data Category Visibility Is Broad, And The Real Trap Is The Multi-Group Rule
 
-**What happens:** Deflection rate has at least three common interpretations: (1) percentage of bot sessions with no agent transfer, (2) percentage of all inbound contacts (across all channels) resolved in self-service, (3) percentage reduction in case creation over a baseline period. Each definition produces a different number, and stakeholders often compare incompatible figures.
+**What happens:** Teams expect visibility to flow only downward, so they re-tag articles at every level. The documented behavior is broader. Making a category visible makes its whole family line visible: ancestors, parent, children, and descendants. The failure that actually hides articles is different. An article classified in two category groups is visible only if the user can see at least one category in each group. A guest profile that can see `Products > Router` but has no visibility in the `Region` group never sees an article tagged `Router` and `EMEA`.
 
-**When it occurs:** When the deflection program spans multiple teams (bot team, portal team, knowledge team) each reporting their own deflection metric to leadership without a shared definition.
+**When it occurs:** When a second category group (region, audience, product line) is added after launch and only internal roles get visibility to it. Users with no visibility in a group see only articles not classified in that group.
 
-**How to avoid:** Define the deflection rate formula in writing before launch and include it in the KPI framework document. The Salesforce-cited 27% industry average refers to bot-specific deflection (sessions where no agent transfer occurred and customer completed goal), not org-wide contact volume reduction.
+**How to avoid:** For every category group, set visibility for the guest profile, the authenticated customer profile or permission set, and partner roles before launch. Test one article per group combination as each audience. Keep the number of category groups on customer-facing articles small.
+
+**Source:** Salesforce Knowledge Implementation Guide (Summer '26), Data Category Visibility: "Setting a category as visible makes that category and its entire directly related family line—ancestors, immediate parent, primary children, other descendants—visible to users"; "Categorized Article Visibility: User's can see an article if they can see at least one category per category group on the article"; Revoked Visibility. This corrects the earlier "inheritance is downward only" statement in this skill.
+
+---
+
+## Gotcha 4: The Right Category With The Wrong Channel Still Hides The Article
+
+**What happens:** An article is published, correctly categorized, and visible to the guest profile, but it never appears on the site. Its channel flags exclude the customer or public channel.
+
+**When it occurs:** When authors publish from the internal app with the default channel selection, or when an import file omits the channel column and the article lands in the internal app only.
+
+**How to avoid:** Add the channel flags to the knowledge readiness audit: `IsVisibleInPkb` for the public knowledge base, `IsVisibleInCsp` for customers, `IsVisibleInPrm` for partners, `IsVisibleInApp` for agents. On import, set the `Channels` column explicitly. When channels change, align translations before publishing, because a translation whose channels differ blocks the publish.
+
+**Source:** Object Reference v67.0, KnowledgeArticleVersion: `IsVisibleInApp`, `IsVisibleInCsp`, `IsVisibleInPkb`, `IsVisibleInPrm`. Knowledge Implementation Guide (Summer '26), import "Channels" keyword ("application for Internal App. If you don't specify a channel, application is the default"; `sites`, `csp`, `prm` for the other channels) and translation publishing: "You can't change channels on an article translation and then publish the article. Doing so generates an error."
+
+---
+
+## Gotcha 5: Bot Article Answers Depend On The Context The Bot Runs In
+
+**What happens:** Knowledge answers look complete when an admin tests the bot, then guests on the live site get no results. The bot searches what its running context can see, not every published article.
+
+**When it occurs:** When testing happens in Setup or the builder preview instead of through the deployed site as a guest. UNVERIFIED (2026-10-03): that the builder test harness runs with admin visibility and that Einstein Article Recommendations inherit the embedding site's category visibility are stated in Salesforce Help only.
+
+**How to avoid:** Test knowledge answers through the deployed channel as each audience. Assign a dialog to the `KnowledgeFallback` system event so a no-result search ends in a designed path, not a dead end.
+
+**Source:** Metadata API Developer Guide v67.0, BotVersion: `knowledgeActionEnabled`; ConversationSystemDialog types `KnowledgeAction` (API 60.0) and `KnowledgeFallback` (API 51.0).
+
+---
+
+## Gotcha 6: Three Teams, Three Deflection Rates
+
+**What happens:** The bot team reports sessions without transfer, the portal team reports sessions without a case, and the service director reports the drop in case creation. Leadership compares the three numbers as if they measured the same thing.
+
+**When it occurs:** When the program spans bot, portal, and knowledge teams and the formula was never written down.
+
+**How to avoid:** Write the formula into the KPI framework before launch, name its numerator and denominator objects, and report per topic. UNVERIFIED (2026-10-03): the widely quoted "27% average deflection rate" attributed to Salesforce could not be traced to a fetched Salesforce source; do not use it as a target.
+
+**Source:** Practice guidance; no platform behavior is claimed beyond the objects named in `references/examples.md`.
+
+---
+
+## Gotcha 7: High-Volume Portal Users Have No Role, So Role Visibility Never Reaches Them
+
+**What happens:** Category visibility is configured on customer roles, and portal users on high-volume licences still see no categorized articles.
+
+**When it occurs:** When the customer population uses high-volume portal licences, which carry no role. Role-based visibility settings cannot apply to users without a role.
+
+**How to avoid:** Grant category visibility to high-volume users through their profile or a permission set. Remember that role, permission set, and profile visibility combine with a logical OR, and that a child role can reduce but never exceed its parent's visibility.
+
+**Source:** Knowledge Implementation Guide (Summer '26), Role-Based Visibility Setting Inheritance: "Because high-volume portal users don't have roles, you must designate visibility settings by permission set or profile before these users can view categorized articles and questions"; note on logical OR between role, permission set, and profile definitions.
+
+---
+
+## Gotcha 8: Article View Counts Are Not Resolutions
+
+**What happens:** The program reports rising article views as deflection. Views measure reach. A customer can read three articles and still open a case.
+
+**When it occurs:** When `KnowledgeArticleViewStat` is the only self-service metric. It counts unique views per channel for published and archived articles; draft views are not tracked, and the normalized score weights recent views more heavily.
+
+**How to avoid:** Pair view statistics with a resolution signal: a "did this answer your question" vote, a case-creation check after an article session, or a bot goal step. Use `CaseArticle` to see which articles agents attach, which shows the articles customers needed but did not find.
+
+**Source:** Object Reference v67.0, KnowledgeArticleViewStat: "The view count statistics are for published and archived articles only. View counts for draft articles aren't tracked"; `ViewCount` is unique views; `NormalizedScore` weighting; `Channel` values `AllChannels`, `App`, `Pkb`, `Csp`, `Prm`. CaseArticle: "Represents the association between a Case and a KnowledgeArticle."

@@ -1,6 +1,6 @@
 ---
 name: platform-selection-guidance
-description: "Use when choosing which Salesforce platform capability to use for a requirement — covering metadata storage (Custom Metadata vs Custom Settings vs Custom Objects), UI framework (LWC vs Aura), integration approach (Platform Events vs Change Data Capture vs Outbound Messaging), and data extension (OmniStudio vs standard automation). Triggers: custom metadata vs custom settings, LWC vs Aura, which salesforce feature to use, platform events vs change data capture, omnistudio vs flow. NOT for automation-specific tool selection between Flow / Apex / Workflow (use admin/process-automation-selection) or for implementing the chosen platform feature."
+description: "Use when choosing which Salesforce platform capability to use for a requirement — covering metadata storage (Custom Metadata vs Custom Settings vs Custom Objects), UI framework (LWC vs Aura), integration approach (Platform Events vs Change Data Capture vs Outbound Messaging), and data extension (OmniStudio vs standard automation). Triggers: custom metadata vs custom settings, LWC vs Aura, which salesforce feature to use, platform events vs change data capture, omnistudio vs flow, choose where to store configuration. NOT for automation-specific tool selection between Flow / Apex / Workflow (use admin/process-automation-selection) or for implementing the chosen platform feature."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -23,16 +23,18 @@ outputs:
   - Risk factors for the recommended option
   - References to implementation skills for the chosen option
 triggers:
-  - custom metadata vs custom settings which should I use
-  - LWC vs Aura which framework should I use
-  - platform events vs change data capture for integration
-  - which salesforce feature should I use for this requirement
-  - omnistudio vs flow vs lwc decision
-  - choosing between salesforce platform capabilities
+  - "custom metadata vs custom settings which should I use"
+  - "LWC vs Aura which framework should I use"
+  - "platform events vs change data capture for integration"
+  - "which salesforce feature should I use for this requirement"
+  - "omnistudio vs flow vs lwc decision"
+  - "choosing between salesforce platform capabilities"
+  - "decide where to store routing thresholds so they deploy with the release"
+  - "pick an event pattern to keep our ERP in sync with Salesforce changes"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 Use this skill when the question is which Salesforce platform feature or capability class should own a requirement — not which automation tool to use within the automation surface (see `admin/process-automation-selection` for Flow vs Apex vs Workflow decisions), and not how to implement the chosen feature. This skill covers the broader platform-level choice: how to store configuration data, which UI framework to use for new components, which integration pattern fits a given sync requirement, and whether OmniStudio is appropriate vs. standard Salesforce tooling.
@@ -45,10 +47,27 @@ The decisions here tend to have long life spans. Choosing Custom Settings instea
 
 Gather this context before working through decision guidance:
 
-- What is the org edition and what add-ons or licenses are active? (OmniStudio requires a license; certain integration patterns require Shield or Platform Events licensing.)
+- What is the org edition and what add-ons or licenses are active? (OmniStudio requires a license. CDC allows five selected entities without an add-on, and platform event delivery to external clients defaults to 50,000 events per 24 hours in Performance and Unlimited Editions and 25,000 in Enterprise, shared with CDC; add-ons raise both.)
 - Who will maintain the result? Admins can deploy Custom Metadata records via change sets; Custom Objects require data migration scripts. LWC requires JavaScript skills; Aura is familiar to legacy teams but is a strategic dead end.
 - What is the expected data volume and lifecycle? High-volume configuration with relationships belongs in Custom Objects, not Custom Metadata. Configuration that ships with your package belongs in Custom Metadata, not Custom Settings.
 - Is there an existing implementation that is being replaced? If so, this skill covers the upgrade path assessment (Mode 3).
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before naming a feature. Each traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What a proper design adds over just doing it |
+|---|---|---|---|
+| "Must this configuration arrive in every org through the release pipeline, or do people edit it in production?" | Custom settings data does not deploy; custom metadata records cannot be changed with DML (Gotchas 1 and 9) | The change path for the values, not just the schema | Configuration moves with the release, and runtime edits land in a store built for them |
+| "Does any value differ by profile or user, or point at a specific record such as a queue?" | Only hierarchy custom settings vary by user; custom metadata cannot look up records (Gotcha 5) | The override levels and record references needed | No text-field IDs that break between orgs |
+| "Is any value a secret?" | Unprotected custom settings are readable by every profile, including guest (Gotcha 7) | A list of values that belong in named credentials | Secrets never sit in readable configuration |
+| "How do the components on the page talk to each other today?" | LWC cannot handle Aura application events; Lightning Message Service is the replacement (Gotcha 2) | The event chain to redesign before migrating | Migrations do not silently break event wiring |
+| "How many external subscribers, how many events a day, and how long can each be offline?" | Retention is 24 or 72 hours for platform events and three days for CDC; delivery allocation is shared (Gotchas 3 and 10) | Event volume per subscriber against the allocation and retention | The pattern fits the limits, with a reconciliation path for long outages |
+| "Is OmniStudio licensed here, and does the team know it?" | OmniStudio needs a licence and its data model differs from SOQL (Gotcha 4) | A yes/no on licence and skills | Guided processes use the tool the org can run and maintain |
+
+What a proper selection adds over "just using the familiar feature": the choice is checked against deployment, security, test, and limit behavior that is hard to reverse later.
 
 ---
 
@@ -71,13 +90,14 @@ Use this framework when the requirement involves storing configuration data that
 | Criterion | Custom Metadata Types | Custom Settings (Hierarchy) | Custom Objects |
 |---|---|---|---|
 | Deployable via Metadata API / change sets | Yes — records deploy as metadata | No — data values must be seeded separately | No — requires data deployment scripts |
-| Queryable in SOQL | Yes | Yes (via `getInstance()` API) | Yes |
+| Queryable in SOQL | Yes, and custom metadata queries do not count against the SOQL query limit | Yes (via `getInstance()` API; data is cached) | Yes |
 | Available in formulas and validation rules | Yes | Yes (hierarchy type only) | No |
 | User/profile-level overrides | No — org-level only | Yes — hierarchy types support org/profile/user overrides | No (requires relationship fields) |
-| Volume ceiling | ~5,000 records per type practical limit | ~5,000 records per list type | Up to object storage limits (millions of rows) |
+| Volume ceiling | ~5,000 records per type practical limit (UNVERIFIED 2026-10-03) | ~5,000 records per list type (UNVERIFIED 2026-10-03) | Up to object storage limits (millions of rows) |
 | Relationships to other objects | No lookup relationships | No lookup relationships | Full lookup and master-detail support |
-| Audit trail | No | No | Yes (if History Tracking enabled) |
-| Package-able | Yes | No | Yes (object schema, not data) |
+| Audit trail | No (UNVERIFIED 2026-10-03) | No | Yes (if History Tracking enabled) |
+| Package-able | Yes (type and records) | Yes, the setting definition (Apex Developer Guide, "Custom Settings"); corrected 2026-10-03 from "No". Records are data and are seeded separately (UNVERIFIED 2026-10-03) | Yes (object schema, not data) |
+| Visible to Apex tests by default | Metadata stays accessible in tests (UNVERIFIED for custom metadata specifically) | No: needs `SeeAllData=true` or test setup | No: tests create their own data |
 
 **Decision rule:**
 
@@ -92,17 +112,17 @@ Use this framework when the requirement involves storing configuration data that
 
 | Criterion | Lightning Web Components (LWC) | Aura Components (Legacy) |
 |---|---|---|
-| Strategic direction | Current standard — all new features added here | Legacy — no new Aura-only platform features as of Spring '25 |
-| Performance | Better — closer to browser-native Web Components standard | Lower — heavier framework overhead |
-| Mobile support | Full | Limited — mobile features added after ~2021 are LWC-only |
+| Strategic direction | Current standard — the Aura Components Developer Guide says to always choose LWC unless you need a feature it does not support | Legacy — no new Aura-only platform features as of Spring '25 (UNVERIFIED 2026-10-03) |
+| Performance | Better — the Aura guide says LWC performs better and is easier to develop | Lower — heavier framework overhead |
+| Mobile support | Full | Limited — mobile features added after ~2021 are LWC-only (UNVERIFIED 2026-10-03) |
 | Experience Cloud support | Full | Partial |
-| Slack integration | Supported | Not supported |
-| Can contain the other | LWC cannot contain Aura | Aura can contain LWC children |
+| Slack integration | Supported | Not supported (UNVERIFIED 2026-10-03) |
+| Can contain the other | LWC cannot contain Aura | Aura can contain LWC children (both UNVERIFIED 2026-10-03: the LWC Developer Guide returned HTTP 403; the Aura guide confirms only that the two coexist and interoperate on a page) |
 
 **Decision rule:**
 
-- All new UI component development uses **LWC**. No exceptions.
-- Use Aura only when you are modifying an existing Aura component that cannot yet be migrated, or when you must consume an Aura application event that has no LWC equivalent in your specific Lightning container.
+- All new UI component development uses **LWC**. Correction (2026-10-03): earlier text said "No exceptions"; the Aura Components Developer Guide says to choose LWC unless you need a feature LWC does not yet support, so record the specific gap when Aura is chosen.
+- Use Aura only when you are modifying an existing Aura component that cannot yet be migrated, or when you need a capability LWC lacks. For cross-component messaging, the Aura guide points application-event designs to Lightning Message Service, which LWC uses too.
 - Migration path: wrap new LWC components inside the existing Aura container. Aura containers calling LWC children is a supported incremental migration pattern. Migrate the Aura shell when the project allows.
 
 ### Decision Area 3 — Integration Pattern: Platform Events vs Change Data Capture vs Outbound Messaging
@@ -110,8 +130,8 @@ Use this framework when the requirement involves storing configuration data that
 | Pattern | When to Use | When Not To Use |
 |---|---|---|
 | Platform Events | Event-driven integration — publisher and subscriber are decoupled; high-volume event publishing; not tied to a specific record's field changes | When the subscriber needs to know which specific fields changed — use CDC instead |
-| Change Data Capture (CDC) | External system must stay in sync with Salesforce record changes (inserts, updates, deletes, undeletes); CDC events include the changed field names automatically | When you are not reacting to Salesforce record changes but publishing application-level events — use Platform Events |
-| Outbound Messaging | Legacy SOAP-based pattern; tied to Workflow Rules | **Do not use for new integrations.** Workflow Rules are retired. Migrate to Platform Events. |
+| Change Data Capture (CDC) | External system must stay in sync with Salesforce record changes (inserts, updates, deletes, undeletes); CDC events include the changed field names automatically (`changedFields` in the change event header) | When you are not reacting to Salesforce record changes but publishing application-level events — use Platform Events. Without an add-on, only five entities can be selected |
+| Outbound Messaging | Legacy SOAP-based pattern; the Metadata API describes outbound messages as workflow and approval actions | **Do not use for new integrations.** Workflow Rules are retired (UNVERIFIED 2026-10-03: retirement status is Help-only). Migrate to Platform Events. |
 
 **Decision rule:**
 
@@ -119,7 +139,7 @@ Use this framework when the requirement involves storing configuration data that
 2. Does the integration need to publish application-level events that trigger external processing, independent of any specific record save? → **Platform Events**.
 3. Is there existing Outbound Messaging still in place? → Plan migration to Platform Events. Do not extend it.
 
-**Retention windows:** Platform Events retain for 72 hours (replay window). CDC events retain for 72 hours standard; up to 7 days with Salesforce Shield Event Monitoring.
+**Retention windows:** High-volume Platform Events retain for 72 hours (replay window); legacy standard-volume events for 24 hours. CDC events are stored for up to three days. Correction (2026-10-03): earlier text said CDC retention extends to 7 days with Shield Event Monitoring; the Change Data Capture Developer Guide gives only the three-day window.
 
 ### Decision Area 4 — OmniStudio vs Standard Automation
 
@@ -144,16 +164,18 @@ Use this framework when the requirement involves storing configuration data that
 
 Use this mode when reviewing a design document, inherited org, or completed build to identify mismatched platform choices.
 
-#
+Work through the Review Checklist below against the inherited design, then use Mode 3 for any item that needs a migration.
+
+---
+
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Ask the six questions in "Questions to Ask Before Configuring" and write down the answers; they decide most of the tables in Mode 1.
+2. Confirm the routing tree first: for automation-tool questions go to `admin/process-automation-selection`, and for integration patterns read `standards/decision-trees/integration-pattern-selection.md` before using Decision Area 3.
+3. Score the top two or three candidates in the relevant Mode 1 table and check each against the limits in `references/gotchas.md` (deployment, secrets, test visibility, event retention and allocation).
+4. Record the choice as a decision record using `references/examples.md` Example 4 as the shape: requirement, candidates, decision, rejected options with the platform fact that ruled them out, and the deployable components.
+5. Run `python3 skills/architect/platform-selection-guidance/scripts/check_platform_selection_guidance.py --project-dir <retrieved-project>` to flag Aura components without LWC equivalents, outbound messages, custom metadata fields storing raw record IDs, active workflow rules, and custom settings used in Apex.
+6. Hand implementation to the skill listed under Related Skills for the chosen feature.
 
 ---
 
@@ -202,7 +224,7 @@ Use this mode when the team has identified a legacy feature and needs a migratio
 4. Migrate the external subscriber from the SOAP endpoint to the Platform Events Pub/Sub API or CometD.
 5. Deactivate the Workflow Rule and remove the Outbound Message.
 
-**Risk:** Outbound Messaging has guaranteed delivery semantics (retry on failure). Platform Events have a 72-hour replay window but do not auto-retry to external endpoints. If the external subscriber goes offline, you must implement replay logic.
+**Risk:** Outbound Messaging retries on failure for up to 24 hours (extendable to seven days through Support), per *Integration Patterns and Practices*. Platform Events have a 72-hour replay window (high-volume) but are published once with no Salesforce-side retry to external endpoints. If the external subscriber goes offline, you must implement replay logic.
 
 ---
 
@@ -225,7 +247,7 @@ Use this mode when the team has identified a legacy feature and needs a migratio
 |---|---|---|---|
 | Trigger | Application-level publish | Record save (any change) | Workflow Rule (retired) |
 | Field delta included | No | Yes | Partial (configured fields) |
-| Retention | 72 hours | 72h (7d with Shield) | N/A |
+| Retention | 72 hours (high-volume); 24 hours (legacy standard-volume) | Up to three days (corrected 2026-10-03 from "72h (7d with Shield)") | Retries up to 24 hours |
 
 ---
 
@@ -234,6 +256,8 @@ Use this mode when the team has identified a legacy feature and needs a migratio
 - `admin/process-automation-selection` — use when the decision is between Flow, Apex, Workflow Rules, or Process Builder for automation logic. That skill covers the automation tool boundary; this skill covers the broader platform feature selection.
 - `admin/custom-metadata-types` — use when Custom Metadata Types has been chosen and the design question shifts to type structure, field design, and deployment patterns.
 - `apex/custom-metadata-in-apex` — use when the storage decision is made and the question is Apex access and caching patterns for Custom Metadata.
-- `lwc/` skills — use for LWC component authoring after the UI framework decision is made.
+- `lwc/aura-to-lwc-migration` and `lwc/message-channel-patterns`: use after the UI framework decision, for the migration and the Lightning Message Service channel design.
 - `omnistudio/omniscript-design-patterns` — use when OmniStudio has been selected and OmniScript design specifics are needed.
 - `integration/platform-events-integration` — use when Platform Events has been chosen and design specifics are needed.
+- `integration/change-data-capture-integration`: use when CDC has been chosen.
+- `standards/decision-trees/integration-pattern-selection.md`: read before Decision Area 3.

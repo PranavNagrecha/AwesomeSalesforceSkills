@@ -29,6 +29,8 @@ triggers:
   - "data freshness requirements for model retraining"
   - "Einstein Feature Store design patterns"
   - "AI-ready field naming and data completeness"
+  - "audit our Knowledge articles before we ground an Agentforce agent on them"
+  - "check which fields are filled in enough before we turn on Einstein scoring"
 inputs:
   - Salesforce clouds and editions licensed (Sales Cloud, Service Cloud, Data Cloud, Agentforce)
   - Current data model overview (key objects and relationships)
@@ -45,12 +47,29 @@ outputs:
   - Data quality gate checklist before AI feature activation
   - Einstein Feature Store field mapping recommendations
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 Use this skill when designing or auditing a Salesforce data architecture to ensure it can reliably support AI features — including Einstein predictive scoring, Agentforce generative actions, Data Cloud-powered insights, and custom ML integrations. This is not a skill about enabling individual Einstein features; it is about making the underlying data model, field design, and data quality posture capable of feeding AI reliably. The difference between an org where Einstein Opportunity Scoring works and one where it produces junk predictions is almost always data architecture, not configuration.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before auditing a single field. Each traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What a proper design adds over just doing it |
+|---|---|---|---|
+| "Which AI features are in scope, and which licences come with them (Sales Cloud Einstein, Data Cloud, CRM Plus for AI Accelerator)?" | Model-factor visibility and use-case metadata need specific licences and permissions (Gotchas 1 and 11) | A feature-to-licence map | No design that depends on metadata or objects the org cannot use |
+| "How fresh must grounded content be, and which articles carry prices, limits, or legal terms?" | Knowledge used with Agentforce is reindexed daily (Gotcha 6) | A list of policy-critical content and its freshness need | Deterministic values come from live actions, not day-old chunks |
+| "Which Knowledge fields hold the content agents should cite, and are any encrypted or URL fields?" | Encrypted and URL fields are not used for grounding; files have size limits (Gotcha 7) | Identifying and content fields per record type | Grounding reads the fields that actually hold answers |
+| "Will grounding use Knowledge, uploaded files, or both, and what can the agent user see?" | A data library takes one source type; retrieval respects the agent's access (Gotcha 8) | A library-per-source plan and agent-user access review | Agents cite what they are allowed to cite, from the right library |
+| "What category is each Data Cloud stream, and what is its identity key?" | Categories cannot change after ingestion; mismatched keys split profiles (Gotchas 5 and 9) | A stream register with category and identity attributes | Re-ingestion is avoided and unified profiles are complete |
+| "Will any flow or trigger branch on a score?" | Prediction outputs arrive asynchronously (Gotcha 4) | A list of score consumers and their timing | No routing decision races the scoring job |
+
+What a proper design adds over "just enabling the AI feature": the data the feature reads is complete, fresh enough, in supported field types, and visible to the user the AI runs as, and every licence the design assumes is confirmed.
 
 ---
 
@@ -58,7 +77,7 @@ Use this skill when designing or auditing a Salesforce data architecture to ensu
 
 AI features consume data. The quality of their output is directly bounded by the quality of their input. Salesforce AI features fail silently when:
 
-- Key predictive fields have fill rates below 70% — Einstein models depersonalize predictions and revert to global averages.
+- Key predictive fields have fill rates below 70% — Einstein models depersonalize predictions and revert to global averages (UNVERIFIED 2026-10-03: threshold and fallback behavior are not in any fetched guide).
 - Text fields used for RAG retrieval are written in inconsistent formats, contain HTML markup, or are truncated — the retrieval model cannot chunk or embed them reliably.
 - Data freshness is misaligned — a model trained on 90-day-old data scores against live pipeline records and produces stale recommendations.
 - Fields are named inconsistently across objects — Data Cloud's harmonized data model cannot map them without manual field mapping on every ingestion run.
@@ -72,7 +91,7 @@ This skill addresses all five failure modes before they reach production.
 
 ### 1. Data Completeness for ML
 
-Einstein predictive models require sufficient field fill rates to produce meaningful predictions. The minimum threshold for a field to influence a model is approximately 70% fill rate across training records. Fields below 40% fill rate are typically ignored by the model during feature selection, which means sparse data silently degrades prediction quality.
+Einstein predictive models require sufficient field fill rates to produce meaningful predictions. The minimum threshold for a field to influence a model is approximately 70% fill rate across training records. Fields below 40% fill rate are typically ignored by the model during feature selection, which means sparse data silently degrades prediction quality. UNVERIFIED (2026-10-03): the 70% and 40% figures are working heuristics, not documented model behavior. For Opportunity Scoring, the factors the model actually used can be read from `SalesAIScoreModelFactor` (Object Reference; needs the View Scoring Model Factors permission).
 
 **Assessment approach:** For each object targeted by an Einstein feature, calculate fill rates for all candidate predictor fields. Use a SOQL aggregate query or CRM Analytics recipe. Flag fields below 70% for remediation before enabling scoring.
 
@@ -90,30 +109,30 @@ Not all data belongs in Salesforce standard objects. AI features have different 
 | Structured CRM records (Accounts, Opportunities, Cases) | Salesforce standard/custom objects | Native Einstein feature extraction; Data Cloud harmonization |
 | High-volume interaction data (emails, web events, clicks) | Data Cloud | Volume tolerance, calculated insights, identity resolution |
 | Long-form knowledge content (articles, runbooks, policies) | Salesforce Knowledge or external CMS | RAG retrieval via Data Cloud knowledge base |
-| Binary files, images, audio | External store (S3, Azure Blob) with URL reference in Salesforce | Salesforce storage limits; vector embedding happens externally |
+| Binary files, images, audio | External store (S3, Azure Blob) with URL reference in Salesforce | Salesforce storage limits; Data Cloud can reference files in external blob stores through an unstructured data lake object (UDLO, *Data Cloud* guide glossary) |
 | Real-time sensor or IoT data | MuleSoft or streaming pipeline to Data Cloud | Event volume exceeds platform API limits |
 
 ### 3. Embedding-Ready Text Field Design
 
 Text fields that will be embedded for vector search require deliberate design. Key rules:
 
-- **Minimum length for meaningful embedding:** 50 characters. Fields shorter than this rarely produce discriminating embeddings.
-- **Maximum practical length:** 2,000 characters per chunk. Fields beyond 4,000 characters should be chunked before embedding. Salesforce Long Text Area fields support up to 131,072 characters — these must be chunked server-side before passing to an embedding model.
-- **Format discipline:** Strip HTML before storing. Rich Text fields in Salesforce Knowledge store HTML markup by default. The embedding model treats `<p>`, `<strong>`, and `&amp;` as tokens, which pollutes the vector space.
+- **Minimum length for meaningful embedding:** 50 characters. Fields shorter than this rarely produce discriminating embeddings (UNVERIFIED 2026-10-03, heuristic).
+- **Maximum practical length:** 2,000 characters per chunk. Fields beyond 4,000 characters should be chunked before embedding (UNVERIFIED 2026-10-03, heuristic). Salesforce Long Text Area fields support up to 131,072 characters (Knowledge Guide (Classic), field types): these must be chunked before passing to an embedding model. On the native path, a Data Cloud search index configuration does the chunking and vectorizing (Generative AI guide).
+- **Format discipline:** Strip HTML before storing in custom pipelines. Rich Text fields in Salesforce Knowledge store HTML markup by default. The native Answer Questions with Knowledge action supports Text Area (Rich) fields directly, so test before stripping there. The embedding model treats `<p>`, `<strong>`, and `&amp;` as tokens, which pollutes the vector space.
 - **Language consistency:** Mixed-language fields produce low-quality embeddings. If the org supports multiple languages, store language as a metadata field and route to language-specific embedding models.
 - **Semantic density:** Fields that mix unrelated topics (e.g., a Description field that contains installation instructions, billing notes, and escalation history concatenated) produce generic embeddings. Split concerns into separate fields.
 
 ### 4. Knowledge Article Structure for RAG
 
-Agentforce grounds responses using Data Cloud knowledge base retrieval. The quality of retrieval is determined by how articles are structured.
+Agentforce grounds responses through an Einstein Data Library: the Knowledge articles or uploaded files are indexed in Data Cloud, and a search index and retriever are created automatically (Generative AI guide, "Setting Up Data Libraries"). A library uses either Knowledge or file uploads, not both; you choose identifying fields and content fields, can restrict to public articles, and can filter by data category. Supported knowledge field types are Text, Text Area, Text Area (Long), and Text Area (Rich); encrypted text and URL fields are not used. The quality of retrieval is still determined by how articles are structured.
 
 **Chunking-friendly article structure:**
 - One topic per article. Do not combine related but distinct concepts in a single article.
-- Lead with a declarative summary sentence (the first 150 characters are the most heavily weighted by most retrieval systems).
+- Lead with a declarative summary sentence (the first 150 characters are the most heavily weighted by most retrieval systems; UNVERIFIED 2026-10-03). Put the summary in the field you select as an identifying field, which the guide recommends be a concise outline of the article.
 - Use H2/H3 headers to create natural chunk boundaries — retrieval systems often split on heading boundaries.
 - Avoid tables for information that could be prose — tables do not chunk cleanly and lose context when split across chunks.
 - Tag articles with structured metadata: product, version, audience, topic category. Metadata filters in retrieval reduce false positives.
-- Maximum recommended article length before mandatory chunking: 1,500 words.
+- Maximum recommended article length before mandatory chunking: 1,500 words (UNVERIFIED 2026-10-03, heuristic).
 
 ### 5. Data Freshness Requirements
 
@@ -123,15 +142,15 @@ AI models decay. The sync cadence for AI-relevant data should be designed based 
 |---|---|---|
 | Einstein Opportunity Scoring | Daily batch | 24 hours |
 | Einstein Case Classification | Near-real-time (CDC-triggered) | 1 hour |
-| Agentforce RAG grounding | Near-real-time knowledge sync | 4 hours |
+| Agentforce RAG grounding | Daily reindex of Knowledge (Generative AI guide); corrected 2026-10-03 from "near-real-time, 4 hours" | 24 hours; use live actions for policy values |
 | Data Cloud calculated insights | Hourly for high-velocity streams | 1 hour |
 | Custom ML model retraining | Weekly or on significant data drift | Org-specific |
 
 ### 6. Einstein Feature Store
 
-Einstein's Feature Store is the mechanism by which Salesforce stores computed ML features alongside CRM records. Key design decisions:
+UNVERIFIED (2026-10-03): "Einstein Feature Store" as a product name, and score fields such as `EinsteinScoreReason1__c`, appear in no fetched guide. What the guides document: Einstein predictions are stored as `AIRecordInsight` records with child `AIInsightReason`, `AIInsightValue`, `AIInsightAction`, and `AIInsightFeedback` records, naming the prediction field written (Object Reference); Opportunity Scoring model factors are in `SalesAIScoreModelFactor`; and custom feature extraction for AI Accelerator use cases is the `AIFeatureExtractor` part of `AIUsecaseDefinition`, which needs the CRM Plus licence and the product's CRM licence and reads batch features from CRM Analytics or Data Cloud (Metadata API Developer Guide). Key design decisions:
 
-- Feature values are stored as custom fields on the scored object (e.g., `EinsteinScoreReason1__c` on Opportunity). These fields are system-managed when Einstein scoring is enabled — do not repurpose them.
+- Feature values are stored as custom fields on the scored object (e.g., `EinsteinScoreReason1__c` on Opportunity; UNVERIFIED as above). These fields are system-managed when Einstein scoring is enabled: do not repurpose them.
 - Custom feature extractors defined via `AIFeatureExtractor` metadata allow Salesforce Industries Einstein to use domain-specific signals. Define extractors in a dedicated metadata set and version-control them.
 - Avoid writing business logic that reads Einstein score fields at runtime — scores update asynchronously. Read them in reporting and recommendations, not in trigger-based decision gates.
 
@@ -139,8 +158,8 @@ Einstein's Feature Store is the mechanism by which Salesforce stores computed ML
 
 Data Cloud provides the harmonized data layer that connects disparate Salesforce and external data sources for AI consumption:
 
-- **Harmonized data model:** Data Cloud maps ingested data to a canonical data model (individual, contact point, engagement, etc.). Field mapping quality directly affects identity resolution and calculated insight accuracy. Invest in mapping before ingestion, not after.
-- **Calculated insights:** Define calculated insights (SOQL-like expressions on Data Cloud data) to pre-compute features at the data layer rather than in real-time Apex. Pre-computed features are faster and more reliable than runtime calculation.
+- **Harmonized data model:** Data Cloud maps ingested data to a canonical data model (individual, contact point, engagement, etc.; the *Data Cloud* guide calls it the Customer 360 Data Model, grouped into subject areas such as party, engagement, and loyalty). Each stream's category (Profile, Engagement, Other) cannot be edited after ingestion. Field mapping quality directly affects identity resolution and calculated insight accuracy. Invest in mapping before ingestion, not after.
+- **Calculated insights:** Define calculated insights (ANSI SQL statements on Data Cloud data, per the *Data Cloud* guide; corrected 2026-10-03 from "SOQL-like expressions") to pre-compute features at the data layer rather than in real-time Apex. Pre-computed features are faster and more reliable than runtime calculation.
 - **Activation targets:** Data Cloud can activate segments and calculated insights back to Salesforce CRM objects. Design the activation schema to match the target object's field structure — mismatched types cause silent activation failures.
 
 ### 8. AI-Ready Field Naming
@@ -149,7 +168,7 @@ Consistent field naming enables automated field mapping in Data Cloud and reduce
 
 - Use consistent prefixes for AI-relevant fields: `AI_`, `ML_`, `Score_`, `Feature_`.
 - Avoid spaces and special characters in API names — underscores only.
-- Document the semantic meaning of each field in the field description — Data Cloud's schema mapping UI uses descriptions as hints during automated mapping.
+- Document the semantic meaning of each field in the field description — Data Cloud's schema mapping UI uses descriptions as hints during automated mapping (UNVERIFIED 2026-10-03).
 - Mirror field names across related objects where semantically equivalent (e.g., `Industry__c` on Lead and Account should map to the same canonical field in Data Cloud).
 
 ### 9. Data Quality Gates Before AI Activation
@@ -159,7 +178,7 @@ Before activating any Einstein or Agentforce feature, verify:
 1. **Completeness:** Fill rate ≥ 70% on all planned predictor fields.
 2. **Consistency:** Picklist values are clean (no duplicates from legacy migration, no "Other" comprising >20% of values).
 3. **Timeliness:** Sync jobs are confirmed running and within target cadence.
-4. **Volume:** Sufficient historical records exist for model training (Einstein requires at least 1,000 closed records for Opportunity Scoring; Case Classification requires 1,000 closed cases with populated target fields).
+4. **Volume:** Sufficient historical records exist for model training (Einstein requires at least 1,000 closed records for Opportunity Scoring; Case Classification requires 1,000 closed cases with populated target fields; UNVERIFIED 2026-10-03, Help-only figures).
 5. **No circular dependencies:** AI scoring fields are not used as inputs to the same model that produces them.
 
 ---
@@ -176,6 +195,6 @@ Before activating any Einstein or Agentforce feature, verify:
 
 5. **Design knowledge article structure.** If Agentforce RAG grounding is in scope, audit existing Knowledge articles against the chunking-friendly structure guidelines. Create or update the Knowledge article template. Apply metadata tagging taxonomy.
 
-6. **Define and validate sync cadence.** For each AI feature, specify the required data freshness SLA and confirm the sync mechanism (CDC, scheduled batch, MuleSoft, Data Cloud connector) can meet it. Test with a representative data volume before go-live.
+6. **Define and validate sync cadence.** For each AI feature, specify the required data freshness SLA and confirm the sync mechanism (CDC, scheduled batch, MuleSoft, Data Cloud connector) can meet it; for Knowledge grounding the documented cadence is a daily reindex. Test with a representative data volume before go-live, then run `python3 skills/architect/ai-ready-data-architecture/scripts/check_ai_ready_data_architecture.py <completed-assessment.md>` to confirm required sections, the quality gate checklist, and declared AI features are present.
 
 7. **Run data quality gate checklist.** Complete the pre-activation checklist (completeness, consistency, timeliness, volume, no circular dependencies). Document results. Obtain sign-off before enabling AI features in production.

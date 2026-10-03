@@ -13,6 +13,8 @@ triggers:
   - "is CPQ worth $75 per user per month for our quoting process"
   - "we need advanced approval chains and contracted pricing — can standard objects handle it"
   - "evaluating CPQ vs standard pricebooks for subscription and renewal management"
+  - "decide whether to renew Salesforce CPQ now that it gets no new features"
+  - "size our product catalog and quoting users before choosing CPQ or standard price books"
 tags:
   - cpq
   - products
@@ -34,9 +36,9 @@ outputs:
   - "Licensing cost estimate based on user count"
   - "Migration complexity assessment if switching from one approach to the other"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-03
 ---
 
 # CPQ vs Standard Products Decision
@@ -51,7 +53,25 @@ Gather this context before advising on CPQ vs standard Products:
 
 - Confirm the current product catalog size: how many products, how many pricebooks, and whether products are sold individually or as bundles.
 - Identify quoting complexity: does the org need guided selling, multi-dimensional discounting, approval chains, contracted pricing, or subscription/renewal management?
-- Determine the number of users who create or modify quotes — this directly drives CPQ licensing cost at $75+/user/month.
+- Determine the number of users who create or modify quotes: this directly drives CPQ licensing cost (UNVERIFIED (2026-10-03): the "$75+/user/month" list price used in this skill comes from older pricing material and could not be fetched).
+- Establish whether the org already holds a Salesforce CPQ subscription. The CPQ Developer Guide (v67.0) says the package "continues to be available for existing customers" and has "no longer any new feature development". That notice changes the question for net-new customers; see Gotcha 1.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Do we hold a Salesforce CPQ subscription today, and when does it renew?" | CPQ is available to existing customers with no new feature development (Gotcha 1) | Whether CPQ is a renewal decision; for a net-new customer it is not sold | The record states the lifecycle premise with its source and a review trigger |
+| "Which bundle, subscription, and discount-schedule requirements are must-haves, and which Commerce, Revenue Cloud, or Subscription Management licences do we already own?" | Standard bundle and selling-model objects exist only under those licences (Gotcha 5) | A requirement matrix scored against objects the org can actually use | No design that depends on an object the org is not licensed for |
+| "Who creates, edits, or clones quotes, not just approves them?" | CPQ licences follow every editor (Gotcha 2) | A user count from last year's quote activity | A licence budget that survives go-live |
+| "How many products, price books, and currencies, and how many price book entries does that make?" | Entries multiply by price book and currency; the standard price comes first (Gotchas 3, 4) | Catalog size in entries, with a load order | Integrations and price-change processes sized for the real volume |
+| "What quote history lives on Quote and QuoteLineItem, and which reports and integrations read it?" | Changing quote models is a data migration (Gotchas 7, 8) | A migrate, dual-report, or cutover decision | Reports and integrations do not silently lose half the history |
+| "Who regression-tests automation on CPQ objects at each package upgrade?" | Upgrades and CPQ trigger logic interact with custom code (Gotcha 6) | A named owner and a sandbox test step | Upgrades stop being production incidents |
+
+What a proper decision adds over "just buying the enterprise option": the lifecycle premise is explicit, the catalog and licence counts are measured, and the migration cost in either direction is priced before the contract is signed.
 
 ---
 
@@ -59,15 +79,15 @@ Gather this context before advising on CPQ vs standard Products:
 
 ### Standard Products and Pricebooks
 
-Standard Products and Pricebooks are included with every Sales Cloud license at no additional cost. A Product record defines what you sell. A Pricebook defines the price for that product in a given context (standard pricebook, partner pricebook, regional pricebook). Quote Line Items connect products to Quotes. This model handles straightforward catalogs well: a set of SKUs, each with one or more prices, selected manually by reps and added to opportunities or quotes. Standard objects support basic discounting through custom fields or formula calculations, but they have no native concept of product bundles, guided selling wizards, or multi-step approval routing tied to discount thresholds.
+Standard Products and Pricebooks carry no add-on licence in Sales Cloud (UNVERIFIED (2026-10-03): edition inclusion is stated in Salesforce Help only). A Product record defines what you sell. A Pricebook defines the price for that product in a given context (standard pricebook, partner pricebook, regional pricebook). Quote Line Items connect products to Quotes. This model handles straightforward catalogs well: a set of SKUs, each with one or more prices, selected manually by reps and added to opportunities or quotes. Standard objects support basic discounting through custom fields or formula calculations, and product schedules for revenue and quantity (`OpportunityLineItemSchedule`). Plain Sales Cloud has no bundle object: `ProductRelatedComponent` and `ProductSellingModel` exist only when Commerce, Industries, Revenue Cloud, or Subscription Management licences enable them (Gotcha 5).
 
 ### Salesforce CPQ (Configure, Price, Quote)
 
-Salesforce CPQ is a managed package (formerly Steelbrick) that requires a separate per-user license starting at $75/user/month. CPQ replaces the standard quote line editing experience with a configuration-driven engine that supports product bundles (parent-child product relationships with inclusion/exclusion rules), guided selling (question-based flows that recommend products), advanced pricing (block pricing, percent-of-total, contracted pricing, multi-dimensional discount schedules), subscription and renewal management (evergreen, co-termed, and auto-renewing contracts), and quote document generation (branded PDF output with dynamic sections). CPQ also provides a multi-tier approval chain engine that routes quotes based on discount percentage, total deal value, or custom criteria.
+Salesforce CPQ is a managed package (formerly Steelbrick) that requires a separate per-user license (UNVERIFIED (2026-10-03): "starting at $75/user/month" is from older pricing material). Its current lifecycle status, quoted from the CPQ Developer Guide v67.0: available for existing customers, no new feature development, support for the contract term, licences can be added and subscriptions renewed. CPQ replaces the standard quote line editing experience with a configuration-driven engine that supports product bundles (parent-child product relationships with inclusion/exclusion rules), guided selling (question-based flows that recommend products), advanced pricing (block pricing, percent-of-total, contracted pricing, multi-dimensional discount schedules), subscription and renewal management (evergreen, co-termed, and auto-renewing contracts), and quote document generation (branded PDF output with dynamic sections). A multi-tier approval chain engine that routes quotes on discount percentage, deal value, or custom criteria comes from Advanced Approvals, which the CPQ Developer Guide documents as a separate package.
 
 ### The Licensing Cost Equation
 
-The decision is fundamentally economic. Standard Products and Pricebooks cost nothing beyond the base Sales Cloud license. CPQ adds $75+/user/month per quoting user, plus implementation cost that typically runs 2-4x higher than standard quoting due to configuration complexity. For an org with 50 sales reps, CPQ licensing alone adds $45,000/year before implementation. The question is whether the quoting complexity justifies that spend or whether custom development on standard objects can close the gap at lower total cost of ownership.
+The decision is fundamentally economic. Standard Products and Pricebooks cost nothing beyond the base Sales Cloud license. CPQ adds a per-user licence for every quoting user, plus implementation cost (UNVERIFIED (2026-10-03): the "2-4x" implementation multiplier is a practitioner estimate). At the older list price of $75 per user per month, 50 quoting users cost $45,000 a year before implementation; replace that price with the current quote. Record near- and long-term costs on both paths: Well-Architected lists "Decision records show calculation for near- and long-term costs when choosing to build or buy solutions" as a pattern. The question is whether the quoting complexity justifies that spend or whether custom development on standard objects can close the gap at lower total cost of ownership.
 
 ---
 
@@ -87,7 +107,7 @@ The decision is fundamentally economic. Standard Products and Pricebooks cost no
 
 **How it works:** Deploy CPQ managed package. Define Product Bundles with required, optional, and excluded child products. Configure Price Rules and Discount Schedules for volume and multi-dimensional discounting. Set up Guided Selling flows as CPQ Quote Processes. Build Approval chains that trigger on discount percentage, deal size, or product mix. Use CPQ's native document generation for branded, dynamic quote PDFs.
 
-**Why not standard objects:** Replicating bundle logic, guided selling, and multi-dimensional discount schedules in custom code on standard objects creates significant technical debt. The maintenance burden of homegrown pricing engines typically exceeds CPQ license costs within 12-18 months for organizations with genuine configuration complexity.
+**Why not standard objects:** Replicating bundle logic, guided selling, and multi-dimensional discount schedules in custom code on standard objects creates significant technical debt. The maintenance burden of homegrown pricing engines typically exceeds CPQ license costs within 12-18 months (UNVERIFIED (2026-10-03): practitioner estimate) for organizations with genuine configuration complexity.
 
 ---
 
@@ -95,6 +115,8 @@ The decision is fundamentally economic. Standard Products and Pricebooks cost no
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
+| No existing CPQ subscription (net-new) | Standard Products + Pricebooks, or a Revenue Cloud evaluation via `architect/revenue-cloud-architecture` | CPQ "continues to be available for existing customers" with no new feature development (CPQ Developer Guide v67.0); Salesforce "is no longer selling new Salesforce CPQ licenses to new customers" (salesforce.com, 10 July 2026) |
+| Existing CPQ customer at renewal | Renew only against requirements CPQ meets today; record a review trigger | No new features will close today's gaps |
 | Simple catalog (<50 products), flat pricing, manual selection | Standard Products + Pricebooks | No licensing cost; standard approval processes cover basic discount controls |
 | Products sold as bundles with inclusion/exclusion rules | Salesforce CPQ | Bundle configuration logic is CPQ's core strength; replicating it custom is fragile |
 | Multi-dimensional discounting (volume + term + customer tier) | Salesforce CPQ | Discount Schedules and Price Rules handle this natively; custom formula fields cannot scale |
@@ -109,9 +131,9 @@ The decision is fundamentally economic. Standard Products and Pricebooks cost no
 
 Step-by-step process for making the CPQ vs standard Products decision:
 
-1. **Inventory the product catalog** — Count active products, identify whether any are sold as bundles or kits, and document the number of active pricebooks. If products are independent SKUs with simple list prices, standard objects are likely sufficient.
+1. **Inventory the product catalog and the licence position**: Confirm whether a CPQ subscription exists (Gotcha 1). Count active products, price books, and price book entries per currency with the queries in `references/examples.md`, and identify whether any products are sold as bundles or kits. If products are independent SKUs with simple list prices, standard objects are likely sufficient.
 2. **Map the quoting workflow** — Document how reps currently build quotes: do they need guided product selection, bundle configuration, volume-based pricing, or subscription terms? Create a requirements matrix that lists each capability and whether it is critical, nice-to-have, or unnecessary.
-3. **Calculate licensing cost** — Multiply the number of quoting users by the CPQ per-user monthly cost ($75+). Add estimated implementation cost (typically 3-6 months of consulting for CPQ vs 1-2 months for standard quoting). Compare the 3-year total cost of ownership for each approach.
+3. **Calculate licensing cost**: Multiply the number of quoting users (measured, not estimated) by the current quoted CPQ per-user price. Add estimated implementation cost (typically 3-6 months of consulting for CPQ vs 1-2 months for standard quoting). Compare the 3-year total cost of ownership for each approach.
 4. **Assess the custom development alternative** — For each CPQ feature on the requirements matrix, estimate the effort to replicate it with custom fields, Flows, validation rules, and Apex on standard objects. If more than 2-3 features require significant custom code, the maintenance burden likely exceeds CPQ cost.
 5. **Evaluate migration risk** — If the org already has quotes on standard objects, moving to CPQ requires data migration of existing quotes and retraining. If the org is greenfield, CPQ can be adopted from day one with lower switching cost.
 6. **Document the recommendation** — Use the decision template to record the analysis, including the feature gap matrix, cost comparison, and architectural rationale. Present the recommendation with clear tradeoffs rather than a single-option proposal.
@@ -134,11 +156,14 @@ Run through these before finalizing a CPQ vs standard Products recommendation:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full detail and sources in `references/gotchas.md`. The short list:
 
-1. **CPQ license applies to all quoting users, not just admins** — Every user who creates or edits a CPQ quote needs a CPQ license. Read-only access to quotes does not require a CPQ license, but organizations often undercount the users who actually touch quotes during the sales cycle.
-2. **CPQ managed package upgrades can break customizations** — CPQ is a managed package with its own release cycle. Triggers, validation rules, or process builders that reference CPQ objects can break during package upgrades. Sandbox testing before every CPQ release is mandatory.
-3. **Standard-to-CPQ migration is not reversible without data loss** — Once quotes are created in CPQ's data model (SBQQ__Quote__c, SBQQ__QuoteLine__c), migrating back to standard Quote and QuoteLineItem objects requires custom data migration. Plan the decision carefully because switching costs increase over time.
+1. CPQ is feature-frozen and offered to existing customers; a gap today is permanent.
+2. CPQ licences follow every user who edits a quote.
+3. The standard price book entry must exist before any custom price, with or without CPQ.
+4. Catalog size is products times price books times currencies.
+5. `ProductRelatedComponent` and `ProductSellingModel` need Commerce, Industries, Revenue Cloud, or Subscription Management licences.
+6. Moving between `Quote` and `SBQQ__Quote__c` is a data migration in either direction.
 
 ---
 
@@ -162,5 +187,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Official Sources Used
 
+- Salesforce CPQ Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/cpq_developer_guide.pdf (full list in `references/well-architected.md`)
 - Salesforce CPQ Documentation — https://help.salesforce.com/s/articleView?id=sf.cpq_parent.htm
 - Salesforce Products and Pricebooks — https://help.salesforce.com/s/articleView?id=sf.products_landing_page.htm

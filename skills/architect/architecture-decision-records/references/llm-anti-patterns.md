@@ -256,13 +256,15 @@ longer purchase it, and product investment has moved to Revenue Cloud
 Advanced. Existing customers retain support. Salesforce has NOT announced
 an end-of-life date.
 
-Source: https://www.salesforce.com/sales/cpq/end-of-life/
+Source: Salesforce CPQ Developer Guide v67.0 (Summer '26), chapter 1
+notice ("continues to be available for existing customers ... no longer
+any new feature development"), read 2026-07-14.
 Confirmed with account team (K. Nowak) on 2026-07-14; she stated no EOL
 date is committed and none is expected before FY29.
 
-<!-- A specific end-of-sale date of 27 March 2025 circulates widely in
-consultancy writing. Not confirmed from a Salesforce source at time of
-writing. Do not treat as fact. -->
+UNVERIFIED (2026-07-14): a specific end-of-sale date of 27 March 2025
+circulates widely in consultancy writing. Not confirmed from a Salesforce
+source at time of writing. Do not treat as fact.
 ```
 
 Three elements: **the Salesforce URL**, **who confirmed it and when**, and an
@@ -318,3 +320,31 @@ visible without opening the ADR.
 condition — "review in 12 months" is not a trigger, because nothing fires it.
 Any review trigger with no named owner. Any `INDEX.md` with no open-triggers
 section on a programme that has made deferral decisions.
+
+---
+
+## Anti-Pattern 9: Equating "No New Features" With "End Of Life"
+
+**What the LLM generates:** an ADR Context that reads a maintenance notice as a
+retirement: "CPQ is being retired, so we must migrate before support ends", or
+"Legacy Chat is end of life". The reverse also appears: "CPQ is fully supported,
+so there is no lifecycle risk to record."
+
+**Why it happens:** Training text uses "deprecated", "legacy", "maintenance
+mode", "end of sale", and "end of life" interchangeably. The official wording
+is narrower. The Salesforce CPQ Developer Guide (v67.0) says the package
+"continues to be available for existing customers" with "no longer any new
+feature development", support "for the duration of your contract", and the
+right to add licences and renew. The Object Reference says of legacy chat that
+the product "is in maintenance-only mode, and we won't continue to build new
+features." Neither sentence announces a retirement date.
+
+**Correct pattern:** quote the official sentence, name the document and
+version, and record the two consequences separately: (1) no new capability
+will arrive, so any requirement CPQ lacks today stays unmet; (2) no end-of-life
+date is stated in that source, so a migration deadline is not a premise. Put
+any date you heard elsewhere behind a visible `UNVERIFIED (date):` marker.
+
+**Detection hint:** the words "retired", "end of life", or "deadline" in a
+Context section whose only source is a maintenance or feature-freeze notice.
+

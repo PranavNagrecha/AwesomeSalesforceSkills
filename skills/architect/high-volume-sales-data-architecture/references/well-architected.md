@@ -4,7 +4,7 @@
 
 - **Performance** — This is the primary pillar. High-volume sales data architecture is fundamentally about keeping query response times, report load times, and batch processing durations within acceptable thresholds as record counts grow. Every recommendation in this skill (indexes, skinny tables, selective filters, archival) targets the Performance pillar directly. The Salesforce Well-Architected Performance guidance explicitly calls out query optimization and data lifecycle management as key practices.
 
-- **Scalability** — Sales data grows continuously as pipeline activity increases. Architecture decisions made at 500K Opportunities must hold at 5M. Scalability in this context means choosing patterns (Big Object archival, ownership distribution, index-backed queries) that degrade gracefully rather than cliff at volume thresholds. Skinny tables and custom indexes are scaling mechanisms that maintain constant-time query behavior as tables grow.
+- **Scalability**: Well-Architected (Trusted > Reliable, Data Volume) names the structural levers: distribute child records and ownership below 10,000 per parent or owner, reduce record data through archiving and purging (Bulk API 2.0 hard delete), aggregation objects populated by batch Apex, and data tiering. It classes custom indexes and skinny tables as short-term workarounds that can add technical debt. Sales data grows continuously as pipeline activity increases. Architecture decisions made at 500K Opportunities must hold at 5M. Scalability in this context means choosing patterns (Big Object archival, ownership distribution, index-backed queries) that degrade gracefully rather than cliff at volume thresholds. Skinny tables and custom indexes are scaling mechanisms that maintain constant-time query behavior as tables grow.
 
 - **Reliability** — Data skew and non-selective queries do not just slow the org down; they cause lock contention failures, sharing recalculation timeouts, and silently truncated report results. A reliability lens means preventing these failure modes proactively through ownership caps, selective query enforcement, and validated archival pipelines. An unreliable pipeline report that shows $2M when the real number is $8M is a business-critical data integrity problem.
 
@@ -32,5 +32,16 @@
 
 ## Official Sources Used
 
-- Salesforce Large Data Volumes Best Practices — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_introduction.htm
+Read for this revision (2026-10-03):
+
+- Best Practices for Deployments with Large Data Volumes (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_large_data_volumes_bp.pdf. Tiered index thresholds; custom index creation paths and sandbox copy; External IDs; null rows; skinny tables (objects, field types, encrypted data, 200 columns, sandbox copy); defer sharing calculation; Best Practices > General (10,000 owned records; 10,000 children per parent).
+- Big Objects Implementation Guide, Version 66.0 (Spring '26): local corpus `knowledge/imports/salesforce-big-objects-guide.md`. Behavioral constraints (object and field permissions only; no triggers or flows; idempotent writes); API support (SOQL, Bulk, Chatter, SOAP; no REST); no encryption; 100 big objects per org; aggregate queries via batch Apex; `insertImmediate()` returns SaveResults; reporting through an extracted custom object.
+- SOQL and SOSL Reference, Version 66.0: local corpus `knowledge/imports/salesforce-soql-sosl.md`. Big object query rules (index order, operators allowed on the last field, unsupported operators).
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. CustomIndex type (API 50.0+, `allowNullValues`, contact Support).
+- Salesforce Data Loader Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_data_loader.pdf. The assignment rule setting applies to cases and leads and overrides CSV Owner values.
+- Salesforce Well-Architected: Trusted > Reliable: https://architect.salesforce.com/docs/architect/well-architected/guide/reliable.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-06-13). Data Volume levers, ownership skew across users, queues, roles, and groups, and custom indexes and skinny tables as short-term workarounds.
+
+Listed in the original version and not re-read (the atlas page returns a script shell without content; the Architects path was not opened); no claim in this revision rests on them alone:
+
+- Salesforce Large Data Volumes Best Practices (atlas HTML): https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_introduction.htm (same content read from the PDF above)
 - Salesforce Well-Architected: Performance — https://architect.salesforce.com/well-architected/easy/performance

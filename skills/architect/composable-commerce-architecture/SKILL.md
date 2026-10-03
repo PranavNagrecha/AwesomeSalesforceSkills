@@ -22,6 +22,8 @@ triggers:
   - "micro frontend storefront with salesforce commerce apis"
   - "cdn strategy for headless commerce storefront"
   - "replacing salesforce storefront with next.js mach"
+  - "size the API and SLAS budget for a headless storefront BFF before peak season"
+  - "plan a phased headless rollout that keeps checkout on SFRA"
 inputs:
   - Commerce Cloud edition (B2C / B2B / B2B2C) and planned scope
   - Storefront technology choice (Next.js, Remix, SvelteKit, Hydrogen-like)
@@ -33,10 +35,9 @@ outputs:
   - CDN, caching, and personalization strategy
   - Migration/decomposition plan from monolith storefront
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-21
-status: stub
+updated: 2026-10-03
 ---
 
 # Composable Commerce Architecture
@@ -46,8 +47,23 @@ Activate when architecting a headless / composable commerce implementation on Sa
 ## Before Starting
 
 - **Confirm the composable choice is warranted.** Composable commerce adds complexity: you now own a frontend codebase, a BFF, CDN config, caching, and observability. If the business can live with the shipped storefront, do that first.
-- **Inventory the Commerce APIs in scope.** Salesforce Commerce API (SCAPI) covers catalog, cart, checkout, promotions, customer. Gaps (custom flows) become BFF-only features.
+- **Inventory the Commerce APIs in scope.** Salesforce Commerce API (SCAPI) covers catalog, cart, checkout, promotions, customer. A gap can become a SCAPI Custom API (B2C Commerce Script API code in a cartridge, served under `/custom/{apiName}/{apiVersion}/organizations/{organizationId}/...` and cacheable) or BFF logic. Choose per gap; do not default everything into the BFF.
 - **Understand the caching contract.** Composable sites live or die by cache strategy. Decide what is page-cached (catalog, PLP), what is edge-computed (personalization), what is origin-only (cart, checkout).
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which platform serves each journey: B2C Commerce through SCAPI, or B2B/D2C Commerce on the core org?" | The two sides have different limit models: SLAS and load shedding versus the org's 24-hour API allocation (Gotchas 1, 5, 6) | A per-journey limit budget against the right pool | Capacity planning uses the numbers that will actually throttle |
+| "How many uncached BFF calls reach the core org per session at peak, and how long can each run?" | Community licences add no API allocation; 20-second calls contend for 25 slots (Gotchas 1, 2, 3) | A calls-per-session ceiling and a client timeout below 20 seconds | One slow storefront route cannot take down every integration in the org |
+| "What is the peak SLAS login and token-refresh rate per instance, including staging load tests?" | SLAS limits are per tenant: 24,000 RPM production, 500 RPM per non-production instance (Gotcha 5) | Token traffic sized per instance, refresh serialized per session | Load tests that fail for the right reason, and no 429 storm at launch |
+| "Where is the shopper's identity verified, and which SLAS client type does each component use?" | A BFF must be a private client; a browser app a public client; client-supplied identity is an IDOR (Gotchas 4, 7) | A private client with Strict Client Auth for the BFF, a public client for browser code | The platform's access model survives the move to a custom frontend |
+| "Which journeys stay on SFRA during a phased rollout, and which frontend serves the rest?" | Custom headless plus SFRA is "possible but not formally supported"; Hybrid Auth targets PWA Kit v3 (Gotcha 8) | A phasing plan that names who owns session bridging | The unsupported part of the design is a recorded decision, not a surprise |
+| "What does each route do on SCAPI 503 or 429?" | Browse APIs shed load; checkout does not; SLAS returns `Retry-After` (Gotchas 5, 6) | A per-route degrade rule in the BFF | Peak traffic degrades to stale catalog instead of blank pages |
+
+What proper configuration adds over "just building a Next.js storefront": a capacity model per limit pool, an identity model the platform still enforces, and a phasing plan that knows where formal support ends.
 
 ## Core Concepts
 
@@ -71,7 +87,7 @@ Catalog pages are rendered at the edge (ISR / SSG), cached in CDN. Authenticated
 
 ### Pattern: Next.js storefront with SCAPI + BFF
 
-Next.js app on Vercel, reads from a Node BFF deployed on Vercel functions or a separate container. BFF authenticates to SCAPI via Client Credentials, applies markups, serves aggregated responses. CDN caches PLP/PDP at edge with ISR revalidation.
+Next.js app on Vercel, reads from a Node BFF deployed on Vercel functions or a separate container. BFF is registered as a SLAS private client (guest tokens via `grant_type=client_credentials`, registered shoppers via the authorization-code flow), applies markups, and serves aggregated responses. CDN caches PLP/PDP at edge with ISR revalidation.
 
 ### Pattern: Multi-brand single Commerce Cloud
 
@@ -88,7 +104,7 @@ Phase 1: keep existing storefront; add headless for one PDP experiment. Phase 2:
 | Standard B2C UX needs | Shipped storefront | Lowest TCO |
 | Brand-specific UX with perf requirements | Composable + Next.js | Frontend ownership |
 | Multi-region with localization needs | Composable + edge rendering | Latency control |
-| Short timeline, generic UX | Stay with shipped | Composable takes 6-9 months minimum |
+| Short timeline, generic UX | Stay with shipped | Composable adds a frontend, a BFF, and a CDN to build and run (UNVERIFIED (2026-10-03): the often-quoted "6-9 months minimum" is a practitioner estimate) |
 | Team lacks frontend engineering | Don't go composable | Ops burden ≠ shipped |
 
 ## Recommended Workflow
@@ -113,9 +129,15 @@ Phase 1: keep existing storefront; add headless for one PDP experiment. Phase 2:
 
 ## Salesforce-Specific Gotchas
 
-1. **SCAPI rate limits are per-client, not per-user.** A busy BFF can exhaust rate limits and throttle every user; design token rotation and per-endpoint budgets.
-2. **Session affinity for cart lives with Commerce Cloud.** Composable frontends must pass the cart token consistently; losing it = empty cart.
-3. **B2B promotions and pricing often require Apex extension points.** Plan the custom API surface alongside the frontend.
+Full detail and sources in `references/gotchas.md`. The short list:
+
+1. Customer Community and Customer Community Login licences add zero calls to the org's API allocation.
+2. Requests of 20 seconds or longer share 25 concurrent slots across the whole org.
+3. SLAS rate limits are per instance (24,000 RPM production, 500 RPM per non-production instance), not per client. This corrects an earlier "per-client" statement in this skill.
+4. Browse APIs shed load with HTTP 503; Shopper Baskets and Shopper Orders do not.
+5. A BFF must be a SLAS private client; browser code must use a public client.
+6. Custom headless plus SFRA is outside formal support; Hybrid Auth (B2C Commerce 25.3+) targets PWA Kit v3.
+7. B2B promotion and pricing gaps may need extension code on the core org (UNVERIFIED (2026-10-03): extension points not re-checked for this revision).
 
 ## Output Artifacts
 

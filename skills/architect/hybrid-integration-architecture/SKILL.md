@@ -1,6 +1,6 @@
 ---
 name: hybrid-integration-architecture
-description: "Use this skill when designing hybrid on-premises-to-Salesforce integration architectures: DMZ relay patterns, reverse proxy configuration, VPN connectivity, and Salesforce Private Connect (AWS PrivateLink) topology. Trigger keywords: on-premises to Salesforce integration network topology, DMZ relay Salesforce, hybrid integration VPN, Private Connect architecture, data residency Salesforce hybrid. NOT for choosing the authentication mechanism — mTLS, OAuth flow, API gateway placement — use architect/integration-security-architecture. NOT for the Setup steps that configure Private Connect peering — use integration/private-connect-setup."
+description: "Use this skill when designing hybrid on-premises-to-Salesforce integration architectures: DMZ relay patterns, reverse proxy configuration, VPN connectivity, and Salesforce Private Connect (AWS PrivateLink) topology. Trigger keywords: on-premises to Salesforce integration network topology, DMZ relay Salesforce, hybrid integration VPN, Private Connect architecture, data residency Salesforce hybrid, route Salesforce callouts privately to our data center. NOT for choosing the authentication mechanism — mTLS, OAuth flow, API gateway placement — use architect/integration-security-architecture. NOT for the Setup steps that configure Private Connect peering — use integration/private-connect-setup."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,8 @@ triggers:
   - "what is the DMZ relay pattern for Salesforce on-premises integration"
   - "how do I configure a VPN between Salesforce and our data center"
   - "we need data residency for regulated data in our Salesforce hybrid integration"
+  - "route Apex callouts to our AWS VPC without going over the internet"
+  - "decide between a DMZ reverse proxy and Private Connect for our on-prem ERP"
 tags:
   - hybrid-integration
   - on-premises
@@ -31,9 +33,9 @@ outputs:
   - "Private Connect architecture overview and licensing prerequisites"
   - "Data residency pattern for regulated data in hybrid scenarios"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
 # Hybrid Integration Architecture
@@ -46,11 +48,28 @@ Use this skill when designing the network topology for integrations between on-p
 
 Gather this context before working on anything in this domain:
 
-- Is the Salesforce org on Hyperforce? Hyperforce uses ephemeral IPs — IP allowlisting is not a viable strategy and must be replaced with mTLS or Private Connect.
+- Is the Salesforce org on Hyperforce? Correction (2026-10-03): earlier text said Hyperforce uses ephemeral IPs and allowlisting is not viable. Salesforce publishes versioned per-region prefixes at `https://ip-ranges.salesforce.com/ip-ranges.json`; they change between versions and are shared by every org in the region, so an allowlist can supplement but never replace mTLS, OAuth, or Private Connect.
 - What is the on-premises system type: mainframe, ERP, database, or middleware?
 - Is the connection **outbound from Salesforce** to on-premises, **inbound from on-premises** to Salesforce, or bidirectional?
 - Are there data residency or regulated-industry requirements (HIPAA, GDPR, financial regulation) that require the integration data to remain within a specific geography or network boundary?
-- Is Salesforce Private Connect licensed? Private Connect requires support-assisted opt-in and carries separate add-on licensing.
+- Is Salesforce Private Connect licensed? Private Connect requires support-assisted opt-in and carries separate add-on licensing (UNVERIFIED 2026-10-03: Help-only; confirm with the account team).
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before drawing the topology. Each traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What a proper design adds over just doing it |
+|---|---|---|---|
+| "Where does the target system run, and can it be fronted by an AWS VPC endpoint service?" | Private Connect connections are `AwsPrivateLink` only (Gotcha 2); no native VPN exists (Gotcha 4) | The candidate pattern: Private Connect, DMZ relay, or public endpoint with strong auth | No design that depends on a capability the platform lacks |
+| "Who owns provisioning on each side: the Salesforce admin and the AWS account owner?" | A deployed connection stays `Unprovisioned` until Provision runs and the AWS side accepts (Gotcha 2) | Named owners and a per-org runbook step | Sandboxes and production reach `Ready` predictably |
+| "Which callouts hit the on-premises target today, and through which named credentials?" | Only `PrivateEndpoint` named credentials use the private path (Gotcha 3); Remote Site Settings open a side door (Gotcha 7) | A callout inventory with named credential type per callout | Every callout takes the private, authenticated path |
+| "How is the caller's identity proven at the relay or endpoint?" | IP ranges are shared by every org in a region (Gotcha 1); WS-Security is unsupported (Gotcha 8) | Two-way SSL, OAuth, or gateway-injected credentials | Identity is cryptographic, not inferred from an address |
+| "What latency does the relay add at peak, and is the call synchronous?" | Callouts default to 10 seconds and cap at 120 seconds per transaction (Gotcha 6) | Measured latency and a sync/async decision per call | Users do not hit timeouts at month end |
+| "Which fields must stay unreadable outside the customer network, and which must stay filterable?" | Gateway tokenization breaks filtering (Gotcha 5) | A per-field searchable/non-searchable decision | Reports and duplicate rules keep working on the fields that need them |
+
+What a proper design adds over "just opening a firewall port": the caller is authenticated by certificate or token rather than address, every callout uses the intended path, and private connections are provisioned and checked per org as a runbook step.
 
 ---
 
@@ -71,20 +90,22 @@ The DMZ relay is the on-premises side of the architecture. Salesforce has no nat
 Salesforce **Private Connect** provides a private network path between Salesforce (hosted on AWS) and the customer's AWS environment using **AWS PrivateLink**. This eliminates the public internet from the data path entirely:
 
 - Data does not traverse the public internet
-- No need to manage Salesforce-side IP allowlists (which fail on Hyperforce)
+- No need to manage Salesforce-side IP allowlists (which change between published versions on Hyperforce)
 - Provides the strongest network-level isolation for regulated data
 
 **Key constraints:**
-- Requires **support-assisted opt-in** — cannot be self-service enabled
-- Carries **separate add-on licensing**
-- Requires the customer environment to also be on AWS (or have AWS connectivity)
+- Requires **support-assisted opt-in** — cannot be self-service enabled (UNVERIFIED 2026-10-03, Help-only)
+- Carries **separate add-on licensing** (UNVERIFIED 2026-10-03, Help-only)
+- Requires the customer environment to also be on AWS (or have AWS connectivity); the Metadata API `OutboundNetworkConnection` and `InboundNetworkConnection` types offer only `AwsPrivateLink` as a customer-usable connection type
+- Outbound connections name the customer's `AwsVpcEndpointServiceName` and `Region`; Salesforce returns the `AwsVpcEndpointId`. Inbound connections expose `SourceIpRanges` allocated by the Salesforce-managed VPC
+- Callouts use the private path only through a `NamedCredential` of type `PrivateEndpoint` that references the `OutboundNetworkConnection` (API 56.0 and later)
 - The existing `integration-security-architecture` skill covers Private Connect authentication details thoroughly; this skill covers the network topology decision
 
 Private Connect is NOT the universal solution — it only applies when the on-premises system connects through AWS and the licensing is available.
 
 ### On-Premises Encryption Gateways for Data Residency
 
-For organizations with regulated data that cannot leave their network boundaries (e.g., HIPAA-protected health data, financial data under specific sovereignty requirements), **on-premises encryption gateways** (such as IBM DataPower or CipherCloud) can be placed between the corporate network and Salesforce:
+For organizations with regulated data that cannot leave their network boundaries (e.g., HIPAA-protected health data, financial data under specific sovereignty requirements), **on-premises encryption gateways** (such as IBM DataPower or CipherCloud; *Integration Patterns and Practices* also lists Salesforce's own gateway and Computer Associates) can be placed between the corporate network and Salesforce:
 
 1. Data from Salesforce travels to the encryption gateway in the customer DMZ.
 2. The gateway encrypts or tokenizes sensitive fields before the data reaches internal systems (or vice versa for inbound).
@@ -103,9 +124,9 @@ This pattern requires that the Salesforce fields holding sensitive values are de
 **How it works:**
 1. Deploy or configure a reverse proxy in the corporate DMZ (e.g., nginx, IBM WebSeal, CA SiteMinder, AWS API Gateway with VPC link).
 2. Assign the relay a public FQDN with a valid TLS certificate.
-3. In Salesforce, configure a Named Credential pointing to the relay's public FQDN.
+3. In Salesforce, configure a Named Credential pointing to the relay's public FQDN, with a client certificate if the relay enforces two-way SSL.
 4. The relay is configured to forward authenticated requests to the internal target over the internal network.
-5. Add the relay FQDN to Salesforce's Remote Site Settings.
+5. Correction (2026-10-03): earlier text said to add the relay FQDN to Remote Site Settings. The Apex Developer Guide ("Invoking Callouts Using Apex") says a callout whose endpoint is a named credential needs no remote site setting; leaving one in place lets any Apex call the relay without the named credential.
 
 **Why not VPN:** Salesforce has no native VPN client and cannot terminate IPSec or SSL VPN tunnels. VPN connectivity must be managed by an intermediary (MuleSoft Runtime Fabric deployed in the customer network, or a relay in the DMZ).
 
@@ -114,10 +135,11 @@ This pattern requires that the Salesforce fields holding sensitive values are de
 **When to use:** Regulated data (HIPAA, financial sovereignty) must never traverse the public internet; customer environment connects to AWS.
 
 **How it works:**
-1. Customer enables Private Connect via Salesforce support request (requires add-on license).
+1. Customer enables Private Connect via Salesforce support request (requires add-on license; UNVERIFIED 2026-10-03).
 2. Customer creates a VPC Endpoint Service in their AWS VPC pointing to their on-premises systems (via Direct Connect or Site-to-Site VPN to AWS).
-3. Salesforce establishes a Private Connect connection to the customer's VPC Endpoint Service via AWS PrivateLink.
-4. Integration traffic flows: Salesforce → AWS PrivateLink → customer AWS VPC → customer on-premises (via Direct Connect or VPN).
+3. An admin creates an `OutboundNetworkConnection` (`connectionType` = `AwsPrivateLink`, properties `AwsVpcEndpointServiceName` and `Region`) and runs Provision; the AWS owner accepts the connection request; the status reaches `Ready`.
+4. A `NamedCredential` of type `PrivateEndpoint` references the connection, and every callout to the target uses it.
+5. Integration traffic flows: Salesforce → AWS PrivateLink → customer AWS VPC → customer on-premises (via Direct Connect or VPN).
 
 ---
 
@@ -128,7 +150,7 @@ This pattern requires that the Salesforce fields holding sensitive values are de
 | On-premises API accessible via public internet | Named Credential + mTLS or OAuth | No special network topology needed |
 | On-premises API behind corporate firewall, no Private Connect | DMZ reverse proxy relay | Relay provides public-facing FQDN that Salesforce can call |
 | Regulated data, no public internet path | Private Connect (if licensed and AWS-connected) | Eliminates public internet from data path |
-| Hyperforce org needing on-premises access | Private Connect or mTLS relay — NOT IP allowlisting | Hyperforce IPs are ephemeral; allowlisting is unreliable |
+| Hyperforce org needing on-premises access | Private Connect or mTLS relay — NOT IP allowlisting alone | Published Hyperforce ranges change between versions and are shared by all orgs in a region |
 | On-premises system not on AWS | DMZ relay or MuleSoft Runtime Fabric on-premises | Private Connect requires AWS connectivity |
 | Data residency encryption requirement | On-premises encryption gateway (DataPower/CipherCloud) | Keys stay on-premises; Salesforce stores tokenized values |
 
@@ -138,13 +160,13 @@ This pattern requires that the Salesforce fields holding sensitive values are de
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Determine org type** — Hyperforce or non-Hyperforce? On Hyperforce, IP allowlisting is architecturally unreliable — plan for mTLS or Private Connect from the start.
+1. **Determine org type** — Hyperforce or non-Hyperforce? On Hyperforce, any allowlist must be automated from the published `ip-ranges.json` feed and paired with mTLS or OAuth; plan for mTLS or Private Connect from the start.
 2. **Classify the connectivity requirement** — Outbound from Salesforce to on-premises, inbound from on-premises to Salesforce, or bidirectional. Each direction may use a different pattern.
 3. **Assess Private Connect eligibility** — Is the customer environment on AWS? Is Private Connect licensed? If both yes, Private Connect is the strongest option for regulated scenarios.
 4. **Design DMZ relay if Private Connect is not available** — Identify the relay host location, TLS certificate requirements, and authentication mechanism at the relay layer.
 5. **Evaluate data residency requirements** — If regulated data must never be visible in plaintext outside the customer network, design an encryption gateway layer at the DMZ boundary.
 6. **Document the network topology** — Produce a diagram showing: Salesforce → relay/Private Connect endpoint → on-premises target. Include all network boundaries (DMZ, internal LAN, internet).
-7. **Validate against Hyperforce constraints** — Confirm that no IP allowlisting dependency exists in the design. Hyperforce IPs are not stable.
+7. **Validate against Hyperforce constraints** — Confirm that no design depends on IP allowlisting alone, that every callout uses the intended named credential type, and that each org's private connection is `Ready`.
 
 ---
 
@@ -168,7 +190,7 @@ Run through these before marking work in this area complete:
 
 2. **Private Connect requires support-assisted opt-in and separate licensing** — Private Connect cannot be self-service enabled. Teams that design for Private Connect without confirming the license and support enablement process will be blocked at implementation.
 
-3. **Hyperforce IP addresses are ephemeral** — On Hyperforce, Salesforce uses cloud infrastructure with dynamic IPs. IP allowlisting for inbound connections to on-premises systems is unreliable. The official Salesforce guidance recommends mTLS as the preferred alternative to IP allowlisting on Hyperforce.
+3. **Hyperforce IP ranges change and are shared** — Salesforce publishes per-region prefixes in `ip-ranges.json`, versioned by `syncToken` (corrected 2026-10-03 from "ephemeral"). Allowlisting must be automated from the feed and cannot prove which org is calling. mTLS or OAuth carries the identity check.
 
 4. **DMZ relay security configuration is outside Salesforce's control** — The relay is a customer-managed component. If the relay has weak TLS configuration or insufficient authentication, the Salesforce-side security is undermined regardless of Salesforce's own security posture.
 
@@ -190,3 +212,5 @@ Run through these before marking work in this area complete:
 - `architect/integration-security-architecture` — Use for mTLS, OAuth, IP allowlisting alternatives, and Private Connect authentication details
 - `architect/api-led-connectivity-architecture` — Use for API layer design (System/Process/Experience) above the network connectivity layer
 - `architect/mulesoft-anypoint-architecture` — Use when MuleSoft Runtime Fabric is the on-premises relay component in the hybrid topology
+- `integration/private-connect-setup`: Use for the Setup steps that provision the Private Connect connection
+- `standards/decision-trees/integration-pattern-selection.md`: read before choosing the integration pattern that runs over this network path

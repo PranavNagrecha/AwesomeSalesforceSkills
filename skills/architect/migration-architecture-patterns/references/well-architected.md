@@ -62,13 +62,24 @@
 
 ## Official Sources Used
 
+Read for this revision (2026-10-03):
+
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. ID field type (15-character case-sensitive, 18-character case-safe); System Fields, Audit Fields (Set Audit Fields upon Record Creation procedure, object list, `systemModstamp` exception, date range); SetupAuditTrail (at least 180 days; aggregate limits); PartnerNetworkConnection.
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. ExternalDataSource `type` values (`SfdcOrg` cross-org adapter distinct from `OData` and `OData4`).
+- Best Practices for Deployments with Large Data Volumes (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_large_data_volumes_bp.pdf. Best Practices > Loading Data from the API (disable triggers, workflow, and validations during loads; load order; Public Read/Write during initial load; group children by parent); defer sharing calculation; External IDs indexed.
+- Salesforce Data Loader Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_data_loader.pdf. Configure Data Loader (Time Zone, Assignment rule); upsert matching on external IDs and related-object external IDs.
+- Platform Events Developer Guide, Version 66.0 (Spring '26): local corpus `knowledge/imports/platform-events.md`. 72-hour retention for high-volume events; stream reset and unrelated replay IDs after org migration, instance refresh, or sandbox refresh.
+- Big Objects Implementation Guide, Version 66.0: local corpus `knowledge/imports/salesforce-big-objects-guide.md`. Salesforce Connect cannot reach big objects in another org; supported APIs.
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-06-16).
+
+Listed in the original version and not re-read for this revision (Salesforce Help does not fetch; the Architects decision-guide pages were not opened); no claim in this revision rests on them alone:
+
 - Multi-org Strategy (Salesforce Architects) — https://architect.salesforce.com/decision-guides/multi-org-strategy
 - Data 360 Provisioning Decision Guide — https://architect.salesforce.com/decision-guides
 - How to Prepare for a Salesforce Org Migration — https://help.salesforce.com/s/articleView?id=000386897&type=1
 - Salesforce Connect (cross-org adapter) — https://help.salesforce.com/s/articleView?id=sf.platform_connect_about.htm&type=5
-- Platform Events overview — https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/
+- Platform Events overview: https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/ (same guide read from the local corpus above)
 - Salesforce Identity (SSO) — https://help.salesforce.com/s/articleView?id=sf.identity_overview.htm&type=5
 - Hyperforce overview — https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm&type=5
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Sibling skill (multi-org strategic decision) — `skills/architect/multi-org-strategy/SKILL.md`
 - Sibling skill (cutover ops) — `skills/devops/go-live-cutover-planning/SKILL.md`

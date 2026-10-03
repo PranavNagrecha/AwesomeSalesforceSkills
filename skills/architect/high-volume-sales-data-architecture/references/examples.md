@@ -101,7 +101,17 @@ public class OpportunityArchivalBatch implements Database.Batchable<SObject> {
                 Owner__c = opp.OwnerId
             ));
         }
-        Database.insertImmediate(archives);
+        // insertImmediate() does not throw on failure; it returns SaveResults.
+        List<Database.SaveResult> results = Database.insertImmediate(archives);
+        Integer failures = 0;
+        for (Database.SaveResult r : results) {
+            if (!r.isSuccess()) { failures++; }
+        }
+        if (failures > 0) {
+            // Persist the failure count for this scope; the hard-delete batch
+            // must refuse to run while any scope has failures.
+            System.debug(LoggingLevel.ERROR, 'Archive failures in scope: ' + failures);
+        }
     }
 
     public void finish(Database.BatchableContext bc) {
@@ -110,7 +120,7 @@ public class OpportunityArchivalBatch implements Database.Batchable<SObject> {
 }
 ```
 
-**Why it works:** Moving 6M historical records to a Big Object reduces the active Opportunity table to 2M rows. Queries become selective by default, storage pressure drops, and the Big Object retains the data for Async SOQL analytics or compliance queries.
+**Why it works:** Moving 6M historical records to a Big Object reduces the active Opportunity table to 2M rows. Queries become selective by default, storage pressure drops, and the Big Object retains the data for index-ordered SOQL lookups, batch analytics, and compliance queries. (Earlier versions of this example said Async SOQL; the current Big Objects guide documents synchronous SOQL along the index.) Remember the archive carries no record-level sharing and stores encrypted fields in clear text.
 
 ---
 
@@ -121,3 +131,82 @@ public class OpportunityArchivalBatch implements Database.Batchable<SObject> {
 **What goes wrong:** Soft-deleted records still exist in the table. Every SOQL query, sharing calculation, and batch job processes them unless every single query explicitly filters on the checkbox. A single missed filter reintroduces the full-table performance hit. Storage consumption is unchanged.
 
 **Correct approach:** Archive to Big Objects and hard-delete the originals. If users need quick UI lookups for archived records, maintain a lightweight summary custom object with key fields (Account, Amount, CloseDate) populated during the archival batch.
+
+---
+
+## Example 3: Skew Queries and an Archival Decision Record
+
+**Context:** A distributor's org holds 6.2 million Opportunities and 1.1 million Accounts with a Private Opportunity sharing model and territory-based visibility. `Amount` is encrypted with Shield Platform Encryption. Leadership wants old deals "out of the way" before a territory realignment.
+
+**Step 1: find the skew.** Run in a full sandbox first; aggregate queries on multi-million-row tables can time out, so filter by date range if needed.
+
+```soql
+-- Q1. Owners above the 10,000-record guideline (LDV guide, Best Practices > General)
+SELECT OwnerId, COUNT(Id) owned
+FROM Opportunity
+GROUP BY OwnerId
+HAVING COUNT(Id) > 10000
+
+-- Q2. Parents above the 10,000-child guideline
+SELECT AccountId, COUNT(Id) children
+FROM Opportunity
+GROUP BY AccountId
+HAVING COUNT(Id) > 10000
+
+-- Q3. Archive candidates and the custom-index threshold for the filter
+--     6.2M rows: custom index threshold = 100,000 + 5% of 5.2M = 360,000
+SELECT COUNT() FROM Opportunity
+WHERE IsClosed = true AND CloseDate < LAST_N_YEARS:3
+```
+
+**Step 2: the decision record** at `docs/adr/0092-opportunity-archive-big-object.md`. It names the metadata the build deploys: the big object (`CustomObject`, `Archived_Opportunity__b`, defined through Metadata API), the summary object (`CustomObject`, `Archived_Opportunity__c`), and the permission set limiting archive access (`PermissionSet`).
+
+```markdown
+# ADR-0092: Archive closed Opportunities older than 3 years to a big object
+
+## Status
+Accepted (2026-10-03), Data Architecture Board
+
+## Context
+- Q1: one integration user owns 2.4M Opportunities (guideline: 10,000).
+- Q2: three catch-all Accounts each exceed 10,000 child Opportunities.
+- Q3: 4.1M closed Opportunities older than 3 years.
+- Big objects support SOQL only along the index, no aggregates, no
+  record-level sharing, and store encrypted source data as clear text
+  (Big Objects Implementation Guide v66.0).
+- Amount is Shield-encrypted.
+
+## Decision
+1. Before archiving: reassign the integration user's open Opportunities
+   to territory queues in parent-sorted batches with deferred sharing
+   calculation; split the three catch-all Accounts.
+2. Archive to Archived_Opportunity__b, index (Account__c, Close_Date__c,
+   Opportunity_Id__c). Amount is NOT archived; Amount_Band__c (a
+   non-sensitive range) is archived instead.
+3. Archive access: permission set "Archive Reader" for Finance and
+   Compliance only. Reps use Archived_Opportunity__c (summary object,
+   Private sharing, owner preserved).
+4. Hard delete runs per scope only when that scope's insertImmediate
+   SaveResults show zero failures and a batch count matches.
+
+## Consequences
+### Positive
+- Active table drops from 6.2M to 2.1M rows; realignment touches less.
+### Negative
+- Exact historical amounts leave Salesforce; finance reads them from the
+  ERP. Agreed with the CFO on 2026-09-30.
+- Archive counts need batch Apex; there is no COUNT() on big objects.
+- Two archive objects to maintain.
+
+## Alternatives Considered
+### Checkbox "Archived" with filtered reports
+Rejected: rows stay in every query, sharing calculation, and skew count.
+### Export to an external data lake only
+Rejected: auditors need in-org lookups by Account and date.
+
+## Date
+2026-10-03
+```
+
+**Why it works:** the skew and threshold numbers are measured, the big object's documented limits (index-only SOQL, no sharing, clear-text storage) each produce an explicit design line, and the destructive step is gated.
+

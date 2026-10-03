@@ -143,3 +143,39 @@ perfectly appropriate if it only does field updates and notifications.
 ```
 
 **Detection hint:** Flag Flow-vs-Apex recommendations that cite "complexity" or "too many steps" without identifying a specific technical constraint that requires Apex.
+
+---
+
+## Anti-Pattern 6: Promising a Longer CDC Retention Window With Shield
+
+**What the LLM generates:** "Turn on Shield Event Monitoring to extend Change Data Capture retention to seven days so the ERP can catch up after long outages."
+
+**Why it happens:** The model mixes CDC retention with the seven-day rotation interval for event bus tenant secrets that appears in the same Shield section of the CDC guide.
+
+**Correct pattern:** The Change Data Capture Developer Guide stores change events for up to three days. High-volume platform events keep 72 hours and legacy standard-volume events 24 hours (Platform Events Developer Guide). Design a reconciliation extract for outages longer than the window instead of buying a licence that does not change it.
+
+**Detection hint:** Any design that cites a seven-day CDC or platform event replay window.
+
+---
+
+## Anti-Pattern 7: Storing Secrets in Custom Settings Because "It's Configuration"
+
+**What the LLM generates:** "Create a hierarchy custom setting `Partner_API__c` with a field for the API key and read it in Apex with `getOrgDefaults()`."
+
+**Why it happens:** Custom settings are the model's default answer for org-wide configuration.
+
+**Correct pattern:** The Apex Developer Guide ("Custom Settings") says custom settings are readable by all profiles, including the guest user, unless they are protected and installed in a managed package, and tells you to use named credentials or encrypted fields for secrets. Put the key in a named credential with an external credential.
+
+**Detection hint:** A custom setting or custom metadata field named like `*_Key__c`, `*_Secret__c`, `*_Password__c`, or `*_Token__c`.
+
+---
+
+## Anti-Pattern 8: Sizing Event Integrations Per Feature Instead of Per Org
+
+**What the LLM generates:** "CDC for the data lake and platform events for the fraud service each have their own 50,000-event daily allocation."
+
+**Why it happens:** The model assumes each feature carries its own quota.
+
+**Correct pattern:** The Platform Events Developer Guide says the default event delivery allocation (50,000 per 24 hours in Performance and Unlimited, 25,000 in Enterprise) is counted per subscribed client and shared between high-volume platform events and CDC, and excludes Apex triggers, flows, and processes. The CDC guide caps entity selection at five without an add-on. Add up every external subscriber's daily events across both features.
+
+**Detection hint:** An integration design that sizes CDC and platform events against separate allocations, or selects more than five CDC entities without mentioning the add-on.

@@ -26,10 +26,17 @@
 
 ## Official Sources Used
 
+Read for this revision (2026-10-03):
+
+- Salesforce Knowledge Implementation Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_knowledge_implementation_guide.pdf. Data Category Visibility (family-line visibility, at-least-one-category-per-group rule, revoked visibility, high-volume portal users), import `Channels` keywords, translation channel rule, edition availability.
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. KnowledgeArticleVersion channel flags; KnowledgeArticleViewStat (unique views, channels, drafts untracked); CaseArticle; Case `Origin` and `Reason`.
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. Bot `sessionTimeout`; BotVersion `conversationGoals`, `knowledgeActionEnabled`; ConversationSystemDialog `KnowledgeAction` and `KnowledgeFallback`; ConversationalIntelligenceSettings `enableConversationMining`; KnowledgeSettings file naming; DataCategoryGroup.
+- Salesforce Well-Architected: Easy > Intentional: https://architect.salesforce.com/docs/architect/well-architected/guide/intentional.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-04-04). KPI-based business impact calculation used instead of published benchmarks.
+- Salesforce Well-Architected: Easy > Engaging: https://architect.salesforce.com/docs/architect/well-architected/guide/engaging.html (Wayback snapshot 2026-03-15). Poor digital experiences erode user trust as customer-facing work moves to digital channels.
+
+Listed in the original version; Salesforce Help does not fetch, so these were not re-read and no claim in this revision rests on them alone:
+
 - Deflect Cases with Self-Service — https://help.salesforce.com/s/articleView?id=sf.cases_deflect.htm&type=5
 - Einstein Conversation Mining for Case Deflection — https://help.salesforce.com/s/articleView?id=sf.einstein_conversation_mining.htm&type=5
 - AI for Admins: Einstein Bots Success — https://help.salesforce.com/s/articleView?id=sf.bots_service_admin.htm&type=5
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Well-Architected: Easy — https://architect.salesforce.com/docs/architect/well-architected/easy/
-- Salesforce Well-Architected: Adaptable — https://architect.salesforce.com/docs/architect/well-architected/adaptable/
-- Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/trusted/
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (read via Wayback snapshot 2026-06-16)

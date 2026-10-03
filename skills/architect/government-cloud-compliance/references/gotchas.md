@@ -1,71 +1,117 @@
 # Gotchas — Government Cloud Compliance
 
-## 1. FedRAMP Authorization Does Not Automatically Cover All AppExchange Packages
+"Government Cloud guide" below means the Salesforce *Government Cloud* guide (`government_cloud.pdf`, Spring '26 edition served under the 262 release path). Claims that rest on external government frameworks (NIST, OMB, DISA, CMS) or on pages this pass could not fetch carry an inline `UNVERIFIED (2026-10-03):` marker.
 
-**What happens:** A team designs a solution for GovCloud Plus that relies on four AppExchange managed packages — a document generation tool, an e-signature integration, a CPQ add-on, and a scheduling tool. None of these packages were checked for GovCloud Plus authorization. The packages are installed in a commercial Salesforce org during development and appear to work correctly. When the GovCloud Plus org is provisioned, three of the four packages cannot be installed because they are not on the Salesforce Government Cloud Plus authorized products list.
+## Gotcha 1: AppExchange Packages Sit Outside the Authorization Boundary
 
-**When it occurs:** Any time a solution design proceeds in a commercial Salesforce environment (developer edition, sandbox on commercial cloud) before the GovCloud Plus org is available. This is extremely common because GovCloud Plus orgs take longer to provision and development starts in the available environment.
+**What happens:** A team designs a Government Cloud Plus solution around four AppExchange managed packages (document generation, e-signature, a CPQ add-on, scheduling) and treats them as covered by the Salesforce authorization. They are not. The Government Cloud guide ("Using AppExchange with Government Cloud") says AppExchange and the apps listed on it are not included in the authorization boundaries of Government Cloud Plus or Government Cloud Plus - Defense, and the FedRAMP and DoD authorizations do not include AppExchange apps.
 
-**Why it matters:** ISV packages that are not FedRAMP-authorized cannot be installed in a GovCloud Plus org regardless of functionality. The ISV must independently complete the FedRAMP authorization process, which can take 6 to 18 months. Replacing a missing package late in a program schedule can cause significant cost and delay.
+Correction (2026-10-03): earlier text said packages "cannot be installed" in a Government Cloud Plus org unless they appear on an authorized products list. The guide says all managed and unmanaged packages are supported when the subscriber org is in Government Cloud, and unsupported only when the subscriber org is outside it. The "Compatible With Government Cloud" and "FedRAMP Compliant" AppExchange labels are self-reported by the ISV, and native apps are generally not eligible for a FedRAMP or DoD provisional authorization at all. The blocker is the authorizing official's risk decision, not installability.
 
-**What to do:** Before finalizing any solution design for GovCloud Plus, validate every planned AppExchange package against Salesforce's published Government Cloud Plus Products list. Contact the ISV directly if the product is not on the list — some ISVs have authorization in progress. Design native Salesforce alternatives for any package that cannot be confirmed as authorized within the program timeline.
+**When it occurs:** Any design built in a commercial org before the Government Cloud Plus org exists, where package choice is treated as a functional decision only.
 
----
-
-## 2. Salesforce Features in GovCloud Lag Commercial Cloud by One to Two Releases
-
-**What happens:** A program officer sees a demo of a new Einstein AI feature at Salesforce World Tour and asks the architecture team to include it in the GovCloud deployment. The feature was generally available on commercial cloud in the Winter '25 release. The team adds it to the design. At go-live, the feature is not available in GovCloud Plus because it has not yet been through the FedRAMP re-authorization cycle for the new functionality.
-
-**When it occurs:** Any time a GovCloud design references a feature announced or released in the last two Salesforce release cycles. New features require Salesforce to update their FedRAMP System Security Plan and potentially conduct a significant change assessment with their 3PAO before the feature can be made available in authorized environments.
-
-**Why it matters:** Committing a program to a feature that is not yet GovCloud-authorized creates a scope gap at go-live. For government contracts with fixed delivery dates, this can create contract compliance issues.
-
-**What to do:** Reference the Salesforce Government Cloud Feature Availability documentation (available through the Salesforce Government Cloud customer portal) before finalizing any feature that was announced or released in the most recent two Salesforce releases. For features in the pipeline, get written confirmation from the Salesforce account team of the expected GovCloud authorization timeline and do not commit to a delivery date that depends on that timeline.
+**How to avoid:** For each package, record the AppExchange labels (Government Cloud, FedRAMP Compliant, Native), cross-check any FedRAMP claim on the FedRAMP Marketplace or DoD Cloud Catalog as the guide recommends, and list every external callout the package makes (the guide's example is Salesforce Maps calling AWS for geolocation). Take the list to the AO with the 3PAO-recommended control set the guide publishes (AT, IR, PS, SA, SI families). Partners should also know that the License Management App cannot update a Government Cloud subscriber's license from outside Government Cloud.
 
 ---
 
-## 3. Commercial Middleware and ETL Tools Break the FedRAMP Boundary
+## Gotcha 2: New Features Reach Government Cloud Later Than Commercial
 
-**What happens:** A GovCloud Plus deployment needs to sync Salesforce records to an on-premise agency data warehouse. The integration team uses their existing MuleSoft CloudHub (commercial) instance as the middleware layer because it is already configured and familiar. The data flows: GovCloud Plus → MuleSoft CloudHub (commercial) → agency data warehouse. At the FedRAMP boundary review, the agency AO rejects the design because MuleSoft CloudHub commercial is not FedRAMP-authorized, and federal data is transiting through a non-authorized system.
+**What happens:** A program officer sees a demo of a new Einstein feature and asks for it in the Government Cloud deployment. At go-live the feature is not there. UNVERIFIED (2026-10-03): the "one to two releases" lag in earlier text comes from field experience; the Government Cloud guide only says products are classified as authorized or interoperable and that the guide's answers can change with each release.
 
-**When it occurs:** Integration designs are almost always drawn by teams with commercial cloud experience who default to the tools they know. The FedRAMP authorization status of middleware tools is rarely checked during the initial integration design phase.
+**When it occurs:** Any design that references a feature from the last two releases without checking its Government Cloud status.
 
-**Why it matters:** Any system that receives, processes, stores, or transmits federal data that is within the ATO boundary must itself be FedRAMP-authorized at the appropriate impact level. A non-authorized system in the data path invalidates the authorization boundary and can result in rejection of the ATO package or a finding requiring boundary restructuring.
-
-**What to do:** For every integration in a GovCloud deployment, document the middleware or integration platform used and confirm its FedRAMP authorization status. Options for commonly used integration platforms: MuleSoft Government Cloud (FedRAMP authorized), Azure Integration Services on Azure Government (FedRAMP High authorized), AWS Step Functions and Lambda on AWS GovCloud (FedRAMP High authorized), Dell Boomi FedRAMP environment. On-premise middleware running in the agency's own FedRAMP-authorized data center is also acceptable if properly documented in the boundary.
+**How to avoid:** Check the product against "Government Cloud Available Products and Features" (linked from the guide) and record whether it is authorized or interoperable. Get written confirmation from the Salesforce account team for anything not yet listed, and do not tie a contractual delivery date to it. Agentforce is a hard example: the *Generative AI* guide ("Considerations for Agents") says agents are not available for Government Cloud.
 
 ---
 
-## 4. Scratch Orgs Are Not Available in GovCloud — Development Workflows Must Change
+## Gotcha 3: Commercial Middleware and ETL Tools Break the Boundary
 
-**What happens:** A development team with strong Salesforce DX experience sets up their local development workflow using scratch orgs, as they do for all commercial cloud projects. They configure a scratch org definition file, set up VS Code with the Salesforce Extension Pack, and begin development. When the GovCloud Plus org is provisioned and they attempt to create scratch orgs from the GovCloud Dev Hub, the command fails. Scratch org creation is not available in Government Cloud.
+**What happens:** A Government Cloud Plus org syncs records to an agency data warehouse through the integration team's existing commercial iPaaS tenant. The AO rejects the design because federal data transits a system outside any authorized boundary. The Government Cloud guide defines the authorization boundary as a logical barrier around the components inside the operating zone that also specifies interactions with external systems, so every hop has to be accounted for.
 
-**When it occurs:** Any team transitioning from commercial Salesforce DX development to GovCloud Plus development without reviewing the GovCloud feature restrictions.
+**When it occurs:** Integration designs drawn by teams with commercial experience who default to familiar tools.
 
-**Why it matters:** Scratch orgs are the foundation of modern Salesforce DX development — disposable, source-driven environments for feature development and testing. Their absence in GovCloud requires significant changes to the development and CI workflow. Teams that do not adapt early end up with slower development cycles and inconsistent environment management practices.
-
-**What to do:** Replace scratch orgs with sandboxes created from the GovCloud production org. Developer sandboxes serve the role of scratch orgs for individual developer work. Partial or Full sandboxes serve the role of staging and UAT environments. Adjust CI/CD pipelines to deploy to sandboxes rather than creating and deleting scratch orgs. Establish a sandbox refresh cadence and a sandbox naming and allocation policy. Data masking (see `security/sandbox-data-masking` skill) is required before loading any production data into developer or partial sandboxes to prevent CUI/PHI from residing in less-controlled environments.
+**How to avoid:** Document the platform and authorization status of every hop that receives, processes, stores, or transmits in-scope data. UNVERIFIED (2026-10-03): the earlier list of acceptable platforms (MuleSoft Government Cloud, Azure Integration Services on Azure Government, AWS Step Functions and Lambda on AWS GovCloud, a Boomi FedRAMP environment) reflects vendor marketplace claims not checked in this pass; verify each on the FedRAMP Marketplace at the required impact level. On-premise middleware in the agency's own authorized data center is acceptable if documented in the boundary.
 
 ---
 
-## 5. A FISMA Significant Change Can Require a Partial Re-Assessment and Delay Deployments
+## Gotcha 4: Scratch Orgs and Commercial DevOps Habits Do Not Transfer
 
-**What happens:** A Salesforce team deploys a major new module to their GovCloud Plus production org — a new Experience Cloud site for external agency partners, with new Connected Apps, new API integrations, and changes to sharing rules. The deployment goes through the normal Salesforce change management process and is deployed successfully. Three weeks later, the agency ISO flags that this change constituted a significant change under FISMA that required prior notification to the Authorizing Official and potentially a partial security assessment before deployment.
+**What happens:** A team with strong Salesforce DX habits plans scratch-org-based development and a CI pipeline on a commercial runner. UNVERIFIED (2026-10-03): earlier text said scratch org creation is not available in Government Cloud; the Government Cloud guide does not address scratch orgs, so confirm with Salesforce before planning around them either way. The pipeline issue is firmer: runners that pull metadata and test data out of the org are in the data path.
 
-**When it occurs:** Teams treat FedRAMP compliance as a one-time ATO event rather than an ongoing authorization. They apply normal commercial Salesforce change management practices without considering whether a change triggers significant change notification requirements.
+**When it occurs:** Any team moving from commercial DX practice to Government Cloud Plus.
 
-**Why it matters:** Deploying a significant change without notifying the AO can void or jeopardize the ATO. FISMA continuous monitoring requirements (per NIST SP 800-37 Rev 2 and OMB A-130) require that the system owner notify the AO of significant changes before they are implemented in production, giving the AO the opportunity to determine whether a partial re-assessment is required.
-
-**What to do:** Define a significant change policy for the Salesforce GovCloud deployment as part of the continuous monitoring plan. Significant changes typically include: adding a new external integration, enabling a new Salesforce feature that changes the attack surface, changing encryption key management, adding or removing user authentication methods, or materially changing the system boundary (e.g., adding a new Experience Cloud site). Route all deployment requests through a significant change review gate before production deployment. For changes determined to be significant, notify the AO and obtain a written determination on whether a partial assessment is required before proceeding.
+**How to avoid:** Plan on sandboxes created from the Government Cloud production org until scratch-org support is confirmed. Run CI on compute inside an authorized boundary. Mask production data before it lands in Developer or Partial Copy sandboxes (see `security/sandbox-data-masking`).
 
 ---
 
-## 6. GovCloud Plus Does Not Guarantee IL5 Compliance Out of the Box
+## Gotcha 5: A Significant Change Can Require AO Review Before Deployment
 
-**What happens:** A DoD program team is told by their contracting officer that their system requires IL5. The team selects Salesforce GovCloud Plus because it is FedRAMP High authorized and assumes this is sufficient for IL5. At the IL5 authorization review, the DISA reviewer identifies that the deployment is on traditional GovCloud Plus infrastructure (not Hyperforce AWS GovCloud), that there is no customer-managed encryption key implementation, and that Salesforce support access is not sufficiently restricted to meet the NSS-level personnel security requirements. The IL5 authorization is rejected.
+**What happens:** A team ships a new Experience Cloud partner site with new connected apps and sharing changes through normal change management. Weeks later the agency ISO flags it as a significant change that needed prior notification to the authorizing official. UNVERIFIED (2026-10-03): the significant-change obligation comes from NIST SP 800-37 Rev 2 and OMB Circular A-130, which are outside Salesforce documentation and were not fetched in this pass.
 
-**When it occurs:** FedRAMP High and DoD IL5 are frequently conflated. FedRAMP High is a necessary but not sufficient condition for IL5. IL5 has additional requirements beyond the FedRAMP High control baseline, particularly around personnel security for cloud service provider staff who can access tenant systems, encryption key management, and infrastructure isolation.
+**When it occurs:** Teams treating the ATO as a one-time event and applying commercial change management.
 
-**Why it matters:** Building a system to FedRAMP High standards and then discovering IL5 requires additional infrastructure or key management capabilities mid-program creates significant rework. Hyperforce GovCloud with CMEK is materially different from traditional GovCloud Plus in the IL5 context, and migrating between them mid-program is not trivial.
+**How to avoid:** Write a significant-change policy into the continuous monitoring plan. Typical triggers: a new external integration, a feature that changes the attack surface, a change to encryption key management, a change to authentication methods, or a change to the system boundary (such as a new Experience Cloud site). Route deployments through a significant-change gate and get the AO's written determination before production.
 
-**What to do:** If IL5 is a requirement, do not assume GovCloud Plus is sufficient. Explicitly verify with the DISA Cloud Authorization portal whether GovCloud Plus on Hyperforce with CMEK meets the current IL5 Provisional Authorization requirements. Confirm with the Salesforce account team that the specific Hyperforce GovCloud deployment meets DISA's IL5 provisional authorization. Read the DISA Cloud Computing SRG (Section 5.3 for IL5) before finalizing the infrastructure selection.
+---
+
+## Gotcha 6: Government Cloud Plus Is IL4, Not IL5
+
+**What happens:** A DoD program needs IL5. The team picks Government Cloud Plus because it is FedRAMP High and assumes that is enough. It is not. The Government Cloud guide ("Government Cloud Offerings", "Compliance by Operating Zone") says Government Cloud Plus provides FedRAMP High and DoD IL4 (plus IRS 1075 and NIST SP 800-171 attestations), while Government Cloud Plus - Defense uses physically dedicated, isolated infrastructure for the DoD and holds the DoD IL5 provisional authorization.
+
+Correction (2026-10-03): earlier text said IL5 requires "Hyperforce GovCloud on AWS GovCloud" with customer-managed keys. The guide names Government Cloud Plus - Defense as the IL5 offering. The "FedRAMP High is necessary but not sufficient for IL5" point stands.
+
+**When it occurs:** Programs that conflate FedRAMP High with IL5, or that provision the offering before the IL is confirmed.
+
+**How to avoid:** Confirm the impact level in writing first. For IL5, specify Government Cloud Plus - Defense. Read the DISA Cloud Computing SRG for IL5 obligations (UNVERIFIED 2026-10-03: external document, not fetched). Note that some features differ by zone: Field Service dispatch mapping and Appointment Assistant are interoperable in Government Cloud Plus but not available in Government Cloud Plus - Defense.
+
+---
+
+## Gotcha 7: Deterministic Encryption Is Not FIPS-Validated
+
+**What happens:** The team enables Shield Platform Encryption with deterministic encryption so encrypted fields can still be filtered and matched, then claims FIPS 140 compliance. The Government Cloud guide ("Encryption and Compliance for Government Cloud") says Shield Platform Encryption uses FIPS-validated AES-256 in CBC mode with a random initialization vector by default, and that a static initialization vector (deterministic encryption) is not FIPS-validated.
+
+**When it occurs:** Designs that need filtering, matching, or duplicate rules on encrypted fields.
+
+**How to avoid:** Record each encrypted field with its scheme. Keep probabilistic encryption on fields whose SC-28 evidence must cite FIPS validation. Where deterministic encryption is needed for function, document the risk acceptance with the AO, as the guide suggests reviewing with a partner or Salesforce Customer Support.
+
+---
+
+## Gotcha 8: Information Spillage Cleanup Is the Customer's Job
+
+**What happens:** A user uploads a document above the org's authorization level. The team opens a ticket expecting Salesforce to clean it up. The Government Cloud guide ("Customer Data Information Spillage", "Mitigate Information Spillage") says the customer is responsible for remediation, and Salesforce cannot assess what data types a customer stores. The documented steps are: delete the data through the UI or API, permanently delete it from the Recycle Bin (Modify All Data required to empty the org Recycle Bin), then open a support case to request a physical delete. Shield Platform Encryption customers can instead destroy their key material (cryptographic erase), which the guide warns must be done carefully to limit data loss.
+
+**When it occurs:** Any Government Cloud org without a written spillage runbook.
+
+**How to avoid:** Put a spillage runbook in the incident response plan (IR-9 is in the guide's recommended control set). Name who holds Modify All Data and Manage Encryption Keys for the cleanup. Decide in advance whether cryptographic erase is acceptable for the encrypted data classes, since it renders all data under that key unusable.
+
+---
+
+## Gotcha 9: "Interoperable" Features Send Data Outside the Boundary When Switched On
+
+**What happens:** An admin turns on Field Service map features or mobile analytics in a Government Cloud Plus org. The Government Cloud guide says interoperable products have been functionally tested but not assessed against FedRAMP or DoD boundary requirements. For Field Service, API calls to Google Maps are at the authorization boundary and off by default ("Send geolocation and map data to Google and Apple"), and the mobile app's analytics and crash reports go to third-party systems outside the boundary when "Allow third parties to store mobile analytics data" and "Send crash reports to Microsoft App Center" are turned on.
+
+**When it occurs:** Feature enablement done in Setup without a boundary review, often during UAT when someone wants maps to "just work".
+
+**How to avoid:** Keep a register of interoperable features and their Setup switches. Require an AO risk acceptance before any of them is turned on. Test interoperable features in a non-production environment first, as the guide requires, and remember that restricted networks such as NIPRNet can block them.
+
+---
+
+## Gotcha 10: Salesforce Express Connect Is Not Available to .mil Orgs
+
+**What happens:** A DoD program plans private connectivity with Salesforce Express Connect. The Government Cloud guide ("Connect to Government Cloud Plus via Salesforce Express Connect") says it is not applicable to DoD customers using a `.mil` My Domain, because their traffic traverses the DISA Boundary Cloud Access Point.
+
+**When it occurs:** Network designs copied from civilian agency deployments.
+
+**How to avoid:** For civilian Government Cloud Plus orgs, follow the guide's routing: specific inbound and outbound routes for non-Hyperforce orgs, per-instance routes for Hyperforce Government Cloud, and a support case with the Government Cloud Network Security team for IP-range restrictions. For DoD `.mil` orgs, design around the BCAP path instead.
+
+---
+
+## Gotcha 11: Audit Retention Depends on Licensed Features
+
+**What happens:** The SSP claims field history and event logs are retained for the agency's AU-11 period, but only standard features are licensed. The Salesforce Security Guide ("Field History Tracking") says that without Field Audit Trail, field history is kept for up to 18 months (24 months through the API). With Field Audit Trail on, it is kept until you delete it, under a `HistoryRetentionPolicy`. The Object Reference (`EventLogFile`) says Shield and Event Monitoring customers get 1 year of event log file storage by default.
+
+Correction (2026-10-03): the control-mapping table earlier described Field Audit Trail as "10-year field history". The current Security Guide wording is retention until deleted, governed by the retention policy.
+
+**When it occurs:** SSP control statements written from marketing summaries rather than from the licensed feature set.
+
+**How to avoid:** Write AU-11 statements from what is licensed. If the retention period exceeds 1 year for event logs, export them nightly to an authorized log store. Define `HistoryRetentionPolicy` per object when Field Audit Trail is on.

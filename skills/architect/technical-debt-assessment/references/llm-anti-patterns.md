@@ -151,3 +151,61 @@ business impact, and a rollback plan.
 ```
 
 **Detection hint:** Flag technical debt recommendations that propose "rewrite everything" without a phased plan or priority rating. Check for missing effort estimates and risk assessments per remediation item.
+
+---
+
+## Anti-Pattern 6: Inverting the Order of Execution When Rating Overlap
+
+**What the LLM generates:** "The old Process Builder runs after your new after-save flow, so it will overwrite the flow's value; deactivate it first." Or a simplified order that lists Workflow Rules and processes after record-triggered flows.
+
+**Why it happens:** Older blog diagrams and memory of pre-API-54 behavior blur together. The model reasons from "legacy runs last" instead of from the documented sequence.
+
+**Correct pattern:**
+
+```text
+Apex Developer Guide, "Triggers and Order of Execution":
+  step 3  before-save record-triggered flows
+  step 4  before triggers
+  step 8  after triggers
+  step 11 workflow rules (a field update re-runs before/after update triggers once)
+  step 13 processes + flows launched by workflow rules, no guaranteed order
+  step 14 after-save record-triggered flows
+So an after-save flow overwrites a process; a workflow field update
+overwrites a before-save flow. Rate overlap from these step numbers.
+```
+
+**Detection hint:** Any overlap finding that names a run order without a step number from the guide, or that says a process runs after an after-save flow.
+
+---
+
+## Anti-Pattern 7: Counting Managed Package Apex Against Org Coverage
+
+**What the LLM generates:** "Your org coverage is dragged down by 25 uncovered classes in the `docgen` namespace; write tests for them or uninstall the package."
+
+**Why it happens:** The model sees namespaced classes in a coverage list and assumes they share the org's 75% pool.
+
+**Correct pattern:**
+
+```text
+Apex Developer Guide:
+- Apex installed from a managed package is excluded from org-level
+  coverage requirements ("@IsTest(OnInstall=true) Annotation").
+- The org coverage percentage excludes package-related tests, except
+  in a deployment that runs RunAllTestsInOrg ("Code Coverage Best Practices").
+Report namespaced classes as Vendor Debt (informational). The org team
+cannot write tests inside another publisher's namespace anyway.
+```
+
+**Detection hint:** A remediation item that asks the org team to raise coverage on a namespaced class, or a coverage figure that includes package code without saying the test level was `RunAllTestsInOrg`.
+
+---
+
+## Anti-Pattern 8: Declaring a Class Dead From One Dependency Query
+
+**What the LLM generates:** "MetadataComponentDependency returns no rows referencing `LeadScoringService`, so it is dead code and safe to delete."
+
+**Why it happens:** The model treats the Dependency API as complete. It is Beta, caps Tooling results at 2,000 rows, excludes reports from Tooling queries, and cannot see `Type.forName()` or class names stored in configuration.
+
+**Correct pattern:** Combine four checks before calling a class dead: zero coverage after a fresh test run, no dependency rows (queried by ID, via Bulk API 2.0 if reports matter), no match in scheduled jobs or Custom Metadata/Custom Settings values, and (if Event Monitoring exists) no Apex Execution or Apex Trigger events. State which checks were possible and mark the finding inferred when any is missing.
+
+**Detection hint:** A deletion recommendation backed by a single query, or one that does not mention dynamic invocation.

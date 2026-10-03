@@ -20,7 +20,7 @@ Common mistakes AI coding assistants make when generating or advising on Salesfo
 
 **Why it matters:** Salesforce Knowledge Body fields are Rich Text Areas that store HTML markup. Embedding HTML-tagged content pollutes the semantic vector space with structural tokens (`<p>`, `<li>`, `&amp;`, `&#160;`). Articles cluster by formatting style rather than semantic content, and cosine similarity searches return false matches.
 
-**Correct approach:** Always include an HTML stripping transformation before embedding. In Apex, use `String.stripHtmlTags()`. In Python-based pipelines, use BeautifulSoup or the `html.parser` stdlib module. The stripped plain text should also be deduplicated for whitespace and normalized to UTF-8 before passing to the embedding model.
+**Correct approach:** In custom pipelines, always include an HTML stripping transformation before embedding. In Apex, use `String.stripHtmlTags()` (Apex Reference Guide, String class). For the native Einstein Data Library path, the Generative AI guide lists Text Area (Rich) as a supported field type, so test retrieval before adding a stripping step there. In Python-based pipelines, use BeautifulSoup or the `html.parser` stdlib module. The stripped plain text should also be deduplicated for whitespace and normalized to UTF-8 before passing to the embedding model.
 
 ---
 
@@ -68,6 +68,37 @@ Common mistakes AI coding assistants make when generating or advising on Salesfo
 
 **What goes wrong:** The assistant designs a Data Cloud or Einstein sync architecture with a single daily batch cadence for all data streams, treating data freshness as a uniform concern. This works for some features but silently degrades others that require near-real-time data.
 
-**Why it matters:** Different AI features have different staleness tolerances. Agentforce RAG grounding on Knowledge articles can tolerate a 4-hour lag for most content but must be near-real-time for policy-sensitive articles. Einstein Case Classification using case metadata fields should be near-real-time to correctly route inbound cases. A 24-hour batch cadence for case data means new case categories added in the morning are not available for classification until the next day.
+**Why it matters:** Different AI features have different staleness tolerances. Agentforce RAG grounding on Knowledge articles can tolerate a 4-hour lag for most content but must be near-real-time for policy-sensitive articles. (Correction 2026-10-03: the Generative AI guide says Knowledge used with Agentforce is reindexed daily, so near-real-time grounding of changed articles is not available; serve policy values from live actions instead.) Einstein Case Classification using case metadata fields should be near-real-time to correctly route inbound cases. A 24-hour batch cadence for case data means new case categories added in the morning are not available for classification until the next day.
 
 **Correct approach:** Define sync cadences per AI feature based on the velocity of the underlying data and the business impact of staleness. Document the cadence requirements in the operational runbook. Configure separate data stream schedules for high-velocity and low-velocity sources rather than applying a single cadence uniformly.
+
+---
+
+## Anti-Pattern 8: Assuming Every Knowledge Field and File Can Ground an Agent
+
+**What goes wrong:** The assistant designs grounding on an encrypted "Internal Notes" field, a URL field pointing at policy PDFs, or a 300 MB PDF.
+
+**Why it matters:** The Generative AI guide says the Answer Questions with Knowledge action uses Text, Text Area, Text Area (Long), and Text Area (Rich) fields; Text (Encrypted) and URL fields are not supported. File uploads are limited to text, HTML, and PDF, up to 4 MB for text or HTML and 100 MB for PDF. A data library takes Knowledge or files, not both.
+
+**Correct approach:** Map each candidate source to a supported field type or file format before designing the agent. Use a separate file-upload library for documents, and keep encrypted fields out of grounding on purpose.
+
+---
+
+## Anti-Pattern 9: Writing Calculated Insights as SOQL
+
+**What goes wrong:** The assistant drafts a calculated insight with SOQL relationship syntax (`Account.Owner.Name`) or SOQL date literals and calls it "SOQL-like".
+
+**Why it matters:** The *Data Cloud* guide says calculated insights take an eligible ANSI SQL statement, with only certain aggregates and functions supported. SOQL syntax fails or silently changes meaning.
+
+**Correct approach:** Write calculated insights as ANSI SQL joins and aggregates over data model objects, and check every function against the guide's supported list.
+
+---
+
+## Anti-Pattern 10: Inventing Einstein Score Field Names and a "Feature Store"
+
+**What goes wrong:** The assistant tells the team to read `EinsteinScoreReason1__c` in a report or to "register features in the Einstein Feature Store".
+
+**Why it matters:** No fetched Salesforce guide documents those names. The Object Reference documents Einstein predictions as `AIRecordInsight` records with child reason, value, action, and feedback objects, and Opportunity Scoring factors in `SalesAIScoreModelFactor`. Custom feature extraction for AI Accelerator use cases is `AIFeatureExtractor` inside `AIUsecaseDefinition`, which requires the CRM Plus licence (Metadata API Developer Guide).
+
+**Correct approach:** Describe outputs with the documented objects, confirm field names in the org with a describe call before writing reports, and confirm licences before designing on use-case metadata.
+

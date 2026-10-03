@@ -17,15 +17,10 @@ dependencies:
   skills:
     - admin/acceptance-criteria-given-when-then
     - admin/agent-output-formats
-    - admin/business-hours-and-holidays
-    - admin/case-management-setup
     - admin/configuration-workbook-authoring
-    - admin/email-to-case-configuration
     - admin/fit-gap-analysis-against-org
-    - admin/record-types-and-page-layouts
     - admin/requirements-gathering-for-sf
     - admin/requirements-traceability-matrix
-    - admin/uat-test-case-design
     - architect/architecture-decision-records
   shared:
     - AGENT_CONTRACT.md

@@ -11,6 +11,8 @@ triggers:
   - "How do I reduce inbound case volume without hiring more agents?"
   - "We want to measure whether our chatbot is actually deflecting cases — what metrics matter?"
   - "Our self-service portal has low adoption; how do I identify which topics to target for deflection?"
+  - "deflect password reset and order status questions to self-service before they become cases"
+  - "measure how many cases our help center and bot actually prevent"
 tags:
   - case-deflection
   - self-service
@@ -30,9 +32,9 @@ outputs:
   - Knowledge readiness gap list
   - Deflection program roadmap with phased rollout recommendation
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-10-03
 ---
 
 # Case Deflection Strategy
@@ -52,15 +54,31 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What share of last quarter's cases came from each Case Origin, and how much chat or messaging transcript history exists?" | Conversation Mining covers conversational channels only (Gotcha 2) | A topic list weighted by the channels that actually carry volume | Wave 1 targets the real top reasons, not the chat-visible ones |
+| "Which numerator and denominator define deflection, and which event proves a customer's goal was met?" | Containment, case reduction, and goal completion diverge (Gotchas 1, 6, 8) | One written formula per channel, reported per topic | Bot goal steps and article votes record resolution instead of inferring it |
+| "Which audiences must see each candidate article: guest, authenticated customer, partner, high-volume portal users?" | Visibility needs a category in every group on the article, and high-volume users have no role (Gotchas 3, 7) | A visibility matrix of category group by audience | Articles reach the audience the topic was chosen for |
+| "Which channels is each candidate article published to?" | Channel flags hide categorized articles (Gotcha 4) | Channel flags checked in the readiness audit | No "published but invisible" articles at launch |
+| "Where will the bot run, and will we test knowledge answers there as a guest?" | Results depend on the running context (Gotcha 5) | A test script per audience through the deployed channel | A designed `KnowledgeFallback` path instead of a dead end |
+
+What a proper deflection design adds over "just launching a bot": the topic list matches real volume, the metric proves resolution rather than silence, and every target article is reachable by the audience it was written for.
+
+---
+
 ## Core Concepts
 
 ### Einstein Conversation Mining for Topic Identification
 
-Einstein Conversation Mining (ECM) analyzes historical chat and messaging transcripts to surface the most frequently discussed contact reasons. It clusters similar intents together and ranks them by volume, making it the primary tool for identifying deflection candidates. The output is a report showing topic clusters, volume share, and a recommended automation potential score. Topics with high volume and low complexity (password resets, order status, return requests) are the best first-wave deflection targets. ECM requires an existing transcript history — typically 90 days minimum — and a Messaging or Chat channel. Orgs without transcript data must use case subject/description classification or manual categorization as a proxy.
+Einstein Conversation Mining (ECM) analyzes historical chat and messaging transcripts to surface the most frequently discussed contact reasons. It clusters similar intents together and ranks them by volume, making it the primary tool for identifying deflection candidates. The output is a report showing topic clusters, volume share, and a recommended automation potential score. Topics with high volume and low complexity (password resets, order status, return requests) are the best first-wave deflection targets. ECM requires existing transcript history and a Messaging or Chat channel (UNVERIFIED (2026-10-03): the often-quoted 90-day minimum is Help-only). Orgs without transcript data must use case subject/description classification or manual categorization as a proxy.
 
 ### Deflection Rate and Goal Completion Rate
 
-Deflection rate measures the percentage of contacts that were resolved in a self-service channel without transferring to a live agent. It is the headline KPI for a deflection program. Industry benchmarks published by Salesforce cite 27% average deflection rates across Einstein Bot deployments. Goal completion rate (GCR) is the more meaningful operational metric: it measures the percentage of self-service sessions where the customer achieved their stated goal (e.g., found an article, completed a transaction, got an answer from the bot) regardless of whether they subsequently escalated. A bot with 60% GCR and 30% deflection rate is performing well — the escalations are genuinely complex. A bot with 5% GCR and 30% deflection rate is suppressing contacts without resolving needs, which degrades CSAT. Always track both. Salesforce ROI research documents an average 198% ROI from deflection programs across Service Cloud deployments, primarily driven by avoided agent handle time.
+Deflection rate measures the percentage of contacts that were resolved in a self-service channel without transferring to a live agent. It is the headline KPI for a deflection program. An "average 27% deflection rate" is often attributed to Salesforce (UNVERIFIED (2026-10-03): no fetched Salesforce source states it). Goal completion rate (GCR) is the more meaningful operational metric: it measures the percentage of self-service sessions where the customer achieved their stated goal (e.g., found an article, completed a transaction, got an answer from the bot) regardless of whether they subsequently escalated. A bot with 60% GCR and 30% deflection rate is performing well: the escalations are genuinely complex. A bot with 5% GCR and 30% deflection rate is suppressing contacts without resolving needs, which degrades CSAT. Always track both. A "198% average ROI" figure also circulates (UNVERIFIED (2026-10-03): no fetched Salesforce source states it); build the business case from the org's own avoided handle time instead.
 
 ### Knowledge Article Quality as a Prerequisite
 
@@ -68,7 +86,15 @@ Deflection channels that surface knowledge articles — bots, self-service porta
 
 ### Data Category Hygiene
 
-Salesforce Knowledge uses data categories to control which articles are visible on which channels and to which user profiles. Mis-assigned data categories are one of the most common causes of "we have articles but customers can't find them" complaints. Key behaviors: articles assigned to a parent data category are visible to Experience Cloud users with access to any child category of that parent — but this inheritance does not work in reverse. A data category assigned to a guest user profile but not to the relevant Experience Cloud channel's sharing settings will produce no-results searches. Bots surfacing knowledge via Einstein Article Recommendations pull from the same data category visibility rules as the Experience Cloud site the bot is embedded in. Always validate data category assignments end-to-end across guest/authenticated user profiles before launching.
+Data categories and article channel flags together decide which articles each audience sees. Three documented rules drive most "we have articles but customers can't find them" complaints:
+
+| Rule | Consequence for deflection |
+|---|---|
+| Making a category visible exposes its whole family line, ancestors and descendants | Re-tagging articles at every level is unnecessary |
+| An article is visible only if the user sees at least one category in each of its category groups | Adding a second category group without guest visibility hides every article tagged in it |
+| Once visibility is configured, a user with none in a group sees only articles not classified in that group | A missing grant fails silently as "no results" |
+
+Article channel flags (`IsVisibleInPkb`, `IsVisibleInCsp`, `IsVisibleInPrm`) are a separate gate on top of categories. Validate both end to end as each audience before launch; details and sources are in `references/gotchas.md` Gotchas 3, 4, and 7.
 
 ---
 
@@ -109,10 +135,10 @@ Salesforce Knowledge uses data categories to control which articles are visible 
 
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
-1. **Audit current contact volume by topic.** Run Einstein Conversation Mining on 90+ days of transcripts, or pull a case volume report grouped by Case Type or Subject keyword. Rank contact reasons by volume. Identify the top 10 topics and tag each as: informational, transactional, or complex. Deflection candidates are informational and transactional.
+1. **Audit current contact volume by topic.** Run Einstein Conversation Mining on the available transcript history, and pull Case volume grouped by Origin and Reason. Rank contact reasons by volume. Identify the top 10 topics and tag each as: informational, transactional, or complex. Deflection candidates are informational and transactional.
 2. **Assess knowledge readiness.** For each deflection candidate topic, check whether a customer-readable knowledge article exists, is assigned to the correct data categories, and is visible on the target self-service channel. Flag gaps. A topic with no article cannot be deflected via knowledge-led channels.
 3. **Select deflection channel per topic.** Use the Decision Guidance table above. Informational topics go to search-first portal or bot + article. Transactional topics go to bot + Flow automation. Complex topics get escalation paths, not deflection targets.
-4. **Define KPI baseline.** Before launch, record baseline: total inbound volume by channel, case creation rate, average handle time. Define target deflection rate (industry average is 27%), goal completion rate target (aim for 55%+), and containment rate for bot deployments.
+4. **Define KPI baseline.** Before launch, record baseline with the queries in `references/examples.md`: inbound volume by Case Origin, case creation rate, average handle time. Derive the target deflection rate from the volume share of wave-1 topics, not from a published average. Set a goal completion target and a containment target for bot deployments.
 5. **Build knowledge gaps.** Author missing articles for deflection candidates. Write at a 6th–8th grade reading level. Use numbered steps for how-to content. Keep articles under 500 words. Assign data categories aligned to the target channel's visibility rules.
 6. **Launch deflection channel and instrument.** Deploy bot dialogs or portal search-first flow. Tag sessions with the deflection topic so you can report deflection rate per topic, not just overall. Set up a session end survey for goal completion rate.
 7. **Run monthly ECM refresh.** Deflection programs stagnate when the topic list is treated as fixed. Re-run ECM every 30–60 days to find emerging topics and retire topics where contact volume has dropped.
@@ -135,13 +161,13 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full detail and sources in `references/gotchas.md`. The short list:
 
-1. **Data category inheritance does not work upward** — assigning a guest profile access to a child data category does not grant visibility to articles assigned only to the parent category. Many orgs assign all articles to the top-level category and then wonder why child-category filtered searches return nothing.
-2. **Einstein Article Recommendations in bots use channel-scoped data category visibility** — the bot does not search all published articles; it searches only articles visible to the Experience Cloud site context the bot is embedded in. Testing article search in Setup while logged in as an admin will show articles that authenticated guest users cannot see.
-3. **ECM requires Messaging or Chat transcripts — it does not analyze Email-to-Case or Web-to-Case** — orgs that predominantly receive contact via email will not get ECM topic clusters from that channel. Case subject/description text mining is required as a substitute and is less accurate.
-4. **Deflection rate and containment rate are different and often confused** — containment rate is the percentage of bot sessions where the customer did not transfer to an agent (may have abandoned). Deflection rate is the percentage where the customer's issue was resolved. A high containment rate with low GCR indicates customers are giving up, not being deflected.
-5. **Bot session timeout does not equal deflection** — if a customer starts a bot conversation and stops responding, the session closes automatically. This session is NOT a deflection. Ensure bot analytics distinguish between customer-abandoned sessions and customer-resolved sessions.
+1. An abandoned bot session looks like containment; measure goal completion with bot goals.
+2. Einstein Conversation Mining covers conversational channels, so email-heavy orgs need case text analysis.
+3. Category visibility is broad (whole family line); the trap is the at-least-one-category-per-group rule.
+4. Article channel flags hide correctly categorized articles.
+5. High-volume portal users have no role, so grant category visibility by profile or permission set.
 
 ---
 

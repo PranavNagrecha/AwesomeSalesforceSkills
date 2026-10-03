@@ -30,6 +30,8 @@ batch reads, and treat API Call Add-Ons as a line item in the business case rath
 also that Full Sandbox is allocated 5,000,000 calls per 24 hours — a load test that passes in Full Sandbox proves
 nothing about production capacity.
 
+**Source:** Salesforce Developer Limits and Allocations Quick Reference (Summer '26 PDF, salesforce_app_limits_cheatsheet.pdf), Total API Request Allocations: the allocation formula and per-licence table (Customer Community 0, Customer Community Login 0, Customer Community Plus 200, Partner Community 200), re-checked 2026-10-03.
+
 ---
 
 ## Gotcha 2: Twenty seconds is an architectural boundary, not a performance target
@@ -52,6 +54,8 @@ results, push aggregation to a pre-computed object — because below that thresh
 Set the BFF's client timeout below 20 seconds so a slow call is abandoned rather than promoted into a contended slot,
 and cap retries: retrying into an exhausted pool is how a slow minute becomes a slow hour.
 
+**Source:** Salesforce Developer Limits and Allocations Quick Reference (Summer '26 PDF, salesforce_app_limits_cheatsheet.pdf), Concurrent API Request Limits: 25 long-running requests (20 seconds or longer) for production and sandboxes, 5 for Developer Edition and trial orgs; re-checked 2026-10-03.
+
 ---
 
 ## Gotcha 3: A composite request shares one timeout budget
@@ -69,6 +73,8 @@ operation that was mostly fine.
 **How to avoid:** Group composite subrequests by expected latency rather than by page. Keep anything unbounded out of a
 composite entirely, and design the BFF's response shape so a partially-successful aggregate is representable — a
 storefront that can render a product page without the personalised block is more available than one that cannot.
+
+**Source:** Salesforce Developer Limits and Allocations Quick Reference (Summer '26 PDF, salesforce_app_limits_cheatsheet.pdf), API Timeout Limits: "For calls to Composite Resources in REST API, this timeout applies to the entire composite request, not to each subrequest."
 
 ---
 
@@ -89,29 +95,69 @@ parameter, and scope every query by that identity in the BFF — then keep the p
 rather than replacing it. Where the BFF calls Apex, state the access mode explicitly (`WITH USER_MODE`, `as user`,
 `AccessLevel.USER_MODE`) so the platform still has an opinion even though the caller is a service account.
 
-## Official Sources Used
+**Source:** Apex Developer Guide v67.0, Using the with sharing, without sharing, and inherited sharing Keywords ("Sharing declarations don't enforce object-level access or field-level security") and Set an Access Mode for Database Operations.
 
-- Salesforce Developer Limits and Allocations Quick Reference (last updated 7 August 2026) — *Total API Request
-  Allocations*: the "100,000 + (number of licenses x calls per license type) + purchased API Call Add-Ons" formula, the
-  per-licence-type table including Customer Community 0 / Customer Community Login 0 / Customer Community Plus 200 /
-  Partner Community 200, the Salesforce licence contributions (1,000 Enterprise, 5,000 Unlimited and Performance), the
-  Developer Edition total of 15,000, and the 5,000,000 Full Sandbox allocation.
-  https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm (verified 2026-08-14)
-- Salesforce Developer Limits and Allocations Quick Reference — *Concurrent API Request Limits* and *API Timeout
-  Limits*: the 25 / 5 concurrency figures for requests of 20 seconds or longer, `REQUEST_LIMIT_EXCEEDED`, "There isn't
-  a limit on the number of concurrent requests shorter than 20 seconds", the 10-minute timeout with
-  `REQUEST_RUNNING_TOO_LONG` / `QUERY_TIMEOUT`, and the composite-request timeout scope.
-  https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm (verified 2026-08-14)
-- Apex Developer Guide, Version 67.0 (Summer '26) — *Using the with sharing, without sharing, and inherited sharing
-  Keywords*: "Sharing declarations don't enforce object-level access or field-level security".
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm (verified 2026-08-14)
-- Apex Developer Guide, Version 67.0 — *Set an Access Mode for Database Operations*: the user-mode idioms
-  (`WITH USER_MODE`, `insert as user`, `AccessLevel.USER_MODE`) cited above.
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm (verified 2026-08-14)
+---
 
-### Not sourced here
+## Gotcha 5: SLAS rate limits belong to the instance, and staging gets 500 RPM
 
-B2C Commerce (SCAPI) has its own quota framework, authentication model (SLAS), and caching behaviour, published in the
-B2C Commerce developer documentation rather than the core platform docs. Nothing in these notes should be read as a
-statement about SCAPI quotas — the figures above are core-org API allocations. Verify SCAPI-side limits against the
-Commerce API documentation for your instance before sizing a storefront against them.
+**What happens:** The B2C side has its own limit model. Shopper Login (SLAS) enforces rate limits per SLAS tenant (instance), not per client and not per shopper: 24,000 requests per minute on a production instance and 500 requests per minute on each non-production instance. Every client on the instance shares that budget. When it is reached, SLAS returns HTTP 429 with a `Retry-After` header. A single refresh token can be exchanged at most 3 times within 60 seconds; more attempts return 429.
+
+**When it occurs:** During a load test against a staging instance, which hits 500 RPM long before the storefront is stressed. In production, when a BFF refreshes the same token from several concurrent requests, or when a login-heavy campaign shares the instance with other SLAS clients.
+
+**How to avoid:** Size login and token traffic per instance, not per app. Load-test SLAS against the production allowance only with Salesforce's agreement, and expect 429 in staging. Serialize refresh per shopper session in the BFF and honour `Retry-After` exactly. Ask the Customer Success Manager about adjustments before a known peak; the documentation says limits can be adjusted per scenario.
+
+**Source:** B2C Commerce Developer Guide, SCAPI > Load Shedding and Rate Limiting (developer.salesforce.com/docs/commerce/commerce-api/guide/throttle-rates.html); SLAS Best Practices, Refresh Token Service Protection (slas-best-practices.html). Both read 2026-10-03.
+
+---
+
+## Gotcha 6: Browse APIs shed load with 503; checkout does not
+
+**What happens:** When an instance reaches its load threshold after scaling to maximum capacity, SCAPI endpoints protected by load shedding return HTTP 503. Responses carry `sfdc_load` (capacity in use, 0 to 100) and `sfdc_load_status`, which reads `WARN` at 80% and `THROTTLE` at 90%. Load shedding is not applied to checkout endpoints such as Shopper Baskets and Shopper Orders.
+
+**When it occurs:** On a flash-sale peak, when product listing and search calls start returning 503 while basket and order calls keep working. A BFF that treats 503 as a hard error blanks the listing page instead of serving cached content.
+
+**How to avoid:** Read `sfdc_load_status` in the BFF and switch catalog routes to stale cache at `WARN`. Treat 503 on browse endpoints as "serve stale", never as "retry immediately". Keep checkout on the documented Shopper Baskets and Shopper Orders families so it inherits the protection.
+
+**Source:** B2C Commerce Developer Guide, SCAPI > Load Shedding and Rate Limiting (throttle-rates.html), read 2026-10-03.
+
+---
+
+## Gotcha 7: A BFF must be a SLAS private client; a browser app must be a public client
+
+**What happens:** A team registers one SLAS client and uses it from both the browser and the BFF. Either the client secret ships in browser JavaScript, or the BFF runs a public-client PKCE flow it does not need. The documentation draws the line explicitly: any app that can store a secret is a private client, and "all shopping apps with a backend-for-frontend (BFF) must be provisioned as private clients", while single-page apps such as PWA Kit and mobile apps without a gateway "must be provisioned as public clients".
+
+**When it occurs:** When the composable design adds a BFF late, after a browser-only prototype, and keeps the prototype's client.
+
+**How to avoid:** Register a private client for the BFF and turn on Strict Client Auth, which requires `/login` and `/authorize` to carry credentials in the `x-slas-client-auth` header. Register a separate public client for any code that runs in the browser. Never put a client secret in a browser bundle.
+
+**Source:** B2C Commerce Developer Guide, Private SLAS Client Use Cases (slas-private-client.html), Public SLAS Client Use Cases (slas-public-client.html), SLAS Best Practices, Strict Client Auth (slas-best-practices.html). Read 2026-10-03.
+
+---
+
+## Gotcha 8: A phased rollout with a custom frontend leaves the supported path
+
+**What happens:** The plan keeps checkout on SFRA and builds browse pages in a custom framework. Session bridging between the two is the hard part, and the documented, supported mechanism targets PWA Kit: "Custom headless web applications are possible but not formally supported." From B2C Commerce version 25.3, Hybrid Auth replaces Plugin SLAS and keeps the SFRA session (`dwsid`) and the SLAS token synchronized, and new Hybrid Auth implementations must start on PWA Kit v3.
+
+**When it occurs:** When the frontend framework is chosen before the phasing plan, and the phasing plan assumes session bridging "just works" for any frontend.
+
+**How to avoid:** Decide the phasing before the framework. If browse and checkout will be split across a custom frontend and SFRA, budget the session-bridging work as owned code, test basket merge on login, and record in the decision record that this path is outside formal support.
+
+**Source:** B2C Commerce Developer Guide, Configure a Hybrid Storefront with Plugin SLAS (phased-headless-rollouts.html) and Configure a Hybrid Storefront with Hybrid Auth (hybrid-auth.html). Read 2026-10-03.
+
+---
+
+## Gotcha 9: A guest order left on the session leaks into the next shopper's account
+
+**What happens:** On a shared device, a guest places an order and the next person registers on the same browser session. Without a session boundary, the guest's order can associate with the new registered profile.
+
+**When it occurs:** When the BFF keeps the guest access and refresh tokens after order confirmation, which is the default behavior of most token caches.
+
+**How to avoid:** Treat order confirmation as a session boundary. After a successful `POST /orders`, request a fresh guest token from SLAS with `grant_type=client_credentials` and replace the stored access and refresh tokens.
+
+**Source:** B2C Commerce Developer Guide, SLAS Best Practices, guest session rotation (slas-best-practices.html), read 2026-10-03.
+
+---
+
+Full source list with URLs: `references/well-architected.md`, section "Official Sources Used".
+

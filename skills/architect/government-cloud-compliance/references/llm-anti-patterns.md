@@ -21,7 +21,7 @@ These patterns help the consuming agent self-check its own output.
 
 **Why it happens:** "FedRAMP" is commonly used as shorthand in training data without the Moderate/High distinction. The difference between the two baselines is significant (approximately 100 additional controls, stricter personnel security, stricter encryption requirements), but it is underrepresented in general Salesforce content.
 
-**Correct pattern:** Always qualify FedRAMP authorization with the impact level: "Salesforce Government Cloud holds FedRAMP Moderate authorization. Salesforce Government Cloud Plus holds FedRAMP High authorization. Confirm which impact level your system requires before selecting the offering." For DoD systems, further qualify with the IL level: IL4 requires FedRAMP High (GovCloud Plus minimum); IL5 requires Hyperforce GovCloud with additional controls.
+**Correct pattern:** Always qualify FedRAMP authorization with the impact level: "Salesforce Government Cloud holds FedRAMP Moderate authorization. Salesforce Government Cloud Plus holds FedRAMP High authorization. Confirm which impact level your system requires before selecting the offering." For DoD systems, further qualify with the IL level: IL4 requires FedRAMP High (GovCloud Plus minimum); IL5 requires Government Cloud Plus - Defense (corrected 2026-10-03 from "Hyperforce GovCloud", per the Government Cloud guide).
 
 **Detection hint:** Any statement about "FedRAMP authorized" without specifying Moderate or High, or any advice to use "GovCloud" without qualifying whether it means GovCloud (Moderate) or GovCloud Plus (High).
 
@@ -69,6 +69,43 @@ These patterns help the consuming agent self-check its own output.
 
 **Why it happens:** FedRAMP and DISA Impact Levels are both US government cloud compliance frameworks, and they correlate but are not identical. FedRAMP High is a necessary but not sufficient condition for IL5. IL5 adds requirements beyond the FedRAMP High baseline. This nuance is underrepresented in training data.
 
-**Correct pattern:** "FedRAMP High authorization (Salesforce GovCloud Plus) meets the minimum compliance baseline for DoD IL4. IL5 requires additional controls beyond FedRAMP High — specifically, Hyperforce deployment on AWS GovCloud, customer-managed encryption keys, and stricter personnel security requirements for CSP access. IL5 provisional authorization must be separately confirmed through the DISA Cloud Authorization portal. IL6 (Secret) is not available on any commercial Salesforce offering."
+**Correct pattern:** "FedRAMP High authorization (Salesforce GovCloud Plus) meets the minimum compliance baseline for DoD IL4. IL5 requires additional controls beyond FedRAMP High — the Government Cloud guide names Government Cloud Plus - Defense, on physically dedicated and isolated DoD infrastructure, as the IL5 offering (corrected 2026-10-03 from "Hyperforce deployment on AWS GovCloud, customer-managed encryption keys"). IL5 provisional authorization must be separately confirmed through the DISA Cloud Authorization portal. IL6 (Secret) is not available on any commercial Salesforce offering."
 
 **Detection hint:** Any statement equating FedRAMP High with IL5 approval, or any DoD compliance guidance that omits the distinction between IL4 and IL5, or that does not reference the DISA CC SRG as the authoritative source.
+
+---
+
+## Anti-Pattern 7: Calling AppExchange Packages "Authorized for GovCloud Plus"
+
+**What the LLM generates:** "Check the Salesforce Government Cloud Plus authorized products list; packages not on it cannot be installed."
+
+**Why it happens:** The model maps the FedRAMP "authorized product" idea onto AppExchange, where it does not apply.
+
+**Correct pattern:** The Government Cloud guide says AppExchange apps are outside the Government Cloud Plus and Government Cloud Plus - Defense authorization boundaries, all packages are supported when the subscriber org is in Government Cloud, and the Government Cloud, FedRAMP Compliant and Native labels are ISV self-reported. Build a package register with labels, FedRAMP Marketplace checks, and external callouts, and take it to the AO.
+
+**Detection hint:** Any mention of an "authorized package list" or a claim that a package "cannot be installed" in Government Cloud.
+
+---
+
+## Anti-Pattern 8: Inventing Event Monitoring Objects and Metadata Types for Evidence
+
+**What the LLM generates:** Evidence automation that queries `ContentDistributionEvent` for file-sharing audit or retrieves `EncryptionPolicy` metadata for SC-28.
+
+**Why it happens:** Plausible names are generated from the control language rather than looked up.
+
+**Correct pattern:** Use objects and types the guides list: Real-Time Event Monitoring objects such as `LoginEvent`, `ReportEvent`, `ListViewEvent`, `ApiEvent`, `FileEventStore`, `BulkApiResultEventStore` and `PermissionSetEventStore` (Platform Events Developer Guide), `EventLogFile` log files (Object Reference), and `PlatformEncryptionSettings` (Metadata API Developer Guide). Check every name before it goes into an SSP evidence procedure.
+
+**Detection hint:** Any evidence query whose object or metadata type name cannot be found in the Object Reference, Platform Events Developer Guide, or Metadata API Developer Guide.
+
+---
+
+## Anti-Pattern 9: Proposing Agentforce or Deterministic Encryption Without the Government Cloud Caveat
+
+**What the LLM generates:** "Add an Agentforce service agent to the citizen portal" or "Use deterministic encryption on SSN so duplicate rules keep working; Shield is FIPS 140 validated."
+
+**Why it happens:** Commercial-cloud defaults are applied to a regulated zone.
+
+**Correct pattern:** The Generative AI guide says agents are not available for Government Cloud. The Government Cloud guide says deterministic encryption (static initialization vector) is not FIPS-validated, while the default probabilistic scheme is. State both constraints and route deterministic encryption to an AO risk decision.
+
+**Detection hint:** Agentforce in a Government Cloud design, or a FIPS claim attached to a deterministic-encryption field.
+

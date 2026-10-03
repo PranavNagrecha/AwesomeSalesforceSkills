@@ -74,13 +74,16 @@ For email-dominant orgs, use case report analysis:
 **Correct pattern:**
 
 ```
-For Einstein Article Recommendations in a bot embedded in Experience Cloud:
-1. Confirm the Experience Cloud site has a Knowledge data category group assigned
-2. Confirm the guest user profile has visibility to the appropriate data categories
-3. Assign articles to data categories that match the guest user visibility grants
-4. Test article search using Experience Cloud Site Preview (guest mode) — NOT the bot test harness
-5. The bot test harness runs as admin; it bypasses data category visibility rules
+For knowledge answers in a bot embedded in Experience Cloud:
+1. List every category group used on customer-facing articles
+2. Grant the guest profile (and the customer profile or permission set) visibility
+   in EACH of those groups: an article needs one visible category per group
+3. Check article channel flags (IsVisibleInPkb / IsVisibleInCsp) on every candidate article
+4. Test knowledge answers through the deployed site as a guest, not in Setup
+5. Assign a dialog to the KnowledgeFallback system event for the no-result path
 ```
+
+Sources: Knowledge Implementation Guide (Summer '26), Categorized Article Visibility; Object Reference v67.0, KnowledgeArticleVersion channel flags; Metadata API v67.0, ConversationSystemDialog `KnowledgeFallback`. UNVERIFIED (2026-10-03): that the builder test harness bypasses category visibility is stated only in Salesforce Help.
 
 **Detection hint:** If the bot article search instructions do not mention data category visibility or guest user profile configuration, the advice is incomplete and will produce "articles not found" issues in production.
 
@@ -90,12 +93,12 @@ For Einstein Article Recommendations in a bot embedded in Experience Cloud:
 
 **What the LLM generates:** A KPI plan that sets 27% deflection rate as the target for all deployments, citing the Salesforce industry average, without adjusting for the org's current state, topic coverage, or knowledge readiness.
 
-**Why it happens:** The 27% figure is widely cited in Salesforce marketing and documentation. LLMs reproduce it as a universal target rather than a benchmark to calibrate against.
+**Why it happens:** The 27% figure is widely repeated and attributed to Salesforce. LLMs reproduce it as a universal target rather than a benchmark to calibrate against. UNVERIFIED (2026-10-03): no fetched Salesforce source states the figure, so it should not appear in a KPI plan at all.
 
 **Correct pattern:**
 
 ```
-27% is an industry average across all Einstein Bot deployments — it is a benchmark, not a target.
+A quoted industry average is not a target, and this one is unsourced.
 
 Calibrate deflection rate targets based on:
 1. What percentage of total inbound volume do wave 1 deflection topics represent?
@@ -121,7 +124,8 @@ the industry average as a fixed number.
 **Correct pattern:**
 
 ```
-NLU bot: requires minimum ~100 utterance examples per intent for reasonable accuracy;
+NLU bot: needs enough real utterances per intent to separate intents cleanly
+         (UNVERIFIED (2026-10-03): the ~100-per-intent figure is a practitioner heuristic, not a documented minimum);
          benefits from ECM transcript analysis to identify and validate intents
 
 Menu-driven bot: does not require NLU training data; reliable for known topic lists;
@@ -133,3 +137,16 @@ Decision rule:
 ```
 
 **Detection hint:** If the recommendation is for an NLU bot but there is no discussion of training data volume, utterance examples, or transcript history requirements, the NLU prerequisite check has been skipped.
+
+---
+
+## Anti-Pattern 7: Reporting Article Views As Deflected Cases
+
+**What the LLM generates:** A deflection dashboard built on `KnowledgeArticleViewStat.ViewCount`, presented as "cases avoided".
+
+**Why it happens:** View statistics are the easiest self-service number to query, and "a customer read the answer" sounds like "a customer did not open a case". The object measures unique views per channel for published and archived articles. It records nothing about whether the customer then opened a case.
+
+**Correct pattern:** Report views as reach. Report deflection from a resolution signal: bot goal completion, an article helpfulness vote, or the share of article sessions not followed by a case from the same contact within a set window. Use `CaseArticle` to list articles agents attach to cases, which shows the gaps self-service missed.
+
+**Detection hint:** A "deflected cases" metric whose only source object is `KnowledgeArticleViewStat`.
+

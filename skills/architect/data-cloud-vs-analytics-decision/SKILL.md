@@ -14,6 +14,8 @@ triggers:
   - "Our architecture review needs a decision on whether CRM Analytics can replace Data Cloud for unified customer data."
   - "How does CRM Analytics query Salesforce Data Cloud — do we report on DMOs or CRM objects?"
   - "We already have CRM Analytics licenses — why would we also need Data Cloud?"
+  - "decide whether marketing's unified profile project needs Data Cloud or just CRM Analytics dashboards"
+  - "write the architecture decision on Data Cloud versus CRM Analytics for the steering committee"
 tags:
   - Data-Cloud
   - CRM-Analytics
@@ -35,9 +37,9 @@ outputs:
   - "Decision record bullets suitable for architecture review and vendor Q&A"
   - "Pointers to deeper skills for implementation after the decision is made"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
 # Data Cloud vs CRM Analytics — Decision Framework
@@ -60,6 +62,23 @@ Gather this context before recommending one platform, the other, or both:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which use cases need cross-source identity, segments, or activation, and is Segmentation and Activation in the contract?" | Those are Data 360 responsibilities CRM Analytics does not replace (Gotcha 1) | A use-case register with an owning platform per row | No dashboard built on a "golden customer" that identity resolution never produced |
+| "For each analytics subject area, does CRM Analytics read Data 360 in place or from converted datasets, and which DMOs?" | The two paths differ in freshness, scope, and maintenance (Gotcha 2) | Named DMOs and a named path per subject area | A proof of concept scoped to objects the path supports |
+| "What freshness does each persona need, and what is the slowest hop?" | Latency adds up across ingestion, identity, insights, and schedules (Gotchas 3, 7) | A latency chain per persona | SLAs set on the pipeline, not blamed on a product |
+| "Who owns Data 360 consumption, and which workloads draw it?" | Data 360 usage is metered as credits, not seats (Gotcha 4) | A consumption owner and a review cadence | A cost model that survives the first full ingestion |
+| "Does a warehouse already hold modeled customer data?" | Zero copy federation and Data Shares can replace bulk ingestion (Gotcha 6) | An ingest, federate, or exclude decision per source | No duplicated storage and modeling |
+| "Will any app or report query DMOs with SOQL?" | 12 MB result cap, no currency aggregates, no calculated insight objects (Gotcha 5) | A query path per consumer | Components that do not fail in production on volume |
+
+What a proper decision adds over "buying both and turning on dashboards": one owner per layer, named objects and paths, and a cost and latency model written down before the first pipeline runs.
+
+---
+
 ## Core Concepts
 
 ### Data Cloud: ingestion, harmonization, identity, activation
@@ -68,7 +87,7 @@ Data Cloud is architected as a lakehouse-style customer data platform. Data land
 
 ### CRM Analytics: analytics, datasets, and embedded experience
 
-CRM Analytics provides datasets, lenses, dashboards, and recipes for metrics and storytelling, embedded in Salesforce for licensed users. It can consume CRM-sourced datasets through native sync patterns familiar to Salesforce teams. When Data Cloud is in play, product documentation describes connecting CRM Analytics to Data Cloud data via Direct Data so that analytics runs against the harmonized model rather than re-implementing every join in CRM alone.
+CRM Analytics provides datasets, lenses, dashboards, and recipes for metrics and storytelling, embedded in Salesforce for licensed users. It can consume CRM-sourced datasets through native sync patterns familiar to Salesforce teams. When Data Cloud is in play, two paths exist: converting Data 360 data model objects into CRM Analytics datasets (documented in the CRM Analytics REST API guide), and Direct Data, which queries Data 360 in place (UNVERIFIED (2026-10-03): Direct Data scope is documented in Salesforce Help only). Either way, analytics runs against the harmonized model rather than re-implementing every join in CRM.
 
 ### Complementary pattern vs false substitution
 
@@ -120,7 +139,7 @@ The common enterprise pattern is complementary: Data Cloud becomes the system of
 
 1. Capture the primary outcome (activation, embedded BI, data science handoff, or compliance) and list every data source with its system of record.
 2. Decide whether harmonization and identity resolution are in scope; if yes, treat Data Cloud as the owning layer for cross-source truth.
-3. If analytics is required on harmonized entities, confirm the intended connectivity path (CRM Analytics consuming Data Cloud via supported Direct Data on DMOs—not informal copies).
+3. If analytics is required on harmonized entities, confirm the connectivity path per subject area: Direct Data in place, or DMOs converted to CRM Analytics datasets. Reject informal copies into custom CRM objects. Record the use-case register from `references/examples.md`.
 4. Document licensing and operational ownership separately for Data Cloud administration versus CRM Analytics authoring so cost models stay honest.
 5. Peer-review the decision with `architect/data-cloud-architecture` for pipeline depth and `admin/einstein-analytics-basics` for CRM Analytics delivery once the boundary is set.
 6. Archive the outcome using `templates/data-cloud-vs-analytics-decision-template.md` for auditability.
@@ -131,7 +150,7 @@ The common enterprise pattern is complementary: Data Cloud becomes the system of
 
 - [ ] Stakeholders can articulate what Data Cloud owns versus what CRM Analytics owns in one sentence each.
 - [ ] Any “CRM Analytics instead of Data Cloud” narrative has been tested against activation and multi-source requirements.
-- [ ] If Direct Data is in scope, documentation names DMO-level consumption rather than raw stream reporting.
+- [ ] Each analytics subject area names its path (Direct Data or DMO-to-dataset conversion) and its DMOs, not raw stream reporting.
 - [ ] Identity resolution and segment latency assumptions are documented with realistic ranges.
 - [ ] Related implementation work is routed to the correct admin or integration skills.
 
@@ -139,9 +158,14 @@ The common enterprise pattern is complementary: Data Cloud becomes the system of
 
 ## Salesforce-Specific Gotchas
 
-1. **Treating CRM Analytics as the harmonization engine** — CRM Analytics transforms and joins data for analytics, but it does not replace Data Cloud’s canonical model, identity rulesets, or activation target fabric. Impact: duplicate transformations and inconsistent customer keys.
-2. **Assuming any CRM Analytics dataset automatically sees external sources** — External truth must land in Data Cloud (or another governed store) with explicit modeling; otherwise dashboards silently omit channels.
-3. **Skipping DMO quality gates before widening analytics** — Poor Contact Point or Party Identification mappings undermine both identity coverage and any downstream CRM Analytics content tied to DMOs.
+Full detail and sources in `references/gotchas.md`. The short list:
+
+1. CRM Analytics does not replace identity resolution, segmentation, or activation.
+2. CRM Analytics reaches Data 360 either by converting DMOs to datasets or through Direct Data; name the path.
+3. Latency stacks across ingestion, identity, calculated insights, and CRM Analytics schedules.
+4. Data 360 is metered by credit consumption, not seats.
+5. SOQL on Data 360 objects caps results at 12 MB, rejects currency aggregates, and cannot read calculated insight objects.
+6. A CRM Analytics sync produces a connected object, not a dataset.
 
 ---
 

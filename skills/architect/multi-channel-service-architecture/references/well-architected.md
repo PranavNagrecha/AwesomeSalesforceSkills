@@ -21,10 +21,18 @@
 
 2. **Ignoring capacity weight tuning** — Deploying multi-channel Omni-Channel with default or guessed capacity weights and never adjusting them. Weights must be calibrated against observed average handle times per channel. A chat that takes 8 minutes should have a different weight than a phone call averaging 15 minutes. Schedule quarterly capacity weight reviews using Omni-Channel reports.
 
-3. **Designing around legacy Live Agent** — Building new multi-channel architectures on Live Agent instead of Messaging for In-App/Web. Live Agent is legacy as of Spring '24 (Messaging GA). New implementations should use Messaging exclusively. Existing Live Agent deployments should have a migration timeline.
+3. **Designing around legacy Live Agent**: Building new multi-channel architectures on Live Agent instead of Messaging for In-App/Web. The Object Reference describes legacy chat as "in maintenance-only mode" with no new features. New implementations should use Messaging exclusively. Existing Live Agent deployments should have a migration timeline.
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-03):
+
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. QueueRoutingConfig (`capacityWeight`, `capacityPercentage`, voice at 100%, `routingPriority`, `routingModel`, `isAttributeBased`, paused capacity); ServiceChannel (`capacityModel`, status mappings, `secondaryRoutingPriorityField`, after-conversation work, `isInterruptible`, package.xml sample); ServicePresenceStatus (`channels`; no channels means Away); PresenceUserConfig (`capacity`); CaseSettings and EmailToCaseSettings (`overEmailLimitAction`, `unauthorizedSenderAction`, cannot disable Email-to-Case, routing address fields, `Case.settings`); ConversationVendorInfo (`vendorType`, `awsAccountKey`).
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. AgentWork (`CapacityWeight`, `CapacityPercentage`, `HandleTime`, `ActiveTime`, `SpeedToAnswer`, `Status` values); MessagingSession (`CaseId`, `ChannelType`); LiveChatTranscript; VoiceCall; ConversationEntry legacy chat maintenance-only note.
+- Salesforce Well-Architected: Adaptable > Resilient: https://architect.salesforce.com/docs/architect/well-architected/guide/resilient.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-06-13). Recovery tactics and switchable manual workarounds, applied here to channel failure isolation.
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (Wayback snapshot 2026-06-16).
+
+Listed in the original version; Salesforce Help does not fetch, so these were not re-read and no claim in this revision rests on them alone:
+
 - Messaging for In-App and Web Overview — https://help.salesforce.com/s/articleView?id=sf.livemessage_overview.htm
 - Service Cloud Voice Overview — https://help.salesforce.com/s/articleView?id=sf.voice_about.htm

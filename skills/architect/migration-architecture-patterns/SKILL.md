@@ -14,6 +14,8 @@ triggers:
   - "metadata audit before data migration"
   - "record id remapping 18 digit external system"
   - "org migration rollback safe deployment window"
+  - "plan how to merge an acquired company's Salesforce org into ours without breaking integrations"
+  - "keep original created dates and owners when we migrate records into the new org"
 tags:
   - org-migration
   - org-merge
@@ -36,9 +38,9 @@ outputs:
   - "Coexistence bridge design (Salesforce Connect external objects, Platform Events, identity / SSO)"
   - "Rollback plan tied to each cutover window"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-10-03
 ---
 
 # Org Migration Architecture Patterns
@@ -81,6 +83,23 @@ made and the cutover-runbook team is downstream.
   system that stores a 15- or 18-character Salesforce record ID will
   break on merge / split unless you plan a remapping layer. This is
   one of the highest-risk surprises.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which external systems store Salesforce record IDs, and in 15- or 18-character form?" | IDs are org-scoped, and 15-character IDs are case-sensitive (Gotcha 2) | An external-reference inventory and an 18-character remapping table | No silent breaks in warehouses and finance systems after cutover |
+| "Must created dates, creators, and owners survive the move?" | Audit fields reset to the load user and time unless set on create (Gotchas 10, 12) | Audit-field permission enabled before the load; owner mapping from the remapping table | Age-based reports, SLAs, and audits stay true |
+| "Which automation, validation rules, and sharing calculations run in the target during the load?" | Loads fire automation and sharing work unless deferred (Gotchas 3, 4, 8) | A load-window switch list and the documented load order | No side-effect emails, overwritten values, or multi-hour recalculations |
+| "If coexistence: what crosses the bridge, and how does it recover after a refresh or org migration?" | Event replay resets on migrations and refreshes; retention is 72 hours (Gotcha 11) | A watermark-based resync design | A bridge that recovers without manual reconstruction |
+| "If the split is regulatory: what is the enforced boundary, and who signs it off?" | Any runtime bridge into protected data defeats the split (Gotcha 6) | A boundary definition with regulator sign-off | Isolation enforced by architecture, not by policy |
+| "Which logs and archives must outlive the source org?" | Setup Audit Trail keeps at least 180 days; big objects cannot be bridged cross-org (Gotchas 9, 13) | An export list with retention owners | Compliance questions answerable after decommission |
+
+What proper configuration adds over "just moving the data": every external reference still resolves, history keeps its original authors and dates, and each wave has a rollback that lands in a known state.
 
 ---
 
@@ -167,8 +186,8 @@ the bridge based on what crosses the boundary:
 | Crossing | Bridge | Notes |
 |---|---|---|
 | Users (same person uses both orgs) | **SSO via Salesforce Identity** + per-org permission sets | Identity is the first thing to bridge; otherwise users have separate accounts that drift |
-| Real-time data viewing (read records from the other org without copy) | **Salesforce Connect** with a cross-org adapter (oData) | No data copy; reads on demand. Latency-sensitive |
-| Eventual-consistency data sync (changes in one org propagate to the other) | **Platform Events + Apex subscribers** in each org | Decoupled, durable, retry built in |
+| Real-time data viewing (read records from the other org without copy) | **Salesforce Connect** with the cross-org adapter (`SfdcOrg`, a distinct adapter type, not OData) | No data copy; reads on demand. Latency-sensitive. Big objects are not reachable this way |
+| Eventual-consistency data sync (changes in one org propagate to the other) | **Platform Events + Apex subscribers** in each org | Decoupled; high-volume events retained 72 hours; replay resets on org migration or refresh, so add a watermark resync |
 | Bulk batch sync | **MuleSoft / middleware** or a scheduled Heroku Connect-style worker | Right when volume + transformation are heavy |
 | Authentication tokens / API access | **Connected Apps** with mutual OAuth | Each org grants the other an integration user / client credentials |
 
@@ -191,7 +210,7 @@ Both source orgs continue operating during the transition.
 1. **Inventory + audit.** Metadata delta between source A, source B, and target. Data inventory. External integration inventory.
 2. **Target-org schema reconciliation.** Resolve metadata deltas in target — pick winning picklist values, harmonize validation rules, resolve API name conflicts.
 3. **Build coexistence bridge.** SSO so users from both source orgs can authenticate to target during cutover. Salesforce Connect or Platform Events for cross-org read during phased data load.
-4. **Pilot data load (≤1% of records).** Validate the migration ETL produces correct records in target. Verify external-Id remapping table.
+4. **Pilot data load (≤1% of records).** Validate the migration ETL produces correct records in target, including preserved audit fields and owners. Verify external-Id remapping table.
 5. **Wave 1 — least-coupled records first.** Reference data, then customers, then transactions. Each wave validated before next.
 6. **External integration cutover.** Update each external system's Salesforce-Id references using the remapping table.
 7. **Source-org freeze.** Source orgs go read-only. Final delta sync from source to target.
@@ -296,6 +315,10 @@ investment.
 5. **Coexistence bridges are operational debt that grows over time.** Schema drift is constant; budget for ongoing bridge maintenance, not just initial build. (See `references/gotchas.md` § 5.)
 6. **Splits "for regulatory isolation" with a Salesforce Connect bridge defeat the isolation.** Hard rule: regulated splits have NO runtime bridge to protected data. (See `references/gotchas.md` § 6.)
 7. **Hyperforce region constraints affect data residency** during merge / split when source and target are in different regions. (See `references/gotchas.md` § 7.)
+8. **Audit fields reset to the load user and time** unless "Set Audit Fields upon Record Creation" is enabled before the load. (§ 10.)
+9. **Event-based bridges lose replay history** when either org is migrated, refreshed, or moved. (§ 11.)
+10. **Data Loader's time zone and assignment rule settings rewrite dates and owners.** (§ 12.)
+11. **Big objects cannot be bridged with Salesforce Connect.** (§ 13.)
 
 ---
 

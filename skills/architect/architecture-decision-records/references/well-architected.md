@@ -136,18 +136,39 @@ Beyond the standard Nygard sections, a Salesforce ADR should carry:
   that decision trees sit above skills and route technology choice, and the
   instruction to surface a gap rather than force-fit when no tree covers a
   scenario. The tree inventory in the table above is taken from it.
-- **Salesforce CPQ — End of Sale vs End of Life** —
+- **Salesforce Well-Architected: Easy > Intentional**:
+  https://architect.salesforce.com/docs/architect/well-architected/guide/intentional.html
+  (a direct fetch does not return the guide page; read via the Wayback
+  Machine snapshot of 2026-04-04): "Decision records. Keep a record of the
+  options considered, trade-offs, final decision, and reasoning in a central
+  location"; the build-or-buy near- and long-term cost pattern; the
+  backwards-compatibility passage behind Gotcha 14.
+- **Salesforce Well-Architected: Adaptable > Resilient**:
+  https://architect.salesforce.com/docs/architect/well-architected/guide/resilient.html
+  (Wayback snapshot of 2026-06-13): release naming by season and the
+  release-management guidance behind Gotcha 2.
+- **Salesforce CPQ Developer Guide, Version 67.0 (Summer '26)**:
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/cpq_developer_guide.pdf
+  Chapter 1 notice: the managed package "continues to be available for
+  existing customers", has "no longer any new feature development", keeps
+  support "for the duration of your contract", and allows adding licences and
+  renewing. This replaces the earlier search-extract grounding for the CPQ
+  lifecycle wording in `examples.md` Example 3.
+- **Navigating the Future of Salesforce CPQ: Product End of Sale (Not End of
+  Life)**, salesforce.com, 10 July 2026:
   https://www.salesforce.com/sales/cpq/end-of-life/
-  — cited in `examples.md` Example 3 as the authority an ADR must check for CPQ
-  lifecycle status. **Sourcing caveat:** this page returns HTTP 403 to a
-  document fetcher, so its contents could not be read directly. The qualitative
-  characterisation used in that example — that CPQ is in an end-of-sale and
-  maintenance phase, that existing customers retain support and renewal rights,
-  that product investment has moved to Revenue Cloud Advanced, and that
-  Salesforce has **not** announced an end-of-life date — comes from search
-  extracts restricted to `salesforce.com` domains, not from a direct read. The
-  specific end-of-sale date of 27 March 2025 that circulates in consultancy
-  writing is **not** verified against any Salesforce source and is marked
-  `UNVERIFIED` inline in the example. The example is written to teach ADR
-  structure, and it deliberately models the correct handling of an unverified
-  lifecycle claim rather than asserting one.
+  Earlier versions of this skill recorded HTTP 403 for this page; a plain
+  fetch returned the article on 2026-10-03. It states that CPQ "is end of
+  sale, not end of life", that existing customers can buy additional users,
+  renew, and receive support, that Salesforce "is no longer selling new
+  Salesforce CPQ licenses to new customers", that investment has shifted to
+  Revenue Cloud Advanced, and that there is "no forced migration". It states
+  no end-of-sale date, so the 27 March 2025 date that circulates in
+  consultancy writing stays marked `UNVERIFIED` in Example 3 and
+  Anti-Pattern 7.
+- **Salesforce Object Reference, Version 67.0 (Summer '26), ConversationEntry,
+  Usage**:
+  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+  "The legacy chat product is in maintenance-only mode, and we won't continue
+  to build new features." Used in Anti-Pattern 9 as a second example of a
+  maintenance notice that states no retirement date.

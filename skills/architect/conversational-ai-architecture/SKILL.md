@@ -1,6 +1,6 @@
 ---
 name: conversational-ai-architecture
-description: "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior. NOT for Einstein Bot dialog and NLU design — use architect/einstein-bot-architecture. NOT for cutting an existing bot over to Agentforce — use agentforce/einstein-bots-to-agentforce-migration. NOT for Omni-Channel routing for human agents — use architect/multi-channel-service-architecture. NOT for Flow-only automation without a conversational surface — use admin/process-automation-selection."
+description: "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior, design an Agentforce agent alongside our Einstein Bot. NOT for Einstein Bot dialog and NLU design — use architect/einstein-bot-architecture. NOT for cutting an existing bot over to Agentforce — use agentforce/einstein-bots-to-agentforce-migration. NOT for Omni-Channel routing for human agents — use architect/multi-channel-service-architecture. NOT for Flow-only automation without a conversational surface — use admin/process-automation-selection."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -12,6 +12,8 @@ triggers:
   - "how do I design topics for an Agentforce agent that handles multiple business functions without mis-routing"
   - "how do I transfer context from an Einstein Bot to an Agentforce agent without losing session data"
   - "what is the right architecture for deploying Agentforce alongside an existing Einstein Bot IVR front-end"
+  - "decide whether to use an Einstein Bot or an Agentforce agent for our customer chat"
+  - "design the escalation path from an Agentforce service agent to a human rep"
 tags:
   - conversational-ai-architecture
   - agentforce
@@ -30,9 +32,9 @@ outputs:
   - "Channel routing diagram showing Omni-Channel, Agentforce, and human agent handoff points"
   - "Architecture decision record covering paradigm choice (Einstein Bot vs. Agentforce vs. hybrid)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-10-03
 ---
 
 # Conversational AI Architecture
@@ -46,8 +48,26 @@ This skill activates when a practitioner needs to design, review, or troubleshoo
 Gather this context before working on anything in this domain:
 
 - Confirm whether the org has existing Einstein Bot deployments. If so, identify which channels they serve and whether session context variables are defined on the bot.
-- The most common wrong assumption is that Agentforce topics work like Einstein Bot intents — they do not. Topics have no utterance training sets. Scope is controlled entirely by the precision of the natural-language topic description. Writing utterances for topics produces no effect.
-- Key limits: an Agentforce agent is subject to the Atlas Reasoning Engine's context window; very long system prompts or topic descriptions degrade routing accuracy. Omni-Channel capacity rules apply to human agents and Einstein Bots but not to Agentforce agents. Agentforce agents do not consume Omni-Channel capacity units.
+- The most common wrong assumption is that Agentforce topics work like Einstein Bot intents — they do not. There is no training step and no versioned intent model. The agent compares each message to the names and 1–3 sentence classification descriptions of all its topics (Generative AI guide, "Parts of a Topic"). Correction (2026-10-03): earlier text said writing utterances for topics produces no effect; the `GenAiPlugin` metadata type has an `aiPluginUtterances` field used to pick a topic at runtime, so sample utterances belong there, not in the description.
+- Key limits: an Agentforce agent is subject to the reasoning engine's context window; very long system prompts or topic descriptions degrade routing accuracy. The Generative AI guide recommends no more than 15 actions per topic and allows up to 20 agents per org. UNVERIFIED (2026-10-03): the claim that Omni-Channel capacity rules apply to human agents and Einstein Bots but not to Agentforce agents, and that Agentforce agents do not consume Omni-Channel capacity units, has no fetched source.
+- Availability: agents are not available for Government Cloud, and only Agentforce Service Agent connects to enhanced Messaging channels and Bring Your Own Channel (Generative AI guide, "Considerations for Agents").
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before choosing a paradigm or writing a topic. Each traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What a proper design adds over just doing it |
+|---|---|---|---|
+| "Which channels must this run on: enhanced Messaging, Bring Your Own Channel, voice, or the internal Agentforce panel?" | Only Agentforce Service Agent connects to enhanced Messaging and BYOC (Gotcha 8) | The agent type for each channel | No design that names an agent type the channel cannot host |
+| "Is this a Government Cloud org?" | Agents are not available for Government Cloud (Gotcha 8) | A yes/no that can remove Agentforce from the option set | The decision record states the constraint instead of discovering it at build |
+| "Which steps must be deterministic or explainable (identity checks, eligibility, disclosures)?" | Topic instructions are nondeterministic (Gotcha 7) | A list of rules that must live in flow or Apex actions, or in an Einstein Bot dialog | Regulated steps are enforced by code, not by prompt wording |
+| "What does the bot already know at handoff, and which `MessagingSession` fields will carry it?" | Context is not inherited automatically (Gotcha 3) | A field-by-field context variable map with `includeInPrompt` choices | The customer never repeats verified data, and secrets are not sent to the model (Gotcha 9) |
+| "When must a human take over, and what must exist first (a Case, a verified identity)?" | Only the standard Escalation topic can route to a rep (Gotcha 5) | Escalation instructions, pre-transfer actions, and the outbound Omni Flow target | One escalation path that always works, with the Case already created |
+| "How will topic changes reach production without cutting live conversations?" | Adding a topic requires deactivation, which interrupts conversations (Gotchas 6 and 10) | A sandbox-to-production metadata path and a change window | Tuning becomes a scheduled deploy, not a live edit |
+
+What a proper design adds over "just switching Agentforce on": each channel gets an agent type it supports, deterministic rules live in actions, handoff context is mapped field by field, and topic changes ship as reviewed metadata.
 
 ---
 
@@ -57,7 +77,7 @@ Gather this context before working on anything in this domain:
 
 Einstein Bots use a trained NLU model. Practitioners define intents and provide labeled utterance examples. The model is trained and versioned. Routing decisions are based on predicted intent confidence scores against that trained model.
 
-Agentforce uses the Atlas Reasoning Engine, a large language model that performs intent routing at inference time. There is no training phase. Practitioners define Topics using natural-language descriptions of scope. The Atlas Reasoning Engine reads those descriptions at runtime and routes incoming messages to the most semantically appropriate topic. This means scope boundaries are expressed in prose, not in utterance lists, and imprecision in prose produces routing errors.
+Agentforce uses the Atlas Reasoning Engine, which works with an LLM to classify the request into a topic, build a plan, and launch actions (Generative AI guide, "The Building Blocks of Agents"). There is no training phase. Practitioners define Topics with a name, a 1–3 sentence classification description, a scope, and instructions. The agent compares each message to the names and classification descriptions of all its topics and uses the best match. This means scope boundaries are expressed mainly in prose, and imprecision in prose produces routing errors.
 
 Architecturally, these are completely distinct systems. A practitioner cannot apply skills learned on Einstein Bot NLU design directly to Agentforce topic design.
 
@@ -76,11 +96,11 @@ Topics serving distinct business functions (billing, technical support, account 
 
 When an Einstein Bot hands off to an Agentforce agent via Omni-Channel, session context does not transfer automatically. An Einstein Bot stores data in bot variables. An Agentforce agent receives a new session with no knowledge of prior bot conversation unless the architect explicitly maps bot variables to a transfer payload.
 
-The transfer mechanism is the Einstein Bot's "Transfer to Agent" action, which can pass a set of named attributes to the receiving Omni-Channel queue or directly to an Agentforce agent. The receiving Agentforce agent must have Actions defined to consume those attributes and inject them into the conversation context. Without this explicit mapping, the Agentforce agent starts with no prior context and the customer must repeat information already collected by the bot.
+UNVERIFIED (2026-10-03): earlier text described the Einstein Bot "Transfer to Agent" action passing named attributes that an Agentforce Action consumes; no fetched source documents that mechanism. The documented carrier is the agent's context variables: the Metadata API `Bot` type maps each `ConversationContextVariable` to a field on `MessagingSession`, `MessagingEndUser` or `LiveChatTranscript` per channel, and `includeInPrompt` decides whether the value is injected into the prompt. So the bot writes what it collected to session fields, and the agent's context variables read them. Without this explicit mapping, the Agentforce agent starts with no prior context and the customer must repeat information already collected by the bot.
 
 ### Multi-Agent Orchestration in Agentforce
 
-Agentforce supports an orchestrator-worker pattern where one Agentforce agent (the orchestrator) delegates to specialized sub-agents. The orchestrator routes based on topic descriptions of the sub-agents, applying the same Atlas Reasoning Engine semantics. This pattern is appropriate when a single business domain is large enough that one agent's topic list would exceed roughly 20 topics — beyond that, routing accuracy and maintainability degrade.
+Agentforce supports an orchestrator-worker pattern where one Agentforce agent (the orchestrator) delegates to specialized sub-agents. The Metadata API `GenAiPlannerBundle` type lists a planner type `Atlas__ConcurrentMultiAgentOrchestration` that coordinates across sub-agents and tools within a single interaction. The orchestrator routes based on topic descriptions of the sub-agents, applying the same reasoning semantics. This pattern is appropriate when a single business domain is large enough that one agent's topic list would exceed roughly 20 topics — beyond that, routing accuracy and maintainability degrade. UNVERIFIED (2026-10-03): the 20-topic threshold is a heuristic; the documented numbers are a recommended maximum of 15 actions per topic and up to 20 agents per org.
 
 Multi-agent orchestration introduces a new failure mode: context isolation between agents. Each sub-agent has its own session context. The orchestrator must explicitly pass required context when delegating.
 
@@ -123,9 +143,10 @@ Multi-agent orchestration introduces a new failure mode: context isolation betwe
 | Simple FAQ deflection, DTMF routing, or identity verification with no open-ended reasoning | Einstein Bot | Deterministic NLU, no LLM inference cost, faster response for structured flows |
 | Complex natural-language requests requiring multi-step reasoning or tool invocation | Agentforce agent | Atlas Reasoning Engine handles ambiguous input; Actions provide structured tool access |
 | Existing Einstein Bot + new complex use case | Hybrid: Einstein Bot front-end, Agentforce escalation via Omni-Channel | Preserves existing bot investment; adds reasoning capability without replacing the bot |
-| Single business domain with more than 20 distinct topic areas | Multi-agent orchestration (orchestrator + specialist sub-agents) | Routing accuracy degrades with large topic lists on a single agent; specialization improves reliability |
+| Single business domain with more than 20 distinct topic areas | Multi-agent orchestration (orchestrator + specialist sub-agents) | Routing accuracy degrades with large topic lists on a single agent; specialization improves reliability (20 is a heuristic, UNVERIFIED 2026-10-03) |
+| Government Cloud org | Einstein Bot plus human routing | Agents are not available for Government Cloud (Generative AI guide) |
 | Two business functions with overlapping natural-language scope | Separate agents or redesign topic descriptions to eliminate overlap | Shared scope language causes Atlas Reasoning Engine mis-routing at inference time |
-| Regulated industry requiring deterministic routing audit trail | Einstein Bot or hybrid with explicit routing rules | LLM inference-time routing is probabilistic; compliance requirements may demand deterministic paths |
+| Regulated industry requiring deterministic routing audit trail | Einstein Bot or hybrid with explicit routing rules | LLM inference-time routing is probabilistic; the Generative AI guide lists regulated industries needing explainable processes and deterministic flows as Einstein Bot cases |
 
 ---
 
@@ -136,7 +157,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 1. **Inventory existing channels and systems.** Identify which channels are in use (IVR, chat, SMS, Slack, Experience Cloud), whether Einstein Bots are deployed, and which channel serves the target use case. Confirm Omni-Channel is enabled and configured.
 2. **Choose the paradigm.** Use the Decision Guidance table to determine whether the solution should be Einstein Bot only, Agentforce only, or a hybrid. Document the decision and reasoning in an architecture decision record.
 3. **Design Agentforce Topics.** For each business function, draft a topic description covering scope, example requests, and explicit exclusions. Review all descriptions together for overlap. Aim for 5–15 topics per agent; escalate to multi-agent orchestration if the topic count exceeds 20.
-4. **Map session context transfer.** If Einstein Bot is in the architecture, enumerate all bot variables that must be available to the Agentforce agent or human agent at handoff. Define the transfer attribute mapping. Implement and test with a real session.
+4. **Map session context transfer.** If Einstein Bot is in the architecture, enumerate all bot variables that must be available to the Agentforce agent or human agent at handoff. Have the bot write them to `MessagingSession` fields and map those fields to agent context variables, setting `includeInPrompt` only where the agent must reason with the value. Implement and test with a real session.
 5. **Configure Actions per Topic.** Assign only the Actions required by each Topic. Avoid giving topics access to Actions they do not need — unused Action access widens the agent's capability surface unnecessarily.
 6. **Test adversarial routing scenarios.** For each topic boundary, construct requests that could plausibly match either topic. Verify routing is consistent. Tune topic descriptions until boundary routing is reliable.
 7. **Review security and data access.** Confirm that each Action runs with least-privilege record access. Verify that session context transfer does not expose PII beyond what the receiving agent requires.
@@ -161,9 +182,9 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Agentforce topics have no utterance training** — Topic descriptions are prose instructions to the Atlas Reasoning Engine, not NLU training data. Adding lists of example phrases to a topic description does not train a model; it adds context that the LLM reads at inference time. Practitioners familiar with Einstein Bot design expect to "train" the system with utterances — no such step exists in Agentforce. The only lever is description wording precision.
-2. **Omni-Channel capacity rules do not apply to Agentforce agents** — Human agents consume capacity units; Einstein Bots are governed by their own session limits. Agentforce agents are not capacity objects and do not appear in Omni-Channel capacity management. A practitioner who configures capacity-based routing for an Agentforce queue will find that capacity rules are ignored for the Agentforce leg of the routing.
-3. **Session context is not automatically inherited on bot-to-Agentforce transfer** — When an Einstein Bot executes a "Transfer to Agent" action and the target is an Agentforce agent, the Agentforce agent starts a new session with zero prior context unless transfer attributes are explicitly populated by the bot and consumed by an Agentforce Action. This surprises teams who expect Omni-Channel transfers to carry conversation history automatically.
+1. **Agentforce topics have no utterance training** — Topic descriptions are prose read at inference time, not NLU training data. Adding lists of example phrases to a topic description does not train a model. Practitioners familiar with Einstein Bot design expect to "train" the system with utterances — no such step exists in Agentforce. Description wording is the main lever; sample utterances, if used, go in the `aiPluginUtterances` field (see `references/gotchas.md` Gotcha 1).
+2. **Omni-Channel capacity rules do not apply to Agentforce agents** (UNVERIFIED 2026-10-03, no fetched source) — Human agents consume capacity units; Einstein Bots are governed by their own session limits. Agentforce agents are not capacity objects and do not appear in Omni-Channel capacity management. A practitioner who configures capacity-based routing for an Agentforce queue will find that capacity rules are ignored for the Agentforce leg of the routing.
+3. **Session context is not automatically inherited on bot-to-Agentforce transfer** — When an Einstein Bot hands off to an Agentforce agent, the agent starts with zero prior context unless the bot's values are written to session fields that the agent's context variables map. This surprises teams who expect Omni-Channel transfers to carry conversation history automatically.
 4. **Topic description overlap causes silent mis-routing** — Unlike an exception or error, routing to the wrong topic produces a plausible-looking wrong response. There is no runtime warning that two topics had overlapping descriptions. The failure manifests as inconsistent behavior on boundary requests, which is difficult to detect without targeted adversarial testing.
 
 ---
@@ -181,6 +202,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- einstein-bot-architecture — For Einstein Bot standalone design, NLU model training, intent/dialog design, and Bot Builder configuration. Use alongside this skill when the architecture includes an Einstein Bot front-end.
-- ai-governance-architecture — For governance controls, audit logging, and trust layer configuration when deploying Agentforce in regulated industries.
-- omni-channel-routing — For Omni-Channel queue configuration, skill-based routing rules, and capacity model design that affects how transfers between bot, Agentforce, and human agents are executed.
+- `architect/einstein-bot-architecture`: For Einstein Bot standalone design, NLU model training, intent/dialog design, and Bot Builder configuration. Use alongside this skill when the architecture includes an Einstein Bot front-end.
+- `architect/ai-governance-architecture`: For governance controls, audit logging, and trust layer configuration when deploying Agentforce in regulated industries.
+- `admin/omni-channel-routing-setup` and `architect/omni-channel-capacity-model`: For Omni-Channel queue configuration, skill-based routing rules, and capacity model design that affects how transfers between bot, Agentforce, and human agents are executed.
+- `standards/decision-trees/agentforce-capability-selector.md`: read before choosing between an Agentforce agent, an Einstein Bot, and Prompt Builder.

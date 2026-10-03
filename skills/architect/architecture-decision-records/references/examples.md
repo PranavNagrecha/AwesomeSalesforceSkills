@@ -215,12 +215,25 @@ Salesforce has NOT announced an end-of-life date; CPQ is described as
 being in a maintenance phase — supported and receiving critical fixes,
 but not new feature development.
 
-<!-- UNVERIFIED: a specific end-of-sale date of 27 March 2025 circulates
-widely in consultancy writing. I could not confirm it from a Salesforce
-source: https://www.salesforce.com/sales/cpq/end-of-life/ returns 403 to
-a document fetcher. Any real ADR must confirm the date and the current
-support commitment with the account team and record what they said,
-with the date they said it. -->
+Source: Salesforce CPQ Developer Guide, Version 67.0 (Summer '26),
+chapter 1 notice: "The Salesforce CPQ managed package continues to be
+available for existing customers, however, there is no longer any new
+feature development. We will continue to provide support and services
+for the duration of your contract. You can also add more user licenses
+... and renew existing subscriptions." Read 2026-10-03.
+
+Source: "Navigating the Future of Salesforce CPQ: Product End of Sale
+(Not End of Life)", salesforce.com, 10 July 2026,
+https://www.salesforce.com/sales/cpq/end-of-life/, read 2026-10-03:
+"Salesforce CPQ is end of sale, not end of life ... Salesforce is no
+longer selling new Salesforce CPQ licenses to new customers"; "There is
+no forced migration from Salesforce CPQ to Revenue Cloud."
+
+UNVERIFIED (2026-10-03): a specific end-of-sale date of 27 March 2025
+circulates widely in consultancy writing. Neither the developer guide
+notice nor the salesforce.com article states a date. Any real ADR must
+confirm the date and the current support commitment with the account
+team and record what they said, with the date they said it.
 
 Our CPQ implementation is 4 years old, heavily customised (61 price
 rules, 14 custom quote-line fields, 3 custom quote calculator plugins).
@@ -285,7 +298,8 @@ records a decision *not to act*, with **named triggers** and an **owner for the
 trigger watch**. Most "we'll wait and see" decisions are never written down,
 which is why they get re-litigated quarterly and why nobody notices when the
 conditions change. It also honestly labels the unverified date rather than
-laundering a blog post into an architecture record.
+laundering a blog post into an architecture record, and it writes that
+label as visible text: an HTML comment would vanish when the ADR renders.
 
 ---
 
@@ -463,3 +477,51 @@ description.
 Store them in the repository they describe. An external wiki goes stale because
 nothing about changing the code forces anyone to look at it; a file in
 `docs/adr/` shows up in a diff.
+
+---
+
+## Enforcing "Only The Status Line Changes" In CI
+
+Gotcha 9 is easy to state and easy to break in a busy repo. This check runs in
+the pull-request pipeline of the repository that holds `docs/adr/` and fails
+when an ADR that already exists on the base branch changes anywhere except its
+Status line or a `Last edited:` footer. New ADR files pass.
+
+File: `ci/check-adr-immutability.sh` in the governed repository. ADRs are
+documentation, not Salesforce metadata, so there is no `package.xml` member:
+nothing here deploys to an org.
+
+```bash
+#!/usr/bin/env bash
+# ci/check-adr-immutability.sh
+# Fails when an ADR that already exists on the base branch changes anywhere
+# except its Status line or a "Last edited:" footer. New ADR files pass.
+# Usage: ci/check-adr-immutability.sh [base-ref]   (default: origin/main)
+set -euo pipefail
+base="${1:-origin/main}"
+fail=0
+while IFS= read -r f; do
+  [ -n "$f" ] || continue
+  # Not on the base branch yet: a new ADR, allowed.
+  git cat-file -e "${base}:${f}" 2>/dev/null || continue
+  offending=$(git diff -U0 "${base}...HEAD" -- "$f" \
+    | grep -E '^[+-]' \
+    | grep -vE '^(\+\+\+|---) ' \
+    | grep -vE '^[+-](Proposed|Accepted|Rejected|Deprecated|Superseded by ADR-[0-9]{4})' \
+    | grep -vE '^[+-]Last edited: [0-9]{4}-[0-9]{2}-[0-9]{2}$' \
+    | grep -vE '^[+-][[:space:]]*$' || true)
+  if [ -n "$offending" ]; then
+    echo "ERROR: ${f} changed outside its Status line:"
+    printf '%s\n' "$offending"
+    fail=1
+  fi
+done < <(git diff --name-only "${base}...HEAD" -- 'docs/adr/[0-9][0-9][0-9][0-9]-*.md')
+exit "$fail"
+```
+
+Verified against a scratch repository: a Status-line flip plus a new ADR exits
+0; a Context edit exits 1; an edited bullet line exits 1. It assumes the Status
+values used in this file's examples. A forum that edits ADRs while they are
+Proposed should keep them on a branch until Accepted, because a merged Proposed
+ADR is protected like any other.
+

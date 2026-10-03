@@ -28,7 +28,7 @@ The WAF Trusted pillar requires that security-relevant actions are logged and th
 
 ### Data Protection (SC Family — WAF Data Security)
 
-The WAF data security guidance recommends encrypting sensitive data at rest. FedRAMP High SC-28 requires it. Platform Encryption in GovCloud Plus, and CMEK via Hyperforce, are the implementation mechanisms. The WAF principle that encryption decisions should be made at data classification time — not retrofitted after go-live — is enforced by FedRAMP: adding encryption after ATO is a significant change.
+The WAF data security guidance recommends encrypting sensitive data at rest. FedRAMP High SC-28 requires it. Platform Encryption in GovCloud Plus, and CMEK via Hyperforce (UNVERIFIED 2026-10-03), are the implementation mechanisms. Only the default probabilistic scheme is FIPS-validated (Government Cloud guide). The WAF principle that encryption decisions should be made at data classification time — not retrofitted after go-live — is enforced by FedRAMP: adding encryption after ATO is a significant change.
 
 ---
 
@@ -64,8 +64,8 @@ Government Cloud deployments sometimes face pressure to enable new Salesforce fe
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html
+- Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)
+- Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (HTTP 403 on 2026-10-03, not re-read)
 - Salesforce Government Cloud Overview — https://www.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Trust and Compliance documentation — https://compliance.salesforce.com/  (page retired — see host index for current equivalent)
 - FedRAMP Authorization for Salesforce Government Cloud — https://marketplace.fedramp.gov/#/product/salesforce-government-cloud
@@ -74,5 +74,13 @@ Government Cloud deployments sometimes face pressure to enable new Salesforce fe
 - NIST SP 800-171 Rev 2 Protecting CUI in Nonfederal Systems — https://csrc.nist.gov/publications/detail/sp/800-171/rev-2/final
 - DISA Cloud Computing SRG (DoD Impact Levels) — https://public.cyber.mil/dccs/
 - CMS Acceptable Risk Safeguards (ARS) — https://www.cms.gov/  (page retired — see host index for current equivalent)
-- Salesforce Hyperforce Overview — https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm
-- Salesforce Shield Overview — https://help.salesforce.com/s/articleView?id=sf.security_shield.htm
+- Salesforce Hyperforce Overview — https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm (help.salesforce.com does not fetch; Hyperforce claims resting on it are marked UNVERIFIED)
+- Salesforce Shield Overview — https://help.salesforce.com/s/articleView?id=sf.security_shield.htm (help.salesforce.com does not fetch; not re-read)
+- NIST, FedRAMP Marketplace, DISA and CMS pages above are external government sources; they were not fetched on 2026-10-03, and claims resting only on them are marked UNVERIFIED in the skill
+- Salesforce Government Cloud guide (Spring '26 edition): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/government_cloud.pdf. Offerings (Government Cloud Plus: FedRAMP High P-ATO from the JAB, DoD IL4, IRS 1075, NIST SP 800-171; Government Cloud Plus - Defense: IL5 on dedicated DoD infrastructure), authorized versus interoperable products, compliance documentation access (package FR2003061248), Shield encryption and FIPS (deterministic not validated), information spillage and its cleanup steps, AppExchange boundary and labels, package install and LMA limits, 3PAO-recommended control list, Field Service compliance and Advanced Security Settings, Salesforce Express Connect routing and the `.mil` exclusion
+- Quickstart Your Einstein Generative AI Solution (Spring '26 edition): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf. "Considerations for Agents": agents are not available for Government Cloud
+- Salesforce Security Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf. "Field History Tracking" (18/24 months without Field Audit Trail; until deleted with it), `HistoryRetentionPolicy`, MFA requirement for logins
+- Platform Events Developer Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/platform_events.pdf. "Real-Time Event Monitoring Objects" (event and storage object pairs; no `ContentDistributionEvent`)
+- Object Reference, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. `EventLogFile` (1-year storage for Shield and Event Monitoring customers, access permissions)
+- Metadata API Developer Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. `PlatformEncryptionSettings` (no `EncryptionPolicy` type)
+

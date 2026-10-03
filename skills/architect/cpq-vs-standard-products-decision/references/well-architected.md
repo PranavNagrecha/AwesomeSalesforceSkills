@@ -20,7 +20,7 @@ A third tradeoff is **vendor dependency vs control**: CPQ ties the org to a mana
 
 ## Anti-Patterns
 
-1. **Over-engineering standard objects to avoid CPQ licensing** — Building custom bundle logic, pricing calculators, and guided selling flows on standard objects when the requirements clearly call for CPQ. This creates fragile custom code that costs more to maintain than CPQ licensing within 12-18 months, violating the Operational Excellence pillar.
+1. **Over-engineering standard objects to avoid CPQ licensing**: Building custom bundle logic, pricing calculators, and guided selling flows on standard objects when the requirements clearly call for CPQ. This creates fragile custom code that costs more to maintain than CPQ licensing within 12-18 months (UNVERIFIED (2026-10-03): practitioner estimate), violating the Operational Excellence pillar.
 
 2. **Adopting CPQ without a requirements analysis** — Purchasing CPQ licenses because it is the "enterprise standard" without confirming that the quoting workflow actually needs CPQ-specific features. This wastes budget on unnecessary licensing and adds managed package complexity to the org, violating the Scalability pillar by introducing unneeded dependencies.
 
@@ -28,6 +28,15 @@ A third tradeoff is **vendor dependency vs control**: CPQ ties the org to a mana
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-03):
+
+- Salesforce CPQ Developer Guide, Version 67.0 (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/cpq_developer_guide.pdf. Chapter 1 lifecycle notice (available for existing customers, no new feature development, support for the contract term, licences can be added and subscriptions renewed, Revenue Cloud recommended); CPQ API models (`SBQQ__Quote__c`, `SBQQ__QuoteLine__c`); Generate Quote Document API; Disable CPQ Triggers in Apex; Advanced Approvals as a separate package.
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. PricebookEntry (standard price first, one entry per price and currency, `UseStandardPrice`); ProductRelatedComponent and ProductSellingModel access rules; Quote; QuoteLineItem; OpportunityLineItemSchedule.
+- Navigating the Future of Salesforce CPQ: Product End of Sale (Not End of Life), salesforce.com, 10 July 2026: https://www.salesforce.com/sales/cpq/end-of-life/. End of sale, not end of life; no new licences for new customers; existing customers can add users, renew, and receive support; no forced migration; investment shifted to Revenue Cloud Advanced. States no end-of-sale date.
+- Salesforce Well-Architected: Easy > Intentional: https://architect.salesforce.com/docs/architect/well-architected/guide/intentional.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-04-04). "Decision records show calculation for near- and long-term costs when choosing to build or buy solutions"; build-buy spectrum; prefer standard functionality.
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (Wayback snapshot 2026-06-16). Trusted, Easy, Adaptable framing.
+
+Listed in the original version; Salesforce Help does not fetch, so these were not re-read and no claim in this revision rests on them alone:
+
 - Salesforce CPQ Documentation — https://help.salesforce.com/s/articleView?id=sf.cpq_parent.htm
 - Salesforce Products and Pricebooks — https://help.salesforce.com/s/articleView?id=sf.products_landing_page.htm

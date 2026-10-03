@@ -4,7 +4,7 @@
 
 - **User Experience** — The bot is the first interaction many customers have with the service organization. Poor dialog design, misrouted intents, and context-less handoffs directly degrade CSAT. Architecture decisions about conversation depth, fallback behavior, and channel-appropriate UI determine whether the bot helps or frustrates.
 - **Scalability** — Conversational AI is a scale play. The architecture must handle concurrent session volume without degradation, support incremental intent expansion without retraining the entire taxonomy from scratch, and allow new channels to be added without redesigning dialogs.
-- **Reliability** — Bots must handle failure gracefully: unavailable agents, failed API callouts during self-service, model confidence below threshold, and expired messaging sessions. Every failure path must have a designed exit rather than a dead-end.
+- **Reliability**: Bots must handle failure gracefully: unavailable agents, failed API callouts during self-service, unmatched intents, and expired messaging sessions. Every failure path must have a designed exit rather than a dead-end; the platform provides `TransferFailed`, `ErrorHandling`, and `KnowledgeFallback` system dialogs for exactly this. Well-Architected's Resilient guidance asks that agents supporting critical use cases have "viable and relevant workarounds ... that can be switched on with short notice", such as switching to manual handling.
 - **Security** — Bot conversations collect PII (names, account numbers, case details). The architecture must ensure that bot variables holding sensitive data are not persisted beyond the session, that pre-chat identity verification gates access to account-specific actions, and that transferred context does not expose data to agents who lack the appropriate profile permissions.
 - **Operational Excellence** — A bot that launches and is never tuned degrades over time as customer language shifts and new products are introduced. The architecture must include an analytics feedback loop, a retraining cadence, and clear ownership of intent maintenance.
 
@@ -29,6 +29,14 @@ Designing the bot to resolve every request autonomously reduces agent workload b
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-03):
+
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. Bot (one active version; `botMlDomain` shared intent set; `contextVariables`; `sessionTimeout`; `defaultOutboundFlow`; `type`; access rules), BotVersion (`intentThreshold` 1 to 5, Support-enabled; `conversationGoals`; `conversationVariables`; `knowledgeActionEnabled`), ConversationContextVariable and ConversationContextVariableMapping, ConversationDefinitionChannelProvider (UI-only messaging channels; `agentRequired`), ConversationSystemDialog types, BotNavigation `TransferToAgent`, ConversationRecordLookup, EmbeddedServiceConfig.
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. BotDefinition (Einstein Bots or Agentforce Agents; `Type`, `AgentType`), BotVersion (`Status`, one active), MessagingSession (`ChannelType`, `CaseId`), LiveChatTranscript, ConversationEntry legacy chat maintenance-only note.
+- Salesforce Well-Architected: Adaptable > Resilient: https://architect.salesforce.com/docs/architect/well-architected/guide/resilient.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-06-13). Recovery tactics and switchable workarounds for critical Agentforce use cases; Agentforce testing patterns.
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (Wayback snapshot 2026-06-16). Trusted, Easy, Adaptable framing.
+
+Listed in the original version; Salesforce Help does not fetch, so these were not re-read and no claim in this revision rests on them alone:
+
 - Einstein Bots Overview — https://help.salesforce.com/s/articleView?id=sf.bots_service_intro.htm
 - Agentforce Overview — https://help.salesforce.com/s/articleView?id=sf.agentforce_overview.htm

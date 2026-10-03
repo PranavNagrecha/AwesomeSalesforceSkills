@@ -13,6 +13,8 @@ triggers:
   - "designing channel prioritization so high-priority channels get answered first"
   - "unified agent experience across phone, chat, email, and social channels"
   - "multi-channel service strategy for phone email chat and social routing"
+  - "set capacity so agents can handle several chats but nothing else while on a call"
+  - "make phone calls route to agents before messaging and email"
 tags:
   - multi-channel-service-architecture
   - omni-channel
@@ -32,9 +34,9 @@ outputs:
   - "Channel migration plan for legacy channels (Live Agent to Messaging)"
   - "Unified case timeline design showing cross-channel interaction history"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-03
 ---
 
 # Multi Channel Service Architecture
@@ -47,9 +49,26 @@ This skill activates when a practitioner needs to design or evaluate a unified s
 
 Gather this context before working on anything in this domain:
 
-- **Identify all active and planned channels.** Enumerate every channel the org currently uses and any planned additions. Check whether legacy channels like Live Agent are still active — Messaging for In-App/Web replaced Live Agent as GA in Spring '24 and legacy deployments should be migrated.
-- **Understand that channel capacity is not uniform.** The most common wrong assumption is that all channels consume equal agent capacity. In Omni-Channel, each Service Channel has its own capacity weight — a phone call typically consumes 100% of an agent's capacity while a chat may consume only 25-33%, allowing agents to handle multiple chats simultaneously.
-- **Know the platform boundaries.** Each channel has distinct governor limits and licensing requirements. Service Cloud Voice requires an Amazon Connect instance and Voice licenses. Messaging for In-App/Web requires Digital Engagement licenses. Email-to-Case (on-demand) has a 25 MB email size limit and processes up to a configurable number of emails per cycle. SMS via Messaging requires a phone number provisioned through the Messaging setup.
+- **Identify all active and planned channels.** Enumerate every channel the org currently uses and any planned additions. Check whether legacy chat (Live Agent) is still active: the Object Reference states "the legacy chat product is in maintenance-only mode", so legacy deployments should be migrated to Messaging for In-App and Web (UNVERIFIED (2026-10-03): the earlier "GA in Spring '24" date was not confirmed).
+- **Understand that channel capacity is not uniform.** The most common wrong assumption is that all channels consume equal agent capacity. In Omni-Channel, each routing configuration sets how much capacity a work item consumes, and each agent's total comes from the presence configuration. A voice call must consume 100% of an agent's capacity; a messaging session may consume 25-33%, allowing several concurrent conversations.
+- **Know the platform boundaries.** Each channel has distinct governor limits and licensing requirements. Service Cloud Voice runs on Amazon Connect provisioned through Salesforce, on Partner Telephony, or on a bring-your-own contact center (Metadata API, ConversationVendorInfo `vendorType`). Messaging for In-App/Web requires Digital Engagement licenses (UNVERIFIED (2026-10-03): licence names from earlier material). Email-to-Case handles mail over its daily limit by a setting (`overEmailLimitAction`: Bounce, Discard, or Requeue); the per-email 25 MB size limit is UNVERIFIED (2026-10-03). SMS via Messaging requires a phone number provisioned through the Messaging setup.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which telephony model will Voice use: Amazon Connect through Salesforce, Partner Telephony, or a bring-your-own contact center?" | Each model provisions differently and per org (Gotcha 8) | A recorded vendor model and a per-org provisioning plan | Licences and sandboxes planned before contracts, not after |
+| "How much capacity does each work type consume, and may an agent take digital work while on a call?" | Capacity is set on routing and presence configurations, and a voice call takes 100% (Gotchas 4, 5) | A capacity table per routing configuration, from observed handle times | Blended agents staffed for the concurrency the platform allows |
+| "When is work finished for capacity purposes: when the tab closes or when the status says done?" | Tab-based capacity frees agents before work is complete (Gotcha 6) | A capacity model per service channel, with status mappings for case work | Agents are not over-assigned on long-running cases |
+| "Which channel's work must reach agents first?" | Cross-channel priority is the routing configuration's `routingPriority`, lower first (Gotcha 7) | Priority numbers per routing configuration | The service policy is enforced by routing, not by habit |
+| "Which presence statuses do agents need, and which channels does each include?" | A status grants work from every channel on it (Gotcha 3) | A small set of channel-combination statuses | Agents receive only the work they signed up for |
+| "What should happen to email over the daily limit or from unauthorized senders?" | Settings can discard mail silently (Gotcha 2) | `overEmailLimitAction` and `unauthorizedSenderAction` chosen deliberately | No invisible loss of customer email |
+
+What proper configuration adds over "just turning on channels": one routing model across channels, capacity that matches how agents actually work, and no channel that loses work silently.
 
 ---
 
@@ -61,19 +80,19 @@ Every service channel maps to a specific Salesforce feature with its own setup p
 
 | Channel | Salesforce feature | Routing object | Licensing notes |
 |---|---|---|---|
-| Phone | Service Cloud Voice (Amazon Connect–powered) | `VoiceCall` | Voice license + Amazon Connect instance |
+| Phone | Service Cloud Voice (Amazon Connect through Salesforce, Partner Telephony, or bring-your-own contact center) | `VoiceCall` | Voice licence plus the chosen telephony model's provisioning |
 | Email | Email-to-Case (on-demand or org-wide) | `Case` (created directly) | On-demand needs no install; org-wide relays through your mail server |
-| Chat | Messaging for In-App/Web (Spring '24 GA — replaces legacy Live Agent) | `MessagingSession` | Digital Engagement license |
+| Chat | Messaging for In-App/Web (replaces legacy chat, which is in maintenance-only mode) | `MessagingSession` | Digital Engagement license (UNVERIFIED (2026-10-03)) |
 | Social | Social Customer Service (Social Studio is retiring) | `SocialPost` → `Case` | Social Customer Service entitlement |
 | SMS | Messaging | `MessagingSession` | Digital Engagement license + provisioned phone number |
 
 ### Omni-Channel as the Unified Routing Layer
 
-Omni-Channel is the single routing engine that distributes work items from all channels to agents. Each channel publishes work through a Service Channel object that defines the Salesforce object type (Case, MessagingSession, VoiceCall) and a capacity weight. Routing configurations determine whether work is pushed to agents via queue-based routing, skills-based routing, or (as of Spring '25) Enhanced Omni-Channel with attribute-based routing. The critical architectural decision is choosing a single routing strategy that works across all channels rather than configuring each channel independently.
+Omni-Channel is the single routing engine that distributes work items from all channels to agents. Each channel publishes work through a Service Channel object that defines the Salesforce object type (Case, MessagingSession, VoiceCall) and, from API 65.0, the capacity model (tab-based or status-based). Capacity consumption is set on the routing configuration. Routing configurations determine whether work is pushed to agents via queue-based routing or skills-based routing (`isAttributeBased`), with Enhanced Omni-Channel adding features such as paused capacity (UNVERIFIED (2026-10-03): the earlier "as of Spring '25" date was not confirmed). The critical architectural decision is choosing a single routing strategy that works across all channels rather than configuring each channel independently.
 
 ### Capacity Weights and Agent Utilization
 
-Capacity weights control how much of an agent's bandwidth a single work item consumes. An agent's total capacity is set in their Presence Configuration (e.g., 100 units). A phone call might have a weight of 100 (fully consuming the agent), a chat session a weight of 25 (allowing up to 4 simultaneous chats), and an email case a weight of 10 (allowing parallel handling with other work). Getting these weights wrong leads to either agent underutilization or overload. Weights must be tuned based on observed handle times and adjusted per channel.
+Capacity weights (or percentages) on the routing configuration control how much of an agent's bandwidth a single work item consumes. An agent's total capacity is set in their presence configuration (e.g., 100 units). A phone call must take the full capacity, a messaging session might weigh 25 (up to 4 concurrent conversations), and an email case 10 (parallel handling with other digital work). Getting these weights wrong leads to either agent underutilization or overload. Weights must be tuned based on observed handle times and adjusted per channel.
 
 ### Unified Case Timeline
 
@@ -119,7 +138,7 @@ A core architectural goal of multi-channel service is a single case timeline tha
 |---|---|---|
 | New org, no legacy channels | Hub-and-spoke with Messaging for In-App/Web, Email-to-Case (on-demand), and Service Cloud Voice | Modern stack, unified routing from day one, no migration debt |
 | Existing Live Agent deployment | Phased migration to Messaging for In-App/Web | Live Agent is legacy; Messaging supports persistent conversations and asynchronous messaging |
-| High call volume, need deflection | Add Messaging and SMS as lower-cost channels with self-service bot as front door | Phone calls have capacity weight of 100; chats and SMS allow concurrency, reducing cost per contact |
+| High call volume, need deflection | Add Messaging and SMS as lower-cost channels with self-service bot as front door | A voice call takes an agent's full capacity; messaging and SMS allow concurrency, reducing cost per contact |
 | Social media complaints escalating | Social Customer Service with auto-case creation routed through Omni-Channel | Captures social interactions on Case timeline; Social Studio is retiring so use Social Customer Service directly |
 | Email-to-Case choosing on-demand vs org-wide | On-demand for most orgs; org-wide only if you need email relay through your own server | On-demand requires no software installation, handles most use cases, and is simpler to maintain |
 
@@ -131,7 +150,7 @@ Step-by-step instructions for an AI agent or practitioner designing a multi-chan
 
 1. **Inventory current channels and volumes.** List every channel in use today, the Salesforce feature backing it, monthly volume per channel, and average handle time. Flag any legacy features (Live Agent, Social Studio) that need migration.
 2. **Define channel strategy and priority.** Decide which channels the org will support, which are primary vs. deflection targets, and the desired customer journey (e.g., chatbot-first with escalation to agent, phone reserved for complex issues).
-3. **Design the Omni-Channel routing model.** Choose queue-based, skills-based, or attribute-based routing. Map each channel's Service Channel object. Define queues organized by topic or skill, not by channel. Assign capacity weights per channel based on observed handle times.
+3. **Design the Omni-Channel routing model.** Choose queue-based or skills-based routing. Map each channel's Service Channel object and capacity model. Define queues organized by topic or skill, not by channel. Set capacity and `routingPriority` per routing configuration from observed handle times (query in `references/examples.md`).
 4. **Configure each channel feature.** Set up Email-to-Case, Messaging for In-App/Web, Service Cloud Voice, Social Customer Service, and SMS Messaging. Ensure each creates or links to Cases as the central object.
 5. **Build the unified agent console.** Create a Lightning console app with the Service Cloud Voice softphone, Messaging panel, Case Feed for email, and a unified Case timeline showing all channel interactions.
 6. **Plan channel migrations.** If migrating from Live Agent to Messaging, follow the phased migration pattern: run both concurrently, migrate entry points incrementally, validate routing, then decommission legacy.
@@ -145,7 +164,7 @@ Run through these before marking work in this area complete:
 
 - [ ] All channels map to a current (non-legacy) Salesforce feature — no Live Agent or Social Studio references in new designs
 - [ ] Omni-Channel routing is configured with a single strategy (not mixed queue-based and skills-based) across all channels
-- [ ] Capacity weights are assigned per Service Channel and reflect real agent handle-time data, not defaults
+- [ ] Capacity is set per routing configuration from real handle-time data; voice takes full capacity; each service channel's capacity model is chosen
 - [ ] Every channel creates or links interactions to the Case object for unified timeline visibility
 - [ ] Agent console app includes components for all active channels (softphone, Messaging, Case Feed)
 - [ ] Email-to-Case variant (on-demand vs org-wide) is explicitly chosen and documented
@@ -155,12 +174,14 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full detail and sources in `references/gotchas.md`. The short list, with one correction to earlier versions of this skill:
 
-1. **Messaging for In-App/Web is not a drop-in Live Agent replacement** — The data model is different. Live Agent uses `LiveChatTranscript`; Messaging uses `MessagingSession`. Reports, automations, and routing rules referencing the old objects will break. All downstream dependencies must be audited during migration.
-2. **Email-to-Case on-demand silently drops emails over 25 MB** — Emails exceeding the size limit are not bounced; they are simply not processed. Customers get no error. Monitor the unprocessed email queue and set up alerts for dropped emails.
-3. **Service Cloud Voice capacity weight defaults to 100 but can be changed** — If you forget to set the VoiceCall Service Channel capacity weight and your agents have a capacity of 100, a single phone call will block all other work items. This is intentional for phone-only agents but breaks multi-channel agents who should receive chats while on a call in some models.
-4. **Omni-Channel presence status is global across all channels** — An agent cannot be "Available" for chat but "Offline" for phone using a single status. You must create multiple Presence Statuses mapped to different Service Channel sets if you need per-channel availability control.
+1. Messaging for In-App and Web uses `MessagingSession`, not `LiveChatTranscript`; legacy chat is in maintenance-only mode.
+2. A voice call must consume 100% of an agent's capacity. The earlier statement that the voice weight "can be changed" so agents take chats during calls is withdrawn.
+3. Capacity lives on the routing configuration and the presence configuration, not the service channel.
+4. Tab-based capacity frees agents when the tab closes; status-based capacity holds until the work is done.
+5. Cross-channel priority is `routingPriority` on the routing configuration, lower first.
+6. Email over the daily limit is bounced, discarded, or requeued according to `overEmailLimitAction`.
 
 ---
 
@@ -185,6 +206,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Official Sources Used
 
+- Metadata API Developer Guide and Object Reference, Version 67.0 (full list in `references/well-architected.md`)
 - Messaging for In-App and Web Overview — https://help.salesforce.com/s/articleView?id=sf.livemessage_overview.htm
 - Service Cloud Voice Overview — https://help.salesforce.com/s/articleView?id=sf.voice_about.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

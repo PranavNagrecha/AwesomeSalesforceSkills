@@ -15,6 +15,9 @@
 - **Adaptable** — the reason to go composable is frontend ownership. That is a real benefit and it is paid for in
   permanent operational surface: a frontend codebase, a BFF, CDN configuration, an observability stack, and a security
   boundary. The trade is only worth making when the frontend requirement is genuinely unmet by the shipped experience.
+  Well-Architected's Composable guidance adds the state rule that matters most for a BFF: "Design solutions that
+  minimize, or eliminate, distributed transactions", and keep distributed transaction logic out of hand-offs. Basket
+  and order state belong to Commerce; the BFF should orchestrate reads and hand-offs, not co-own a transaction.
 
 ## Architectural Tradeoffs
 
@@ -76,3 +79,16 @@ B2C Commerce (SCAPI) quotas, the SLAS authentication model, and Commerce-side ca
 B2C Commerce developer documentation, which was not reachable for these notes. Every figure above is a **core org**
 limit. Do not read them as SCAPI limits, and verify the Commerce-side quota framework separately before sizing a
 storefront against it.
+
+## Official Sources Used
+
+- Salesforce Developer Limits and Allocations Quick Reference (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf. Total API Request Allocations formula and per-licence table (Customer Community 0, Customer Community Login 0, Customer Community Plus 200, Partner Community 200; Salesforce 1,000 Enterprise, 5,000 Unlimited and Performance; Full Sandbox 5,000,000); Concurrent API Request Limits (25 / 5 for requests of 20 seconds or longer; none below 20 seconds); API Timeout Limits (composite timeout applies to the whole request). First verified 2026-08-14 via the atlas page; re-checked against the PDF 2026-10-03.
+- Apex Developer Guide, Version 67.0: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm and https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm. "Sharing declarations don't enforce object-level access or field-level security"; user-mode idioms. Verified 2026-08-14 by the earlier author; not re-fetched 2026-10-03 because atlas pages now return a script shell without content.
+- B2C Commerce Developer Guide, SCAPI: Load Shedding and Rate Limiting: https://developer.salesforce.com/docs/commerce/commerce-api/guide/throttle-rates.html. 503 load shedding, `sfdc_load` and `sfdc_load_status` (WARN 80%, THROTTLE 90%), no shedding on Shopper Baskets and Shopper Orders, SLAS limits per instance (24,000 RPM production, 500 RPM non-production), 429 with `Retry-After`. Read 2026-10-03.
+- B2C Commerce Developer Guide, SLAS Best Practices: https://developer.salesforce.com/docs/commerce/commerce-api/guide/slas-best-practices.html. Strict Client Auth, refresh token limited to 3 exchanges in 60 seconds, guest session rotation after order. Read 2026-10-03.
+- B2C Commerce Developer Guide, Private and Public SLAS Client Use Cases: https://developer.salesforce.com/docs/commerce/commerce-api/guide/slas-private-client.html and https://developer.salesforce.com/docs/commerce/commerce-api/guide/slas-public-client.html. BFF apps must be private clients; SPAs such as PWA Kit and mobile apps without a gateway must be public clients; token request form. Read 2026-10-03.
+- B2C Commerce Developer Guide, Configure a Hybrid Storefront with Plugin SLAS: https://developer.salesforce.com/docs/commerce/commerce-api/guide/phased-headless-rollouts.html. Phased rollouts with session bridging and eCDN routing; "Custom headless web applications are possible but not formally supported." Read 2026-10-03.
+- B2C Commerce Developer Guide, Configure a Hybrid Storefront with Hybrid Auth (PWA Kit): https://developer.salesforce.com/docs/commerce/commerce-api/guide/hybrid-auth.html. Hybrid Auth replaces Plugin SLAS from version 25.3; keeps `dwsid` and the SLAS JWT synchronized; new implementations start on PWA Kit v3. Read 2026-10-03.
+- B2C Commerce Developer Guide, Custom APIs and Custom API Caching: https://developer.salesforce.com/docs/commerce/commerce-api/guide/custom-apis.html and https://developer.salesforce.com/docs/commerce/commerce-api/guide/custom-api-caching.html. Custom API URL structure and components; cacheable responses participate in the CDN cache. Read 2026-10-03.
+- Salesforce Well-Architected: Adaptable > Composable: https://architect.salesforce.com/docs/architect/well-architected/guide/composable.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-06-12). Separation of concerns by business capability; minimize distributed transactions; no distributed transaction logic in hand-offs.
+

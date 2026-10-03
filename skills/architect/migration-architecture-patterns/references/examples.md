@@ -165,3 +165,114 @@ or Custom Metadata kill-switch that the trigger framework respects.
 Migrate. Validate. Re-enable automation. Run a delta-update batch
 that triggers only the necessary follow-up logic for the migrated
 records (or none, if the records are pre-existing).
+
+---
+
+## Example 5: Worked decision record and pre-load checks for an M&A merge
+
+**Context.** Company A (Enterprise Edition, 420 users) acquires Company B
+(Enterprise Edition, 130 users). Both run Sales Cloud and Service Cloud.
+B's ERP and data warehouse store B's Salesforce Account and Opportunity IDs.
+The executive mandate is one org by Q3.
+
+**Pre-load checks in the source org (B).** Run before wave 1; each answers a
+question from the skill's Questions table.
+
+```soql
+-- C1. Records that will need a remapping row (every Account that moves)
+SELECT COUNT() FROM Account
+
+-- C2. Records already carrying a stable key for the target upsert
+SELECT COUNT() FROM Account WHERE Legacy_B_Id__c != null
+
+-- C3. Owners in B with more than 10,000 Opportunities: plan their target
+--     owners and the load order before the move (LDV guide, Best Practices > General)
+SELECT OwnerId, COUNT(Id) owned
+FROM Opportunity
+GROUP BY OwnerId
+HAVING COUNT(Id) > 10000
+
+-- C4. Setup changes in the retention window that must be exported before
+--     decommission (SetupAuditTrail keeps at least 180 days; aggregate
+--     queries other than count() are not supported on it)
+SELECT CreatedDate, CreatedBy.Name, Action, Section, Display
+FROM SetupAuditTrail
+WHERE CreatedDate = LAST_N_DAYS:180
+ORDER BY CreatedDate DESC
+```
+
+`Legacy_B_Id__c` is a Text field marked External ID in the target org (A),
+populated with B's 18-character Id on insert. External ID fields are indexed
+automatically (LDV guide, Indexes), which keeps the upsert and later lookups
+selective.
+
+**The decision record** lives at `docs/adr/0105-merge-org-b-into-org-a.md` in
+the target org's delivery repository. It deploys nothing; the metadata it
+commits to (the external ID fields as `CustomField`, the migration permission
+set as `PermissionSet`, and the bypass custom metadata as `CustomMetadata`
+records) goes into the wave-0 `package.xml`.
+
+```markdown
+# ADR-0105: Merge org B into org A in three waves with a remapping table
+
+## Status
+Accepted (2026-10-03), Integration Architecture Board
+
+## Context
+- Direction: merge (2 → 1). Driver: M&A, executive mandate for Q3.
+- B's ERP and warehouse store B record IDs. IDs are org-scoped; the
+  API returns 18-character case-safe IDs (Object Reference, ID type).
+- Created dates and owners drive B's renewal reports and case SLAs.
+  Audit fields can be set on create only after enabling "Set Audit
+  Fields upon Record Creation" (Object Reference, Audit Fields).
+- A's target has 140 active validation rules and 31 record-triggered
+  flows. The LDV guide recommends disabling triggers, workflow, and
+  validations during loads and processing afterward with batch Apex.
+- Coexistence for 8 weeks: B users read A Accounts through Salesforce
+  Connect (cross-org adapter, `SfdcOrg`). No event bridge: replay
+  resets on refresh or org migration, and 8 weeks does not justify it.
+
+## Decision
+1. Wave 0: deploy Legacy_B_Id__c (External ID) on every moving object,
+   the migration permission set (Set Audit Fields upon Record
+   Creation), and a bypass flag that triggers, flows, and validation
+   rules check.
+2. Waves 1-3: reference data, then Accounts and Contacts, then
+   Opportunities, Cases, and activities. Upsert on Legacy_B_Id__c;
+   map audit fields and OwnerId from the remapping table. Data Loader
+   Time Zone set to America/Chicago (B's org zone); assignment rule
+   setting left empty.
+3. Remapping table (B Id, A Id, object) is retained indefinitely and
+   published to the ERP and warehouse teams before wave 3.
+4. Before decommissioning B: export SetupAuditTrail (180-day window),
+   field history, and login history to the compliance store.
+
+## Consequences
+### Positive
+- External systems remap with a lookup, not a re-integration.
+- Reports keep original created dates and owners.
+### Negative
+- Automation that should run on migrated records (for example
+  entitlement assignment) must run as a post-load batch.
+- The remapping table becomes a permanent integration dependency.
+- 8 weeks of cross-org reads add per-page latency for B users.
+
+## Alternatives Considered
+### Long-term coexistence with an event bridge
+Rejected: no business driver for two orgs; bridge debt grows.
+### Big-bang single load
+Rejected: one failed wave would block the Q3 date with no rollback point.
+
+## Rollback
+Each wave records the A Ids it created; rollback deletes those Ids and
+restores the previous wave's remapping snapshot.
+
+## Date
+2026-10-03
+```
+
+**Why it works.** Each premise cites what the platform actually does (org-scoped
+IDs, settable audit fields, load-time bypass guidance, cross-org adapter), the
+pre-load checks turn the Questions table into numbers, and every wave has a
+rollback that names its own Ids.
+

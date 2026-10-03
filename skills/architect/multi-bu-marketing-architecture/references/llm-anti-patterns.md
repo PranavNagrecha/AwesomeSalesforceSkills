@@ -100,21 +100,33 @@ Folder restrictions within a BU are organizational aids, not security controls.
 
 ---
 
-## Anti-Pattern 6: Assuming the Enterprise All Subscribers List Provides Automatic Cross-BU Suppression
+## Anti-Pattern 6: Answering "Is An Opt-Out Global?" Without Checking `MasterUnsubscribeBehavior`
 
-**What the LLM generates:** Advice that an opt-out recorded in any Child BU is automatically suppressed across all other Child BUs via the Enterprise All Subscribers list, requiring no additional configuration.
+**What the LLM generates:** Either "an opt-out in any Child BU is automatically suppressed across all BUs" or, the reverse, "an opt-out never crosses BUs unless you build a shared suppression data extension". Both skip the setting that decides it.
 
-**Why it happens:** The Enterprise All Subscribers list is described in documentation as tracking subscriber status "across the org," which LLMs interpret as implying automatic cross-BU suppression enforcement at send time.
+**Why it happens:** Training material describes the Enterprise All Subscribers list loosely. The API documents a per-BU property, `BusinessUnit.MasterUnsubscribeBehavior`, with values `ENTIRE_ENTERPRISE` and `BUSINESS_UNIT_ONLY`, which "defines how master unsubscription requests are handled for a business unit."
 
 **Correct pattern:**
 ```
-The Enterprise All Subscribers list records subscriber status but does NOT
-automatically suppress sends from sibling Child BUs at send time.
-To enforce global suppression:
-1. Create a Shared DE in the Parent BU to hold global opt-outs
-2. Configure read access for all sending Child BUs via folder-level permissions
-3. Reference the Shared DE as a suppression list in every Child BU's send activities
-Test suppression behavior per Child BU before go-live.
+1. Retrieve MasterUnsubscribeBehavior for every BU (audit script in examples.md).
+2. Agree the intended scope per brand with legal.
+3. Set ENTIRE_ENTERPRISE where a master unsubscribe must stop all sends;
+   BUSINESS_UNIT_ONLY where brands are legally separate.
+4. Add a Shared DE suppression list only for rules the setting cannot express
+   (imported suppressions, brand-level lists), shared to each sending BU.
+5. Test with a send from every Child BU before go-live.
 ```
 
-**Detection hint:** Phrases like "automatically suppressed enterprise-wide", "all BUs respect the opt-out by default", or "the Enterprise list handles it" without mention of Shared DE configuration.
+**Detection hint:** Any statement about cross-BU opt-out behavior that never names `MasterUnsubscribeBehavior` or the BU-level unsubscribe setting.
+
+---
+
+## Anti-Pattern 7: Using One API Token Across Business Units
+
+**What the LLM generates:** Integration code that requests a token once from the Parent BU and reuses it for calls meant for several Child BUs, or a design that assumes a Parent BU token "covers children".
+
+**Why it happens:** Most OAuth integrations elsewhere use one token per tenant. In Marketing Cloud Engagement, "Access tokens and refresh tokens act in the context of a single business unit", and a SOAP access token "doesn't flow down through child accounts."
+
+**Correct pattern:** Request a token per target BU with `account_id` set to that BU's MID, enable the server-to-server integration for each BU on the Installed Packages Access tab, cache each token for its 20-minute life, and handle 401 and 403 for BUs the integration cannot reach.
+
+**Detection hint:** A `v2/token` request with no `account_id` in code that writes to more than one BU.

@@ -79,3 +79,28 @@ Call out that licensing and permission models are product-specific: verify curre
 ```
 
 **Detection hint:** Absolute statements about bundles with no caveat to verify org-specific entitlements.
+
+---
+
+## Anti-Pattern 6: Pricing Data 360 like a per-seat analytics licence
+
+**What the LLM generates:** A cost comparison that multiplies analyst seats for CRM Analytics and does the same for Data Cloud, then picks the cheaper column.
+
+**Why it happens:** Most analytics products in training data are licensed per user. Data 360 documents usage as credit consumption shown in a digital wallet, so volume and processing frequency drive cost.
+
+**Correct pattern:** Price CRM Analytics by its licences and Data 360 by expected consumption from a measured proof of concept. Record a consumption owner and a review cadence in the decision record. Mark any credit rate you did not read from the contract as unverified.
+
+**Detection hint:** A cost table with a "per user" row for Data Cloud and no consumption line.
+
+---
+
+## Anti-Pattern 7: Designing SOQL dashboards over calculated insights
+
+**What the LLM generates:** A Lightning component or report plan that runs `SELECT ... FROM` a calculated insight object, or sums a currency field across a DMO with SOQL.
+
+**Why it happens:** DMOs look like sObjects, so the model assumes full SOQL support. The SOQL reference says calculated insight objects cannot be queried with SOQL, aggregate queries over Data 360 objects do not support currency fields, and results are capped at 12 MB.
+
+**Correct pattern:** Query calculated insights through the Data 360 query paths (SQL, CRM Analytics, or a BI tool over the JDBC driver). Use SOQL on DMOs only for record lookups and small non-currency aggregates.
+
+**Detection hint:** SOQL naming a calculated insight object, or `SUM()` on a currency field of a DMO.
+

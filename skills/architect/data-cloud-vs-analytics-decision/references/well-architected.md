@@ -21,16 +21,19 @@
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — architecture quality framing for tradeoff documentation
-- Data 360 Architecture (Salesforce Architects) — customer data platform layering and Data Cloud role in Data 360
-- Data 360 Integration Patterns and Practices (Salesforce Architects) — integration boundaries between Salesforce clouds and external systems
-- Connect CRM Analytics to Salesforce Data Cloud (Salesforce Help) — Direct Data connectivity concepts for analytics on Data Cloud
-- Integration Patterns (Salesforce Architects) — synchronization vs remote integration vocabulary for documenting data movement contracts
+Read for this revision (2026-10-03):
 
-Full URLs (for authors and reviewers):
+- Data Cloud Developer Guide, Data 360 Architecture: https://developer.salesforce.com/docs/data/data-cloud-dev/guide/dc-architecture.html. DLO to DMO mapping on the C360 Data Model; identity resolution (match and reconciliation rules, link tables, unified profile); segmentation; calculated insights (batch and streaming); activations; Data Shares; zero copy connectors; reporting through Tableau, Power BI, and the Data 360 JDBC driver; SOQL, SQL, and vector or hybrid query; digital wallet credit consumption.
+- Data Cloud Developer Guide, Data 360 Features Brief Overview: https://developer.salesforce.com/docs/data/data-cloud-dev/guide/dc-features-overview.html. Harmonization and identity purpose; capabilities available "if you have purchased Segmentation and Activation".
+- Salesforce Architects, Data 360 Architecture: https://architect.salesforce.com/docs/architect/fundamentals/guide/data-360-architecture. Zero Copy federation with Snowflake, Databricks, BigQuery, and Redshift; federated data represented as DLOs; incremental batch processing that reduces resource consumption; batch and streaming calculated insights; data spaces as isolation containers. (Fetched directly on 2026-10-03; the earlier note that architect.salesforce.com returns 403 applies to browser-style fetches only.)
+- Data Cloud Integration Guide (navigation): https://developer.salesforce.com/docs/data/data-cloud-int/guide. Data federation setup pages for Snowflake, Databricks, and Redshift.
+- SOQL and SOSL Reference, Version 66.0 (Spring '26), SOQL Object Limits and Limitations, Data 360 Objects: local corpus `knowledge/imports/salesforce-soql-sosl.md`. 12 MB result limit; no currency fields in aggregate queries; calculated insight objects not queryable; Id restrictions.
+- CRM Analytics REST API Developer Guide (Spring '26): local corpus `knowledge/imports/salesforce-analytics-rest-api.md`. "Convert Data 360 data model objects to datasets"; replicated datasets (connected objects) are caches that cannot be visualized directly; schedules for dataflows, recipes, and connection syncs.
+- Salesforce Well-Architected: Easy > Intentional: https://architect.salesforce.com/docs/architect/well-architected/guide/intentional.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-04-04). Use prebuilt data models so capabilities are "defined only once" with "a single source of truth"; decision records with near- and long-term costs.
 
-- https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- https://architect.salesforce.com/docs/architect/fundamentals/guide/data-360-architecture
-- https://architect.salesforce.com/docs/architect/fundamentals/guide/data360_integration_patterns_and_practices
-- https://help.salesforce.com/s/articleView?id=sf.bi_direct_data_for_cdp.htm&type=5
-- https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
+Listed in the original version and not re-read for this revision (Salesforce Help does not fetch; the remaining Architects pages were not opened); no claim in this revision rests on them alone:
+
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (read via Wayback snapshot 2026-06-16)
+- Data 360 Integration Patterns and Practices (Salesforce Architects): https://architect.salesforce.com/docs/architect/fundamentals/guide/data360_integration_patterns_and_practices
+- Connect CRM Analytics to Salesforce Data Cloud (Salesforce Help): https://help.salesforce.com/s/articleView?id=sf.bi_direct_data_for_cdp.htm&type=5
+- Integration Patterns (Salesforce Architects): https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html

@@ -15,8 +15,11 @@ These patterns help the consuming agent self-check its own output.
 Before recommending CPQ, evaluate:
 1. Product catalog size and complexity (bundles? options? exclusions?)
 2. Pricing model (flat list price vs volume tiers vs contracted rates)
-3. Number of quoting users (drives licensing cost at $75+/user/month)
+3. Number of quoting users (drives per-user licensing cost)
 4. Whether standard Products + Pricebooks + custom fields can cover requirements
+5. Whether the org already holds a CPQ subscription: the package "continues to be
+   available for existing customers" with "no longer any new feature development"
+   (CPQ Developer Guide v67.0)
 
 Recommend standard objects when the catalog is simple and quoting is straightforward.
 ```
@@ -29,15 +32,15 @@ Recommend standard objects when the catalog is simple and quoting is straightfor
 
 **What the LLM generates:** "CPQ is available as an add-on to Sales Cloud" without mentioning the per-user monthly cost, or stating a generic "additional licensing may apply."
 
-**Why it happens:** LLMs avoid specific pricing because it changes over time. However, omitting the cost entirely makes the recommendation misleading — $75+/user/month is a significant factor in the decision.
+**Why it happens:** LLMs avoid specific pricing because it changes over time. However, omitting the cost entirely makes the recommendation misleading. UNVERIFIED (2026-10-03): the "$75+/user/month" figure used in this skill is older list pricing that could not be fetched; use the customer's current quote.
 
 **Correct pattern:**
 
 ```text
-Salesforce CPQ requires a separate per-user license starting at $75/user/month
-(as of Spring '25). For 50 quoting users, this adds $45,000/year in licensing
-alone, before implementation costs. Always calculate the actual cost for the
-org's user count before recommending CPQ.
+Salesforce CPQ requires a separate per-user licence. At the older list price of
+$75/user/month, 50 quoting users cost $45,000/year before implementation.
+Replace the price with the current quote, measure the user count from quote
+activity, and state the lifecycle notice alongside the cost.
 ```
 
 **Detection hint:** Check for CPQ recommendations that do not include a specific per-user cost figure or total cost estimate.
@@ -75,8 +78,9 @@ automation.
 
 ```text
 While technically possible to build custom bundling logic on standard objects,
-the maintenance burden typically exceeds CPQ licensing cost within 12-18 months
-for orgs with genuine bundle complexity (5+ bundles with option constraints).
+the maintenance burden can exceed CPQ licensing cost for orgs with genuine
+bundle complexity (UNVERIFIED (2026-10-03): the "12-18 months" crossover often
+quoted is a practitioner estimate, not a documented figure).
 Evaluate the total cost of ownership, not just the initial build effort.
 ```
 
@@ -124,7 +128,22 @@ schedules, contracted pricing, subscription management, advanced approvals,
 quote document generation.
 
 CPQ does NOT natively include: e-signature, AI pricing, revenue recognition,
-billing/invoicing (these require separate products or add-ons).
+billing/invoicing (these require separate products or add-ons). Advanced
+Approvals ships as its own package: the CPQ Developer Guide documents "the API
+from the Advanced Approvals package".
 ```
 
 **Detection hint:** Flag any CPQ feature claim that is not in the official CPQ documentation. Cross-reference against the CPQ feature list before presenting to users.
+
+---
+
+## Anti-Pattern 7: Recommending A Net-New CPQ Purchase From Pre-2026 Material
+
+**What the LLM generates:** "For complex bundles and subscriptions, purchase Salesforce CPQ" for a customer with no CPQ subscription, with no mention of the product's lifecycle.
+
+**Why it happens:** Most comparison content in training data predates the current notice. The model learned CPQ as the default enterprise quoting answer and has no signal that its status changed.
+
+**Correct pattern:** Quote the CPQ Developer Guide v67.0 notice: the package "continues to be available for existing customers, however, there is no longer any new feature development", with support "for the duration of your contract". For an existing customer, treat CPQ as a renewal decision scored against today's feature set. For a net-new customer, CPQ is not sold ("Salesforce is no longer selling new Salesforce CPQ licenses to new customers", salesforce.com, 10 July 2026); route the complex-quoting evaluation to `architect/revenue-cloud-architecture`.
+
+**Detection hint:** A CPQ recommendation that never states whether the customer already holds a CPQ subscription.
+

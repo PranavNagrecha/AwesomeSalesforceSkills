@@ -23,6 +23,8 @@ triggers:
   - "should we request skinny tables or custom indexes for our custom object"
   - "millions of records on a custom object and reports are degrading"
   - "bulk load into salesforce is taking too long and hitting sharing limits"
+  - "check whether our report filters are selective enough to use a custom index"
+  - "plan moving old records off a 60 million row object without breaking reports"
 inputs:
   - "Approximate record counts per high-volume object and monthly growth"
   - "Ownership distribution (especially any user or integration user near or above 10,000 owned records)"
@@ -34,16 +36,16 @@ outputs:
   - "Archival or Big Object boundary recommendation for cold data"
   - "Bulk load sequencing checklist (rules, triggers, sharing deferral)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
 # Large Data Volume Architecture
 
 This skill activates when an org crosses the threshold where default Salesforce patterns stop scaling: reports slow down, sharing jobs queue, integrations time out, or bulk loads stall. It focuses on **architectural** levers the platform exposes—indexes, skinny tables, skew avoidance, sharing deferral, divisions, and Big Object boundaries—not on polishing a single SOQL string.
 
-Large data volume is elastic in official documentation: very large user counts, tens of millions of records, or hundreds of gigabytes of storage all qualify. Even smaller orgs benefit once any one object crosses roughly one hundred thousand rows and operations become sensitive to selectivity and sharing cost.
+Large data volume is elastic in official documentation: the LDV guide names tens of thousands of users, tens of millions of records, or hundreds of gigabytes of total record storage. Even smaller orgs benefit once any one object crosses roughly one hundred thousand rows and operations become sensitive to selectivity and sharing cost.
 
 ---
 
@@ -58,21 +60,38 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before requesting an index, a skinny table, or a load window. Each traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What a proper design adds over just doing it |
+|---|---|---|---|
+| "What are the exact filters on the slow reports, list views, batch jobs, and integrations, including OR and LIKE?" | OR needs every field indexed; LIKE samples 100,000 rows (Gotchas 1 and 2) | A filter inventory per heavy path | Index requests target the filters that actually run |
+| "How many rows match each filter value today, and how many rows does the object hold?" | Custom indexes need under 10% of the first million and 5% of the rest (Gotcha 4) | Distribution counts and the threshold for this row count | Selectivity is proven before Support is engaged |
+| "Do any filters test for blank values, formulas, or special standard fields?" | Index tables omit nulls; non-deterministic formulas and fields like `Opportunity.Amount` cannot be indexed (Gotchas 5 and 6) | A list of filters that need a materialized field or a null-inclusive index | No Support case for an index the platform cannot build |
+| "Who owns the rows, and which parents have the most children?" | Keep owners and parents under 10,000 records each (Gotcha 8) | Owner and parent distribution | Sharing and locking cost fall without buying hardware |
+| "Which sandbox will performance testing run in?" | Skinny tables copy only to Full sandboxes (Gotcha 7) | A test environment that matches production access paths | Test results mean something |
+| "What leaves the object, how, and in what order?" | Million-row deletes need Bulk API hard delete, children first; big extracts belong in Bulk API 2.0 (Gotchas 9 and 10) | An archive, delete, and extract plan | Retention purges and extracts finish inside their windows |
+
+What a proper LDV design adds over "just asking Support for an index": thresholds computed for the real row count, filters rewritten where no index can help, skew removed at the source, and every Support request backed by distribution evidence.
+
+---
+
 ## Core Concepts
 
 ### Selectivity and the Query Optimizer
 
-Reports, list views, and SOQL all flow through the Lightning Platform query optimizer. The optimizer chooses indexes, join order, and how to minimize I/O—including **sharing joins**. For standard indexed fields, an index can drive the query when the filter matches less than thirty percent of the first million rows and less than fifteen percent of additional rows, capped at one million matching rows. For custom indexed fields, the filter must match less than ten percent of total rows, with an absolute ceiling of 333,333 matching rows. AND and OR combinations have additional thresholds documented in the Large Data Volumes guide; with OR, each branch must be selective and indexed.
+Reports, list views, and SOQL all flow through the Lightning Platform query optimizer. The optimizer chooses indexes, join order, and how to minimize I/O—including **sharing joins**. For standard indexed fields, an index can drive the query when the filter matches less than thirty percent of the first million rows and less than fifteen percent of additional rows, capped at one million matching rows (UNVERIFIED 2026-10-03: the cap is not in the current LDV guide's threshold section). Correction (2026-10-03): for custom indexed fields, earlier text said the filter must match less than ten percent of total rows with a 333,333-row ceiling. The current LDV guide says less than ten percent of the first million rows and less than five percent of additional rows (5 million rows allows 300,000 matches). For AND, the optimizer uses the indexes unless one returns more than 20% of rows; for OR, unless they all return more than 10%, and every field in the OR must be indexed.
 
-Practitioners should measure distribution with aggregate queries (for example, GROUP BY on filter fields) rather than guessing. Deleted rows affect statistics—exclude them when measuring if your org uses soft delete in queries.
+Practitioners should measure distribution with aggregate queries (for example, GROUP BY on filter fields) rather than guessing, then check the plan the optimizer would choose with the REST API `explain` parameter (Beta; REST API Developer Guide, "Get Feedback on Query Performance (Beta)"). Deleted rows affect statistics—exclude them when measuring if your org uses soft delete in queries (UNVERIFIED 2026-10-03).
 
 ### Skinny Tables
 
-Skinny tables are optional, read-optimized physical row sets that duplicate a subset of columns from a wide object so read operations avoid joining the standard and custom field storage shapes. They are created only through Salesforce Customer Support, apply to Account, Contact, Opportunity, Lead, Case, and custom objects, support up to two hundred columns from the allowed scalar field types, and are synchronized when source rows change. They are not copied to non-Full sandboxes. They help read-heavy workloads on millions of rows but add maintenance overhead—use them when measured join cost is the bottleneck, not as a default.
+Skinny tables are optional, read-optimized physical row sets that duplicate a subset of columns from a wide object so read operations avoid joining the standard and custom field storage shapes. They are created only through Salesforce Customer Support, apply to Account, Contact, Opportunity, Lead, Case, and custom objects, support up to two hundred columns from the allowed field types (checkbox, currency, date, date/time, email, number, percent, phone, multi-select picklist, text, text area, long text area, URL), cannot include fields from other objects, omit soft-deleted records, and are synchronized when source rows change. They are not copied to non-Full sandboxes unless Support activates them, and Salesforce must update the definition when the report or query they serve changes (LDV guide, "Skinny Tables"). They help read-heavy workloads on millions of rows but add maintenance overhead—use them when measured join cost is the bottleneck, not as a default.
 
 ### Skew, Sharing, and Bulk Operations
 
-**Ownership skew** (typically a single owner beyond roughly ten thousand records on an object) increases sharing calculation cost. **Parent-child skew** (very large related lists under one parent) hurts UI and query latency. The LDV guide recommends deferring or sequencing sharing calculation, disabling Apex triggers and validations during massive loads when appropriate, using Batch Apex afterward, and avoiding unnecessary sharing work during initial seed loads—for example using wider org-wide defaults temporarily during controlled migrations then tightening.
+**Ownership skew** (typically a single owner beyond roughly ten thousand records on an object) increases sharing calculation cost. **Parent-child skew** (very large related lists under one parent; the LDV guide says no parent should have more than 10,000 children) hurts UI and query latency and raises locking conflicts during loads. The LDV guide recommends deferring or sequencing sharing calculation, disabling Apex triggers and validations during massive loads when appropriate, using Batch Apex afterward, and avoiding unnecessary sharing work during initial seed loads—for example using wider org-wide defaults temporarily during controlled migrations then tightening.
 
 Big Objects are the platform’s native store for billions of immutable rows; the LDV paper focuses on standard and custom objects and points to Bulk API and Batch Apex to land historical data in Big Objects for sustainable scale.
 
@@ -141,7 +160,7 @@ Big Objects are the platform’s native store for billions of immutable rows; th
 
 ## Salesforce-Specific Gotchas
 
-1. **Custom indexes are not always self-service** — Support or Metadata API paths apply depending on field type; some field types cannot be indexed at all.
+1. **Custom indexes are not always self-service** — Support or Metadata API paths apply depending on field type; some field types cannot be indexed at all. The Metadata API `CustomIndex` type (API 50.0+) still requires contacting Support, and External ID fields (Auto Number, Email, Number, Text) get an index automatically.
 2. **Skinny tables in Developer and partial sandboxes** — Only Full sandboxes copy skinny tables; other sandboxes do not, which can make performance testing asymmetrical.
 3. **Optimizer thresholds differ for AND vs OR** — OR requires each side to be selective; naive dynamic SOQL that ORs many branches often defeats indexes.
 
@@ -161,4 +180,6 @@ Big Objects are the platform’s native store for billions of immutable rows; th
 
 - `data/soql-query-optimization` — Line-level SOQL tuning, Query Plan interpretation, and immediate query fixes
 - `architect/high-volume-sales-data-architecture` — Sales-cloud-specific skew, pipeline reporting, and Opportunity archival patterns
-- `knowledge/imports/salesforce-big-objects-guide.md` (via search) — Deep Big Object mechanics when archive design is the focus
+- `data/external-data-and-big-objects` and `data/data-archival-strategies`: Big Object mechanics and archive design when archival is the focus (the local corpus also carries `knowledge/imports/salesforce-big-objects-guide.md`)
+- `data/bulk-api-and-large-data-loads`: load sequencing, hard delete, and Bulk API 2.0 extracts
+- `standards/decision-trees/performance-tuning.md`: read first when the symptom is "slow" and the cause is not yet known

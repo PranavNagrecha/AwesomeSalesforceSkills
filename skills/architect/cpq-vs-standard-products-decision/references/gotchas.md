@@ -1,51 +1,97 @@
 # Gotchas — CPQ vs Standard Products Decision
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious Salesforce platform behaviors that cause real production problems in this domain. Each gotcha names its source. Claims that could not be confirmed from a fetched source carry an inline `UNVERIFIED (2026-10-03):` marker.
 
-## Gotcha 1: CPQ License Count Is Per Quoting User, Not Per Admin
+## Gotcha 1: CPQ Is Feature-Frozen, So Today's Gap Is Permanent
 
-**What happens:** Organizations budget CPQ licensing for the sales team but forget that sales engineers, deal desk analysts, and managers who edit quotes also need CPQ licenses. The actual license count ends up 30-50% higher than the initial estimate.
+**What happens:** A team buys or renews Salesforce CPQ expecting a missing capability to arrive "in a later release". It will not. The official guide states the managed package "continues to be available for existing customers, however, there is no longer any new feature development", with support "for the duration of your contract" and the option to add licences and renew. Salesforce points customers wanting "a more comprehensive and robust CPQ solution" to Revenue Cloud.
 
-**When it occurs:** During CPQ budgeting and procurement. The undercount surfaces after go-live when users receive "insufficient privileges" errors trying to access CPQ quote objects.
+**When it occurs:** In any decision record written from older comparison material, and whenever an AI assistant treats CPQ as the default answer for complex quoting.
 
-**How to avoid:** Audit every user who will create, edit, or clone a CPQ quote — not just the "sales rep" role. Include deal desk, sales operations, sales engineering, and any manager who modifies quotes rather than just approving them.
+**How to avoid:** Put the lifecycle notice in the decision record's Context, quoted with its document version. Score requirements against CPQ as it exists today. For a customer without a CPQ subscription, CPQ is not on the table: Salesforce "is no longer selling new Salesforce CPQ licenses to new customers". Route the complex-quoting evaluation to `architect/revenue-cloud-architecture`. Existing customers face "no forced migration".
 
----
-
-## Gotcha 2: Standard Pricebook Entries Are Required Even with CPQ
-
-**What happens:** CPQ uses its own pricing engine (Price Rules, Discount Schedules, Contracted Prices), but the underlying Product2 and PricebookEntry records must still exist. Teams sometimes skip creating standard pricebook entries thinking CPQ replaces them entirely, then encounter errors when CPQ tries to reference the base price.
-
-**When it occurs:** During initial CPQ setup or when adding new products. The error manifests as "No standard price defined for this product" when adding products to a CPQ quote.
-
-**How to avoid:** Always create a Standard Pricebook Entry for every product, even when CPQ Price Rules will override the price. Treat the standard pricebook entry as the floor price that CPQ adjusts.
+**Source:** Salesforce CPQ Developer Guide, Version 67.0 (Summer '26), Chapter 1 notice; "Navigating the Future of Salesforce CPQ: Product End of Sale (Not End of Life)", salesforce.com, 10 July 2026 (https://www.salesforce.com/sales/cpq/end-of-life/, read 2026-10-03).
 
 ---
 
-## Gotcha 3: CPQ Managed Package Upgrades Can Break Custom Triggers
+## Gotcha 2: CPQ Licences Follow Everyone Who Edits A Quote
 
-**What happens:** Salesforce CPQ releases managed package updates on its own cadence, separate from the three Salesforce platform releases per year. Custom Apex triggers, validation rules, or Flows that reference CPQ objects (SBQQ__Quote__c, SBQQ__QuoteLine__c) can fail after a package upgrade if field behaviors or object relationships change.
+**What happens:** The budget covers account executives. Sales engineers, deal desk analysts, and managers who edit quotes also need a CPQ licence, so the real count runs higher than planned. UNVERIFIED (2026-10-03): the often-quoted "30-50% higher" range is a practitioner estimate.
 
-**When it occurs:** During CPQ package upgrades, especially major version bumps. Teams that skip sandbox testing before upgrading production discover broken automations after the upgrade completes.
+**When it occurs:** During procurement, and again after go-live when non-rep users cannot work on CPQ quote objects.
 
-**How to avoid:** Always install CPQ package updates in a full-copy sandbox first. Run regression tests on all custom automations that touch CPQ objects. Subscribe to CPQ release notes and review breaking changes before upgrading.
+**How to avoid:** Count distinct users who created or edited quotes over the last year (query in `references/examples.md`), then add deal desk and sales engineering roles. Existing customers can add licences during the current term, so an undercount is fixable, but it is a budget event.
 
----
-
-## Gotcha 4: Standard Quote Templates Cannot Render CPQ Quote Lines
-
-**What happens:** CPQ stores quote lines in SBQQ__QuoteLine__c, not the standard QuoteLineItem object. Standard Salesforce quote templates only render QuoteLineItem records. Teams that expect standard templates to work with CPQ data see blank or incomplete PDFs.
-
-**When it occurs:** When a team deploys CPQ but tries to reuse their existing standard quote template rather than building a CPQ quote template.
-
-**How to avoid:** Plan for CPQ quote document generation from the start. Use CPQ's native quote template engine or a third-party document generation tool that reads from SBQQ__QuoteLine__c. Do not assume standard quote templates are compatible.
+**Source:** CPQ Developer Guide v67.0, Chapter 1 notice: "You can also add more user licenses to your Salesforce org during your current subscription term." Licence-per-editor rule: UNVERIFIED (2026-10-03), stated in Salesforce Help only.
 
 ---
 
-## Gotcha 5: Switching from Standard to CPQ Requires Data Migration, Not Just Configuration
+## Gotcha 3: The Standard Price Must Exist Before Any Other Price, With Or Without CPQ
 
-**What happens:** Teams assume that enabling CPQ on top of an existing standard Products/Quotes implementation is purely additive — just install the package and configure. In reality, existing Quote and QuoteLineItem records are not automatically migrated to CPQ's SBQQ objects. Historical quotes remain in the old model, creating a split data architecture.
+**What happens:** A team loads custom price book entries, or relies on CPQ price rules, without first creating the standard price book entry. The load fails, or products cannot be added to quotes.
 
-**When it occurs:** During CPQ adoption in an org that already has years of quoting history on standard objects. Reporting, dashboards, and integrations that reference standard Quote objects break or show incomplete data.
+**When it occurs:** During initial catalog migration and whenever a product is added by integration rather than through the UI. UNVERIFIED (2026-10-03): the exact CPQ error text "No standard price defined for this product" was not confirmed.
 
-**How to avoid:** Plan a data migration strategy as part of the CPQ implementation project. Decide whether to migrate historical quotes to CPQ objects, maintain parallel reporting on both object sets, or accept a cutover date where old quotes stay in the legacy model.
+**How to avoid:** Load standard price book entries first, in every currency the product sells in, then custom price books. Treat the standard entry as the base price that CPQ adjusts.
+
+**Source:** Object Reference v67.0, PricebookEntry: "You must load the standard price for a product before you're permitted to load its custom prices"; `UseStandardPrice` "must be set to true" for entries in the standard price book.
+
+---
+
+## Gotcha 4: Catalog Size Is Products Times Price Books Times Currencies
+
+**What happens:** A 200-product catalog in five price books and four currencies is 4,000 price book entries, not 200. Integration jobs, data loads, and price-change processes are sized for the wrong number.
+
+**When it occurs:** In multi-currency orgs and in orgs with regional or partner price books, on both the standard and CPQ paths.
+
+**How to avoid:** Size the catalog as entries, not products, before choosing a tool. Count current entries per price book and currency with the query in `references/examples.md`.
+
+**Source:** Object Reference v67.0, PricebookEntry: "Create one PricebookEntry record for each standard or custom price and currency combination for a product in a Pricebook2"; `CurrencyIsoCode` exists only with multicurrency enabled.
+
+---
+
+## Gotcha 5: The Standard Bundle Object Exists Only Under Other Licences
+
+**What happens:** Someone proposes modeling bundles on standard objects with `ProductRelatedComponent`, and selling models with `ProductSellingModel`. In a plain Sales Cloud org neither object is available.
+
+**When it occurs:** When object names are found in documentation without reading their access rules.
+
+**How to avoid:** Check licences before designing. `ProductRelatedComponent` (API 58.0+) is available when B2B Commerce, B2C Commerce, Industries Automotive, Industries EPC, or Subscription Management is enabled. `ProductSellingModel` is available with Revenue Cloud and Subscription Management. Without those, bundles on the standard path mean custom objects you own and maintain.
+
+**Source:** Object Reference v67.0, ProductRelatedComponent and ProductSellingModel, Special Access Rules.
+
+---
+
+## Gotcha 6: CPQ Package Upgrades Still Need Regression Tests
+
+**What happens:** Custom Apex triggers, validation rules, or flows on `SBQQ__Quote__c` and `SBQQ__QuoteLine__c` fail after a package upgrade, or double-fire alongside CPQ's own trigger logic.
+
+**When it occurs:** On package upgrades, and when custom automation updates CPQ records several times in one transaction. With no new feature development, upgrades are maintenance releases, which lowers but does not remove the risk.
+
+**How to avoid:** Install upgrades in a full sandbox first and run regression tests on every automation that touches CPQ objects. Where custom code updates CPQ records, use the documented mechanism to disable CPQ and Billing trigger logic for that update rather than fighting it.
+
+**Source:** CPQ Developer Guide v67.0, "Disable CPQ Triggers in Apex": "You can manually disable Salesforce CPQ and Salesforce Billing application logic when you update records ... when you update a record several times in one transaction and want triggers to run only on the last iteration."
+
+---
+
+## Gotcha 7: Standard Quote Templates Do Not Read CPQ Quote Lines
+
+**What happens:** After CPQ adoption the existing quote template produces blank or partial PDFs. CPQ stores lines on `SBQQ__QuoteLine__c`, not `QuoteLineItem`.
+
+**When it occurs:** When a team assumes it can keep its standard quote template after moving to CPQ.
+
+**How to avoid:** Plan document generation with the CPQ quote document capability or a document tool that reads `SBQQ__QuoteLine__c`. UNVERIFIED (2026-10-03): that standard quote templates render only `QuoteLineItem` is stated in Salesforce Help, not in a fetched source.
+
+**Source:** CPQ Developer Guide v67.0, CPQ API Models (`QuoteModel.record` is `SBQQ__Quote__c`; `QuoteLineModel.record` is `SBQQ__QuoteLine__c`) and "Generate Quote Document API: Creates and saves a CPQ quote document." Object Reference v67.0, QuoteLineItem.
+
+---
+
+## Gotcha 8: Moving Between Quote Models Is A Data Migration
+
+**What happens:** CPQ is installed on top of years of standard quotes. Existing `Quote` and `QuoteLineItem` records stay where they are, CPQ writes new quotes to `SBQQ__Quote__c`, and reports and integrations now see half the history. The reverse move has the same shape.
+
+**When it occurs:** In any org with quoting history, in either direction.
+
+**How to avoid:** Decide in the record: migrate history, report across both models, or set a cutover date and freeze the old model. Inventory every report, integration, and automation that reads `Quote` or `QuoteLineItem` before go-live.
+
+**Source:** CPQ Developer Guide v67.0, CPQ API Models (CPQ quote objects); Object Reference v67.0, Quote ("Quotes can be created from and synced with opportunities") and QuoteLineItem.

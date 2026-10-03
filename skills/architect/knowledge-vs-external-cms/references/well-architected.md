@@ -22,6 +22,10 @@ A secondary tradeoff is **operational simplicity vs. audience-optimized delivery
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview -- https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce Knowledge Overview -- https://help.salesforce.com/s/articleView?id=sf.knowledge_whatis.htm
-- CMS Connect for Experience Cloud -- https://help.salesforce.com/s/articleView?id=sf.cms_connect.htm
+- Salesforce Well-Architected Overview -- https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)
+- Salesforce Knowledge Overview -- https://help.salesforce.com/s/articleView?id=sf.knowledge_whatis.htm (help.salesforce.com does not fetch; not re-read)
+- CMS Connect for Experience Cloud -- https://help.salesforce.com/s/articleView?id=sf.cms_connect.htm (help.salesforce.com does not fetch; not re-read)
+- Salesforce Knowledge Guide (Classic), Spring '26 -- https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_knowledge_implementation_guide.pdf -- edition availability, "Data Category Limits" (5 groups / 3 active, 100 per group, 5 levels, 8 per article, translations inherit), "Visibility Setting Enforcement" (ancestors and descendants visible), "Work with Data Categories" (standard sharing for Lightning Knowledge since Summer '20), scheduled publication, "Export Articles for Translation" (50 exports per 24 hours, 15 pending), "Import Translated Articles"
+- Salesforce Knowledge Developer Guide, Summer '26 -- https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_knowledge_dev_guide.pdf -- "Knowledge Object Model" (`Knowledge__ka`, `Knowledge__kav`, record types), "Audience Channel" (Customer, Partner, Public Knowledge Base, license requirements), "Publishing Cycle", `KnowledgeArticleVersion`
+- Metadata API Developer Guide, Summer '26 -- https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf -- `CMSConnectSource` (Experience Builder sites, source types, connection types, language mapping, AEM-only personalization, CMS Connect org permission)
+- Experience Cloud Developer Guide, Summer '26 -- https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/communities_dev.pdf -- Chapter 7 (Salesforce CMS versus CMS Connect), Chapter 8 "Report on Deflections: The Deflection Signals Framework" (article or discussion destination, authenticated users only, Community Case Deflection Metrics)

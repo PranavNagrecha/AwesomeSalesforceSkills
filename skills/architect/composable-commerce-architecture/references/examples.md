@@ -157,3 +157,100 @@ and field permissions are the last line of defence — which means the BFF's int
 the minimum the storefront needs, not cloned from an admin. (`WITH USER_MODE` and `as user` are Apex-side idioms and
 belong in an Apex REST endpoint, not in a SOQL string sent over the Query API; if the storefront needs behaviour the
 Query API cannot express safely, an Apex REST service that states its access mode is the right place to put it.)
+
+---
+
+## Example 3: Reference architecture decision record for a B2C composable storefront
+
+**Context:** A retailer on B2C Commerce wants a Next.js storefront for browse pages, keeps SFRA checkout for one season, and reads order history from a Service Cloud org for logged-in shoppers.
+
+**The decision record** lives at `docs/adr/0051-composable-browse-sfra-checkout.md` in the storefront repository. B2C Commerce cartridges and the Next.js app deploy through B2C code versions and the hosting platform, not through the Metadata API, so no `package.xml` applies to the storefront. The one core-org artifact (the order-history integration user's permission set) follows the org's normal release manifest.
+
+```markdown
+# ADR-0051: Next.js browse, SFRA checkout for FY27 H1, BFF as SLAS private client
+
+## Status
+Accepted (2026-10-03), Digital Architecture Board
+
+## Context
+- B2C Commerce production instance; one staging instance.
+- SLAS limits are per instance: 24,000 RPM production, 500 RPM staging.
+  Peak forecast: 9,000 logins + refreshes per minute on campaign day.
+- Browse SCAPI families are protected by load shedding (HTTP 503,
+  sfdc_load_status WARN at 80%, THROTTLE at 90%). Shopper Baskets and
+  Shopper Orders are not shed.
+- Order history reads a Service Cloud Enterprise Edition org with 150
+  Salesforce licences. Shoppers hold Customer Community licences, which
+  add 0 calls to the org's 24-hour allocation:
+  100,000 + 150 x 1,000 = 250,000 calls per 24 hours, shared with ERP.
+- Session bridging between a custom frontend and SFRA is "possible but
+  not formally supported" (Plugin SLAS guide); Hybrid Auth (25.3+)
+  targets PWA Kit v3.
+
+## Decision
+1. Browse pages: Next.js on the hosting CDN; product and listing routes
+   edge-cached; on WARN serve stale.
+2. BFF: Node service registered as a SLAS private client with Strict
+   Client Auth. No client secret reaches the browser.
+3. Checkout: SFRA for FY27 H1. We own the session-bridging code and test
+   basket merge on login in every release.
+4. Order history: one paged org call per page view, 8-second client
+   timeout, summary fields only. Detail on demand.
+5. Gaps (loyalty balance): SCAPI Custom API with page caching, not BFF
+   code, so the CDN can cache it.
+
+## Consequences
+### Positive
+- Browse pages scale on the CDN; checkout keeps SFRA's maturity.
+### Negative
+- Session bridging is unsupported territory we maintain ourselves.
+- Order history budget: at 40,000 logged-in order views per day we use
+  16% of the org allocation; a second org-backed page needs a new ADR.
+- Staging cannot exercise SLAS at production volume.
+
+## Alternatives Considered
+### PWA Kit v3 with Hybrid Auth for browse
+Viable and formally supported; rejected because the design system is
+already built in Next.js. Revisit if bridging defects exceed two per
+quarter.
+### Full composable including checkout now
+Rejected: PCI scope and payment re-certification in the same season.
+
+## Review Trigger
+Re-evaluate when SFRA checkout is retired or bridging defects exceed
+two per quarter. Owner: Commerce Architect.
+
+## Date
+2026-10-03
+```
+
+**The SLAS smoke test the BFF team runs before every release** (`bff/scripts/slas-guest-token.sh`). It requests a guest token as a private client and honours `Retry-After` on 429, the behavior the rate-limit section requires of client code.
+
+```bash
+#!/usr/bin/env bash
+# bff/scripts/slas-guest-token.sh: guest token via a SLAS private client.
+# Env: SHORT_CODE, ORG_ID, CLIENT_ID, CLIENT_SECRET, CHANNEL_ID
+set -euo pipefail
+url="https://${SHORT_CODE}.api.commercecloud.salesforce.com/shopper/auth/v1/organizations/${ORG_ID}/oauth2/token"
+auth=$(printf '%s:%s' "$CLIENT_ID" "$CLIENT_SECRET" | base64 | tr -d '\n')
+for attempt in 1 2 3; do
+  hdrs=$(mktemp); body=$(mktemp)
+  code=$(curl -sS -o "$body" -D "$hdrs" -w '%{http_code}' -X POST "$url" \
+    -H "Authorization: Basic ${auth}" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    --data-urlencode "grant_type=client_credentials" \
+    --data-urlencode "channel_id=${CHANNEL_ID}")
+  if [ "$code" = "200" ]; then echo "OK: guest token issued"; exit 0; fi
+  if [ "$code" = "429" ]; then
+    wait=$(awk 'tolower($1)=="retry-after:" {print $2}' "$hdrs" | tr -d '\r')
+    echo "429: waiting ${wait:-60}s as instructed by Retry-After"; sleep "${wait:-60}"; continue
+  fi
+  echo "ERROR: HTTP ${code}"; cat "$body"; exit 1
+done
+echo "ERROR: still rate limited after 3 attempts"; exit 1
+```
+
+Grounding: the token endpoint, the `Basic` header of base64 `clientID:clientSecret`, `grant_type=client_credentials`, and the recommended `channel_id` come from the Private SLAS Client Use Cases page; the base URI form comes from Load Shedding and Rate Limiting. UNVERIFIED (2026-10-03): the `/shopper/auth/v1/organizations/{organizationId}/oauth2/token` path is inferred from the documented `/oauth2/login` path on the SLAS Best Practices page and the "/token endpoint of the SLAS API" wording; confirm against the SLAS API reference before use.
+
+**Why it works:** every number in the record is one the platform enforces, each negative is checkable, and the unsupported part of the design is written down with an owner and an exit condition.
+

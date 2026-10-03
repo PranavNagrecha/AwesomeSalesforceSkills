@@ -1,6 +1,6 @@
 ---
 name: security-architecture-review
-description: "Use when conducting a dedicated security architecture review of a Salesforce org — assessing sharing model completeness, FLS/CRUD enforcement, Apex security patterns, exposed API surface, Connected App policies, and Shield readiness. Produces a structured findings report with severity ratings (Critical/High/Medium/Low) and a 20+ point review checklist. Triggers: security architecture review, org security posture, sharing model audit, FLS coverage review, Connected App security, Shield assessment, org security health deep-dive, HIPAA or PCI security controls Salesforce. NOT for auditing Apex or LWC code line-by-line for CRUD/FLS, SOQL injection and XSS — use security/secure-coding-review-checklist. NOT for a full Well-Architected review across all three pillars — use architect/well-architected-review."
+description: "Use when conducting a dedicated security architecture review of a Salesforce org — assessing sharing model completeness, FLS/CRUD enforcement, Apex security patterns, exposed API surface, Connected App policies, and Shield readiness. Produces a structured findings report with severity ratings (Critical/High/Medium/Low) and a 20+ point review checklist. Triggers: security architecture review, org security posture, sharing model audit, FLS coverage review, Connected App security, Shield assessment, org security health deep-dive, HIPAA or PCI security controls Salesforce, audit who can see what in our org. NOT for auditing Apex or LWC code line-by-line for CRUD/FLS, SOQL injection and XSS — use security/secure-coding-review-checklist. NOT for a full Well-Architected review across all three pillars — use architect/well-architected-review."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -23,6 +23,8 @@ triggers:
   - "identify over-permissioned profiles and permission sets"
   - "check for SOQL injection risks in Apex"
   - "review community or Experience Cloud external sharing"
+  - "find every user who holds Modify All Data or View All Data"
+  - "list OAuth apps nobody has used in 90 days"
 inputs:
   - Org type (production, sandbox, scratch) and Salesforce edition
   - Clouds and features in scope (Sales, Service, Experience Cloud, etc.)
@@ -37,9 +39,9 @@ outputs:
   - Shield needs assessment (criteria met, recommendation, justification)
   - Prioritized remediation backlog
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 Use this skill when you need a dedicated, deep-dive security architecture review of a Salesforce org. Where the `well-architected-review` skill surveys all three WAF pillars at breadth, this skill goes deep on the Trusted pillar — examining the sharing model, field-level security, Apex code security patterns, API exposure, Connected App configuration, and Shield licensing decisions. It produces a structured findings report with severity ratings and a comprehensive checklist, suitable for delivery to a security team, a compliance officer, or an architecture review board.
@@ -58,6 +60,23 @@ This skill does not cover implementation of fixes. Once findings are identified,
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before scoring a single checklist item. Each traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What a proper review adds over just doing it |
+|---|---|---|---|
+| "When was the org created, and does it have Experience Cloud sites or guest access?" | Pre-Spring '20 orgs inherited external defaults from internal ones (Gotcha 1); personal-info settings are not enforced in Apex (Gotcha 7) | The external surface to review and the default-access history | External exposure is reviewed from the real defaults, not assumed Private |
+| "Which API version are the Apex classes and triggers saved at?" | Undeclared sharing and access mode flip at 67.0 (Gotchas 2 and 5) | A version-bucketed class inventory | Findings score each class on its own version, not on the org release |
+| "Which integrations use connected apps, which use external client apps, and which are planned?" | New connected apps are restricted as of Spring '26 (Gotcha 6) | An OAuth app inventory with owners and last use | Remediation proposes something the org can actually create |
+| "Which code runs as the Automated Process user or another non-human user?" | Automated Process users need permission sets for access checks (Gotcha 8) | The running user per async entry point | Access checks are tested under the user that runs them |
+| "How far back must audit evidence go?" | Setup Audit Trail covers at least 180 days only (Gotcha 9) | A retention requirement and an export plan | Evidence exists when the auditor asks |
+| "Where are secrets stored today?" | Protected settings protect only inside managed packages (Gotcha 11) | A secret inventory with storage location | Every exposed secret is moved and rotated, not just noted |
+
+What a proper review adds over "just running Health Check": each finding is scored against the version, user, and default-access facts that make it real or not, and remediation names mechanisms the org can still create.
+
+---
+
 ## Review Domains
 
 ### Domain 1: Sharing Model Completeness
@@ -72,7 +91,7 @@ The sharing model defines who can see and modify which records. A misconfigured 
 
 3. **With sharing / without sharing Apex** — Every Apex class that performs DML or queries should have an explicit sharing declaration. Classes using `without sharing` should be documented with a reason. Classes using `inherited sharing` should be traced to their caller chain to confirm the caller enforces sharing. What a *missing* declaration means is version-gated on the `apiVersion` in the class's `.cls-meta.xml`, not the org's release: at **67.0+** (Summer '26) a bare `public class Foo` runs `with sharing`, and so does any class whose inheritance chain contains a 67.0+ class; at **66.0 and earlier** the same class runs without sharing. Read the meta file before scoring an absent keyword — on a 58.0 class it is a live exposure, on a 67.0 class it is a documentation gap. Apex **triggers** are a special case, and the usual summary of it is wrong. A trigger cannot carry a sharing *keyword* — the Apex Developer Guide says it "always run[s] implicitly in a without sharing context" — but that is the baseline, not the outcome. The same page states that "database operations within trigger bodies ... run in **user mode** unless system mode is explicitly specified", and that "user mode overrides the trigger's without sharing context". So at 67.0+ a bare query in a trigger body enforces sharing, FLS and CRUD; only an explicit `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` falls back to bypassing all three. Score each trigger query on its own access mode and the trigger's `.trigger-meta.xml` apiVersion — never on the absent keyword — and review the handler class as well. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
-4. **Community / Experience Cloud external OWD** — External OWD settings are separate from internal OWD. An object set to "Private" internally can be "Public Read Only" externally if the external OWD was not set explicitly. Review all objects accessible in Experience Cloud sites against their external OWD.
+4. **Community / Experience Cloud external OWD** — External OWD settings are separate from internal OWD. Correction (2026-10-03): earlier text said an object set to "Private" internally can be "Public Read Only" externally; the Security Guide says the external access level cannot be more permissive than the internal level. The real risk is older orgs: for orgs created before Spring '20, external defaults were set to the original (often Public) defaults, while newer orgs default external access to Private. Review all objects accessible in Experience Cloud sites against their external OWD.
 
 5. **Manual sharing and Share objects** — Review whether manual shares (`AccountShare`, `OpportunityShare`, etc.) are present at scale. Manual shares are invisible in standard UI reports and can accumulate over years without review.
 
@@ -94,7 +113,7 @@ Field-Level Security (FLS) controls which fields individual users can read and w
 
 10. **Integration user FLS** — Integration users (named credentials, connected app users) often have broad profiles because they "need access to everything." Review the integration user's profile and permission sets against the minimum necessary access principle. A CRUD-level over-permission on an integration user is a High finding.
 
-11. **Visualforce and field references** — Visualforce pages that reference fields via `{!record.Field__c}` will render even if the running user has no FLS read permission on that field — Visualforce does not enforce FLS automatically. Any VF page displaying sensitive fields must use `$ObjectType.describe()` checks or be replaced with an LWC that enforces FLS server-side.
+11. **Visualforce and field references** — Visualforce pages that reference fields via `{!record.Field__c}` will render even if the running user has no FLS read permission on that field — Visualforce does not enforce FLS automatically (UNVERIFIED 2026-10-03: no fetched guide states the Visualforce FLS behavior either way; test with a restricted user). Any VF page displaying sensitive fields must use `$ObjectType.describe()` checks or be replaced with an LWC that enforces FLS server-side.
 
 ---
 
@@ -108,9 +127,9 @@ Insecure Apex code can bypass the sharing model, enable data exfiltration, or al
 
 13. **SOSL injection** — Same pattern as SOQL but for `Search.query()`. Less common but equally severe.
 
-14. **Encoding in Visualforce** — All output rendered in Visualforce should use `{!HTMLENCODE(value)}` or equivalent. Unencoded output of user-controlled strings enables stored XSS.
+14. **Encoding in Visualforce** — All output rendered in Visualforce should use `{!HTMLENCODE(value)}` or equivalent. Unencoded output of user-controlled strings enables stored XSS. The Apex Developer Guide ("Security Tips for Apex and Visualforce Development") says nearly all Visualforce tags escape by default, so concentrate on `escape="false"` and formulas outside components.
 
-15. **Hardcoded credentials and sensitive strings** — Passwords, tokens, client secrets, and encryption keys must not be stored in Apex code, Custom Labels, or Custom Metadata that is accessible to all users. Use Named Credentials for endpoint authentication and Protected Custom Metadata for secrets.
+15. **Hardcoded credentials and sensitive strings** — Passwords, tokens, client secrets, and encryption keys must not be stored in Apex code, Custom Labels, or Custom Metadata that is accessible to all users. Use Named Credentials for endpoint authentication and Protected Custom Metadata for secrets. Correction (2026-10-03): the Apex Developer Guide says protection applies only inside a managed package, and that outside one you should use named credentials or encrypted custom fields; protected custom metadata is a packaging tool, not a secrets store for an unpackaged org.
 
 16. **System-context callouts** — Apex making callouts in system context (batch jobs, future methods, platform events) should be reviewed to confirm they do not relay data the calling user could not access directly. Below 67.0 an async class with no sharing declaration is in system context by default; at 67.0+ it is not, so the finding there is an explicit `without sharing`, `as system`, or `WITH SYSTEM_MODE` rather than an absent keyword.
 
@@ -118,7 +137,7 @@ Insecure Apex code can bypass the sharing model, enable data exfiltration, or al
 
 ### Domain 4: API Surface and Connected Apps
 
-Every Connected App is an OAuth entry point. Misconfigured Connected Apps allow credential theft, session hijacking, and unauthorized data export.
+Every Connected App is an OAuth entry point. Misconfigured Connected Apps allow credential theft, session hijacking, and unauthorized data export. The Security Guide notes that connected app creation is restricted as of Spring '26 and recommends external client apps, so review both inventories (`ConnectedApplication` and `ExternalClientApplication` in the Object Reference). UNVERIFIED (2026-10-03): the IP relaxation, scope, and token-policy behavior in items 17–19 is Help-only.
 
 **Checklist items:**
 
@@ -128,7 +147,7 @@ Every Connected App is an OAuth entry point. Misconfigured Connected Apps allow 
 
 19. **Session policy and token lifetime** — Review session security level and token validity settings per Connected App. Refresh tokens that never expire combined with IP relaxation are a Critical finding for apps holding sensitive data.
 
-20. **Unused or dormant Connected Apps** — Connected Apps that have not been used in 90+ days should be reviewed for deactivation. Each dormant app is a latent attack surface.
+20. **Unused or dormant Connected Apps** — Connected Apps that have not been used in 90+ days should be reviewed for deactivation. Each dormant app is a latent attack surface. Evidence: `OauthToken.LastUsedDate` and `UseCount` per `AppName` (Object Reference; a user with Customize Application sees all users' tokens).
 
 21. **Named Credential certificate management** — Named Credentials using JWT or certificate-based auth should have documented certificate expiry dates and a renewal process. Expired certificates cause integration failures; unrotated credentials are a security risk.
 
@@ -181,11 +200,15 @@ If two or more "Required" criteria are met, a Shield licensing conversation is a
 - `architect/well-architected-review` — full WAF review across all three pillars; use as the entry point before this skill for a new org assessment
 - `apex/apex-security-patterns` — with/without/inherited sharing patterns, stripInaccessible, FLS enforcement in Apex
 - `apex/soql-security` — SOQL injection prevention, bind variables, dynamic SOQL review
-- `security/connected-app-security` — Connected App OAuth configuration, IP restrictions, scope management (if that skill exists)
+- `security/connected-app-security-policies` and `security/oauth-token-management`: Connected App OAuth configuration, IP restrictions, scope management, and token revocation
+- `security/guest-user-security-audit` and `security/experience-cloud-security`: external and guest exposure beyond the OWD check
+- `standards/decision-trees/sharing-selection.md`: read when a finding needs a different sharing mechanism
 
 ---
 
 ## Official Sources Used
+
+See `references/well-architected.md` for fetch status on 2026-10-03 and the PDFs read in this pass.
 
 - Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html
 - Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
@@ -197,13 +220,12 @@ If two or more "Required" criteria are met, a Shield licensing conversation is a
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Ask the six questions in "Questions to Ask Before Configuring" and record the org creation date, API-version spread of Apex, OAuth app inventory, and audit retention requirement.
+2. Collect evidence with the queries in `references/examples.md` Example 3 (privileged permission holders, external defaults, dormant tokens, Setup Audit Trail export), saving raw output with timestamps.
+3. Work the 21 checklist items across the five domains, scoring each Apex finding on its class's `apiVersion` and each external finding on the external default.
+4. Complete the Shield Needs Assessment and rate every finding with the severity definitions.
+5. Fill `templates/security-architecture-review-template.md`, then run `python3 skills/architect/security-architecture-review/scripts/check_security_architecture_review.py <completed-review.md>` to confirm the five domains, scorecard, severity table, Shield assessment, and remediation backlog are all present.
+6. Route Critical and High findings to the remediation skills under Related Skills; this skill stops at the findings report and backlog.
 
 ---
 

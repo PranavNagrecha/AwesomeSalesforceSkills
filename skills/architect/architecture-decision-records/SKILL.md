@@ -7,11 +7,13 @@ well-architected-pillars:
   - Operational Excellence
   - Reliability
 triggers:
-  - architecture decision record
-  - adr template
-  - design decision log
-  - technical rationale document
-  - how do we record why we chose this approach
+  - "architecture decision record"
+  - "adr template"
+  - "design decision log"
+  - "technical rationale document"
+  - "how do we record why we chose this approach"
+  - "write an ADR for our decision to use Batch Apex instead of a scheduled flow"
+  - "document why we are staying on CPQ so the question stops coming back every quarter"
 tags:
   - architect
   - adr
@@ -26,9 +28,9 @@ outputs:
   - Index updated with new entry + any superseded links
 dependencies:
   - architect/solution-design-patterns
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Architecture Decision Records
@@ -42,6 +44,23 @@ On Salesforce specifically, two things make ADR discipline harder than
 elsewhere: three major releases a year expire premises fast, and the platform's
 lifecycle churn (product end-of-sale, feature retirement, GA dates) invites
 confident unsourced claims into a document that is deliberately never updated.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before drafting. Each one traces to a failure mode in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which two options could a competent person have chosen here?" | No real alternative means a standard, not a decision (Gotcha 4) | An Alternatives Considered section a future team will believe | The index holds decisions only, so readers keep reading it |
+| "Does a `standards/decision-trees/` tree route this, and are we following it or deviating?" | A re-derived tree forks and drifts (Gotcha 1) | The branch, the question numbers, and the inputs that selected them | One owner for the reasoning; the ADR records only what was true here |
+| "Which volumes, limits, licences, or product-lifecycle facts does this rest on, and where is each one sourced?" | Premises expire on a three-release cadence and lifecycle claims get frozen unsourced (Gotchas 2, 6, 7) | A Context section a future reader can re-test line by line | A supersession that says whether a premise expired or a mistake was found |
+| "Does this rest on a current platform limitation or a pending vendor decision, and who watches it?" | Backwards compatibility means nothing breaks to force a re-read (Gotcha 14) | A Review Trigger with a named owner, listed in `INDEX.md` | Expired premises surface at release readiness instead of in an incident |
+| "Who decided, in which role and forum, and can every stakeholder open the place this is stored?" | Unnamed deciders and unreachable records make revisiting slow (Gotchas 12, 15) | Named deciders plus a location business readers can reach | The five-minute conversation with the original decider stays possible |
+| "What will the team writing the superseding ADR complain about?" | An all-positive Consequences section means no tradeoff was weighed (Gotcha 5) | At least one specific, checkable negative | Reviewers can test the decision against its own stated cost |
+
+What a proper decision record adds over "just writing it down": the premise is testable, the reversal path is explicit, and the record survives the people who made it.
 
 ---
 
@@ -144,9 +163,14 @@ Consultancy blogs are not sources for an architecture record. Where a claim
 cannot be verified, mark it inline rather than laundering it:
 
 ```markdown
-<!-- UNVERIFIED: a specific end-of-sale date of 27 March 2025 circulates
-widely in consultancy writing. Not confirmed from a Salesforce source. -->
+UNVERIFIED (2026-07-21): a specific end-of-sale date of 27 March 2025
+circulates widely in consultancy writing. Not confirmed from a Salesforce
+source. Confirm with the account team and record who said it and when.
 ```
+
+Write the marker as visible text, not as an HTML comment. GitHub and most
+wiki renderers hide `<!-- -->` comments, so a hidden caveat disappears from
+exactly the reader who needs it.
 
 The same applies to managed-package constraints: record the package name, the
 **version tested**, and *how* the constraint was established, so a future reader
@@ -178,7 +202,8 @@ can re-test it instead of assuming it still holds.
    subsequent PR descriptions.
 7. On supersession: write a new ADR, flip the old one's Status line and nothing
    else, link both ways, and state whether a premise **expired** or a mistake
-   was **found** — they teach different lessons.
+   was **found**: they teach different lessons. Enforce the "Status line
+   only" rule with the CI check in `references/examples.md`.
 
 ---
 
@@ -220,6 +245,8 @@ can re-test it instead of assuming it still holds.
 - Org strategy ADRs need the licensing consequence, not just the topology
 - Never edit the body of a superseded ADR
 - Proposed ADRs rot silently
+- Backwards compatibility means nothing breaks to force a re-read
+- A repo-only record that business deciders cannot open
 
 ## Top LLM Anti-Patterns (full list in `references/llm-anti-patterns.md`)
 
@@ -231,6 +258,7 @@ can re-test it instead of assuming it still holds.
 - An ADR as a design specification
 - Stating platform lifecycle facts without sourcing or dating them
 - "Decide to wait" left unwritten, or written without triggers
+- Equating "no new features" with "end of life"
 
 ---
 
