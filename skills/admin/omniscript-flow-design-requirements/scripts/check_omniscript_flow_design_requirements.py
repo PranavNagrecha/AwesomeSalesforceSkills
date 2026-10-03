@@ -54,7 +54,8 @@ def check_requirements_document(file_path: Path) -> list[str]:
     if "navigate action" not in lower and "navigate_action" not in lower:
         issues.append(
             "MISSING Navigate Action: Requirements document does not mention a Navigate Action. "
-            "Every OmniScript requires a Navigate Action to complete. "
+            "Most OmniScripts end with a Navigate Action; without one the user is left on the last step. "
+            "(UNVERIFIED 2026-10-03: no official source says activation fails without it.) "
             "Document the Navigate Action type and destination."
         )
 
@@ -99,7 +100,8 @@ def check_requirements_document(file_path: Path) -> list[str]:
         issues.append(
             "POSSIBLE Screen Flow bleed: Document mentions conditional logic but does not use "
             "OmniScript Conditional View / Block container notation. "
-            "OmniScript branching requires Conditional View set on Block containers, "
+            "OmniScript branching uses Conditional Views, which almost every element supports (Steps, Blocks, "
+            "inputs, actions — Trailhead, OmniScript Conditional Views), "
             "not Decision elements or field-level conditions."
         )
 
@@ -131,7 +133,7 @@ def check_metadata_dir(manifest_dir: Path) -> list[str]:
         if "NavigateAction" not in content and "navigate_action" not in content.lower():
             issues.append(
                 f"{sf.name}: OmniScript metadata does not contain a NavigateAction element. "
-                "Activation will fail without a Navigate Action."
+                "Confirm how the script ends; no official source says activation fails without a Navigate Action (UNVERIFIED 2026-10-03)."
             )
 
     return issues

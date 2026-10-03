@@ -43,3 +43,22 @@ then keep each selected subagent small and capability-specific.
 **What goes wrong:** The agent keeps trying to answer beyond its real boundary instead of escalating or refusing safely.
 
 **Correct approach:** Include explicit out-of-scope, escalation, and handoff conditions in the subagent design.
+
+---
+
+## Example 3: Topic Metadata, Agent Script Router, and Routing Test
+
+**Context:** The `Order_Returns` subagent for a retail service agent, designed with the instruction template from SKILL.md.
+
+**Solution:** The complete `GenAiPlugin` XML, the equivalent Agent Script router and subagent, the `AiEvaluationDefinition` routing test, and the `package.xml` member form are in `references/metadata-examples.md`. The design maps onto metadata fields like this:
+
+```text
+Template section            GenAiPlugin field
+What this subagent does  -> description (1-3 sentences; the classification signal)
+When to activate         -> description + aiPluginUtterances
+Does NOT do              -> description (exclusions) + scope ("You are not allowed to ...")
+Handoff rules            -> canEscalate + an out-of-scope instruction
+Actions available        -> genAiFunctions (no more than 15)
+```
+
+**Why it works:** Each section of the design has a home in deployable metadata, so the review artifact and the deployed topic cannot drift apart.

@@ -9,11 +9,11 @@
 **Solution:**
 The BA produces a requirements document that specifies:
 - Step 1: Policy Lookup — Pre-Step Read DataRaptor pulling InsurancePolicy fields by Policy_Number__c input
-- Step 2: Loss Details — Radio Button "Loss Type" (Auto/Property/Liability) with three Block containers, each with Conditional View set to `%LossType:value% == 'Auto'`, `== 'Property'`, `== 'Liability'` respectively
+- Step 2: Loss Details — Radio Button "Loss Type" (Auto/Property/Liability) with three Block containers, each with a Conditional View of LossType equals Auto, Property, or Liability respectively
 - Step 3: Coverage Selection — Post-Step Integration Procedure that validates coverage eligibility
 - Step 4: Summary & Submit — Post-Step Integration Procedure creates Claim and ClaimItem records; Navigate Action routes to the new Claim record page
 
-**Why it works:** The branching is documented in OmniScript Conditional View notation so the developer can directly wire the JSON condition without a discovery session. The Pre/Post timing is explicit, preventing the common "data loaded Post-Step can't be seen on current screen" bug.
+**Why it works:** The branching is documented as element, operator, and value per Block, so the developer can wire each Conditional View without a discovery session. The Pre/Post timing is explicit, preventing the common "data loaded Post-Step can't be seen on current screen" bug.
 
 ---
 
@@ -25,12 +25,12 @@ The BA produces a requirements document that specifies:
 
 **Solution:**
 Requirements explicitly note:
-- Branching mechanism: Conditional View on Block containers — NOT Decision elements (OmniScript has no Decision elements)
-- Full-Time path Block: shown when `%EmploymentType:value% == 'Full-Time'` — contains Benefits selection and beneficiary fields
-- Contractor path Block: shown when `%EmploymentType:value% == 'Contractor'` — contains NDA acknowledgment, rate card, and engagement end date
+- Branching mechanism: Conditional View on Block containers, not Screen Flow Decision elements (OmniScript's Decision Matrix action is a Business Rules Engine lookup, not a branching element)
+- Full-Time path Block: shown when EmploymentType equals Full-Time; contains Benefits selection and beneficiary fields
+- Contractor path Block: shown when EmploymentType equals Contractor; contains NDA acknowledgment, rate card, and engagement end date
 - Step 5 Navigate Action: two separate Navigate Action elements each with a Condition property pointing to the same employment type field — Full-Time routes to Onboarding Dashboard, Contractor routes to Document Signing page
 
-**Why it works:** Specifying Conditional View JSON notation in requirements documents prevents the developer from applying Screen Flow patterns that don't translate to OmniStudio's declarative branching model.
+**Why it works:** Specifying each Conditional View in requirements prevents the developer from applying Screen Flow patterns that don't translate to OmniStudio's declarative branching model.
 
 ---
 
@@ -41,3 +41,17 @@ Requirements explicitly note:
 **What goes wrong:** The developer must re-derive the OmniScript structural requirements (Step containers, Block groupings for conditions, Pre vs Post action timing, Navigate Action specification) from generic requirements, creating ambiguity and rework. The activation failure for missing Navigate Action is only discovered when the developer tries to activate the OmniScript.
 
 **Correct approach:** Use an OmniScript-specific requirements template that explicitly captures: Step inventory, Block container groupings with Conditional View expressions, data source type per step (DataRaptor vs IP vs Remote Action) with Pre/Post timing, and Navigate Action destination.
+
+---
+
+## Example 3: Requirements Spec the Developer Can Build From
+
+The complete artifacts (file paths, metadata XML or API payloads, and the `package.xml` member form) are in `references/metadata-examples.md`.
+
+```text
+Hand-off order for the build team:
+1. requirements spec (YAML) reviewed and signed off
+2. Integration Procedures and Data Mappers built against the JSON node names in the spec
+3. OmniScript built; element names copied from the spec
+4. Built OmniScript retrieved with the manifest and diffed against the spec
+```

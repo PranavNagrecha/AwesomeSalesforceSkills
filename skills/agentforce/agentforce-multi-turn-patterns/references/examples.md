@@ -40,14 +40,14 @@ Turn 3 (user): "actually my order is A7843"
 
 **Solution:**
 
-Declare `session.verifiedAccountId` at cross-subagent scope when the Support subagent completes identity verification. The Billing subagent's entry condition checks `session.verifiedAccountId != null`; if present, skip re-verification. If the Billing subagent exits and a third subagent opens beyond a short window (e.g., 10 minutes), force re-verification.
+Set `verified_account_id` (an agent-wide Agent Script variable; every subagent can read it) when the Support subagent completes identity verification. The Billing subagent's entry condition checks `session.verifiedAccountId != null`; if present, skip re-verification. If the Billing subagent exits and a third subagent opens beyond a short window (e.g., 10 minutes), force re-verification.
 
 ```
 Support topic:
   - Collect caseNumber.
   - Look_Up_Case → returns accountId.
-  - Verify_Account_Identity → sets session.verifiedAccountId (cross-topic).
-  - session.verifiedAt = now (cross-topic).
+  - Verify_Account_Identity → sets verified_account_id (agent-wide variable).
+  - verified_at = now (agent-wide variable).
 
 Billing topic entry:
   - Check session.verifiedAccountId.
@@ -107,4 +107,21 @@ Escalation payload:
 
 **What goes wrong:** Users feel like the agent doesn't know them.
 
-**Correct approach:** Cross-subagent verification variable with a timed expiry. See Example 2.
+**Correct approach:** An agent-wide verification variable with a timed expiry. See Example 2.
+
+---
+
+## Example 4: The Return Flow as a Deployable Agent Script Bundle
+
+**Context:** Examples 1 and 2 written as real Agent Script with a multi-turn test.
+
+**Solution:** The `AiAuthoringBundle` (bundle metadata plus `.agent` file), the `AiEvaluationDefinition` with `conversationHistory`, and the `package.xml` member form are in `references/metadata-examples.md`. The variable design it implements:
+
+```text
+order_number        mutable string   source of truth; changing it resets the two below
+item_id             mutable string   derived from order_number by Look_Up_Order
+return_reason       mutable string   asked after item_id is known
+verified_account_id mutable string   agent-wide; read by every subagent
+```
+
+**Why it works:** Every fact the later turns need is a declared variable with an owner, and the Returns subagent branches on which facts are still empty, so corrections, detours, and subagent switches have defined behavior.

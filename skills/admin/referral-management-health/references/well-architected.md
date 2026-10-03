@@ -11,7 +11,7 @@
 
 **ClinicalServiceRequest vs. Custom Object:** Using the standard ClinicalServiceRequest object aligns with FHIR R4 and Salesforce's Health Cloud data model roadmap. Custom objects require custom FHIR mapping if interoperability is needed and lose native Health Cloud UI integration. The tradeoff: ClinicalServiceRequest requires HealthCloudICM license assignment overhead; custom objects offer more schema flexibility but at the cost of platform alignment.
 
-**Real-Time vs. Batch Provider Search Index:** The DPE-based CareProviderSearchableField approach is optimized for search performance at scale but introduces index latency. For orgs with very small provider networks, a direct SOQL-based provider lookup component might be acceptable. For any network over ~500 providers, the denormalized index approach is required for acceptable search performance.
+**Real-Time vs. Batch Provider Search Index:** The DPE-based CareProviderSearchableField approach is optimized for search performance at scale but introduces index latency. For orgs with very small provider networks, a direct SOQL-based provider lookup component might be acceptable. For any network over ~500 providers, the denormalized index approach is required for acceptable search performance. UNVERIFIED (2026-10-03): the 500-provider threshold has no source; the developer guide only says querying the search object instead of multiple objects improves search performance.
 
 ## Anti-Patterns
 
@@ -20,6 +20,13 @@
 3. **Creating custom Referral__c objects instead of using ClinicalServiceRequest** — Custom objects require all FHIR mapping to be built manually if the org ever needs interoperability. ClinicalServiceRequest is the FHIR R4-aligned standard; Salesforce's future Health Cloud features will target this object, not custom alternatives.
 
 ## Official Sources Used
+
+Read for the 2026-10-03 revision:
+
+- Agentforce Health Developer Guide (Health Cloud developer guide, Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/health_cloud_dev_guide.pdf. Sections used: Clinical Data Model (`ClinicalServiceRequest` fields, Status and Type values, org preference list), Provider Relationship Management (`CareProviderSearchableField`, `CareProviderSearchConfig` object), Metadata API type `CareProviderSearchConfig` (sample and package.xml), REST Reference (Referral Management request body), and "Health Cloud Referral Management Fields on Contact, Lead, and Opportunity".
+- Object Reference for the Salesforce Platform (Spring '26), `CareProviderSearchableField` in the list of Health Cloud objects: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+
+Carried from earlier revisions (not re-read on 2026-10-03):
 
 - Health Cloud Administration Guide — Configure Referral Management: https://help.salesforce.com/s/articleView?id=ind.hc_referral_management.htm
 - Health Cloud Developer Guide — Provider Network Management Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_care_provider.htm

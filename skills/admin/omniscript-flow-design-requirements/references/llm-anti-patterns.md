@@ -10,13 +10,16 @@ Common mistakes AI coding assistants make when generating or advising on OmniScr
 
 **Correct pattern:**
 ```
-Conditional branching in OmniScript uses Conditional View on Block containers:
+Conditional branching in OmniScript uses the Conditional View property, usually on a Block
+that groups the fields for one branch (it also works on Steps and most other elements):
 - Block Name: AutoBlock
-  - Conditional View: %LossType:value% == 'Auto'
+  - Conditional View: LossType equals 'Auto'
   - Elements: VehicleYear, VehicleMake, VehicleModel
 - Block Name: PropertyBlock
-  - Conditional View: %LossType:value% == 'Property'
+  - Conditional View: LossType equals 'Property'
   - Elements: PropertyAddress, StructureType
+(element, operator, value; the %Element:value% shorthand in older copies of this
+skill is UNVERIFIED (2026-10-03) as literal designer syntax)
 ```
 
 **Detection hint:** Look for "Decision element," "Fault path," or generic `IF condition THEN show field X` notation in requirements output — these indicate Screen Flow bleed.
@@ -74,22 +77,63 @@ Requirements document header must include:
 
 ---
 
-## Anti-Pattern 5: Specifying Field-Level Conditions Instead of Block-Level Conditions
+## Anti-Pattern 5: Repeating One Condition on Every Field Instead of Grouping Them
 
 **What the LLM generates:** Requirements that list individual field conditions: "Show VehicleYear field if LossType == Auto; show PropertyAddress field if LossType == Property" — implying per-field visibility control.
 
-**Why it happens:** Per-field visibility conditions are standard in HTML form design, standard Flow, and most UI frameworks. LLMs default to this pattern because it is the most common mental model for conditional form fields.
+**Why it happens:** Per-field visibility conditions are standard in HTML form design, standard Flow, and most UI frameworks. LLMs default to this pattern. The opposite error also appears: claiming OmniScript only supports conditions on Blocks. Trailhead says almost every element supports Conditional View, including Steps.
 
 **Correct pattern:**
 ```
-OmniScript Conditional Views are set on Block container elements, not individual fields.
-All fields that share a condition must be grouped inside a named Block.
+OmniScript Conditional Views can be set on almost any element, but fields that share
+a condition belong in one named Block with one Conditional View.
 Block: AutoBlock
-  Conditional View: %LossType:value% == 'Auto'
+  Conditional View: LossType equals 'Auto'
   Contains: VehicleYear, VehicleMake, VehicleVIN
 Block: PropertyBlock
-  Conditional View: %LossType:value% == 'Property'
+  Conditional View: LossType equals 'Property'
   Contains: PropertyAddress, StructureType, SquareFootage
+A Step that only applies to one branch gets the condition on the Step itself.
 ```
 
-**Detection hint:** Requirements list individual field conditions in a flat format without Block grouping notation.
+**Detection hint:** Requirements list the same condition on several individual fields, or claim conditions cannot be set on Steps or fields.
+
+---
+
+## Anti-Pattern 6: Naming Screen Fields Without Matching the Data Contract
+
+**What the LLM generates:** A screen inventory with friendly names ("Account Phone", "Web Address") and a separate data section that says "IP returns the account record", with no mapping between the two.
+
+**Why it happens:** LLMs treat labels and API names as interchangeable. In OmniScript the parser fills inputs by matching JSON node names to element names, and fields appear empty when they differ (Trailhead, "Configure a Simple OmniScript").
+
+**Correct pattern:**
+```
+| Step        | Element name | Label        | JSON node from IPGetAccountDetails | Read/Write |
+|-------------|--------------|--------------|------------------------------------|------------|
+| StepAccount | AccountName  | Account Name | AccountName                        | Read only  |
+| StepAccount | Phone        | Phone        | Phone                              | Write      |
+| StepAccount | Website      | Website      | Website                            | Write      |
+```
+
+**Detection hint:** A requirements document with screen fields but no element-name column, or element names that never appear in the data-source section.
+
+---
+
+## Anti-Pattern 7: Writing Cross-Step Rules as Required Fields
+
+**What the LLM generates:** "Mobile Phone (Step 1) is required when SMS Alerts (Step 4) is checked", listed in the field table as a required flag.
+
+**Why it happens:** LLMs map every conditional requirement to the field's Required property. Required fields and formula messaging only guard the current Step (Trailhead, "Validate Data and Handle Errors").
+
+**Correct pattern:**
+```
+Cross-step rule CR-01
+  Trigger:            SmsAlerts = true on StepPreferences
+  Check:              MobilePhone is blank (collected on StepContact)
+  Element:            Set Errors, placed after StepPreferences
+  Element Error Map:  MobilePhone
+  Value:              "Add a mobile number to receive text alerts."
+  Conditional View:   SmsAlerts equals true AND MobilePhone is blank
+```
+
+**Detection hint:** A Required flag whose condition references a field from a different Step.

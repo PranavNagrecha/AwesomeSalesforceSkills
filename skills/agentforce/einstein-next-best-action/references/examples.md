@@ -49,7 +49,7 @@ Recommendation Records:
     AcceptanceLabel: "Add Product"
     RejectionLabel: "Skip"
     Description: "This account's industry benchmarks show high adoption of premium support."
-    ExpirationDate: 2026-06-30
+    Expiration_Date__c: 2026-06-30   (custom field; the standard object has no expiration field)
 
   - Name: "Schedule Executive Business Review"
     ActionReference: Create_EBR_Event_Flow
@@ -59,7 +59,8 @@ Recommendation Records:
 
 Strategy Flow (Autolaunched):
   1. Input: Opportunity record variable
-  2. Get Records: Retrieve Recommendation records where ExpirationDate >= TODAY or ExpirationDate = null
+  2. Get Records: Retrieve Recommendation records where IsActionActive = true
+     and (Expiration_Date__c >= TODAY or Expiration_Date__c = null)
   3. Decision: If Opportunity.Amount > 50000 AND Account.Industry = 'Technology'
        → add "Add Premium Support Package" to output
   4. Decision: If Opportunity.StageName = 'Negotiation'
@@ -68,7 +69,7 @@ Strategy Flow (Autolaunched):
   6. Output: List<Recommendation> collection variable
 ```
 
-**Why it works:** ExpirationDate ensures time-limited promotions disappear automatically. The Flow's Decision elements encode business rules that marketing and sales leadership can adjust without developer help. The acceptance Flows perform concrete actions (adding a product, creating an event) rather than just displaying information.
+**Why it works:** The custom `Expiration_Date__c` field makes time-limited promotions disappear automatically, and `IsActionActive` keeps recommendations with a broken acceptance flow off the page. The Flow's Decision elements encode business rules that marketing and sales leadership can adjust without developer help. The acceptance Flows perform concrete actions (adding a product, creating an event) rather than just displaying information.
 
 ---
 
@@ -76,6 +77,22 @@ Strategy Flow (Autolaunched):
 
 **What practitioners do:** They create NBA strategies using the legacy Strategy Builder interface, defining recommendation logic with the drag-and-drop strategy canvas including Load, Filter, Sort, and Output elements.
 
-**What goes wrong:** Strategy Builder was deprecated in Spring '24. New orgs may not have it available. Existing strategies in Strategy Builder will not receive platform updates or bug fixes. Salesforce documentation now directs all strategy authoring to Flow Builder, and any Trailhead or community content referencing Strategy Builder is outdated.
+**What goes wrong:** Strategy Builder was deprecated in Spring '24 (UNVERIFIED (2026-10-03): the date is not confirmed by a source read for this revision). New orgs may not have it available. Existing strategies in Strategy Builder will not receive platform updates or bug fixes. Salesforce documentation now directs all strategy authoring to Flow Builder, and any Trailhead or community content referencing Strategy Builder is outdated.
 
-**Correct approach:** Build all NBA strategies as Autolaunched Flows. Define a `List<Recommendation>` output collection variable. Use Get Records, Decision, Assignment, and Loop elements to replicate any logic previously built in Strategy Builder. Migrate existing Strategy Builder strategies to Flow before they become unsupported.
+**Correct approach:** Build new NBA strategies as flows of process type `RecommendationStrategy`. Define a Recommendation collection output variable. Use Get Records, Decision, Assignment, and Loop elements to replicate any logic previously built in Strategy Builder. Migrate existing Strategy Builder strategies to Flow before they become unsupported.
+
+---
+
+## Example 3: Deployable Strategy Flow and Actions & Recommendations Deployment
+
+**Context:** Example 1, made deployable: a case-page strategy that returns up to four active, unexpired case recommendations, shown through an Actions & Recommendations deployment.
+
+**Solution:** The custom fields, the `RecommendationStrategy` flow, the `RecordActionDeployment`, and the `package.xml` member form are in `references/metadata-examples.md`. The recommendation records themselves are data:
+
+```csv
+Name,Description,ActionReference,AcceptanceLabel,RejectionLabel,Target_Object__c,Expiration_Date__c
+Share Password Reset Article,Send the password reset article to the case contact.,Share_KB_Article_Flow,Send to Customer,Not Relevant,Case,
+Escalate to Tier 2,Escalate this case to Tier 2 support based on complexity indicators.,Escalate_Case_Flow,Escalate Now,Dismiss,Case,
+```
+
+**Why it works:** The metadata (fields, flow, deployment) moves with a change set or `sf project deploy`, while the catalog rows move with a data load, which is what the Recommendation sObject requires.

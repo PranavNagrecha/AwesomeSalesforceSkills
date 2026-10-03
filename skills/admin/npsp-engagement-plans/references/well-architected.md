@@ -10,7 +10,7 @@ The Operational Excellence risk area in this domain is template governance: beca
 
 ### Reliability
 
-Reliability applies to the task-generation mechanism. NPSP creates Task records synchronously when an `npsp__Engagement_Plan__c` record is inserted. If the insertion fails (e.g., validation rule on Task, trigger error, governor limit), no Tasks are created and the failure may not surface visibly to the user. Reliable implementations include:
+Reliability applies to the task-generation mechanism. NPSP creates Task records synchronously in the after-insert trigger of `npsp__Engagement_Plan__c`, with an all-or-none insert. If one Task fails (e.g., validation rule on Task, trigger error, governor limit), the plan insert rolls back with it, and a Flow without a fault path hides the reason. Reliable implementations include:
 
 - A post-application verification step (confirm Task count matches expected template tasks)
 - Monitoring via a scheduled report that flags `npsp__Engagement_Plan__c` records with zero associated Tasks (indicating a creation failure)
@@ -35,6 +35,20 @@ The non-retroactivity of template changes is also a reliability concern: in-flig
 3. **Applying Templates Without a Retroactive Change Policy** — Orgs that lack a policy for handling template updates to in-flight plans accumulate drift between the current template standard and active stewardship sequences. Establish a change management process: when a template is updated, identify active instances, communicate to owners, and decide whether to retroactively reapply.
 
 ## Official Sources Used
+
+Read for the 2026-10-03 revision:
+
+- NPSP source, object definitions: https://github.com/SalesforceFoundation/NPSP/tree/main/force-app/main/default/objects (Engagement_Plan__c, Engagement_Plan_Template__c, Engagement_Plan_Task__c, Activity/fields/Engagement_Plan__c and Engagement_Plan_Task__c, Level__c/fields/Engagement_Plan_Template__c). Supports field names, picklist values, defaults, master-detail and SetNull relationships, and the Status formula.
+- NPSP source, `EP_EngagementPlans_TDTM.cls`: https://github.com/SalesforceFoundation/NPSP/blob/main/force-app/main/default/classes/EP_EngagementPlans_TDTM.cls. Supports Task creation at plan insert, all-or-none insert, owner fallback, Send Email header, and the target-lookup validations.
+- NPSP source, `EP_EngagementPlans_UTIL.cls`: https://github.com/SalesforceFoundation/NPSP/blob/main/force-app/main/default/classes/EP_EngagementPlans_UTIL.cls. Supports the `Waiting on Dependent Task` constant, custom-lookup discovery, and the one-target rule.
+- NPSP source, `EP_Task_UTIL.cls`: https://github.com/SalesforceFoundation/NPSP/blob/main/force-app/main/default/classes/EP_Task_UTIL.cls. Supports due-date math, weekend shifting, reminders, and dependent-task activation.
+- NPSP source, `EP_TaskDependency_TDTM.cls` and `EP_TaskRollup_TDTM.cls`: https://github.com/SalesforceFoundation/NPSP/tree/main/force-app/main/default/classes. Supports the IsClosed trigger for child recalculation and the plan task counts.
+- NPSP source, `TDTM_DefaultConfig.cls`: https://github.com/SalesforceFoundation/NPSP/blob/main/force-app/tdtm/classes/TDTM_DefaultConfig.cls. Supports which trigger events the engagement plan handlers run on.
+- Object Reference for the Salesforce Platform (Spring '26), Task `WhatId` and the reference-field rules for WhoId/WhatId: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Metadata API Developer Guide (Spring '26), Flow (`FlowRecordLookup`, `FlowCustomError`) and ActionPlanTemplate: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Salesforce CLI Command Reference, `data import tree` plan ordering: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/sfdx_cli_reference.pdf
+
+Carried from earlier revisions (not re-read on 2026-10-03; help.salesforce.com does not render to a fetcher):
 
 - Configure Engagement Plans — Salesforce Help: https://help.salesforce.com/s/articleView?id=sfdo.NPSP_Engagement_Plans.htm
 - Create and Manage Engagement Plans — Salesforce Help: https://help.salesforce.com/s/articleView?id=sfdo.npsp_config_engage_plans.htm

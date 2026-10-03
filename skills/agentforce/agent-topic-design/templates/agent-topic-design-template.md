@@ -26,6 +26,9 @@
 - [ ] Overlap is minimized
 - [ ] Topic selector use was evaluated
 - [ ] Action sets stay aligned to the topic boundary
+- [ ] No topic has more than 15 actions
+- [ ] Hard business rules live in actions, not instructions
+- [ ] Routing test cases (topic_sequence_match) written for each topic
 
 ## Notes
 

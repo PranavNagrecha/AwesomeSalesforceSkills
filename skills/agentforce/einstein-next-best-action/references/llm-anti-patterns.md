@@ -12,8 +12,10 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 
 ```text
-All NBA strategies must be built as Autolaunched Flows in Flow Builder.
-Strategy Builder was deprecated in Spring '24.
+Build new NBA strategies as flows of process type RecommendationStrategy
+(Metadata API, API 54.0+) in Flow Builder.
+Strategy Builder was deprecated in Spring '24 (UNVERIFIED (2026-10-03): no source
+read for this revision states the date; current Trailhead units still show it).
 Use Get Records, Decision, Assignment, and Loop elements in Flow
 to replicate any logic previously built in Strategy Builder.
 ```
@@ -48,23 +50,23 @@ output variables that do not match this exact configuration.
 
 **What the LLM generates:** References to fields like `Recommendation.Priority__c`, `Recommendation.Score`, `Recommendation.Category`, or `Recommendation.TargetObject` as if they are standard fields on the Recommendation sObject.
 
-**Why it happens:** LLMs hallucinate plausible field names based on the domain context. The Recommendation object's standard fields are limited to Name, Description, ActionReference, AcceptanceLabel, RejectionLabel, ExpirationDate, and a few system fields. Any additional fields require custom field creation.
+**Why it happens:** LLMs hallucinate plausible field names based on the domain context. Earlier versions of this file did it too, by listing ExpirationDate as standard. Per the Object Reference, the Recommendation object's fields are AcceptanceLabel, ActionReference, Description, ExternalId, ImageId, IsActionActive, Name, NetworkId, RecommendationKey, RejectionLabel, plus system fields. Any additional fields require custom field creation.
 
 **Correct pattern:**
 
 ```text
-Standard Recommendation fields:
-  - Name
-  - Description
-  - ActionReference
-  - AcceptanceLabel
-  - RejectionLabel
-  - ExpirationDate
-Any field beyond these (Priority, Score, Category, TargetObject)
+Standard Recommendation fields (Object Reference, Spring '26):
+  - Name (80)                - Description (255)
+  - ActionReference (flow)   - AcceptanceLabel (80)
+  - RejectionLabel (80)      - ImageId (ContentAsset)
+  - ExternalId               - RecommendationKey
+  - IsActionActive (read-only)
+  - NetworkId (Experience Cloud site)
+Any field beyond these (ExpirationDate, Priority, Score, Category, TargetObject)
 must be created as a custom field and referenced with the __c suffix.
 ```
 
-**Detection hint:** Flag any Recommendation field reference that lacks the `__c` suffix and is not in the standard field list: Name, Description, ActionReference, AcceptanceLabel, RejectionLabel, ExpirationDate.
+**Detection hint:** Flag any Recommendation field reference that lacks the `__c` suffix and is not in the standard field list above. `ExpirationDate` without `__c` is the most common one.
 
 ---
 
@@ -81,7 +83,8 @@ Use the standard Actions & Recommendations Lightning component
 to display recommendations. This component handles:
   - Invoking the strategy Flow
   - Rendering recommendation cards
-  - Executing acceptance actions (linked Flows or quick actions)
+  - Launching the acceptance flow named in ActionReference
+    (and, if shouldLaunchActionOnReject is true, on reject as well)
   - Tracking acceptance and rejection events
 Custom components should only be built when the standard component
 genuinely cannot meet UX requirements (rare).
@@ -91,26 +94,26 @@ genuinely cannot meet UX requirements (rare).
 
 ---
 
-## Anti-Pattern 5: Omitting ExpirationDate Filtering in Strategy Flows
+## Anti-Pattern 5: Omitting Expiry and Active-Flow Filtering in Strategy Flows
 
-**What the LLM generates:** A strategy Flow that retrieves all active Recommendation records via Get Records but does not include any Decision or filter logic to exclude recommendations where ExpirationDate is in the past.
+**What the LLM generates:** A strategy Flow that retrieves all Recommendation records via Get Records with no filter for expired offers and no filter on `IsActionActive`, or one that filters on a nonexistent standard `ExpirationDate` field.
 
 **Why it happens:** LLMs focus on the "happy path" of retrieving and returning recommendations. ExpirationDate filtering is a defensive measure that is easy to overlook, and many example snippets in training data omit it.
 
 **Correct pattern:**
 
 ```text
-In the strategy Flow, always add one of:
-  Option A: Filter in Get Records WHERE ExpirationDate >= TODAY
-            OR ExpirationDate = null
-  Option B: Add a Decision element after Get Records that excludes
-            recommendations with ExpirationDate < TODAY
+Add a custom date field Expiration_Date__c to Recommendation, then in the strategy Flow:
+  Get Records WHERE IsActionActive = true
+               AND (Expiration_Date__c >= TODAY OR Expiration_Date__c = null)
+IsActionActive is a standard read-only field; it is false when the
+referenced acceptance flow is inactive.
 
 This prevents expired promotions, seasonal offers, or
 compliance-deadline recommendations from appearing to users.
 ```
 
-**Detection hint:** Examine strategy Flow descriptions for any Get Records element on the Recommendation object. If there is no ExpirationDate filter condition (either in the query or in a subsequent Decision), flag as a potential issue.
+**Detection hint:** A Get Records element on Recommendation with no `IsActionActive` filter, or with a filter on `ExpirationDate` (no `__c`).
 
 ---
 
@@ -125,7 +128,9 @@ compliance-deadline recommendations from appearing to users.
 ```text
 Einstein Next Best Action requires the "Einstein Next Best Action"
 permission set license — not Einstein Analytics, Einstein Discovery,
-or Einstein Prediction Builder licenses.
+or Einstein Prediction Builder licenses. (UNVERIFIED (2026-10-03): the
+license name; the Object Reference documents the Manage Next Best Action
+Recommendations and Manage Next Best Action Strategies permissions.)
 
 NBA works with purely rule-based Flow logic. AI scoring via
 prediction models or Response__c tracking is optional and additive,
@@ -133,3 +138,15 @@ not a prerequisite.
 ```
 
 **Detection hint:** Flag any mention of "Einstein Analytics license," "train a model first," or "Einstein Discovery" as prerequisites for NBA. The only required license is the "Einstein Next Best Action" permission set license.
+
+---
+
+## Anti-Pattern 7: Promising a Long List of Recommendations on the Page
+
+**What the LLM generates:** "The Actions & Recommendations component can display up to 25 recommendations, so return your top 25."
+
+**Why it happens:** A number repeated in community content (and in earlier versions of this skill) gets treated as documented. The Metadata API defines `maxDisplayRecommendations` on `RecordActionDeployment` with valid values 1–4, and Trailhead's setup steps say "You can show a maximum of 4 recommendations."
+
+**Correct pattern:** Rank recommendations in the strategy flow, return the few that matter most, and set `maxDisplayRecommendations` between 1 and 4 in the deployment.
+
+**Detection hint:** Any display count above 4 for the Actions & Recommendations component.

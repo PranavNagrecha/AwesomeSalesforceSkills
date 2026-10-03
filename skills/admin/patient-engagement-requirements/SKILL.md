@@ -12,6 +12,8 @@ triggers:
   - "Health assessment requirements for patient portal in Salesforce Health Cloud"
   - "OmniStudio and Discovery Framework prerequisites for delivering health assessments to patients"
   - "Secure in-portal messaging requirements for HIPAA-compliant patient communication"
+  - "scope patient self-scheduling requirements against the EHR we already run"
+  - "list the licenses and setup steps a Health Cloud patient portal needs before build"
 tags:
   - health-cloud
   - patient-engagement
@@ -33,9 +35,9 @@ outputs:
 dependencies:
   - admin/health-cloud-patient-setup
   - admin/care-program-management
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-10
+updated: 2026-10-03
 ---
 
 # Patient Engagement Requirements
@@ -51,7 +53,20 @@ Gather this context before working on anything in this domain:
 - Confirm that the Experience Cloud for Health Cloud add-on license is in scope. A base Health Cloud license does NOT include patient-facing portal functionality. Experience Cloud for Health Cloud is a separately purchased add-on SKU.
 - Identify which patient engagement features are required: appointment scheduling, health assessments, secure messaging, patient education, self-enrollment. Each may have different license and implementation prerequisites.
 - Confirm whether Intelligent Appointment Management (IAM) is in scope. IAM requires CRM Analytics as a separately licensed add-on for no-show prediction functionality. Without CRM Analytics, IAM scheduling works but the predictive analytics features are unavailable.
-- Confirm whether health assessments are required. Delivering health assessments to patients via a portal requires both the OmniStudio managed package and the Discovery Framework to be installed — these are separate prerequisites not included in base Health Cloud licensing.
+- Confirm whether health assessments are required. The Agentforce Health Developer Guide says Health Cloud Assessments "use the power of Discovery Framework and OmniStudio". The Salesforce Industries Developer Guide describes Discovery Framework as a feature enabled in the org, and OmniStudio ships either as Omnistudio for Managed Packages or on the standard runtime. Confirm which runtime the org has and that Discovery Framework is enabled.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| Which system owns appointment availability: Salesforce Scheduler, the EHR, or both? | Intelligent Appointment Management queries the source EHR for a practitioner's availability at a facility using the source system's IDs; custom sources need an `AppointmentBookingInterop` implementation and a Named Credential (Agentforce Health Developer Guide). | The source system per specialty and whether its FHIR R4 interface is available. | Self-scheduling shows real slots instead of a copy of the EHR calendar that drifts. |
+| Which appointment reasons can a patient pick, and through which channels (video, phone, in person)? | Self-scheduling is driven by `AppointmentReason` records and `ApptReasonEngmtChannelType` rows that link each reason to a channel and default work types. | A reason-by-channel matrix with the work type for each cell. | Patients only see reasons and channels the clinic can actually serve. |
+| Which assessments go to patients, and how are they bundled and tracked? | Patient assessments are delivered through `AssessmentEnvelope` and `AssessmentEnvelopeItem` (API 58.0+), with Status and NotificationStatus fields. | The instruments, the envelope grouping, expiry, and who is notified on completion. | Coordinators can see which assessments were sent, started, and finished per patient. |
+| Will portal users see clinical records (conditions, encounters, service requests)? | Community users need the FHIR R4 for Experience Cloud Sites permission set for Clinical Data Model objects, and many of those objects need the FHIR-Aligned Clinical Data Model org preference. | The objects in scope and the permission set plan for portal users. | Portal pages show clinical data on day one instead of failing with access errors. |
+| Which add-on licenses are in the signed contract (Experience Cloud for Health Cloud, CRM Analytics, Messaging)? | Several features in this skill depend on separately sold licenses; this is contract information no metadata reveals. | A license-to-feature matrix signed off by the account team. | Requirements that the org cannot deliver are cut before build, not after. |
+| Which channels may carry PHI, and are they covered by the BAA? | Coverage is a contractual fact per service. | A channel list with BAA status and the PHI each one may carry. | Reminders and messages are designed to stay inside covered channels. |
 
 ---
 
@@ -73,7 +88,7 @@ IAM aggregates Salesforce Scheduler and/or external EHR scheduling engines in a 
 - Appointment type configuration by specialty and location
 - Provider availability management
 
-**CRM Analytics dependency:** No-show prediction in IAM requires CRM Analytics (formerly Tableau CRM) as a separately licensed add-on. Without this license, the IAM scheduling console works but the AI/ML no-show risk scoring is unavailable. This is a common implementation gap — the feature appears in product marketing but the CRM Analytics dependency is not prominently documented.
+**CRM Analytics dependency:** No-show prediction in IAM requires CRM Analytics (formerly Tableau CRM) as a separately licensed add-on. Without this license, the IAM scheduling console works but the AI/ML no-show risk scoring is unavailable. This is a common implementation gap — the feature appears in product marketing but the CRM Analytics dependency is not prominently documented. UNVERIFIED (2026-10-03): the developer guide read for this revision records NoShow as a booking status (`healthcloudext.BookingStatus`) and a Service Appointment Status Reason value, but describes no prediction feature or license dependency.
 
 ### OmniStudio and Discovery Framework for Health Assessments
 
@@ -81,7 +96,7 @@ Delivering health assessments (standardized clinical questionnaires, social scre
 1. **OmniStudio managed package** installed — OmniScript is the form/assessment engine used for health assessments.
 2. **Discovery Framework** installed — the clinical assessment library framework used to standardize assessment templates (PHQ-9, GAD-7, SDOH screeners).
 
-Both are separate from base Health Cloud licensing, though OmniStudio is bundled within Health Cloud licenses. The key requirement: both must be explicitly installed and activated — they are not active by default after the Health Cloud package installation.
+Both must be explicitly set up before assessments can be built. OmniStudio is either the managed package runtime or the standard runtime; Discovery Framework is described in the Salesforce Industries Developer Guide as a feature that must be enabled in the org (its Metadata API types require "an Omnistudio license and the Discovery Framework feature enabled"). The Assessment standard objects are visible only to users with the Health Cloud and Health Cloud Platform permission set licenses and the Health Cloud Permission Set License permission set (Agentforce Health Developer Guide, Health Assessments).
 
 ### HIPAA-Compliant Secure Messaging
 
@@ -113,8 +128,8 @@ Secure in-portal messaging for patient-clinician communication must route throug
 **When to use:** A care program requires patients to complete standardized clinical assessments (PHQ-9 depression screening, SDOH social needs screening) via a portal.
 
 **How it works:**
-1. Confirm OmniStudio is installed and activated (not just licensed — must be installed and activated separately).
-2. Confirm Discovery Framework is installed and assessment templates are available.
+1. Confirm the OmniStudio runtime (managed package or standard) is set up in the org (not just licensed).
+2. Confirm the Discovery Framework feature is enabled and assessment templates are available.
 3. Identify required assessment instruments (PHQ-9, GAD-7, SDOHCC screening, etc.).
 4. Design the assessment trigger (enrollment event, scheduled cadence, or care gap).
 5. Define assessment response data model — where responses are stored (standard survey/assessment objects or custom).
@@ -130,7 +145,7 @@ Secure in-portal messaging for patient-clinician communication must route throug
 | Health assessments via portal | OmniStudio + Discovery Framework | OmniStudio in HC license; Discovery Framework must be installed |
 | Patient portal | Experience Cloud for Health Cloud | Separate add-on SKU; per-user license |
 | Secure clinical messaging | Messaging for In-App and Web + Messaging User perm set | Separate add-on; must be BAA-covered |
-| FHIR data in patient portal | FHIR R4 for Experience Cloud perm set | Included with Experience Cloud for HC add-on |
+| FHIR data in patient portal | FHIR R4 for Experience Cloud Sites perm set, plus the FHIR-Aligned Clinical Data Model org pref for many clinical objects | Included with Experience Cloud for HC add-on (UNVERIFIED) |
 
 ---
 
@@ -139,7 +154,7 @@ Secure in-portal messaging for patient-clinician communication must route throug
 1. **Confirm license scope** — before designing any patient engagement feature, verify which features are covered in the contract: Experience Cloud for Health Cloud, IAM, CRM Analytics, Messaging add-on, OmniStudio activation. Build a license-to-feature mapping as a prerequisite artifact.
 2. **Inventory patient engagement requirements** — gather requirements for each engagement category: scheduling, messaging, assessments, education, self-enrollment. For each, note the business requirement, technical prerequisites, and license dependencies.
 3. **Identify HIPAA compliance requirements** — for each engagement channel (messaging, assessment responses, appointment data), confirm HIPAA applicability, BAA coverage for the channel, and PHI handling requirements.
-4. **Design feature implementation sequence** — sequence features by dependency order. Patient portal (Experience Cloud for HC) must exist before any portal features can be configured. OmniStudio must be installed before assessment features are built.
+4. **Design feature implementation sequence** — sequence features by dependency order. Patient portal (Experience Cloud for HC) must exist before any portal features can be configured. OmniStudio and Discovery Framework must be set up before assessment features are built. Example queries and an appointment booking payload for validating each prerequisite are in `references/metadata-examples.md`.
 5. **Document prerequisites for implementation team** — produce a prerequisites document covering: license activation steps, permission set assignments (per-user experience cloud license, FHIR perm set, Messaging User perm set), and package installation sequence.
 6. **Validate requirements against licensing contracts** — review the completed requirements against the signed contract to confirm all required license SKUs are included. Flag any gaps before implementation begins.
 
@@ -149,11 +164,12 @@ Secure in-portal messaging for patient-clinician communication must route throug
 
 - [ ] Experience Cloud for Health Cloud add-on license confirmed (separate from base HC)
 - [ ] CRM Analytics license confirmed if IAM no-show prediction is in scope
-- [ ] OmniStudio installation confirmed if health assessments are in scope
-- [ ] Discovery Framework installation confirmed if standardized assessments are needed
+- [ ] OmniStudio runtime confirmed if health assessments are in scope
+- [ ] Discovery Framework feature enabled if standardized assessments are needed
+- [ ] Health Cloud and Health Cloud Platform permission set licenses planned for assessment users
 - [ ] Messaging add-on confirmed and HIPAA BAA coverage verified for messaging channel
 - [ ] Per-user Experience Cloud for Health Cloud permission set assignment planned
-- [ ] FHIR R4 for Experience Cloud permission set planned if FHIR data needed in portal
+- [ ] FHIR R4 for Experience Cloud Sites permission set planned if clinical data is needed in the portal
 
 ---
 
@@ -163,7 +179,7 @@ Secure in-portal messaging for patient-clinician communication must route throug
 
 2. **CRM Analytics required for IAM no-show prediction** — IAM appointment scheduling works without CRM Analytics, but no-show risk prediction (a key feature in product marketing materials) requires CRM Analytics as a separate licensed add-on. Organizations that include no-show prediction in requirements must confirm CRM Analytics is in scope.
 
-3. **OmniStudio must be installed AND activated** — OmniStudio is included in Health Cloud licensing, but the managed package must be explicitly installed in the org and activated per the installation guide. Health Cloud orgs where OmniStudio was never installed cannot use OmniScript-based assessment forms, even if the license is included.
+3. **OmniStudio and Discovery Framework must be set up, and assessment objects need specific licenses**: Health Cloud orgs without an OmniStudio runtime or with Discovery Framework disabled cannot deliver OmniScript-based assessments. See `references/gotchas.md` for the permission set licenses and the EHR scheduling dependency.
 
 ---
 

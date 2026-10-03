@@ -16,7 +16,7 @@ Answer these before building anything:
 
 - **Target object(s):** (Account / Contact / Opportunity / Campaign / Case / Recurring Donation / Custom Object)
 - **Custom object extra steps needed?** (Activities enabled? Lookup field added to npsp__Engagement_Plan__c?)
-- **Stewardship cadence:** (Number of tasks, day offsets, subjects, assigned-to users or queues, parent-child dependencies)
+- **Stewardship cadence:** (Number of tasks, Days After values, subjects, assigned-to users (User lookup only, no queues), parent-child dependencies)
 - **Non-Task actions needed?** (Email sends, field updates, Chatter posts — these require a separate Flow)
 - **Template migration plan:** (Manual recreation in production? Data Loader export/import? Document reference?)
 - **In-flight plans impacted by this change?** (Are there existing npsp__Engagement_Plan__c instances that need to be deleted and reapplied?)
@@ -29,14 +29,20 @@ Fill this in before building the template record.
 
 **Template Name:** ____________________________________
 
-**Target Object:** ____________________________________
+**Target lookup set on each plan (the template itself has no target-object field):** ____________________________________
 
-**Skip Weekends:** Yes / No
+**Skip Weekends:** Yes / No (default Yes)
+
+**Reschedule To:** Monday / Friday
+
+**Default Assignee:** Owner of Object for Engagement Plan / User Creating Engagement Plan
+
+**Automatically Update Child Task Due Date:** Yes / No (default Yes)
 
 **Description:** ____________________________________
 
-| # | Subject | Days Offset | Type | Priority | Assigned To | Parent Task # |
-|---|---------|-------------|------|----------|-------------|---------------|
+| # | Subject | Days After | Type | Priority | Assigned To | Parent Task # |
+|---|---------|------------|------|----------|-------------|---------------|
 | 1 | | | | | | (none) |
 | 2 | | | | | | |
 | 3 | | | | | | |
@@ -78,12 +84,12 @@ Non-Task actions: ____________________________________
 
 ## Build Checklist
 
-- [ ] Template `npsp__Engagement_Plan_Template__c` record created with correct name and target object
-- [ ] All `npsp__Engagement_Plan_Task__c` records added with accurate subjects, day offsets, types, and assignees
+- [ ] Template `npsp__Engagement_Plan_Template__c` record created with correct name and defaults
+- [ ] All `npsp__Engagement_Plan_Task__c` records added with accurate subjects, Days After values, types, and assignees
 - [ ] Parent-child task dependencies configured (if applicable)
-- [ ] Auto-Update Child Due Date behavior tested: parent marked Complete → child tasks recalculate (date edit alone does NOT trigger recalculation)
+- [ ] Auto-Update Child Due Date behavior tested: parent Task closed, child leaves Waiting on Dependent Task and gets a new date (date edit alone does NOT trigger recalculation)
 - [ ] Plan applied to a test record; correct number of Task records created
-- [ ] Task due dates verified against the template offset values
+- [ ] Task due dates verified against the template Days After values
 - [ ] Flow fault path added (if automated application via Flow)
 - [ ] Non-Task actions implemented in a separate Flow (if required)
 - [ ] Template definition documented in external reference (spreadsheet/wiki) for migration

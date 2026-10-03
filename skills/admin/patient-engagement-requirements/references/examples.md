@@ -21,17 +21,17 @@
 
 **Context:** A behavioral health organization wants patients to complete PHQ-9 depression screening and SDOH social needs assessments via a patient portal before their appointments.
 
-**Problem:** The implementation team builds the portal and begins assessment configuration, then discovers that OmniStudio is licensed but not installed in the org, and the Discovery Framework (which provides standardized PHQ-9 and SDOH assessment templates) was never installed.
+**Problem:** The implementation team builds the portal and begins assessment configuration, then discovers that no OmniStudio runtime is set up in the org, the Discovery Framework feature was never enabled, and coordinators lack the permission set licenses that make Assessment records visible.
 
 **Solution:**
-1. At project inception, verify OmniStudio installation status in Setup. It is licensed within Health Cloud but must be separately installed via the managed package installer.
-2. Verify Discovery Framework installation: check Setup > Installed Packages for the Discovery Framework package.
-3. If either is missing, follow the Health Cloud installation guide to install both in the correct order (OmniStudio before Discovery Framework).
+1. At project inception, record the OmniStudio runtime: Omnistudio for Managed Packages (an installed package) or the standard runtime.
+2. Confirm the Discovery Framework feature is enabled. The Salesforce Industries Developer Guide describes it as an org feature, not a package, so it will not appear under Installed Packages.
+3. Assign the Health Cloud and Health Cloud Platform permission set licenses and the Health Cloud Permission Set License permission set to every persona that works with assessments (Agentforce Health Developer Guide, Health Assessments).
 4. After installation, configure assessment templates using Discovery Framework's pre-built library (PHQ-9, GAD-7, SDOHCC screening).
 5. Build OmniScript-based assessment delivery flows for the patient portal.
 6. Design the notification workflow to alert care coordinators when high-risk PHQ-9 scores (>=10) are submitted.
 
-**Why it works:** OmniStudio and Discovery Framework are prerequisites for assessment delivery, but they are not active by default. Confirming installation status before beginning configuration prevents blocked implementation work.
+**Why it works:** OmniStudio, Discovery Framework, and the permission set licenses are prerequisites for assessment delivery, and none of them is active by default. Confirming each before configuration prevents blocked implementation work.
 
 ---
 
@@ -42,3 +42,17 @@
 **What goes wrong:** Health Cloud is a care coordinator/clinician product. Patient-facing portal functionality requires the Experience Cloud for Health Cloud add-on (separate SKU with per-user licensing). Implementations that begin portal development before confirming this license will hit a hard stop when attempting to configure Experience Cloud for Health Cloud components.
 
 **Correct approach:** At project inception, explicitly confirm which patient engagement features are in scope and verify that each required license SKU is included in the contract: Experience Cloud for Health Cloud (portal), IAM (scheduling), CRM Analytics (no-show prediction), Messaging add-on (secure messaging). Never assume portal capability is included in the base Health Cloud license.
+
+---
+
+## Example 3: Prerequisite Checks and an Appointment Payload for the Requirements Pack
+
+The complete artifacts (file paths, metadata XML or API payloads, and the `package.xml` member form) are in `references/metadata-examples.md`.
+
+```text
+Evidence the requirements pack must contain before build:
+1. ApptReasonEngmtChannelType inventory (reasons x channels x work types)
+2. AssessmentEnvelope status query result from the target org
+3. Agreed Book Appointment payload for the portal
+4. Retrieved IAM integration class and Named Credential (or a note that the default FHIR adapter is used)
+```

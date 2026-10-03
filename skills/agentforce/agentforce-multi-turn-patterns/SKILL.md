@@ -21,6 +21,7 @@ triggers:
   - "topic to topic handoff"
   - "conversation memory agentforce"
   - "agent remembers previous turn"
+  - "keep my agentforce agent from asking for the order number again two turns later"
 inputs:
   - Conversation design goals (what info must accumulate across turns)
   - Topic catalog for the agent
@@ -32,9 +33,9 @@ outputs:
   - Clarifying-question patterns per ambiguous input class
   - Hand-off criteria and escalation flow
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Agentforce Multi-Turn Conversation Patterns
@@ -46,25 +47,36 @@ updated: 2026-08-14
 > keywords — those did not change, and readers arriving with the older
 > vocabulary still need to find this skill.
 
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| Which facts must the agent still know several turns later, and which must be exact? | Agent Script variables "let agents deterministically remember information across conversation turns"; the guide recommends them over LLM context memory for state. | A variable list with type, default, and description for each fact. | Exact values (order numbers, dates) survive long conversations instead of being paraphrased. |
+| Is this an Agent Script agent or an Agentforce (Default) employee agent? | Agentforce (Default) uses only the most recent six turns as context, and its sessions are tied to one browser tab; Agent Script agents keep variables for the session. | The agent type and channel, which decides where state can live. | The memory design matches the runtime instead of assuming one that does not apply. |
+| Which values come from the channel rather than the user? | Linked variables read sources such as `@MessagingSession.Id` or `@MessagingEndUser.ContactId`; they cannot have defaults and cannot be set by the agent. | A list of channel-sourced values and their source namespace. | Identity and session context are read from the channel, not re-asked. |
+| What resets when the user corrects an earlier answer or switches subagent? | Variables are agent-wide (all subagents can access them), and transitions are one way, so stale values follow the user unless they are reset. | A dependency map: which variables to clear when another changes. | Corrections cascade cleanly and do not produce records built from mixed answers. |
+| When does the conversation leave the agent, and what goes with it? | `@utils.escalate` needs an active Omni-Channel connection with outbound route settings; `@utils.end_session` ends the conversation immediately. | Escalation triggers, the route, and the context to collect first. | Handoffs reach a person who can see what the agent already learned. |
+| How will multi-turn behavior be tested? | `AiEvaluationDefinition` test cases accept `conversationHistory` inputs, so an utterance can be tested in the middle of a conversation. | A set of transcripts with expected subagents and actions per turn. | Prompt or script changes are checked against real multi-turn paths before release. |
+
 ## Core concept — conversation state lives in three places
 
 Agentforce keeps conversation state in three distinct stores. Design fails when authors conflate them.
 
 | Store | Scope | Persistence | When to use |
 |---|---|---|---|
-| **LLM context window** | Current turn (+ recent turns) | Ephemeral — falls off as conversation grows | Implicit; handled by the model |
-| **Session variables** | Current conversation session | Until session ends (timeout or user closes) | Facts the user states that future turns need |
+| **LLM context window** | Conversation history (Agentforce (Default): the most recent six turns, per the Generative AI guide; Agent Script: the guide says the LLM remembers the entire conversation history) | Not deterministic; the model interprets it | Implicit; handled by the model |
+| **Session variables** (Agent Script `variables` block) | Agent-wide: every subagent can read and set them | Until the session ends | Facts the user states that future turns need, action outputs used in conditions |
 | **Platform data** (Account, Case, custom objects, Data Cloud) | Forever | Durable | Facts that outlive the session — user preferences, transaction logs |
 
 Rules:
-- Never rely on the LLM context window alone to remember multi-turn facts. The window truncates silently.
+- Never rely on the LLM context window alone to remember multi-turn facts. Agentforce (Default) keeps only six turns, and even where history is kept, the model interprets it rather than storing exact values.
 - Never use session variables for data that must outlive the conversation.
 - Never write platform data on every turn when a session variable would do.
 
 ## Recommended Workflow
 
 1. **Inventory the turn-to-turn facts.** List every piece of information the agent must know in turn N that was given in turn N-1 or earlier. This is your session-variable schema.
-2. **Decide the scope of each fact.** Within-subagent-only, cross-subagent, cross-session? Each scope maps to a different store.
+2. **Decide the scope of each fact.** Cross-subagent (any Agent Script variable is agent-wide), within one subagent (an agent-wide variable you reset on exit), or cross-session (platform data)? Write the result as a `variables` block; a complete example is in `references/metadata-examples.md`.
 3. **Design subagents around user intent shifts, not UI screens.** A subagent boundary should match a meaningful change in what the user is trying to accomplish.
 4. **Plan clarifying-question triggers.** For every ambiguous input class, decide: can the agent proceed with a plausible assumption and verify, or does it need to ask?
 5. **Wire the subagent-to-subagent handoff.** When a subagent exits, which session variables survive? Which are reset?
@@ -117,9 +129,9 @@ Turn 5:
 ```
 
 Key design:
-- The `verifiedAccountId` session variable has **cross-subagent scope**.
-- The Support subagent's internal variables (`caseId`, `resolutionStatus`) are **subagent-scoped** and don't survive the subagent exit.
-- Declaring scope explicitly at variable-creation time prevents information leaks.
+- In Agent Script every variable is defined once in the `variables` block, and all subagents can access it ("Variables (Custom and Linked)", Agentforce Developer Guide). `verified_account_id` is therefore visible to the Upgrade subagent without extra setup.
+- There is no subagent-private variable scope. Earlier versions of this skill said Support's internal variables are subagent-scoped and vanish on exit; they do not. If `case_id` must not influence the Upgrade subagent, reset it explicitly (`set @variables.case_id = ""`) when Support finishes.
+- Name and describe each variable so its owner and lifetime are obvious, because any subagent can change a `mutable` variable.
 
 ### Pattern 3 — Clarifying question with fallback
 
@@ -151,8 +163,8 @@ Turn 3: Agent says "Let me connect you with a specialist." Hands off to a human 
 
 Key design:
 - Two-strike rule: two consecutive non-understanding turns trigger hand-off.
-- Hand-off preserves the full conversation transcript for the human agent.
-- Session variables accumulated to this point are passed to the human via the hand-off payload.
+- Hand-off uses `@utils.escalate`, which needs an active Omni-Channel connection defined in the agent's connection block with `outbound_route_type` and `outbound_route_name` (Agent Script Reference: Utils).
+- Hand-off preserves the full conversation transcript for the human agent, and session variables accumulated to this point are passed to the human via the hand-off payload. UNVERIFIED (2026-10-03): what the receiving rep sees depends on the Omni-Channel flow; no source read for this revision describes the payload.
 - The agent does NOT keep probing after escalation — the human owns the interaction.
 
 ## Bulk safety
@@ -181,7 +193,7 @@ See `references/gotchas.md`.
 
 ## Testing
 
-Multi-turn conversations need **transcript-level evals**, not single-turn unit tests. See `skills/agentforce/agentforce-eval-harness` for the harness + fixture format. Minimum coverage:
+Multi-turn conversations need **transcript-level evals**, not single-turn unit tests. See `skills/agentforce/agentforce-eval-harness` for the harness + fixture format. Salesforce's own test definition (`AiEvaluationDefinition`) supports this directly: a test case can include `conversationHistory` entries (role, message, subagent for agent turns, index) before the utterance under test, and context variables are immutable after the session starts except `EndUserLanguage` (Agentforce Developer Guide, Build Tests in Metadata API). Minimum coverage:
 
 - Happy path for each subagent (linear flow, all variables captured correctly).
 - Subagent switch mid-conversation (state handoff correct).
@@ -195,3 +207,7 @@ Multi-turn conversations need **transcript-level evals**, not single-turn unit t
 - Salesforce Help — Session Variables for Agents: https://help.salesforce.com/s/articleView?id=sf.copilot_variables.htm
 - Salesforce Architects — Conversational AI Patterns: https://architect.salesforce.com/
 - Salesforce Developer — Agentforce Developer Guide: https://developer.salesforce.com/docs/einstein/genai/guide/
+- Agentforce Developer Guide, Agent Script Reference: Variables (Custom and Linked): https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-ref-variables.html
+- Agentforce Developer Guide, Agent Script Reference: Utils: https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-ref-utils.html
+- Agentforce Developer Guide, Build Tests in Metadata API: https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-build-tests.html
+- Full list with the claim each source supports: `references/well-architected.md`

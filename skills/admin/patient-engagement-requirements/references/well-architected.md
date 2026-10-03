@@ -3,7 +3,7 @@
 ## Relevant Pillars
 
 - **Security** — Patient portal features must handle PHI with HIPAA compliance: secure messaging must use BAA-covered channels, assessment responses containing PHI must be encrypted, portal authentication must meet HIPAA access control requirements. Every engagement channel that carries PHI requires explicit BAA coverage verification.
-- **Operational Excellence** — License prerequisites (Experience Cloud for HC, CRM Analytics, OmniStudio installation) must be confirmed and activated before implementation begins. Discovering license gaps during build phases creates costly rework. The engagement feature inventory must include license dependency documentation as a mandatory artifact.
+- **Operational Excellence** — License prerequisites (Experience Cloud for HC, CRM Analytics, OmniStudio runtime, Discovery Framework feature) must be confirmed and activated before implementation begins. Discovering license gaps during build phases creates costly rework. The engagement feature inventory must include license dependency documentation as a mandatory artifact.
 - **Reliability** — IAM scheduling aggregation from multiple sources (Salesforce Scheduler + EHR) creates dependency on external system availability. Patient self-scheduling must handle graceful degradation when the EHR scheduling system is unavailable.
 
 ## Architectural Tradeoffs
@@ -20,8 +20,15 @@
 
 ## Official Sources Used
 
+Read for the 2026-10-03 revision:
+
+- Agentforce Health Developer Guide (Health Cloud developer guide, Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/health_cloud_dev_guide.pdf. Sections used: Intelligent Appointment Management (`AppointmentReason`, `ApptReasonEngmtChannelType`, practitioner availability), HealthCloudExt namespace (`AppointmentBookingInterop`, `BookingStatus`), Health Assessments (`AssessmentEnvelope`, `AssessmentEnvelopeItem`, visibility rule), Clinical Data Model (org preference and FHIR R4 for Experience Cloud Sites permission set), Fields on Service Appointment, and REST Reference (Appointment Management, Book Appointment).
+- Salesforce Industries Developer Guide (Spring '26), Discovery Framework Metadata API Types: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_industries_dev_guide.pdf. Supports the "Discovery Framework feature enabled" requirement.
+- Trailhead, Configure a Simple OmniScript: https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript/create-a-simple-omniscript. Supports the managed package runtime versus standard runtime distinction.
+
+Carried from earlier revisions (not re-read on 2026-10-03; help.salesforce.com does not render to a fetcher):
+
 - Salesforce Health Cloud Admin Guide — Intelligent Appointment Management: https://help.salesforce.com/s/articleView?id=ind.hc_iam.htm
-- Trailhead — Intelligent Appointment Management for Health Cloud: https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - OmniStudio Developer Guide: https://developer.salesforce.com/docs/industries/omnistudio/overview
 - Experience Cloud for Health Cloud: https://help.salesforce.com/s/articleView?id=ind.hc_exp_cloud_for_health_cloud.htm
 - Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

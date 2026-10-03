@@ -13,6 +13,8 @@ These patterns help the consuming agent self-check its own output.
 
 ```
 Engagement Plans create standard Salesforce Task records only.
+The Send Email checkbox on a template task only sends the standard task
+notification to the assigned user. It never emails the donor.
 For email sends, field updates, or Chatter posts as part of the cadence:
   - Build a separate Record-Triggered Flow on the same object
   - Trigger the Flow on the same conditions that apply the Engagement Plan
@@ -54,12 +56,16 @@ To migrate templates between orgs:
 
 **What the LLM generates:** "Update the Engagement Plan Template with the new 45-day task and all existing engagement plans will automatically reflect the change."
 
-**Why it happens:** LLMs familiar with metadata-driven configuration (e.g., page layouts, validation rules) expect that editing a template propagates to all instances. NPSP Engagement Plan instances are data records frozen at the time of application — they do not have a live reference to the template.
+**Why it happens:** LLMs familiar with metadata-driven configuration (e.g., page layouts, validation rules) expect that editing a template propagates to all instances. Tasks created from a plan are copied from the template at application time. The plan keeps a master-detail link to the template, so a few things do stay live: the plan Status formula reads the template's current task count, and waiting dependent Tasks read the template task's current values when their parent closes.
 
 **Correct pattern:**
 
 ```
-Template changes have NO effect on existing npsp__Engagement_Plan__c instances.
+Template changes do NOT rewrite Tasks that already exist.
+They DO change two live readings on existing plans:
+  - Status__c compares Completed_Tasks__c to the template's current task count
+  - waiting dependent Tasks take the template task's current Status, Days After,
+    Reminder and Send Email values when their parent closes
 To apply a template change to records that already have a plan:
   1. Identify all active npsp__Engagement_Plan__c records using the old template version
      (SOQL: SELECT Id, npsp__Account__c FROM npsp__Engagement_Plan__c
@@ -77,13 +83,14 @@ To apply a template change to records that already have a plan:
 
 **What the LLM generates:** "To reschedule child tasks, simply update the parent task's due date and NPSP will automatically adjust all dependent child tasks."
 
-**Why it happens:** LLMs infer that "Auto-Update Child Due Date" means due-date changes cascade on any modification to the parent task. The actual trigger is narrower: parent Task completion (Status = "Completed").
+**Why it happens:** LLMs infer that "Auto-Update Child Due Date" means due-date changes cascade on any modification to the parent task. The actual trigger is narrower: the parent Task becoming closed (`IsClosed` changes from false to true in `EP_TaskDependency_TDTM`).
 
 **Correct pattern:**
 
 ```
 Auto-Update Child Due Date in NPSP Engagement Plans fires ONLY when:
-  - The parent Salesforce Task Status is set to "Completed"
+  - The parent Salesforce Task moves to a status flagged as closed
+    ("Completed" is the common one, but any closed status counts)
 
 It does NOT fire when:
   - The parent Task's ActivityDate (due date) is manually edited
@@ -91,7 +98,7 @@ It does NOT fire when:
   - Any other field on the parent Task is updated
 
 To shift child task due dates:
-  Option A: Mark the parent Task Complete (if appropriate) — children recalculate from completion date
+  Option A: Close the parent Task (if appropriate); direct children recalculate from the close date
   Option B: Manually update child Task due dates directly
   Option C: Delete the plan instance and reapply the template (resets all tasks)
 ```
@@ -124,6 +131,8 @@ Step 2: Add a lookup field to npsp__Engagement_Plan__c
   Save
 
 Only after both steps is the custom object available as an Engagement Plan target.
+NPSP finds the new lookup on its own at run time (EP_EngagementPlans_UTIL scans
+custom relationship fields on the plan object), so there is no settings page to update.
 ```
 
 **Detection hint:** Flag any response that says Engagement Plans work "on any object" or that custom objects can be targeted without additional setup. Also flag responses that omit the lookup field requirement on `npsp__Engagement_Plan__c`.
@@ -154,4 +163,28 @@ FSC Action Plans:
 These are separate features. Do not apply FSC Action Plan guidance to NPSP Engagement Plans.
 ```
 
+The deployability difference is documented: `ActionPlanTemplate` is a Metadata API type (suffix `.apt`, folder `actionPlanTemplates`) in the Metadata API Developer Guide, while NPSP templates are records of a custom object.
+
 **Detection hint:** Flag any response that uses `ActionPlanTemplate` or `ActionPlan` API names when the context is NPSP. Also flag FSC-specific configuration steps (e.g., Action Plan Lightning Component) being suggested for NPSP orgs.
+
+---
+
+## Anti-Pattern 7: Inventing a Target Object Field on the Template, or Setting Two Lookups on the Plan
+
+**What the LLM generates:** "Set the template's Target Object to Campaign" or a Flow that populates both `npsp__Contact__c` and `npsp__Opportunity__c` on the same `npsp__Engagement_Plan__c` "so it shows on both records."
+
+**Why it happens:** Other template features (FSC Action Plan Templates, email templates) carry an object type. LLMs assume NPSP templates do too, and they treat extra lookups as harmless reporting fields.
+
+**Correct pattern:**
+
+```
+npsp__Engagement_Plan_Template__c fields: Name, Description__c, Skip_Weekends__c,
+  Reschedule_To__c, Default_Assignee__c, Automatically_Update_Child_Task_Due_Date__c.
+  There is no target-object field. One template can serve any target.
+npsp__Engagement_Plan__c: populate exactly ONE target lookup.
+  Zero lookups  -> error engagementPlanNoLookups
+  Two lookups   -> error engagementPlanTwoLookups
+  Changing the target after insert -> error engagementPlanCantEdit
+```
+
+**Detection hint:** Flag any instruction that mentions a template "Target Object" setting, or any record-create step that sets more than one of `npsp__Account__c`, `npsp__Campaign__c`, `npsp__Case__c`, `npsp__Contact__c`, `npsp__Opportunity__c`, `npsp__Recurring_Donation__c` (or a custom lookup) on the same plan.

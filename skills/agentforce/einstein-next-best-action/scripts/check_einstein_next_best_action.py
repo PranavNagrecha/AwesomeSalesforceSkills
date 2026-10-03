@@ -109,22 +109,23 @@ def check_deprecated_strategy_builder(manifest_dir: Path) -> list[str]:
     """Detect legacy Strategy Builder metadata files."""
     issues: list[str] = []
 
-    # Strategy Builder files have .strategy-meta.xml extension or live in strategies/ folder
+    # Strategy Builder metadata is RecommendationStrategy: recommendationStrategies/<Name>.recommendationStrategy-meta.xml.
+    # Earlier versions looked for strategies/*.recommendationStrategy-meta.xml, which no deployment contains, so the rule never fired.
     for search_dir in [manifest_dir, manifest_dir / "force-app" / "main" / "default"]:
-        strategies_dir = search_dir / "strategies"
+        strategies_dir = search_dir / "recommendationStrategies"
         if strategies_dir.exists():
-            strategy_files = list(strategies_dir.glob("*.strategy-meta.xml"))
+            strategy_files = list(strategies_dir.glob("*.recommendationStrategy-meta.xml"))
             if strategy_files:
-                names = ", ".join(f.stem.replace(".strategy-meta", "") for f in strategy_files)
+                names = ", ".join(f.stem.replace(".recommendationStrategy-meta", "") for f in strategy_files)
                 issues.append(
                     f"Deprecated Strategy Builder files found in {strategies_dir}: {names}. "
-                    f"Strategy Builder was deprecated in Spring '24. "
+                    f"Strategy Builder is the legacy authoring surface (deprecation timing UNVERIFIED 2026-10-03). "
                     f"Migrate these to Autolaunched Flows."
                 )
 
     # Also check for .strategy files at various depths
-    for strategy_file in manifest_dir.rglob("*.strategy-meta.xml"):
-        if "strategies" not in str(strategy_file):
+    for strategy_file in manifest_dir.rglob("*.recommendationStrategy-meta.xml"):
+        if "recommendationStrategies" not in str(strategy_file):
             issues.append(
                 f"Strategy Builder file found at unexpected location: {strategy_file}. "
                 f"Migrate to an Autolaunched Flow."

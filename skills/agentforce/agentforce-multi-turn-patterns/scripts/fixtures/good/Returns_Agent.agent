@@ -1,0 +1,101 @@
+system:
+    instructions: "You help customers return items from recent orders. Be brief and confirm before acting."
+    messages:
+        welcome: "Hi! I can help you return an item. What's your order number?"
+        error: "Sorry, something went wrong. Let me try that again."
+
+config:
+    developer_name: "Returns_Agent"
+    agent_label: "Returns Agent"
+    description: "Collects order, item, and reason across turns and creates a return."
+    runtime:
+        reset_to_initial_node: False
+
+connection messaging:
+    escalation_message: "One moment while I connect you to a service representative."
+    outbound_route_type: "OmniChannelFlow"
+    outbound_route_name: "Returns_Escalation_Flow"
+
+variables:
+    order_number: mutable string = ""
+        description: "Order the customer wants to return from. Source of truth for item_id and return_reason."
+    item_id: mutable string = ""
+        description: "Record ID of the order item being returned. Derived from order_number."
+    return_reason: mutable string = ""
+        description: "Reason the customer gave for the return."
+    verified_account_id: mutable string = ""
+        description: "Account ID set after identity verification. Read by every subagent."
+    messaging_session_id: linked string
+        source: @MessagingSession.Id
+        description: "Messaging session for this conversation."
+
+start_agent agent_router:
+    description: "Welcome the customer and route to the right subagent"
+    reasoning:
+        instructions: ->
+            if @variables.verified_account_id == "":
+                transition to @subagent.Identity
+            | Select the best tool to call based on conversation history and user's intent.
+        actions:
+            go_to_returns: @utils.transition to @subagent.Returns
+                description: "Handles item returns for an order."
+            go_to_escalation: @utils.escalate
+                description: "Escalate to a human rep when the customer asks for one."
+
+subagent Identity:
+    description: "Verifies the customer before any order data is shown."
+    reasoning:
+        instructions: ->
+            | Ask for the email on the account, then call {!@actions.verify_customer}.
+        actions:
+            verify_customer: @actions.verify_customer
+                with email = ...
+                set @variables.verified_account_id = @outputs.account_id
+                transition to @subagent.Returns
+    actions:
+        verify_customer:
+            description: "Verify the customer by email and return the account ID."
+            inputs:
+                email: string
+            outputs:
+                account_id: string
+                date_of_birth: string
+                    filter_from_agent: True
+            target: "apex://VerifyCustomerAction"
+
+subagent Returns:
+    description: "Collects the order number, the item, and the reason, then creates the return."
+    reasoning:
+        instructions: ->
+            if @variables.order_number == "":
+                | Ask for the order number, then call {!@actions.capture_order}.
+            if @variables.order_number != "" and @variables.item_id == "":
+                | Show the items on order {!@variables.order_number} and ask which one is being returned, then call {!@actions.capture_item}.
+            if @variables.item_id != "" and @variables.return_reason == "":
+                | Ask why the item is being returned, then call {!@actions.capture_reason}.
+            | Confirm order, item, and reason before calling {!@actions.create_return}.
+              If the customer changes the order number, call {!@actions.capture_order} again.
+        actions:
+            capture_order: @utils.setVariables
+                with order_number = ...
+                description: "Store the order number the customer gave."
+            capture_item: @utils.setVariables
+                with item_id = ...
+                description: "Store the record ID of the item the customer picked."
+            capture_reason: @utils.setVariables
+                with return_reason = ...
+                description: "Store the reason for the return."
+            create_return: @actions.create_return
+                with order_number = @variables.order_number
+                with item_id = @variables.item_id
+                with reason = @variables.return_reason
+    actions:
+        create_return:
+            description: "Create a return for one order item."
+            inputs:
+                order_number: string
+                item_id: string
+                reason: string
+            outputs:
+                return_id: string
+            target: "flow://Create_Order_Return"

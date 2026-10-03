@@ -20,7 +20,7 @@ Common mistakes AI coding assistants make when authoring Agentforce multi-turn c
 
 **Why it happens:** LLMs default to string-concatenation patterns when they don't think about schema.
 
-**Correct pattern:** One variable per atomic fact. `session.orderNumber`, `session.itemId`, `session.reason` — each typed, each scoped independently.
+**Correct pattern:** One variable per atomic fact. In Agent Script: `order_number: mutable string`, `item_id: mutable string`, `return_reason: mutable string`, each with a description. Variables are agent-wide, so "scoping" a fact means resetting it explicitly when its owning subagent finishes.
 
 **Detection hint:** Session variables of type "Text(Long)" used for multi-field data.
 
@@ -119,3 +119,36 @@ Common mistakes AI coding assistants make when authoring Agentforce multi-turn c
 **Correct pattern:** Name by semantics: `session.orderNumber`, `session.returnReason`. Turn numbers are not stable — user corrections can renumber the conceptual turns.
 
 **Detection hint:** Session variable names containing digits matching turn numbers.
+
+---
+
+## Anti-Pattern 11: Claiming Subagent-Private Variable Scope
+
+**What the LLM generates:** "Declare `caseId` at subagent scope so it is cleared automatically when the Support subagent exits; declare `verifiedAccountId` at cross-subagent scope."
+
+**Why it happens:** Many frameworks have local and global state, so LLMs invent a scope setting. The Agent Script reference says all variables are defined in the `variables` block and all subagents in the agent can access them. There is no scope property.
+
+**Correct pattern:**
+```text
+variables:
+  verified_account_id: mutable string = ""
+    description: "Set by Identity after verification. Read by every subagent."
+  case_id: mutable string = ""
+    description: "Owned by Support. Reset to empty when Support finishes."
+# In Support, before handing off:
+#   set @variables.case_id = ""
+```
+
+**Detection hint:** Any mention of "subagent scope", "topic scope", or "cross-subagent scope" as a variable setting.
+
+---
+
+## Anti-Pattern 12: Typing Record References as `id`
+
+**What the LLM generates:** `account_id: mutable id` in a variables block, or `id` as an action input type.
+
+**Why it happens:** Apex has an `Id` type, so LLMs carry it over. The Agent Script reference marks `id` as deprecated for variables and for action inputs and outputs: use `string` for Salesforce record IDs.
+
+**Correct pattern:** `account_id: mutable string = ""`, validated by the action that consumes it.
+
+**Detection hint:** The token `id` used as a type in a `variables`, `inputs`, or `outputs` block.

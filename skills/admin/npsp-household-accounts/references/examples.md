@@ -1,92 +1,85 @@
 # Examples — NPSP Household Accounts
 
-## Example 1: Household Naming Customization for a Married Couple with Different Last Names
+## Example 1: Household Naming for a Married Couple with Different Last Names
 
-**Context:** A nonprofit org has donors Jane Smith and John Jones who are married but kept separate last names. They share a Household Account. The default NPSP naming produces "Jones Household" (alphabetical last Contact added), which does not reflect both donors.
+**Context:** A nonprofit org has donors Jane Smith and John Jones who are married but kept separate last names. They share a Household Account. Development staff expect the name to read "Smith and Jones Household" and the formal greeting to name both people.
 
-**Problem:** Without custom naming configuration, only one last name appears in the household name and greeting fields, which affects mail merge accuracy and donor acknowledgment letters.
+**Problem:** Staff assume the default NPSP naming can only show one last name and start hand-editing household names. Each edit adds the field to `npo02__SYSTEM_CUSTOM_NAMING__c`, so those households stop updating forever.
 
 **Solution:**
 
-Step 1 — Navigate to NPSP Settings > Households > Household Naming.
+Step 1: Navigate to NPSP Settings > People > Households and read the current Household Naming settings before changing anything.
 
-Step 2 — Set the following format strings:
+Step 2: Compare them with the NPSP defaults (set by `UTIL_CustomSettingsFacade.configHouseholdNamingSettings` in the NPSP source):
 
-```
-Household Name Format:   {!LastName}
-Name Connector:          " and "
-Name Append Text:        " Household"
+```text
+Household Name Format:     {!LastName} Household
+Formal Greeting Format:    {!{!Salutation} {!FirstName}} {!LastName}
+Informal Greeting Format:  {!{!FirstName}}
+Name Connector:            and          (one connector shared by all three strings;
+                                         default comes from the npo02 HouseholdNameConnector label,
+                                         UNVERIFIED (2026-10-03) that its value is "and")
+Contact Overrun Count:     9
+Implementing Class:        HH_NameSpec
 
-→ Result: "Smith and Jones Household"
-
-Formal Greeting Format:  {!{!Salutation}} {!FirstName}} {!LastName}
-Formal Greeting Connector: " and "
-
-→ Result: "Ms. Jane Smith and Mr. John Jones"
-
-Informal Greeting Format: {!FirstName}
-Informal Greeting Connector: " and "
-
-→ Result: "Jane and John"
+Result for Jane Smith (Ms.) and John Jones (Mr.), Jane first in naming order:
+  Name:               Smith and Jones Household
+  Formal Greeting:    Ms. Jane Smith and Mr. John Jones
+  Informal Greeting:  Jane and John
 ```
 
-Step 3 — Click "Refresh Household Names" in NPSP Settings to batch-regenerate all existing household names.
+`HH_NameSpec` groups members by last name. Each distinct last name becomes one entry, entries are joined with the Name Connector, and the text after the last token (" Household") is appended once. The default format therefore already handles different last names. For Jane and John Smith it produces "Smith Household" and "Ms. Jane and Mr. John Smith".
 
-Step 4 — Verify the Household Account record for Jane Smith and John Jones now shows:
-- Name: "Smith and Jones Household"
-- Formal Greeting: "Ms. Jane Smith and Mr. John Jones"
-- Informal Greeting: "Jane and John"
+Step 3: Set `npo02__Household_Naming_Order__c` to 0 on Jane and 1 on John if Jane must come first. Without it, NPSP puts the primary contact first, then the oldest record.
 
-**Why it works:** NPSP evaluates the Name Format token across all Contacts in the household, concatenating with the configured connector. The `{!LastName}` token produces one value per household Contact, then joins them. The append text is added once at the end.
+Step 4: If any household was hand-edited earlier, blank the overridden field on the Account and save, so NPSP takes it back. Then click "Refresh Household Names" in NPSP Settings to apply format changes to every household. Refresh skips fields that are still user-controlled.
+
+Step 5: Verify the Household Account record shows the expected name and greetings.
+
+**Why it works:** The format strings, not manual edits, carry the rule. The naming order makes the sequence deliberate. Releasing overridden fields lets the refresh reach every household.
 
 ---
 
-## Example 2: Merging Duplicate Household Accounts Using NPSP Flow
+## Example 2: Merging Duplicate Contacts Across Two Households
 
-**Context:** A data import created duplicate Contact records for the same donor — "Robert Williams" appears twice, each on a separate Household Account. The original household has $5,000 in rollup giving; the duplicate has $0. A deduplication effort is underway.
+**Context:** A data import created duplicate Contact records for the same donor. "Robert Williams" appears twice, each on a separate Household Account. The original household has $5,000 in rollup giving; the duplicate has $0.
 
-**Problem:** Using the native Salesforce Account merge UI merges the Account records but bypasses NPSP Apex triggers. The surviving Account retains only the giving data from whichever master record was chosen — the $5,000 rollup may be lost or duplicated, Relationship records pointing at the deleted Contact become orphaned, and the household name may not regenerate correctly.
+**Problem:** A volunteer merges the two Household Accounts with the native Account merge from a batch dedupe tool. The household name and `npo02__TotalOppAmount__c` on the survivor stay wrong for days. NPSP's Account merge handler only queues its fix-up when the merge is not running in a future or batch context.
 
 **Solution:**
 
-Step 1 — Navigate to the duplicate **Contact** record (not the Account record).
+Step 1: Merge the duplicate Contacts, not the Accounts, with the NPSP Contact Merge page (Visualforce page `CON_ContactMerge`). Select two or three Contacts per pass.
 
-Step 2 — Click "Find Duplicates" in the Contacts related list or use the NPSP Merge Duplicate Contacts quick action.
+Step 2: Choose the winning Contact and the field values to keep, then merge.
 
-Step 3 — In the NPSP Merge Duplicate Contacts flow:
-- Select the record to retain as the master Contact.
-- Confirm which Household Account should be the surviving account.
-- Review the field value selections for the merged Contact record.
+Step 3: NPSP's `CON_ContactMerge_TDTM` queues a fix-up job that updates household names and member counts and moves Opportunities for individual-account Contacts. Wait for the queueable job in Setup > Apex Jobs.
 
-Step 4 — Complete the flow. NPSP will:
-- Merge the two Contact records
-- Re-associate all Opportunity records with the surviving Contact and Household Account
-- Re-fire household naming triggers to regenerate Account Name, Formal Greeting, and Informal Greeting
-- Delete orphaned Relationship records pointing at the removed Contact
+Step 4: Verify on the surviving Household Account:
 
-Step 5 — After the flow completes, verify on the surviving Household Account:
-
-```
+```sql
 SELECT Id, Name, npo02__TotalOppAmount__c, npo02__NumberOfClosedOpps__c,
-       npo02__Formal_Greeting__c, npo02__Informal_Greeting__c
+       npo02__Formal_Greeting__c, npo02__Informal_Greeting__c,
+       npo02__SYSTEM_CUSTOM_NAMING__c
 FROM Account
 WHERE Id = '<surviving_account_id>'
 ```
 
-Confirm `npo02__TotalOppAmount__c` reflects the combined giving history.
+Confirm `npo02__TotalOppAmount__c` reflects the combined giving history. If the merge ran from a batch tool, re-run NPSP rollups for the surviving Accounts before reporting on them.
 
-**Why it works:** The NPSP Merge Duplicate Contacts flow uses NPSP's internal merge APIs which respect the trigger architecture. Rollup recalculation is triggered automatically on the surviving Account. Native merge does not invoke these APIs.
+**Why it works:** Apex triggers fire on merge (delete events on losers, an update on the winner), but triggers do not fire on reparented children such as Opportunities (Apex Developer Guide, Triggers and Merge Statements). NPSP's merge handlers exist to repair what the merge itself does not, and they run asynchronously. Waiting for them, or re-running rollups when they were skipped, is what makes the totals correct.
 
 ---
 
-## Anti-Pattern: Using Native Account Merge for NPSP Households
+## Anti-Pattern: Treating Native Account Merge as Either Safe or Forbidden Without Checking Context
 
-**What practitioners do:** Navigate to the duplicate Account record in Salesforce, click the standard "Merge Accounts" button (or go to `/merge?mergeType=Account`), select a master record, and complete the native merge wizard.
+**What practitioners do:** Either they merge Household Accounts with the native merge or a batch tool and report on totals immediately, or they ban native merge outright because "it bypasses NPSP triggers".
 
-**What goes wrong:** The native Salesforce Account merge bypasses all NPSP Apex triggers. The result is:
-- Rollup fields (`npo02__TotalOppAmount__c`, `npo02__LastCloseDate__c`, etc.) reflect only the master Account's data — Opportunity history from the non-master is re-parented at the data layer but rollup totals are not recalculated
-- `npe4__Relationship__c` records that referenced the deleted Contact ID become orphaned and cause errors in relationship views
-- The household name may not regenerate because NPSP naming triggers were never fired during the merge
-- The NPSP customization flag state from the non-master Account is silently discarded
+**What goes wrong:** The first group reports stale rollups, and from batch tools never gets the Account fix-up at all (`ACCT_AccountMerge_TDTM` skips it in future and batch contexts). The second group rejects a supported path based on a false premise and builds manual workarounds.
 
-**Correct approach:** Always merge duplicate NPSP Contacts (not Accounts directly) using the NPSP Merge Duplicate Contacts flow. If Account-only merges are needed for Organization Accounts (non-household), the standard merge UI is acceptable — but never for Household Account types.
+**Correct approach:** Prefer the NPSP Contact Merge page for small sets. For bulk tools, find out whether they merge in batch Apex, and plan a rollup re-run for survivors if they do. Always verify totals after the asynchronous jobs complete.
+
+---
+
+## Example 3: Deployable Custom Naming Class
+
+The complete Apex class, its test, the `package.xml` entry, and audit queries are in `references/metadata-examples.md`. Use it only when the token syntax cannot express the naming rule.

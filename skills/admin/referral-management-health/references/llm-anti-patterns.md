@@ -61,7 +61,7 @@ CareProviderSearchableField must be explicitly populated by running a Data Proce
 **Why it happens:** Lead-based referral tracking is a common Sales Cloud pattern with extensive training data. LLMs apply this general CRM pattern to Health Cloud without recognizing that clinical referrals require the specialized Health Cloud data model.
 
 **Correct pattern:**
-Health Cloud clinical referrals belong on ClinicalServiceRequest, not Lead. Lead-based tracking is appropriate for marketing attribution and sales pipeline management, not clinical care coordination. ClinicalServiceRequest supports patient lookup, provider lookup, FHIR R4 mapping, and clinical encounter linkage — none of which are available on the Lead object.
+Health Cloud clinical referrals belong on ClinicalServiceRequest for new designs. ClinicalServiceRequest supports a patient master-detail, requester and performer references, FHIR R4 alignment, and clinical encounter linkage through ClinicalEncounterSvcRequest. Note that Health Cloud itself also ships an older Lead-based referral model: the Agentforce Health Developer Guide lists Health Cloud referral fields on Lead, Contact, and Opportunity (for example `ReferralStatus__c`, `ReferredToOrganization__c`, `ReasonForReferral__c`). Generic "Referred By" fields on Lead are wrong; the Health Cloud Lead fields are a legitimate but separate model, and the design must pick one.
 
 **Detection hint:** If the referral tracking recommendation uses Lead, Opportunity, or custom referral objects for a Health Cloud clinical use case without mentioning ClinicalServiceRequest, the wrong data model is being applied.
 
@@ -114,3 +114,35 @@ object is addressable in SOQL, a record type is not — `SELECT Id FROM
 HealthcareProvider LIMIT 1` compiles, which settles the question in one query.
 In metadata, a record type appears as `<Object>.<RecordTypeName>` inside a
 `.recordType-meta.xml`; if you cannot find that file, the name is an object.
+
+---
+
+## Anti-Pattern 7: Generating ClinicalServiceRequest Code With Invented Referral Fields
+
+**What the LLM generates:**
+```apex
+insert new ClinicalServiceRequest(
+    PatientId = patientId,
+    ReferralType = 'Outbound',       // does not exist
+    ReferredToId = specialistContactId, // does not exist; Contacts are not valid performers
+    ReferralDate = Date.today(),     // does not exist
+    Status = 'Submitted'             // not a standard value
+);
+```
+
+**Why it happens:** "Referral" products in other clouds and in training data use these names, and the shape looks plausible. The object reference for `ClinicalServiceRequest` has none of these fields, and its Status values follow FHIR ServiceRequest.
+
+**Correct pattern:**
+```apex
+insert new ClinicalServiceRequest(
+    PatientId   = patientId,              // master-detail to the patient Account
+    RequesterId = referringProviderId,    // HealthcareProvider, Account, Asset or CareRegisteredDevice
+    PerformerId = specialistProviderId,   // same allowed targets; never a Contact
+    Type        = 'Order',
+    Priority    = 'Routine',
+    Status      = 'Draft',
+    StartDate   = System.now()
+);
+```
+
+**Detection hint:** Any of `ReferralType`, `ReferredToId`, `ReferralDate`, `AuthorizationNumber` on `ClinicalServiceRequest`, a Status value outside Active, Completed, Draft, Entered-in-Error, On-Hold, Revoked, Unknown, or a Contact ID in `PerformerId`.

@@ -74,7 +74,9 @@ def scan_invocable_apex(apex_dir: Path) -> list[str]:
                 issues.append(
                     f"{cls_file.name}: Class has @InvocableMethod and HTTP callout code (Http/HttpRequest) "
                     f"but 'callout=true' is not set on the @InvocableMethod annotation. "
-                    f"This will cause a runtime CalloutException. Add callout=true to the annotation."
+                    f"callout=true does not enable or block the callout for an agent; its documented effect is "
+                    f"screen-flow transaction control. Set it so a screen flow reusing this action commits before "
+                    f"the callout (Apex Reference Guide, InvocableMethod annotation; corrected 2026-10-03)."
                 )
 
         # Check 3: @InvocableVariable missing description

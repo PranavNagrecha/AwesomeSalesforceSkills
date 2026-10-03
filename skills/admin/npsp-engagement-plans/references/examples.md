@@ -18,23 +18,23 @@ Description: Applied to Opportunities ≥ $10,000 at Closed Won stage.
 Engagement Plan Tasks:
   Task 1:
     Subject:      "Thank-You Call — Major Gift"
-    Days Offset:  30
+    Days After:   30
     Type:         Call
     Priority:     High
-    Assigned To:  Development Director (user or queue)
+    Assigned To:  Development Director (a User; the field is a User lookup, not a queue)
     Parent Task:  (none — independent)
 
   Task 2:
     Subject:      "Send Impact Report — Major Gift"
-    Days Offset:  60
+    Days After:   60
     Type:         Email
-    Priority:     Normal
+    Priority:     Medium   (picklist values are High, Medium, Low)
     Assigned To:  Development Director
     Parent Task:  (none — independent)
 
   Task 3:
     Subject:      "Cultivation Meeting — Major Gift"
-    Days Offset:  90
+    Days After:   90
     Type:         Meeting
     Priority:     High
     Assigned To:  Development Director
@@ -51,7 +51,7 @@ npsp__Opportunity__c:        {Opportunity.Id}
 
 NPSP generates the three Task records automatically with due dates calculated from the `npsp__Engagement_Plan__c` creation date.
 
-**Why it works:** The template enforces a consistent cadence for every qualifying gift. The Flow removes manual application errors. Task 3's optional dependency on Task 2 means if the impact report task is completed and the child due-date auto-update fires, the cultivation meeting shifts accordingly — but only when Task 2 is marked Complete, not when its due date is edited by hand.
+**Why it works:** The template enforces a consistent cadence for every qualifying gift. The Flow removes manual application errors. Task 3's optional dependency on Task 2 means the cultivation meeting Task is created at once with status `Waiting on Dependent Task`. When the impact report Task closes, the meeting Task becomes active and, with Automatically Update Child Task Due Date checked, gets a due date 90 days after the close date. Editing Task 2's due date by hand moves nothing.
 
 ---
 
@@ -63,27 +63,27 @@ NPSP generates the three Task records automatically with due dates calculated fr
 
 **Solution:**
 
-1. Build the template targeting Campaign records (confirm Activities are enabled on Campaign in Setup > Object Manager > Campaign > Activity Settings).
+1. Build the template. Templates have no target-object setting; the Campaign target is chosen later by populating `npsp__Campaign__c` on the plan. Campaign already appears in the Object Reference list of objects that `Task.WhatId` can reference.
 
 ```
 Template: Annual Fund — Post-Campaign Stewardship
-Target Object: Campaign
 
 Engagement Plan Tasks:
   Task 1:
     Subject:     "Review Donor Acknowledgment List"
-    Days Offset: 7
+    Days After:  7
     Assigned To: Campaign Manager (user lookup)
 
   Task 2:
     Subject:     "Coordinate Board Thank-You Letters"
-    Days Offset: 14
+    Days After:  14
     Assigned To: Executive Director
 
   Task 3:
     Subject:     "Retention Analysis Meeting"
-    Days Offset: 30
-    Assigned To: Development Team Queue
+    Days After:  30
+    Assigned To: (blank, so the template's Default Assignee decides;
+                 Assigned_To__c cannot hold a queue)
 ```
 
 2. Apply the plan manually (or via Flow) to a Campaign record: open the Campaign, navigate to the Engagement Plans related list, click New, select the template. NPSP creates three Task records.
@@ -107,3 +107,16 @@ Engagement Plan Tasks:
 **What goes wrong:** Salesforce does not expose `npsp__Engagement_Plan_Template__c` or `npsp__Engagement_Plan_Task__c` records as metadata components. The Change Set will not include them. Production remains empty. Go-live day reveals missing templates with no obvious error message during deployment.
 
 **Correct approach:** Export templates from sandbox using Data Loader (export `npsp__Engagement_Plan_Template__c` and `npsp__Engagement_Plan_Task__c` with relationship fields), strip sandbox-specific IDs, and import to production. Alternatively, document templates in a canonical reference sheet and manually recreate them in production. For teams with many templates, a Python script using the Salesforce REST API can automate the export/import cycle.
+
+---
+
+## Example 3: Deployable Flow That Applies the Template
+
+The deployable artifacts for this skill (the record-triggered Flow that creates the plan, the template data plan, and the `package.xml` member form) are in `references/metadata-examples.md`. The Flow is metadata and moves through a Change Set. The template rows are data and move with `sf data import tree`.
+
+```text
+Deploy order:
+1. Flow  Apply_Major_Gift_Stewardship_Plan   (metadata: sf project deploy start)
+2. Template + template tasks                 (data: sf data import tree --plan)
+3. Activate the Flow after step 2 so its Get Records step finds the template by Name.
+```

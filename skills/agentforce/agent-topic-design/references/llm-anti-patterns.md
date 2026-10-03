@@ -7,7 +7,7 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** A single subagent ("Customer Support") with 15+ actions and broad instructions like "Help the customer with anything related to their account," causing the agent to attempt tasks outside its reliable capability and making debugging impossible.
 
-**Why it happens:** LLMs default to broad categorization. A single subagent is simpler to describe. However, the Agentforce topic selector uses subagent scope and instructions to route conversations. An overly broad subagent accepts every utterance, bypasses scope boundaries, and prevents the agent from gracefully declining out-of-scope requests.
+**Why it happens:** LLMs default to broad categorization. A single subagent is simpler to describe. However, the agent routes each utterance by comparing it to every topic's name and classification description (Generative AI guide); scope and instructions only apply after a topic is chosen. An overly broad subagent accepts every utterance, bypasses scope boundaries, and prevents the agent from gracefully declining out-of-scope requests.
 
 **Correct pattern:**
 
@@ -24,10 +24,11 @@ Good: 3-5 focused subagents with 3-5 actions each
   "Returns and Exchanges" — check eligibility, initiate return, track return
 
 Sizing guideline:
-- 3-5 actions per subagent (max 7)
+- Documented ceiling: no more than 15 actions per topic (Generative AI guide, Agents Limits)
+- Working heuristic inside that ceiling: 3-5 actions per subagent (UNVERIFIED (2026-10-03): no source gives this range)
 - Each subagent maps to one business capability domain
-- If a subagent needs 10+ actions, it should be split
-- Total subagents per agent: 5-15 is typical
+- If a subagent needs 10+ actions, consider splitting it
+- Total subagents per agent: no documented number; up to 20 agents per org is the documented agent limit
 ```
 
 **Detection hint:** Flag subagents with more than 7 actions assigned. Check for subagents whose instructions contain more than 3 distinct business domains. Flag agents with only 1 subagent.
@@ -190,3 +191,32 @@ Subagent instruction integration:
 **Detection hint:** Flag subagent instructions that reference objects or fields not accessible by the agent user profile. Check for agent users with overly broad "System Administrator" profile assignment. Flag agents where test conversations return "no data found" for records that exist.
 
 ---
+
+---
+
+## Anti-Pattern 6: Putting Hard Business Rules in Topic Instructions
+
+**What the LLM generates:** An instruction list that includes "Never approve a refund over $500" and "Only reschedule appointments more than 24 hours away", with no matching logic in the actions.
+
+**Why it happens:** Instructions look like the natural place for every rule. The Generative AI guide says instructions are nondeterministic and that sensitive or deterministic business rules belong in the action's logic.
+
+**Correct pattern:**
+```text
+Instruction (guidance):  "If the user asks for a refund, call Check_Refund_Eligibility first."
+Action (enforcement):    Check_Refund_Eligibility returns eligible=false above $500,
+                         and Issue_Refund refuses when eligible is false.
+```
+
+**Detection hint:** Instructions containing amounts, dates, or thresholds that no action enforces.
+
+---
+
+## Anti-Pattern 7: Inventing Per-Subagent Trust Layer or Masking Settings
+
+**What the LLM generates:** "Enable stricter PII masking on the Billing subagent only" or "turn citations off for the Small Talk topic in Trust Layer settings."
+
+**Why it happens:** Topic-level configuration is everywhere else in the design, so LLMs assume security settings follow the same grain. The guide says Trust Layer settings are applied to the org, and Agent Script's citation and groundedness switches are agent-level `config.runtime` settings.
+
+**Correct pattern:** Org-level masking in Einstein Trust Layer Setup; agent-level runtime switches in the Agent Script config block; per-topic data exposure controlled by which actions the topic has and what those actions return.
+
+**Detection hint:** Any instruction to configure masking, citations, or groundedness "for a topic" or "per subagent".

@@ -15,3 +15,10 @@ one test, so a new branch cannot ship without a named, asserted failure mode.
 - Apex Developer Guide — Testing Apex (Test.startTest/stopTest, async completion) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing.htm
 - Testing HTTP Callouts with HttpCalloutMock — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_testing.htm
 - Apex Governor Limits — 100 SOQL queries synchronous, 150 DML statements per transaction — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+
+Read for the 2026-10-03 revision:
+
+- Apex Developer Guide (Spring '26 PDF), InvocableMethod and InvocableVariable annotations, Testing Queueable Jobs, Testing the Apex Scheduler, Performing DML Operations and Mock Callouts, Using the runAs Method, Execution Governors and Limits, Versioned Behavior Changes (savepoints in tests): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Quickstart Your Einstein Generative AI Solution (Generative AI guide, Spring '26 PDF), Create an Agent (the agent user): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+- Agentforce Developer Guide, Build Tests in Metadata API (`action_sequence_match`): https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-build-tests.html
+- Salesforce CLI Command Reference, `apex run test` (`--class-names`, `--code-coverage`): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/sfdx_cli_reference.pdf

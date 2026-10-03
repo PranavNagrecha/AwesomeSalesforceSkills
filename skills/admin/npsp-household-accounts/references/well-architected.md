@@ -12,14 +12,14 @@ NPSP Household Accounts are a configuration-heavy area where small missteps (e.g
 
 ### Reliability
 
-- **Merge integrity:** The most significant reliability risk in this domain is using the native Salesforce merge UI instead of the NPSP Merge Duplicate Contacts flow. This is a data corruption vector: rollup totals become inaccurate, relationship records become orphaned, and the errors may not surface until a campaign or financial report reveals incorrect totals.
+- **Merge integrity:** The most significant reliability risk in this domain is reading household totals before NPSP's asynchronous merge fix-ups finish, or merging from batch Apex where the Account fix-up is skipped (`ACCT_AccountMerge_TDTM`). Rollup totals stay inaccurate until rollups are re-run, and the errors may not surface until a campaign or financial report reveals incorrect totals.
 - **Trigger chain dependencies:** NPSP household naming relies on Apex triggers firing in the correct order. Third-party packages that also fire on Account or Contact update can interfere with NPSP trigger logic. Always test naming refresh after installing any package that touches Account or Contact.
 
 ---
 
 ## Architectural Tradeoffs
 
-**Standard NPSP naming vs Custom Household Naming Class:** The built-in NPSP naming token format covers the majority of use cases (up to 3-4 Contacts per household, standard name concatenation). For complex scenarios — conditional honorifics, language-specific connectors, or custom business rules for household names — a custom Apex class implementing `HH_NameSpec_IF` provides full programmatic control. The tradeoff is maintainability: a custom naming class requires Apex development and must be updated when NPSP releases breaking changes to the naming interface.
+**Standard NPSP naming vs Custom Household Naming Class:** The built-in NPSP naming token format covers the majority of use cases (standard name concatenation up to the Contact Overrun Count, default 9). For complex scenarios (conditional honorifics, language-specific connectors, or custom business rules for household names), a custom Apex class implementing the global `HH_INaming` interface provides full programmatic control. The tradeoff is maintainability: a custom naming class requires Apex development and must be updated when NPSP releases breaking changes to the naming interface.
 
 **Direct Contact-Account lookup vs ACR junction (NPSP vs FSC):** NPSP's direct lookup model is simpler — a Contact belongs to one Account — but it cannot represent a Contact who belongs to multiple households simultaneously (e.g., a child living in two homes). FSC's ACR junction solves this but adds complexity for gift processing, rollup maintenance, and naming. Do not attempt to retrofit FSC's ACR model onto an NPSP org.
 
@@ -29,7 +29,7 @@ NPSP Household Accounts are a configuration-heavy area where small missteps (e.g
 
 ## Anti-Patterns
 
-1. **Using native Salesforce merge for Household Account deduplication** — The native merge UI does not invoke NPSP trigger logic. Rollup totals become stale, relationship records become orphaned, and household names may not regenerate. Always use the NPSP Merge Duplicate Contacts flow from the Contact record.
+1. **Using native or batch merges for Household Account deduplication without a follow-up check**: Merges fire NPSP's merge handlers, but their fix-ups run asynchronously and the Account fix-up is skipped in batch or future contexts. Prefer the NPSP Contact Merge page, and verify rollups after any other merge path.
 
 2. **Treating NPSP household naming format strings as Salesforce formula fields** — NPSP's `{!Field}` tokens are parsed by NPSP Apex, not the formula engine. Entering formula functions like `UPPER()` or `IF()` produces literal text in the household name. Use only documented NPSP token names, or implement a Custom Household Naming Class for complex logic.
 
@@ -38,6 +38,19 @@ NPSP Household Accounts are a configuration-heavy area where small missteps (e.g
 ---
 
 ## Official Sources Used
+
+Read for the 2026-10-03 revision:
+
+- NPSP source, naming implementation `HH_NameSpec.cls` and interface `HH_INaming.cls`: https://github.com/SalesforceFoundation/NPSP/tree/main/force-app/main/default/classes. Supports token parsing, last-name grouping, overrun handling, and the global interface name.
+- NPSP source, `HouseholdNamingService.cls`, `HouseholdNamingUserControlledFields.cls`, `HouseholdSettings.cls`: https://github.com/SalesforceFoundation/NPSP/tree/main/force-app/main. Supports the user-controlled field list, the Automatic Household Naming gate, and implementing-class lookup.
+- NPSP source, `HH_HouseholdNaming_BATCH.cls`, `HH_HouseholdNamingSettingValidator.cls`, `UTIL_CustomSettingsFacade.cls`: https://github.com/SalesforceFoundation/NPSP/tree/main/force-app/main/default/classes. Supports activation behavior, `Type.forName` validation, and the default settings values.
+- NPSP source, `ContactSelector.cls`: https://github.com/SalesforceFoundation/NPSP/blob/main/force-app/main/selector/ContactSelector.cls. Supports the member sort order.
+- NPSP source, merge handlers `ACCT_AccountMerge_TDTM.cls`, `CON_ContactMerge_TDTM.cls`, `CON_ContactMerge_CTRL.cls`, and `TDTM_DefaultConfig.cls`: https://github.com/SalesforceFoundation/NPSP/tree/main/force-app. Supports the asynchronous fix-ups, the batch/future gap, the two-to-three Contact limit, and default handler registration.
+- NPSP source, object definitions (`Household_Naming_Settings__c`, `npo02__Households_Settings__c`, Contact fields `Primary_Contact__c` and `Exclude_from_Household_*`): https://github.com/SalesforceFoundation/NPSP/tree/main/force-app/main/default/objects
+- Apex Developer Guide (Spring '26), Triggers and Merge Statements, and the Bulk API trigger chunking note: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Apex Reference Guide (Spring '26), Type Class `forName`: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf
+
+Carried from earlier revisions (not re-read on 2026-10-03; help.salesforce.com does not render to a fetcher):
 
 - What is the Household Account Model? — https://help.salesforce.com/s/articleView?id=sf.npsp_household_account_model.htm
 - Customize Household Names — https://help.salesforce.com/s/articleView?id=sf.npsp_customize_household_name.htm

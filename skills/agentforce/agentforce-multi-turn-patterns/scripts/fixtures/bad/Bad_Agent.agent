@@ -1,0 +1,52 @@
+system:
+    instructions: "Help."
+
+config:
+    developer_name: "Bad_Agent"
+    runtime:
+        reset_to_initial_node: True
+
+variables:
+    order_id: mutable id = ""
+    reason: mutable string = ""
+    verified: mutable string = ""
+        description: "Set after verification."
+
+start_agent agent_router:
+    description: "Routes."
+    reasoning:
+        instructions: ->
+            | Route.
+        actions:
+            go_a: @utils.transition to @subagent.A
+                description: "Handles returns."
+            go_missing: @utils.transition to @subagent.Ghost
+                description: "Nowhere."
+            esc: @utils.escalate
+                description: "Escalate."
+
+subagent A:
+    description: "Handles returns."
+    reasoning:
+        instructions: ->
+            | Collect.
+        actions:
+            capture: @utils.setVariables
+                with order_id = ...
+                with undeclared_thing = ...
+                description: "Store."
+    actions:
+        lookup:
+            description: "Look up the customer."
+            inputs:
+                email: string
+            outputs:
+                account_id: string
+                date_of_birth: string
+            target: "apex://Lookup"
+
+subagent B:
+    description: "Handles returns."
+    reasoning:
+        instructions: ->
+            | Also collect.

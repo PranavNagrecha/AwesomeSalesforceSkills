@@ -46,8 +46,9 @@ Use this template when configuring or troubleshooting Health Cloud referral mana
 
 ## Referral Workflow Checklist
 
-- [ ] ClinicalServiceRequest page layout includes PatientId, ReferralType, ReferredToId, Status
-- [ ] Status picklist values match workflow (Draft, Submitted, In Review, Accepted, Declined, Completed, Cancelled)
+- [ ] ClinicalServiceRequest page layout includes PatientId, RequesterId, PerformerId, Status, IsAccepted, StatusReason, Priority
+- [ ] Business statuses mapped onto standard Status values (Active, Completed, Draft, Entered-in-Error, On-Hold, Revoked, Unknown) plus IsAccepted and StatusReason
+- [ ] FHIR-Aligned Clinical Data Model org preference enabled
 - [ ] Flow automation covers all status transitions including error paths
 - [ ] HealthCloudICM assigned to all referral user personas
 - [ ] End-to-end referral creation and status update tested in sandbox

@@ -17,6 +17,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -40,11 +41,22 @@ def check_flow_referral_status(manifest_dir: Path) -> list[str]:
     if not flows_dir.exists():
         return issues
 
-    required_statuses = {"Submitted", "Accepted", "Declined", "Completed", "Cancelled"}
+    # Standard ClinicalServiceRequest.Status values are the FHIR set; acceptance is the IsAccepted
+    # checkbox and reasons go in StatusReason (Health Cloud developer guide). Earlier versions
+    # required business values (Submitted/Accepted/Declined/Cancelled) that are not in the picklist.
+    required_statuses = {"Active", "Completed"}
+    invented_statuses = {"Submitted", "Accepted", "Declined", "Cancelled"}
     for flow_file in flows_dir.glob("*.flow-meta.xml"):
         content = flow_file.read_text(encoding="utf-8")
         if "ClinicalServiceRequest" not in content:
             continue
+        for bad in sorted(invented_statuses):
+            if f"<stringValue>{bad}</stringValue>" in content or f"<value>{bad}</value>" in content:
+                issues.append(
+                    f"{flow_file.name}: sets ClinicalServiceRequest.Status to '{bad}', which is not a standard "
+                    "value (Active, Completed, Draft, Entered-in-Error, On-Hold, Revoked, Unknown). Model acceptance "
+                    "with the IsAccepted checkbox and reasons with StatusReason."
+                )
         missing = [s for s in required_statuses if s not in content]
         if missing:
             issues.append(
@@ -76,24 +88,30 @@ def check_permission_sets(manifest_dir: Path) -> list[str]:
 
 
 def check_clinical_service_request_fields(manifest_dir: Path) -> list[str]:
-    """Check for required ClinicalServiceRequest field configurations."""
-    issues: list[str] = []
-    objects_dir = manifest_dir / "objects" / "ClinicalServiceRequest"
-    if not objects_dir.exists():
-        return issues
+    """Flag references to fields that do not exist on ClinicalServiceRequest.
 
-    # Check for expected fields in page layouts or field metadata
-    required_fields = {"PatientId", "ReferralType", "ReferredToId", "Status"}
-    fields_dir = objects_dir / "fields"
-    if fields_dir.exists():
-        present = {f.stem.replace(".field-meta", "") for f in fields_dir.glob("*.field-meta.xml")}
-        missing = required_fields - present
-        if missing:
-            issues.append(
-                f"ClinicalServiceRequest is missing expected field definitions for: "
-                f"{', '.join(sorted(missing))}. "
-                "These fields are required for referral management workflow."
-            )
+    `ReferralType`, `ReferredToId`, `ReferralDate` and `AuthorizationNumber` are not in the object
+    reference (earlier versions of this checker REQUIRED two of them). The real fields are
+    RequesterId / PerformerId (parties), StartDate / DateSigned (dates), Type / Priority
+    (classification) and ClinicalServiceRequestDetail for an authorization number. Corrected 2026-10-03.
+    """
+    issues: list[str] = []
+    invented = ("ReferralType", "ReferredToId", "ReferralDate", "AuthorizationNumber")
+    for search_dir, pattern in (("flows", "*.flow-meta.xml"), ("classes", "*.cls"), ("objects", "**/*.validationRule-meta.xml")):
+        d = manifest_dir / search_dir
+        if not d.exists():
+            continue
+        for f in sorted(d.glob(pattern)):
+            text = f.read_text(encoding="utf-8")
+            if "ClinicalServiceRequest" not in text:
+                continue
+            hits = [name for name in invented if re.search(rf"\b{name}\b", text)]
+            if hits:
+                issues.append(
+                    f"{f.name}: references {', '.join(hits)} on ClinicalServiceRequest; none of these fields "
+                    "exists in the object reference. Use RequesterId / PerformerId, StartDate / DateSigned, "
+                    "Type / Priority, or a ClinicalServiceRequestDetail record (Health Cloud developer guide)."
+                )
     return issues
 
 

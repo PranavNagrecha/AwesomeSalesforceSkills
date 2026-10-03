@@ -13,6 +13,8 @@ triggers:
   - "how do I write an @InvocableMethod that an Agentforce agent can call"
   - "agent action keeps failing with an exception instead of returning a useful error"
   - "how do I make a callout from an Agentforce custom action"
+  - "expose an Apex method as an agent action with the right input and output descriptions"
+  - "deploy an Apex-backed agent action as GenAiFunction metadata"
 tags:
   - agentforce
   - apex-actions
@@ -30,14 +32,14 @@ outputs:
   - "Input/output DTO classes with descriptive labels"
   - "Error handling strategy returning structured failure responses"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Custom Agent Actions Apex
 
-This skill activates when a practitioner needs to build a custom Apex action for an Agentforce agent. The Atlas Reasoning Engine reads the `label` and `description` on every `@InvocableMethod` and `@InvocableVariable` at runtime to decide when and how to invoke the action — meaning poor descriptions directly degrade agent reasoning quality and lead to incorrect or missed invocations.
+This skill activates when a practitioner needs to build a custom Apex action for an Agentforce agent. The agent decides when and how to call the action from the action's description and its input and output descriptions, which are stored on the `GenAiFunction` metadata and its input/output `schema.json` files. Poor descriptions directly degrade agent reasoning quality and lead to incorrect or missed invocations. When the action is created from an Apex class, those descriptions start from the `@InvocableMethod` and `@InvocableVariable` annotations. UNVERIFIED (2026-10-03): that Agentforce Builder copies the annotation text into the action's descriptions is not stated in the sources read for this revision; check the generated action before relying on it.
 
 ---
 
@@ -45,10 +47,23 @@ This skill activates when a practitioner needs to build a custom Apex action for
 
 Gather this context before working on anything in this domain:
 
-- Determine the agent type: **Employee Agent** runs as the logged-in user (authenticated internal user context), **Service Agent** runs as a designated agent user (typically a restricted integration user). Security context and data visibility differ between the two.
+- Determine the agent type: **Employee Agent** runs as the logged-in user (authenticated internal user context), **Service Agent** runs as a designated agent user (typically a restricted integration user). Security context and data visibility differ between the two. The Generative AI guide states that the agent user "determines what your agent can access and do" and that a Service Agent's user gets the Agentforce Service Agent User permission set. UNVERIFIED (2026-10-03): the Employee Agent running-user statement is not in the sources read for this revision.
 - Define the action's single responsibility. Each Agentforce action should do one thing well — the agent composes multiple actions to achieve complex goals. A monolithic action that does 5 things is harder for the LLM to invoke correctly.
-- Identify whether the action needs an HTTP callout to an external system. If so, the method must include `callout=true` in the annotation.
+- Identify whether the action needs an HTTP callout to an external system. If so, set `callout=true` on the annotation. Per the Apex Developer Guide, the modifier "identifies whether the method calls to an external system" and screen flows use it to decide whether to run the action in a new transaction; it does not switch callouts on or off.
 - Determine whether the action should be synchronous or needs to chain async work. Agentforce actions execute synchronously during the agent turn — long-running work should be queued and the action should return a tracking ID.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| What one job does the action do, and when should the agent call it? | The agent selects actions from their descriptions; `GenAiFunction.description` is "a description explaining the general purpose and domain of the action" (Metadata API Developer Guide). | A one-sentence "Use when ..." description and a distinct label. | The agent calls the action for the right requests and leaves it alone otherwise. |
+| Which inputs come from the user and which outputs should the agent use or show? | The action schema marks inputs with `copilotAction:isUserInput` and outputs with `copilotAction:isDisplayable` and `copilotAction:isUsedByPlanner`; at least one output must be used by the planner "or else the planner returns random responses". | A table of inputs and outputs with those three flags decided. | Answers are grounded in the action's result instead of guessed. |
+| Can every input and output be a primitive? | The Generative AI guide says custom actions that reference an Apex class or flow support only primitive data types, and collections aren't supported. | A DTO with String, Boolean, Integer, Decimal, Date fields, plus a JSON string where structure is unavoidable. | The action works in Agentforce, not only in Flow. |
+| Whose permissions should the action run with? | The agent user determines what the agent can access; Apex `with sharing` and `WITH USER_MODE` apply that user's sharing and FLS. | The agent user, its permission sets, and any deliberate elevation. | Data exposure is a documented decision, not a side effect of `without sharing`. |
+| Does it change data or call out, and should the user confirm first? | `GenAiFunction.isConfirmationRequired` asks for confirmation; DML before a callout in one transaction blocks the callout (Apex Developer Guide, uncommitted work). | A confirm/no-confirm decision and the order of DML and callouts. | Destructive actions pause for the user, and callouts do not fail on uncommitted work. |
+| Will the action also be packaged or reused from Flow? | Only one `@InvocableMethod` per class; in managed packages an invocable method cannot be removed in later versions, and only global methods appear in subscriber orgs. | Packaging plan and visibility (public or global). | The action can evolve without a package-version dead end. |
 
 ---
 
@@ -56,7 +71,7 @@ Gather this context before working on anything in this domain:
 
 ### @InvocableMethod Annotation and Atlas Reasoning Engine
 
-The `@InvocableMethod` annotation marks an Apex method as callable from Flow, Process Builder, and Agentforce. When an Agentforce agent evaluates what action to take, the Atlas Reasoning Engine reads the `label` and `description` on both the method annotation and on every `@InvocableVariable` input/output field.
+The `@InvocableMethod` annotation marks an Apex method as callable from Flow, Process Builder, and Agentforce. The Apex Developer Guide says invocable methods "are called natively from REST, Apex, flows, Agentforce agents or AI bots". When an Agentforce agent evaluates what action to take, the Atlas Reasoning Engine reads the action's label and description and the description of every input and output, which for an Apex action are seeded from the method annotation and each `@InvocableVariable` field.
 
 These text values are used verbatim in the LLM's tool-calling context. If the label says "Run Action" and the description is blank, the agent has no information to decide when to use this action. If the description says "Creates a support case in the system when a customer reports a problem", the agent knows exactly when to invoke it.
 
@@ -64,7 +79,7 @@ Rule: every `@InvocableMethod` must have a `label` and a `description`. Every `@
 
 ### Bulk-Safe List-in / List-out Wrapper
 
-All `@InvocableMethod` methods must accept `List<InputClass>` and return `List<OutputClass>`. This is a platform constraint — not optional even for Agentforce. The agent always passes a single-item list, but the bulk wrapper is required for compilation.
+The Apex Developer Guide allows at most one input parameter, and when there is one it must be a list (of a primitive, an sObject, or a user-defined type with `@InvocableVariable` fields); a non-void return must also be a list. Inputs and outputs "must match on both the size and the order". For Agentforce, write `List<InputClass>` in and `List<OutputClass>` out, with primitive DTO fields. UNVERIFIED (2026-10-03): earlier versions of this skill said the agent always passes a single-item list; no source read for this revision says so, so keep the method bulk-safe.
 
 ```apex
 @InvocableMethod(
@@ -212,9 +227,9 @@ public static List<OrderStatusOutput> getOrderStatus(List<OrderStatusInput> inpu
 2. Design the input DTO: identify every parameter the agent needs to pass. Write a `description` for each `@InvocableVariable` that explains what value to provide and in what format.
 3. Design the output DTO: always include `success` (Boolean), `errorMessage` (String), and the payload fields. Write descriptions for each output field.
 4. Implement the action class with `with sharing`. Use `WITH USER_MODE` in SOQL. Handle all exceptions and return structured error outputs — never throw to the agent.
-5. Add `callout=true` if any HTTP callout is needed. Use Named Credentials.
+5. Add `callout=true` if any HTTP callout is needed (it documents the callout and lets screen flows manage the transaction). Use Named Credentials. Do all callouts before any DML in the same transaction.
 6. Write an Apex unit test that covers both success and failure paths. Test with a mock callout if the action makes HTTP requests.
-7. Deploy and wire the action to the appropriate subagent (called a topic before April 2026) in Agentforce Builder. Test the agent's ability to invoke the action correctly by running test conversations.
+7. Deploy and wire the action to the appropriate subagent (called a topic before April 2026) in Agentforce Builder, or deploy the `GenAiFunction` metadata with its input/output schemas (complete set in `references/metadata-examples.md`). Test the agent's ability to invoke the action correctly by running test conversations.
 
 ---
 
@@ -235,9 +250,9 @@ public static List<OrderStatusOutput> getOrderStatus(List<OrderStatusInput> inpu
 ## Salesforce-Specific Gotchas
 
 1. **Missing label/description degrades reasoning** — the Atlas Reasoning Engine uses these strings as the action's "tool card." A blank description means the LLM cannot distinguish this action from others and will either invoke it randomly or never invoke it at all. This is the most common Agentforce action bug.
-2. **callout=true omission causes CALLOUT_LOOP exception** — if an action makes an HTTP callout but the annotation omits `callout=true`, the runtime throws a `System.CalloutException: You have uncommitted work pending` error. This happens even if the Apex has no prior DML — the platform checks the annotation before allowing the callout.
+2. **`callout=true` is a flow transaction hint, not a callout switch**: Screen flows use it to decide whether to commit and start a new transaction before the action. The "uncommitted work pending" exception comes from DML (or queued async work) before the callout in the same transaction, with or without the modifier. Earlier versions of this skill said omitting it throws a CalloutException even with no prior DML.
 3. **Service Agent user context is not the current user** — developers testing in the Developer Console see their own user context. The deployed Service Agent runs as a different, restricted user. SOQL that works in testing may return zero records in production because the service agent user has different sharing or FLS. Always test with a user that matches the service agent's profile.
-4. **List-in/List-out is not optional** — even if you are certain only one record will ever be processed, the method signature must be `List<Input>` and `List<Output>`. Changing the signature to a single Input/Output breaks compilation and Flow compatibility simultaneously.
+4. **A parameter, if present, must be a list**: A single-object parameter does not compile, and outputs must line up with inputs by size and order. More traps (planner flags, primitive-only types, text length) are in `references/gotchas.md`.
 5. **Throwing exceptions to the agent produces no useful error message** — the agent receives a generic "action failed" signal and cannot tell the user what went wrong. Always catch exceptions, set `success=false`, and populate `errorMessage` with a human-readable string the agent can surface.
 
 ---

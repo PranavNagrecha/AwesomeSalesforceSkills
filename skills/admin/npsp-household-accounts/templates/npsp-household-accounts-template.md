@@ -47,7 +47,7 @@ Which pattern from SKILL.md applies?
 
 - [ ] **Pattern 1: Mixed-Last-Name Household Naming** — configure Name Format and greeting format strings
 - [ ] **Pattern 2: Primary Contact Designation** — set `npo02__Household_Naming_Order__c` on Contacts
-- [ ] **Merge Pattern** — use NPSP Merge Duplicate Contacts flow (NOT native Account merge)
+- [ ] **Merge Pattern** — use the NPSP Contact Merge page; for native or batch merges, wait for NPSP fix-up jobs and re-run rollups when merged in batch context
 - [ ] **Custom Override** — edit household name directly; document customization flag consequence
 
 **Reasoning:** (explain why this pattern applies to the request)
@@ -60,14 +60,14 @@ Fill these in before applying any changes:
 
 | Setting | Current Value | New Value |
 |---|---|---|
-| Household Name Format | | |
-| Name Connector | | |
-| Name Append Text | | |
-| Formal Greeting Format | | |
-| Formal Greeting Connector | | |
-| Informal Greeting Format | | |
-| Informal Greeting Connector | | |
-| Custom Household Naming Class | | |
+| Automatic Household Naming (on/off) | | |
+| Household Name Format (default `{!LastName} Household`) | | |
+| Formal Greeting Format (default `{!{!Salutation} {!FirstName}} {!LastName}`) | | |
+| Informal Greeting Format (default `{!{!FirstName}}`) | | |
+| Name Connector (one value for all three strings) | | |
+| Name Overrun | | |
+| Contact Overrun Count (default 9) | | |
+| Implementing Class (default `HH_NameSpec`) | | |
 
 ---
 
@@ -79,7 +79,7 @@ Copy from the SKILL.md review checklist and tick items as you complete them.
 - [ ] Household Name Format, Formal Greeting, and Informal Greeting strings verified in NPSP Settings
 - [ ] Batch name refresh completed and Apex Jobs show no failures
 - [ ] Manually customized household names audited; intentional overrides documented
-- [ ] Any duplicate merges performed using NPSP Merge Duplicate Contacts flow (not native Account merge)
+- [ ] Any duplicate merges performed with the NPSP Contact Merge page, or followed by a rollup check
 - [ ] Rollup totals verified on surviving Household Account after any merge
 - [ ] Primary Contact naming order (`npo02__Household_Naming_Order__c`) set correctly for multi-member households
 

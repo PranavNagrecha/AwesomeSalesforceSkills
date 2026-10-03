@@ -111,3 +111,17 @@ window turns "is it bulkified?" into a number. A per-Request query drives `queri
 to 200 and fails this assertion well before the platform limit trips, so the failure
 message names the real defect instead of surfacing as
 `System.LimitException: Too many SOQL queries: 101` from an unrelated line.
+
+---
+
+## Example 3: The Complete, Deployable Action and Test Class
+
+The two examples above show test methods against `CloseCaseAction`. The full action class, the validation rule its `VALIDATION_BLOCKED` branch depends on, the complete test class (including a `System.runAs` test), and the `package.xml` member form are in `references/metadata-examples.md`.
+
+```text
+Reason code         Produced when                                   Test method
+CLOSED              update succeeds                                 closedOnHappyPath
+VALIDATION_BLOCKED  update fails with FIELD_CUSTOM_VALIDATION_EXCEPTION  validationBlockedKeepsItsOwnCode
+UNKNOWN             missing or malformed case ID                     unknownForMissingOrMalformedId
+(contract)          200 requests keep size, order, flat limits      twoHundredRequestsKeepSizeOrderAndFlatLimits
+```

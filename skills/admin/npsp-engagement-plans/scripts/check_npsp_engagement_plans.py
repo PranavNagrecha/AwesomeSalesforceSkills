@@ -144,7 +144,8 @@ def check_for_task_only_output_assumption(manifest_dir: Path) -> list[str]:
         ):
             issues.append(
                 f"{f}: Workflow Email Alert metadata appears to reference Engagement Plans. "
-                "NPSP Engagement Plans create Tasks only — they do not send emails. "
+                "NPSP Engagement Plans create Tasks; the only email is the Task notification to the assignee "
+                "when Send_Email__c is checked on the template task. "
                 "Email automation must be implemented in a separate Flow using an Email Alert action."
             )
     return issues

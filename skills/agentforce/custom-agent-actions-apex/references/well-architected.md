@@ -20,6 +20,15 @@
 
 ## Official Sources Used
 
-- Agentforce Developer Guide (@InvocableMethod for agents) — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
-- Apex Developer Guide (InvocableMethod Annotation) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm
+- Apex Developer Guide (Spring '26), InvocableMethod Annotation and InvocableVariable Annotation: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf. Supports the parameter and return rules, size-and-order matching, failure-reporting pattern, modifiers (`callout`, `required`, `defaultValue`), one method per class, and managed-package rules.
+- Apex Developer Guide (Spring '26), Making Callouts to External Systems from Invocable Actions; Performing DML Operations and Mock Callouts: same PDF. Supports the meaning of `callout=true` and the uncommitted-work rule.
+- Metadata API Developer Guide (Spring '26), GenAiFunction (fields, input and output `schema.json`, `isUsedByPlanner`, text length, Usage notes) and GenAiPlannerBundle: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Quickstart Your Einstein Generative AI Solution (Generative AI guide, Spring '26), Considerations for Custom Actions, Considerations for Agent Conversations, and Create an Agent (agent user): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+- Agentforce Developer Guide, Create Custom Actions Using Apex Invocable Method: https://developer.salesforce.com/docs/ai/agentforce/guide/agent-invocablemethod.html
+- Agentforce Developer Guide, Build and Enhance Agentforce Actions (action types: Apex REST, AuraEnabled, Named Query, Invocable Method): https://developer.salesforce.com/docs/ai/agentforce/guide/get-started-actions.html
+- Agentforce Developer Guide, Agent Metadata (GenAiFunction represents an agent action): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-metadata.html
+
+Carried from earlier revisions (not re-read on 2026-10-03):
+
+- Agentforce Developer Guide (older einstein/genai path; returned HTTP 404 on 2026-10-03, superseded by the developer.salesforce.com/docs/ai/agentforce/guide/ pages above): https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -22,12 +22,23 @@
 
 2. **Deferring data source decisions to the developer** — Requirements that say "load account data somewhere" without specifying DataRaptor vs Integration Procedure, Pre vs Post timing, and the specific fields needed force the developer to make architectural decisions that should be requirements-time choices.
 
-3. **Omitting Navigate Action from requirements** — Treating the form submission as implicit (as in standard web forms) and not specifying the Navigate Action type and destination causes activation failures that are discovered late in the build cycle.
+3. **Omitting Navigate Action from requirements** — Treating the form submission as implicit (as in standard web forms) and not specifying the Navigate Action type and destination leaves users on the final Step, and the gap is discovered late in the build cycle.
 
 ## Official Sources Used
 
+Read for the 2026-10-03 revision (Trailhead pages fetch as plain HTML; help.salesforce.com does not):
+
+- Trailhead, Design and Build a Branching Omniscript: https://trailhead.salesforce.com/content/learn/modules/omniscripts-with-branching/design-and-build-a-branching-omniscript. Supports the required-elements list, Conditional View on almost every element, Block-per-branch grouping, and the Send/Response JSON properties.
+- Trailhead, Validate Data and Handle Errors: https://trailhead.salesforce.com/content/learn/modules/omniscripts-with-branching/validate-data-and-handle-errors. Supports current-Step-only required fields and the Set Errors properties.
+- Trailhead, Configure a Simple OmniScript: https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript/create-a-simple-omniscript. Supports Type/SubType/Language identity, one active version, element naming, action placement semantics, and JSON-to-element name matching.
+- Trailhead, Optimize Workflow with OmniScript Design: https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript/design-a-simple-omniscript. Supports action placement before and after the Step and the Edit Account example.
+- Trailhead, Explore Omniscript Group and Input Elements: https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript-fundamentals/explore-omniscript-group-and-input-elements. Supports conditional Steps, Action Block parallel execution, and input types.
+- Trailhead, Use Action, Function, and Display Elements: https://trailhead.salesforce.com/content/learn/modules/omnistudio-omniscript-fundamentals/use-action-function-and-display-elements. Supports Navigate actions, one-level nesting, and unique element names across parent and child.
+- Salesforce Industries Developer Guide (Spring '26), OmniScript metadata type (Discovery Framework Metadata API Types): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_industries_dev_guide.pdf. Supports the `omniScript` suffix, `omniScripts` folder, required `type`/`subType`/`language`, and `uniqueName` format.
+
+Carried from earlier revisions (not re-read on 2026-10-03):
+
 - OmniScript Best Practices — https://help.salesforce.com/s/articleView?id=sf.os_omniscript_best_practices.htm
-- OmniScripts with Branching — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - OmniStudio Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 

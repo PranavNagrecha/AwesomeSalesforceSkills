@@ -121,8 +121,10 @@ def check_flows_for_native_account_merge(manifest_dir: Path) -> list[str]:
             if indicator in flow_text:
                 issues.append(
                     f"Flow '{flow_file.stem}' may reference a native Account merge action "
-                    f"(found '{indicator}'). Native Account merge bypasses NPSP triggers — "
-                    f"use NPSP Merge Duplicate Contacts flow instead."
+                    f"(found '{indicator}'). NPSP does handle native merges (ACCT_AccountMerge_TDTM / "
+                    f"CON_ContactMerge_TDTM), but asynchronously, and the Account fix-up is skipped when the "
+                    f"merge runs in batch or future Apex. Prefer the NPSP Merge Duplicate Contacts page, or "
+                    f"merge synchronously and re-run household naming afterwards (NPSP source, corrected 2026-10-03)."
                 )
                 break
 

@@ -10,7 +10,7 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Questions to Ask Before Configuring table in SKILL.md here.
 
 - Setting / configuration:
 - Known constraints:
@@ -18,15 +18,20 @@ TODO: Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Which pattern from SKILL.md applies (accumulating form fill, cross-subagent memory, clarify-or-assume, failure-bounded escalation)? Why?
 
 ## Checklist
 
 Copy the review checklist from SKILL.md and tick items as you complete them.
 
-- [ ] TODO
-- [ ] TODO
+- [ ] Every fact later turns need is a declared variable with type, default, and description
+- [ ] Record IDs are typed string, not id
+- [ ] Dependent variables reset when their source variable changes
+- [ ] Owned variables reset when their subagent hands off
+- [ ] Escalation route (Omni-Channel connection) exists before escalation is tested
+- [ ] Sensitive action outputs use filter_from_agent
+- [ ] Multi-turn test cases use conversationHistory
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviations from the standard pattern and why.

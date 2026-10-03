@@ -9,10 +9,10 @@
 **Solution:**
 1. Enable the HealthCloudICM permission set for all clinical users.
 2. Create two record types on ClinicalServiceRequest: Inbound and Outbound.
-3. Configure the Status picklist with values: Draft, Submitted, In Review, Accepted, Declined, Completed, Cancelled.
-4. Build a Record-Triggered Flow on ClinicalServiceRequest to: (a) notify the receiving provider via email when Status transitions to Submitted; (b) create a follow-up Task on the care coordinator when Status = Declined; (c) update the related care plan task when Status = Completed.
-5. Set field-level security to make PatientId, ReferralType, and ReferredToId required on page layout.
-6. Build a report on ClinicalServiceRequest grouped by Status and ReferralType for care coordinator dashboards.
+3. Keep the standard Status values (Active, Completed, Draft, Entered-in-Error, On-Hold, Revoked, Unknown). Represent "accepted" with the `IsAccepted` checkbox and "declined" with Status = Revoked plus a `StatusReason` value.
+4. Build a Record-Triggered Flow on ClinicalServiceRequest to: (a) notify the receiving provider when Status moves from Draft to Active; (b) create a follow-up Task on the care coordinator when Status = Revoked; (c) update the related care plan task when Status = Completed.
+5. Make RequesterId, PerformerId, and Priority required on the page layout (PatientId is already required as the master-detail field). Earlier versions of this example named `ReferralType` and `ReferredToId`, which do not exist on the object.
+6. Build a report on ClinicalServiceRequest grouped by Status and record type for care coordinator dashboards.
 
 **Why it works:** ClinicalServiceRequest is a platform-standard FHIR R4-aligned object. It participates in Health Cloud's clinical data model, supports FHIR API reads/writes, and will receive ongoing Salesforce investment. Custom Referral__c objects must be rebuilt every time the FHIR model evolves.
 
@@ -43,4 +43,19 @@
 
 **What goes wrong:** FSC Referral Management uses a completely different data model (custom Lead/Opportunity fields, Einstein scoring, advisor-to-client referral workflow). Configuring FSC Referral features in a Health Cloud org either does nothing (features simply are not active without FSC license) or conflicts with ClinicalServiceRequest-based clinical referral workflows.
 
-**Correct approach:** Health Cloud referral management is built on ClinicalServiceRequest (API v51.0+) with provider network integration via CareProviderSearchableField. Start from the Health Cloud Administration Guide — Configure Referral Management, not FSC documentation.
+**Correct approach:** Health Cloud referral management is built on ClinicalServiceRequest (API v51.0+) with provider network integration via CareProviderSearchableField. Start from the Health Cloud documentation (Agentforce Health Developer Guide object reference and the Health Cloud admin guide), not FSC documentation.
+
+---
+
+## Example 3: Searchable Provider Attribute, Referral Intake API, and Verification Query
+
+The complete artifacts (file paths, metadata XML or API payloads, and the `package.xml` member form) are in `references/metadata-examples.md`.
+
+```text
+Deploy and test order:
+1. HealthcareProvider and CareProviderSearchableField custom fields
+2. CareProviderSearchConfig mapping (active)
+3. Refresh the provider search index, then search for the new attribute
+4. Partner sends one referral through the Referral Management API
+5. Coordinator queue query returns the new Draft referral
+```

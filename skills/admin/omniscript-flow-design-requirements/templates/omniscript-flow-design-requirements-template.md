@@ -46,7 +46,7 @@ For each conditional path, complete:
 
 | Block Name | Triggering Element | Condition Expression | Elements Inside Block |
 |---|---|---|---|
-| | [Radio Button name] | `%FieldName:value% == 'Value'` | |
+| | [Radio Button name] | element, operator, value (e.g. LossType equals Auto) | |
 
 ---
 
@@ -72,7 +72,7 @@ For each conditional path, complete:
 
 **Type:** Navigate to Record / Navigate to URL / Navigate to OmniScript
 **Target:** (record ID expression / URL / OmniScript Type+Sub Type)
-**Condition (if conditional):** `%FieldName:value% == 'Value'`
+**Condition (if conditional):** element, operator, value
 
 ---
 
@@ -81,7 +81,9 @@ For each conditional path, complete:
 - [ ] OmniStudio license confirmed and org runtime documented
 - [ ] At least one Step element documented
 - [ ] At least two data source bindings specified (read and write)
-- [ ] All branching conditions documented in Block + Conditional View notation
+- [ ] All branching conditions documented as element, operator, value on the Block or Step they show
+- [ ] Every pre-filled element name matches its JSON node name
+- [ ] Cross-step rules listed as Set Errors entries, not required flags
 - [ ] Navigate Action type and destination specified
 - [ ] Data requirements matrix complete with field mappings
 - [ ] External API calls specified as Integration Procedure (not DataRaptor)

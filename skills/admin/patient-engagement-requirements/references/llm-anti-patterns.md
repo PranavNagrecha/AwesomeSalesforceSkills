@@ -22,22 +22,22 @@ Patient portal functionality requires the Experience Cloud for Health Cloud add-
 **Why it happens:** No-show prediction is prominently featured in IAM product marketing and documentation. LLMs present it as a native IAM feature without knowing that the AI/ML prediction layer requires a separately licensed CRM Analytics add-on.
 
 **Correct pattern:**
-IAM core appointment scheduling works without CRM Analytics. No-show prediction specifically requires CRM Analytics (formerly Tableau CRM) as a separate license. When scoping IAM, explicitly separate core scheduling from predictive analytics requirements and confirm the CRM Analytics license if prediction is needed.
+IAM core appointment scheduling works without CRM Analytics. No-show prediction specifically requires CRM Analytics (formerly Tableau CRM) as a separate license. When scoping IAM, explicitly separate core scheduling from predictive analytics requirements and confirm the CRM Analytics license if prediction is needed. Recording a no-show needs no add-on: `NoShow` already exists as a booking status and a Service Appointment Status Reason value (Agentforce Health Developer Guide). UNVERIFIED (2026-10-03): the CRM Analytics dependency itself is not described in the developer guide.
 
 **Detection hint:** If IAM requirements include no-show prediction without mentioning CRM Analytics as a license requirement, the dependency is missing.
 
 ---
 
-## Anti-Pattern 3: Assuming OmniStudio Is Auto-Installed with Health Cloud
+## Anti-Pattern 3: Assuming OmniStudio and Discovery Framework Are Ready Because Health Cloud Is Licensed
 
-**What the LLM generates:** Health assessment configuration steps that assume OmniStudio is ready to use immediately after Health Cloud is licensed, without noting that the managed package must be separately installed.
+**What the LLM generates:** Health assessment configuration steps that assume OmniStudio and Discovery Framework are ready to use immediately after Health Cloud is licensed. The opposite error also appears: instructions to find "the Discovery Framework package" under Installed Packages.
 
-**Why it happens:** OmniStudio is licensed as part of Health Cloud. LLMs conflate "licensed" with "installed and active." The managed package installation step is a deployment action, not a license activation.
+**Why it happens:** OmniStudio is licensed as part of Health Cloud. LLMs conflate "licensed" with "set up and active", and they assume every Industries capability is a managed package.
 
 **Correct pattern:**
-OmniStudio must be explicitly installed as a managed package (via AppExchange or managed package installer) even if licensed within Health Cloud. Discovery Framework must be installed separately after OmniStudio. Verify installation status in Setup > Installed Packages before scoping any OmniScript-based assessment work.
+Record which OmniStudio runtime the org uses: Omnistudio for Managed Packages (installed package, custom objects) or the standard runtime. Confirm the Discovery Framework feature is enabled; the Salesforce Industries Developer Guide describes it as a feature enabled in the org, not as a package. Add the Health Cloud and Health Cloud Platform permission set licenses and the Health Cloud Permission Set License permission set for assessment users, because the Assessment objects are visible only with them (Agentforce Health Developer Guide, Health Assessments).
 
-**Detection hint:** If assessment implementation steps begin with OmniStudio configuration without verifying the managed package is installed, the installation prerequisite is missing.
+**Detection hint:** Flag assessment plans that skip the runtime check, that look for Discovery Framework under Installed Packages, or that never mention the permission set licenses.
 
 ---
 
@@ -64,3 +64,37 @@ Patient-clinician clinical communications (appointment details, care instruction
 Experience Cloud for Health Cloud uses per-user licensing — each patient portal user requires an Experience Cloud for Health Cloud license assigned via permission set. Estimate the patient user population size for licensing cost planning. Factor per-user license costs into the total project budget. Plan the permission set assignment process for patient onboarding.
 
 **Detection hint:** If the portal design does not include per-user license assignment planning and cost estimation, the per-user licensing requirement has been overlooked.
+
+---
+
+## Anti-Pattern 6: Scoping Self-Scheduling as a Salesforce-Only Feature
+
+**What the LLM generates:** "Enable Intelligent Appointment Management, create work types, and patients can book online", with no mention of the EHR.
+
+**Why it happens:** LLMs know Salesforce Scheduler and assume IAM is the same thing for healthcare. The developer guide describes IAM as integrating with the customer's appointment management system: Health Cloud queries the source EHR for practitioner availability at a facility using the source system's IDs.
+
+**Correct pattern:**
+```
+For each specialty, record:
+  system of record for slots ..... EHR name / Salesforce Scheduler
+  integration .................... default AppointmentBookingInteropFhirAdapter (FHIR R4)
+                                   or custom class implementing healthcloudext.AppointmentBookingInterop
+  credentials .................... Named Credential, mapped in AppointmentBookingConfig
+  patient-facing reasons ......... AppointmentReason records
+  channels per reason ............ ApptReasonEngmtChannelType rows (video, phone, in person)
+  work types ..................... DefaultWorkTypeId (new patient), EstablishedWorkTypeId (established patient)
+```
+
+**Detection hint:** Self-scheduling requirements with no source-system column, no Named Credential, or no reason-by-channel matrix.
+
+---
+
+## Anti-Pattern 7: Granting Portal Users Clinical Data Without the FHIR Experience Cloud Permission Set
+
+**What the LLM generates:** A portal design that shows `ClinicalEncounter` or `HealthCondition` records to patients through standard sharing alone.
+
+**Why it happens:** LLMs apply the usual Experience Cloud recipe (profile, sharing set) and stop. The developer guide adds two conditions: community users need the FHIR R4 for Experience Cloud Sites permission set, and objects such as `ClinicalEncounter` and `HealthCondition` exist only after the FHIR-Aligned Clinical Data Model org preference is enabled.
+
+**Correct pattern:** List the clinical objects per portal page, enable the org preference where the object requires it, and assign the FHIR R4 for Experience Cloud Sites permission set to portal users, then apply sharing.
+
+**Detection hint:** Portal requirements that read Clinical Data Model objects without naming the org preference or the permission set.

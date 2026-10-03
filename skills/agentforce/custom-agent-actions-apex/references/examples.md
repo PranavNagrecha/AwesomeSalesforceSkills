@@ -123,4 +123,24 @@ public static List<OrderStatusOutput> getOrderStatus(List<OrderStatusInput> inpu
 }
 ```
 
-**Why it works:** `callout=true` enables the HTTP request. Named Credential `ERP_API` handles authentication without hardcoded credentials. The 10-second timeout prevents the agent turn from hanging on a slow ERP response.
+**Why it works:** `callout=true` marks the method as calling an external system, so screen flows can run it in a fresh transaction; the callout happens before any DML, so there is no uncommitted work to block it. Named Credential `ERP_API` handles authentication without hardcoded credentials. The 10-second timeout prevents the agent turn from hanging on a slow ERP response.
+
+---
+
+## Example 3: Apex Action Deployed With Its GenAiFunction Metadata
+
+**Context:** A Service Agent needs a read-only "case status" action that the planner can reason with and that never returns raw records.
+
+**Solution:** The complete Apex class, its test, the `GenAiFunction` component with input and output `schema.json` files, and the `package.xml` member form are in `references/metadata-examples.md`. The design choices it encodes:
+
+```text
+inputs   case_number  String   isUserInput=true
+outputs  success      Boolean  isUsedByPlanner=true  isDisplayable=false
+         status       String   isUsedByPlanner=true  isDisplayable=true
+         subject      String   isUsedByPlanner=true  isDisplayable=true
+         error_message String  isUsedByPlanner=true  isDisplayable=false
+confirmation  not required (read-only)
+sharing       with sharing + WITH USER_MODE (runs as the agent user)
+```
+
+**Why it works:** Every field is primitive, at least one output is visible to the planner, and the action reads only what the agent user may see.

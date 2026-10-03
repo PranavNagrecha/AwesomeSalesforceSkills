@@ -101,8 +101,9 @@ emit.
 
 ❌ "Coverage is 88%, ship it."
 ✅ Enumerate every literal assigned to `reasonCode` in the class and require one test per
-literal. `scripts/check_agent_action_unit_tests.py` in this package performs that
-comparison mechanically.
+literal. Do this by review or with your own script: `scripts/check_agent_action_unit_tests.py`
+in this package only checks that the skill package's files exist, and does not compare
+reason codes with tests (earlier versions of this file said it did).
 
 ## Anti-Pattern 7: Relying on @InvocableVariable defaults that do not exist
 

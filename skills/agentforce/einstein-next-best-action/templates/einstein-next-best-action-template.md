@@ -21,9 +21,9 @@ Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Recommendation Records
 
-| Name | Description | ActionReference | AcceptanceLabel | RejectionLabel | ExpirationDate |
+| Name | Description | ActionReference | AcceptanceLabel | RejectionLabel | Expiration_Date__c (custom) |
 |---|---|---|---|---|---|
-| (recommendation name) | (user-facing description) | (API name of Flow or quick action) | (button text) | (dismiss text) | (YYYY-MM-DD or blank) |
+| (recommendation name, max 80) | (user-facing description, max 255) | (API name of the acceptance flow) | (button text, max 80) | (dismiss text, max 80) | (YYYY-MM-DD or blank) |
 | | | | | | |
 | | | | | | |
 
@@ -38,7 +38,7 @@ Record the answers to the Before Starting questions from SKILL.md here.
 - `recommendations` — Type: Record (Recommendation), Collection: Yes, Available for Output: Yes
 
 **Logic outline:**
-1. Get Records: Retrieve Recommendation records WHERE (filter criteria) AND (ExpirationDate >= TODAY OR ExpirationDate = null)
+1. Get Records: Retrieve Recommendation records WHERE (filter criteria) AND IsActionActive = true AND (Expiration_Date__c >= TODAY OR Expiration_Date__c = null), sorted and limited to the display count (1–4)
 2. Decision: (describe branching logic based on input record fields)
 3. Assignment: Add matching recommendations to the output collection
 4. (additional Decision/Assignment branches as needed)
@@ -53,7 +53,7 @@ Record the answers to the Before Starting questions from SKILL.md here.
 
 | Recommendation Name | ActionReference | Action Type | What It Does |
 |---|---|---|---|
-| (name) | (Flow or quick action API name) | Flow / Quick Action | (describe the action) |
+| (name) | (flow API name) | Flow | (describe the action) |
 | | | | |
 
 ## Checklist
@@ -61,12 +61,12 @@ Record the answers to the Before Starting questions from SKILL.md here.
 Copy from SKILL.md Review Checklist and tick items as you complete them.
 
 - [ ] Einstein Next Best Action permission set license is assigned to target users
-- [ ] All Recommendation records have valid ActionReference values pointing to active Flows or quick actions
+- [ ] All Recommendation records have ActionReference values pointing to active flows (IsActionActive = true)
 - [ ] Strategy Flow defines an output variable of type `List<Recommendation>` (collection, sObject = Recommendation)
-- [ ] Strategy Flow filtering logic excludes expired recommendations (ExpirationDate < TODAY)
+- [ ] Strategy Flow filtering logic excludes expired recommendations (custom Expiration_Date__c < TODAY)
 - [ ] Actions & Recommendations component is placed on the correct Lightning page and configured with the strategy Flow
 - [ ] Acceptance actions execute correctly when the user clicks the acceptance button
-- [ ] No more than 25 recommendations are returned per strategy invocation
+- [ ] Deployment maxDisplayRecommendations set (1–4) and the strategy ranks before that cut
 - [ ] AcceptanceLabel and RejectionLabel text is clear and user-friendly
 
 ## Notes
