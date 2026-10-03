@@ -5,7 +5,9 @@ name: tests
 # mcp/sfskills-mcp/tests/. validate.yml owns skill/agent VALIDATION; it should
 # not also own test execution.
 #
-# Both jobs use `unittest discover`, never a hand-written module list. A named
+# Both jobs use automatic discovery (pytest for the repo suite, which has
+# pytest-style modules; `unittest discover` for the MCP suite), never a
+# hand-written module list. A named
 # list is how 233 of the MCP suite's 248 tests came to gate nothing: only
 # test_agent_frontmatter, test_tools and test_export_parity were ever invoked,
 # so both security modules for a server that talks to live orgs
@@ -63,10 +65,15 @@ jobs:
       # PyYAML (frontmatter parsing) and jsonschema (the frontmatter and
       # registry-record gates). Nothing else — the suite is otherwise stdlib.
       - name: install deps
-        run: python3 -m pip install -r requirements.txt
+        run: python3 -m pip install -r requirements.txt pytest
 
+      # pytest, not unittest discover: tests/test_build_plan.py,
+      # test_mock_deploy.py and test_render_step_docs.py use pytest fixtures and
+      # parametrize, so unittest's loader cannot import them (the 2026-10-03
+      # main run failed with "No module named 'pytest'"). pytest still collects
+      # every unittest.TestCase in the tree, so discovery stays automatic.
       - name: repo test suite
-        run: python3 -m unittest discover -s tests -t tests -v
+        run: python3 -m pytest tests -q -p no:cacheprovider
 
       - name: version consistency
         run: python3 scripts/check_release_versions.py
