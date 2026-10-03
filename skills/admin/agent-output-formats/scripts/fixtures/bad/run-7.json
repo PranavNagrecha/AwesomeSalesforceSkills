@@ -1,0 +1,1 @@
+{"agent":"user-access-diff","mode":"compare","run_id":"run7","summary":"x","confidence":"HIGH","citations":[],"dimensions_skipped":[{"dimension":"setup_entity_access","confidence_impact":"LOW"}],"findings":[{"id":"F-01","severity":"CRITICAL","title":"t","evidence":{"permission_set_id":"0PS5f000001AbCdEFG"}},{"severity":"P1"}]}

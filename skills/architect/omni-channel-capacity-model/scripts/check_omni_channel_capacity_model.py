@@ -69,31 +69,40 @@ def _get_child_text(element: ET.Element, local_name: str) -> str | None:
 
 
 def check_service_channel_weights(manifest_dir: Path) -> list[str]:
-    """Check ServiceChannel metadata for equal-weight anti-pattern."""
+    """Check routing configurations for the equal-weight anti-pattern.
+
+    Capacity does not live on ServiceChannel (the Metadata API type carries no capacity
+    field); it lives on QueueRoutingConfig (capacityWeight / capacityPercentage) and on
+    PresenceUserConfig (capacity). Earlier versions read `capacityWeight` from the
+    ServiceChannel file, so this rule could never fire. Found 2026-10-03.
+    """
     issues: list[str] = []
-    channel_files = _find_files(manifest_dir, ".serviceChannel-meta.xml")
-    if not channel_files:
+    config_files = _find_files(manifest_dir, ".queueRoutingConfig-meta.xml")
+    if not config_files:
         return issues
 
-    weights: dict[str, str] = {}
-    for cf in channel_files:
+    weights: dict[str, float] = {}
+    for cf in config_files:
         root = _parse_xml_safe(cf)
         if root is None:
             continue
-        name = _get_child_text(root, "masterLabel") or cf.stem.replace(".serviceChannel-meta", "")
-        capacity = _get_child_text(root, "capacityWeight")
-        if capacity:
-            weights[name] = capacity
+        name = _get_child_text(root, "label") or cf.name.replace(".queueRoutingConfig-meta.xml", "")
+        raw = _get_child_text(root, "capacityWeight") or _get_child_text(root, "capacityPercentage")
+        if not raw:
+            continue
+        try:
+            weights[name] = float(raw)
+        except ValueError:
+            issues.append(f"Queue Routing Config '{name}' has a non-numeric capacity value '{raw}'.")
 
-    if len(weights) >= 2:
-        unique_weights = set(weights.values())
-        if len(unique_weights) == 1:
-            issues.append(
-                f"All {len(weights)} Service Channels have the same capacity weight "
-                f"({unique_weights.pop()}). Differentiate weights by channel effort "
-                f"(e.g., Voice=10, Case=5, Chat=3)."
-            )
-
+    if len(weights) >= 2 and len(set(weights.values())) == 1:
+        value = next(iter(weights.values()))
+        issues.append(
+            f"All {len(weights)} Queue Routing Configs carry the same capacity value "
+            f"({value:g}). Differentiate capacityWeight by channel effort "
+            f"(e.g., Voice=10, Case=5, Messaging=2) so one channel cannot starve another "
+            f"(QueueRoutingConfig, Metadata API Developer Guide)."
+        )
     return issues
 
 

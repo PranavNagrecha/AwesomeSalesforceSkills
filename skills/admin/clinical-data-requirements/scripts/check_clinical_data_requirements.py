@@ -32,22 +32,20 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-LEGACY_EHR_OBJECTS = [
-    "HC24__EhrCondition__c",
-    "HC24__EhrMedication__c",
-    "HC24__EhrProcedure__c",
-    "HC24__EhrLabResult__c",
-    "HC24__EhrPatientMedication__c",
-    "HC24__EhrCarePlan__c",
-]
-
+# Legacy packaged EHR objects and their FHIR R4-aligned standard counterparts, from the Health
+# Cloud developer guide (Spring '23 legacy statement). Earlier versions listed objects that do
+# not exist in the guide (`HC24__EhrMedication__c`, `HC24__EhrLabResult__c`) and invented
+# replacements (`PatientMedication`, `MedicalProcedure`). Corrected 2026-10-03.
 FHIR_ALIGNED_REPLACEMENTS = {
     "HC24__EhrCondition__c": "HealthCondition",
-    "HC24__EhrMedication__c": "PatientMedication",
-    "HC24__EhrProcedure__c": "MedicalProcedure",
-    "HC24__EhrLabResult__c": "CareObservation",
-    "HC24__EhrCarePlan__c": "CarePlan",
+    "HC24__EhrMedicationStatement__c": "MedicationStatement",
+    "HC24__EhrMedicationPrescription__c": "MedicationRequest",
+    "HC24__EHRProcedure__c": "PatientMedicalProcedure",
+    "HC24__EhrObservation__c": "CareObservation",
+    "HC24__EhrImmunization__c": "PatientImmunization",
+    "HC24__EhrAllergyIntolerance__c": "AllergyIntolerance",
 }
+LEGACY_EHR_OBJECTS = list(FHIR_ALIGNED_REPLACEMENTS)
 
 
 def check_legacy_ehr_object_usage(manifest_dir: Path) -> list[str]:

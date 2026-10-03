@@ -120,11 +120,14 @@ def check_quote_process_guided_selection_flag(quote_processes: list[dict]) -> li
             qp.get("GuidedProductSelection", ""),
         )
         name = qp.get("Name", qp.get("_file", "unknown"))
-        if str(flag).lower() not in ("true", "1"):
+        # The field API name is documented only on help.salesforce.com (UNVERIFIED 2026-10-03),
+        # so an absent field is not a finding — only an explicit false value is.
+        if flag != "" and str(flag).lower() in ("false", "0"):
             issues.append(
-                f"GUIDED SELECTION DISABLED: Quote Process '{name}' has "
-                f"SBQQ__GuidedProductSelection__c = '{flag}' (must be true). "
-                f"The guided selling wizard will not launch for quotes using this process."
+                f"GUIDED SELECTION DISABLED: Quote Process '{name}' has the Guided Selling flag "
+                f"(SBQQ__GuidedProductSelection__c) explicitly set to '{flag}'. "
+                f"The guided selling wizard will not launch for quotes using this process. "
+                f"Confirm the field API name in Object Manager."
             )
     return issues
 

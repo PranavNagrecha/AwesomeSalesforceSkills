@@ -2,7 +2,7 @@
 """Checker script for Client Onboarding Design skill.
 
 Validates FSC onboarding metadata artifacts for common process design issues:
-- Action Plan template task count approaching or exceeding the 75-task limit
+- Action Plan template task count large enough to warrant a phased split (size advisory)
 - Published Action Plan templates that appear to have been cloned but lack
   a version indicator in their name (versioning governance issue)
 - Flows or Action Plans referencing OmniStudio component names (indicates
@@ -22,6 +22,9 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+# No item limit for Action Plan templates appears in the Object Reference or Metadata API
+# entries (checked 2026-10-03); the '75-task hard limit' earlier versions asserted is
+# UNVERIFIED. The thresholds below are size advisories, not platform limits.
 ACTION_PLAN_TASK_LIMIT = 75
 ACTION_PLAN_TASK_WARNING_THRESHOLD = 60
 
@@ -94,14 +97,15 @@ def check_action_plan_templates(manifest_dir: Path) -> list[str]:
         if task_count >= ACTION_PLAN_TASK_LIMIT:
             issues.append(
                 f"Action Plan template '{template_name}' has {task_count} tasks — "
-                f"this meets or exceeds the 75-task hard platform limit. "
-                f"Split into phased templates to avoid plan launch failures."
+                f"a template this large is hard to maintain and slow to launch. "
+                f"Consider phased templates. (No documented item limit exists — the earlier "
+                f"'75-task hard limit' claim is UNVERIFIED as of 2026-10-03.)"
             )
         elif task_count >= ACTION_PLAN_TASK_WARNING_THRESHOLD:
             issues.append(
                 f"Action Plan template '{template_name}' has {task_count} tasks — "
-                f"approaching the 75-task hard limit. "
-                f"Review whether a phased template split is needed."
+                f"review whether a phased template split is needed. "
+                f"(Size advisory only; no documented item limit exists.)"
             )
 
         # Check for version indicator in template name

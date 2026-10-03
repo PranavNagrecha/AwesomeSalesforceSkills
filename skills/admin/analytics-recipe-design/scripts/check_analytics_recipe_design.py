@@ -120,8 +120,10 @@ def check_embedded_schedule(recipe_path: Path, data: dict) -> list[str]:
     if found_props:
         issues.append(
             f"{recipe_path.name}: Recipe body contains schedule-like properties "
-            f"({', '.join(sorted(found_props))}). Recipe schedules must be configured via "
-            f"POST /wave/recipes/{{recipeId}}/schedules — they are not part of the recipe definition."
+            f"({', '.join(sorted(found_props))}). Recipe schedules are a separate resource: "
+            f"PUT /services/data/vXX.0/wave/asset/<recipeId>/schedule with a frequency body "
+            f"(hourly, weekly, monthly, monthlyrelative, eventdriven) — they are not part of the "
+            f"recipe definition (CRM Analytics REST API Developer Guide, Schedule resource)."
         )
     return issues
 

@@ -16,6 +16,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -32,49 +33,75 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def check_caregap_creation_in_flows(manifest_dir: Path) -> list[str]:
-    """Check Flows for patterns that attempt to create CareGap records."""
+def check_caregap_status_writes_in_flows(manifest_dir: Path) -> list[str]:
+    """Flag Flows that write CareGap.Status directly.
+
+    `CareGap` supports create(), update() and upsert() (Health Cloud developer guide, CareGap,
+    API 59.0) — earlier versions of this checker wrongly flagged every recordCreates on it.
+    What is NOT writable is `CareGap.Status` (Open / Closed / Excluded): the field carries no
+    Create or Update property. Closure runs through `MeasureEvaluationStatus`. Corrected
+    2026-10-03.
+    """
     issues: list[str] = []
     flows_dir = manifest_dir / "flows"
     if not flows_dir.exists():
         return issues
 
-    for flow_file in flows_dir.glob("*.flow-meta.xml"):
+    block_re = re.compile(r"<(recordUpdates|recordCreates)>(.*?)</\1>", re.S)
+    for flow_file in sorted(flows_dir.glob("*.flow-meta.xml")):
         content = flow_file.read_text(encoding="utf-8")
-        if "CareGap" in content and "<recordCreates>" in content:
-            issues.append(
-                f"{flow_file.name}: Flow contains a recordCreates element that may reference CareGap. "
-                "CareGap records (API v59.0+) are system-generated and cannot be created via standard DML. "
-                "Verify this is not attempting manual CareGap creation."
-            )
+        if "CareGap" not in content:
+            continue
+        for m in block_re.finditer(content):
+            block = m.group(2)
+            if "<object>CareGap</object>" not in block:
+                continue
+            assigns = re.findall(r"<inputAssignments>(.*?)</inputAssignments>", block, re.S)
+            if any("<field>Status</field>" in a for a in assigns):
+                issues.append(
+                    f"{flow_file.name}: Flow assigns CareGap.Status directly. The field is not "
+                    "writable (no Create/Update property); set MeasureEvaluationStatus and let the "
+                    "platform derive Status (Health Cloud developer guide, CareGap)."
+                )
+                break
     return issues
 
 
 def check_icm_permission_references(manifest_dir: Path) -> list[str]:
-    """Check for HealthCloudICM permission set references."""
+    """Check that some permission set grants the ICM / social-determinants objects.
+
+    Earlier versions required a permission set literally named `HealthCloudICM`; that name
+    is not in the Summer '26 developer guide and is UNVERIFIED (2026-10-03). The rule now
+    checks object permissions, not a name.
+    """
     issues: list[str] = []
     perm_dir = manifest_dir / "permissionsets"
     if not perm_dir.exists():
         return issues
 
-    hc_icm_found = any(
-        "HealthCloudICM" in f.name
-        for f in perm_dir.glob("*.permissionset-meta.xml")
-    )
-    if not hc_icm_found:
-        # Check in permissionsetgroups
-        psg_dir = manifest_dir / "permissionsetgroups"
-        if psg_dir.exists():
-            for f in psg_dir.glob("*.permissionsetgroup-meta.xml"):
-                if "HealthCloudICM" in f.read_text(encoding="utf-8"):
-                    hc_icm_found = True
-                    break
+    icm_objects = ("CareGap", "CareBarrier", "CareEpisode", "ClinicalServiceRequest")
+    referenced: set[str] = set()
+    for search_dir, pattern in (("flows", "*.flow-meta.xml"), ("classes", "*.cls")):
+        d = manifest_dir / search_dir
+        if d.exists():
+            for f in d.glob(pattern):
+                text = f.read_text(encoding="utf-8")
+                referenced.update(o for o in icm_objects if o in text)
+    if not referenced:
+        return issues
 
-    if not hc_icm_found:
+    granted: set[str] = set()
+    for f in perm_dir.glob("*.permissionset-meta.xml"):
+        text = f.read_text(encoding="utf-8")
+        for obj in referenced:
+            if re.search(rf"<object>{obj}</object>", text):
+                granted.add(obj)
+    for obj in sorted(referenced - granted):
         issues.append(
-            "HealthCloudICM permission set not found in permissionsets/ or permissionsetgroups/. "
-            "ICM objects (ClinicalServiceRequest, CareGap, CareBarrier, CareEpisode) require "
-            "the HealthCloudICM permission set. Verify it is assigned via Setup > Permission Sets."
+            f"No permission set in permissionsets/ grants object permissions on {obj}, which the "
+            "automation references. Health Cloud ICM and social-determinants objects need the Health "
+            "Cloud permission set licenses plus a permission set granting the object; add the "
+            "objectPermissions entry or confirm the grant comes from a managed permission set."
         )
     return issues
 
@@ -105,7 +132,7 @@ def check_care_coordination_requirements(manifest_dir: Path) -> list[str]:
         issues.append(f"Manifest directory not found: {manifest_dir}")
         return issues
 
-    issues.extend(check_caregap_creation_in_flows(manifest_dir))
+    issues.extend(check_caregap_status_writes_in_flows(manifest_dir))
     issues.extend(check_icm_permission_references(manifest_dir))
     issues.extend(check_carebarrier_flow_patterns(manifest_dir))
 

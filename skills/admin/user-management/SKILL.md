@@ -8,6 +8,7 @@ well-architected-pillars:
   - Operational Excellence
 triggers:
   - "add a new user in Salesforce"
+  - "how do I add a new user"
   - "deactivate a user who left the company"
   - "freeze a user account without deactivating it"
   - "bulk load users from a CSV with Data Loader"
@@ -39,7 +40,7 @@ outputs:
   - "Login restriction settings (hours and IP ranges per profile)"
   - "User deactivation or freeze checklist with reassignment steps"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
 updated: 2026-10-03
 ---

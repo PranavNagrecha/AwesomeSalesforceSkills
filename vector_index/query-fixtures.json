@@ -6033,7 +6033,7 @@
     {
       "query": "flow record choice set dynamic picklist choice collection",
       "domain": "flow",
-      "expected_skill": "flow/flow-resource-patterns",
+      "expected_skill": "flow/flow-dynamic-choices",
       "top_k": 3
     },
     {

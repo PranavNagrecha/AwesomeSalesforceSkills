@@ -22,9 +22,12 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
+# UNVERIFIED (2026-10-03): the three-writeback-field ceiling and the `Einstein_` field prefix came
+# from earlier versions of this skill and were not found in the Summer '26 docs; the limit is kept
+# as an advisory threshold. The former `1OR` prediction-definition key-prefix constant was unused and
+# unsupported, and has been removed.
 WRITEBACK_FIELD_LIMIT = 3
 EINSTEIN_FIELD_PREFIXES = ("Einstein_", "einstein_")
-PREDICTION_DEFINITION_PREFIX = "1OR"
 
 
 def parse_args() -> argparse.Namespace:
@@ -141,13 +144,13 @@ def check_writeback_field_count_per_object(manifest_dir: Path) -> list[str]:
         if count >= WRITEBACK_FIELD_LIMIT:
             issues.append(
                 f"Object '{object_name}' has {count} Einstein Discovery writeback field(s) "
-                f"({', '.join(fields)}). The platform maximum is {WRITEBACK_FIELD_LIMIT} per object. "
+                f"({', '.join(fields)}). This reaches the {WRITEBACK_FIELD_LIMIT}-field advisory threshold (UNVERIFIED as a platform limit, 2026-10-03). "
                 f"Deploying an additional prediction with writeback on this object will fail."
             )
         elif count == WRITEBACK_FIELD_LIMIT - 1:
             issues.append(
                 f"Object '{object_name}' has {count} Einstein Discovery writeback field(s). "
-                f"Only 1 slot remains before reaching the {WRITEBACK_FIELD_LIMIT}-field limit. "
+                f"One more writeback field reaches the {WRITEBACK_FIELD_LIMIT}-field advisory threshold. "
                 f"Review before adding another prediction definition with writeback on this object."
             )
 

@@ -1,0 +1,1 @@
+expected: ENV-REQ-01 (missing keys), ENV-RUNID-01 (bad format + stem mismatch), ENV-FIND-01 (bad severity, missing id/title), ENV-DIM-01 (LOW impact with HIGH confidence; missing state/reason), CSV-RUNID-01 (no run_id column), CSV-ID-01 (lower-cased Id).

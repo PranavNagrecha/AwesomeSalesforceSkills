@@ -19,7 +19,20 @@ from pathlib import Path
 
 
 NPSP_OBJECT_HINTS = ("npsp__", "npo02__", "npe01__", "npe03__", "npe4__", "npe5__")
-NONPROFIT_CLOUD_OBJECT_HINTS = ("Gift__c", "GiftCommitment", "ProgramEngagement", "PersonEducation")
+# Standard Nonprofit Cloud objects (Nonprofit Cloud developer guide). Earlier versions listed
+# `Gift__c`, `ProgramEngagement` and `PersonEducation`, none of which is a Nonprofit Cloud
+# object: `ProgramEngagement` is NPSP's `pmdm__ProgramEngagement__c`; the target is
+# `ProgramEnrollment`. Corrected 2026-10-03.
+NONPROFIT_CLOUD_OBJECT_HINTS = (
+    "GiftTransaction",
+    "GiftCommitment",
+    "GiftCommitmentSchedule",
+    "GiftSoftCredit",
+    "GiftDesignation",
+    "ProgramEnrollment",
+    "BenefitAssignment",
+    "BenefitDisbursement",
+)
 
 
 def parse_args() -> argparse.Namespace:
