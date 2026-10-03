@@ -1,6 +1,6 @@
 ---
 name: flow-resource-patterns
-description: "Flow resource types and when to use each: Variables, Collection Variables, Constants, Formulas, Text Templates, Choices, Stages, Picklist Choice Sets, Record Choice Sets. Covers scope, data types, and reuse patterns. NOT for decision elements. NOT for custom metadata (use admin/custom-metadata-types)."
+description: "Flow resource types and when to use each: Variables, Collection Variables, Constants, Formulas, Text Templates, Choices, Stages, Picklist Choice Sets, Record Choice Sets. Covers scope, data types, and reuse patterns. Triggers: 'which Flow resource type', 'record choice set or picklist choice set', 'choice collection from records in a Flow' (the choice-set wiring itself is flow/flow-dynamic-choices). NOT for decision elements. NOT for custom metadata (use admin/custom-metadata-types)."
 category: flow
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -28,9 +28,9 @@ outputs:
   - Correct resource choice per use case
   - Naming + scoping guidelines
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-05-19
+updated: 2026-10-02
 ---
 
 # Flow Resource Patterns
@@ -122,6 +122,10 @@ Swapping the constant in one place updates all references.
 | Show picklist values | Picklist Choice Set |
 | Show live records | Record Choice Set |
 | Show in-memory collection | Collection Choice Set |
+
+## Choosing Between Choice Resources
+
+Three Flow resources present a list of options and they are not interchangeable. A **Choice** is one hand-typed label and value — right for a fixed yes/no or a short constant list. A **Picklist Choice Set** reads a picklist field's active values at run time, so the Flow follows the field without redeploying; it cannot filter. A **Record Choice Set** reads records with a filter and sort, maps one field to the label and one to the stored value, and can assign the chosen record's other fields to variables; it is the resource for a dynamic choice collection driven by data. A collection variable of records is not a choice resource — to offer records as choices, bind a Record Choice Set to it. Dependent choices (one set filtered by another's selection) and the metadata shapes for all three are `flow/flow-dynamic-choices`; this skill decides which resource fits and how it is scoped and reused.
 
 ## Recommended Workflow
 
