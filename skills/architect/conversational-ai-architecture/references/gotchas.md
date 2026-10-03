@@ -73,7 +73,7 @@ The documented carrier is the agent's context variables. The Metadata API Develo
 
 **When it occurs:** Regulated flows (identity verification, disclosures, eligibility checks) designed as prompt text.
 
-**How to avoid:** Put deterministic rules inside the action (a flow or Apex invocable action that refuses to act when the rule fails). For flows that must be explainable end to end, the guide lists regulated industries that need explainable processes and deterministic conversation flows as cases where Einstein Bots fit better. That is the basis for the hybrid pattern in this skill.
+**How to avoid:** Put deterministic rules inside the action (a flow or Apex invocable action that refuses to act when the rule fails). Where control flow itself must be predictable, the Agentforce Developer Guide ("Get Started with Agent Script") describes Agent Script expressions for if/else conditions, transitions, and variables that "don't rely solely on interpretation by an LLM". For flows that must be explainable end to end, the guide lists regulated industries that need explainable processes and deterministic conversation flows as cases where Einstein Bots fit better. That is the basis for the hybrid pattern in this skill.
 
 ---
 
@@ -104,3 +104,14 @@ The documented carrier is the agent's context variables. The Metadata API Develo
 **When it occurs:** Promoting an agent from a Winter '26+ sandbox to an org on an older release, or reusing a pre-Winter '26 `package.xml`.
 
 **How to avoid:** List both `GenAiPlannerBundle` and `GenAiPlugin` (and `GenAiFunction` for actions, plus `Bot`) in the manifest. Pin the retrieve API version to the target org's version when releases differ.
+
+---
+
+## Gotcha 11: "Topics" Are Now Called "Subagents" in Newer Documentation
+
+**What happens:** A team searches the current Agentforce documentation for topic guidance and finds "subagents" instead, or reads an older design that says "topics" and assumes a different feature. The Agentforce Developer Guide ("Get Started with Agent Script") says that beginning in April 2026, agent topics are called subagents, with no change in functionality, and that documentation mixes the old and new terms during the transition. The Metadata API still models them as `GenAiPlugin` ("agent topic").
+
+**When it occurs:** Any design, runbook, or review checklist written before April 2026, and any search across mixed-era documentation.
+
+**How to avoid:** Use both terms in design documents ("topic (subagent)") and map them to the metadata type (`GenAiPlugin`, inside `GenAiPlannerBundle`). Search documentation for both words before concluding a feature is missing.
+

@@ -55,10 +55,10 @@ A one-time review that produces a report that is filed and forgotten is a WAF an
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)
-- Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (HTTP 403 on 2026-10-03, not re-read)
+- Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)
+- Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)
 - Secure Apex Classes (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_perms_enforcing.htm (read as the Summer '26 PDF below)
-- Apex Security and Sharing (LWC Developer Guide) — https://developer.salesforce.com/docs/platform/lwc/guide/apex-security (HTTP 403 on 2026-10-03, not re-read)
+- Apex Security and Sharing (LWC Developer Guide) — https://developer.salesforce.com/docs/platform/lwc/guide/apex-security (returned content on 2026-10-03; status checked, page not re-read)
 - Salesforce Sharing Model — https://help.salesforce.com/s/articleView?id=sf.sharing_model.htm (help.salesforce.com does not fetch; the Security Guide PDF below was read instead)
 - Connected App Overview — https://help.salesforce.com/s/articleView?id=sf.connected_app_overview.htm (help.salesforce.com does not fetch; connected app policy claims marked UNVERIFIED)
 - Salesforce Shield Overview — https://help.salesforce.com/s/articleView?id=sf.security_shield.htm (help.salesforce.com does not fetch; not re-read)

@@ -23,7 +23,7 @@ This is the primary reason Custom Metadata Types are preferred for deployable co
 
 **What happens:** LWC components cannot register as handlers of Aura application events (`e.namespace:EventName`). If an org has a cross-component communication pattern built on Aura application events, migrating only the publisher component to LWC will silently break all Aura consumers — they will stop receiving events with no runtime error that clearly points to the event chain.
 
-The reverse is also true: an Aura component cannot subscribe to a custom DOM event from a LWC sibling at the application level. The *Lightning Aura Components Developer Guide* (Spring '26, local corpus `knowledge/imports/lightning.md`, "Application Event Propagation") says that to communicate across the DOM within a Lightning page, or between Visualforce, Lightning pages and LWC, you should use Lightning Message Service instead of application events.
+The reverse is also true: an Aura component cannot subscribe to a custom DOM event from a LWC sibling at the application level. The LWC Developer Guide ("Lightning Web Components and Aura Components Working Together") says Aura components can contain Lightning web components but not the reverse. The *Lightning Aura Components Developer Guide* (Spring '26, local corpus `knowledge/imports/lightning.md`, "Application Event Propagation") says that to communicate across the DOM within a Lightning page, or between Visualforce, Lightning pages and LWC, you should use Lightning Message Service instead of application events.
 
 **When it occurs:** Component-by-component LWC migrations of a page whose components talk through application events.
 

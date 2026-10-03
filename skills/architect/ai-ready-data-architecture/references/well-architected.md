@@ -53,11 +53,11 @@ AI-ready data architectures require ongoing operational discipline. The data mod
 The following official Salesforce sources were used to inform this skill:
 
 - **Salesforce Well-Architected — Reliable / Data**
-  https://architect.salesforce.com/well-architected/reliable/data (HTTP 403 on 2026-10-03, not re-read)
+  https://architect.salesforce.com/well-architected/reliable/data (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)
   Primary authority for data reliability patterns and data lifecycle design guidance.
 
 - **Salesforce Well-Architected Overview**
-  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)
+  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)
   Primary authority for the Trusted / Easy / Adaptable pillar model and operational excellence guidance.
 
 - **Data Cloud Overview (Salesforce Help)**
@@ -65,7 +65,7 @@ The following official Salesforce sources were used to inform this skill:
   Primary authority for Data Cloud capabilities, harmonized data model, identity resolution, and activation behavior.
 
 - **Salesforce Architects Blog**
-  https://architect.salesforce.com/content (HTTP 403 on 2026-10-03, not re-read)
+  https://architect.salesforce.com/content (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)
   Pattern guidance for data architecture decisions in large-scale Salesforce implementations.
 
 - **Einstein AI Documentation (Salesforce Help)**

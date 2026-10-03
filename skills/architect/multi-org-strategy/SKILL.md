@@ -29,6 +29,8 @@ triggers:
   - "Salesforce-to-Salesforce is hitting our API limits — what should we use instead"
   - "users need to log in to multiple Salesforce orgs — how do we do SSO across all of them"
   - "our org topology has grown to five orgs and nobody understands how data flows between them"
+  - "decide whether a second production org is justified or we should stay on one org"
+  - "replace our Salesforce to Salesforce connection with something supported"
 inputs:
   - "Business justification for considering multiple orgs (regulatory, M&A, business unit separation, etc.)"
   - "Data classification and residency requirements per region or business unit"
@@ -46,9 +48,9 @@ outputs:
   - "Risk register: governor limit exposure, user management duplication, licensing implications"
   - "Callout of legacy Salesforce-to-Salesforce usage with migration path"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 Use this skill when evaluating whether to use multiple Salesforce production orgs, designing how those orgs will exchange data, reviewing an existing multi-org architecture for hidden risks, or troubleshooting cross-org integration failures. This skill addresses the structural decision layer — it does not replace role-specific skills for building individual integrations, configuring Named Credentials, or setting up SSO providers.
@@ -61,6 +63,35 @@ Use this skill when evaluating whether to use multiple Salesforce production org
 - **Is this really a sandbox question?** Development, QA, and UAT isolation is handled by sandboxes — not by separate production orgs. If the conversation is about dev/prod separation, use the sandbox-strategy skill instead.
 - **What data needs to cross org boundaries?** If the answer is "most of it," that is a signal that multiple orgs may be the wrong call.
 - **Who manages user access across the orgs?** Deactivation, permission changes, and onboarding must be replicated independently in each org unless an external IdP handles provisioning.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What written requirement can one org not satisfy?" | Without one, every extra org buys duplicated users, licences, releases, and API budgets for nothing | A named regulation, contract clause, or divestiture date in the decision record | The org count is defended by a requirement, and the record says when to revisit it |
+| "Which data must cross org boundaries, in which direction, and how many records per day?" | The receiving org's inbound API allocation comes from its own licences, and small spokes run out first (Gotcha 3) | A per-pair volume table and the receiving org's allocation from the Limits Quick Reference formula | Bulk API 2.0 or batched calls chosen up front instead of after a 24-hour lockout |
+| "Must the other org's data drive automation, formulas, or roll-ups, or only be displayed?" | External objects take no triggers, formulas, roll-ups, or master-detail (Gotchas 2, 5) | A split between display-only reads (cross-org adapter) and replicated data (sync jobs) | Automation runs in the owning org, so nothing waits on a trigger that cannot exist |
+| "Which identity provider owns users, and how is a leaver deactivated in every org?" | SSO stops new sessions but deactivates nothing; JIT acts only at login (Gotchas 4, 9) | A provisioning and deprovisioning design per org, with one SAML registration per org | Leavers lose access everywhere on the same day, and MFA is enforced at the IdP for every org |
+| "Is Salesforce to Salesforce enabled anywhere, and which connections are accepted today?" | S2S connections have their own lifecycle and no supported growth path (Gotcha 1) | The `PartnerNetworkConnection` inventory with a replacement per connection | A dated retirement plan instead of a fragile connection nobody owns |
+| "Which integration user in each target org serves each cross-org connection?" | A named-principal connection fails for everyone when that one user changes (Gotcha 8) | A dedicated user per data source, excluded from automated leaver jobs | Cross-org reads survive offboarding sweeps and credential rotations |
+
+What proper configuration adds over "just connecting the orgs": each org has a stated reason to exist, each data flow has an owner and an API budget, and identity lifecycle covers every org rather than the first one.
+
+---
+
+## Recommended Workflow
+
+1. **Record the driver.** Write the requirement that a single org cannot satisfy and test it against "When Multiple Production Orgs Are Justified" below. No written requirement means a single-org recommendation.
+2. **Inventory what exists.** For each org, capture licences by type, the 24-hour inbound API allocation, active S2S connections (`SELECT ConnectionName, ConnectionStatus, ConnectionType FROM PartnerNetworkConnection`), named credentials, external data sources, and integration users.
+3. **Choose the topology** (single org, hub-and-spoke, or peer-to-peer) with Mode 1 Step 2, and name the system of record for every shared object.
+4. **Pick a mechanism per org pair** from the Integration Pattern Decision Matrix, and check its daily volume against the receiving org's allocation (Gotcha 3).
+5. **Design identity** per org: one SAML registration each, Federation ID mapping, and an explicit deprovisioning path (Gotchas 4, 9).
+6. **Write the decision record and release manifest** (worked example in `references/examples.md`, Example 4), then run `python3 scripts/check_multi_org.py --project-dir <force-app>` to catch S2S use, hard-coded org Ids, and literal callout endpoints.
+7. **Set the review trigger**: contract renewal, a Hyperforce region becoming available, or the end of an M&A transition, with an owner for consolidation.
 
 ---
 
@@ -128,6 +159,7 @@ For each org pair that must exchange data:
    - REST API: preferred for record-by-record or small-batch synchronous exchange
    - Bulk API 2.0: preferred for large-volume nightly or periodic sync jobs (millions of records)
    - Salesforce Connect (External Objects): preferred for near-real-time cross-org lookup without full replication; data is queried on-demand via OData 2.0/4.0 adapter or a custom adapter
+   - For another Salesforce org specifically, use the cross-org adapter (`ExternalDataSource` type `SfdcOrg`), not OData (see Gotcha 7)
 
 2. **Authenticate with Named Credentials:**
    - Create a Connected App in the target org (the org being called).
@@ -157,20 +189,7 @@ For each org pair that must exchange data:
 
 ## Mode 2: Review an Existing Multi-Org Architecture
 
-Use this mode when reviewing an inherited or in-flight multi-org design for risks and improvement opportunities.
-
-#
-## Recommended Workflow
-
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
-
----
+Use this mode when reviewing an inherited or in-flight multi-org design for risks and improvement opportunities. Run the inventory in Recommended Workflow step 2, then score the estate against the checklist below.
 
 ## Review Checklist
 
@@ -196,7 +215,7 @@ Use this mode when cross-org integrations are failing, hitting limits, or behavi
 |---|---|---|
 | Cross-org callout hitting API limit | Both orgs consuming callout limits simultaneously; or S2S hitting SOAP API limits on both ends | Debug logs on calling org (check `CALLOUT_REQUEST`/`CALLOUT_RESPONSE`); API Usage in target org Setup |
 | Named Credential OAuth token expired or invalid | JWT certificate rotation or Connected App scope change | Named Credential config in calling org; Connected App session policies in target org |
-| External Object query returning no rows | OData adapter endpoint URL changed; target org API version mismatch; integration user permission revoked | Salesforce Connect external data source setup; Check integration user profile and permission set in target org |
+| External Object query returning no rows | Cross-org (`SfdcOrg`) data source endpoint or `apiVersion` changed; integration user deactivated or permission revoked in the target org | Salesforce Connect external data source setup; Check integration user profile and permission set in target org |
 | Hard-coded org ID causing failures in new environment | Org ID embedded in Apex, Custom Settings, or Flow | Search Apex source for 18-char Salesforce org ID pattern; check Custom Settings and Flow variable defaults |
 | Salesforce-to-Salesforce connection broken after org refresh | S2S connections are environment-specific; sandbox refresh resets them | Migrate off S2S; use Named Credentials + REST API instead |
 | Users can SSO into one org but not the other | SP configuration mismatch in IdP; Entity ID or ACS URL wrong for second org | SAML settings in both orgs; IdP application configuration |
@@ -209,7 +228,7 @@ Use this mode when cross-org integrations are failing, hitting limits, or behavi
 
 | Scenario | Recommended Pattern |
 |---|---|
-| Read another org's record on-demand (low volume) | Salesforce Connect (External Objects) — OData adapter to target org REST API |
+| Read another org's record on-demand (low volume) | Salesforce Connect cross-org adapter: `ExternalDataSource` type `SfdcOrg` (corrected from "OData adapter"; see Gotcha 7) |
 | Sync a small number of records in near-real-time | REST API callout from Apex or Flow → Named Credential + Connected App |
 | Nightly full sync of hundreds of thousands of records | Bulk API 2.0 job from scheduled Apex or MuleSoft/external ETL |
 | New multi-org integration replacing Salesforce-to-Salesforce | REST API + Named Credentials (JWT Bearer) — deprecate S2S immediately |
@@ -234,7 +253,10 @@ Salesforce-to-Salesforce is a native Salesforce feature that allows records to b
 
 ## Related Skills
 
-- `integration/named-credentials-and-callouts` — for Named Credential and Connected App configuration details
+- `integration/named-credentials-setup` and `apex/apex-named-credentials-patterns`: Named Credential and External Credential configuration (the earlier `integration/named-credentials-and-callouts` path does not exist)
+- `integration/salesforce-to-salesforce-integration`: building the S2S replacement or cross-org sync once this skill has chosen the pattern
+- `security/sso-configuration` and `security/scim-provisioning-integration`: SAML registration per org and deprovisioning
+- `architect/architecture-decision-records`: the record format used in Example 4
 - `architect/solution-design-patterns` — for broader automation layer decisions
 - `security/` skills — for OAuth scope design and IP range restrictions on Connected Apps
 - `data/` skills — for LDV design within a single org (an alternative to multi-org for data volume concerns)

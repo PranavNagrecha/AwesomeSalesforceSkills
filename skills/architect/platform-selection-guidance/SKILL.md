@@ -117,7 +117,7 @@ Use this framework when the requirement involves storing configuration data that
 | Mobile support | Full | Limited — mobile features added after ~2021 are LWC-only (UNVERIFIED 2026-10-03) |
 | Experience Cloud support | Full | Partial |
 | Slack integration | Supported | Not supported (UNVERIFIED 2026-10-03) |
-| Can contain the other | LWC cannot contain Aura | Aura can contain LWC children (both UNVERIFIED 2026-10-03: the LWC Developer Guide returned HTTP 403; the Aura guide confirms only that the two coexist and interoperate on a page) |
+| Can contain the other | LWC cannot contain Aura | Aura can contain LWC children (LWC Developer Guide, "Lightning Web Components and Aura Components Working Together": "Aura components can contain Lightning web components. However, the opposite doesn't apply.") |
 
 **Decision rule:**
 

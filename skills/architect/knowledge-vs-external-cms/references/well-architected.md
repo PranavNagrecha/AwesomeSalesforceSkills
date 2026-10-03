@@ -22,7 +22,7 @@ A secondary tradeoff is **operational simplicity vs. audience-optimized delivery
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview -- https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)
+- Salesforce Well-Architected Overview -- https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)
 - Salesforce Knowledge Overview -- https://help.salesforce.com/s/articleView?id=sf.knowledge_whatis.htm (help.salesforce.com does not fetch; not re-read)
 - CMS Connect for Experience Cloud -- https://help.salesforce.com/s/articleView?id=sf.cms_connect.htm (help.salesforce.com does not fetch; not re-read)
 - Salesforce Knowledge Guide (Classic), Spring '26 -- https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_knowledge_implementation_guide.pdf -- edition availability, "Data Category Limits" (5 groups / 3 active, 100 per group, 5 levels, 8 per article, translations inherit), "Visibility Setting Enforcement" (ancestors and descendants visible), "Work with Data Categories" (standard sharing for Lightning Knowledge since Summer '20), scheduled publication, "Export Articles for Translation" (50 exports per 24 hours, 15 pending), "Import Translated Articles"

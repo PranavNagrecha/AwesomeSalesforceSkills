@@ -29,8 +29,8 @@ Hybrid architectures introduce multiple runtime environments (Salesforce, middle
 ## Official Sources Used
 
 - Salesforce Help — Salesforce Private Connect: https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm (help.salesforce.com does not fetch; licensing and enablement claims marked UNVERIFIED)
-- Salesforce Architects — Integration Patterns: https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html (HTTP 403 on 2026-10-03; the PDF edition below was read instead)
-- Salesforce Architects — Hyperforce Architecture: https://architect.salesforce.com/docs/architect/infrastructure/guide/hyperforce-architecture (HTTP 403 on 2026-10-03, not re-read)
+- Salesforce Architects — Integration Patterns: https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html (returned content to plain curl on 2026-10-03; the PDF edition below was the one read)
+- Salesforce Architects — Hyperforce Architecture: https://architect.salesforce.com/docs/architect/infrastructure/guide/hyperforce-architecture (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)
 - MuleSoft Docs — Hybrid Deployment: https://docs.mulesoft.com/runtime-manager/deployment-strategies (not re-read on 2026-10-03)
 - Salesforce Trust — IP Ranges: https://help.salesforce.com/s/articleView?id=sf.salesforce_app_ip_allowlist.htm (help.salesforce.com does not fetch)
 - Salesforce published IP ranges (machine-readable): https://ip-ranges.salesforce.com/ip-ranges.json: fetched 2026-10-03: `syncToken`, `createDate` 2026-07-06, prefixes for 24 AWS and GCP regions; basis for correcting the "ephemeral IPs" claim

@@ -25,7 +25,7 @@ Key operational excellence practices this skill addresses:
 ## Official Sources Used
 
 - Salesforce Well-Architected Framework Overview — reliability and operational excellence pillars framing
-  URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)
+  URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)
 - Salesforce Trust Site — real-time instance status, SLA documentation, maintenance notification
   URL: https://trust.salesforce.com
 - Salesforce Trust Site Status API — instance status JSON API

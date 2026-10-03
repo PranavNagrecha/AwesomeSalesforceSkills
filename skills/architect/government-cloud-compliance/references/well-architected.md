@@ -64,8 +64,8 @@ Government Cloud deployments sometimes face pressure to enable new Salesforce fe
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)
-- Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (HTTP 403 on 2026-10-03, not re-read)
+- Salesforce Well-Architected Framework Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)
+- Salesforce Well-Architected: Trusted — https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)
 - Salesforce Government Cloud Overview — https://www.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Trust and Compliance documentation — https://compliance.salesforce.com/  (page retired — see host index for current equivalent)
 - FedRAMP Authorization for Salesforce Government Cloud — https://marketplace.fedramp.gov/#/product/salesforce-government-cloud
@@ -76,7 +76,7 @@ Government Cloud deployments sometimes face pressure to enable new Salesforce fe
 - CMS Acceptable Risk Safeguards (ARS) — https://www.cms.gov/  (page retired — see host index for current equivalent)
 - Salesforce Hyperforce Overview — https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm (help.salesforce.com does not fetch; Hyperforce claims resting on it are marked UNVERIFIED)
 - Salesforce Shield Overview — https://help.salesforce.com/s/articleView?id=sf.security_shield.htm (help.salesforce.com does not fetch; not re-read)
-- NIST, FedRAMP Marketplace, DISA and CMS pages above are external government sources; they were not fetched on 2026-10-03, and claims resting only on them are marked UNVERIFIED in the skill
+- NIST, FedRAMP Marketplace, DISA and CMS pages above are external government sources; they returned pages on 2026-10-03 but were not read for content in this pass, so claims resting only on them are marked UNVERIFIED in the skill
 - Salesforce Government Cloud guide (Spring '26 edition): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/government_cloud.pdf. Offerings (Government Cloud Plus: FedRAMP High P-ATO from the JAB, DoD IL4, IRS 1075, NIST SP 800-171; Government Cloud Plus - Defense: IL5 on dedicated DoD infrastructure), authorized versus interoperable products, compliance documentation access (package FR2003061248), Shield encryption and FIPS (deterministic not validated), information spillage and its cleanup steps, AppExchange boundary and labels, package install and LMA limits, 3PAO-recommended control list, Field Service compliance and Advanced Security Settings, Salesforce Express Connect routing and the `.mil` exclusion
 - Quickstart Your Einstein Generative AI Solution (Spring '26 edition): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf. "Considerations for Agents": agents are not available for Government Cloud
 - Salesforce Security Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf. "Field History Tracking" (18/24 months without Field Audit Trail; until deleted with it), `HistoryRetentionPolicy`, MFA requirement for logins
