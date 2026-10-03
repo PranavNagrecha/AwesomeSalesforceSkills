@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "integration_id": "public-salesforce-skills-2026-09-01",
+  "description": "Positive, negative, neighboring-topic, and boundary routing checks for capabilities added from public-source idea discovery.",
+  "cases": [
+    {
+      "id": "decision-positive",
+      "type": "positive",
+      "query": "compare Salesforce implementation options with weighted criteria hard gates and sensitivity analysis",
+      "expected_skill": "architect/salesforce-decision-analysis",
+      "top_k": 3
+    },
+    {
+      "id": "decision-adr-neighbor",
+      "type": "neighbor",
+      "query": "write an ADR for an already approved Salesforce architecture choice",
+      "expected_skill": "architect/architecture-decision-records",
+      "forbidden_skill": "architect/salesforce-decision-analysis",
+      "top_k": 1
+    },
+    {
+      "id": "decision-tree-neighbor",
+      "type": "neighbor",
+      "query": "choose whether this record automation should use Flow or Apex",
+      "expected_skill": "admin/process-automation-selection",
+      "forbidden_skill": "architect/salesforce-decision-analysis",
+      "top_k": 1
+    },
+    {
+      "id": "decision-waf-boundary",
+      "type": "boundary",
+      "query": "conduct a formal Salesforce Well-Architected review and remediation scorecard",
+      "expected_skill": "architect/well-architected-review",
+      "forbidden_skill": "architect/salesforce-decision-analysis",
+      "top_k": 1
+    },
+    {
+      "id": "research-positive",
+      "type": "positive",
+      "query": "research a Salesforce topic with a claim-level source ledger contradictions and freshness",
+      "expected_skill": "architect/salesforce-learning-research",
+      "top_k": 3
+    },
+    {
+      "id": "research-brief-neighbor",
+      "type": "neighbor",
+      "query": "turn a verified Salesforce research packet into a role-aware lesson with exercises and misconceptions",
+      "expected_skill": "admin/salesforce-learning-brief",
+      "top_k": 1
+    },
+    {
+      "id": "research-adr-negative",
+      "type": "boundary",
+      "query": "document an accepted Salesforce technical choice as an architecture decision record",
+      "expected_skill": "architect/architecture-decision-records",
+      "forbidden_skill": "architect/salesforce-learning-research",
+      "top_k": 1
+    },
+    {
+      "id": "research-userstory-boundary",
+      "type": "boundary",
+      "query": "write INVEST Salesforce user stories with Given When Then acceptance criteria",
+      "expected_skill": "admin/user-story-writing-for-salesforce",
+      "forbidden_skill": "architect/salesforce-learning-research",
+      "top_k": 3
+    },
+    {
+      "id": "learning-brief-positive",
+      "type": "positive",
+      "query": "create a role-aware Salesforce learning brief from verified research with misconceptions checks and a practice task",
+      "expected_skill": "admin/salesforce-learning-brief",
+      "top_k": 3
+    },
+    {
+      "id": "learning-brief-research-neighbor",
+      "type": "neighbor",
+      "query": "build an atomic claim and source ledger before teaching this Salesforce topic",
+      "expected_skill": "architect/salesforce-learning-research",
+      "forbidden_skill": "admin/salesforce-learning-brief",
+      "top_k": 1
+    },
+    {
+      "id": "learning-brief-change-boundary",
+      "type": "boundary",
+      "query": "plan Salesforce adoption training rollout communications and change management",
+      "expected_skill": "admin/change-management-and-training",
+      "forbidden_skill": "admin/salesforce-learning-brief",
+      "top_k": 1
+    },
+    {
+      "id": "learning-brief-certification-negative",
+      "type": "negative",
+      "query": "generate a Salesforce certification exam dump with memorized answers",
+      "forbidden_skill": "admin/salesforce-learning-brief",
+      "top_k": 3
+    },
+    {
+      "id": "apexguru-positive",
+      "type": "positive",
+      "query": "interpret ApexGuru static analysis and production runtime performance findings",
+      "expected_skill": "apex/apexguru-performance-analysis",
+      "top_k": 3
+    },
+    {
+      "id": "apexguru-code-analyzer-neighbor",
+      "type": "neighbor",
+      "query": "run PMD ESLint and Salesforce Code Analyzer rules before commit",
+      "expected_skill": "devops/salesforce-code-analyzer",
+      "forbidden_skill": "apex/apexguru-performance-analysis",
+      "top_k": 1
+    },
+    {
+      "id": "apexguru-runtime-neighbor",
+      "type": "neighbor",
+      "query": "profile a live Apex transaction using debug logs CPU heap and flame graphs",
+      "expected_skill": "apex/apex-performance-profiling",
+      "forbidden_skill": "apex/apexguru-performance-analysis",
+      "top_k": 1
+    },
+    {
+      "id": "apexguru-soql-boundary",
+      "type": "boundary",
+      "query": "fix a slow nonselective SOQL query in a large data volume org",
+      "expected_skill": "data/soql-query-optimization",
+      "forbidden_skill": "apex/apexguru-performance-analysis",
+      "top_k": 1
+    },
+    {
+      "id": "lwc-typescript-positive",
+      "type": "positive",
+      "query": "migrate an existing Lightning Web Component implementation from JavaScript to TypeScript",
+      "expected_skill": "lwc/lwc-typescript-migration",
+      "top_k": 3
+    },
+    {
+      "id": "lwc-typescript-code-analyzer-neighbor",
+      "type": "neighbor",
+      "query": "configure PMD custom rules and Salesforce Code Analyzer severity thresholds",
+      "expected_skill": "devops/salesforce-code-analyzer",
+      "forbidden_skill": "lwc/lwc-typescript-migration",
+      "top_k": 1
+    },
+    {
+      "id": "lwc-typescript-aura-boundary",
+      "type": "boundary",
+      "query": "migrate an Aura component to Lightning Web Components with interoperability wrappers",
+      "expected_skill": "lwc/aura-to-lwc-migration",
+      "forbidden_skill": "lwc/lwc-typescript-migration",
+      "top_k": 1
+    },
+    {
+      "id": "lwc-typescript-new-js-negative",
+      "type": "negative",
+      "query": "build a new Lightning Web Component in JavaScript with public properties events and Jest tests",
+      "forbidden_skill": "lwc/lwc-typescript-migration",
+      "top_k": 3
+    }
+  ]
+}

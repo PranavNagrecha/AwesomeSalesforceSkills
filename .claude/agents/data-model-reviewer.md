@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/review-data-model` (`commands/review-data-model.md`)
 - Domain router skill: `salesforce-data`
-

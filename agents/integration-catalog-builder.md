@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/catalog-integrations` (`commands/catalog-integrations.md`)
 - Domain router skill: `salesforce-integration`
-

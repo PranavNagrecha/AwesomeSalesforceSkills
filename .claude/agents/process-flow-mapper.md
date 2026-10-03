@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/map-process-flow` (`commands/map-process-flow.md`)
 - Domain router skill: `salesforce-admin`
-

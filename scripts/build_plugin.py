@@ -80,7 +80,7 @@ PLUGIN_AGENT_SCAN_DIR = Path("agents")
 
 PLUGIN_NAME = "sfskills"
 MARKETPLACE_NAME = "sfskills"
-PLUGIN_VERSION = "1.1.0"
+PLUGIN_VERSION = "1.2.0"
 AUTHOR_NAME = "Pranav Nagrecha"
 REPO_URL = "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
 
@@ -1432,7 +1432,7 @@ def render_subagent(agent: dict) -> str:
         lines.append(
             f"- Slash command: `/{agent['command']}` (`commands/{agent['command']}.md`)"
         )
-    lines += [f"- Domain router skill: `{router}`", ""]
+    lines += [f"- Domain router skill: `{router}`"]
     return "\n".join(lines) + "\n"
 
 

@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/preflight-load` (`commands/preflight-load.md`)
 - Domain router skill: `salesforce-data`
-

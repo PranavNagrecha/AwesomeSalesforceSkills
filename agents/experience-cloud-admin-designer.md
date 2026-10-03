@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-experience-cloud` (`commands/design-experience-cloud.md`)
 - Domain router skill: `salesforce-admin`
-

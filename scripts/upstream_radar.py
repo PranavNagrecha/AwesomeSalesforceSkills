@@ -10,8 +10,9 @@ WHAT THIS IS
 
 WHAT THIS IS NOT
     It does not copy, fetch, or store any upstream prose. forcedotcom/sf-skills
-    is licensed CC BY-NC 4.0; our repo is Apache-2.0. The two are incompatible
-    for copying. This tool treats upstream purely as a DISCOVERY RADAR: it learns
+    currently publishes conflicting license signals (Apache-2.0 in the root
+    license file and CC-BY-NC-4.0 in package metadata). Until upstream resolves
+    that conflict, this tool treats it as CLEAN-ROOM discovery only: it learns
     *what topics exist* and hands that list to a human/agent who authors our own
     skill FROM OFFICIAL SALESFORCE DOCS. See memory: project-upstream-sf-skills-sync.
 
@@ -38,7 +39,10 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 UPSTREAM = "forcedotcom/sf-skills"
-UPSTREAM_LICENSE = "CC BY-NC 4.0 — clean-room only; author from official docs, never copy upstream prose"
+UPSTREAM_LICENSE = (
+    "CONFLICTING: LICENSE.txt declares Apache-2.0 while package metadata declares "
+    "CC-BY-NC-4.0 — clean-room only; author from official Salesforce sources"
+)
 DEFAULT_MANIFEST = REPO_ROOT / "config" / "upstream-sources" / "sf-skills.manifest.json"
 SKILL_PATH_RE = re.compile(r"^skills/([^/]+)/SKILL\.md$")
 

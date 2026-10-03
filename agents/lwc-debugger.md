@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/debug-lwc` (`commands/debug-lwc.md`)
 - Domain router skill: `salesforce-lwc`
-

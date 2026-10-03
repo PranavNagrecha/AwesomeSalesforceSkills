@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-duplicate-rule` (`commands/design-duplicate-rule.md`)
 - Domain router skill: `salesforce-data`
-

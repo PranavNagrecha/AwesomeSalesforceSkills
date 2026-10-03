@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/draft-stories` (`commands/draft-stories.md`)
 - Domain router skill: `salesforce-admin`
-

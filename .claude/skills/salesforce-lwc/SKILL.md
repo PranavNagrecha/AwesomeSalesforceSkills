@@ -1,13 +1,13 @@
 ---
 name: salesforce-lwc
-description: "Router for the 82 SfSkills `lwc` skill packages. Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing. Use when the request mentions LWC, Lightning Web Component, wire, @api, @track, lightning-record-form, shadow DOM, Jest, Lightning Message Service, Aura migration, Lightning page. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 83 SfSkills `lwc` skill packages. Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing. Use when the request mentions LWC, Lightning Web Component, wire, @api, @track, lightning-record-form, shadow DOM, Jest, Lightning Message Service, Aura migration, Lightning page. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce lwc — SfSkills domain router
 
 Lightning Web Components: reactivity, wire adapters, component communication, accessibility, performance, security and Jest testing.
 
-**82 skill packages** live under
+**83 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/lwc/<slug>/SKILL.md`. They are not
 loaded — reach them by path, on demand.
 
@@ -53,7 +53,7 @@ it is a map, not the territory.
 
 Curated starting points when the request is broad or the lookup is
 ambiguous. This is a shortlist, not the catalogue — the roster at
-`references/skill-index.md` has all 82.
+`references/skill-index.md` has all 83.
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/lwc/component-communication/SKILL.md` — parent/child, events, and when to reach for Lightning Message Service
 - `${CLAUDE_PLUGIN_ROOT}/skills/lwc/wire-service-patterns/SKILL.md` — @wire, reactive parameters, and refreshing cached data

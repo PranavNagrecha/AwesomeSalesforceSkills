@@ -1,13 +1,13 @@
 ---
 name: salesforce-apex
-description: "Router for the 158 SfSkills `apex` skill packages. Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data. Use when the request mentions Apex, trigger, SOQL, Apex governor limit, batch, queueable, @future, schedulable, test class, CPU time, heap, with sharing, StripInaccessible, callout, HTTP callout, HttpRequest, call an external API, consume a REST API from Apex, Named Credential in Apex, HttpCalloutMock, Apex REST service. Finds and opens the exact skill package to read; it does not contain the guidance itself."
+description: "Router for the 159 SfSkills `apex` skill packages. Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data. Use when the request mentions Apex, trigger, SOQL, Apex governor limit, batch, queueable, @future, schedulable, test class, CPU time, heap, with sharing, StripInaccessible, callout, HTTP callout, HttpRequest, call an external API, consume a REST API from Apex, Named Credential in Apex, HttpCalloutMock, Apex REST service. Finds and opens the exact skill package to read; it does not contain the guidance itself."
 ---
 
 # Salesforce apex — SfSkills domain router
 
 Apex and SOQL: triggers, Apex governor limits, async processing, OUTBOUND HTTP callouts, security enforcement, and test patterns. Owns calling an external API FROM Salesforce; salesforce-integration owns inbound. Generic nightly scheduling without naming code belongs to salesforce-flow. Codebase security review belongs to salesforce-security. NOT for SOSL — use salesforce-data.
 
-**158 skill packages** live under
+**159 skill packages** live under
 `${CLAUDE_PLUGIN_ROOT}/skills/apex/<slug>/SKILL.md`. They are not
 loaded — reach them by path, on demand.
 
@@ -53,7 +53,7 @@ it is a map, not the territory.
 
 Curated starting points when the request is broad or the lookup is
 ambiguous. This is a shortlist, not the catalogue — the roster at
-`references/skill-index.md` has all 158.
+`references/skill-index.md` has all 159.
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/apex/trigger-framework/SKILL.md` — one trigger per object, handler dispatch, and recursion control
 - `${CLAUDE_PLUGIN_ROOT}/skills/apex/governor-limits/SKILL.md` — the limit table and which ones actually bite in practice

@@ -23,7 +23,8 @@ If `has_coverage: true` is returned, review the existing skill before creating a
 ### Step 2 — Scaffold
 
 ```bash
-python3 scripts/new_skill.py <domain> <skill-name>
+python3 scripts/new_skill.py <domain> <skill-name> --strict --agent <agent-id> \
+  --agent-justification '<agent-id>=This skill changes the agent output by <specific effect>.'
 ```
 
 This creates the full directory structure:
@@ -40,7 +41,7 @@ skills/<domain>/<skill-name>/
 └── scripts/check_<noun>.py          ← stdlib-only checker stub
 ```
 
-`new_skill.py` will warn if coverage already exists and ask for confirmation.
+`new_skill.py` will warn if coverage already exists and ask for confirmation. Use `--runtime-orphan --orphan-reason "<why>"` when no runtime agent honestly owns the topic.
 
 ### Step 3 — Fill All TODOs
 

@@ -98,6 +98,27 @@ def _yaml_skill_block_bounds(lines: list[str]) -> tuple[int, int]:
 
 
 def insert_yaml_skill(lines: list[str], skill_id: str) -> bool:
+    # ``scripts/new_agent.py`` intentionally scaffolds a valid empty YAML list
+    # as ``skills: []``. Convert that shape to the normal block form on the
+    # first citation instead of failing after the skill directory was created.
+    for i, line in enumerate(lines):
+        if re.match(r"^  skills:\s*\[\s*\]\s*$", line.rstrip("\n")):
+            lines[i] = "  skills:\n"
+            lines.insert(i + 1, f"    - {skill_id}\n")
+            return True
+
+    # Also accept an empty block-style key (``skills:`` immediately followed
+    # by the next dependency key or the frontmatter terminator).
+    for i, line in enumerate(lines):
+        if not re.match(r"^  skills:\s*$", line.rstrip("\n")):
+            continue
+        j = i + 1
+        while j < len(lines) and not lines[j].strip():
+            j += 1
+        if j >= len(lines) or not re.match(r"^    -\s+\S", lines[j].rstrip("\n")):
+            lines.insert(i + 1, f"    - {skill_id}\n")
+            return True
+
     start, end = _yaml_skill_block_bounds(lines)
     existing = [lines[i].strip().removeprefix("- ").strip() for i in range(start, end + 1)]
     if skill_id in existing:

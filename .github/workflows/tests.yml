@@ -68,6 +68,9 @@ jobs:
       - name: repo test suite
         run: python3 -m unittest discover -s tests -t tests -v
 
+      - name: version consistency
+        run: python3 scripts/check_release_versions.py
+
   # -----------------------------------------------------------------------
   # MCP server — the FULL suite, by discovery.
   #
@@ -121,6 +124,9 @@ jobs:
       - name: full mcp test suite
         working-directory: mcp/sfskills-mcp
         run: python3 -m unittest discover -s tests -t tests -v
+
+      - name: public-source routing pack
+        run: python3 -m unittest tests.test_public_source_routing.PublicSourceRoutingPackTest.test_routing_cases -v
 
       # The coverage gate is implemented twice — scripts/search_knowledge.py
       # and mcp/.../skills.py — against the same index. Both surfaces keep

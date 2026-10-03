@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-entitlements` (`commands/design-entitlements.md`)
 - Domain router skill: `salesforce-admin`
-

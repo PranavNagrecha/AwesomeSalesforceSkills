@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/design-sandbox-strategy` (`commands/design-sandbox-strategy.md`)
 - Domain router skill: `salesforce-devops`
-

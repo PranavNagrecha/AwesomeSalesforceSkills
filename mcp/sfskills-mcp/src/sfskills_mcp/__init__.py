@@ -121,4 +121,22 @@
 #           index from `triggers:`), skipping the index surface rather than
 #           failing when vector_index/ is absent.
 
-__version__ = "0.4.8"
+#   0.4.9 — Compatible data/catalog release. Server tool/API surface is
+#           unchanged. Ships five new canonical skill packages
+#           (architect/salesforce-decision-analysis,
+#           architect/salesforce-learning-research,
+#           admin/salesforce-learning-brief,
+#           apex/apexguru-performance-analysis,
+#           lwc/lwc-typescript-migration), a deepened Code Analyzer package,
+#           two advisory runtime agents with /decide-salesforce and
+#           /learn-salesforce MCP prompts, Draft 2020-12 source-integration
+#           ledger validation, and MCP search/get/agent/prompt parity for
+#           those surfaces. Forcedotcom remains clean-room.
+
+#   0.4.10 — Hotfix data bundle. Server tool/API surface is unchanged.
+#            Includes `pipelines/` and `config/` in `sfskills-data.tar.gz` so
+#            a PyPI install + `sfskills-mcp-init` can run lexical `search_skill`
+#            without a full git checkout. 0.4.9 GitHub assets remain published
+#            but are superseded by this release for `/releases/latest`.
+
+__version__ = "0.4.10"

@@ -1,0 +1,99 @@
+{
+  "$schema": "../../config/source-integration.schema.json",
+  "schema_version": 1,
+  "integration_id": "jaganpro-sf-skills-2026-09-01",
+  "created_at": "2026-09-01T00:00:00Z",
+  "baseline": {
+    "requested_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive": "AwesomeSalesforceSkills-main (3).zip",
+    "reviewed_archive_sha256": "fdf1823f02d3145066da3b48c8e31b2b5309a3f93284c1e7c4ecec697c727bc0",
+    "exact_requested_snapshot_available": true,
+    "repository_baseline_commit": "7e0ecaba888f3d986362782f04d7035064bfce34",
+    "notes": "The designated AwesomeSalesforceSkills-main (3).zip archive was mounted and hashed. Its SHA-256 matches the earlier inspectable (1).zip fallback byte-for-byte, so reconciliation used commit 7e0ecaba888f3d986362782f04d7035064bfce34 created from the (3) extract as the exact latest baseline. Upstream candidate archives remain unavailable for byte-level pins."
+  },
+  "sources": [
+    {
+      "id": "jaganpro-sf-skills",
+      "requested_archive": "sf-skills-main.zip",
+      "repository": "https://github.com/Jaganpro/sf-skills",
+      "pin": {
+        "kind": "unavailable",
+        "value": null,
+        "reason": "The user-supplied archive was not mounted, so no archive hash, commit, or tag is asserted for the reviewed snapshot."
+      },
+      "license": {
+        "detected": "MIT",
+        "class": "permissive",
+        "conflict": false,
+        "conflict_reason": null,
+        "evidence": [
+          "https://github.com/Jaganpro/sf-skills",
+          "https://github.com/Jaganpro/sf-skills/blob/main/LICENSE"
+        ]
+      },
+      "candidate_count": 37,
+      "content_use": "Historical topic and migration-lineage verification only; no new source content was imported."
+    }
+  ],
+  "decisions": [
+    {
+      "source_id": "jaganpro-sf-skills",
+      "candidate_id": "tracked-thirty-seven-skill-catalog",
+      "disposition": "STOP",
+      "target": "config/upstream-sources/jaganpro-sf-skills.manifest.json",
+      "scope": "Preserve the existing per-skill historical integration record and do not duplicate its topics.",
+      "rationale": "The fallback repository already carries pinned hashes for 37 Jaganpro skills, and the public repository is archived with development moved elsewhere.",
+      "routing": "Use the existing local owners for those topics; review successor changes only through a separately pinned source intake.",
+      "files": [
+        "config/upstream-sources/jaganpro-sf-skills.manifest.json"
+      ]
+    },
+    {
+      "source_id": "jaganpro-sf-skills",
+      "candidate_id": "unverified-post-manifest-delta",
+      "disposition": "DEFER",
+      "target": "future pinned successor-source intake",
+      "scope": "Defer any delta beyond the committed manifest until exact source bytes or a pinned successor tag are available.",
+      "rationale": "The requested archive was unavailable, so a trustworthy byte-level comparison against the prior manifest could not be performed.",
+      "routing": "Run /onboard-source against an exact archive or pinned successor repository, then classify only changed candidates.",
+      "files": [
+        "docs/source-integrations/2026-09-01-public-skill-source-audit.md"
+      ]
+    }
+  ],
+  "changed_files": {
+    "config/upstream-sources/jaganpro-sf-skills.manifest.json": "dce849eea6ae8f16e99a4e00e167bf262b141aa9277b8a309a9bdabc1f45b83d",
+    "docs/source-integrations/2026-09-01-public-skill-source-audit.md": "74509125d22628ebfc4b228c0056fde151403ebb325b6a6e37c04d14576bf110",
+    "validation/commands.txt": "65b17ab4a9ef8707dadb392e7f7e3e9ab63b731e2f94199cab1f1b608624b3bf",
+    "config/source-integration.schema.json": "e03dc93331dc48f530ae3a93942190a5d26ec7e2977eb0422a94eaa980a074b2",
+    "tests/test_source_integrations.py": "e691c8558b6f7d2aaa46e4ede50794a1ee974aaaef872d9a1374851785ef3d38",
+    "scripts/check_source_integrations.py": "01a89fcbc04ed109c08a68b9489c4b61d545ce705da41f30428f8fcb5e1a4408"
+  },
+  "validation": [
+    {
+      "command": "python3 scripts/check_source_integrations.py",
+      "status": "passed",
+      "evidence": "source-integration-check.txt"
+    },
+    {
+      "command": "python3 scripts/validate_repo.py --all --changed-only",
+      "status": "passed",
+      "evidence": "validate-changed.txt"
+    },
+    {
+      "command": "python3 -m unittest mcp.sfskills-mcp.tests.test_public_source_integration",
+      "status": "passed",
+      "evidence": "mcp-public-source-integration.txt"
+    },
+    {
+      "command": "new skill checker passing and failing fixtures",
+      "status": "passed",
+      "evidence": "unit-core.txt"
+    }
+  ],
+  "attestation": {
+    "clean_room": "The existing manifest is preserved as historical provenance. No source wording or executable material was copied during this integration.",
+    "no_unverified_copy": true,
+    "product_boundary": "All accepted additions remain read-only analysis, teaching, retrieval, or local validation guidance. They do not deploy, mutate an org, grant authority, or bypass the V2.0/V2.1/V2.2 product gates."
+  }
+}

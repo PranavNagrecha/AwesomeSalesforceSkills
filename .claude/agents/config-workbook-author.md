@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/author-config-workbook` (`commands/author-config-workbook.md`)
 - Domain router skill: `salesforce-admin`
-

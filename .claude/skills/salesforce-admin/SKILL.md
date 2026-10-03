@@ -115,6 +115,7 @@ rather than a single question:
 - `profile-to-permset-migrator` — Decompose a Profile into Permission Sets + PSGs
 - `requirements-clarifier` — Ask every question the skills say must be asked before configuring
 - `sales-stage-designer` — Design or audit Opportunity sales stages
+- `salesforce-learning-guide` — Research and teach one Salesforce topic with current evidence, citations, practice, and knowledge checks
 - `story-drafter` — Draft a Salesforce-aware INVEST story backlog
 - `user-access-diff` — Side-by-side access comparison between two Salesforce users
 

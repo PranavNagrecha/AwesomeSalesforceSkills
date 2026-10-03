@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/analyze-field-impact` (`commands/analyze-field-impact.md`)
 - Domain router skill: `salesforce-admin`
-

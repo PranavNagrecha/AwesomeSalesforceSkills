@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/run-fit-gap` (`commands/run-fit-gap.md`)
 - Domain router skill: `salesforce-admin`
-

@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/architect-perms` (`commands/architect-perms.md`)
 - Domain router skill: `salesforce-admin`
-

@@ -159,10 +159,13 @@ def _suggest_agents_for(domain: str) -> list[str]:
 
 def _prompt_agent_decision(
     domain: str, skill_name: str
-) -> tuple[list[str], bool, str | None]:
+) -> tuple[list[str], bool, str | None, dict[str, str]]:
     """Interactive prompt for the agent-wiring decision.
 
-    Returns (agent_ids, runtime_orphan, orphan_reason). Exits on abort.
+    Returns ``(agent_ids, runtime_orphan, orphan_reason, justifications)``.
+    Each cited agent gets a scenario-specific justification so the scaffolder
+    cannot create an echo-only Mandatory Reads entry that the citation-quality
+    gate rejects later.
     """
     agents = _list_runtime_agents()
     suggested = _suggest_agents_for(domain)
@@ -205,7 +208,26 @@ def _prompt_agent_decision(
             if bad:
                 print(f"⚠  Unknown agent(s): {', '.join(bad)}. Try again.")
                 continue
-            return ids, False, None
+            from scripts.patch_agent_skill import is_echo_description
+
+            skill_id = f"{domain}/{skill_name}"
+            justifications: dict[str, str] = {}
+            invalid = False
+            for agent_id in ids:
+                reason = input(
+                    f"Why would {agent_id}'s output be wrong without {skill_id}? "
+                ).strip()
+                if is_echo_description(skill_id, reason):
+                    print(
+                        "⚠  Give a scenario-specific reason, not the skill name. "
+                        "Try the agent-wiring choice again."
+                    )
+                    invalid = True
+                    break
+                justifications[agent_id] = reason
+            if invalid:
+                continue
+            return ids, False, None, justifications
         if choice == "2":
             reason = input(
                 "Reason this skill has no run-time agent owner "
@@ -214,7 +236,7 @@ def _prompt_agent_decision(
             if not reason:
                 print("⚠  A reason is required. Try again.")
                 continue
-            return [], True, reason
+            return [], True, reason, {}
         print("⚠  Invalid choice. Pick 1, 2, ?, or q.")
 
 
@@ -638,6 +660,46 @@ TODO: Record any deviations from the standard pattern and why.
 """
 
 
+def _parse_agent_justifications(
+    values: list[str] | None,
+    agent_ids: list[str],
+    skill_id: str,
+) -> dict[str, str]:
+    """Validate ``AGENT_ID=TEXT`` values and return a complete mapping.
+
+    Keep this helper pure so its failure paths can be tested without creating
+    or deleting repository files.
+    """
+    from scripts.patch_agent_skill import is_echo_description
+
+    if not values:
+        return {}
+
+    allowed = set(agent_ids)
+    mapping: dict[str, str] = {}
+    for raw in values:
+        if "=" not in raw:
+            raise ValueError(
+                f"invalid --agent-justification {raw!r}; expected AGENT_ID=TEXT"
+            )
+        agent_id, reason = raw.split("=", 1)
+        agent_id = agent_id.strip()
+        reason = reason.strip()
+        if agent_id not in allowed:
+            raise ValueError(
+                f"--agent-justification names {agent_id!r}, which is not present in --agent"
+            )
+        if agent_id in mapping:
+            raise ValueError(f"duplicate --agent-justification for {agent_id}")
+        if is_echo_description(skill_id, reason):
+            raise ValueError(
+                f"justification for {agent_id} must name the failure scenario, "
+                "not restate the skill slug"
+            )
+        mapping[agent_id] = reason
+    return mapping
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Scaffold a new Salesforce skill package.",
@@ -668,8 +730,15 @@ After scaffolding:
         help="Run-time agent that should cite this skill. May be repeated for "
              "multiple agents. The skill is added to the agent's "
              "`dependencies.skills:` block and to its `## Mandatory Reads` "
-             "section. Either --agent or --runtime-orphan is required (in TTY "
-             "mode the scaffolder will prompt instead).",
+             "section. Pair every --agent with --agent-justification. Either "
+             "--agent or --runtime-orphan is required (in TTY mode the "
+             "scaffolder will prompt instead).",
+    )
+    parser.add_argument(
+        "--agent-justification", metavar="AGENT_ID=TEXT", action="append",
+        help="Scenario-specific reason the named agent must read this skill. "
+             "Repeat once per --agent. Validated before scaffolding so an "
+             "echo-only citation cannot leave a partial skill directory.",
     )
     parser.add_argument(
         "--runtime-orphan", action="store_true",
@@ -703,9 +772,22 @@ After scaffolding:
         raise SystemExit(
             "✘ --orphan-reason is only valid with --runtime-orphan."
         )
+    if args.agent_justification and not args.agent:
+        raise SystemExit(
+            "✘ --agent-justification is only valid with --agent."
+        )
 
     domain: str = args.domain
     skill_name: str = args.skill_name
+    skill_id = f"{domain}/{skill_name}"
+    try:
+        agent_justifications = _parse_agent_justifications(
+            args.agent_justification,
+            list(args.agent or []),
+            skill_id,
+        )
+    except ValueError as exc:
+        raise SystemExit(f"✘ {exc}") from exc
 
     # Enforce naming convention
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", skill_name):
@@ -784,6 +866,17 @@ After scaffolding:
                 f"Run with --help or list with `ls agents/`."
             )
         agents_to_wire = list(args.agent)
+        missing_justifications = [
+            agent_id
+            for agent_id in agents_to_wire
+            if agent_id not in agent_justifications
+        ]
+        if missing_justifications:
+            raise SystemExit(
+                "✘ Every --agent needs a scenario-specific "
+                "--agent-justification AGENT_ID=TEXT. Missing: "
+                + ", ".join(missing_justifications)
+            )
     elif args.runtime_orphan:
         is_orphan = True
         orphan_reason = args.orphan_reason or (
@@ -800,9 +893,12 @@ After scaffolding:
                 "deliberately leave it unowned.\n"
                 "   See `python3 scripts/new_skill.py --help`."
             )
-        agents_to_wire, is_orphan, orphan_reason = _prompt_agent_decision(
-            domain, skill_name
-        )
+        (
+            agents_to_wire,
+            is_orphan,
+            orphan_reason,
+            agent_justifications,
+        ) = _prompt_agent_decision(domain, skill_name)
 
     # Read scaffold template
     scaffold_template = ROOT / "config" / "skill-scaffold.md"
@@ -839,7 +935,6 @@ After scaffolding:
         print(f"  {f}")
 
     # ── Apply the agent-wiring decision ──────────────────────────────────
-    skill_id = f"{domain}/{skill_name}"
     if is_orphan:
         _add_orphan_marker(skill_dir / "SKILL.md", orphan_reason or "")
         print(
@@ -847,20 +942,13 @@ After scaffolding:
             f"   The validator will accept this skill without an agent citation."
         )
     elif agents_to_wire:
-        # Use the first sentence of the description as the wiring blurb.
-        # If the description is still TODO at this point, fall back to the skill name.
-        try:
-            from pipelines.frontmatter_io import parse_markdown_with_frontmatter
-            parsed = parse_markdown_with_frontmatter(skill_dir / "SKILL.md")
-            desc = (parsed.metadata.get("description") or "").strip()
-            blurb = desc.split(". ")[0].strip(' "\'.')[:120] if desc else ""
-        except Exception:
-            blurb = ""
-        if not blurb or blurb.upper().startswith("TODO"):
-            blurb = skill_name.replace("-", " ")
         print(f"\n🔌 Wiring '{skill_id}' into {len(agents_to_wire)} agent(s):")
         for aid in agents_to_wire:
-            _patch_agent_with_skill(aid, skill_id, blurb)
+            _patch_agent_with_skill(
+                aid,
+                skill_id,
+                agent_justifications[aid],
+            )
 
     # Print official sources prominently — MUST read before writing any content
     official_sources = DOMAIN_OFFICIAL_SOURCES.get(domain, [
