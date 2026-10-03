@@ -1,5 +1,8 @@
 # Installing SfSkills as a Claude Code plugin
 
+**Who this is for:** Claude Code users installing SfSkills as a plugin, and
+maintainers changing the plugin build or its token budget.
+
 The generated artifacts come from
 [`scripts/build_plugin.py`](../scripts/build_plugin.py); the drift gate is
 `python3 scripts/build_plugin.py --check`. The shipped version is whatever

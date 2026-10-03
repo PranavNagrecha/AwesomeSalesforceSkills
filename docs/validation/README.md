@@ -1,5 +1,8 @@
 # Validation — How SfSkills verifies itself against a real Salesforce org
 
+**Who this is for:** maintainers and evaluators who want to check skills, agents
+and probes against a live org of their own.
+
 **Status:** Wave 9, April 2026.
 
 Every skill, agent, and probe in this repo is verified against a live Salesforce org via three automated harnesses. Unlike the structural validators (which check "does the AGENT.md have 8 sections?"), these harnesses check **behavior** — does the SOQL actually execute, does the field actually exist, does the agent's declared dependencies actually resolve.

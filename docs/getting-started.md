@@ -1,11 +1,14 @@
 # Getting started
 
+**Who this is for:** a first-time user going from install to a first useful
+answer, on whichever of the three entry points fits their tool.
+
 Three genuinely different ways to use this library. Pick one; you do not need
 all three.
 
 Before you pick, one fact that reorders the whole page: **the main path needs no
 build step.** A clone carries `CLAUDE.md`, the 12 router skills under
-`.claude/skills/`, their 11 rosters and the 48 run-time agent loaders under
+`.claude/skills/`, their 11 rosters and the 70 run-time agent loaders under
 `.claude/agents/` — all tracked in git on `origin/main`. Open the directory in
 Claude Code, ask a Salesforce question, and it works immediately. What a build
 adds is the keyword-search layer and the slash commands, and both are optional.
@@ -13,7 +16,9 @@ adds is the keyword-search layer and the slash commands, and both are optional.
 Commands and outputs on this page were executed on an Apple-silicon macOS
 machine with Python 3.14.4 on 2026-08-15, unless a line says otherwise. Where a
 figure comes from somewhere other than a command run for this page, the source
-is named inline.
+is named inline. Transcripts keep that day's counts (1,027 skills, 67 commands,
+48 run-time agents). The corpus has since grown to 1,040 skills and 70 run-time
+agents, and `python3 scripts/check_doc_counts.py` prints the live figures.
 
 ---
 
@@ -97,7 +102,7 @@ It is not, and mechanism 1 is unaffected.
 **2. There are no slash commands.** `.gitignore:131` is `.claude/*`, negated on
 the next three lines for `.claude/agents/`, `.claude/skills/` and
 `.claude/workflows/` but not for `.claude/commands/`. The tracked command specs
-live in `commands/`, one file per command — **67** on this checkout, and `ls
+live in `commands/`, one file per command — **92** on this checkout, and `ls
 commands/*.md | wc -l` is the live count. Tracking a second copy would create a
 permanent drift surface between two copies of the same file, which is why the
 generated copy is not committed. `python3 scripts/bootstrap.py` puts them where
@@ -124,17 +129,17 @@ What happens next is a model-driven roster scan, not a search. Claude reads the
 to one domain router, opens that router's `references/skill-index.md` — a roster
 of that domain's packages, one gloss each, budgeted at 220 characters
 (`scripts/build_plugin.py:281`) — and opens the package it picks. Eleven rosters
-carry 1,027 glosses between them; Claude reads one. No index is consulted and
+carry 1,040 glosses between them; Claude reads one. No index is consulted and
 nothing is built.
 
-That indirection is the design, not a workaround. A flat export of all 1,027
-skill descriptions would cost **138,694 tokens** at session start before you
-type anything. Everything loaded up front here — 12 routers, 67 commands and 48
-agent loaders — costs **5,490**, or **4.0%** of that
+That indirection is the design, not a workaround. A flat export of all 1,040
+skill descriptions would cost **149,178 tokens** at session start before you
+type anything. Everything loaded up front here — 12 routers, 92 commands and 70
+agent loaders — costs **7,043**, or **4.8%** of that
 (`python3 scripts/build_plugin.py --measure`, keys `flat_export_tokens`,
-`tier1_tokens`, `ratio`). The token model is an estimate calibrated against a
+`tier1_tokens`, `ratio`, re-run 2026-10-03). The token model is an estimate calibrated against a
 real Claude Code install; the method and its caveat are in
-[architecture.md](architecture.md#why-the-library-is-tiered).
+[architecture.md](architecture.md#why-the-library-is-tiered-at-all).
 
 **Verify it worked.** Ask something with an unambiguous home — "how do I stop a
 trigger firing twice on the same record?" — and check that Claude opens
@@ -153,21 +158,22 @@ python3 scripts/bootstrap.py
 
 About **9 s** on a fresh clone, per the measurement in the script's own header
 (`scripts/bootstrap.py:20`). It builds `vector_index/chunks.jsonl` and
-`vector_index/lexical.sqlite`, installs the 67 slash commands into
+`vector_index/lexical.sqlite`, installs the slash commands into
 `.claude/commands/`, and writes nothing tracked — `git status` is clean when it
 finishes. The full transcript, every flag, and the phase-by-phase breakdown are
 in [installing.md §1](installing.md#1-one-command).
 
 > Use `scripts/bootstrap.py`, not `scripts/skill_sync.py --all` or
 > `scripts/build_index.py`. The other two rewrite generated artifacts —
-> `build_index.py` nulls `vector_embedding` across all 1,027 registry records on
-> a fresh clone with no embedding backend, leaving about **1,029 modified
-> tracked files** you then have to recognise as noise
+> `build_index.py` nulls `vector_embedding` across every registry record on
+> a fresh clone with no embedding backend, leaving roughly one modified tracked
+> file per skill (**1,029** when the script's header measured it) that you then
+> have to recognise as noise
 > (`scripts/bootstrap.py:33-36`). `skill_sync.py` is the contributor's command,
 > run after editing a skill; `bootstrap.py` is the consumer's.
 
 Restart the CLI afterwards. Claude Code loads slash commands at session start,
-so `/consolidate-triggers` and the other 66 will not appear until you do.
+so `/consolidate-triggers` and the rest will not appear until you do.
 `/consolidate-triggers` is walked end to end in
 [worked-example-trigger-consolidation.md](worked-example-trigger-consolidation.md).
 
@@ -178,7 +184,7 @@ What the build leaves on disk, measured on this checkout with
 |---|---:|---|---|
 | `vector_index/lexical.sqlite` | 179 MB | `bootstrap.py` | FTS5 index over 135,409 chunks (`vector_index/manifest.json`, key `chunk_count`) |
 | `vector_index/chunks.jsonl` | 127 MB | `bootstrap.py` | chunk text |
-| `vector_index/skill_embeddings.jsonl` | 5.0 MB | `scripts/build_skill_embeddings.py` | one vector per skill, 1,027 of them; needs `fastembed` |
+| `vector_index/skill_embeddings.jsonl` | 5.0 MB | `scripts/build_skill_embeddings.py` | one vector per skill; needs `fastembed` |
 
 Two things about that third row, because this page got both wrong before.
 `bootstrap.py` does **not** build it — `grep -n "skill_embeddings"
@@ -233,28 +239,30 @@ search surface at query time and the only way to ask questions about your actual
 org.
 
 The package is published on PyPI as `sfskills-mcp`. Two version facts, both
-checked on 2026-08-17: this repository declares **0.4.8**
+checked on 2026-10-03: this repository declares **0.5.0**
 (`mcp/sfskills-mcp/pyproject.toml:11` and `meta.health()`), and the newest
-release on PyPI is **0.4.7**. A `pip install` can therefore trail the checkout;
+release on PyPI is **0.4.10**; 0.5.0 publishes when the `mcp-v0.5.0` tag lands.
+A `pip install` can therefore trail the checkout;
 `python3 -m pip show sfskills-mcp` tells you which one you have.
 
-The wheel ships small on purpose and does not bundle the corpus. Its documented
-bootstrap, `sfskills-mcp-init`, is supposed to download a data bundle from a
-GitHub Release. **That path does not work today** — the project has published no
-GitHub release carrying `sfskills-data.tar.gz`, re-checked 2026-08-15:
+The wheel ships small on purpose and does not bundle the corpus. Its bootstrap,
+`sfskills-mcp-init`, downloads the data bundle `sfskills-data.tar.gz` from the
+latest GitHub Release. Releases `mcp-v0.4.7` through `mcp-v0.4.10` each carry
+that bundle, and the `releases/latest/download/sfskills-data.tar.gz` URL
+answers HTTP 200 (both checked 2026-10-03 with `gh release view` and `curl -I`):
 
-```text
-$ gh api repos/PranavNagrecha/AwesomeSalesforceSkills/releases --jq 'length'
-0
-$ sfskills-mcp-init --cache-dir /tmp/clean-cache
-sfskills-mcp-init: downloading https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz
-sfskills-mcp-init: HTTP 404 fetching https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz
-  Verify the release tag exists: https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases
-$ echo $?
-1
+```bash
+pip install sfskills-mcp
+sfskills-mcp-init
 ```
 
-So configure the server against a repository checkout and point
+(historical, fixed in 0.4.8) On 2026-08-15 no GitHub release existed yet, so
+`sfskills-mcp-init` exited 1 with `HTTP 404`, and the then-current 0.4.6 wheel
+resolved an incompatible `mcp` 2.0 SDK. The transcripts are kept in
+[installing.md § 5](installing.md#from-pypi).
+
+A PyPI install serves whatever corpus the release bundled. To serve the corpus
+in your own checkout instead, configure the server against the checkout and point
 `SFSKILLS_REPO_ROOT` at it. Follow entry point A2 first — the MCP server reads
 `registry/skills.json` and `vector_index/lexical.sqlite`, so it needs the same
 index build.
@@ -324,7 +332,7 @@ agree, because both apply the identical
 `max_score >= min_skill_max_score or score >= min_skill_score` gate from
 `config/retrieval-config.yaml`, both reach FTS5 through the same
 `pipelines.lexical_index.tokenize_query`, and both embed the query when
-`vector_index/skill_embeddings.jsonl` is present (**1,027 vectors**, one per
+`vector_index/skill_embeddings.jsonl` is present (one vector per
 skill). Measured 2026-08-15:
 
 ```text
@@ -385,7 +393,7 @@ EXPORT COMPLETE
 ```
 
 The tree it writes for this target is `exports/cursor/.cursor/` containing
-`rules/` (1,027 `.mdc` files plus an `INDEX.md`) and `commands/` (one per file
+`rules/` (one `.mdc` file per skill plus an `INDEX.md`) and `commands/` (one per file
 in `commands/`). Copy `exports/cursor/.cursor/` to the root of your project —
 copying `exports/` wholesale puts the rules in the wrong place, because the
 export writes one subdirectory per target.
@@ -396,7 +404,7 @@ Other targets — `claude`, `windsurf`, `aider`, `augment`, `codex`, `agents`,
 Codex, Gemini and Cursor ≥ 2.4 at. What each target gains and loses is
 tabulated in [multi-ai-parity.md](multi-ai-parity.md).
 
-`--domain` and `--skill` narrow the export if 1,027 skills is more than your
+`--domain` and `--skill` narrow the export if 1,040 skills is more than your
 tool's context can carry, which it usually is.
 
 ### Verify it worked
@@ -422,6 +430,9 @@ catch.
 
 ## Where to go next
 
+- Asked to make a Salesforce change rather than answer a question? The
+  requirement-to-build loop, told through five worked builds:
+  [build-loop.md](build-loop.md)
 - Canonical setup reference, every flag and the maintainer runbook:
   [installing.md](installing.md)
 - One complete Salesforce task, end to end, with real output:

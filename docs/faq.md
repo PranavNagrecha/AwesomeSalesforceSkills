@@ -1,5 +1,8 @@
 # FAQ
 
+**Who this is for:** first-time readers with a specific question: do I need an
+org, why is search slow, why do the CLI and the MCP server disagree.
+
 Questions a first-time reader actually asks. Every answer is grounded in
 behaviour measured in this repository on 2026-08-15, or in the code that
 produces it. Where something is a tuning decision that changes, the answer says

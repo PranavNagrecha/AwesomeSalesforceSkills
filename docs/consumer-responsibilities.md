@@ -1,5 +1,8 @@
 # Consumer Responsibilities
 
+**Who this is for:** authors of a tool or AI client that runs SfSkills run-time
+agents and must persist their reports and envelopes.
+
 **Status:** Wave 10 canonical doc. Defines what a consuming AI (Claude Code,
 Cursor, an MCP client, Aider, Windsurf, anything else) MUST do when running a
 run-time agent from this library.
@@ -11,7 +14,7 @@ read the two files it implements:
 [`agents/_shared/schemas/output-envelope.schema.json`](../agents/_shared/schemas/output-envelope.schema.json)
 (the schema every envelope validates against). Where this page and those two
 disagree, they win — and one known disagreement is flagged in
-[Known contract conflict](#known-contract-conflict-no-persist-and-the-schema).
+[Known contract conflict](#known-contract-conflict---no-persist-and-the-schema).
 
 *Verified 2026-08-15: every path, schema constraint, and test command below was
 run against the working tree.*

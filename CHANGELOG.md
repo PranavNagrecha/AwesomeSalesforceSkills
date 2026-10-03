@@ -361,9 +361,16 @@ files, and checkers that grepped their own SKILL.md.
 ### Fixed — retrieval fixtures
 
 - `admin/user-management` gains one curated natural-language trigger ("how do I
-  add a new user"); the 1,381-fixture eval holds Hit@1 at 97.7% and lifts Hit@3
-  from 99.9% to 100%. A tokenizer stopword change was measured and rejected
-  (−0.3 to −0.5 pp Hit@1 from sibling flips).
+  add a new user"); the 1,381-fixture eval lifts Hit@3 from 99.9% to 100%. A
+  tokenizer stopword change was measured and rejected (−0.3 to −0.5 pp Hit@1
+  from sibling flips). After the full depth wave Hit@1 reads 97.5% (was 97.7%):
+  four queries now rank an enriched neighbour first with the expected skill at
+  rank 2–3 (`email-to-case-configuration` over `case-management-setup`,
+  `prompt-builder-templates` over `prompt-template-versioning`,
+  `package-development-strategy` over `packaging-dependency-graph`,
+  `multi-currency-and-advanced-currency-management` over
+  `currency-management-patterns`); two others gained first place. Every
+  fixture's expected skill is within the top 3.
 - The fixture "flow record choice set dynamic picklist choice collection" now
   expects `flow/flow-dynamic-choices`, the specialist that owns the query's words.
 

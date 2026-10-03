@@ -1,5 +1,8 @@
 # Installing a Single Agent
 
+**Who this is for:** someone taking one run-time agent into another project
+without carrying the whole library.
+
 How to take one run-time agent into another project without carrying the whole
 library. Every command below was executed as written on 2026-08-15 against a
 fresh `git clone --depth 1` of this repository.

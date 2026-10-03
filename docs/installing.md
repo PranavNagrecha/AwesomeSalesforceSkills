@@ -1,26 +1,32 @@
 # Installing SfSkills
 
+**Who this is for:** anyone setting up a clone, the local search index or the
+MCP server, and the repository owner cutting a release (§ 6).
+
 Canonical setup reference for a fresh clone. Every command on this page was
 executed as written on 2026-08-15 (macOS 26.5, Apple silicon, Python 3.14.4,
 Claude Code 2.1.209). Counts and timings are live values — the verification
 command is given beside each one so you can re-derive it rather than trust it.
+Transcripts keep that day's counts (1,027 skills, 67 commands); prose figures
+were refreshed on 2026-10-03, and `python3 scripts/check_doc_counts.py` prints
+the live ones.
 
 **What works with no setup at all.** A clone carries `CLAUDE.md`, the 12 router
 skills under `.claude/skills/` (a top-level `salesforce` router plus 11 domain
-routers), their 11 rosters, and the 48 run-time agent loaders under
+routers), their 11 rosters, and the 70 run-time agent loaders under
 `.claude/agents/`. Open the directory in Claude Code and ask a Salesforce
 question: the model reads the router descriptions, hands off to one domain
 router, opens that router's `references/skill-index.md` — the roster of that
 domain's packages, one ≤220-character gloss each — and opens the one it picks.
 
 There are **eleven** rosters, not one, and Claude reads **one** of them: an Apex
-question costs the apex roster's 158 glosses, never the corpus's 1,027. No index
+question costs the apex roster's 159 glosses, never the corpus's 1,040. No index
 is involved anywhere in that path, which is why every router says the shipped
 rosters work with no setup.
 
 ```bash
 git ls-files .claude/skills | wc -l          # 23 = 12 SKILL.md + 11 rosters
-grep -c '^- ' .claude/skills/salesforce-apex/references/skill-index.md   # 158
+grep -c '^- ' .claude/skills/salesforce-apex/references/skill-index.md   # 159
 ```
 
 **What bootstrap adds.** Three generated artefacts are deliberately not
@@ -30,7 +36,7 @@ committed, and one command builds them:
 |---|---|
 | `vector_index/chunks.jsonl` | `scripts/search_knowledge.py`, the MCP `search_skill` tool, and the build-time agents that maintain the library |
 | `vector_index/lexical.sqlite` | same — this is the FTS5 index search reads |
-| `.claude/commands/` | the 67 slash commands inside Claude Code |
+| `.claude/commands/` | the slash commands inside Claude Code, one per `commands/*.md` |
 
 So bootstrap is required for the *search* and *slash-command* surfaces, not for
 the library to be reachable. Skipping it degrades library maintenance work and
@@ -141,7 +147,7 @@ is `len(commands/*.md)` and the chunk count is whatever your working tree
 produces. Compare them against the repository, not against this page:
 
 ```bash
-ls commands/*.md | wc -l                                              # 67
+ls commands/*.md | wc -l                                              # 92
 python3 -c "import json;print(json.load(open('vector_index/manifest.json'))['chunk_count'])"
 ```
 
@@ -203,7 +209,7 @@ $ echo $?
 | Phase | Does |
 |---|---|
 | 1. preflight | Checks Python ≥ 3.10 and that PyYAML + jsonschema import. Prints the resolved repo root, the interpreter path, and whether `fastembed` is available. Exits 2 with the exact remediation command if anything is missing. |
-| 2. chunks | `pipelines.sync_engine.build_state(root, skip_embeddings=True)` — scans 1,027 skill packages into ~135k retrieval chunks, in-process. |
+| 2. chunks | `pipelines.sync_engine.build_state(root, skip_embeddings=True)` — scans every skill package (1,040 today) into ~135k retrieval chunks, in-process. |
 | 3. integrity | Compares the freshly computed `chunks_hash` against the committed `vector_index/manifest.json`. A mismatch prints a WARNING naming both hashes and continues — it is the expected result when you have local skill edits. |
 | 4. write | Writes `vector_index/chunks.jsonl` and `vector_index/lexical.sqlite`. Both are gitignored. Nothing else is written. |
 | 5. commands | Runs `scripts/install_local_commands.py`, copying `commands/*.md` into `.claude/commands/`. |
@@ -250,10 +256,10 @@ $ git status --porcelain | grep -v '^??' | wc -l
        0
 ```
 
-With an encoder present it rewrites `vector_embedding` into all 1,027
-`registry/skills/*.json` records plus `registry/skills.json` and
-`vector_index/manifest.json` — 1,029 modified tracked files you then have to
-recognise as noise and discard. Measured by temporarily setting
+With an encoder present it rewrites `vector_embedding` into every
+`registry/skills/*.json` record plus `registry/skills.json` and
+`vector_index/manifest.json` — 1,029 modified tracked files when measured
+(1,027 skills then), which you have to recognise as noise and discard. Measured by temporarily setting
 `embeddings.backend: hash` (a cheap stand-in for a working encoder) on that same
 clone:
 
@@ -270,8 +276,8 @@ With the real `fastembed` backend that same run first encodes every chunk, which
 is hours rather than seconds. Earlier revisions of this page asserted the
 1,029-file outcome unconditionally, including for "a fresh clone with no
 embedding backend installed" — which is precisely the case where the count is
-zero. The committed registry already carries `vector_embedding: null` for all
-1,027 records and `embedding_count: 0` in the manifest, so without an encoder the
+zero. The committed registry already carries `vector_embedding: null` for every
+record and `embedding_count: 0` in the manifest, so without an encoder the
 run is a content-identical no-op.
 
 ---
@@ -287,8 +293,8 @@ Measured on `git clone --depth 1` (2026-08-15): **138 MB** working tree, of whic
 |---|---:|---|
 | `vector_index/lexical.sqlite` | 177 MB | Past GitHub's file-size limits; a binary that changes wholesale on every rebuild. |
 | `vector_index/chunks.jsonl` | 134 MB | Same — 135,409 lines regenerated from `skills/`. |
-| `vector_index/skill_embeddings.jsonl` | 5.3 MB | 1,027 vectors, one per skill. Built only by `scripts/build_skill_embeddings.py`; see [section 4](#4-embeddings-configured-on-inert-until-you-install-fastembed). |
-| `.claude/commands/` | 67 files | Byte-for-byte copies of the tracked `commands/*.md` (`cmp` clean on all 67). Tracking both would create a permanent drift surface between two copies of the same file. |
+| `vector_index/skill_embeddings.jsonl` | 5.3 MB | One vector per skill. Built only by `scripts/build_skill_embeddings.py`; see [section 4](#4-embeddings-configured-on-inert-until-you-install-fastembed). |
+| `.claude/commands/` | one file per command (92 today) | Byte-for-byte copies of the tracked `commands/*.md` (`cmp` clean on every file when measured). Tracking both would create a permanent drift surface between two copies of the same file. |
 
 `vector_index/embeddings.jsonl`, the chunk-level vector file, is **not built by
 any default path**. It is absent from this checkout; only
@@ -314,9 +320,9 @@ Under `.claude/`, three subtrees are tracked so a clone is plugin-usable:
 
 ```text
 $ git ls-files .claude/ | cut -d/ -f1-2 | sort | uniq -c
-  48 .claude/agents            run-time agent loaders
+  70 .claude/agents            run-time agent loaders
   23 .claude/skills            12 router SKILL.md + 11 references/skill-index.md
-   3 .claude/workflows         add-skill.js, model-routing-benchmark.js, source-onboarding.js
+   5 .claude/workflows         add-skill.js, build-from-requirements.js, model-routing-benchmark.js, plan-verify.js, source-onboarding.js
 ```
 
 The top-level `salesforce` router has no roster because it hands off to the
@@ -379,7 +385,7 @@ There are two embedding files and they are not interchangeable:
 
 | File | Vectors | Built by | Read by |
 |---|---:|---|---|
-| `vector_index/skill_embeddings.jsonl` | 1,027 (one per skill) | `scripts/build_skill_embeddings.py` | `scripts/search_knowledge.py` and the MCP `search_skill` tool — checked **first** in `pipelines/ranking.rerank_results` |
+| `vector_index/skill_embeddings.jsonl` | one per skill (1,040 today) | `scripts/build_skill_embeddings.py` | `scripts/search_knowledge.py` and the MCP `search_skill` tool — checked **first** in `pipelines/ranking.rerank_results` |
 | `vector_index/embeddings.jsonl` | ~135,409 (one per chunk) | `scripts/bootstrap.py --with-embeddings`, `scripts/build_index.py` | the same reranker, only as a fallback when a chunk's skill has no skill-level vector |
 
 Almost everyone wants the first one. The chunk-level file is hundreds of
@@ -483,7 +489,7 @@ this is the default)` and the encode produces nothing.
 
 ## 5. MCP install paths
 
-The server exposes 38 tools over stdio. Full per-client wiring for 18 clients
+The server exposes 50 tools over stdio (`python3 scripts/check_doc_counts.py` prints the live count). Full per-client wiring for 18 clients
 lives in [`mcp/sfskills-mcp/docs/CONNECT.md`](../mcp/sfskills-mcp/docs/CONNECT.md).
 The install decision is here.
 
@@ -533,15 +539,28 @@ config block — an `export` in your shell does not reach a detached subprocess.
 
 ```bash
 pip install sfskills-mcp
-sfskills-mcp-init          # currently exits 1 — see below
+sfskills-mcp-init          # downloads the data bundle from the latest GitHub Release
 ```
 
-Both halves of this path are currently broken, verified in a clean virtualenv on
-2026-08-15:
+Checked 2026-10-03: the newest release on PyPI is **0.4.10**, and it pins
+`mcp>=1.7.0,<2.0`. GitHub releases `mcp-v0.4.7` through `mcp-v0.4.10` each
+carry `sfskills-data.tar.gz`, and
+`releases/latest/download/sfskills-data.tar.gz` answers HTTP 200. In-tree the
+package is **0.5.0** (`mcp/sfskills-mcp/pyproject.toml` and
+`src/sfskills_mcp/__init__.py` agree), and 0.5.0 reaches PyPI when the
+`mcp-v0.5.0` tag lands, so until then a PyPI install trails a checkout. A PyPI
+install serves the corpus its release bundled; to serve your own checkout, use
+the clone path above.
 
-1. **The wheel resolves an incompatible SDK.** `pip install sfskills-mcp` pulls
+#### When this path was broken (historical, fixed in 0.4.8)
+
+Both halves of this path were broken when verified in a clean virtualenv on
+2026-08-15. The transcripts are kept because the error messages are what you
+will see on an old install:
+
+1. **The wheel resolved an incompatible SDK.** `pip install sfskills-mcp` pulled
    `sfskills-mcp 0.4.6`, which declared an unbounded `mcp>=1.4.0` floor, so pip
-   now picks `mcp 2.0.0` and the server cannot import:
+   picked `mcp 2.0.0` and the server could not import:
 
    ```text
    $ pip install sfskills-mcp
@@ -552,7 +571,7 @@ Both halves of this path are currently broken, verified in a clean virtualenv on
    ModuleNotFoundError: No module named 'mcp.server.fastmcp'
    ```
 
-   Fix an existing install by hand — this works:
+   An old 0.4.6 install can still be fixed by hand:
 
    ```text
    $ pip install 'mcp>=1.7.0,<2.0'
@@ -561,7 +580,7 @@ Both halves of this path are currently broken, verified in a clean virtualenv on
    import OK
    ```
 
-2. **The published wheel is stale.** It installs as version 0.4.6 but reports
+2. **The published wheel was stale.** It installed as version 0.4.6 but reported
    `__version__ = 0.4.4`, so it was built from older source:
 
    ```text
@@ -572,9 +591,9 @@ Both halves of this path are currently broken, verified in a clean virtualenv on
    0.4.4
    ```
 
-3. **`sfskills-mcp-init` has nothing to download.** It fetches
+3. **`sfskills-mcp-init` had nothing to download.** It fetches
    `https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz`,
-   which returns HTTP 404 because no GitHub release has been published:
+   which returned HTTP 404 because no GitHub release had been published yet:
 
    ```text
    $ sfskills-mcp-init --cache-dir /tmp/clean-cache
@@ -584,10 +603,6 @@ Both halves of this path are currently broken, verified in a clean virtualenv on
    $ echo $?
    1
    ```
-
-Until a later MCP version is cut, use the clone path above. In-tree the package
-is **0.4.10** (`mcp/sfskills-mcp/pyproject.toml` and
-`src/sfskills_mcp/__init__.py` agree).
 
 ### The `mcp` SDK pin
 
@@ -613,10 +628,10 @@ Owner authorization is a safety gate. An agent may execute this section **only
 when the repository owner explicitly authorizes the active task**. This
 document is the runbook; it is not standing permission.
 
-Current in-tree versions after the public-source integration:
+Current in-tree versions (checked 2026-10-03; `python3 scripts/check_release_versions.py` prints them):
 
-- Plugin/library: **1.2.0** (`PLUGIN_VERSION` in `scripts/build_plugin.py`)
-- sfskills-mcp: **0.4.10** (`pyproject.toml` and `sfskills_mcp.__version__`)
+- Plugin/library: **1.3.0** (`PLUGIN_VERSION` in `scripts/build_plugin.py`)
+- sfskills-mcp: **0.5.0** (`pyproject.toml` and `sfskills_mcp.__version__`)
 
 Do not create a separate public GitHub Release for a `plugin-v*` tag.
 `sfskills-mcp-init` downloads `/releases/latest/download/sfskills-data.tar.gz`,
@@ -646,10 +661,10 @@ tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
    bypass protection.
 4. Tag and push **one tag per push**:
    ```bash
-   git tag -a plugin-v1.2.0 <final-main> -m "SfSkills plugin 1.2.0"
-   git push origin plugin-v1.2.0
-   git tag -a mcp-v0.4.10 <final-main> -m "sfskills-mcp 0.4.10"
-   git push origin mcp-v0.4.10
+   git tag -a plugin-v1.3.0 <final-main> -m "SfSkills plugin 1.3.0"
+   git push origin plugin-v1.3.0
+   git tag -a mcp-v0.5.0 <final-main> -m "sfskills-mcp 0.5.0"
+   git push origin mcp-v0.5.0
    ```
 5. Watch `publish-mcp.yml`: `gh run watch`.
 6. Confirm assets on the MCP release include `sfskills-data.tar.gz`, the
@@ -661,7 +676,7 @@ tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
    ```
 8. Clean-room smoke test from public PyPI:
    ```bash
-   pip install "sfskills-mcp==0.4.10" && sfskills-mcp-init --force
+   pip install "sfskills-mcp==0.5.0" && sfskills-mcp-init --force
    ```
 
 ---
@@ -678,7 +693,7 @@ tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
 | Search takes tens of seconds | [`docs/troubleshooting.md`](./troubleshooting.md#search-is-slow-or-appears-to-hang) — no longer normal; expect well under a second. |
 | `ModuleNotFoundError: No module named 'mcp.server.fastmcp'` | [Section 5](#the-mcp-sdk-pin) — pip resolved mcp 2.0.x. |
 | MCP server added but `✘ Failed to connect` | [Section 5](#from-a-clone-recommended-today) — register the venv interpreter, not bare `python3`. |
-| `sfskills-mcp-init: HTTP 404` | [Section 6](#6-cutting-a-github-release-maintainer-only) — expected; use the clone path. |
+| `sfskills-mcp-init: HTTP 404` | [Section 5](#when-this-path-was-broken-historical-fixed-in-048) — releases now carry the bundle, so a 404 means the latest release is missing `sfskills-data.tar.gz`; see [Section 6](#6-cutting-a-github-release-maintainer-only) step 6. |
 | Client can't find the repo root | [`CONNECT.md`](../mcp/sfskills-mcp/docs/CONNECT.md) — set `SFSKILLS_REPO_ROOT` to an absolute path. |
 | Anything else | [`docs/troubleshooting.md`](./troubleshooting.md) |
 

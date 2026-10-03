@@ -305,7 +305,9 @@ scrubbed to `[REDACTED]` (`mcp/sfskills-mcp/tests/test_sf_cli_redaction.py`).
 
 ## Docs
 
+- [`docs/README.md`](docs/README.md): the documentation index, ordered the way a reader needs it
 - [`docs/getting-started.md`](docs/getting-started.md): the three entry points, each with a check
+- [`docs/build-loop.md`](docs/build-loop.md): the requirement-to-build loop told through the five scenarios
 - [`docs/installing.md`](docs/installing.md): bootstrap, every flag, embeddings, MCP install paths
 - [`docs/installing-the-plugin.md`](docs/installing-the-plugin.md): the Claude Code plugin
 - [`docs/SKILLS.md`](docs/SKILLS.md): the generated skill catalog

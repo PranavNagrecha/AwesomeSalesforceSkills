@@ -1,5 +1,8 @@
 # Troubleshooting
 
+**Who this is for:** anyone whose install, search or MCP connection misbehaves.
+Find the symptom, read the cause, apply the fix.
+
 Symptom, cause, fix. Every entry below is a failure actually hit while walking
 this repository's own documented paths. Everything was re-executed on
 2026-08-15 (macOS 26.5, Apple silicon, Python 3.14.4, Claude Code 2.1.209);
@@ -299,17 +302,24 @@ $ echo $?
 ```
 
 **Cause.** The PyPI wheel deliberately ships without the corpus and expects to
-fetch it from a GitHub Release asset named `sfskills-data.tar.gz`. No such
-release has been published — re-checked 2026-08-15:
+fetch it from a GitHub Release asset named `sfskills-data.tar.gz`, so a 404
+means the latest release has no such asset. Releases `mcp-v0.4.7` through
+`mcp-v0.4.10` all carry it (checked 2026-10-03), so today a 404 points at a
+release cut without the asset — see
+[installing.md §6](installing.md#6-cutting-a-github-release-maintainer-only)
+step 6.
+
+(historical, fixed in 0.4.8) On 2026-08-15 no release existed at all:
 
 ```text
 $ gh api repos/PranavNagrecha/AwesomeSalesforceSkills/releases --jq 'length'
 0
 ```
 
-**A second failure hides behind the first.** `pip install sfskills-mcp` installs
-but does not import, because the published 0.4.6 wheel declared an unbounded
-`mcp>=1.4.0` floor and pip now resolves `mcp 2.0.0`:
+(historical, fixed in 0.4.8) **A second failure hid behind the first.**
+`pip install sfskills-mcp` installed but did not import, because the
+then-published 0.4.6 wheel declared an unbounded `mcp>=1.4.0` floor and pip
+resolved `mcp 2.0.0`:
 
 ```text
 $ pip install sfskills-mcp
@@ -324,11 +334,13 @@ $ python -c "import sfskills_mcp.server; print('import OK')"
 import OK
 ```
 
-That wheel is also stale: it installs as 0.4.6 and reports
-`sfskills_mcp.__version__ == 0.4.4`. In-tree the package is at 0.4.8, so the fix
-is published-side.
+That wheel was also stale: it installed as 0.4.6 and reported
+`sfskills_mcp.__version__ == 0.4.4`. PyPI's newest release, 0.4.10, pins
+`mcp>=1.7.0,<2.0`, so `pip install -U sfskills-mcp` replaces an old 0.4.6
+install.
 
-**Fix.** Use a repository checkout as the data root instead.
+**Fix.** If the latest release is missing the asset, or you want the server to
+serve your own checkout, use a repository checkout as the data root.
 
 ```bash
 git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git

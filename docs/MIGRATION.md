@@ -1,5 +1,8 @@
 # Migration Guide — SfSkills Agent Consolidation
 
+**Who this is for:** anyone whose scripts, docs or habits still call a retired
+agent or slash command, and maintainers checking the state of a redirect.
+
 Permanent record of every agent retired during the Wave 3 consolidation: what
 replaced it, how to migrate, and what state each redirect is in today.
 

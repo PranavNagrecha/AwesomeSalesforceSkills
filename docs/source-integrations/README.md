@@ -1,5 +1,8 @@
 # Source Integration Records
 
+**Who this is for:** contributors onboarding an external skill source, and
+reviewers checking its licence and chain of title.
+
 This directory contains human-readable audits for external knowledge and skill-source integrations. The durable machine-readable chain of title lives under `registry/source-integrations/` and is validated by `scripts/check_source_integrations.py`.
 
 Each integration must state the exact canonical baseline reviewed, source pin availability, license class, candidate dispositions, changed-file hashes, validation evidence, and the product-authority boundary. A source being public does not make its prose or code reusable. When a grant is missing, restrictive, or internally inconsistent, use topic-only clean-room discovery and author from approved Salesforce evidence.

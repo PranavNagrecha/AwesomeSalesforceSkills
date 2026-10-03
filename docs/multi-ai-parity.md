@@ -1,5 +1,8 @@
 # Multi-AI Parity Contract
 
+**Who this is for:** users of Cursor, Windsurf, Aider, Codex and other tools
+choosing an export target, and maintainers of the export scripts.
+
 **What this guarantees:** the same set of skills reaches Claude Code, Cursor and
 any MCP client, with byte-identical `SKILL.md` bodies; five more targets get a
 best-effort subset.

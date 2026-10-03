@@ -1,5 +1,8 @@
 # Worked example — three triggers on Account, one fires twice
 
+**Who this is for:** a developer who wants to watch one real Salesforce task go
+through the library end to end before trying it.
+
 A complete pass through the library on a real Salesforce problem, with the
 commands as they were typed and the output as it came back. Every command on
 this page was re-run on **2026-08-15** against the working tree and the output
