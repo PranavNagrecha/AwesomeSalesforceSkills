@@ -49,9 +49,9 @@ Define each phase of the onboarding journey. Add or remove stages as needed.
 
 **Purpose:** (e.g., identity verification, KYC/AML clearance)
 
-| Task | Owner Role/Queue | DaysFromStart | Required? | Document Type |
-|---|---|---|---|---|
-| | | | Yes / No | |
+| Task | Owner Role/Queue | Due (StartDate + N) | Required? | Depends on | Document Type |
+|---|---|---|---|---|---|
+| | | | Yes / No | | |
 
 **Gate condition:** (What must be complete before Stage 2 begins?)
 
@@ -63,9 +63,9 @@ Define each phase of the onboarding journey. Add or remove stages as needed.
 
 **Purpose:** (e.g., collect signed agreements, disclosures, supporting documents)
 
-| Task | Owner Role/Queue | DaysFromStart | Required? | Document Type |
-|---|---|---|---|---|
-| | | | Yes / No | |
+| Task | Owner Role/Queue | Due (StartDate + N) | Required? | Depends on | Document Type |
+|---|---|---|---|---|---|
+| | | | Yes / No | | |
 
 **Gate condition:**
 
@@ -77,9 +77,9 @@ Define each phase of the onboarding journey. Add or remove stages as needed.
 
 **Purpose:** (e.g., compliance officer review and sign-off)
 
-| Task | Owner Role/Queue | DaysFromStart | Required? | Document Type |
-|---|---|---|---|---|
-| | | | Yes / No | |
+| Task | Owner Role/Queue | Due (StartDate + N) | Required? | Depends on | Document Type |
+|---|---|---|---|---|---|
+| | | | Yes / No | | |
 
 **Gate condition:**
 
@@ -91,9 +91,9 @@ Define each phase of the onboarding journey. Add or remove stages as needed.
 
 **Purpose:** (e.g., fund account, send funding instructions, activate record)
 
-| Task | Owner Role/Queue | DaysFromStart | Required? | Document Type |
-|---|---|---|---|---|
-| | | | Yes / No | |
+| Task | Owner Role/Queue | Due (StartDate + N) | Required? | Depends on | Document Type |
+|---|---|---|---|---|---|
+| | | | Yes / No | | |
 
 ---
 
@@ -136,7 +136,7 @@ Define each phase of the onboarding journey. Add or remove stages as needed.
 
 Total task count across all stages: _____
 
-- [ ] Total is under 75 (hard platform limit). If over 75, split into phased templates — see gotchas.md.
+- [ ] Large templates tested by launching a plan in a sandbox (the 75-item limit is unconfirmed); split into phased templates if launch fails. See gotchas.md gotcha 7.
 
 **Template naming:**
 - Template 1 name: (e.g., "Client Onboarding v1")

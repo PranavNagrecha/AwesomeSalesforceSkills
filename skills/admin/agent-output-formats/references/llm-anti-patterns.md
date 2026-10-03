@@ -68,4 +68,32 @@ Common mistakes AI coding assistants make when generating or advising on Agent O
 
 **Why it happens:** LLMs flatten structured JSON mechanically.
 
-**Correct pattern:** Flatten only the `findings[]` array to a sheet; keep metadata (run_id, confidence, summary) as a header block on the same sheet. One sheet unless there's a strong structural reason for more.
+**Correct pattern:** Flatten the `findings[]` array to one sheet with `run_id` in every row, and keep `confidence` and `summary` as a header block. For multi-dimensional agents, add exactly one more sheet for coverage (`dimensions_compared` and `dimensions_skipped`), because the Deliverable Contract requires skipped dimensions to stay visible. (Updated 2026-10-03: the earlier "one sheet" rule dropped coverage gaps.)
+
+---
+
+## Anti-Pattern 8: A Generic "All Keys To CSV" jq Filter
+
+**What the LLM generates:**
+```bash
+jq -r '.findings | (map(keys) | add | unique) as $keys |
+       ($keys | @csv), (.[] | [.[$keys[]]] | @csv)' envelope.json
+```
+
+**Why it happens:** It is the most common jq-to-CSV idiom, and it works on flat sample data.
+
+**Correct pattern:**
+```text
+Findings may carry evidence, which the envelope schema types as an object, and
+@csv requires an array of scalars ("The input must be an array"). The idiom stops
+with "object (...) is not valid in a csv row" (exit 5). Name the columns, default
+missing arrays, and serialise nested values:
+  .run_id as $run
+  | (.findings // [])[]
+  | [$run, .id, .severity, .title, .detail, .recommendation, .evidence]
+  | map(if type == "object" or type == "array" then tojson else . end)
+  | @csv
+```
+
+**Detection hint:** `map(keys) | add | unique` feeding `@csv`, or any filter over `.findings` without `// []`.
+

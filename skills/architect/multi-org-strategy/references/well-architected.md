@@ -66,22 +66,19 @@ Multi-org architectures increase operational complexity proportionally with each
 
 ## Official Sources Used
 
-- Salesforce Well-Architected — Org Strategy Decision Guide
-  Architecture patterns and tradeoffs for single vs. multiple org decisions
-  URL: https://architect.salesforce.com/design/decision-guides/org-strategy
+Read for this revision (2026-10-03):
 
-- Apex Developer Guide — Named Credentials
-  Named Credential configuration for Apex callouts; JWT Bearer flow for server-to-server OAuth
-  URL: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. ExternalDataSource (`type` `SfdcOrg` cross-org adapter, cross-org `customConfiguration`, `isWritable` API 39.0 rule, `principalType`, `.dataSource` in `dataSources`); CustomField (field types unavailable on external objects; external objects are `CustomObject`); SamlSsoConfig (`samlEntityId`, `userProvisioning` JIT, `identityMapping`); ExternalCredential and NamedCredential (suffixes, `SigningCertificate` for OAuth JWT Bearer); AuthProvider (`providerType` `Salesforce`); ConnectedApp suffix.
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. PartnerNetworkConnection (`ConnectionStatus`, `ConnectionType`, `ReplicationRole`, availability only when S2S is enabled); PartnerNetworkRecordConnection; External Objects overview (real-time callouts, best for small slices of large data, `__x` naming, lookup-only relationships).
+- Salesforce Developer Limits and Allocations Quick Reference (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf. Total API Request Allocations (per-org 24-hour formula, aggregate not per user, defined by licences), Concurrent API Request Limits, Bulk API 2.0 guidance for operations over 2,000 records.
+- Apex Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf. Execution Governors and Limits (100 callouts, 120-second cumulative timeout); Named Credentials as Callout Endpoints (same name, different endpoint per org); Apex Considerations for Salesforce Connect External Objects (no triggers, no Apex-managed sharing, batch storage note).
+- Salesforce Security Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf. Multi-Factor Authentication (requirement applies to SSO logins); Single Sign-On (SAML and OpenID Connect support).
+- Analytics Platform Setup Guide (Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_admin_guide_setup.pdf. CRM Analytics Limits: Salesforce External Connector sync limit per job.
 
-- Salesforce Help — Salesforce to Salesforce Overview
-  S2S feature documentation; confirms legacy status and SOAP API usage
-  URL: https://help.salesforce.com/s/articleView?id=sf.salesforce_to_salesforce_overview.htm
+Listed in the original version and not re-read; no claim in this revision rests on them alone:
 
-- Salesforce Help — Salesforce Connect
-  External Objects, OData adapter behavior, external query limits, cross-org data access patterns
-  URL: https://help.salesforce.com/s/articleView?id=sf.salesforce_connect.htm
-
-- Salesforce Well-Architected Overview
-  Overall architecture quality model — trusted, easy, adaptable — and integration pattern framing
-  URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Salesforce Well-Architected: Org Strategy Decision Guide, https://architect.salesforce.com/design/decision-guides/org-strategy (returned HTTP 404 on 2026-10-03).
+- Apex Developer Guide: Named Credentials (atlas page), https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm (same content read in the PDF above).
+- Salesforce Help: Salesforce to Salesforce Overview, https://help.salesforce.com/s/articleView?id=sf.salesforce_to_salesforce_overview.htm (Salesforce Help does not fetch).
+- Salesforce Help: Salesforce Connect, https://help.salesforce.com/s/articleView?id=sf.salesforce_connect.htm (Salesforce Help does not fetch).
+- Salesforce Well-Architected Overview, https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html.

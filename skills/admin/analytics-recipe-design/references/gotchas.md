@@ -1,67 +1,101 @@
-# Gotchas — Analytics Recipe Design
+# Gotchas: Analytics Recipe Design
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious CRM Analytics Data Prep behaviors that cause real production problems. Sources are listed in `well-architected.md`. Line references cite the plain-text extraction of each Summer '26 PDF (`pdftotext -layout`), written as `<guide> L<n>`. A claim that could not be re-read in an official source carries an inline `UNVERIFIED (2026-10-03):` marker.
 
-## Gotcha 1: Lookup Join vs Inner Join — Silent Row Loss
+## Gotcha 1: Inner join drops unmatched left rows and the run still succeeds
 
-**What happens:** When a Join node is configured as Inner, any row from the left (primary) input dataset that has no matching row in the right (secondary) input dataset is permanently dropped from the output. No warning is emitted, no error is logged, and the recipe run reports "Completed" with a green status. The only observable symptom is that the output dataset has fewer rows than the input.
+**What happens:** A Join node set to `Inner` keeps only rows whose keys match on both sides. Every left-side row with no match is removed from the output. The run completes normally, so the only symptom is an output dataset with fewer rows than its primary input.
 
-**When it occurs:** Any time an Inner join is used and the two datasets do not have perfectly matching key values for every row. Common triggers:
-- Left dataset has rows with null join keys (e.g., `AccountId` is null on some Opportunity records)
-- Right dataset is a filtered subset (e.g., only Active accounts) and the left dataset references inactive or deleted records
-- Data quality issues cause key mismatches (e.g., leading/trailing spaces in ID fields)
+**When it occurs:** The left input has null keys (Opportunities with no `AccountId`), the right input is a filtered subset (only active Accounts), or key values differ in format. It also occurs when the join type is accepted without review. `JoinParametersInput.joinType` accepts `Cross`, `Inner`, `LeftOuter`, `Lookup`, `MultiValueLookup`, `Outer`, and `RightOuter` (Data Prep Recipe REST API, Join Parameters Input, `salesforce_recipes_api L2770-2795`), so the type is always an explicit choice.
 
-**How to avoid:** Explicitly choose Lookup (not Inner) when the requirement is "add columns from a secondary dataset to every row of the primary dataset." After each recipe run, compare the input Load node row count against the output dataset row count in Analytics Studio. Any shrinkage requires a join type audit.
+**How to avoid:** Use `Lookup` or `LeftOuter` when the intent is enrichment. Reserve `Inner` for a real "rows in both" requirement. After the first run, compare the primary input count with the output count and treat any difference as a defect until explained. UNVERIFIED (2026-10-03): the statement that the canvas shows no row-count difference after a join comes from practitioner experience, not from a guide.
 
 ---
 
-## Gotcha 2: Recipe Scheduling Is a Separate API Resource — Not Embedded in the Recipe
+## Gotcha 2: A schedule is created only through the Schedule resource, never through the recipe body
 
-**What happens:** Developers expect to find a `schedule` property in the recipe definition JSON (the `/wave/recipes/{id}` resource body). No such property exists. Attempts to add a schedule field to the recipe JSON either have no effect or produce a validation error. The recipe runs only on-demand unless a schedule is created through the Schedule Resource API or the Analytics Studio UI scheduling panel.
+**What happens:** `GET /wave/recipes/<recipeId>?format=R3` returns `scheduleAttributes`, so teams try to set a schedule by editing the recipe or by posting to an invented `/wave/recipes/<id>/schedules` endpoint with a cron expression. The guide states: "While the scheduleAttributes are part of the Recipe, to update a schedule, the /wave/asset/<assetId>/schedule endpoint must be used" (`salesforce_recipes_api L588-596`). The Schedule resource supports GET (52.0), PUT (40.0), and DELETE (43.0) (`bi_dev_guide_rest L6267-6290`).
 
-**When it occurs:** Any time a practitioner tries to configure a recurring recipe refresh by editing the recipe JSON directly, by including a schedule in a deployment package, or by searching the recipe metadata for a schedule property.
+**When it occurs:** Automating refreshes from CI, from a package post-install step, or from an LLM-generated script that assumes a cron-style job API.
 
-**How to avoid:** Use the Schedule Resource API endpoint exclusively:
-- Create: `POST /services/data/v62.0/wave/recipes/{recipeId}/schedules`
-- Read: `GET /services/data/v62.0/wave/recipes/{recipeId}/schedules`
-- Delete: `DELETE /services/data/v62.0/wave/recipes/{recipeId}/schedules`
-
-The request body accepts `scheduleType`, `cronExpression`, and `timeZone`. Schedules survive recipe edits and re-saves — they are not overwritten when the recipe body is updated.
+**How to avoid:** `PUT /wave/asset/<recipeId>/schedule` with a body whose `frequency` is `hourly`, `weekly`, `monthly`, `monthlyrelative`, or `eventdriven` (`bi_dev_guide_rest L1488-1566`). There is no cron expression field. The PUT response is empty unless there is an API error. To run immediately, POST to `/wave/dataflowjobs` with the recipe's `targetDataflowId` (starts with `02KB`) as `dataflowId` and `"command":"start"` (`salesforce_recipes_api L598-616`).
 
 ---
 
-## Gotcha 3: Formula Nodes Use the Recipe Expression Language, Not SAQL
+## Gotcha 3: Recipes and dataflows share a 60-run rolling 24-hour budget
 
-**What happens:** Practitioners familiar with CRM Analytics SAQL attempt to write SAQL functions inside a recipe Formula node (e.g., `toDate()`, `dateValue()`, `groupby()`, `sum()`). The recipe expression language has a different function library and syntax. SAQL functions either fail to parse or silently return null depending on the formula editor's validation behavior.
+**What happens:** The org can run at most 60 dataflow and recipe jobs in a rolling 24-hour period. Runs shorter than 2 minutes (and data syncs) do not count, but once the limit is reached no dataflow, recipe, or data sync can run, regardless of size. At most 3 recipe runs execute concurrently. Jobs that are scheduled but not executed time out after 5 minutes. An event-based schedule can have at most 5 dependent jobs. (Analytics Platform Setup Guide, Recipe and Dataflow Limits, `bi_admin_guide_setup L1148-1191`.)
 
-**When it occurs:** When a practitioner:
-- Copies a SAQL expression from a lens or dashboard and pastes it into a formula node
-- Attempts to use SAQL date parsing functions (`toDate`, `epoch_to_date`) in a formula
-- Tries to reference an aggregated value (e.g., `sum(Amount)`) in a formula node placed before an Aggregate node
+**When it occurs:** An hourly schedule on a recipe that runs longer than 2 minutes consumes 24 of the 60 runs by itself. Several such recipes, plus dataflows, exhaust the budget and later jobs are refused.
 
-**How to avoid:** Use only the recipe expression language functions documented in the Salesforce Help "Transformations for Data Prep Recipes" reference. For date operations, use `DATE()`, `YEAR()`, `MONTH()`, `DAY()`. For aggregations, always place the Aggregate node upstream of any Formula node that needs to reference an aggregated value.
+**How to avoid:** Pick the slowest frequency that meets the freshness requirement. Count every scheduled job that runs longer than 2 minutes before adding a new one. Use an event-based schedule (`"frequency":"eventdriven"`, `"triggerRule":"$ALL_SALESFORCE_OBJECTS"`) when the recipe only needs to follow the local sync. Since Winter '24, recipe runs over 2 minutes count against the limit (`bi_admin_guide_setup L1149-1150`).
 
 ---
 
-## Gotcha 4: Recipes Reprocess Full Input on Every Run — No Native Incremental Support
+## Gotcha 4: The Integration User's permissions decide what the recipe can extract
 
-**What happens:** Unlike some ETL frameworks, CRM Analytics recipes do not support native incremental or delta loads. Every scheduled or on-demand run reads the complete input dataset from scratch and reprocesses every row through the entire node graph. For datasets with millions of rows, this means every run consumes the full processing time and quota, regardless of how many rows actually changed since the last run.
+**What happens:** CRM Analytics extracts Salesforce data as the Integration User. "If the dataflow or recipe is configured to extract data from an object or field on which the Integration User does not have permission, the job fails" (`bi_admin_guide_setup L90-94`). The Integration User's permissions limit extraction only; they do not control who can see dataset rows.
 
-**When it occurs:** When a recipe is built on a large connected object (e.g., 5M+ Event or Task records) and the design assumes that only new or changed records will be processed on each run.
+**When it occurs:** A new custom field or object is added to a recipe and nobody grants the Integration User read access. It also occurs after an admin restricts the Integration User profile to hide sensitive fields.
 
-**How to avoid:** If partial incremental behavior is required, implement it explicitly:
-1. Add a Filter node early in the graph to restrict rows to a recent date window (e.g., `LastModifiedDate >= 30 days ago`).
-2. Use an Append node to union the filtered "recent" output with a previously stored full-history dataset.
-3. Add a second Output node to persist the full-history dataset for use in the next run's Append step.
-
-This pattern approximates incremental behavior but still reprocesses the filtered window on every run. True change-data-capture incremental loading is not available natively in recipes as of Spring '25.
+**How to avoid:** Check every object and field in the recipe against the Integration User's access before the first run. Restrict sensitive fields on purpose, then design the recipe without them. Do not delete the Integration User or the Security User; Analytics requires both (`bi_admin_guide_setup L105-106`).
 
 ---
 
-## Gotcha 5: Bucket Node Type Must Match the Source Field Kind
+## Gotcha 5: A security predicate on the Output node only applies when the dataset is created
 
-**What happens:** Attempting to create a Measure bucket on a Dimension (string) field, or a Dimension bucket on a Date field, causes a configuration error in the recipe canvas. The bucket type selector options change based on the detected type of the source field. Selecting an incompatible bucket type is either blocked by the UI or produces a recipe validation failure on run.
+**What happens:** "After a dataset is created, changes to its security settings must be made by editing the dataset; changes to security settings in the dataflow (rowLevelSharingSource or rowLevelSecurityFilter) or recipe (Security Predicate) have no effect" (Analytics Security Implementation Guide, `bi_admin_guide_security L274-275`). "If row-level security isn't applied to a dataset, any user that has access to the dataset can view all records in the dataset" (`L289`).
 
-**When it occurs:** When the source field type is ambiguous or when a field that appears numeric is stored as a string dimension in the dataset (e.g., a ZIP code or phone number stored as a text field).
+**When it occurs:** A recipe ships without a predicate, users open the dataset, and the team later adds a predicate to the recipe's Output node expecting the next run to apply it.
 
-**How to avoid:** Inspect the source field's data type in the dataset schema view before adding a Bucket node. If a numeric-looking field is stored as a Dimension (string), either cast it to a number in a preceding Formula node, or use a Dimension bucket with discrete value matching instead of range-based Measure bucket logic.
+**How to avoid:** Decide row-level security before the first run and set it in the Output node's Security Predicate field (`L300`). If the dataset already exists, change the predicate on the dataset itself. Predicates that reference `$User` need a new user session before a changed value is recognized (`L295`).
+
+---
+
+## Gotcha 6: `WaveRecipe` metadata needs its dataflow, and wildcard retrieval leaves it behind
+
+**What happens:** `WaveRecipe` has a required `dataflow` field holding the recipe's dataflow ID. Deleting a `WaveRecipe` with destructive changes also deletes related `WaveDataflow` components. Wildcard retrieval "doesn't return the recipe's associated dataflows" (Metadata API Developer Guide, WaveRecipe, `api_meta L138986-139058`).
+
+**When it occurs:** A team retrieves `<members>*</members>` for `WaveRecipe`, deploys to another org, and finds the recipe incomplete or unrunnable. It also occurs when a cleanup deploy removes a recipe and its dataflow disappears with it.
+
+**How to avoid:** Name each `WaveRecipe` and its `WaveDataflow` explicitly in `package.xml`. Retrieve from the source org rather than hand-writing the `dataflow` ID. UNVERIFIED (2026-10-03): how a deploy resolves an org-specific `dataflow` ID in a different target org is not described in the guide; test in a sandbox. Schedules are not part of the recipe metadata, so recreate them in the target org with the Schedule resource.
+
+---
+
+## Gotcha 7: Formula nodes use the `Sql` or `Legacy` expression type, not SAQL
+
+**What happens:** Practitioners paste SAQL from a lens (`toDate()`, `group by`, `sum()`) into a Formula node and it fails. The REST API defines `FormulaParametersInput.expressionType` as `Sql` or `Legacy`, and SQL formula fields carry a result type of `DateOnly`, `DateTime`, `Multivalue`, `Number`, or `Text` (`salesforce_recipes_api L2740-2752`, `L4317-4362`).
+
+**When it occurs:** Copying expressions from dashboards, or asking an assistant that answers with SAQL or with Salesforce formula syntax.
+
+**How to avoid:** Write formulas in the recipe editor and validate them there. Put any aggregation in an Aggregate node upstream of the Formula node. UNVERIFIED (2026-10-03): the specific function names available to `Sql` formulas are documented only on help.salesforce.com, which does not serve content to plain HTTP clients.
+
+---
+
+## Gotcha 8: The recipe preview runs as the Security User, so its counts are not the job's counts
+
+**What happens:** "To enable the interactive preview in recipes, Data Prep uses the Security User. When a user previews the results of a recipe, Data Prep shows only the results that the logged-in user has permission to access" (`bi_admin_guide_setup L95-97`). The job itself extracts as the Integration User.
+
+**When it occurs:** A developer validates join row counts in the preview and signs off, but the scheduled job processes rows the developer cannot see, so the output count differs.
+
+**How to avoid:** Reconcile row counts against the output dataset after a real run, not against the preview. Data Prep previews are also limited to 4,000 per hour per user (`bi_admin_guide_setup L1189`).
+
+---
+
+## Gotcha 9: "Recipes cannot run incrementally" is no longer safe to assume
+
+**What happens:** Earlier guidance said every recipe reprocesses its full input with no native incremental option. The current REST API lists `runMode` values `Full`, `Incremental`, and `Streaming` on the recipe definition and on load node input (API 57.0; `salesforce_recipes_api L2953-2956`, `L3660-3663`).
+
+**When it occurs:** Designs that build a manual filter-and-append "incremental" pattern without checking whether the native run mode applies, or designs that assume incremental behavior when the recipe is in `Full` mode.
+
+**How to avoid:** Read the recipe's `runMode` from `GET /wave/recipes/<id>?format=R3` before designing around refresh cost. UNVERIFIED (2026-10-03): which sources and node types support `Incremental` is not stated in the REST guide. Keep the filter, append, and second Output pattern only where the native mode is unavailable, and document it, because the canvas does not explain it.
+
+---
+
+## Gotcha 10: Bucket type must match the source field kind
+
+**What happens:** The REST API defines separate measure, dimension, and date bucket inputs (`salesforce_recipes_api L1812`, `L1915`, `L2001`). A numeric-looking field stored as text (ZIP code, phone number, a "1/2/3" priority) cannot take a measure bucket.
+
+**When it occurs:** The field kind is inferred from its name or sample values instead of the dataset schema.
+
+**How to avoid:** Check the field kind in the dataset schema first. Cast text to number in a Formula node, or use a dimension bucket with discrete values. UNVERIFIED (2026-10-03): whether the canvas blocks the wrong bucket type or fails at run time is not stated in the guides read.

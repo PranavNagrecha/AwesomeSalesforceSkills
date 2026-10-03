@@ -165,3 +165,46 @@ Hyperforce and data residency:
 ```
 
 **Detection hint:** Flag Hyperforce recommendations that claim complete GDPR compliance without mentioning transient data processing, DPA requirements, or feature availability caveats.
+
+---
+
+## Anti-Pattern 7: Putting Triggers, Formulas, Or Roll-Ups On External Objects From Another Org
+
+**What the LLM generates:** "Create an after-update trigger on `Distributor_Opportunity__x` to update the hub Account" or "add a roll-up summary on Account that sums the external opportunities."
+
+**Why it happens:** External objects look like custom objects in SOQL and Setup, so the model applies custom-object patterns to them.
+
+**Correct pattern:**
+
+```text
+External objects support neither Apex triggers nor Apex-managed sharing
+(Apex Developer Guide), and cannot hold formula, roll-up summary, or
+master-detail fields (Metadata API, CustomField).
+- Automation reacting to the other org's changes must start in the
+  owning org (its own trigger, flow, or platform event).
+- Totals across orgs come from replication plus a local calculation,
+  or from an analytics layer that reads both orgs.
+```
+
+**Detection hint:** Flag any `trigger ... on <Name>__x`, any roll-up or formula field whose object or child ends in `__x`, and any master-detail to an external object.
+
+---
+
+## Anti-Pattern 8: Configuring An OData Data Source To Read Another Salesforce Org
+
+**What the LLM generates:** "Expose the spoke org's REST API as an OData endpoint and point an OData 4.0 external data source at it."
+
+**Why it happens:** OData is the best-known Salesforce Connect adapter, and older guidance in this skill said "OData adapter to target org REST API".
+
+**Correct pattern:**
+
+```text
+Use ExternalDataSource type SfdcOrg (the cross-org adapter).
+- customConfiguration: apiVersion, environment, searchEnabled, timeout
+- isWritable: false unless the reading org must edit the owner's records
+  (writes need API 39.0 or later on this adapter)
+- principalType: NamedUser (one integration user) or PerUser
+OData and OData4 are for non-Salesforce OData producers.
+```
+
+**Detection hint:** Flag `<type>OData</type>` or `<type>OData4</type>` whose endpoint is a `*.my.salesforce.com` URL.

@@ -48,18 +48,19 @@ A recipe or dataflow must materialize them into a registered dataset first.
 
 **What the LLM generates:** "Enable faceting on your dashboard to allow users to filter widgets by clicking on chart elements. This will propagate the selection across all your dashboard widgets."
 
-**Why it happens:** Faceting sounds like a universal dashboard filtering mechanism. The dataset-boundary limitation is not always clearly documented.
+**Why it happens:** Faceting sounds like a universal dashboard filtering mechanism. By default it stops at the dataset boundary, and the cross-dataset option (connected data sources) is easy to miss.
 
 **Correct pattern:**
 
 ```
-Faceting: Works ONLY for widgets sharing the SAME dataset.
-Bindings: Required for filtering across different datasets.
-
-For cross-dataset filtering:
-1. Use selection bindings — {{cell(stepA.selection, 0, "DimensionField")}}
-2. Wire the binding value into Step B's SAQL filter clause
-3. Configure in dashboard JSON or advanced binding UI
+Faceting: by default filters steps on the SAME dataset (broadcastFacet,
+receiveFacetSource control who sends and receives).
+Across datasets, choose one:
+1. Connected data sources (dashboard dataSourceLinks): link the shared field
+   in each dataset so faceting crosses them
+   (Dashboard JSON Guide: "Cross-Dataset Faceting with Connected Data Sources")
+2. Selection bindings, e.g. {{cell(stepA.selection, 0, "DimensionField")}},
+   wired into Step B's SAQL filter when the relationship is not a field match
 ```
 
 **Detection hint:** Any recommendation to use faceting for widgets that reference different datasets.
@@ -81,8 +82,11 @@ CRM Analytics data is NOT real-time by default.
 - Dashboards query the last refreshed dataset version
 
 For near-real-time requirements:
-- Increase refresh frequency (minimum is ~15 minutes per sync cycle)
-- Use Direct Data (live SQL query, limited to specific connectors)
+- Increase refresh frequency within the org budget: 60 dataflow and recipe
+  runs per rolling 24 hours (Analytics Platform Setup Guide)
+- Consider Direct Data for Data Cloud for live queries on Data Cloud data
+  (UNVERIFIED (2026-10-03): the earlier "~15 minutes per sync cycle" minimum
+  and the Direct Data connector scope were not confirmed)
 - Surface dataset "Last Updated" timestamp in dashboard headers
 ```
 
@@ -105,12 +109,37 @@ Option A — Security Predicate (most flexible):
 'OwnerId' == "$User.Id"
 # Only shows records owned by the current user
 
-Option B — Sharing Inheritance (simpler, limited to 5 objects, max 3000 rows):
-Enable in dataset settings: "Salesforce record-level access"
-# Mirrors Salesforce record visibility for Account, Case, Contact, Lead, Opportunity
+Option B: Sharing Inheritance, always with a backup predicate:
+Setup > Quick Find "Analytics" > Settings > "Inherit sharing from Salesforce";
+then Data Manager > Connect > (object) > Row Level Sharing > Sharing inheritance on
+# Works "for supported objects"; adds time to syncs, jobs, and queries
+# UNVERIFIED (2026-10-03): the earlier "5 objects, max 3000 rows" limits and
+# object list come from Salesforce Help and were not confirmed
 
 Without one of these:
 All Viewers see ALL dataset rows regardless of Salesforce sharing settings.
 ```
 
 **Detection hint:** Any app setup workflow that does not mention security predicates or sharing inheritance configuration on the dataset.
+
+---
+
+## Anti-Pattern 6: Hand-Editing Retrieved Dashboard Files Before Deployment
+
+**What the LLM generates:** "Retrieve the dashboard, open the `.wdash` file, remove the unused steps and fix the labels, then deploy to production."
+
+**Why it happens:** Retrieved metadata looks like ordinary source code, and editing it is the normal developer move.
+
+**Correct pattern:**
+
+```
+Metadata API, WaveDashboard:
+- "Modifications to the .wdash component are unsupported."
+- "Removing steps from the .wdash component causes deployment to the
+  destination org to fail because the source dashboard fails validation."
+Edit in the dashboard designer or JSON editor (CTRL/CMD+E), save in the
+org, then retrieve and deploy the unmodified file.
+```
+
+**Detection hint:** Any deployment plan that edits `.wdash` content between retrieve and deploy.
+

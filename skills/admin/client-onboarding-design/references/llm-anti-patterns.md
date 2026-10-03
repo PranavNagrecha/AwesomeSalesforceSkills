@@ -22,46 +22,44 @@ Before recommending OmniStudio OmniScripts or FlexCards:
 
 ---
 
-## Anti-Pattern 2: Recommending Direct Edits to an Active Action Plan Template
+## Anti-Pattern 2: Recommending Direct Edits to a Published Action Plan Template
 
-**What the LLM generates:** Instructions such as "open the Action Plan template, find the task you want to update, and edit the DaysFromStart field" — applied to an already-published (Active) template.
+**What the LLM generates:** "Open the Action Plan template, find the task, and change its DaysFromStart value," applied to a template whose version is already published.
 
-**Why it happens:** LLMs default to the intuitive "open and edit" pattern for configuration updates. The immutability constraint on published Action Plan templates is a platform-specific behavior that is not obvious from general Salesforce patterns.
+**Why it happens:** The model defaults to "open and edit" for configuration changes, and invents a `DaysFromStart` field because many task tools have one.
 
 **Correct pattern:**
 
 ```
-To update a published Action Plan template:
-1. Navigate to the active template
-2. Click "Clone" to create a Draft copy
-3. Edit the Draft copy (name, tasks, deadlines, owners)
-4. Activate the Draft clone (Status = Active) — this becomes the new version
-5. Leave the original template active until all in-flight plans on it are closed
-6. Follow the naming convention (e.g., "Client Onboarding v3") for the new version
+To change a published onboarding template:
+1. Create a new version (or the org's documented clone path) in Draft.
+2. Change items there; due dates are ActivityDate value formulas such as StartDate + 5.
+3. Publish the new version (version Status = Final).
+4. Plans already launched stay on their original version; apply the in-flight policy.
+5. Name the version clearly, for example "Client Onboarding v3".
 ```
 
-**Detection hint:** Any instruction to "edit," "update," or "modify" an Action Plan template without first cloning it should be flagged if the template is already published.
+**Detection hint:** Any edit instruction for a published template, or any mention of `DaysFromStart` or `TaskDeadlineType`.
 
 ---
 
-## Anti-Pattern 3: Skipping Compliance Gate Design in Favor of a Flat Task List
+## Anti-Pattern 3: Using Required Flags as Sequencing
 
-**What the LLM generates:** A flat Action Plan task list with all tasks at equivalent priority, no required flags, and no sequencing constraints — presented as a complete onboarding design.
+**What the LLM generates:** A flat task list where compliance steps are marked required, presented as if that stops later steps from starting.
 
-**Why it happens:** LLMs optimize for simplicity in task lists and tend to produce flat checklists. The regulatory requirement that certain steps must be completed before subsequent steps are permitted is a domain-specific constraint that requires explicit design, not just a list.
+**Why it happens:** "Required" sounds like "must happen first". In Action Plans it only records that the item must be done.
 
 **Correct pattern:**
 
 ```
-For each compliance-mandatory checkpoint:
-- Set the task as required (Required = true on ActionPlanTemplateItem)
-- Document the gate condition: "Stage N cannot begin until [task X] is closed"
-- Identify the owner and escalation path if the gate is not cleared within SLA
-- In the process map, draw an explicit gate between phases where required tasks
-  must be completed before the next phase's tasks are launched
+For each regulatory "A before B" rule:
+- Mark A and B required (IsRequired = true).
+- Add an actionPlanTemplateItemDependencies entry:
+    previousTemplateItem = A, templateItem = B, creationType = OnPreviousItemCompleted
+- Record the owner and the escalation path if A is not done within its SLA.
 ```
 
-**Detection hint:** A process design with no required tasks and no phase gates in a financial services onboarding context should be reviewed for missing compliance checkpoint enforcement.
+**Detection hint:** A regulated onboarding design with required items and no dependencies or approval steps between phases.
 
 ---
 
@@ -110,23 +108,45 @@ Welcome journey handoff specification must include:
 
 ---
 
-## Anti-Pattern 6: Exceeding the 75-Task Limit Without a Split Design
+## Anti-Pattern 6: Asserting an Unconfirmed Item Limit, or Ignoring Template Size
 
-**What the LLM generates:** A comprehensive onboarding Action Plan template with 90+ individual task items covering every document, signature, and checklist step — presented as a single template without noting the 75-task hard limit.
+**What the LLM generates:** Either a 90-item single template with no thought for size, or a confident "Action Plans have a hard 75-task limit" statement.
 
-**Why it happens:** LLMs generating detailed task inventories for complex regulated onboarding processes will naturally produce large lists. The 75-task platform limit is a non-obvious constraint that the LLM does not automatically apply unless it has been trained on this specific FSC behavior.
+**Why it happens:** The 75-item figure circulates in older content, but it does not appear in the Object Reference or Metadata API entries for Action Plans read on 2026-10-03.
 
 **Correct pattern:**
 
 ```
-Before finalizing the Action Plan task inventory:
-1. Count total tasks across all stages
-2. If total > 75: split into sequential phased templates
-   - Phase 1 template: Pre-Onboarding + Document Collection
-   - Phase 2 template: Compliance Review + Activation
-3. Design the Phase 1 → Phase 2 handoff trigger
-   (e.g., Flow triggered on ActionPlan Status = Completed)
-4. Document the split in the process map so the handoff is explicit
+Before finalizing the item inventory:
+1. Count items across all stages.
+2. For very large templates, launch a test plan in a sandbox before sign-off.
+3. Prefer phased templates (Pre-Onboarding and Document Collection; Compliance Review and Activation),
+   launching phase 2 when phase 1's ActionPlanState reaches Complete.
+4. Document the split in the process map.
 ```
 
-**Detection hint:** Any onboarding task inventory with more than 60 items that does not mention splitting into phases should be reviewed against the 75-task limit.
+**Detection hint:** A limit stated as fact with no source, or a very large single template with no size test.
+
+---
+
+## Anti-Pattern 7: Editing `IsRequired` on a Document Checklist Item to Waive a Document
+
+**What the LLM generates:** "Uncheck Required on the document checklist item for this client."
+
+**Why it happens:** The model assumes every checkbox is editable.
+
+**Correct pattern:** `DocumentChecklistItem.IsRequired` is set at creation and has no Update property. Record exceptions as `Status = Waived` (values: `Accepted`, `New`, `Pending`, `Waived`) with a comment, so the waiver is auditable.
+
+**Detection hint:** Any update to `IsRequired` on an existing document checklist item.
+
+---
+
+## Anti-Pattern 8: Assuming Every Record Can Anchor an Action Plan
+
+**What the LLM generates:** "Create the onboarding template on FinancialAccount," with no check.
+
+**Why it happens:** Financial Account is the natural FSC anchor, and the model does not know the parent lists differ between guides.
+
+**Correct pattern:** The Metadata API template parent list does not include Financial Account; the plan object list includes it from API 48.0. Launch a test plan on the intended anchor in a sandbox, and fall back to Account or Opportunity if it fails.
+
+**Detection hint:** A template `targetEntityType` chosen without a sandbox launch test.

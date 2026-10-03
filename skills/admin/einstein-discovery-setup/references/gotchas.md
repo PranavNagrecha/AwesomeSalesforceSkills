@@ -1,41 +1,81 @@
-# Gotchas — Einstein Discovery Setup
+# Gotchas: Einstein Discovery Setup
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious Einstein Discovery behaviors that cause real production problems. The grounded source is the Summer '26 Metadata API Developer Guide (`DiscoveryAIModel`, `DiscoveryGoal`), cited as `api_meta L<n>` from its `pdftotext -layout` extraction. The Einstein Discovery admin pages (help.salesforce.com) and the Einstein Discovery REST API guide did not fetch for this pass, so UI behavior carried from earlier versions of this skill carries an inline `UNVERIFIED (2026-10-03):` marker.
 
-## Gotcha 1: Refreshed Model Is NOT Automatically Activated — Scoring Silently Runs Against Old Model
+## Gotcha 1: Removing `pushbackField` from the goal metadata deletes the field
 
-**What happens:** After a model refresh job completes successfully, the new model version sits in "Ready" status in the Model Manager. The prediction definition continues using the previous model version for all bulk scoring jobs and API calls. There is no error, no warning, and no notification in the UI or via email that indicates scoring is now against a stale model.
+**What happens:** `DiscoveryGoal.pushbackField` is the "automated writeback field for predictions. A custom field on the Salesforce object specified in subscribedEntity." The guide warns: "Removing a pushback field from the goal metadata causes the field to be deleted from the Salesforce object as well" (`api_meta L54794-54800`).
 
-**When it occurs:** Every time a model refresh job completes, whether triggered manually or on a schedule. The activation step is always manual. Admins who set up scheduled refreshes and assume scoring automatically uses the latest model will silently accumulate model drift over weeks or months.
+**When it occurs:** A developer retrieves a `DiscoveryGoal` from a sandbox where writeback was not set up, or edits the file and drops the element, then deploys to production. The production writeback field and its values are deleted.
 
-**How to avoid:** After every refresh job completes, navigate to Analytics Studio > story > Model Manager, review the new model's accuracy metrics, and explicitly click "Activate" on the new version. Then trigger a new bulk scoring job. Document this as a required operational step in the admin runbook and set a calendar reminder or notification to perform it after each scheduled refresh window.
-
----
-
-## Gotcha 2: Writeback Field Is Read-Only — Not Updated on Record Save or Field Change
-
-**What happens:** The Einstein Discovery writeback field is system-managed and read-only. It cannot be updated by users, Flow, triggers, Process Builder, or direct DML. Editing the source record (changing Stage, updating Amount, modifying related fields) does not cause the writeback field to refresh. The score shown on the record page is the value from the last bulk scoring job or API call — which may be hours, days, or weeks old.
-
-**When it occurs:** Anytime a user edits a record and expects to see an updated prediction score, or when a Flow or automation is designed to trigger re-scoring by updating source fields. This also catches admins who add validation rules or triggers that check the writeback field value expecting it to be current.
-
-**How to avoid:** Treat the writeback field as a snapshot that is updated by scheduled bulk jobs, not a live calculated field. Design workflows with the assumption that scores are as old as the last scoring job. If fresher scores are needed, configure more frequent bulk scoring jobs or use the developer API to trigger explicit scoring at known points in the business process.
+**How to avoid:** Treat the goal file as the owner of the writeback field. Review every `DiscoveryGoal` diff for a removed `pushbackField` before deploying, and block such deploys in code review. Retrieve from the org that holds the real writeback configuration.
 
 ---
 
-## Gotcha 3: Maximum Three Writeback Fields Per Salesforce Entity
+## Gotcha 2: Up to ten active models per prediction definition, and the first matching filter wins
 
-**What happens:** Each Salesforce object can have at most three Einstein Discovery writeback fields across all deployed prediction definitions. If an object already has three writeback fields and a new prediction is deployed with writeback enabled on the same object, the deployment fails with a limit error. The story trains successfully but the writeback field creation step fails.
+**What happens:** A prediction definition "is associated with one or more deployed models. If a prediction definition contains multiple models, then each model produces predictions for a different segment of the data. A prediction definition can contain up to ten active models" (`api_meta L54747-54751`). For deployed model filters: "When making a prediction, the first model that has filters matching a specific input row will be used to make the prediction. No filters indicates that the model matches all input rows" (`L54833-54838`).
 
-**When it occurs:** Most commonly on high-value objects like Opportunity or Contact, where multiple teams independently configure Einstein Discovery predictions — for example, one for win probability, one for churn risk, and one for expansion potential. The fourth deployment attempt fails even if the existing fields are from inactive or rarely used predictions.
+**When it occurs:** A broad model with no filters is listed before segment models, so it scores every row; or an eleventh segment model is planned.
 
-**How to avoid:** Before deploying a new prediction on any object, audit the existing writeback fields in Setup > Object Manager > [Object] > Fields & Relationships and filter by field label or type for Einstein-managed fields. If the object already has three, identify which existing writeback field is the least valuable and remove it (via the Deploy tab of the relevant story) before creating a new one.
+**How to avoid:** Order deployed models from most specific filter to least, and put the unfiltered catch-all last. Merge segments if the plan needs more than ten active models.
 
 ---
 
-## Gotcha 4: Field-Level Security on Writeback Field Is Not Granted Automatically
+## Gotcha 3: Models are not authored through the Metadata API
 
-**What happens:** Einstein Discovery creates the writeback field and populates it via scoring jobs, but does not assign field-level security to any profile, role, or permission set. The field exists in the database and holds prediction scores, but no user — including system administrators — can see it in reports, list views, or record page layouts until FLS is manually assigned.
+**What happens:** "Write operations for DiscoveryAIModel objects are generally not supported" (`api_meta L54458`). A model is stored in the `discovery` folder as a `.model` file with the model data and a `-meta.xml` file (`L54469-54471`). The `UserUpload` source type (a model built in an external tool) "is not supported in the Metadata API" (`L54655-54665`).
 
-**When it occurs:** Immediately after writeback field creation. The bulk scoring job runs and writes values to the field, but the ops team opens a report expecting to see scores and finds the column empty or the field unavailable in the field picker.
+**When it occurs:** A team hand-edits a model file to change thresholds or fields, or tries to deploy an externally trained model through a package.
 
-**How to avoid:** As part of every new prediction deployment, immediately navigate to Setup > Object Manager > [Object] > Fields & Relationships, locate the new writeback field, open Field-Level Security, and grant Read access to all relevant profiles and permission sets. This is a mandatory post-deployment step that is easy to forget because the scoring job completes without any FLS-related warning.
+**How to avoid:** Build and change models in Einstein Discovery, upload external models through Model Manager, and use the Metadata API to retrieve and version them. Deploy models only as retrieved.
+
+---
+
+## Gotcha 4: `pushbackType` must be `AiRecordInsight`
+
+**What happens:** `DiscoveryPushbackType` "represents the type of writeback field. Must be set to AiRecordInsight." The other value, `Direct`, is "currently not supported. Reserved for future use" (`api_meta L55069-55076`).
+
+**When it occurs:** A goal file is written by hand or generated by a script that guesses a "direct" writeback.
+
+**How to avoid:** Keep `<pushbackType>AiRecordInsight</pushbackType>` wherever `pushbackField` is set.
+
+---
+
+## Gotcha 5: Accuracy monitoring needs a terminal-state definition
+
+**What happens:** `terminalStateFilters` are "one or more filter expressions that define the conditions under which an observation has attained its terminal state (the actual outcome has been reached). For performance monitoring, Einstein Discovery determines model accuracy by comparing a model's predicted outcomes with actual (observed) outcomes" (`api_meta L54806-54812`).
+
+**When it occurs:** A win-prediction goal has no terminal-state filters, so open opportunities are counted as outcomes, and accuracy reporting is misleading.
+
+**How to avoid:** Define terminal states explicitly (for example `IsClosed` equals true for an Opportunity win model) in the prediction definition, and record them in the refresh runbook.
+
+---
+
+## Gotcha 6: Model fields carry sensitive and disparate-impact flags that someone must review
+
+**What happens:** Each `DiscoveryModelField` has `isSensitive` and `isDisparateImpact` booleans (`api_meta L54555-54562`). They mark fields that need a fairness review before scores are used for decisions.
+
+**When it occurs:** Stories built from wide datasets include demographic fields or proxies (postal code, for example), and nobody reads the flags before deployment.
+
+**How to avoid:** Make a sensitive-field review a deployment gate. Record which flagged fields were kept and why, or remove them from the explanatory variables.
+
+---
+
+## Gotcha 7: Leakage fields inflate training accuracy
+
+**What happens:** Fields populated only after the outcome (for example a close-related field on a win prediction) make the model look accurate in training and useless on open records.
+
+**When it occurs:** Explanatory variables are chosen by "include everything" on the object.
+
+**How to avoid:** For each candidate field, ask whether its value is known at the moment a prediction is needed. Exclude it if not. This is modeling practice rather than platform behavior; UNVERIFIED (2026-10-03): whether the story wizard flags likely leakage fields is help-only.
+
+---
+
+## Gotcha 8: Writeback visibility, freshness, and activation are unverified help-only claims
+
+**What happens:** Earlier versions of this skill stated four behaviors as fact: the writeback field receives no field-level security by default and is invisible to every user until granted; it updates only through bulk scoring jobs or explicit API calls, never on record save; each object holds at most three writeback fields; and a refreshed model stays inactive until an admin activates it. UNVERIFIED (2026-10-03): none of these is described in the Metadata API guide, and the help pages that state them did not fetch. The metadata does show that each deployed model and the prediction definition carry `active` flags (`api_meta L54780`, `L54824`).
+
+**When it occurs:** Users are told scores refresh on edit, or that a fourth prediction "cannot" be added, without anyone testing.
+
+**How to avoid:** In a sandbox, grant field-level security explicitly (it does no harm if already granted), edit a scored record and watch the field, and check activation after a refresh. Write the observed behavior into the runbook.

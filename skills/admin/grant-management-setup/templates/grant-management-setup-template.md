@@ -45,7 +45,7 @@ Answer each question before proceeding to configuration:
 | Single lump-sum disbursement or multi-tranche? | Lump-sum / Multi-tranche |
 | Number of tranches per award (if multi-tranche) | |
 | Are deliverables / reports required per award? | Yes / No |
-| Types of deliverables needed (e.g., Progress Report, Final Report, Site Visit) | |
+| Types of deliverables needed (standard `Type` values: Combined Report, Contract, Financial Report, Narrative Report) | |
 | Will grantees access Salesforce directly (Experience Cloud portal)? | Yes / No |
 | Volume: estimated number of active awards at any time | |
 | Integration needed with financial system? | Yes / No / Which system: |
@@ -64,13 +64,13 @@ Answer each question before proceeding to configuration:
 ### FundingDisbursement Setup
 
 - Tranche pattern per award: ______ tranches of $______ each (or milestone-based)
-- Key fields: ScheduledDate, DisbursementAmount, Status
-- Status lifecycle for this org: Draft → Scheduled → Paid (standard) / customized: ______
+- Key fields: ScheduledDate, DisbursementDate, Amount, Status
+- Status values in use (standard: Scheduled, Pending Approval, Approved, Processing, Paid, Returned, Cancelled) / customized: ______
 
 ### FundingAwardRequirement Setup
 
 - Requirement types needed: ______________________________
-- Standard status lifecycle: Open → Submitted → Approved
+- Standard `Status` values: Open, In Progress, Submitted, Delayed, Approved, Rejected; `ApprovalStatus`: New, In Review, Approved, Rejected
   - Any approved deviations from standard lifecycle: ______________________________
 - Disbursement gating: Which disbursement tranches are gated by which requirement types?
 
@@ -87,8 +87,8 @@ Answer each question before proceeding to configuration:
 
 - `outfunds__Funding_Request__c` page layout fields: ______________________________
 - `outfunds__Disbursement__c` payment tracking approach: ______________________________
-- Relationship to Opportunity: ______________________________
-- Custom objects needed for deliverable tracking (OFM has no native equivalent): ______
+- NPSP fund accounting extension (`outfundsnpspext`, GAU expenditures) needed: Yes / No
+- Requirement types and statuses in use on `outfunds__Requirement__c`: ______
 
 ---
 
@@ -124,7 +124,7 @@ Run through these before marking implementation complete:
 - [ ] No OFM API names (`outfunds__`) appear in NC Grantmaking automation, and vice versa
 - [ ] FundingDisbursement records created at award setup time (not retroactively)
 - [ ] All expected disbursement tranches are created per FundingAward
-- [ ] FundingAwardRequirement status lifecycle (Open → Submitted → Approved) is enforced by automation
+- [ ] FundingAwardRequirement status convention (`Status` and `ApprovalStatus`) is documented and enforced by automation
 - [ ] Disbursement gating validation rule tested end-to-end (cannot pay without approved requirements)
 - [ ] Reports surface correct totals (no double-counting from incorrect data model choices)
 - [ ] Grants staff trained on new data model and page layouts

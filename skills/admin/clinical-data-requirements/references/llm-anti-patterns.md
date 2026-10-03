@@ -28,39 +28,60 @@ FHIR Patient demographics map to child objects: PersonName (name), ContactPointP
 
 ---
 
-## Anti-Pattern 3: Using Legacy HC24__ EHR Objects for New Integrations
+## Anti-Pattern 3: Using Legacy or Invented EHR Object Names
 
-**What the LLM generates:** Integration code targeting HC24__EhrCondition__c, HC24__EhrMedication__c, HC24__EhrProcedure__c, or HC24__EhrLabResult__c for new Health Cloud clinical data integrations.
+**What the LLM generates:** Integration code targeting `HC24__EhrCondition__c` for a new org, or "replacement" objects that do not exist, such as `PatientMedication`, `MedicalProcedure`, `HC24__EhrMedication__c`, or `HC24__EhrLabResult__c`.
 
-**Why it happens:** Legacy managed-package EHR objects appear in pre-Spring '23 documentation and tutorials. LLMs trained on historical content recommend these objects without knowing about the write-lock applied in new orgs.
+**Why it happens:** Pre-Spring '23 tutorials use the packaged objects, and plausible names fill the gaps.
 
-**Correct pattern:**
-Target FHIR R4-aligned standard objects: HealthCondition (not HC24__EhrCondition__c), PatientMedication, MedicalProcedure, CareObservation. For new orgs (Spring '23+), HC24__ objects are read-only where standard counterparts exist. All new integrations must target standard objects.
+**Correct pattern:** New customers cannot create records in packaged EHR objects that have standard counterparts. Target `HealthCondition`, `MedicationStatement`, `MedicationRequest`, `PatientMedicalProcedure`, `CareObservation`, `PatientImmunization`, and `AllergyIntolerance`. Confirm every object name against the guide or a describe call.
 
-**Detection hint:** If the integration code references objects with `HC24__` prefix for data that has a corresponding FHIR R4-aligned standard object, legacy objects are being targeted incorrectly.
-
----
-
-## Anti-Pattern 4: Designing HL7 v2 Direct Integration Without Middleware
-
-**What the LLM generates:** Integration architectures where HL7 v2 messages from an EHR are sent directly to Salesforce via REST or SOAP APIs, without a middleware translation layer.
-
-**Why it happens:** LLMs know Salesforce supports REST and SOAP APIs and know that EHRs send HL7 v2 messages. The logical inference is that HL7 v2 can be sent to Salesforce directly. Salesforce's inability to natively parse HL7 v2 is not a general API knowledge fact.
-
-**Correct pattern:**
-HL7 v2 messages must be translated to FHIR R4 JSON by a middleware layer before storage in Salesforce clinical objects. Salesforce's FHIR Healthcare API accepts FHIR R4 JSON only — not HL7 v2. Middleware options include MuleSoft HL7 connector, Mirth Connect, Rhapsody, or custom FHIR translators.
-
-**Detection hint:** If the HL7 integration design shows ADT or ORU messages going directly to Salesforce APIs without a translator, the middleware layer is missing.
+**Detection hint:** Any `HC24__` object in new integration code, or an object name that a describe call does not return.
 
 ---
 
-## Anti-Pattern 5: Omitting FHIR R4 Support Settings Activation as a Prerequisite
+## Anti-Pattern 4: Treating HL7 v2 as Either Unsupported or Native
 
-**What the LLM generates:** Clinical data configuration instructions that begin with creating HealthCondition or CareObservation records without first noting that FHIR R4 Support Settings must be enabled.
+**What the LLM generates:** Either "Salesforce cannot store HL7 v2 data at all," or "send the ADT message to Salesforce and it will be parsed."
 
-**Why it happens:** Org preferences are administrative setup steps that LLMs often omit because they are not visible in object schemas or API documentation. FHIR R4 Support Settings is a critical prerequisite that must be completed before any FHIR-aligned clinical object is accessible.
+**Why it happens:** The model knows Salesforce speaks REST and JSON, and does not know the clinical data model documents HL7 v2.3 segment mappings.
 
-**Correct pattern:**
-The first step in any clinical data model configuration is to enable the FHIR-Aligned Clinical Data Model in Setup > FHIR R4 Support Settings. Without this, all FHIR R4-aligned clinical objects are inaccessible. This activation is irreversible once enabled — document the decision before proceeding.
+**Correct pattern:** The guide documents mappings for ADT, ORM, ORU, MDM, VXU, and RDE (HL7 v2.3) segments to standard object fields, and states that a middleware integration solution is required to convert HL7 and FHIR messages. Put a translation layer in front of Salesforce that parses messages and writes the mapped fields.
 
-**Detection hint:** If clinical data model configuration steps begin without mentioning FHIR R4 Support Settings activation, the activation prerequisite is missing.
+**Detection hint:** HL7 v2 messages sent straight to the REST API, or a design that discards HL7 v2 sources as unsupported.
+
+---
+
+## Anti-Pattern 5: Overstating What the Org Pref Gates
+
+**What the LLM generates:** "Without FHIR R4 Support Settings, all clinical objects including CareObservation are inaccessible, and the activation is irreversible."
+
+**Why it happens:** The model generalizes from the objects that do need the pref, and adds an irreversibility claim that is not in the guide.
+
+**Correct pattern:** The guide lists objects that need the FHIR-Aligned Clinical Data Model org pref (for example `HealthCondition`, `ClinicalEncounter`, `MedicationRequest`) and objects that do not (for example `CareObservation`, `CodeSet`, `CodeSetBundle`, `PersonName`). Enable the pref first, list what it unlocks, and treat reversibility as a question to confirm, not a fact.
+
+**Detection hint:** `CareObservation` described as gated by the pref, or "irreversible" stated without a source.
+
+---
+
+## Anti-Pattern 6: Mapping `condition.code` as Optional
+
+**What the LLM generates:** A middleware mapping that sends conditions without a code, because `condition.code` is 0..1 in FHIR.
+
+**Why it happens:** The model maps cardinality straight from the FHIR specification.
+
+**Correct pattern:** `HealthCondition.ConditionCodeId` (a lookup to `CodeSetBundle`) is one-to-one in Salesforce. Build the `CodeSet` and `CodeSetBundle` first, and define a rule for code-less source records.
+
+**Detection hint:** A condition mapping with no rule for missing codes.
+
+---
+
+## Anti-Pattern 7: Calling the Portal Requirement an Org Setting
+
+**What the LLM generates:** "Enable FHIR R4 for Experience Cloud in Setup so patients can see their conditions."
+
+**Why it happens:** Many Health Cloud features are org settings, so the model assumes this one is too.
+
+**Correct pattern:** Community users need the FHIR R4 for Experience Cloud Sites permission set to use clinical data model objects on a site. Pair it with sharing for the records each patient may see.
+
+**Detection hint:** Portal designs that name an org setting instead of the permission set.

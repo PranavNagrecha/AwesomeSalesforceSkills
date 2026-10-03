@@ -83,23 +83,19 @@ For each Formula node (use recipe expression language, not SAQL):
 If a recurring schedule is needed, record the Schedule Resource API call details:
 
 ```
-POST /services/data/v62.0/wave/recipes/{recipeId}/schedules
+PUT /services/data/v67.0/wave/asset/{recipeId}/schedule
 Content-Type: application/json
 
 {
-  "scheduleType": "cron",
-  "cronExpression": "_______________",
-  "timeZone": "_______________"
+  "frequency": "_______________",
+  "daysOfWeek": ["_______________"],
+  "time": { "hour": __, "minute": __, "timeZone": "_______________" }
 }
 ```
 
-Common cron patterns:
-- Daily at 3 AM: `0 0 3 * * ?`
-- Daily at midnight: `0 0 0 * * ?`
-- Hourly: `0 0 * * * ?`
-- Weekly Sunday 2 AM: `0 0 2 ? * SUN`
+`frequency` values: `hourly` (add `hourlyInterval` and `lastHour`), `weekly`, `monthly` (use `daysOfMonth`), `monthlyrelative` (use `weekInMonth` and `dayInWeek`), `eventdriven` (use `"triggerRule": "$ALL_SALESFORCE_OBJECTS"` instead of `time`). There is no cron expression. GET and DELETE use the same URL.
 
-Note: The `recipeId` is retrieved from `GET /wave/recipes` — look for the `id` field on the recipe object.
+Note: The `recipeId` starts with `05v` and comes from `GET /wave/recipes`. To run the recipe now, POST `{"dataflowId": "<targetDataflowId>", "command": "start"}` to `/wave/dataflowjobs`, where `targetDataflowId` (starts with `02KB`) comes from `GET /wave/recipes/{recipeId}?format=R3`.
 
 ---
 

@@ -13,6 +13,8 @@ triggers:
   - "how do we document availability and compliance requirements for Salesforce"
   - "what SLAs should we agree with the business before launching on Salesforce"
   - "how do we capture scalability requirements so the architect can design appropriately"
+  - "write measurable performance and availability NFRs for our Salesforce rollout"
+  - "turn 'the system must be fast' into a testable requirement with a threshold"
 tags:
   - nfr
   - performance
@@ -35,9 +37,9 @@ outputs:
   - "Shared responsibility matrix for availability (Salesforce infrastructure vs. customer data)"
   - "Compliance control checklist tied to applicable regulations"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-03
 ---
 
 # NFR Definition for Salesforce
@@ -58,6 +60,23 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What does one hour of Salesforce being unavailable cost, and which processes must keep running?" | Availability is shared responsibility; the platform's figure says nothing about custom code or integrations (Gotcha 3) | A criticality tier and team-owned RPO and RTO per process | Availability NFRs that the team can actually influence and test |
+| "How many users, records per object, and API calls per day at launch, at peak hour, and at three years?" | Daily allocations scale with licences; per-transaction limits never do (Gotchas 2, 4) | A limit translation table with utilisation at launch and at the horizon | Async patterns chosen at design time, not after a limit breach |
+| "Where, with what tool, and at which percentile will each performance NFR be measured?" | Only a Full sandbox approximates production volume, and page-time evidence lives in Event Monitoring (Gotchas 1, 7) | The environment, the data source (`EFFECTIVE_PAGE_TIME` or browser timing), and the percentile per NFR | Go-live criteria that produce evidence instead of opinions |
+| "Which integrations share the org's API allocation, and how many run in parallel?" | One pool serves every integration, and 25 long requests can block new ones (Gotchas 2, 6) | One API budget table with calls per day, concurrency, and duration per integration | No integration starves another, and throughput tests use production's numbers |
+| "Which regulations apply, and which named control does each one impose?" | A licence is not a control; only verified configuration passes an audit (Gotcha 5) | One NFR per control with a UAT acceptance test | Compliance evidence exists before go-live, not after the auditor asks |
+| "Which jobs must finish in which window, and how are they started?" | Scheduled Apex runs under synchronous limits (Gotcha 8) | The execution context and window per job | Batch windows sized on the limits the job will really get |
+
+What proper configuration adds over "just writing NFRs": every requirement names a metric, a threshold, a measurement source, and an owner, and each one is tied to the platform limit or responsibility split that decides whether it can pass.
+
+---
+
 ## Core Concepts
 
 ### NFR Categories for Salesforce
@@ -66,9 +85,9 @@ The five categories that must always appear in a Salesforce NFR register, mapped
 
 1. **Performance** (Performance Efficiency pillar) — Page load times, report execution times, batch job completion windows, API response times. Must be expressed as Service Level Indicators (SLIs): "95th-percentile Lightning page load under 3 seconds measured in a Full sandbox." Vague targets ("fast") cannot be tested.
 
-2. **Scalability** (Performance Efficiency + Reliability pillars) — Salesforce governor limits are hard, non-negotiable platform ceilings, not soft guidelines. Every scalability NFR must be expressed relative to these limits. Key limits: SOQL rows per transaction (50,000), DML statements per transaction (150), CPU time per transaction (10,000 ms Apex), heap size (6 MB sync / 12 MB async), synchronous callout timeout (120 s), daily API request allocation (varies by edition/user count). Architect for 50% headroom against any limit that correlates with data growth.
+2. **Scalability** (Performance Efficiency + Reliability pillars): Salesforce governor limits are hard, non-negotiable platform ceilings, not soft guidelines. Every scalability NFR must be expressed relative to these limits. Key limits: SOQL rows per transaction (50,000), DML statements per transaction (150), CPU time per transaction (10,000 ms Apex), heap size (6 MB sync / 12 MB async), cumulative callout timeout per transaction (120 s), daily API request allocation (varies by edition/user count). Architect for 50% headroom against any limit that correlates with data growth.
 
-3. **Availability** (Reliability pillar) — Salesforce Trust publishes a 99.9% infrastructure uptime SLA. This covers the platform — it does NOT cover: custom Apex code reliability, integration availability, org-to-org data sync, or data recovery time after a misconfigured bulk delete. The NFR register must distinguish infrastructure availability (Salesforce's SLA) from application availability (team's responsibility) and define RPO/RTO for backup scenarios.
+3. **Availability** (Reliability pillar): Salesforce Trust publishes a 99.9% infrastructure uptime SLA (UNVERIFIED (2026-10-03): no fetched source states this figure; quote the customer's contract instead, see `references/gotchas.md` Gotcha 3). This covers the platform, it does NOT cover: custom Apex code reliability, integration availability, org-to-org data sync, or data recovery time after a misconfigured bulk delete. The NFR register must distinguish infrastructure availability (Salesforce's SLA) from application availability (team's responsibility) and define RPO/RTO for backup scenarios.
 
 4. **Security and Compliance** (Trusted pillar) — Regulations impose specific technical controls. GDPR requires data maps, right-to-erasure workflows, and audit logs. HIPAA requires encryption at rest (Shield Platform Encryption or Field Encryption), audit trails (Field History Tracking or Event Monitoring), and BAA with Salesforce. PCI-DSS scopes may require tokenisation or out-of-scope data routing. Each applicable regulation should generate a named NFR with a testable acceptance criterion.
 
@@ -135,7 +154,7 @@ Example of an untestable NFR: "The system must be responsive." Example of a test
 | Performance target is vague ("fast enough") | Define SLI with percentile, threshold, and measurement method | Untestable NFRs cannot gate go-live or be used in capacity planning |
 | Scale target exceeds 50% of a governor limit at 3-year horizon | Raise as architectural constraint requiring design decision now | Governor limits cannot be increased; redesign is cheaper before build |
 | Regulation named but controls not enumerated | Decompose into per-control NFRs with Salesforce feature mapping | Audit-ready compliance requires control-level traceability |
-| Business says "we need 99.99% uptime" | Separate infrastructure SLA (Salesforce's 99.9%) from application reliability (team's responsibility) | Salesforce's SLA covers infrastructure only; custom code is team-owned |
+| Business says "we need 99.99% uptime" | Separate infrastructure availability (the contract's figure) from application reliability (team's responsibility) | Availability is a shared responsibility; custom code, integrations, and admin errors are team-owned |
 | Project lacks usability NFRs | Add layout field count limits, mobile completion targets, WCAG level | Usability regressions are caught late and expensive to fix post-launch |
 
 ---
@@ -170,13 +189,14 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The full list, with sources, is in `references/gotchas.md`. The ones that most often invalidate an NFR register:
 
-1. **Governor limits are per-transaction, not per-request** — SOQL row limits (50,000), DML statements (150), and CPU time (10,000 ms) reset at transaction boundaries. An NFR that says "the system must handle 1 million records per day" is valid at the batch level but a single synchronous transaction cannot process more than 50,000 rows. NFRs must specify the unit of measurement and the processing mode (sync vs. async).
-
-2. **Salesforce's 99.9% uptime SLA does not cover org-level outages from bad deployments** — A Metadata API deployment that breaks a critical trigger is not covered by the Trust infrastructure SLA. Customer-owned application availability must be explicitly scoped in the NFR register with a separate RTO/RPO.
-
-3. **Scale testing requires Full sandbox — Developer Pro is not a valid proxy** — Developer Pro sandboxes have a 200 MB storage limit and do not replicate production data volume or record distribution. Performance NFRs validated only in Developer Pro sandboxes will produce invalid results. Full sandboxes are the minimum for load-representative performance testing.
+| Gotcha | What it does to an NFR |
+|---|---|
+| Per-transaction limits ignore licence count (Gotcha 4) | A "1 million records a day" NFR is valid only for an async mode; one synchronous transaction stops at 50,000 rows |
+| Shared responsibility for availability (Gotcha 3) | A bad deployment that breaks a trigger is the team's outage, so it needs its own RTO and RPO |
+| Full sandbox only for scale tests (Gotcha 1) | Developer (200 MB) and Developer Pro (1 GB) sandboxes cannot validate a performance NFR; the earlier "Developer Pro 200 MB" statement was wrong |
+| Concurrent long-running request limit (Gotcha 6) | A throughput NFR must state concurrency and duration, not only calls per day |
 
 ---
 

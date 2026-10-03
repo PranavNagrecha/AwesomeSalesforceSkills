@@ -4,7 +4,7 @@
 
 - **Reliability** — Documented build dependencies (child card activation order, IP active status, LWC deployment) prevent activation failures in production; without requirements-time dependency mapping, deployment outages are predictable.
 - **Operational Excellence** — FlexCard requirements documents serve as the canonical reference for future card maintenance; state template conditions and data source bindings are opaque inside Card Designer without external documentation.
-- **Security** — Requirements must capture user context (internal agent vs Experience Cloud community user); guest-user FlexCards require explicit object sharing settings and FLS that must be specified at requirements time.
+- **Security** — Requirements must capture user context (internal agent vs Experience Cloud community user). Guest-user FlexCards depend on guest user sharing rules, which grant Read Only access only, because guest org-wide defaults are Private and cannot be changed.
 - **Performance** — Choosing Integration Procedure vs SOQL vs DataRaptor data source is a performance decision; IP with sequential actions adds latency; SOQL with a narrow WHERE clause is fastest for single-object display.
 - **Scalability** — FlexCards embedded in list views should specify data source queries with LIMIT clauses; requirements that leave query scope undefined risk loading hundreds of records into a card panel.
 
@@ -26,9 +26,17 @@
 
 ## Official Sources Used
 
-- OmniStudio FlexCards — https://help.salesforce.com/s/articleView?id=sf.os_flexcards.htm
-- OmniStudio Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for the 2026-10-03 pass (fetched with plain `curl`; line numbers cite the `pdftotext -layout` extraction):
+
+- Salesforce Industries Developer Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_industries_dev_guide.pdf (OmniTrackingComponentDef and OmniTrackingGroup, OmniStudio Standard only, L91660-91780; `OmniUiCard` internal-use note L91930-91933; deprecated OmniStudio Business REST APIs L91936-91941; Data Mapper and Integration Procedure as FlexCard data sources L91954-91962)
+- Salesforce Security Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf (guest users' Private org-wide defaults L2868-2869; guest user sharing rules are Read Only L2985-2987)
+- Metadata API Developer Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (PermissionSet `classAccesses`, `fieldPermissions`, `objectPermissions` L94772-94840)
+
+Listed by the original author and not re-read in this pass (help.salesforce.com and architect.salesforce.com do not serve article content to plain HTTP clients; the atlas OmniStudio guide returned empty JSON on 2026-10-03):
+
+- OmniStudio FlexCards: https://help.salesforce.com/s/articleView?id=sf.os_flexcards.htm
+- OmniStudio Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.omnistudio_developer_guide.meta/omnistudio_developer_guide/omnistudio_intro.htm
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 
 ## Cross-Skill References
 

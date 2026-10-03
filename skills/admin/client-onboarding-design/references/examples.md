@@ -12,23 +12,23 @@ Process design delivered before any re-implementation:
 
 ```
 Stage 1: Pre-Onboarding (Gate: Identity verification cleared)
-  - Task: Collect government-issued ID (owner: Advisor, DaysFromStart: 1, required: true)
-  - Task: Run KYC check (owner: Compliance, DaysFromStart: 2, required: true)
-  - Task: Capture beneficial ownership disclosure (owner: Advisor, DaysFromStart: 2, required: true)
+  - Task: Collect government-issued ID (owner: Advisor, due: StartDate + 1, required: true)
+  - Task: Run KYC check (owner: Compliance, due: StartDate + 2, required: true)
+  - Task: Capture beneficial ownership disclosure (owner: Advisor, due: StartDate + 2, required: true)
   Gate condition: KYC task closed AND beneficial ownership task closed
 
 Stage 2: Document Collection (Gate: All required docs received)
-  - Task: Collect signed account agreement (owner: Advisor, DaysFromStart: 1, required: true)
-  - Task: Collect investment policy statement (owner: Advisor, DaysFromStart: 3, required: true)
-  - Task: Confirm beneficiary designations (owner: Advisor, DaysFromStart: 5, required: false)
+  - Task: Collect signed account agreement (owner: Advisor, due: StartDate + 1, required: true)
+  - Task: Collect investment policy statement (owner: Advisor, due: StartDate + 3, required: true)
+  - Task: Confirm beneficiary designations (owner: Advisor, due: StartDate + 5, required: false)
   Gate condition: Account agreement task closed AND IPS task closed
 
 Stage 3: Compliance Review (Gate: Compliance sign-off)
-  - Task: Compliance officer review (owner: Compliance Queue, DaysFromStart: 2, required: true)
+  - Task: Compliance officer review (owner: Compliance Queue, due: StartDate + 2, required: true)
   Gate condition: Compliance review task closed
 
 Stage 4: Account Activation
-  - Task: Send funding instructions (owner: Operations, DaysFromStart: 1, required: true)
+  - Task: Send funding instructions (owner: Operations, due: StartDate + 1, required: true)
 
 Stage 5: Welcome Journey Handoff
   Trigger: FinancialAccount Status field = "Active"
@@ -38,7 +38,7 @@ Stage 5: Welcome Journey Handoff
 
 Governance design: Template owner = Senior Business Analyst. Change requests submitted via internal JIRA project. Naming convention: "Wealth Onboarding v[N]". In-flight plans complete on the version at launch; new version applies to onboardings started after publish date.
 
-**Why it works:** The compliance gate (Stage 3 must complete before Stage 4 begins) is enforced by making the compliance review task required, so the plan cannot close and the welcome journey trigger cannot fire until compliance has signed off. The versioning governance means the beneficial ownership change — and all future changes — have a documented path that does not require emergency decisions.
+**Why it works:** The compliance gate (Stage 3 must complete before Stage 4 begins) is enforced by an item dependency: the "Send funding instructions" item depends on the "Compliance officer review" item with `creationType` `OnPreviousItemCompleted`, so the funding task is not created until compliance signs off. Marking the review item required records that it must be done; the dependency is what enforces the order. The versioning governance gives the beneficial ownership change, and every later change, a documented path that does not need emergency decisions. The deployable template for this design is in `metadata-examples.md`.
 
 ---
 
@@ -66,9 +66,9 @@ Stage 1: Intake (Screen Flow)
 
 Stage 2: Document Collection (Action Plan on InsurancePolicy)
   Template: "Insurance Onboarding Docs v2"
-  - Task: Receive signed application form (owner: Operations Queue, DaysFromStart: 2, required: true)
-  - Task: Receive proof of prior coverage (owner: Operations Queue, DaysFromStart: 5, required: false)
-  - Task: Confirm medical exam scheduled if required (owner: Advisor, DaysFromStart: 3, required: true)
+  - Task: Receive signed application form (owner: Operations Queue, due: StartDate + 2, required: true)
+  - Task: Receive proof of prior coverage (owner: Operations Queue, due: StartDate + 5, required: false)
+  - Task: Confirm medical exam scheduled if required (owner: Advisor, due: StartDate + 3, required: true)
 
 Stage 3: Underwriting Review
   Approval process on InsurancePolicy record (standard Salesforce Approval Process)
@@ -92,3 +92,24 @@ Stage 4: Welcome Journey
 **What goes wrong:** OmniStudio FlexCards and OmniScripts are a separately licensed add-on. They are prominently documented in FSC materials because they are commonly purchased together, but they are not automatically included. The implementation team either has to stop work pending a licensing procurement, or substitute Screen Flows last-minute with a design that was not optimized for the standard Flow UI.
 
 **Correct approach:** Confirm OmniStudio license availability as the first step of process design. Check the org's installed packages (Setup > Installed Packages) for the OmniStudio managed package, or confirm with the account executive. Only then select the intake tool. Document the license basis in the technology selection rationale artifact so the decision is traceable.
+
+---
+
+## Example 3: Checking Document Collection Status Before the Compliance Gate
+
+**Context:** The wealth onboarding design in Example 1 tracks the signed account agreement and the investment policy statement as document checklist items on the client's account.
+
+**Problem:** The compliance officer needs one view of every client whose required documents are not yet accepted or waived, before the review task is assigned.
+
+**Solution:** A report or list view built on this query, run against the onboarding parent records:
+
+```sql
+SELECT ParentRecordId, Name, DocumentType.MasterLabel, Status, IsRequired
+FROM DocumentChecklistItem
+WHERE IsRequired = true
+  AND Status IN ('New', 'Pending')
+ORDER BY ParentRecordId
+```
+
+**Why it works:** `Status` takes `Accepted`, `New`, `Pending`, or `Waived`, so "outstanding" is `New` or `Pending`. A document compliance chose not to require for one client is marked `Waived` rather than having `IsRequired` edited, because `IsRequired` is set only at creation. UNVERIFIED (2026-10-03): the `DocumentType` relationship name on `DocumentChecklistItem` is inferred from the `DocumentTypeId` field; adjust if the org's schema differs.
+

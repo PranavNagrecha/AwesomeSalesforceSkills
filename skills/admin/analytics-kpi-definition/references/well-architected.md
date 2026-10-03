@@ -24,9 +24,20 @@
 
 ## Official Sources Used
 
-- Calculate Key Performance Indicators Using CRM Analytics — https://help.salesforce.com/s/articleView?id=sf.bi_kpis.htm
-- CRM Analytics Design Principles — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-03):
+
+- Analytics SAQL Developer Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_dev_guide_saql.pdf. Basic Elements (case-sensitive identifiers and keywords), Comparison Operators (case-sensitive `==`, `matches`), cogroup (inner, left, right, full; quota attainment example with `coalesce()`), Aggregate Functions (`avg()`, `sum()`, `count()`, `unique()`), String Functions (`lower()`), SAQL Null Measures and Dimensions.
+- Analytics Dashboard JSON Developer Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_dev_guide_json.pdf. `measureField` formulas and the unique-count behaviour of dimension counts.
+- Analytics Platform Setup Guide (Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_admin_guide_setup.pdf. Dataset Field Limits (precision and overflow), Trending Data Limits, Localization and Internationalization (currency).
+- Analytics External Data API Developer Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_dev_guide_ext_data.pdf. Metadata JSON example and field keys, CSV format, `InsightsExternalData.Operation` values.
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. AnalyticsSettings (`enableWaveCustomFiscal`, `enableWaveMulticurrency`).
+- Einstein Discovery REST API Developer Guide (Spring '26), local corpus: `knowledge/imports/bi-dev-guide-rest-sdd.md`. Searched for fill-rate rules; none found.
+
+Listed in the original version and not re-read:
+
+- Salesforce Help: Calculate Key Performance Indicators Using CRM Analytics, https://help.salesforce.com/s/articleView?id=sf.bi_kpis.htm (Salesforce Help does not fetch).
+- CRM Analytics Design Principles, https://trailhead.salesforce.com/ (page retired).
+- Salesforce Well-Architected Overview, https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 
 ## Cross-Skill References
 

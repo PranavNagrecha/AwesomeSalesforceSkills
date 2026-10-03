@@ -10,6 +10,8 @@ triggers:
   - "How do I join two datasets in a CRM Analytics recipe without losing rows?"
   - "I need to bucket a numeric field into tiers in Data Prep — which node do I use?"
   - "My recipe output has fewer rows than expected after adding a join"
+  - "schedule a CRM Analytics recipe to run every night through the REST API"
+  - "fix a Data Prep recipe that drops rows after a join node"
 tags:
   - crm-analytics
   - recipe
@@ -24,16 +26,16 @@ outputs:
   - "Bucket and formula node configuration guidance"
   - "Schedule Resource API call structure for recipe scheduling"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-10-03
 runtime_orphan: true
 runtime_orphan_reason: "No run-time agent covers CRM Analytics / Einstein Discovery. This skill was previously listed in audit-router's Mandatory Reads, but no audit-router classifier routes to it and report_dashboard's own scope excludes CRM Analytics migration, so the citation was decorative rather than load-bearing. Removed 2026-08-14 rather than left as a citation an agent never honoured. Re-wire when a CRM Analytics agent exists."
 ---
 
 # Analytics Recipe Design
 
-Use this skill to design CRM Analytics Data Prep recipes: selecting the right node types, configuring joins without silent row loss, building bucket dimensions, writing formula expressions, and wiring up recipe schedules through the Schedule Resource API. This skill does NOT cover SAQL query writing, dashboard lens design, or legacy dataflow JSON configuration.
+Use this skill to design CRM Analytics Data Prep recipes: choosing node types, configuring joins without silent row loss, building bucket dimensions, writing formula expressions, and scheduling the recipe through the Schedule resource. This skill does NOT cover SAQL query writing, dashboard lens design, or legacy dataflow JSON configuration.
 
 ---
 
@@ -41,10 +43,28 @@ Use this skill to design CRM Analytics Data Prep recipes: selecting the right no
 
 Gather this context before working on anything in this domain:
 
-- Confirm the org has CRM Analytics enabled and the user has the Analytics Cloud - Analytics User or CRM Analytics Plus User permission set.
-- Identify whether the recipe replaces an existing dataflow — recipes are the recommended path for new development as of Spring '25, but existing dataflows are not automatically migrated.
-- Know the row counts of your input datasets. Recipes reprocess the full input on every run — there is no native incremental load support, so large inputs have a direct impact on run time and quota consumption.
-- Clarify the join cardinality. Using an Inner join when the requirement is "preserve all left-side rows" silently drops unmatched rows and is the single most common source of unexplained row count shrinkage.
+- Confirm the org has CRM Analytics enabled and the user holds the Edit Dataset Recipes user permission (Analytics Platform Setup Guide, user permissions table). A user with only Recipes View Only (beta) can open the recipe editor but cannot create, change, or delete recipes.
+- Identify whether the recipe replaces an existing dataflow. Recipes are the recommended path for new development, but existing dataflows are not migrated automatically. UNVERIFIED (2026-10-03): "recommended path as of Spring '25" is not stated in the guides read for this pass.
+- Know the row counts of your input datasets. A recipe defined with `runMode` = `Full` reprocesses its whole input on every run. The Data Prep Recipe REST API also lists `Incremental` and `Streaming` run modes (API 57.0), so check which mode the recipe uses before budgeting run time.
+- Clarify the join cardinality. An Inner join where the requirement is "keep every left-side row" drops unmatched rows, and that is the most common cause of unexplained row shrinkage.
+- Confirm the Integration User can read every object and field the recipe extracts. A recipe job fails when the Integration User lacks permission on an extracted object or field.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before opening the recipe canvas. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "For each join, must every row of the primary dataset survive, even with no match?" | Inner, Lookup, LeftOuter, and the other join types keep different rows (gotcha 1) | The join type per Join node, written down with its reason | Row counts that reconcile to the source instead of a silent shortfall found by a stakeholder |
+| "How fresh must the output be, and which other dataflows and recipes already run in this org?" | Recipe and dataflow runs share a 60-run rolling 24-hour limit and a 3-concurrent-recipe cap (gotcha 3) | A schedule frequency that fits the run budget | Scheduled jobs that keep running instead of queuing or being refused at the daily limit |
+| "Which users may see which rows of the output dataset?" | A security predicate set on the Output node applies only when the dataset is first created (gotcha 5) | The predicate or sharing-inheritance decision before the first run | Row-level security in place from day one, not retrofitted by editing the dataset |
+| "Does the Integration User have read access to every object and field this recipe extracts?" | The job fails when the Integration User lacks a permission (gotcha 4) | A field list checked against the Integration User profile | A first run that succeeds instead of a failed job and a permission hunt |
+| "Will this recipe be moved between orgs with Metadata API or a package?" | `WaveRecipe` carries a required `dataflow` ID and wildcard retrieval skips the related dataflow (gotcha 6) | A manifest that names the recipe and its dataflow explicitly | A deployment that brings the whole recipe, not an orphaned definition |
+| "Is any formula copied from a SAQL lens?" | Recipe formulas use the `Sql` or `Legacy` expression type, not SAQL (gotcha 7) | Formulas written for the recipe engine | Formula nodes that validate on save instead of failing at run time |
+
+What a proper configuration adds over "just building the recipe": output row counts you can explain, a schedule that fits the org's run limits, and row-level security that exists before anyone opens the dataset.
 
 ---
 
@@ -52,121 +72,103 @@ Gather this context before working on anything in this domain:
 
 ### Recipe Node Types
 
-A CRM Analytics recipe is a directed acyclic graph of typed nodes on a visual canvas in Data Prep. Every node has exactly one function:
+A Data Prep recipe is a directed graph of typed nodes. In the REST representation each node has an `action` (for example `load`, `filter`, `save`), a `parameters` object, and a `sources` list naming upstream nodes.
 
 | Node | Role |
 |---|---|
 | **Load** | Reads a registered dataset or connected object into the recipe graph. Every recipe starts with at least one Load node. |
-| **Filter** | Applies row-level inclusion/exclusion predicates. Reduces row count without changing schema. |
-| **Join** | Combines two input streams on one or more key fields. Join type controls how unmatched rows are handled — see Join Types below. |
-| **Bucket** | Creates a new categorical dimension column by assigning rows to named buckets based on value ranges or discrete values. Typed by field kind: Measure, Dimension, or Date. |
-| **Formula** | Adds a computed column using the recipe expression language (not SAQL). Supports arithmetic, string, date, and conditional functions. |
-| **Append** | Unions two datasets with compatible schemas (like SQL UNION ALL). Rows from both inputs are preserved. |
-| **Aggregate** | Groups rows and computes aggregations (SUM, COUNT, MIN, MAX, AVG). Reduces row count to one row per group. |
-| **Flatten** | Expands a hierarchical dataset (commonly used with Salesforce role hierarchies) into a flat structure. |
-| **Output** | Writes the result of the preceding node graph to a named CRM Analytics dataset. A recipe must have at least one Output node. |
+| **Filter** | Applies row-level inclusion or exclusion predicates. Reduces row count without changing schema. |
+| **Join** | Combines two input streams on one or more key fields. Join type controls how unmatched rows are handled. |
+| **Bucket** | Creates a new categorical column by assigning rows to named buckets. The API has measure, dimension, and date bucket inputs. |
+| **Formula** | Adds a computed column. The formula parameters declare an expression type of `Sql` or `Legacy`. |
+| **Append** | Unions two inputs with compatible schemas. Rows from both inputs are preserved. |
+| **Aggregate** | Groups rows and computes aggregations. Reduces row count to one row per group. |
+| **Flatten** | Expands a hierarchical dataset (commonly a role hierarchy) into a flat structure. |
+| **Output (save)** | Writes the result to a named CRM Analytics dataset. The save node's dataset `label` is the name users see in Analytics Studio. |
 
 ### Join Types and Row Preservation
 
-The Join node supports six types. Choosing the wrong type is the most frequent cause of silent data loss in recipes:
+The Data Prep Recipe REST API's `JoinParametersInput.joinType` accepts seven values. Choosing the wrong one is the most frequent cause of silent data loss in recipes.
 
 | Join Type | Left Rows | Right Rows | Typical Use Case |
 |---|---|---|---|
-| **Inner** | Matched only | Matched only | Intersection — only rows that exist in both datasets |
-| **LeftOuter** | All | Matched only | Enrich left dataset; unmatched right rows discarded |
-| **RightOuter** | Matched only | All | Enrich right dataset; unmatched left rows discarded |
+| **Inner** | Matched only | Matched only | Intersection: only rows that exist in both inputs |
+| **LeftOuter** | All | Matched only | Enrich the left input; unmatched right rows discarded |
+| **RightOuter** | Matched only | All | Enrich the right input; unmatched left rows discarded |
 | **Outer** | All | All | Full merge; unmatched rows on either side preserved |
-| **Lookup** | All | Matched columns added | Enrich left dataset by looking up right-side columns; preserves every left row |
-| **MultiValueLookup** | All | Multiple matched rows expanded | Left row duplicated for each matching right row |
+| **Lookup** | All | Matched columns added | Enrich the left input with right-side columns; preserves every left row |
+| **MultiValueLookup** | All | Multiple matched values | Left row enriched with every matching right value |
+| **Cross** | Every combination | Every combination | Cartesian product; row count multiplies |
 
-**Lookup vs Inner** is the critical distinction: Lookup preserves all left-side rows and appends matched right-side column values (up to 5 key fields). Inner drops any left-side row that has no match in the right dataset — silently. If the requirement is "show all accounts and add owner details where available," use Lookup, not Inner.
+**Lookup vs Inner** is the critical distinction. Lookup keeps every left-side row and fills right-side columns where a match exists. Inner drops any left-side row with no match. If the requirement is "show all accounts and add owner details where available", use Lookup. UNVERIFIED (2026-10-03): the "up to 5 key fields" limit for Lookup is not in the REST API guide.
 
 ### Bucket Node Configuration
 
-A Bucket node adds a new dimension column by classifying an existing field into labeled groups. The bucket type must match the source field kind:
+A Bucket node adds a new column by classifying an existing field into labeled groups. The bucket type must match the source field kind:
 
-- **Measure bucket** — classifies numeric ranges (e.g., Revenue < 10000 → "SMB", 10000–99999 → "Mid-Market", >= 100000 → "Enterprise"). Ranges are inclusive/exclusive as configured.
-- **Dimension bucket** — classifies discrete string values into groups (e.g., "CA", "NY" → "West"; "TX", "FL" → "South"). Unmatched values fall into a configurable "Other" bucket.
-- **Date bucket** — classifies date fields into calendar periods (e.g., fiscal quarter, calendar year).
+- **Measure bucket** classifies numeric ranges (for example Revenue below 10,000 as "SMB").
+- **Dimension bucket** classifies discrete string values into groups (for example "CA" and "NY" as "West"). Unmatched values fall into a configurable "Other" bucket.
+- **Date bucket** classifies date fields into calendar periods.
 
-The output is always a new string dimension column. The source field remains in the schema unless explicitly removed by a subsequent node.
+The output is a new column. The source field remains in the schema unless a later node removes it.
 
 ### Formula Node Expression Language
 
-Formula nodes use the CRM Analytics recipe expression language, which is syntactically distinct from SAQL. It supports:
+Formula nodes are not SAQL. The REST API's `FormulaParametersInput.expressionType` is `Sql` or `Legacy`, and SQL formula fields declare a result type of `Text`, `Number`, `DateOnly`, `DateTime`, or `Multivalue`. A Formula node placed before an Aggregate node works on row-level data; to compute on a SUM or COUNT, place the Aggregate node first.
 
-- Arithmetic: `+`, `-`, `*`, `/`
-- String functions: `CONCAT()`, `LEFT()`, `RIGHT()`, `TRIM()`, `UPPER()`, `LOWER()`
-- Date functions: `DATE()`, `YEAR()`, `MONTH()`, `DAY()`, `NOW()`
-- Conditional: `IF(condition, true_value, false_value)`, `CASE()`
-- Null handling: `ISNULL()`, `BLANKVALUE()`
-
-Formula results can be typed as Text, Number, or Date. Formulas cannot reference aggregated values — that requires an Aggregate node upstream.
+UNVERIFIED (2026-10-03): the function names this skill previously listed (`CONCAT()`, `LEFT()`, `IF()`, `CASE()`, `ISNULL()`, `BLANKVALUE()`, `DATE()`, `YEAR()`) are not documented in the Data Prep Recipe REST API guide. The function reference lives only on help.salesforce.com, which did not fetch. Validate every expression in the formula editor before relying on it.
 
 ---
 
 ## Common Patterns
 
-### Pattern: Lookup Enrichment — Add Context Columns Without Losing Rows
+### Pattern: Lookup Enrichment Without Losing Rows
 
-**When to use:** You have a primary fact dataset (e.g., Opportunities) and want to add descriptive columns from a secondary dataset (e.g., Account details) without dropping any Opportunity rows that may lack an Account match.
+**When to use:** A primary fact dataset (Opportunities) needs descriptive columns from a secondary dataset (Accounts) without dropping Opportunity rows that lack an Account match.
 
 **How it works:**
 1. Load the primary dataset (Opportunities).
 2. Load the secondary dataset (Accounts).
-3. Add a Join node, set type to **Lookup**.
-4. Configure the join key (e.g., `AccountId` = `Id`).
-5. Select only the right-side columns you need (e.g., `Industry`, `AnnualRevenue`).
+3. Add a Join node with `joinType` = `Lookup`.
+4. Set `leftKeys` to `AccountId` and `rightKeys` to `Id`.
+5. Keep only the right-side columns you need (for example `Industry`, `AnnualRevenue`).
 6. Connect to an Output node.
 
-Unmatched Opportunity rows (where `AccountId` is null or absent in the Account dataset) will appear in the output with null values for the added columns — they are never dropped.
-
-**Why not Inner:** An Inner join silently drops every Opportunity without a matching Account, causing row count shrinkage that is invisible unless you compare input and output counts explicitly.
+Unmatched Opportunity rows appear in the output with null values for the added columns. They are not dropped.
 
 ### Pattern: Tiered Dimension via Measure Bucket
 
-**When to use:** A numeric measure (e.g., Annual Revenue) needs to become a groupable dimension for dashboard filtering or segment analysis.
+**When to use:** A numeric measure (Annual Revenue) needs to become a groupable dimension for dashboard filtering.
 
 **How it works:**
 1. Load the dataset containing the numeric field.
-2. Add a **Bucket** node; select source field type = Measure.
-3. Define ranges and labels:
-   - 0–9,999 → "SMB"
-   - 10,000–99,999 → "Mid-Market"
-   - 100,000+ → "Enterprise"
-4. Name the output column (e.g., `Revenue_Tier`).
+2. Add a Bucket node with source field type Measure.
+3. Define ranges and labels: 0 to 9,999 as "SMB"; 10,000 to 99,999 as "Mid-Market"; 100,000 and above as "Enterprise".
+4. Name the output column (for example `Revenue_Tier`).
 5. Connect downstream to Output or Aggregate.
 
-The new `Revenue_Tier` column appears in the dataset schema as a dimension. It can be used as a grouping field in SAQL queries and dashboard lenses without any changes to the query layer.
+### Pattern: Schedule and Run a Recipe Through the REST API
 
-### Pattern: Recipe Scheduling via Schedule Resource API
+**When to use:** A recipe must refresh on a cadence, or an external scheduler must start it.
 
-**When to use:** You need a recipe to refresh on a defined cadence (hourly, daily, weekly).
+**How it works:** The recipe resource (`GET /wave/recipes/<recipeId>?format=R3`) returns `scheduleAttributes`, but a schedule is created, changed, or removed only through the Schedule resource:
 
-**How it works:** Recipe scheduling is NOT configured inside the recipe definition itself. It is managed through a separate Schedule Resource API call:
+```bash
+# Create or replace the schedule (weekly, Monday and Thursday, 00:45 Los Angeles time)
+curl -X PUT "$INSTANCE/services/data/v67.0/wave/asset/05vB0000000xxxxxxx/schedule" \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"frequency":"weekly","daysOfWeek":["Monday","Thursday"],"time":{"hour":0,"minute":45,"timeZone":"America/Los_Angeles"}}'
 
-```
-POST /services/data/v62.0/wave/recipes/{recipeId}/schedules
-Content-Type: application/json
+# Read the schedule
+curl "$INSTANCE/services/data/v67.0/wave/asset/05vB0000000xxxxxxx/schedule" -H "Authorization: Bearer $TOKEN"
 
-{
-  "scheduleType": "cron",
-  "cronExpression": "0 0 3 * * ?",
-  "timeZone": "America/Los_Angeles"
-}
-```
-
-To retrieve the current schedule:
-```
-GET /services/data/v62.0/wave/recipes/{recipeId}/schedules
+# Run now: the dataflowId is the recipe's targetDataflowId (starts with 02KB), not the recipe Id
+curl -X POST "$INSTANCE/services/data/v67.0/wave/dataflowjobs" \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"dataflowId":"02KB000000xxxxxxxx","command":"start"}'
 ```
 
-To delete a schedule:
-```
-DELETE /services/data/v62.0/wave/recipes/{recipeId}/schedules
-```
-
-The `recipeId` is the `id` field from the recipe resource (`/wave/recipes/{id}`). Schedules can also be managed in the Analytics Studio UI under the recipe's scheduling panel, but the API is required for automation.
+`frequency` takes `hourly`, `weekly`, `monthly`, `monthlyrelative`, or `eventdriven`; there is no cron expression. `DELETE` on the same Schedule URL removes the schedule. The full worked example, including the recipe metadata and manifest, is in `references/metadata-examples.md`.
 
 ---
 
@@ -174,52 +176,56 @@ The `recipeId` is the `id` field from the recipe resource (`/wave/recipes/{id}`)
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Need to enrich left dataset, preserving all left rows | Lookup join | Preserves every left-side row; adds right-side columns where matched |
-| Need only rows present in both datasets | Inner join | Intersection semantics; rows without a match in either dataset are dropped |
-| Need to classify a numeric measure into named tiers | Measure Bucket node | Produces a new categorical dimension column without altering source field |
-| Need to add a computed column using field arithmetic | Formula node | Recipe expression language supports arithmetic, string, date, and conditional functions |
-| Need to combine two datasets with the same schema | Append node | SQL UNION ALL equivalent; all rows from both inputs are preserved |
-| Need to schedule a recipe refresh | Schedule Resource API POST | Schedules are external to the recipe definition; must be set via API or UI scheduling panel |
-| Large input datasets (millions of rows) | Minimize upstream node count; push Filter nodes as early as possible | Recipes reprocess full input on every run; early filtering reduces work for downstream nodes |
+| Enrich the left dataset and keep every left row | Lookup join | Preserves every left-side row; adds right-side columns where matched |
+| Keep only rows present in both datasets | Inner join | Intersection semantics; unmatched rows on either side are dropped |
+| Classify a numeric measure into named tiers | Measure Bucket node | Produces a new column without altering the source field |
+| Add a computed column | Formula node, `Sql` expression type | Recipe formulas are not SAQL |
+| Combine two datasets with the same schema | Append node | All rows from both inputs are preserved |
+| Refresh on a cadence | `PUT /wave/asset/<recipeId>/schedule` | The Schedule resource owns schedules; `scheduleAttributes` on the recipe is read-back only |
+| Run after the Salesforce Local sync finishes | Event-based schedule (`"frequency":"eventdriven"`) | Event-based schedules apply to dataflows and recipes, with at most 5 dependent jobs |
+| Large inputs (millions of rows) | Push Filter nodes as early as possible; check `runMode` | A `Full` run reprocesses the whole input |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Gather requirements** — Identify all input datasets, join keys, cardinality expectations, required output columns, aggregation logic, and refresh schedule. Confirm the org has CRM Analytics enabled and the user has sufficient permissions.
-2. **Design the node graph on paper** — Map out the recipe DAG before opening the canvas: Load nodes → Filter (if row reduction is needed early) → Join → Bucket/Formula → Aggregate (if needed) → Output. Identify join types explicitly for each Join node.
-3. **Validate join type selection** — For every Join node, confirm whether all left-side rows must be preserved. If yes, use Lookup or LeftOuter, not Inner. Document the join type rationale in the recipe description field.
-4. **Build and configure nodes in Data Prep** — Open the recipe canvas in Analytics Studio. Add nodes in the designed order. For Join nodes, configure key fields (up to 5 for Lookup). For Bucket nodes, match the bucket type to the source field kind (Measure, Dimension, or Date). For Formula nodes, write expressions in the recipe expression language, not SAQL.
-5. **Run the recipe and verify row counts** — After the first run, compare input dataset row counts against the output dataset row count. Unexplained shrinkage almost always indicates an Inner join where a Lookup or LeftOuter was needed.
-6. **Configure the schedule** — If a refresh cadence is required, POST to `/wave/recipes/{recipeId}/schedules` with the desired cron expression. Do not look for a schedule field inside the recipe definition — it does not exist there.
-7. **Validate the output dataset** — Confirm that all expected columns are present, bucket labels are correct, formula outputs match expected values on sample rows, and the dataset is accessible in Analytics Studio under the correct app.
+1. **Gather requirements and answer the questions above.** List input datasets, join keys, cardinality, output columns, aggregation logic, row-level security, and refresh cadence. Confirm the user has Edit Dataset Recipes and the Integration User can read every extracted field.
+2. **Design the node graph on paper.** Load, then Filter early, then Join, then Bucket or Formula, then Aggregate if needed, then Output. Write the join type and its reason for every Join node.
+3. **Build the nodes in Data Prep.** For Join nodes set the keys and type. For Bucket nodes match the bucket type to the field kind. For Formula nodes use the recipe expression language and validate in the editor. Set the security predicate on the Output node before the first run.
+4. **Run once and reconcile row counts.** Compare each Load node's input count with the output dataset count. Unexplained shrinkage almost always means an Inner join where Lookup or LeftOuter was intended. Remember that the editor preview runs as the Security User and shows only rows the previewing user can access.
+5. **Schedule through the Schedule resource.** `PUT /wave/asset/<recipeId>/schedule` with a `frequency` body. Check the org's 60-run rolling 24-hour budget first.
+6. **Package and promote.** Retrieve `WaveRecipe` together with its `WaveDataflow` by name (wildcard retrieval omits the dataflow). Deploy, then confirm the schedule in the target org, because schedules are not part of the recipe metadata. See `references/metadata-examples.md`.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] Every Join node has an explicitly documented type — no undocumented default joins in the graph
-- [ ] All joins that must preserve left-side rows use Lookup or LeftOuter, not Inner
-- [ ] Output row count matches expected count (compared against input dataset counts)
-- [ ] Bucket nodes match source field kind (Measure / Dimension / Date)
-- [ ] Formula nodes use recipe expression language syntax, not SAQL
-- [ ] Recipe schedule is configured via Schedule Resource API or Analytics Studio scheduling panel, not embedded in the recipe definition
-- [ ] Recipe has been run at least once and the output dataset is visible in Analytics Studio
+- [ ] Every Join node has an explicitly documented type
+- [ ] Joins that must preserve left-side rows use Lookup or LeftOuter, not Inner
+- [ ] Output row count reconciled against input dataset counts after the first run
+- [ ] Bucket nodes match the source field kind (Measure / Dimension / Date)
+- [ ] Formula nodes validated in the recipe editor; no SAQL functions
+- [ ] Security predicate set on the Output node before the first run, or sharing inheritance decided
+- [ ] Schedule created with `PUT /wave/asset/<recipeId>/schedule` and fits the 60-run daily budget
+- [ ] Integration User can read every extracted object and field
+- [ ] Manifest names both the `WaveRecipe` and its `WaveDataflow`
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The deep versions, with sources, live in `references/gotchas.md`.
 
-1. **Inner join silently drops unmatched rows** — Unlike a Lookup, an Inner join removes any row from the left dataset that has no matching row in the right dataset. There is no warning, no error, and no row count diff displayed on the canvas. The only way to detect this is to compare input and output dataset row counts after a run. Use Lookup when the intent is "enrich, not filter."
-2. **Recipe scheduling is a separate API resource** — There is no `schedule` field inside the recipe definition JSON. Schedules are managed exclusively through the `/wave/recipes/{recipeId}/schedules` endpoint (or the Analytics Studio UI). Attempting to embed scheduling in the recipe body has no effect.
-3. **Formula nodes cannot reference post-aggregate values** — A Formula node placed before an Aggregate node operates on raw row-level data. If a formula needs to reference a SUM or COUNT, the Aggregate node must come first, and the Formula node must be placed downstream of it.
-4. **Recipes do not support native incremental loads** — Every recipe run reprocesses the full input dataset from scratch. There is no built-in delta or watermark mechanism. For large datasets, the full run time and quota cost must be budgeted accordingly. Incremental patterns require custom filtering logic (e.g., a Filter node on a date field combined with an Append node to union with a previously stored output dataset).
+| # | Gotcha | One-line consequence |
+|---|---|---|
+| 1 | Inner join drops unmatched left rows | Output is short and the run still reports success |
+| 2 | Schedules live on `/wave/asset/<id>/schedule` | Cron bodies and `/wave/recipes/<id>/schedules` calls do nothing useful |
+| 3 | 60 runs per rolling 24 hours, 3 concurrent recipe runs | Hourly schedules starve other jobs; at the limit nothing runs |
+| 4 | Integration User permissions gate extraction | The job fails on the first unreadable field |
+| 5 | Output-node security predicate applies at creation only | Later predicate edits in the recipe have no effect |
+| 6 | `WaveRecipe` wildcard retrieval omits the dataflow | A deploy carries an incomplete recipe |
+| 7 | Formula expression type is `Sql` or `Legacy`, not SAQL | Copied lens expressions fail |
+| 8 | Preview runs as the Security User | Preview counts differ from job output counts |
 
 ---
 
@@ -227,13 +233,14 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Recipe node graph design | DAG diagram or written node sequence with join type rationale for each Join node |
-| Schedule Resource API call | POST body for `/wave/recipes/{recipeId}/schedules` with cron expression and timezone |
-| Output dataset schema | List of expected columns, types, and row count estimate post-transformation |
+| Recipe node graph design | Written node sequence with join type rationale for each Join node |
+| Schedule request | `PUT /wave/asset/<recipeId>/schedule` body with `frequency`, days, and time |
+| Output dataset schema | Expected columns, types, row count estimate, and security predicate |
+| Deployment manifest | `package.xml` listing the `WaveRecipe` and its `WaveDataflow` |
 
 ---
 
 ## Related Skills
 
-- `crm-analytics-app-creation` — Use alongside this skill when the recipe is part of a net-new CRM Analytics app setup (app creation, dataset registration, permission assignment)
-- `analytics-dashboard-design` — Use after this skill when the recipe output dataset needs to be wired into dashboard lenses and SAQL queries
+- `admin/crm-analytics-app-creation`: use alongside this skill when the recipe is part of a net-new CRM Analytics app setup
+- `admin/analytics-dashboard-design`: use after this skill when the output dataset feeds dashboard lenses and SAQL queries

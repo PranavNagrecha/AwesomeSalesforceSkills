@@ -30,6 +30,11 @@ The skill pushes teams away from stretching standard reports past their practica
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — platform-fit and scalability framing for analytics decisions
-- Metadata API Developer Guide — deployment and packaging context for analytics and reporting assets
-- Integration Patterns — guidance for cross-system analytics boundary decisions
+Read for this revision (2026-10-03):
+
+- Analytics Platform Setup Guide (Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_admin_guide_setup.pdf. Edition availability; licences and prebuilt permission sets; internal Integration User and Security User; Basic and Advanced setup procedures; user permission table; CRM Analytics Limits (row allocations, dataset limits, recipe and dataflow limits); CRM Analytics Limitations (localization, single currency, field-level security).
+- Analytics Security Implementation Guide (Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_admin_guide_security.pdf. Row-level security with security predicates, sharing inheritance and its backup predicate, editing security on the dataset, `$User` session rule.
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. AnalyticsSettings (`enableInsights`, `canAccessAnalyticsViaAPI`, `enableWaveMulticurrency`, `Analytics.settings` file, manifest example); Wave metadata type names.
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. PermissionSetLicense, PermissionSetLicenseAssign, and UserLicense fields used in the licence inventory queries.
+
+Listed in the original version without links and not re-read: Salesforce Well-Architected Overview; Integration Patterns (cross-system analytics boundary framing).

@@ -93,14 +93,17 @@ For real-time data needs:
 ```
 Current naming (as of Spring '25):
 - Product name: CRM Analytics (or "Salesforce CRM Analytics").
-- Setup path: Setup → CRM Analytics → Settings.
+- Setup path to enable: Setup > Quick Find "Analytics" > Getting Started >
+  Enable CRM Analytics (Analytics Platform Setup Guide, Spring '26).
 - Builder interface: Analytics Studio (accessed via App Launcher).
 - Previous names (for reference only):
   - Tableau CRM (used 2021-2022)
   - Einstein Analytics (used 2017-2021)
   - Wave Analytics (used 2015-2017)
 - API/metadata names may still use "wave" or "analytics" prefixes
-  (e.g., WaveRecipe, AnalyticsDataset).
+  (e.g., WaveRecipe, WaveDataset, WaveDashboard, AnalyticsSettings with
+  enableInsights; corrected from "AnalyticsDataset", which is not a
+  Metadata API type).
 ```
 
 **Detection hint:** If the output uses "Wave Analytics" or navigates to a deprecated Setup path, it is referencing an outdated product era. Search for `Wave` or `Tableau CRM` as the current product name.
@@ -122,8 +125,10 @@ CRM Analytics security is NOT inherited from Salesforce by default:
    Example: 'OwnerId' == "$User.Id" || 'ManagerId' == "$User.Id"
 2. Row-Level Security dataset: a separate dataset mapping users to
    the records they can see, joined at query time.
-3. Salesforce Sharing Inheritance: available for datasets synced via
-   the "Data Sync" feature (not classic dataflows).
+3. Salesforce Sharing Inheritance: set with rowLevelSharingSource in a
+   dataflow or in the recipe output, and always paired with a backup
+   security predicate ('false' blocks users sharing cannot cover).
+   (Corrected: an earlier version said dataflows could not use it.)
 4. App-level sharing: CRM Analytics apps can be shared with specific
    users, roles, or groups — but this controls app access, not row-level data.
 
@@ -131,3 +136,26 @@ Always configure row-level security for datasets containing sensitive data.
 ```
 
 **Detection hint:** If the output creates a dataset without mentioning Security Predicates, row-level security, or sharing, the data may be over-exposed. Search for `Security Predicate` or `row-level security` in the dataset configuration.
+
+---
+
+## Anti-Pattern 6: Scheduling Frequent Refreshes To Make CRM Analytics "Real-Time"
+
+**What the LLM generates:** "Schedule the recipe every 15 minutes so the dashboard stays current."
+
+**Why it happens:** The model treats refresh frequency as free and assumes more runs mean fresher data with no cost.
+
+**Correct pattern:**
+
+```
+CRM Analytics allows 60 dataflow and recipe runs per rolling 24 hours
+(runs under 2 minutes and data sync do not count). At the limit, no
+dataflow, recipe, or data sync job can run at all. Concurrency is 1
+dataflow in a sandbox or Growth production org, 2 with Plus.
+- Budget runs per day across every recipe and dataflow first.
+- If the business needs live numbers, use Reports and Dashboards.
+(Analytics Platform Setup Guide, CRM Analytics Limits)
+```
+
+**Detection hint:** A schedule more frequent than hourly with no run-budget calculation, or "real-time" promised for a dataset-backed dashboard.
+

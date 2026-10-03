@@ -22,7 +22,7 @@ Common mistakes AI coding assistants make when generating or advising on data st
 
 **Why it happens:** LLMs conflate enabling Einstein Discovery stories with automatic narrative injection into dashboards.
 
-**The correct pattern:** The Smart Data Discovery narrative API produces text that must be consumed by custom code (LWC, Visualforce). It does not auto-inject into CRM Analytics dashboards.
+**The correct pattern:** The Einstein Discovery narrative comes from `POST /services/data/vXX.X/smartdatadiscovery/narrative` (API 51.0+), which returns narrative data for a story. Custom code (LWC, Visualforce, an integration) must call it and render the result; nothing in the documentation places it in CRM Analytics dashboards automatically. Do not cite `/wave/smartdatadiscovery/narratives`; that path is not the documented resource.
 
 **Detection hint:** Any claim that enabling Einstein Discovery automatically adds narrative to existing dashboards is incorrect.
 
@@ -61,3 +61,16 @@ Common mistakes AI coding assistants make when generating or advising on data st
 **The correct pattern:** Executive dashboards prioritize headline metrics (Z-pattern, 30-second readability). Manager dashboards include comparison and drill-down. Frontline dashboards prioritize action triggers and compact metric tiles with filter controls. Each role's design follows the Efficiency principle differently.
 
 **Detection hint:** If audience-specific design is not addressed in the storytelling recommendations, the design is likely optimized for one role but not others.
+
+---
+
+## Anti-Pattern 6: Designing One Desktop Layout And Assuming It Works On Phones
+
+**What the LLM generates:** A 12-column Z-pattern layout with no mention of mobile, followed by "executives can open it on their phones."
+
+**Why it happens:** The model treats the dashboard as one canvas, as in slide tools.
+
+**The correct pattern:** A CRM Analytics dashboard holds one or more `gridLayouts`, and the platform picks one by its `selectors` (for example a Mobile layout with `"maxWidth(599)"`). Build a phone layout with its own order: headline text, then one or two numbers, then one chart. Embedded dashboards in mobile browsers are not supported; phones use the CRM Analytics mobile app or Lightning app pages in the Salesforce mobile app. Set `mobileDisabled` where a dashboard should not open on mobile.
+
+**Detection hint:** A storytelling design with a single layout, no `selectors`, and a claim about mobile readability.
+

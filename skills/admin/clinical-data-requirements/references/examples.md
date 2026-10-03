@@ -7,12 +7,17 @@
 **Problem:** The FHIR-Aligned Clinical Data Model org preference was never enabled. The FHIR R4-aligned standard objects (HealthCondition, CareObservation, PatientImmunization, AllergyIntolerance) are not available in the org until this setting is activated.
 
 **Solution:**
-1. Navigate to Setup > FHIR R4 Support Settings in the Health Cloud org.
-2. Enable "FHIR-Aligned Clinical Data Model."
-3. If a patient portal will need access to FHIR clinical data: also enable "FHIR R4 for Experience Cloud."
-4. Verify activation: query `SELECT Id FROM HealthCondition LIMIT 1` in Developer Console — should return 0 rows (not an error).
-5. Assign the FHIR R4 for Experience Cloud permission set to portal users who need to view clinical data.
-6. Document the activation as a prerequisite for all downstream FHIR integration configuration.
+1. Navigate to Setup > FHIR R4 Support Settings in the Health Cloud org, or deploy `IndustriesSettings.enableClinicalDataModel` = `true` (see `metadata-examples.md`).
+2. Enable the FHIR-Aligned Clinical Data Model org pref.
+3. Verify activation with one query per object in scope. Each should return zero rows, not an error:
+
+```sql
+SELECT Id FROM HealthCondition LIMIT 1
+```
+
+4. Do not wait for `CareObservation`, `CodeSet`, `CodeSetBundle`, or `PersonName`; the guide lists them as available without the org pref.
+5. If a patient portal needs clinical data, assign the FHIR R4 for Experience Cloud Sites permission set to the community users who need it. It is a permission set, not an org setting.
+6. Record the activation as a prerequisite for all downstream FHIR integration configuration.
 
 **Why it works:** The FHIR-Aligned Clinical Data Model is an opt-in feature. Enabling it is the first step before any clinical data requirements can be implemented.
 
@@ -46,3 +51,33 @@
 **What goes wrong:** Health Cloud clinical UI components (PatientCard, Timeline) query child objects — PersonName, ContactPointPhone, ContactPointAddress — not Account fields directly. Patients created with demographics in Account fields appear correctly in standard CRM views but with blank data in Health Cloud clinical components. Care coordinators see patients with no name or contact information in the clinical console.
 
 **Correct approach:** FHIR Patient demographics map to child objects in Salesforce. Use PersonName for name data, ContactPointPhone/Email for telecom, and ContactPointAddress for address. Create these as child records linked to the Person Account after the Person Account record itself is created.
+
+---
+
+## Example 3: Mapping One FHIR Condition to `HealthCondition` and `CodeSetBundle`
+
+**Context:** The payer feed in Example 2 sends a Condition with three codings and no free text. The middleware team asks for the target shape.
+
+**Solution:** The mapping specification, expressed as the records the middleware writes in order:
+
+```json
+{
+  "step1_CodeSet": [
+    { "Code": "E11.9", "SourceSystem": "http://hl7.org/fhir/sid/icd-10-cm", "Name": "Type 2 diabetes mellitus without complications" },
+    { "Code": "44054006", "SourceSystem": "http://snomed.info/sct", "Name": "Diabetes mellitus type 2" }
+  ],
+  "step2_CodeSetBundle": {
+    "Name": "Type 2 diabetes mellitus",
+    "CodeSet1Id": "<Id of the ICD-10-CM CodeSet>",
+    "CodeSet2Id": "<Id of the SNOMED CT CodeSet>"
+  },
+  "step3_HealthCondition": {
+    "PatientId": "<Person Account Id>",
+    "ConditionCodeId": "<Id of the CodeSetBundle>",
+    "ConditionStatus": "Active"
+  }
+}
+```
+
+**Why it works:** `coding.code` maps to `CodeSet.Code` (a string) and `coding.system` maps to `CodeSet.SourceSystem` (a string). The bundle holds up to 15 `CodeSet` references, filled in the priority order from Example 2. `condition.code` maps to `HealthCondition.ConditionCodeId`, which is one-to-one in Salesforce, so the bundle must exist before the condition. `HealthCondition.PatientId` and `ConditionStatus` (values `Active`, `Inactive`, `Recurrence`, `Relapse`, `Remission`, `Resolved`) are documented in the guide's HealthCondition field list (`health_cloud_dev_guide L15199-15215`, `L15313`). UNVERIFIED (2026-10-03): the `CodeSet.Name` values shown are illustrative; confirm which `CodeSet` fields are required with a describe call.
+

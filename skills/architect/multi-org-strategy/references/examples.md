@@ -109,14 +109,16 @@ A Salesforce ISV builds a field service scheduling product distributed as a mana
 
 **Context:** A manufacturer (hub org, Unlimited Edition, 900 Salesforce licences) acquires a distributor whose org (spoke, Enterprise Edition, 40 Salesforce licences) has two accepted Salesforce to Salesforce connections publishing Accounts and Opportunities into the hub. The distributor's contracts require its customer data to stay in its own org until the contracts are re-papered, which legal dates to the end of next year.
 
-**Step 1: inventory, run in both orgs.**
+**Step 1: inventory, run in both orgs.** S2S connections (the object is not available where S2S was never enabled):
 
 ```soql
--- S2S connections (fails with "sObject type not supported" where S2S was never enabled)
 SELECT ConnectionName, ConnectionStatus, ConnectionType, ReplicationRole, ResponseDate
 FROM PartnerNetworkConnection
+```
 
--- Records currently shared through each connection
+Records currently shared through each connection:
+
+```soql
 SELECT ConnectionId, COUNT(Id) records
 FROM PartnerNetworkRecordConnection
 WHERE EndDate = null

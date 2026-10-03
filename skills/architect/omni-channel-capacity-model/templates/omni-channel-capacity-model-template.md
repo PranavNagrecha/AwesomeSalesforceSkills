@@ -14,7 +14,7 @@ Record the answers to the Before Starting questions from SKILL.md here.
 
 - **Omni-Channel enabled:** Yes / No
 - **Org edition:** (Enterprise / Unlimited / etc.)
-- **Current capacity mode:** Tab-based / Status-based / Not yet configured
+- **Capacity model per service channel:** Tab-based / Status-based (`ServiceChannel.capacityModel`) / Not yet configured
 - **Service Channels in use:** (list: Case, Chat, Voice, Messaging, Custom)
 - **Agent headcount:** (total agents and breakdown by team/skill)
 - **Known volume peaks:** (seasonal, day-of-week, time-of-day patterns)
@@ -30,11 +30,11 @@ Record the answers to the Before Starting questions from SKILL.md here.
 | (e.g., Standard Agent) | (e.g., 10) | (e.g., Tier 1 Support) |
 | | | |
 
-### Service Channel Weights
+### Routing Configuration Weights (`QueueRoutingConfig.capacityWeight`)
 
-| Service Channel | Weight (units) | Rationale |
+| Routing configuration (work type) | Weight (units) | Rationale |
 |---|---|---|
-| Voice | 10 | Fully occupies agent — no concurrent work |
+| Voice | Equal to the agent's total capacity | The platform requires voice to use the entire capacity weight |
 | Case | 5 | Moderate effort, asynchronous |
 | Chat | 3 | Real-time, agents can handle 2-3 concurrently |
 | Messaging | 3 | Similar effort to chat |
@@ -88,7 +88,7 @@ Which pattern from SKILL.md applies? Why?
 Copy from SKILL.md and tick items as you complete them.
 
 - [ ] Total capacity per Presence Configuration is set and documented
-- [ ] Service Channel weights are configured and reflect channel effort differences
+- [ ] Routing configuration weights are configured and reflect work-type effort differences
 - [ ] Skills matrix has no single-agent bottlenecks (minimum 3 agents per skill)
 - [ ] Presence Statuses cover all real agent working modes
 - [ ] Interruptible flag is set correctly (cases/messaging = interruptible, voice = not interruptible)

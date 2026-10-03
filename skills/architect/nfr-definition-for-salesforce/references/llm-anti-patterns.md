@@ -17,11 +17,12 @@ NFR-003: The system must be secure.
 ```
 NFR-PERF-001: Lightning record page load (p95) < 3 seconds in Full sandbox
                with 200 concurrent users and 5M records on target object.
-NFR-AVAIL-001: Infrastructure availability: 99.9% (Salesforce Trust SLA, platform-owned).
+NFR-AVAIL-001: Infrastructure availability: the contract's figure (platform-owned;
+               no fetched source states 99.9%, see gotchas.md Gotcha 3).
                Application availability: 99.5% during business hours (team-owned),
                RTO = 4 hours, RPO = 1 hour.
-NFR-SEC-001: Field-level encryption active for SSN and DOB fields via Shield
-             Platform Encryption; plaintext not returned by REST API in any context.
+NFR-SEC-001: SSN and DOB fields are in the active Shield Platform Encryption
+             policy, verified in UAT by policy and key-state review (gotchas.md Gotcha 5).
 ```
 
 **Detection hint:** Scan generated NFRs for the words "quickly," "fast," "highly," "secure," "compliant," "reliable" without an associated numeric threshold and measurement method. Flag any such NFR for revision.
@@ -41,7 +42,8 @@ NFR-AVAIL-001: System availability: 99.9% — satisfied by Salesforce Trust SLA.
 **Correct pattern:**
 ```
 Availability must be specified at two levels:
-1. Salesforce infrastructure: 99.9% (Trust SLA — Salesforce-owned, not verifiable by team).
+1. Salesforce infrastructure: the figure in the customer's contract (Salesforce-owned,
+   not verifiable by team). UNVERIFIED (2026-10-03): a published 99.9% SLA was not found.
 2. Application availability: Team-owned. Includes custom Apex, Flows, integrations,
    scheduled jobs. Define RPO and RTO. Define monitoring. Define rollback procedure.
 ```
@@ -115,8 +117,9 @@ Test the performance NFR in a Developer or Developer Pro sandbox before committi
 **Correct pattern:**
 ```
 Performance NFRs must be validated in a Full sandbox with production-equivalent data volume.
-Developer Pro sandboxes have a 200 MB storage limit and do not replicate production record
-distribution. Query performance, index selectivity, and page load times measured in Developer
+Developer sandboxes hold 200 MB and Developer Pro sandboxes 1 GB of data (Tooling API,
+SandboxInfo), and neither replicates production record distribution. (Corrected: an earlier
+version gave Developer Pro as 200 MB.) Query performance, index selectivity, and page load times measured in Developer
 Pro are not representative of production behaviour at scale.
 
 If a Full sandbox is unavailable, the NFR must be marked "unverified — go-live risk" and
@@ -143,3 +146,28 @@ Usability NFRs must include at minimum:
 ```
 
 **Detection hint:** If the NFR register has no rows with "ux," "usability," "layout," "mobile," or "accessibility" in the category or tag column, usability NFRs have been omitted.
+
+---
+
+## Anti-Pattern 7: Stating Integration Throughput Only As Calls Per Day, Proven In A Full Sandbox
+
+**What the LLM generates:**
+```
+NFR-INT-001: The order integration must support 150,000 API calls per day.
+             Verified by load test in the Full sandbox: no limit errors.
+```
+
+**Why it happens:** The daily allocation is the best-known API limit, and a clean load test reads as proof.
+
+**Correct pattern:**
+```
+NFR-INT-001: Order integration
+  Daily volume:  <= 30% of production's 24-hour allocation (edition formula,
+                 not the Full sandbox's flat 5,000,000)
+  Concurrency:   <= 10 concurrent requests lasting 20 s or longer
+                 (production limit: 25; beyond it REQUEST_LIMIT_EXCEEDED)
+  Latency:       p95 < 2 s per request
+  Measured by:   DailyApiRequests from REST /limits, middleware concurrency metrics
+```
+
+**Detection hint:** Flag throughput NFRs with no concurrency or duration term, and any load-test evidence that quotes a Full sandbox's allocation as the ceiling.

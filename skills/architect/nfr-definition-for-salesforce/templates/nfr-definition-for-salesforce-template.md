@@ -45,8 +45,9 @@ Use this template to document non-functional requirements for a Salesforce imple
 | CPU time per sync transaction | 10,000 ms | Apex Governor Limits |
 | Heap size (sync) | 6 MB | Apex Governor Limits |
 | Heap size (async) | 12 MB | Apex Governor Limits |
-| Daily REST API calls (Enterprise, 100 users) | ~1,000,000 | Varies by edition |
-| Bulk API v2 records per job | 100,000,000 | Bulk API docs |
+| Daily inbound API calls (Enterprise, 100 Salesforce licences) | 200,000 (100,000 + 100 x 1,000) | Limits Quick Reference, Total API Request Allocations |
+| Bulk API 2.0 ingest job size | 150 MB of CSV per job (upload at most 100 MB) | Limits Quick Reference, Bulk API 2.0 |
+| Bulk API 2.0 records uploaded per 24 hours | 150,000,000 | Limits Quick Reference, Bulk API 2.0 |
 
 ---
 
@@ -56,7 +57,7 @@ Use this template to document non-functional requirements for a Salesforce imple
 
 | ID | Description | SLA | Source | Notes |
 |---|---|---|---|---|
-| NFR-AVAIL-001 | Salesforce platform uptime | 99.9% | trust.salesforce.com | Covers datacenter, network, core platform; does NOT cover custom code |
+| NFR-AVAIL-001 | Salesforce platform uptime | Contract figure | trust.salesforce.com | Covers datacenter, network, core platform; does NOT cover custom code |
 
 ### Level 2: Application Availability (Team-Owned)
 

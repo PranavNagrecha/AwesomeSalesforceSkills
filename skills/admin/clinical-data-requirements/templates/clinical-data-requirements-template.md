@@ -11,7 +11,7 @@ Use this template when defining clinical data model requirements for Health Clou
 ## Prerequisites
 
 - [ ] FHIR R4 Support Settings enabled in Setup (FHIR-Aligned Clinical Data Model)
-- [ ] FHIR R4 for Experience Cloud enabled (if portal access to clinical data needed)
+- [ ] FHIR R4 for Experience Cloud Sites permission set assigned to community users (if portal access to clinical data needed)
 - [ ] Org provisioning date confirmed (new = Spring '23+; legacy = pre-Spring '23)
 
 ## Source System Clinical Data Inventory
@@ -41,7 +41,7 @@ Use this template when defining clinical data model requirements for Health Clou
 | Legacy Object (HC24__) | Replacement Object | Data Volume | Migration Required? |
 |-----------------------|-------------------|-------------|---------------------|
 | HC24__EhrCondition__c | HealthCondition | | |
-| HC24__EhrMedication__c | PatientMedication | | |
+| HC24__EhrMedicationStatement__c / HC24__EhrMedicationPrescription__c | MedicationStatement / MedicationRequest | | |
 
 ## Middleware Translation Requirements
 

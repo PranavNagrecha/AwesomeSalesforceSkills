@@ -42,6 +42,8 @@ Trigger a new bulk scoring job after activation to re-score existing records
 
 **Detection hint:** Any response that omits the manual activation step after describing model refresh setup is applying this anti-pattern. Flag any mention of "automatic" or "automatically" in the context of model refresh and activation.
 
+UNVERIFIED (2026-10-03): the platform behavior this anti-pattern relies on is documented only on help.salesforce.com, which did not fetch for the 2026-10-03 pass. Test it in a sandbox before stating it to users; see `gotchas.md` gotcha 8.
+
 ---
 
 ## Anti-Pattern 3: Treating the Writeback Field as Editable or Event-Driven
@@ -60,6 +62,8 @@ Writeback field behavior:
 ```
 
 **Detection hint:** Any suggestion to use Flow's Update Records action, a trigger's DML operation, or a validation rule that checks the "current" writeback value as if it is real-time data indicates this anti-pattern.
+
+UNVERIFIED (2026-10-03): the platform behavior this anti-pattern relies on is documented only on help.salesforce.com, which did not fetch for the 2026-10-03 pass. Test it in a sandbox before stating it to users; see `gotchas.md` gotcha 8.
 
 ---
 
@@ -82,6 +86,8 @@ Without this step, the field exists and holds data but is invisible to all users
 ```
 
 **Detection hint:** Any Einstein Discovery deployment walkthrough that does not include a step for "Field-Level Security" or "FLS" for the writeback field is missing this required post-deployment action.
+
+UNVERIFIED (2026-10-03): the platform behavior this anti-pattern relies on is documented only on help.salesforce.com, which did not fetch for the 2026-10-03 pass. Test it in a sandbox before stating it to users; see `gotchas.md` gotcha 8.
 
 ---
 
@@ -125,3 +131,54 @@ Setup > Einstein menus contain:
 ```
 
 **Detection hint:** Any instructions directing an admin to "Setup > Einstein Discovery > Create Story" or similar Setup-only navigation for the story creation wizard indicate this anti-pattern.
+
+UNVERIFIED (2026-10-03): the platform behavior this anti-pattern relies on is documented only on help.salesforce.com, which did not fetch for the 2026-10-03 pass. Test it in a sandbox before stating it to users; see `gotchas.md` gotcha 8.
+
+---
+
+## Anti-Pattern 7: Deploying a Goal File That Lost Its `pushbackField`
+
+**What the LLM generates:** "Retrieve the DiscoveryGoal from your dev sandbox and deploy it to production," with no check of the writeback element.
+
+**Why it happens:** Most metadata deploys are additive or overwrite harmlessly, so the model does not expect a deploy to delete data.
+
+**Correct pattern:** "Removing a pushback field from the goal metadata causes the field to be deleted from the Salesforce object as well." Retrieve from the org with the real writeback configuration, and block any deploy whose goal diff removes `pushbackField`.
+
+**Detection hint:** A promotion plan for `DiscoveryGoal` with no diff review of `pushbackField`.
+
+---
+
+## Anti-Pattern 8: Hand-Authoring Model Metadata
+
+**What the LLM generates:** An edited `.model-meta.xml` that changes `classificationThreshold` or adds model fields, offered as a way to tune a model.
+
+**Why it happens:** The model sees an XML file with readable fields and assumes it is editable configuration.
+
+**Correct pattern:** "Write operations for DiscoveryAIModel objects are generally not supported," and the `UserUpload` source type is not supported in the Metadata API. Tune and retrain in Einstein Discovery, upload external models through Model Manager, and deploy models only as retrieved.
+
+**Detection hint:** Any manual edit to a `DiscoveryAIModel` file.
+
+---
+
+## Anti-Pattern 9: Describing the Algorithm Choice as "Regression or GBM"
+
+**What the LLM generates:** "Einstein Discovery automatically picks between linear regression and gradient boosting."
+
+**Why it happens:** Older material described a two-algorithm choice.
+
+**Correct pattern:** The metadata enumeration `DiscoveryAlgorithmType` lists `Best` (tournament), `Glm`, `Gbm`, `Xgboost`, and `Drf`, and `DiscoveryPredictionType` includes `MulticlassClassification`. State the algorithm recorded on the model, and treat how the wizard chooses it as something to check in the org.
+
+**Detection hint:** A two-algorithm claim, or no mention of multiclass when the outcome has more than two values.
+
+---
+
+## Anti-Pattern 10: Ignoring Segment Order and the Sensitive-Field Flags
+
+**What the LLM generates:** A prediction definition with a catch-all model listed first, or a deployment walkthrough that never mentions fields flagged sensitive or disparate impact.
+
+**Why it happens:** Filter order and fairness flags are not visible in a story summary, and the model does not know the first matching filter wins.
+
+**Correct pattern:** Order deployed models from most specific filter to the unfiltered catch-all, within ten active models. Review every model field with `isSensitive` or `isDisparateImpact` set, and record the decision before scores reach users.
+
+**Detection hint:** An unfiltered model ahead of filtered ones, or no sensitive-field review step.
+

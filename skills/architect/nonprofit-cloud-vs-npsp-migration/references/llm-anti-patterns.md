@@ -97,3 +97,46 @@ recurring donation modifications.
 ```
 
 **Detection hint:** Migration runbook with no entry for "payment processor" or "recurring donation cutover."
+
+---
+
+## Anti-Pattern 6: Loading NPSP Rollup Values As Data In The Target
+
+**What the LLM generates:** "Copy `npo02__TotalOppAmount__c` and the other rollup fields onto the Account in Nonprofit Cloud so donor totals are preserved."
+
+**Why it happens:** Totals look like data, and copying them makes the first report match.
+
+**Correct pattern:**
+
+```
+Rollups are definitions to rebuild, not values to load.
+- NPSP: Customizable Rollups (npsp__Rollup__mdt, npsp__Customizable_Rollup_Settings__c)
+- Nonprofit Cloud: Record Rollup Definitions (RecordAggregationDefinition, API 59.0+;
+  needs the Record Aggregation permission set licence and Record Aggregation Access)
+Rebuild each rollup, let it calculate from migrated GiftTransaction rows, and
+reconcile a donor sample against the NPSP values.
+```
+
+**Detection hint:** A mapping row whose source is a rollup or summary field and whose target is a plain field.
+
+UNVERIFIED (2026-10-03): the field name `npo02__TotalOppAmount__c` is a commonly seen NPSP household rollup used here as an illustration; confirm the installed field names in the source org.
+
+---
+
+## Anti-Pattern 7: Assuming The Migration Or Integration User Can See Fundraising Objects
+
+**What the LLM generates:** A Data Loader or middleware plan that authenticates as the existing integration user and inserts into `GiftTransaction`.
+
+**Why it happens:** Standard objects are assumed to be visible to any user with object permissions.
+
+**Correct pattern:**
+
+```
+Fundraising objects are "available only if the Fundraising Access license is
+enabled and the Fundraising User system permission is assigned to users"
+(NPC Guide, Special Access Rules). Assign both, through a permission set group,
+to the migration user and every integration user (payment processor, email,
+portal) before the pilot load, and test each one.
+```
+
+**Detection hint:** A migration runbook with no step that assigns the Fundraising Access licence or the Fundraising User permission.

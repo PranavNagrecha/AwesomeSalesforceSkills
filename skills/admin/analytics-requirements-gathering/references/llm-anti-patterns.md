@@ -15,7 +15,7 @@ CRM Analytics is required when:
 - External data (Snowflake, S3, BigQuery) must be included
 - Predictive scoring or trend forecasting is needed
 - Row-level security requires custom SAQL predicates
-- Dataset aggregates exceed 2,000 report rows
+- Dataset aggregates exceed what a report can display
 
 Standard Reports and Dashboards are sufficient when:
 - Single-object or simple 2-object report
@@ -24,6 +24,8 @@ Standard Reports and Dashboards are sufficient when:
 ```
 
 **Detection hint:** Answer recommends "custom report type" or "summary report" for a use case that involves external data, 3+ object joins, or complex row-level security.
+
+UNVERIFIED (2026-10-03): the object-count threshold above ("more than 2 objects") is a rule of thumb, not a documented limit; check custom report type limits for the specific case.
 
 ---
 
@@ -101,3 +103,48 @@ Transformation requirements:
 ```
 
 **Detection hint:** Requirements document lists source objects but has no join specifications, computed field definitions, or field rename/normalization requirements.
+
+---
+
+## Anti-Pattern 6: Treating App Sharing as Row-Level Security
+
+**What the LLM generates:** "Share the Analytics app with the Sales Reps group so each rep sees their own pipeline."
+
+**Why it happens:** In standard Salesforce, folder and record sharing blur together in casual training text. In CRM Analytics, app sharing and dataset row-level security are separate layers.
+
+**Correct pattern:**
+
+```
+App share (WaveApplication.shares): who can open the app and its assets
+  accessLevel: View | EditAllContents | Manage
+Row security (dataset predicate or sharing inheritance): which rows each user sees
+  'OwnerId' == "$User.Id"
+A dataset with no row-level security shows every row to everyone who can open it.
+```
+
+**Detection hint:** An audience requirement satisfied only by an app share, with no predicate or sharing-inheritance decision.
+
+---
+
+## Anti-Pattern 7: Planning Refresh Cadence Without the Run Budget
+
+**What the LLM generates:** "Refresh each dataset hourly so dashboards stay current," for six datasets, without counting runs.
+
+**Why it happens:** The model treats refresh frequency as free. CRM Analytics caps dataflow and recipe runs at 60 per rolling 24 hours (runs under two minutes excepted), and at the limit no job runs.
+
+**Correct pattern:** Add a refresh budget to the requirements: each scheduled job, its expected duration, and its frequency, summed against 60. Prefer event-based schedules that run once after the local sync.
+
+**Detection hint:** Several hourly schedules in one requirements document with no run count.
+
+---
+
+## Anti-Pattern 8: Forgetting the Two Internal Users
+
+**What the LLM generates:** A data source matrix and predicate design that never mentions the Integration User or the Security User.
+
+**Why it happens:** These users are internal to CRM Analytics and rarely appear in generic requirements templates.
+
+**Correct pattern:** Check every extracted field against the Integration User (a job fails on an unreadable field). List every custom User field a predicate references so the Security User can be granted read access (otherwise queries error). Never delete either user.
+
+**Detection hint:** Requirements that name custom User fields in predicates, or sensitive source fields, with no access task for the internal users.
+

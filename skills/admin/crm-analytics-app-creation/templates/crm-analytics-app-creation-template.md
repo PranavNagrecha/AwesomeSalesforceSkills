@@ -68,7 +68,7 @@ OR
 - [ ] Non-admin test user sees correct data (not all rows)
 - [ ] Dataset refreshes on schedule
 - [ ] Dashboard filters work correctly
-- [ ] Faceting tested (same-dataset widgets only)
+- [ ] Faceting tested (same-dataset widgets, plus connected data sources or bindings for cross-dataset widgets)
 
 ## Notes
 

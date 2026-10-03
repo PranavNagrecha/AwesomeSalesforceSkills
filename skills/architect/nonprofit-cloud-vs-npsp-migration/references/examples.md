@@ -34,8 +34,8 @@ fundraising:
       - target: GiftCommitmentSchedule        # "the schedule for fulfilling the commitment"
         target_available_from: "59.0"
 
-  - source: <NPSP soft credit records>
-    target: GiftSoftCredit
+  - source: npsp__Partial_Soft_Credit__c      # contact soft credits; npsp__Account_Soft_Credit__c for organizations
+    target: GiftSoftCredit                    # RecipientId (Account), Role (8 restricted values), PartialAmount
     target_available_from: "59.0"
     disposition: convert
     exclude_if: generated_by_recurrence_engine
@@ -55,7 +55,7 @@ program_management:
     target_available_from: "57.0"
     disposition: convert
 
-  - source: <NPSP service delivery records>
+  - source: pmdm__ServiceDelivery__c
     target: BenefitDisbursement
     target_available_from: "57.0"
     disposition: convert
@@ -158,3 +158,99 @@ real one is scheduled.
 
 The sign-off in step 4 is the load-bearing part. A migration team can verify that records arrived; only the fundraising
 lead can tell you that the attribution is right, and attribution is where this particular migration fails.
+
+---
+
+## Example 3: Decision Record, Release Manifest, And Reconciliation Queries For A Phased Migration
+
+**Context:** A community foundation runs NPSP (Enterprise Edition, 120 users) with Recurring Donations, Allocations, Customizable Rollups, and 400,000 Opportunities. Grants are tracked in the Outbound Funds Module. The board approved a move to Nonprofit Cloud in a new Enterprise Edition org.
+
+**The decision record** at `docs/adr/0031-npsp-to-nonprofit-cloud.md`:
+
+```markdown
+# ADR-0031: Migrate fundraising and households from NPSP to Nonprofit Cloud in a new org
+
+## Status
+Accepted (2026-10-03), Programme Board
+
+## Context
+- Namespace inventory (Example 2): 1,140 files reference npsp__, npe01__,
+  npo02__, npe03__, npe4__, npe5__, or outfunds__; 212 are formulas,
+  validation rules, report types, or list views.
+- Target org: Enterprise Edition, API 67.0. Fundraising objects need the
+  Fundraising Access licence and Fundraising User permission. Record
+  Rollup Definitions need the Record Aggregation permission set licence.
+- Program Management is not used; grants are in outfunds__ objects.
+
+## Decision
+1. New org, not in-place: NPSP package objects and Nonprofit Cloud
+   objects never coexist for the same entity.
+2. Households: one Account plus one PartyRelationshipGroup per NPSP
+   household; members as AccountContactRelation; the NPSP primary contact
+   carried as a PartyRoleRelation role.
+3. Gifts: Opportunity (Closed Won) -> GiftTransaction (Status = Paid);
+   npe03__Recurring_Donation__c -> GiftCommitment + GiftCommitmentSchedule;
+   npsp__Allocation__c -> GiftTransactionDesignation against GiftDesignation
+   rows built from npsp__General_Accounting_Unit__c.
+4. Soft credits: npsp__Partial_Soft_Credit__c and npsp__Account_Soft_Credit__c
+   -> GiftSoftCredit, Role mapped by a reviewed table; recurrence-engine
+   soft credits excluded.
+5. Rollups: rebuild the 14 Customizable Rollups as Record Rollup
+   Definitions; no rollup values loaded as data.
+6. Grants: outfunds__Funding_Request__c -> Application Form model
+   (Individual Application gets no future enhancements).
+7. Freeze NPSP data changes for the final extraction weekend.
+
+## Consequences
+### Positive
+- One data model per entity; Nonprofit Cloud features apply from day one.
+### Negative
+- Every NPSP-dependent report, formula, and integration mapping is rebuilt.
+- Payment processor re-points to GiftTransaction and GiftCommitment.
+- Licence cost for Fundraising Access and Record Aggregation.
+
+## Alternatives Considered
+### Stay on NPSP
+Rejected: board decision to adopt Nonprofit Cloud fundraising features.
+### Install Nonprofit Cloud next to NPSP in the same org
+Rejected: two household and gift models, dual writes, conflicting rollups.
+
+## Date
+2026-10-03
+```
+
+**Reconciliation queries, run before sign-off of each entity.** Source org, Closed Won gift totals by year:
+
+```soql
+SELECT CALENDAR_YEAR(CloseDate) giftYear, COUNT(Id) gifts, SUM(Amount) total
+FROM Opportunity
+WHERE IsWon = true
+GROUP BY CALENDAR_YEAR(CloseDate)
+ORDER BY CALENDAR_YEAR(CloseDate)
+```
+
+Target org, the same totals from paid gift transactions:
+
+```soql
+SELECT CALENDAR_YEAR(TransactionDate) giftYear, COUNT(Id) gifts, SUM(OriginalAmount) total
+FROM GiftTransaction
+WHERE Status = 'Paid'
+GROUP BY CALENDAR_YEAR(TransactionDate)
+ORDER BY CALENDAR_YEAR(TransactionDate)
+```
+
+`GiftTransaction.Status` values (Canceled, Failed, Fully Refunded, Paid, Pending, and others) and `OriginalAmount` ("includes donor cover and excludes the transaction fees") come from the NPC Guide. UNVERIFIED (2026-10-03): whether `TransactionDate` is a date or datetime field (the `CALENDAR_YEAR` function accepts both) and whether refunded NPSP gifts should be excluded on both sides must be confirmed against the org before the numbers are compared.
+
+**Release manifest members for the target org** (types from the Metadata API and the NPC Guide; member names are this org's):
+
+| Component | Type | `package.xml` member form |
+|---|---|---|
+| Lifetime giving rollup | `RecordAggregationDefinition` | `<members>Donor_Lifetime_Giving</members><name>RecordAggregationDefinition</name>` |
+| Fundraising user access | `PermissionSetGroup` | `<members>Fundraising_Users</members><name>PermissionSetGroup</name>` |
+| Migration external Id on GiftTransaction | `CustomField` | `<members>GiftTransaction.NPSP_Opportunity_Id__c</members><name>CustomField</name>` |
+| Migration external Id on GiftCommitment | `CustomField` | `<members>GiftCommitment.NPSP_Recurring_Donation_Id__c</members><name>CustomField</name>` |
+
+`RecordAggregationDefinition` (API 59.0+, `.RecordAggregationDefinition` suffix in the `RecordAggregationDefinitions` folder) is from the NPC Guide's Record Rollup Definitions chapter. UNVERIFIED (2026-10-03): that custom external Id fields can be added to `GiftTransaction` and `GiftCommitment` was not confirmed in the NPC Guide; if not, keep the source Id in a load-staging object instead.
+
+**Why it works:** each decision names the exact source and target objects, the licences the target needs, and the reconciliation that proves the conversion, so the board approves a plan whose risks are written down.
+

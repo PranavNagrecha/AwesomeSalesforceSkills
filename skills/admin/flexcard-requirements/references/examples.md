@@ -9,7 +9,7 @@
 **Solution:**
 Requirements document specifies a data source mapping matrix:
 - Patient Name, DOB, MRN: SOQL (Patient/Account object direct fields)
-- LastEncounterDate, EncounterCount: Integration Procedure (`GetPatientSummaryIP`) — aggregated from ClinicalEncounter__c
+- LastEncounterDate, EncounterCount: Integration Procedure (`GetPatientSummaryIP`) — aggregated from ClinicalEncounter records (a standard Health Cloud object)
 - ActiveCarePlans: Integration Procedure (`GetPatientSummaryIP`) — filtered CarePlan list
 - LastCareGapStatus: Integration Procedure (`GetPatientSummaryIP`) — derived field
 
@@ -47,3 +47,52 @@ Build dependency noted: Child FlexCard `OrderLineItemCard` must be activated bef
 **What goes wrong:** The developer cannot build the card without knowing whether the data comes from SOQL, DataRaptor, or Integration Procedure. The developer makes arbitrary choices, often defaulting to SOQL, which fails for aggregated or external API data. Action buttons are added without specifying the action type, leading to Navigation actions being used where OmniScript Launch is required.
 
 **Correct approach:** Use a FlexCard-specific requirements template that specifies: data source type per field, action type per button/trigger, card state conditions, and embedded component build dependencies.
+
+---
+
+## Example 3: The Requirements Package as a Structured Artifact
+
+**Context:** The Patient Summary card from Example 1 will also appear, read-only, on an authenticated patient portal. The developer asks for one file that covers both placements.
+
+**Solution:** Capture the requirements as YAML in the project repository:
+
+```yaml
+card: PatientSummaryCard
+omnistudio_runtime: standard            # OmniAnalytics tracking objects exist only in OmniStudio Standard
+placements:
+  - context: service_console_record_page
+    audience: care_coordinators
+  - context: experience_cloud_authenticated
+    audience: patients                   # read-only; no actions rendered in this state
+data_sources:
+  - fields: [Name, BirthDate, MRN]
+    source: data_mapper
+    name: DM_PatientDemographics
+  - fields: [LastEncounterDate, EncounterCount, ActiveCarePlans, LastCareGapStatus]
+    source: integration_procedure       # multi-object aggregation
+    name: IP_GetPatientSummary
+states:
+  - name: ActivePatient
+    condition: "Status == 'Active'"
+    order: 1
+  - name: InactivePatient
+    condition: "Status != 'Active'"
+    order: 2
+actions:
+  - label: New Encounter
+    type: omniscript_launch
+    target: { type: NewEncounter, subtype: Intake }
+    passes: [PatientId]
+    audiences: [care_coordinators]
+    needs: [read Account, create ClinicalEncounter]
+embedded_components: []
+permissions:
+  care_coordinators: Patient_Summary_Card_Coordinator   # permission set in metadata-examples.md
+  patients: portal sharing on own records; no edit access
+analytics:
+  tracking_group: Patient_Cards          # OmniTrackingGroup, API 60.0
+deployment_rule: "Cards move only through OmniStudio deployment tooling; never edit OmniUiCard records with data tools"
+```
+
+**Why it works:** Every placement has an audience, every field group has a source, and every action names the access it needs, so the developer can build and test each audience without a discovery session. UNVERIFIED (2026-10-03): the `type` and `subtype` keys for an OmniScript launch follow common OmniStudio usage and are not documented in the guides read; match them to the org's Card Designer.
+

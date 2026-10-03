@@ -12,32 +12,33 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 
 ```text
-Set the agent's total capacity to 10 (via Presence Configuration).
-Set the Chat Service Channel weight to 3 units.
+Set the agent's total capacity to 10 (PresenceUserConfig.capacity).
+Set the chat routing configuration's weight to 3 units (QueueRoutingConfig.capacityWeight).
 Result: the agent can handle up to 3 chats (3 x 3 = 9 units) before capacity is exhausted.
 ```
 
-**Detection hint:** Look for capacity values that match a small concurrent item count (1-5) without mention of Service Channel weights.
+**Detection hint:** Look for capacity values that match a small concurrent item count (1-5) without mention of routing configuration weights.
 
 ---
 
 ## Anti-Pattern 2: Recommending Equal Weights for All Channels
 
-**What the LLM generates:** "Set each Service Channel weight to 1 for simplicity."
+**What the LLM generates:** "Set each Service Channel weight to 1 for simplicity." (The weight is actually on the routing configuration; see Anti-Pattern 5.)
 
 **Why it happens:** LLMs default to the simplest configuration. Equal weights are easy to explain but fail to model the reality that a phone call demands full attention while cases are asynchronous.
 
 **Correct pattern:**
 
 ```text
-Service Channel weights should reflect effort:
-  Voice:     10 (fully occupies agent)
+Routing configuration weights should reflect effort:
+  Voice:     equal to the agent's total capacity (the platform requires
+             voice to use the entire capacity weight, or percentage 100)
   Case:       5 (moderate effort, not real-time)
   Chat:       3 (real-time but concurrent)
   Messaging:  3 (similar to chat)
 ```
 
-**Detection hint:** All Service Channel weights set to the same value, especially 1.
+**Detection hint:** All routing configuration weights set to the same value, especially 1.
 
 ---
 
@@ -52,8 +53,11 @@ Service Channel weights should reflect effort:
 ```text
 1. Create skills: Billing, Technical, Sales
 2. Assign primary agents to each skill (minimum 3 per skill)
-3. Create secondary routing configuration with relaxed skill requirements
-4. Set queue timeout (90 seconds) to trigger overflow to secondary routing
+3. Mark nice-to-have skills as Additional Skill and set
+   dropAdditionalSkillsTimeout on the routing configuration, so they drop
+   after the wait and the item goes to the best-matched agent
+4. For required skills, set an overflow assignee (queueOverflowAssignee or
+   userOverflowAssignee) on the routing configuration
 5. Monitor overflow rate and cross-train agents when overflow exceeds 15%
 ```
 
@@ -87,20 +91,21 @@ Non-interruptible channels (cannot be interrupted):
 
 **What the LLM generates:** "Set the agent's capacity to 10 in their user record" or "Configure capacity in the Service Channel settings."
 
-**Why it happens:** LLMs hallucinate where settings live. Agent capacity ceiling is not on the User record or the Service Channel — it is on the Presence Configuration, which is linked to agents via Presence Status assignments.
+**Why it happens:** LLMs hallucinate where settings live. The agent's capacity ceiling is on the Presence Configuration, which is assigned to users or profiles directly (`PresenceUserConfig.assignments`). An earlier version of this file said the Service Channel holds the weight and the Presence Status links agents to a configuration; both were wrong.
 
 **Correct pattern:**
 
 ```text
-Capacity is configured in three places:
-  1. Presence Configuration: sets the total capacity ceiling for the agent
-  2. Service Channel: sets the weight (units consumed) per work item type
-  3. Presence Status: links the agent to a Presence Configuration and controls which channels they receive
+Capacity is configured in four places (Metadata API, Version 67.0):
+  1. PresenceUserConfig: capacity, interruptibleCapacity; assigned to users or profiles
+  2. QueueRoutingConfig: capacityWeight or capacityPercentage per routed work item
+  3. ServiceChannel: capacityModel (TAB_BASED or STATUS_BASED) and isInterruptible
+  4. ServicePresenceStatus: which channels a status receives (no channels = Away)
 
 The agent's User record does not contain capacity settings.
 ```
 
-**Detection hint:** References to setting capacity on "the user record," "the agent profile," or "the Service Channel capacity field."
+**Detection hint:** References to setting capacity on "the user record" or "the agent profile," or to a weight field on the Service Channel.
 
 ---
 
@@ -108,7 +113,7 @@ The agent's User record does not contain capacity settings.
 
 **What the LLM generates:** "Update the Presence Configuration capacity from 10 to 15. The change will take effect immediately for all agents."
 
-**Why it happens:** LLMs assume configuration changes propagate in real time, as they do in most modern SaaS platforms. Salesforce Omni-Channel Presence Configurations only update for an agent when they log out and back in.
+**Why it happens:** LLMs assume configuration changes propagate in real time, as they do in most modern SaaS platforms. Each live presence session records its own `ConfiguredCapacity` on `UserServicePresence`. UNVERIFIED (2026-10-03): the statement that configurations update only after the agent logs out and back in is from Salesforce Help, which does not fetch.
 
 **Correct pattern:**
 
@@ -117,6 +122,29 @@ After updating the Presence Configuration capacity value:
   - Agents currently logged in will continue using the OLD capacity
   - Agents must go Offline and back Online to pick up the new value
   - Schedule changes during shift transitions to minimize disruption
+  - Verify with UserServicePresence (IsCurrentState = true): ConfiguredCapacity
 ```
 
 **Detection hint:** Claims that Presence Configuration changes are "immediate," "real-time," or "instant" without mentioning agent re-login.
+
+---
+
+## Anti-Pattern 7: Reassigning Work By Owner Change And Trusting The Capacity Numbers
+
+**What the LLM generates:** "When an agent is overloaded, have the supervisor change the case owner to another agent; Omni-Channel will account for it."
+
+**Why it happens:** Ownership and Omni-Channel assignment look like the same thing in the console.
+
+**Correct pattern:**
+
+```text
+"A work item consumes agent capacity only if it was first assigned to the agent
+by Omni-Channel using queues or skills" (Object Reference, AgentWork).
+- Reassign through a queue or skill so Omni-Channel creates the AgentWork.
+- For status-based channels, review ServiceChannel.doesCheckCapOnOwnerChange
+  and doesCheckCapOnStatusChange.
+- Report on records owned by agents with no matching open AgentWork.
+```
+
+**Detection hint:** Advice to fix overload by changing `OwnerId` directly, or flows that assign cases to users without a queue.
+

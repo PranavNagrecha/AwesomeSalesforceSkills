@@ -12,6 +12,8 @@ triggers:
   - "different user roles need different views of the same data — need to document audience-specific requirements"
   - "analytics project kickoff needs to capture data source types, transformation needs, and drill-down paths"
   - "team needs to know if standard Reports can serve the need or if CRM Analytics is required"
+  - "write the requirements for a CRM Analytics app before anyone builds a dataset"
+  - "decide who sees which rows in a CRM Analytics dashboard"
 tags:
   - crm-analytics
   - requirements-gathering
@@ -29,16 +31,16 @@ outputs:
   - "Data transformation requirements for dataflow/recipe design"
   - "Decision record: CRM Analytics vs standard Reports"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-03
 runtime_orphan: true
 runtime_orphan_reason: "No run-time agent covers CRM Analytics / Einstein Discovery. This skill was previously listed in audit-router's Mandatory Reads, but no audit-router classifier routes to it and report_dashboard's own scope excludes CRM Analytics migration, so the citation was decorative rather than load-bearing. Removed 2026-08-14 rather than left as a citation an agent never honoured. Re-wire when a CRM Analytics agent exists."
 ---
 
 # Analytics Requirements Gathering
 
-This skill activates when a practitioner needs to gather, document, and validate CRM Analytics requirements before any dataset, dataflow, or dashboard is built. It produces a structured requirements package — data source inventory, audience matrix, transformation requirements, and drill-down specifications — that the analytics developer uses as the authoritative spec.
+This skill activates when a practitioner needs to gather, document, and validate CRM Analytics requirements before any dataset, dataflow, or dashboard is built. It produces a requirements package: data source inventory, audience matrix, transformation requirements, refresh budget, and drill-down specifications. The analytics developer uses it as the authoritative spec.
 
 ---
 
@@ -46,10 +48,27 @@ This skill activates when a practitioner needs to gather, document, and validate
 
 Gather this context before working on anything in this domain:
 
-- The first question to answer: Do stakeholders need CRM Analytics or standard Reports and Dashboards? CRM Analytics is appropriate for cross-object aggregation, predictive insights, and multi-audience views. For simple single-object reports with no cross-object joins, standard Reports are the correct (and license-free) choice.
-- CRM Analytics requires Salesforce CRM Analytics Growth or Plus license. Confirm the org has the required license before committing to CRM Analytics.
-- The most common wrong assumption: practitioners assume synced Salesforce objects are immediately usable as CRM Analytics data sources without a dataset step. Every data source (Salesforce object sync, external file, Data Cloud Direct) requires a dataflow or recipe to create a dataset before it can be queried.
-- Requirements must capture data source type (Salesforce object sync vs external connector vs Data Cloud direct vs CSV/External Data API) — this determines whether a recipe or a dataflow runs the transformation.
+- Decide first whether stakeholders need CRM Analytics or standard Reports and Dashboards. CRM Analytics fits cross-object aggregation, external data, predictive insight, and multi-audience row-level security. For single-object reporting with no external data, standard Reports are the cheaper choice.
+- Confirm the org's CRM Analytics platform license. The Analytics Platform Setup Guide states several limits per license (for example, concurrent dataflow runs differ between CRM Analytics Plus and CRM Analytics Growth), so the license shapes the refresh plan, not only the price.
+- Synced Salesforce objects land as connected objects. The CRM Analytics REST API guide states that connected objects "can't be visualized directly"; a recipe or dataflow must build a dataset from them.
+- Capture the source type of every input (Salesforce local sync, external connection, Data Cloud, CSV upload). The type decides the extraction path, the limits that apply, and whether a recipe or dataflow is needed.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before anyone designs a dataset. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which questions must the analytics answer, and could a standard report answer them?" | CRM Analytics costs licenses and build effort; some needs fit Reports | A documented platform decision with its reason | No dashboard built on a license the need did not justify |
+| "Who may see which rows, and is that the same as their Salesforce record access?" | A dataset without row-level security shows every row to anyone with dataset access (gotcha 3) | An audience matrix with a predicate or sharing-inheritance choice per role | Row-level security designed before the first dataset exists, not retrofitted |
+| "How fresh must each source be, and what other dataflows and recipes already run?" | Dataflow and recipe runs share a 60-run rolling 24-hour limit (gotcha 5) | A refresh cadence per source that fits the run budget | Schedules that keep running instead of being refused at the daily limit |
+| "Which exact fields does each source need, including fields that hold sensitive data?" | The Integration User extracts data; a job fails on fields it cannot read (gotcha 2) | A field list checked against the Integration User's access | A first run that succeeds, and sensitive fields excluded on purpose |
+| "Do predicates need custom User fields such as region or territory?" | The Security User must be able to read every User field a predicate references (gotcha 6) | The User fields named in the requirement | Predicates that query without errors on day one |
+| "Is any source outside this Salesforce org (another org, a warehouse, Data Cloud)?" | External and output connections count against org limits differently from the local connection (gotcha 7) | A source-type column in the data source matrix | A refresh plan that does not surprise the integration team |
+
+What a proper requirements package adds over "just building a dashboard": a platform decision that can be defended, a row-level security model per audience, and a refresh plan that fits the org's run limits.
 
 ---
 
@@ -57,35 +76,36 @@ Gather this context before working on anything in this domain:
 
 ### Data Source Types
 
-CRM Analytics has four distinct data source types with different setup requirements:
+| Source type | Setup | Grounding |
+|---|---|---|
+| Salesforce local sync | Data sync loads source objects as connected objects; a recipe or dataflow builds the dataset | REST guide: connected objects "can't be visualized directly" |
+| External connection | Connector and credentials; data synced as connected objects, then prepared by a recipe | REST guide, Replicated Dataset resources |
+| Data Cloud | UNVERIFIED (2026-10-03): direct query of Data Cloud objects without a dataset, and its SAQL limits, are help-only claims not re-read in this pass | None in fetched guides |
+| CSV upload | Creates a dataset directly; upload with metadata for row-level security | Security guide: predicate in the external data metadata file |
 
-| Source type | Setup |
-|---|---|
-| Salesforce object sync | Direct connection to Salesforce standard and custom objects; configured in Data Manager; requires a dataflow or recipe to create a dataset |
-| External connector | Snowflake, AWS S3, Google BigQuery, etc.; requires Named Credential and Connector setup; data pulled via recipe |
-| Data Cloud Direct | Real-time query of Data Cloud Data Model Objects (DMOs) without dataset creation; available in Spring '25+ for specific query patterns; does not support all SAQL operations |
-| CSV/External Data API | Static file upload; creates a dataset directly; requires manual or API-driven refresh |
-
-Requirements must specify which type each data source is — the implementation path differs significantly.
+Requirements must name the type of every source. The implementation path differs per type.
 
 ### Audience-Specific Views
 
-CRM Analytics supports multiple access patterns for different audiences:
-- **Sharing inheritance** — Row-level security inherited from Salesforce record sharing
-- **Predicate-based row-level security** — Custom SAQL predicates filtering data to the viewing user's role or territory
-- **Separate dashboards per audience** — Different dashboard designs for different roles (e.g., VP dashboard vs rep dashboard)
+CRM Analytics separates two access layers, and requirements must state both:
 
-Requirements must document which rows each audience can see and whether they need different visualizations or just different filtered views of the same data.
+| Layer | What it controls | How it is configured |
+|---|---|---|
+| App sharing | Who can open the app and its dashboards and datasets | `WaveApplication` shares with View, EditAllContents, or Manage access to users, groups, or roles |
+| Row-level security | Which rows each user sees in a dataset | A security predicate on the dataset, or sharing inheritance from Salesforce objects |
+
+Sharing inheritance increases sync, job, and query time, and the more complex the sharing settings, the larger the impact (Analytics Security Implementation Guide).
 
 ### Transformation Requirements
 
-Raw Salesforce object data often requires transformation before it is useful in CRM Analytics:
-- Field remapping and renaming for consistent naming across datasets
-- Computed fields (revenue tiers, fiscal period labels, region groupings)
-- Dataset joins (Account + Opportunity joined dataset)
-- Date dimension augmentation (fiscal year/quarter derived from CloseDate)
+Raw object data usually needs work before it is useful:
 
-Requirements must specify each transformation explicitly — the developer cannot infer them from field names alone.
+- field renames for consistent naming across datasets
+- computed fields (revenue tiers, fiscal period labels, region groupings)
+- dataset joins, with the join type stated (keep every primary row, or only matches)
+- date dimension derivations (fiscal year and quarter from `CloseDate`)
+
+Requirements must specify each transformation. The developer cannot infer them from field names.
 
 ---
 
@@ -93,25 +113,25 @@ Requirements must specify each transformation explicitly — the developer canno
 
 ### Pattern: Data Source Mapping Matrix
 
-**When to use:** At the start of every CRM Analytics requirements engagement — before any dataset or recipe is designed.
+**When to use:** At the start of every CRM Analytics requirements engagement.
 
 **How it works:**
-1. List all data sources stakeholders need in the analytics
-2. For each source: identify the type (Salesforce object / external connector / Data Cloud / CSV), the connection mechanism, and the refresh frequency required
-3. For Salesforce objects: list all fields needed (not just the objects) — unnecessary fields increase dataset size and dataflow runtime
-4. For external connectors: confirm Named Credential and connector setup exists or is in scope
-
-**Why not the alternative:** Leaving data source type unspecified causes the developer to choose the connection mechanism arbitrarily, which leads to wrong refresh cadence or missing incremental update configuration.
+1. List every data source the analytics needs.
+2. For each source record the type, the connection, the fields needed, and the refresh cadence.
+3. For Salesforce objects list fields, not just objects; extra fields lengthen sync and recipe runs.
+4. For external sources confirm the connector and credentials exist or are in scope.
 
 ### Pattern: Audience Matrix
 
-**When to use:** When more than one user role will access the analytics and they should see different data or layouts.
+**When to use:** More than one role will use the analytics and they should see different rows or layouts.
 
 **How it works:**
-1. List all user roles/personas
-2. For each role: document what data rows they can see (all data / own territory / direct reports / etc.)
-3. For each role: document whether they need a different dashboard layout or just a filtered view of a shared dashboard
-4. Specify the row-level security mechanism: sharing inheritance, SAQL predicate, or separate org-wide defaults
+1. List every role or persona.
+2. For each role record which rows they may see (own records, team, territory, all).
+3. Record whether they need a different dashboard layout or the same dashboard filtered.
+4. Name the mechanism per role: security predicate, sharing inheritance, or app sharing only.
+
+The worked artifact, an audience matrix turned into deployable app sharing and a dataset predicate, is in `references/metadata-examples.md`.
 
 ---
 
@@ -119,56 +139,54 @@ Requirements must specify each transformation explicitly — the developer canno
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Single-object reporting with filters and grouping | Standard Reports and Dashboards | No CRM Analytics license required; covers single-object use cases natively |
-| Cross-object aggregation (Opp + Account + Activity) | CRM Analytics | Standard Reports cannot join three or more objects efficiently |
-| Predictive scoring or trend analysis | CRM Analytics with Einstein Discovery | Predictive capabilities require CRM Analytics license |
-| Data from external databases (Snowflake, BigQuery) | CRM Analytics external connector | External data cannot feed standard Reports |
-| Real-time Data Cloud data | Data Cloud Direct connection in CRM Analytics | Spring '25+ feature; check if applicable query patterns are supported |
-| Different views for VP vs individual rep | CRM Analytics with audience-specific predicate or separate dashboards | Standard Dashboards have limited row-level security |
+| Single-object reporting with filters and grouping | Standard Reports and Dashboards | No CRM Analytics license required |
+| Cross-object aggregation (Opportunity, Account, Activity) | CRM Analytics | Recipes join datasets and persist the result |
+| Predictive scoring or trend analysis | CRM Analytics with Einstein Discovery | Predictive features need the CRM Analytics license |
+| Data from an external warehouse | CRM Analytics external connection | External data cannot feed standard Reports |
+| Different rows for VP and individual rep | Security predicate or sharing inheritance on the dataset | App sharing alone controls access to the app, not rows |
+| Frequent refresh on many sources | Plan the run budget first | 60 dataflow and recipe runs per rolling 24 hours, shared |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Qualify the platform decision.**
-   - Determine whether CRM Analytics is required or if standard Reports can serve the need — document this decision with the rationale.
-   - Confirm CRM Analytics license availability in the org before proceeding.
-2. **List all reporting questions** stakeholders need the analytics to answer — these drive the data model.
-3. **Build the data source matrix.**
-   - For each reporting question: identify the data source type (Salesforce object sync / external connector / Data Cloud / CSV) and document it in the matrix.
-   - For each data source: list the specific fields needed (not just the object) — unnecessary fields increase dataflow runtime.
-4. **Document transformation requirements:** joins needed, computed fields, date dimension derivations, and field renames for consistency.
-5. **Define audience and navigation.**
-   - Build the audience matrix: list all user roles, what rows each can see, and whether they need different layouts.
-   - Specify drill-down paths: for each summary visualization, document what level of detail users should be able to drill into.
-6. **Review with stakeholders and the developer** to confirm the requirements are complete and buildable before dataset design begins.
+1. **Qualify the platform decision.** Decide CRM Analytics or standard Reports, write the reason down, and confirm the CRM Analytics license.
+2. **List the reporting questions.** Every dataset and dashboard must trace to a question.
+3. **Build the data source matrix.** For each question identify the source, its type, the exact fields, and the refresh cadence. Check the fields against the Integration User's access.
+4. **Document transformations.** Joins with their type, computed fields, date derivations, and renames.
+5. **Build the audience matrix.** Roles, the rows each may see, the predicate or sharing-inheritance choice, and any custom User fields the predicates need.
+6. **Budget the refreshes.** Count every scheduled dataflow and recipe that runs longer than two minutes against the 60-run rolling 24-hour limit.
+7. **Review with stakeholders and the developer.** Confirm the package is complete and buildable, then hand off with `references/metadata-examples.md` as the configuration target.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
 - [ ] CRM Analytics vs standard Reports decision documented with rationale
 - [ ] CRM Analytics license confirmed
-- [ ] All data sources identified with type (object sync / external / Data Cloud / CSV)
-- [ ] Field-level requirements documented for each data source (not just object names)
-- [ ] Transformation requirements specified (joins, computed fields, date dimensions)
-- [ ] Audience matrix complete with row-level security specification
+- [ ] Every data source has a type (local sync / external / Data Cloud / CSV)
+- [ ] Field-level requirements per source, checked against the Integration User
+- [ ] Transformation requirements specified (joins with type, computed fields, date dimensions)
+- [ ] Audience matrix complete with a row-level security mechanism per role
+- [ ] Custom User fields used in predicates listed for the Security User
+- [ ] Refresh cadence per source fits the 60-run daily budget
 - [ ] Drill-down paths documented for each summary visualization
-- [ ] Refresh cadence specified for each data source
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The deep versions, with sources, live in `references/gotchas.md`.
 
-1. **Synced objects are not immediately usable — a dataset step is required** — Enabling Salesforce object sync in CRM Analytics Data Manager does not create a queryable dataset. The sync brings data into the analytics storage layer, but a dataflow or recipe must run to create a dataset from the synced object. Requirements that say "use the Opportunity object" without specifying the dataset creation step leave a gap in the developer's understanding.
-2. **Data Cloud Direct query does not support all SAQL operations** — Spring '25+ Data Cloud Direct connection allows real-time queries of Data Cloud DMOs without a dataset, but not all SAQL operations are supported (no recipe transforms, limited GROUP BY patterns). Requirements that specify Data Cloud Direct must confirm that the required query patterns are supported.
-3. **External connector data does not support incremental refresh by default** — External connector data sources pull full datasets on each recipe run unless incremental refresh is explicitly configured. Large external tables (millions of rows) run slowly with full refreshes. Requirements must specify whether incremental refresh is needed and whether the external source supports a reliable watermark field.
+| # | Gotcha | One-line consequence |
+|---|---|---|
+| 1 | Connected objects can't be visualized directly | A requirement that stops at "sync Opportunity" has no dataset |
+| 2 | The Integration User decides what can be extracted | Jobs fail on unreadable fields |
+| 3 | No predicate means every row for everyone with access | A shared dashboard leaks rows |
+| 4 | Sharing inheritance costs job and query time | Heavy sharing slows every refresh |
+| 5 | 60 dataflow and recipe runs per rolling 24 hours | Aggressive cadences block other jobs |
+| 6 | The Security User must read predicate User fields | Queries error when a custom User field is unreadable |
+| 7 | External and output connections count against org limits | Integration budgets are hit unexpectedly |
 
 ---
 
@@ -176,15 +194,17 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| CRM Analytics requirements document | Data source inventory, transformation needs, audience matrix, drill-down paths |
-| Data source mapping matrix | Per-source table of type, connection, fields needed, refresh cadence |
-| Audience matrix | User roles mapped to row-level security rules and dashboard view requirements |
-| CRM Analytics vs Reports decision record | Documented decision with rationale and license confirmation |
+| CRM Analytics requirements document | Questions, data source inventory, transformations, audience matrix, drill-down paths |
+| Data source mapping matrix | Per-source type, connection, fields, refresh cadence |
+| Audience matrix | Roles mapped to app sharing and row-level security |
+| Refresh budget | Scheduled jobs counted against the 60-run daily limit |
+| CRM Analytics vs Reports decision record | Decision with rationale and license confirmation |
 
 ---
 
 ## Related Skills
 
-- `admin/analytics-kpi-definition` — use after requirements gathering to define KPI formulas and targets before build
-- `admin/saql-query-development` — downstream implementation skill using requirements from this document
-- `admin/requirements-gathering-for-sf` — general Salesforce requirements gathering companion skill
+- `admin/analytics-kpi-definition`: define KPI formulas and targets after requirements are gathered
+- `admin/saql-query-development`: downstream implementation using this document
+- `admin/requirements-gathering-for-sf`: general Salesforce requirements gathering companion
+- `admin/analytics-recipe-design`: turns the transformation requirements into a recipe

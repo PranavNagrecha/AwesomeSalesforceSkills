@@ -40,7 +40,9 @@ Step 4: When the rep opens the wizard in Enhanced mode, the Industry Vertical qu
 
 Step 5: Test by selecting only "Manufacturing" — confirm the consulting package does not appear. Select "Healthcare" alone — confirm it appears. Select "Financial Services" alone — confirm it still appears.
 
-**Why it works:** Enhanced search type changes the CPQ filter from a single-value equality match to an OR-match across the rep's selected values for each question. A product eligible for any of the selected values is included in results, which is the correct mechanism for products with multi-dimensional eligibility requirements.
+**Why it works (as reported):** Enhanced search is described here as changing the filter from a single-value match to an OR-match across the rep's selected values.
+
+UNVERIFIED (2026-10-03): this multi-select behavior, and the `SBQQ__SearchType__c` field, are help-only claims carried from earlier versions of this skill. The CPQ Plugins Developer Guide uses "Enhanced" for a different thing: the product search plugin mode in which `isSuggestCustom` returns false and CPQ appends the WHERE fragment returned by `getAdditionalSuggestFilters`. Test multi-select behavior in a sandbox before promising it to the business, and if it is not available, express multi-value eligibility in the plugin's appended filter (for example `AND Product2.Industry_Vertical__c INCLUDES ('Healthcare')`). CPQ runs the returned fragment itself, so bind variables are not available there: build it only from values checked against the picklist's allowed values, and escape them with `String.escapeSingleQuotes`.
 
 ---
 
@@ -51,3 +53,32 @@ Step 5: Test by selecting only "Manufacturing" — confirm the consulting packag
 **What goes wrong:** OmniStudio product selection flows operate outside the CPQ quote calculation engine. Products injected into a CPQ quote via OmniScript do not pass through CPQ's configurator, price waterfall, or product rule evaluation. Quote line items end up with missing pricing data, skipped bundle configuration, and no CPQ-managed document. The experience appears to work in the UI but produces structurally incomplete CPQ quotes that fail downstream in approval, contracting, and revenue recognition.
 
 **Correct approach:** For CPQ-managed quotes, always use the native CPQ Guided Selling mechanism — `SBQQ__QuoteProcess__c` and `SBQQ__ProcessInput__c` records. OmniStudio product selection is a legitimate tool for non-CPQ quoting contexts (e.g., OmniStudio-native order management), not for adding products to SBQQ-managed quotes.
+
+---
+
+## Example 3: Diagnosing an Unfiltered Wizard in Two Queries
+
+**Context:** After a release, reps report that the "Deployment Model" question returns the whole catalog.
+
+**Problem:** The release renamed the Product2 picklist field to `Deployment_Model_v2__c`, but the Process Input mirror field was not renamed, and the question still points at the old name.
+
+**Solution:** Compare the field on both objects with `FieldDefinition` (no Tooling API needed):
+
+```sql
+SELECT EntityDefinition.QualifiedApiName, QualifiedApiName, DataType
+FROM FieldDefinition
+WHERE EntityDefinition.QualifiedApiName IN ('Product2', 'SBQQ__ProcessInput__c')
+  AND QualifiedApiName LIKE 'Deployment_Model%'
+```
+
+If the two objects return different API names, the mirror is broken. Then confirm products carry values, because null values never match an equals filter:
+
+```sql
+SELECT Deployment_Model_v2__c, COUNT(Id)
+FROM Product2
+WHERE IsActive = true
+GROUP BY Deployment_Model_v2__c
+```
+
+**Why it works:** The first query proves whether the same API name exists on both objects, which is the first thing to check for unfiltered results (`gotchas.md` gotcha 2). The second shows how many active products have no value and therefore never appear for that question (gotcha 8). Redeploy the mirror field from `metadata-examples.md` with the new name, and update the question to point at it.
+

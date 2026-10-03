@@ -90,7 +90,9 @@ Node: Formula
     )
 ```
 
-**Why it works:** The recipe expression language supports `MONTH()`, `YEAR()`, `CONCAT()`, `TEXT()`, and nested `IF()`. This is syntactically distinct from SAQL — SAQL date functions like `toDate()` or `dateValue()` are not available in the formula node editor and will produce a parse error if attempted.
+**Why it works:** The formula is written for the recipe engine, not for SAQL. The Data Prep Recipe REST API declares a formula's `expressionType` as `Sql` or `Legacy`, so SAQL functions such as `toDate()` or `dateValue()` are the wrong language for this node.
+
+UNVERIFIED (2026-10-03): the function names used above (`CONCAT()`, `IF()`, `MONTH()`, `YEAR()`, `TEXT()`) are not documented in the REST API guide; the recipe function reference is published only on help.salesforce.com, which did not fetch for this pass. Paste the expression into the formula editor and confirm it validates, and rewrite it with the editor's suggested functions if it does not. A `Sql` expression may need `case when ... then ... end` syntax instead of nested `IF()`.
 
 ---
 
@@ -101,3 +103,25 @@ Node: Formula
 **What goes wrong:** Any left-side row without a match in the right dataset is silently dropped from the output. Run logs show a successful completion with no errors. The row count discrepancy is only visible by comparing input and output dataset counts. On large datasets this can mean tens of thousands of records vanishing without any alert.
 
 **Correct approach:** Explicitly choose the join type for every Join node. Default to Lookup when the intent is enrichment (adding columns from a secondary dataset to a primary dataset). Use Inner only when the business requirement is genuinely "return only records that exist in both datasets." Document the join type rationale in the recipe description field so the intent is auditable.
+
+---
+
+## Example 4: Event-Based Schedule After the Local Sync
+
+**Context:** The enrichment recipe from Example 1 reads connected objects for Opportunity and Account. The sales team wants fresh data each morning, and the org already runs six dataflows longer than two minutes.
+
+**Problem:** An hourly schedule would add 24 counted runs a day to a 60-run rolling budget that six dataflows already share, and it would often start before the local sync finished.
+
+**Solution:** Replace the time-based schedule with an event-based one, so the recipe runs once after the Salesforce Local connection syncs.
+
+```json
+{
+  "frequency": "eventdriven",
+  "triggerRule": "$ALL_SALESFORCE_OBJECTS"
+}
+```
+
+Send it with `PUT /services/data/v67.0/wave/asset/<recipeId>/schedule`. Read it back with `GET` on the same URL.
+
+**Why it works:** Event-based schedules apply to dataflows and recipes and run after the Salesforce Local connection syncs (CRM Analytics REST API Developer Guide, Schedule Dataflows, Recipes, and Data Syncs). A recipe that runs once per sync uses one counted run a day instead of up to 24. An event-based schedule can have at most 5 dependent jobs (Analytics Platform Setup Guide, Recipe and Dataflow Limits), so count the jobs already chained to the sync before adding this one.
+

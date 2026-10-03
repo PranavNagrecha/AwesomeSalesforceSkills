@@ -20,6 +20,8 @@ Without step 2, guided selling silently returns all products regardless of rep a
 
 **Detection hint:** Look for any ProcessInput setup instruction that references a custom `__c` field in `SBQQ__SearchField__c` without a corresponding step to create that same field on `SBQQ__ProcessInput__c`. Flag it.
 
+UNVERIFIED (2026-10-03): the mirror-field mechanism and the `SBQQ__SearchField__c` API name are documented only on help.salesforce.com; confirm the field name in Object Manager.
+
 ---
 
 ## Anti-Pattern 2: Recommending OmniStudio Flows for Guided Product Selection on CPQ Quotes
@@ -59,6 +61,8 @@ SBQQ__SearchField__c must be set to the exact API name of a flat field on Produc
 
 **Detection hint:** Any `SBQQ__SearchField__c` value containing a dot (`.`), a space, or a label-style name should be flagged.
 
+UNVERIFIED (2026-10-03): the field API name is help-only. The plugin guide does confirm that answers reach plugins keyed by Product2 API name.
+
 ---
 
 ## Anti-Pattern 4: Setting SBQQ__GuidedProductSelection__c to False on the Quote Process
@@ -80,27 +84,74 @@ Without this:
 
 **Detection hint:** Any instruction to create a `SBQQ__QuoteProcess__c` record for guided selling that does not explicitly set `SBQQ__GuidedProductSelection__c = true` is incomplete.
 
+UNVERIFIED (2026-10-03): the activation field's API name is help-only; confirm it in Object Manager before scripting record creation.
+
 ---
 
-## Anti-Pattern 5: Using Custom Apex (ProductSearchPlugin) for Scenarios That Standard Search Can Handle
+## Anti-Pattern 5: Reaching for Plugin Code Before Configuration Is Exhausted
 
-**What the LLM generates:** An Apex class implementing `SBQQ.ProductSearchPlugin` for a requirement that is straightforwardly a standard classification filter — for example, filtering products by industry and service tier using equals operators on two custom fields.
+**What the LLM generates:** An `SBQQ.ProductSearchPlugin` class for a requirement that is plain classification filtering ("filter by product line and region").
 
-**Why it happens:** LLMs default to code solutions when the question involves product filtering logic. "ProductSearchPlugin" appears in CPQ developer documentation and looks like the primary extension point. LLMs overfit on it as the solution for any non-trivial filtering requirement.
+**Why it happens:** "ProductSearchPlugin" is the most visible extension point in CPQ developer material, so the model treats it as the default answer for any filtering requirement.
 
 **Correct pattern:**
-```
-Decision order for CPQ Guided Selling search type:
-1. Standard — one answer per question, equality/contains filtering. Use for most cases.
-2. Enhanced — multi-select per question (OR matching). Use when a product spans multiple values.
-3. Custom (Apex ProductSearchPlugin) — ONLY when:
-   - Logic cannot be expressed with Standard or Enhanced operators
-   - An external data source must be called during product search
-   - Scoring or ranking beyond simple inclusion/exclusion is required
 
-Custom search adds: Apex development, test coverage requirements, managed package
-upgrade risk, and governor limit exposure. Do not recommend it when Standard or
-Enhanced can express the requirement.
+```
+1. Questions mapped to Product2 fields (no code). Use for most cases.
+2. Plugin in Enhanced mode (isSuggestCustom = false): CPQ keeps its query,
+   getAdditionalSuggestFilters appends a WHERE fragment for a rule the rep does not control.
+3. Plugin in Custom mode (isSuggestCustom = true): suggest() builds and runs the whole
+   query and returns List<PricebookEntry>. Only for external data, ranking, or logic
+   the appended fragment cannot express.
+The CPQ package has no new feature development; keep custom code small.
 ```
 
-**Detection hint:** Any response recommending Apex and `SBQQ.ProductSearchPlugin` for a requirement that only describes classification-based filtering (e.g., "filter by product line and region") without external system lookups or scoring should be questioned.
+**Detection hint:** Plugin code proposed for a requirement that only lists classification fields and equals filters.
+
+---
+
+## Anti-Pattern 6: Inventing the Plugin Signature
+
+**What the LLM generates:** `global List<Id> search(SBQQ.ProductSearchContext ctx)` presented as the guided selling contract.
+
+**Why it happens:** The model composes a plausible "context object" API. An earlier version of this skill did the same.
+
+**Correct pattern:** The guided selling methods are `isInputHidden(SObject quote, String fieldName)`, `getInputDefaultValue(SObject quote, String fieldName)`, `isSuggestCustom(SObject quote, Map<String,Object> fieldValuesMap)`, `suggest(SObject quote, Map<String,Object> fieldValuesMap)` returning `List<PricebookEntry>`, and `getAdditionalSuggestFilters(SObject quote, Map<String,Object> fieldValuesMap)` returning a WHERE fragment. The product search interface uses `isFilterHidden`, `getFilterDefaultValue`, `isSearchCustom`, `search`, and `getAdditionalSearchFilters` with the same parameter shapes.
+
+**Detection hint:** `ProductSearchContext`, a `List<Id>` return type, or a `suggest` method that never runs because `isSuggestCustom` returns false.
+
+---
+
+## Anti-Pattern 7: Copying the Guide's String-Built SOQL
+
+**What the LLM generates:** A `suggest` or `search` implementation that concatenates `quote.get('SBQQ__Pricebook__c')` and rep answers into a query string, because the guide's sample does.
+
+**Why it happens:** The sample is the most authoritative code the model has seen for this interface.
+
+**Correct pattern:** In `suggest` and `search`, use bind variables (`Database.queryWithBinds` with `AccessLevel.USER_MODE` when the field list comes from a field set). In `getAdditionalSuggestFilters`, CPQ runs the fragment, so return static text or values checked against an allowed list and escaped with `String.escapeSingleQuotes`.
+
+**Detection hint:** `Database.query(` on a string containing a rep answer or a quote field value.
+
+---
+
+## Anti-Pattern 8: Assuming the Plugin Sees Every Quote Field
+
+**What the LLM generates:** Plugin logic that reads a custom quote field from the `quote` parameter and branches on it, or parses a date field as a `Date`.
+
+**Why it happens:** The parameter is typed `SObject`, so the model assumes it is fully populated.
+
+**Correct pattern:** Plugins "can use only a subset of CPQ quote fields by default"; query the quote by `Id` for anything else. Date fields arrive as `yyyy-mm-dd` strings. The `suggest` and `search` maps contain only keys for non-null values.
+
+**Detection hint:** `quote.get('Custom_Field__c')` with no SOQL fallback, or a cast of a date field to `Date`.
+
+---
+
+## Anti-Pattern 9: Using the Configuration Initializer for Custom Option Fields
+
+**What the LLM generates:** A product configuration initializer that sets a custom field on a product option or a configuration attribute from the guided selling answers.
+
+**Why it happens:** The initializer is described as "setting field values", and the model generalizes to all fields.
+
+**Correct pattern:** The initializer "works only for standard product option fields and not for configuration attributes or custom product option fields". Use it for selection and quantity; use product rules or configuration rules for the rest.
+
+**Detection hint:** An initializer design that writes custom option fields or configuration attributes.

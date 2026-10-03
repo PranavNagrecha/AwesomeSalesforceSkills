@@ -16,7 +16,7 @@
 
 ## Anti-Patterns
 
-1. **One-size-fits-all capacity** — Setting all Service Channel weights to 1 and relying on tab count to manage load. This treats a phone call the same as a chat message, leading to agent overload and customer dissatisfaction. Use differentiated weights that reflect real effort per channel.
+1. **One-size-fits-all capacity**: Setting every routing configuration weight to 1 and relying on item count to manage load. This treats a phone call the same as a chat message, leading to agent overload and customer dissatisfaction. Use differentiated weights that reflect real effort per channel.
 
 2. **Skills without overflow** — Assigning narrow skills to small agent groups with no secondary routing path. When those agents are unavailable, work items queue indefinitely while generalist agents sit idle. Always pair skill-based primary routing with a timeout-triggered overflow to a broader agent pool.
 
@@ -24,6 +24,13 @@
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Omni-Channel Overview — https://help.salesforce.com/s/articleView?id=sf.omnichannel_intro.htm
-- Service Presence Introduction — https://help.salesforce.com/s/articleView?id=sf.service_presence_intro.htm
+Read for this revision (2026-10-03):
+
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. QueueRoutingConfig (`capacityWeight`, `capacityPercentage`, voice rules, `capacityType`, `dropAdditionalSkillsTimeout`, `PausedCapacityWeight`, `PausedCapacityPercentage`, `pushTimeout`, `queueOverflowAssignee`, `userOverflowAssignee`, `routingModel`, `routingPriority`, suffix and sample); ServiceChannel (`capacityModel`, `isInterruptible`, `statusField`, `serviceChannelStatusFieldMappings`, `doesCheckCapOnOwnerChange`, `doesCheckCapOnStatusChange`, after-conversation work fields, sample); PresenceUserConfig (`capacity`, `interruptibleCapacity`, `assignments`, decline and push-timeout statuses, sample); ServicePresenceStatus (`channels`, Away rule).
+- Salesforce Object Reference, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. AgentWork (`Status` values, Usage note on Assigned and push, `CapacityWeight`, `CapacityPercentage`, `CapacityModel`, capacity only when assigned by Omni-Channel, `ActiveTime`, `PushTimeoutDateTime`); UserServicePresence (`ConfiguredCapacity`, `ConfiguredInterruptCapacity`, `AverageCapacity`, `AtCapacityDuration`, `IdleDuration`, `IsCurrentState`).
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (a direct fetch does not return the guide page; read via Wayback snapshot 2026-06-16).
+
+Listed in the original version; Salesforce Help does not fetch, so these were not re-read and no claim in this revision rests on them alone:
+
+- Omni-Channel Overview, https://help.salesforce.com/s/articleView?id=sf.omnichannel_intro.htm
+- Service Presence Introduction, https://help.salesforce.com/s/articleView?id=sf.service_presence_intro.htm

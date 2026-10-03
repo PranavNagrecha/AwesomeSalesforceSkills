@@ -42,7 +42,19 @@ Rule: conversion tools belong at system level. Project-level deps are for the pr
 
 ## Official Sources Used
 
-- Salesforce Architects — Well-Architected Framework: https://architect.salesforce.com/design/architecture-framework/well-architected
-- Pandoc — Universal document converter: https://pandoc.org/MANUAL.html
-- jq — Command-line JSON processor: https://jqlang.github.io/jq/manual/
-- Salesforce Help — Reporting & Dashboards: https://help.salesforce.com/s/articleView?id=sf.reports_dashboards.htm
+Read for this revision (2026-10-03):
+
+- Deliverable Contract, local path `agents/_shared/DELIVERABLE_CONTRACT.md`. Canonical pair, `run_id` conventions, multi-dimensional rule and `dimensions_skipped`, scope guardrails (no dependencies in the consumer's project), atomic write, persistence path override.
+- Output Envelope Schema, local path `agents/_shared/schemas/output-envelope.schema.json`. Required fields, optional `findings` and `deliverables`, `evidence` typed as an object, `dimensions_skipped` fields.
+- jq 1.7 Manual: https://jqlang.github.io/jq/manual/. Invoking jq (`-f` / `--from-file`), Format strings and escaping (`@csv`), Convert to/from JSON (`tojson`), Alternative operator (`//`).
+- Pandoc User's Guide: https://pandoc.org/MANUAL.html. Creating a PDF (LaTeX default, `--pdf-engine`), `--metadata`, input formats (CSV is an input format) and output formats (no CSV writer).
+- LibreOffice Help, Starting LibreOffice Software With Parameters: https://help.libreoffice.org/latest/en-US/text/shared/guide/start_parameters.html. `--convert-to`, `--outdir`.
+- RFC 4180, Common Format and MIME Type for CSV Files: https://www.rfc-editor.org/rfc/rfc4180.txt. Quoting rules 6 and 7.
+- Microsoft Support, Excel specifications and limits: https://support.microsoft.com/en-us/office/excel-specifications-and-limits-1672b34d-7043-467e-8e27-269d656771c3. 32,767 characters per cell, 1,048,576 rows, 15-digit precision.
+- Microsoft Support, EXACT function: https://support.microsoft.com/en-us/office/exact-function-d3087698-fc15-4a15-9631-12575cf29926. Case-sensitive comparison.
+- Einstein Discovery REST API Developer Guide (Spring '26), local corpus `knowledge/imports/bi-dev-guide-rest-sdd.md`. Org and Object Identifiers (15-character case-sensitive Ids, 18-character case-insensitive Ids).
+
+Listed in the original version and not re-read:
+
+- Salesforce Architects, Well-Architected Framework: https://architect.salesforce.com/design/architecture-framework/well-architected (HTTP 404 on 2026-10-03)
+- Salesforce Help, Reporting & Dashboards: https://help.salesforce.com/s/articleView?id=sf.reports_dashboards.htm (Salesforce Help does not fetch).

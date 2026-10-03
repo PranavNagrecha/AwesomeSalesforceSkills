@@ -22,10 +22,20 @@
 
 ## Official Sources Used
 
-- CRM Analytics REST API Developer Guide Spring '26 — https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_overview.htm
-- Trailhead Quick Start: Create an App and a Lens — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
-- Connect and Sync Your Data to CRM Analytics — https://help.salesforce.com/s/articleView?id=sf.bi_integrate_connecting_to_salesforce.htm&type=5
-- Add Row-Level Security with a Security Predicate — https://help.salesforce.com/s/articleView?id=sf.bi_security_dataset_predicate.htm&type=5
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-- Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+Read for this revision (2026-10-03):
+
+- Analytics Platform Setup Guide (Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_admin_guide_setup.pdf. App access note (Viewer access), Data Sync limits, Recipe and Dataflow limits, Lens and Dashboard limits, Sales and Service Analytics app limits.
+- Analytics Security Implementation Guide (Spring '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_admin_guide_security.pdf. Security predicates (editing on the dataset, no-RLS warning, predicate syntax and 5,000-character limit), sharing inheritance (time trade-off, backup predicate, Setup and Data Manager steps).
+- CRM Analytics REST API Developer Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_dev_guide_rest.pdf. Replicated Dataset Resources (connected objects as a cache), Dataset Versions List Resource, Security Coverage Dataset Version Resource.
+- Analytics Dashboard JSON Developer Guide (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_dev_guide_json.pdf. `dataSourceLinks` and cross-dataset faceting pointer, `broadcastFacet`, `receiveFacetSource`, bindings.
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. WaveApplication, WaveDashboard, WaveDataset, WaveLens, WaveRecipe, WaveDataflow, FolderShare.
+
+Listed in the original version and not re-read:
+
+- CRM Analytics REST API Developer Guide (atlas page), https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_overview.htm (same guide read as PDF above).
+- Trailhead Quick Start: Create an App and a Lens, https://trailhead.salesforce.com/ (page retired).
+- Salesforce Help: Connect and Sync Your Data to CRM Analytics, https://help.salesforce.com/s/articleView?id=sf.bi_integrate_connecting_to_salesforce.htm&type=5 (Salesforce Help does not fetch).
+- Salesforce Help: Add Row-Level Security with a Security Predicate, https://help.salesforce.com/s/articleView?id=sf.bi_security_dataset_predicate.htm&type=5 (same content read in the Security Guide PDF).
+- Salesforce Well-Architected Overview, https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Object Reference, https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
+- Metadata API Developer Guide (atlas page), https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm

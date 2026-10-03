@@ -10,7 +10,7 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+_Fill in: the answers to the Questions to Ask Before Configuring from SKILL.md._
 
 - Setting / configuration:
 - Known constraints:
@@ -18,15 +18,15 @@ TODO: Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+_Fill in: which pattern from SKILL.md applies, and why._
 
 ## Checklist
 
 Copy the review checklist from SKILL.md and tick items as you complete them.
 
-- [ ] TODO
-- [ ] TODO
+- [ ] _(first checklist item from SKILL.md)_
+- [ ] _(next checklist item)_
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+_Fill in: any deviations from the standard pattern, and why._

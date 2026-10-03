@@ -10,9 +10,9 @@ Use this template when gathering and mapping care coordination process requireme
 
 ## ICM Prerequisites Verified
 
-- [ ] ICM enabled: Managing Care Plans checkbox
-- [ ] ICM enabled: Calculating Care Gaps checkbox
-- [ ] HealthCloudICM permission set available in org
+- [ ] FHIR R4-Aligned Data Model setting enabled (Setup > FHIR R4 Support Settings)
+- [ ] Enhanced Care Plans setting enabled (Setup > Integrated Care Management Settings)
+- [ ] Health Cloud permission set licenses and Health Cloud Social Determinants permission sets assigned
 - [ ] Care Coordination for Slack license confirmed (if Slack workflows in scope)
 
 ## Care Coordination Scenario Mapping
@@ -21,7 +21,7 @@ Use this template when gathering and mapping care coordination process requireme
 |----------|------------------|--------------|
 | SDOH barrier identification | SDOH | CareDeterminant, CareBarrier, CareBarrierType |
 | Referral to specialist | Referrals | ClinicalServiceRequest |
-| Preventive care quality gaps | Care Gaps | CareGap (system-generated only) |
+| Preventive care quality gaps | Care Gaps | CareGap (origin: Calculated, Imported, or ManuallyCreated) |
 | Episode of care management | Care Episodes | CareEpisode |
 
 ## SDOH Barrier Taxonomy
@@ -39,7 +39,7 @@ Use this template when gathering and mapping care coordination process requireme
 |--------------|-------------------|---------------------|
 | | FHIR R4 API / Direct API | |
 
-Note: CareGap records cannot be created manually. External system integration is required.
+Note: CareGap supports create, update, and upsert. Record each gap's origin in RecordOriginType, and close or exclude gaps through MeasureEvaluationStatus with a StatusReason; Status itself is not writable.
 
 ## Transition of Care Handoff Design
 

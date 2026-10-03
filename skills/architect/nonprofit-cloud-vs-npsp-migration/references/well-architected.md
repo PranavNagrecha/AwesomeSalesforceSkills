@@ -60,24 +60,19 @@ prototype environment by cost rather than by module availability is a week nobod
 
 ## Official Sources Used
 
-- Nonprofit Cloud Developer Guide, Version 67.0 (Summer '26) — *Fundraising Standard Objects*: `GiftTransaction`,
-  `GiftCommitment`, `GiftCommitmentSchedule`, `GiftSoftCredit`, `GiftDefaultSoftCredit`, `GiftDesignation`, `GiftEntry`,
-  `GiftBatch`, plus the "Available in: **Enterprise**, **Unlimited**, and **Developer** Editions." statement.
-  https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_fundraising_standard_objects.htm (verified 2026-08-14)
-- Nonprofit Cloud Developer Guide, Version 67.0 — *Program Management Standard Objects*: `Program`,
-  `ProgramEnrollment`, `Benefit`, `BenefitAssignment`, `BenefitDisbursement`, `BenefitSchedule`, `BenefitSession`,
-  `BenefitType`, `ProgramCohort`, `ProgramCohortMember`, `CaseProgram`, `RecurrenceSchedule`, and the "Available in:
-  **Enterprise** and **Unlimited** Editions." statement.
-  https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_pm_standard_objects.htm (verified 2026-08-14)
-- Nonprofit Cloud Developer Guide, Version 67.0 — per-object pages for the API-version numbers cited: `GiftTransaction`
-  (59.0), `GiftCommitment` (59.0), `GiftSoftCredit` (59.0), `GiftDefaultSoftCredit` (62.0), `Program` (57.0),
-  `ProgramEnrollment` (57.0).
-  https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_fundraising_api_objects_giftdefaultsoftcredit.htm (verified 2026-08-14)
+Read for this revision (2026-10-03):
 
-### Not sourced here
+- Nonprofit Cloud Developer Guide, Version 67.0 (Summer '26): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/nonprofit_cloud.pdf. Chapter 1 edition box; Chapter 2 data models (Grantmaking Application Form model introduced Spring '26, Individual Application "won't receive future platform enhancements"); Chapter 3 Fundraising (object list and API versions, GiftTransaction fields and `Status` values, GiftSoftCredit fields and `Role` values, GiftDefaultSoftCredit, Fundraising Access licence rule); Chapter 4 Program Management (object list, editions); Chapter 10 Group Memberships and Households (PartyRelationshipGroup, AccountContactRelation, ContactContactRelation, AccountAccountRelation, PartyRoleRelation); Chapter 11 Record Rollup Definitions (RecordAggregationDefinition, RecordAggregationResult, licence and permission).
+- NPSP package source, Salesforce.org: https://github.com/SalesforceFoundation/NPSP (`cumulusci.yml` namespace and dependencies; `force-app/main/default/objects` and `force-app/tdtm/objects` listings via https://api.github.com/repos/SalesforceFoundation/NPSP/git/trees/main?recursive=1). Object and field names for soft credits, allocations, rollups, households, and trigger handlers.
+- Program Management Module source, Salesforce.org: https://github.com/SalesforceFoundation/PMM (`sfdx-project.json` namespace `pmdm`; object listing).
+- Outbound Funds Module source, Salesforce.org: https://github.com/SalesforceFoundation/OutboundFundsModule (`cumulusci.yml` namespace `outfunds`; object listing; repository description as an Open Source Commons project).
 
-The NPSP side of the mapping (`npsp__`, `npe01__`, `npe03__`, `pmdm__` object and field names) is documented by the
-package's own materials, not by the Salesforce developer documentation set, and was not verified against an official
-page for these notes. Treat NPSP names in the mapping examples as placeholders to confirm against the installed package
-in the source org — `sf sobject list` or the org's Object Manager is the authority for what your NPSP install actually
-contains, since package versions differ between orgs.
+Earlier sources, verified 2026-08-14 by a previous revision and consistent with the PDF above:
+
+- Nonprofit Cloud Developer Guide: Fundraising Standard Objects, https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_fundraising_standard_objects.htm
+- Nonprofit Cloud Developer Guide: Program Management Standard Objects, https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_pm_standard_objects.htm
+- Nonprofit Cloud Developer Guide: GiftDefaultSoftCredit, https://developer.salesforce.com/docs/atlas.en-us.nonprofit_cloud.meta/nonprofit_cloud/npc_fundraising_api_objects_giftdefaultsoftcredit.htm
+
+### Still not sourced here
+
+NPSP option names (account model choices), the behaviour of TDTM exclusion fields, and household rollup field names come from NPSP documentation outside the package source and are marked UNVERIFIED where used. The package source shows what objects and fields exist, not how the package behaves; the installed package in the source org remains the authority for names.

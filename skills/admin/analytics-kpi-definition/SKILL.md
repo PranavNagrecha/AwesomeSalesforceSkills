@@ -12,6 +12,8 @@ triggers:
   - "analytics team needs to document which fields are measures vs dimensions for a dataset"
   - "KPI target attainment requires loading a separate targets dataset — how to model and join it"
   - "CRM Analytics recipe needs to know what calculations to apply before the dataset is published"
+  - "write a KPI register with formulas and targets before we build the CRM Analytics dashboard"
+  - "calculate quota attainment by rep in SAQL with a separate targets dataset"
 tags:
   - crm-analytics
   - kpi
@@ -28,9 +30,9 @@ outputs:
   - "Target dataset schema for loading attainment targets"
   - "SAQL snippet for KPI attainment calculation"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-14
+updated: 2026-10-03
 runtime_orphan: true
 runtime_orphan_reason: "No run-time agent covers CRM Analytics / Einstein Discovery. This skill was previously listed in audit-router's Mandatory Reads, but no audit-router classifier routes to it and report_dashboard's own scope excludes CRM Analytics migration, so the citation was decorative rather than load-bearing. Removed 2026-08-14 rather than left as a citation an agent never honoured. Re-wire when a CRM Analytics agent exists."
 ---
@@ -52,6 +54,21 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What exactly counts, what is excluded, and is it a row count or a distinct count?" | A count on a dimension is a unique count, and dimensions cannot be summed (Gotcha 2) | Inclusion and exclusion rules and an explicit `count()` or `unique()` | Every dashboard computes the same number for the same KPI |
+| "Which groups must appear even with no activity: territories with no wins, reps with no deals?" | An inner cogroup drops unmatched groups (Gotcha 4) | The population stream and a left outer join with `coalesce()` | Zero results show as zero instead of disappearing |
+| "At what grain are targets set, who maintains them, and in what key format?" | Targets join by exact, case-sensitive keys (Gotchas 1, 3) | A targets dataset schema, an owner, and the key format | Attainment never goes blank because of a spelling difference |
+| "Does a blank value mean zero or unknown for each measure?" | Null measure handling decides how blanks aggregate (Gotcha 5) | A null rule per measure and an explicit population filter | Averages are not dragged down by records that should not count |
+| "Which currency and which fiscal calendar does each KPI use?" | No currency conversion, and custom fiscal years must be imported (Gotcha 6) | A currency rule, a converted field, and the fiscal setting | Fiscal-quarter KPIs agree with Salesforce reports |
+| "How far back must the KPI trend, and is that history in the source data?" | Snapshot trending has row and dataset caps (Gotcha 7) | A history source per KPI and a snapshot volume estimate | Multi-year trends are promised only where the platform can hold them |
+
+What proper configuration adds over "just building the lens": a signed register whose formulas say how to count, which groups to keep, how blanks behave, and which currency and calendar apply, so every dashboard built from it agrees.
+
 ## Core Concepts
 
 ### Measures vs Dimensions
@@ -66,7 +83,7 @@ A KPI formula must correctly identify which fields are measures (to aggregate) a
 
 CRM Analytics does not support inline target values in a dataset. The canonical pattern:
 1. Create a separate targets dataset with columns matching the KPI's dimension groupings (e.g., Owner, Region, Quarter) plus a Target value measure
-2. Join the targets dataset to the actuals dataset at query time using SAQL cogroup or recipe join
+2. Join the targets dataset to the actuals dataset at query time using a SAQL left outer cogroup from the targets side (or a recipe join), with `coalesce()` for groups that have no actuals
 3. Compute attainment as `actual / target * 100`
 
 Target datasets must be updated on the same cadence as the reporting period (quarterly targets loaded quarterly). The join key between actuals and targets must be an exact string match — case differences cause nulls.
@@ -125,7 +142,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 2. For each KPI: write a plain-English definition that specifies what counts (included criteria), what excludes (excluded criteria), the time period, and the granularity.
 3. Map each KPI to CRM Analytics dataset fields: identify which field is the measure to aggregate, which fields are dimensions for grouping, and confirm field types in the dataset configuration.
 4. Identify KPIs that require target attainment: for these, design the targets dataset schema — dimension columns matching the KPI grouping, Target measure column, join key to actuals.
-5. Document SAQL formula sketch for each KPI: `sum(Measure) groupby [DimensionField]` with target join pattern if applicable.
+5. Document SAQL formula sketch for each KPI: `sum(Measure) groupby [DimensionField]` with target join pattern if applicable. Use the register format and attainment query in `references/examples.md`, Example 3.
 6. Get stakeholder sign-off on the KPI register before any lens or dashboard is built — record who approved each formula and target definition.
 7. Hand off the signed KPI register to the dashboard builder as the authoritative specification.
 
@@ -147,11 +164,13 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The full list with sources is in `references/gotchas.md`. The ones that most often corrupt a KPI:
 
-1. **Targets dataset join key must be exact string match** — When joining a targets dataset to an actuals dataset in SAQL, the join key field values must be an exact string match including case. A targets dataset with `Owner = "John Smith"` will not join to an actuals dataset with `Owner = "john smith"`. Null results appear silently — KPIs show actual values with no target column. Document the exact string format for all join keys in the KPI register.
-2. **Dimensions cannot be aggregated — SAQL error at runtime** — Using a dimension field in a SUM(), AVG(), or COUNT(Distinct) aggregation produces a SAQL error at lens runtime. Practitioners who haven't checked the dataset schema assume all numeric-looking fields are measures — but fields configured as dimensions in the dataset editor cannot be aggregated regardless of their data type.
-3. **Fields below ~70% fill rate are silently dropped from Einstein Discovery** — If CRM Analytics KPIs are later used in Einstein Discovery models, fields below approximately 70% fill rate are silently excluded from feature selection. KPI definitions that depend on sparse fields should document the fill rate risk.
+| Gotcha | Consequence |
+|---|---|
+| Case-sensitive join keys (Gotcha 1) | Attainment is blank for groups whose key differs only in case |
+| Inner cogroup drops unmatched groups (Gotcha 4) | Ratio KPIs lose the groups with zero numerator and look better than they are |
+| Sparse fields and Einstein Discovery (Gotcha 8) | The earlier "70% fill rate" rule is UNVERIFIED; record fill rates and check the story's field analysis |
 
 ---
 

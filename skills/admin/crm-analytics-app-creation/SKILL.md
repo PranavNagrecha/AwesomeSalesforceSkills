@@ -12,6 +12,8 @@ triggers:
   - "How do I share a CRM Analytics app with a specific team or profile?"
   - "What is the difference between a lens and a dashboard in CRM Analytics?"
   - "How do I connect Salesforce object data to a CRM Analytics dataset?"
+  - "deploy a CRM Analytics app with its dashboards and recipes from sandbox to production"
+  - "set up a blank CRM Analytics app, recipe, and dashboard for the sales team"
 tags:
   - crm-analytics
   - analytics-studio
@@ -36,9 +38,9 @@ outputs:
   - "Dashboard assembling lenses with filters and faceting"
   - "Row-level security configuration guidance"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-12
+updated: 2026-10-03
 runtime_orphan: true
 runtime_orphan_reason: "No run-time agent covers CRM Analytics / Einstein Discovery. This skill was previously listed in audit-router's Mandatory Reads, but no audit-router classifier routes to it and report_dashboard's own scope excludes CRM Analytics migration, so the citation was decorative rather than load-bearing. Removed 2026-08-14 rather than left as a citation an agent never honoured. Re-wire when a CRM Analytics agent exists."
 ---
@@ -59,6 +61,21 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which groups need to open the app, and which need to edit or manage it?" | A permission set opens Analytics Studio; app sharing opens the app (Gotcha 1) | A sharing table: group, access level (View, EditAllContents, Manage) | Users see the dashboards on day one, and only a few can change them |
+| "Which rows may each audience see, and does Salesforce sharing already express it?" | No row-level security shows every row; inheritance is slower and needs a backup predicate (Gotchas 5, 8) | A predicate or inheritance-plus-backup per dataset | The app never shows more than Salesforce would |
+| "How fresh must each dataset be, and how many other recipes already run?" | Runs share a 60-per-day budget and low concurrency (Gotcha 2) | A refresh cadence per dataset inside the org's run budget | Schedules never block each other or lock out data sync |
+| "Must widgets on different datasets filter each other?" | Faceting crosses datasets only through connected data sources or bindings (Gotcha 3) | The shared fields to link, or a binding design | Click-to-filter works across the whole dashboard |
+| "Will this start from a template, and how far will it be extended?" | Sales and Service Analytics templates cap custom objects at 10 by contract (Gotcha 7) | A template or blank-app decision with the extension plan | The app does not hit a contractual wall mid-project |
+| "How will the app move between orgs?" | Hand-edited `.wdash` files fail, datasets deploy without rows, and recipe wildcards miss dataflows (Gotcha 6) | A retrieve-and-deploy manifest and a post-deploy run list | Promotion is repeatable and the target app has data before users arrive |
+
+What proper configuration adds over "just creating an app": access at three layers (permission set, app share, row-level security) that match the audience, refresh schedules that fit the org's budget, and a deployment path that carries the app intact.
+
 ## Core Concepts
 
 ### App Structure: Apps, Lenses, and Dashboards
@@ -69,7 +86,7 @@ A CRM Analytics app is a named container created in Analytics Studio. It holds:
 - **Lenses**: A saved single-dataset exploration. A lens is a query with groupings, measures, and chart type selected. Lenses are used as the building blocks of dashboard steps.
 - **Dashboards**: Multi-lens views that assemble multiple lenses/steps with filters, faceting, and cross-widget interactions. Dashboards support user-controlled filtering and are the primary end-user interface.
 
-Lenses query exactly one dataset. Dashboards can reference steps from multiple datasets, but cross-dataset filtering requires bindings rather than faceting (faceting only works within the same dataset).
+Lenses query exactly one dataset. Dashboards can reference steps from multiple datasets. Faceting filters steps on the same dataset by default; across datasets it needs connected data sources (`dataSourceLinks`) or bindings. (Corrected: the earlier text said faceting only works within one dataset.)
 
 ### Data Ingestion: Dataflows and Recipes
 
@@ -78,7 +95,7 @@ Data flows into CRM Analytics datasets through:
 - **Dataflows**: JSON-defined ETL pipelines. More powerful but more complex. The primary mechanism for joining multiple Salesforce objects into a single dataset.
 - **Recipes (Data Prep)**: Visual node-based transformation canvas. Easier for admins; supports join, filter, bucket, and aggregate operations. The recommended starting point for most admin-authored datasets.
 
-Both require **Data Sync** (connected objects) to replicate Salesforce object data into the CRM Analytics staging layer first. Connected objects do not count against dataset row limits but cannot be queried directly — they must feed a dataflow or recipe first.
+Both require **Data Sync** (connected objects) to replicate Salesforce object data into the CRM Analytics staging layer first. Connected objects "can't be visualized directly, but are used like a cache" (REST Guide), so they must feed a dataflow or recipe first. UNVERIFIED (2026-10-03): the earlier statement that connected objects do not count against dataset row limits was not confirmed.
 
 ### Three-Layer Security Architecture
 
@@ -133,7 +150,7 @@ Template apps reduce initial setup time significantly but may include unused ass
 | Users see app but no data | Check app sharing + row-level security | Permission set alone does not grant row access |
 | Real-time data requirement | Not natively supported — use Direct Data for specific cases | Datasets refresh on schedule, not on query |
 | Data restricted by user | Add security predicate to dataset | Without predicate, Viewers see all dataset rows regardless of Salesforce sharing |
-| Cross-dataset dashboard filtering | Use bindings, not faceting | Faceting only works within a single dataset |
+| Cross-dataset dashboard filtering | Connected data sources for faceting on a shared field; bindings otherwise | Default faceting stays within one dataset (Gotcha 3) |
 
 ---
 
@@ -146,8 +163,8 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 3. **Enable Data Sync for required objects** — In Analytics Studio > Data Manager > Connected Objects, enable sync for each Salesforce object needed. Schedule sync to run before the dataflow/recipe.
 4. **Build the dataset via recipe or dataflow** — Create a Data Prep Recipe or Dataflow that loads connected objects, applies joins and transformations, and outputs to a registered dataset. Schedule to run after each data sync.
 5. **Create a lens** — Open the dataset, select groupings and measures, apply a chart type, and save as a lens within the app.
-6. **Build the dashboard** — Create a new dashboard in the app. Add steps referencing lenses or write inline SAQL. Add filter widgets and configure faceting for same-dataset interactions. Use bindings for cross-dataset filtering.
-7. **Configure app sharing and row-level security** — In App Settings > Share, assign Viewer/Editor/Manager to target users or groups. Separately, configure a security predicate on the dataset if users should see only a restricted subset of rows.
+6. **Build the dashboard**: Create a new dashboard in the app. Add steps referencing lenses or write inline SAQL. Add filter widgets and configure faceting for same-dataset interactions. Use connected data sources or bindings for cross-dataset filtering.
+7. **Configure app sharing and row-level security, then make it deployable**: In App Settings > Share, assign Viewer/Editor/Manager to target users or groups. Separately, configure a security predicate on the dataset if users should see only a restricted subset of rows. Retrieve the app's metadata with the manifest in `references/examples.md`, Example 3.
 
 ---
 
@@ -167,11 +184,13 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The full list with sources is in `references/gotchas.md`. The ones that most often leave a new app empty:
 
-1. **Permission set assignment does not grant data access** — Assigning the CRM Analytics Plus User permission set enables Analytics Studio access and app visibility. It does NOT grant access to data in any specific app or dataset. Users must also be added to the app with Viewer access AND a row-level security predicate must be configured if they should not see all rows. Stopping after permission set assignment produces blank apps with no data visible.
-2. **Connected objects cannot be queried directly in dashboards** — Connected objects (created by Data Sync) are intermediate staging-layer replicas. They do not appear as selectable datasets in the lens explorer or dashboard step query. They must first be processed by a recipe or dataflow that outputs to a registered dataset.
-3. **Faceting only works within a single dataset** — Faceting automatically filters all widgets sharing the same dataset on user click. It cannot cross datasets. If two dashboard widgets reference different datasets and filtering them together is needed, bindings must be configured. Faceting across datasets silently produces no cross-widget filtering.
+| Gotcha | Consequence |
+|---|---|
+| Permission set is not app access (Gotcha 1) | Users open Analytics Studio but see no data until the app is shared |
+| Connected objects are a cache (Gotcha 4) | They feed recipes; lenses and dashboards need a registered dataset |
+| Cross-dataset faceting needs connected data sources or bindings (Gotcha 3) | Click-to-filter silently stops at the dataset boundary |
 
 ---
 

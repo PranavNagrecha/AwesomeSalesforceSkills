@@ -21,6 +21,8 @@ triggers:
   - "export user-access-diff as spreadsheet"
   - "agent deliverable to notion"
   - "agent deliverable format conversion"
+  - "turn the user-access-diff findings into a spreadsheet for the compliance board"
+  - "send agent findings to ServiceNow or Jira without re-running the agent"
 inputs:
   - The canonical deliverable pair (markdown + JSON envelope) from the agent run
   - The target format (excel, pdf, csv, notion, servicenow, jira, confluence)
@@ -30,9 +32,9 @@ outputs:
   - If no dependency-free path exists, a documented approach with the smallest possible dep footprint
   - Guidance on preserving auditability — the converted artifact references the canonical run_id
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-03
 ---
 
 # Agent Output Formats
@@ -46,6 +48,20 @@ Reasons:
 1. **Reproducibility** — the canonical deliverable is checked into `docs/reports/`. Six months later, anyone can regenerate the Excel from it. If the consuming AI regenerates by re-asking the agent, the output may differ due to LLM stochasticity.
 2. **Auditability** — the `run_id` in the envelope is the tracking key. The Excel/PDF should reference it in its header, so "which run produced this?" is always answerable.
 3. **Minimal dependencies** — reinstalling `exceljs`, `xlsxwriter`, `weasyprint`, etc. into a consumer's project every time someone wants a different format bloats their project's dependency tree.
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which run do you need converted: agent, `run_id`, and envelope path?" | Conversion must start from the canonical pair, and the `run_id` is the audit thread (Gotcha 9) | The exact envelope path and run | Every converted file traces back to one run |
+| "Does the reader need only findings, or also what the run did not cover?" | Dropping `dimensions_skipped` makes a partial review look complete (Gotcha 3) | A findings sheet plus a coverage sheet, with confidence in the header | Reviewers see coverage gaps, as the contract requires |
+| "Which agents will this conversion run against?" | Some envelopes carry `evidence` objects, others have no `findings` at all (Gotchas 1, 2) | One test envelope per agent shape | The script works for every agent, not only the first one tried |
+| "Which tools already exist on the machine: jq, pandoc, a LaTeX engine, LibreOffice, Excel?" | PDF needs a LaTeX engine by default, and pandoc does not write CSV (Gotcha 7) | A conversion path using installed system tools | No project dependencies are added |
+| "Will the output be opened in Excel, and does it hold long text or numeric Ids?" | Excel caps cells at 32,767 characters and numbers at 15 digits (Gotchas 5, 6) | Columns to drop or keep as text | The spreadsheet shows what the envelope says |
+
+What proper configuration adds over "just exporting": a repeatable, dependency-free conversion that keeps the `run_id`, the confidence, and the coverage gaps visible in every format.
 
 ## Conversion decision tree
 
@@ -62,13 +78,15 @@ Q2. Is X a format the consumer's existing tooling handles natively?
     └── GitHub issue → embed markdown inline; link the report path
     → Prefer this path. Zero new dependencies.
 
-Q3. Does the consumer want a "table" from the markdown?
-    ├── CSV: extract markdown tables using `pandoc` (most dev machines have it)
-    ├── Excel from the JSON envelope: use `jq` + `csv2xlsx` CLI tools (lighter than a full SDK)
-    └── If neither pandoc nor jq: recommend installing pandoc (1 tool, system-level, widely used)
+Q3. Does the consumer want a "table"?
+    ├── CSV: build it from the JSON envelope with `jq` (pandoc reads CSV but does not write it)
+    ├── Excel: jq to CSV, then `soffice --headless --convert-to xlsx`, or open the CSV in Excel
+    └── If jq is missing: recommend installing jq (1 tool, system-level)
 
 Q4. Does the consumer want PDF?
     → `pandoc <report>.md -o <report>.pdf` — single command, no new project deps
+    → pandoc uses LaTeX by default; without a LaTeX engine, pick another --pdf-engine
+      or convert to HTML and print to PDF from a browser
     → If pandoc isn't available: recommend a system-wide install, NOT a project-level dep
 
 Q5. Does the consumer want something format-specific (e.g. ServiceNow change ticket)?
@@ -80,7 +98,7 @@ Q5. Does the consumer want something format-specific (e.g. ServiceNow change tic
 ## Recommended Workflow
 
 1. **Confirm the canonical deliverable exists** — `docs/reports/<agent-id>/<run_id>.{md,json}`. If not, run the agent first.
-2. **Check the consumer's tooling** — do they already have `pandoc`, `jq`, `csv2xlsx`? The answer is almost always yes for #2 and often for #1.
+2. **Check the consumer's tooling**: do they already have `jq`, `pandoc` (and a LaTeX engine), or LibreOffice (`soffice`)? Use what is installed; do not add project dependencies.
 3. **Walk the decision tree above.**
 4. **Produce the conversion command** — a one-liner the user runs in their shell, not code added to their project.
 5. **Include the canonical `run_id`** in the converted artifact's header — so auditors can trace it back.
@@ -99,18 +117,23 @@ pandoc docs/reports/user-access-diff/2026-04-17T21-14-05Z.md \
 
 Zero project dependencies added. Works because pandoc is a widely-available system tool.
 
-### Pattern 2 — JSON envelope → Excel via jq + csv2xlsx
+### Pattern 2: JSON envelope → CSV → Excel via jq and LibreOffice
 
 ```bash
-# Extract the findings array from the envelope as CSV.
-jq -r '.findings | (map(keys) | add | unique) as $keys |
-       ($keys | @csv), (.[] | [.[$keys[]]] | @csv)' \
+# Findings as CSV. Nested values (evidence objects) become JSON text, because
+# @csv rejects objects; a missing findings array yields a header row only.
+jq -r '.run_id as $run
+  | (["run_id","id","severity","title","detail","recommendation","evidence"] | @csv),
+    ((.findings // [])[] | [$run, .id, .severity, .title, .detail, .recommendation, .evidence]
+      | map(if type == "object" or type == "array" then tojson else . end) | @csv)' \
     docs/reports/user-access-diff/2026-04-17T21-14-05Z.json \
-    > /tmp/findings.csv
+    > ~/agent-exports/findings.csv
 
-# Convert to xlsx.
-csv2xlsx /tmp/findings.csv /tmp/findings.xlsx
+# Convert to xlsx with LibreOffice, a system tool.
+soffice --headless --convert-to xlsx --outdir ~/agent-exports ~/agent-exports/findings.csv
 ```
+
+Corrected 2026-10-03: the earlier filter (`map(keys) | add | unique` with `@csv`) fails on any finding that carries `evidence`, and the `csv2xlsx` command named earlier has no fetched documentation. The full tested script is in `references/examples.md`, Example 5.
 
 Or, if the user has Excel open:
 ```bash
@@ -124,16 +147,16 @@ Extract the fields ServiceNow needs from the envelope:
 ```bash
 jq '{
     short_description: .summary,
-    description: .summary + "\n\nRun ID: " + .run_id +
-                 "\nConfidence: " + .confidence +
-                 "\nFull report: " + .report_path,
-    priority: (if .findings | map(.severity) | any(. == "P0") then "1"
-               elif .findings | map(.severity) | any(. == "P1") then "2"
+    description: (.summary + "\n\nRun ID: " + .run_id +
+                  "\nConfidence: " + .confidence +
+                  "\nFull report: " + .report_path),
+    priority: (if (.findings // []) | map(.severity) | any(. == "P0") then "1"
+               elif (.findings // []) | map(.severity) | any(. == "P1") then "2"
                else "3" end)
 }' docs/reports/<agent-id>/<run_id>.json
 ```
 
-Paste the JSON into the ServiceNow integration payload. No project deps.
+Paste the JSON into the ServiceNow integration payload. No project deps. (Corrected 2026-10-03: object values built with `+` need parentheses in jq, and `(.findings // [])` keeps deliverables-only envelopes from failing; both versions were run against sample envelopes.)
 
 ### Pattern 4 — Notion / Obsidian / Confluence import
 
@@ -183,4 +206,5 @@ When converting reports for multiple runs in a batch:
 - Salesforce Architects — Reporting & Analytics Patterns: https://architect.salesforce.com/
 - Pandoc Documentation (third-party CLI): https://pandoc.org/MANUAL.html
 - Salesforce Developer — REST API: https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
-- Salesforce Help — External Services: https://help.salesforce.com/s/articleView?id=sf.external_services.htm
+- Salesforce Help, External Services: https://help.salesforce.com/s/articleView?id=sf.external_services.htm (not re-read; Salesforce Help does not fetch)
+- The sources read for the 2026-10-03 revision are listed in `references/well-architected.md`.

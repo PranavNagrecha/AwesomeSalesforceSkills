@@ -1,66 +1,97 @@
-# LLM Anti-Patterns — Health Cloud Consent Management
+# LLM Anti-Patterns: Health Cloud Consent Management
 
-Common mistakes AI coding assistants make when generating or advising on Health Cloud consent management.
+Common mistakes AI assistants make when advising on Health Cloud patient consent. Several were present in earlier versions of this skill; the corrections are grounded in `gotchas.md`.
 
 ## Anti-Pattern 1: Using ContactPointConsent for HIPAA Clinical Authorization
 
-**What the LLM generates:** Instructions to create ContactPointTypeConsent and ContactPointConsent records to track whether a patient has authorized clinical use of their PHI, citing Salesforce Consent Management documentation.
+**What the LLM generates:** Instructions to create `ContactPointTypeConsent` and `ContactPointConsent` records to track whether a patient authorized clinical use of their PHI.
 
-**Why it happens:** ContactPointConsent appears in Salesforce's general "Consent Management" documentation alongside AuthorizationFormConsent. LLMs conflate these because both are called "consent" and both appear in the same product documentation section. GDPR/CCPA marketing consent has far more online training data.
+**Why it happens:** Both object families sit under "consent" in Salesforce material, and marketing consent dominates training data.
 
-**Correct pattern:**
-Use `AuthorizationFormConsent` for HIPAA clinical authorization. Use `ContactPointConsent` for marketing communication channel preferences. HIPAA authorization requires specific fields (clinical purpose, PHI categories, expiration date, ConsentGiverId) not present on ContactPointConsent.
+**Correct pattern:** Use `AuthorizationFormConsent` against an `AuthorizationFormText` for clinical authorization, with the form linked to a `DataUsePurpose` through `AuthorizationFormDataUse`. Use the contact point consent objects for communication preferences.
 
-**Detection hint:** If the consent solution uses `ContactPointConsent`, `ContactPointTypeConsent`, or `ContactPointAddress` for a HIPAA clinical authorization use case, the wrong object family is being applied.
-
----
-
-## Anti-Pattern 2: Deleting AuthorizationFormConsent on Withdrawal
-
-**What the LLM generates:** Code or instructions to delete `AuthorizationFormConsent` records when a patient withdraws consent, treating withdrawal as a "remove the consent record" operation.
-
-**Why it happens:** LLMs model withdrawal as the inverse of consent creation. In most data models, "undo" means deletion. HIPAA's audit trail requirement — which mandates retaining the history of when consent was obtained and when it was revoked — is a compliance-specific requirement not present in general training data.
-
-**Correct pattern:**
-Update the `Status` field on the existing `AuthorizationFormConsent` record to a terminal value such as "Withdrawn". Never delete consent records. The audit trail must show when consent was obtained, when it was in effect, and when it was withdrawn.
-
-**Detection hint:** If the withdrawal implementation includes `delete [authFormConsentRecord]` or equivalent DML, it is destroying the HIPAA audit trail.
+**Detection hint:** `ContactPointConsent` or `ContactPointTypeConsent` in a HIPAA authorization design.
 
 ---
 
-## Anti-Pattern 3: Assuming AuthorizationFormConsent Enforces PHI Access Control
+## Anti-Pattern 2: Inventing an `IsDefault` Flag on `AuthorizationFormText`
 
-**What the LLM generates:** Claims that creating AuthorizationFormConsent records automatically restricts PHI record access for patients who have not consented, or that enrolling a patient without consent will be blocked by the platform automatically.
+**What the LLM generates:** "Set `IsDefault = true` on exactly one AuthorizationFormText per form," and validation SOQL that selects `IsDefault`.
 
-**Why it happens:** LLMs often assume that data model objects that represent restrictions also enforce those restrictions. In Salesforce, data model objects are records — access control is a separate concern governed by sharing rules, profiles, and permission sets.
+**Why it happens:** "One default child record" is a common pattern, and an earlier version of this skill stated it.
 
-**Correct pattern:**
-`AuthorizationFormConsent` is a tracking and audit object. It documents that consent was obtained — it does not technically enforce PHI access restrictions. Access control must be implemented separately through OWD settings, sharing rules, and care team role-based record access. The enrollment Flow must explicitly check consent status before proceeding.
+**Correct pattern:** The default is `AuthorizationForm.DefaultAuthFormTextId`, "the ID of the default authorization form text to use if text isn't available for a specific language". Create the form, create the texts, then set the lookup on the form.
 
-**Detection hint:** If the implementation relies on AuthorizationFormConsent alone to enforce access control without separate sharing rule configuration, the access control gap is present.
-
----
-
-## Anti-Pattern 4: Creating Multiple Default AuthorizationFormTexts
-
-**What the LLM generates:** Instructions to create multiple `AuthorizationFormText` records for the same form (one per locale) and set `IsDefault = true` on all of them to ensure the form works for all languages.
-
-**Why it happens:** LLMs interpret "default" as a per-locale flag and logically conclude that each locale variant should be its default. The platform constraint — exactly one IsDefault = true per form — is a specific implementation detail not inferrable from the field name alone.
-
-**Correct pattern:**
-Only one `AuthorizationFormText` per `AuthorizationForm` can have `IsDefault = true`. This is the fallback text when no locale match is found. For multilingual consent, create one AuthorizationFormText per locale but set IsDefault = true on only one (typically the primary language). The platform uses locale matching to select the appropriate text.
-
-**Detection hint:** If instructions set `IsDefault = true` on multiple AuthorizationFormText records for the same form, the implementation will fail at runtime.
+**Detection hint:** `IsDefault` anywhere near `AuthorizationFormText`.
 
 ---
 
-## Anti-Pattern 5: Skipping AuthorizationFormDataUse Junction Records
+## Anti-Pattern 3: Setting `Status = 'Withdrawn'`, or Deleting the Consent
 
-**What the LLM generates:** Instructions that create DataUsePurpose and AuthorizationForm records but skip creating the `AuthorizationFormDataUse` junction object, assuming the relationship is established elsewhere.
+**What the LLM generates:** A withdrawal flow that sets `Status = 'Withdrawn'` or `'Revoked'`, or that deletes the `AuthorizationFormConsent` record.
 
-**Why it happens:** Junction objects are commonly omitted in LLM-generated configuration steps because the two primary objects can exist independently. The junction record is a less prominent part of the documentation and is easy to miss.
+**Why it happens:** The model invents a natural-sounding terminal value, or models withdrawal as the inverse of creation.
 
-**Correct pattern:**
-`AuthorizationFormDataUse` must be created explicitly to link each `AuthorizationForm` to its `DataUsePurpose`. Without this junction record, the consent form is not associated with any clinical use purpose, breaking the full consent hierarchy and potentially causing consent records to be created with no stated purpose.
+**Correct pattern:** The documented values are `Rejected`, `Seen`, and `Signed`. Record withdrawal as `Rejected`, and preserve the signed evidence with a new record per event or an update with field history tracking. Never delete consent records.
 
-**Detection hint:** If the consent setup steps do not include creating `AuthorizationFormDataUse` records, the hierarchy is incomplete.
+**Detection hint:** `Withdrawn`, `Revoked`, or `delete` against `AuthorizationFormConsent`.
+
+---
+
+## Anti-Pattern 4: Putting "Verbal" or "Written" in the Capture Fields
+
+**What the LLM generates:** `ConsentCapturedSource = 'Verbal'` or `'Written'`, with `ConsentCapturedSourceType` left empty.
+
+**Why it happens:** The two field names look like one concept, and "verbal or written" is how consent is described in clinical policy.
+
+**Correct pattern:** `ConsentCapturedSourceType` is a required restricted picklist (`Email`, `InPerson`, `MailingAddress`, `Phone`, `Social`, `Video`, `Web`). `ConsentCapturedSource` is a required string describing the source (for example a staff member or URL). `ConsentCapturedDateTime` and `ConsentGiverId` are also required.
+
+**Detection hint:** A source type value outside the list, or a consent insert missing any required capture field.
+
+---
+
+## Anti-Pattern 5: Assuming Consent Records Enforce Access to PHI
+
+**What the LLM generates:** "Once the AuthorizationFormConsent exists, unconsented patients' records are protected automatically."
+
+**Why it happens:** Models assume objects that describe restrictions also enforce them.
+
+**Correct pattern:** Consent records document consent; they do not change record access. Implement access through org-wide defaults, sharing, and permission sets, and make the enrollment flow check consent status before it activates enrollment.
+
+**Detection hint:** Access control described only in terms of consent records.
+
+---
+
+## Anti-Pattern 6: Toggling Data Protection and Privacy Casually
+
+**What the LLM generates:** "If consent objects behave strangely, turn Data Protection and Privacy off and on again," or a settings deploy copied from an org where it is off.
+
+**Why it happens:** Feature toggles are usually reversible, and the model does not know this one deletes data.
+
+**Correct pattern:** `PartyDataModelSettings.enableConsentManagement` set to false "purges all data protection details, such as privacy preferences and stored consent forms." Keep the setting under change control and never use it for troubleshooting.
+
+**Detection hint:** Any instruction to disable Data Protection and Privacy, or a settings diff that sets it to false.
+
+---
+
+## Anti-Pattern 7: Copying a `PurposeId` Field Onto `DataUsePurpose`
+
+**What the LLM generates:** `new DataUsePurpose(Name = 'Treatment', PurposeId = 'treatment')`.
+
+**Why it happens:** The model invents a code field to pair with the name, as an earlier example in this skill did.
+
+**Correct pattern:** `DataUsePurpose` has `Name`, `Description`, `CanDataSubjectOptOut` (required), and `LegalBasisId` (lookup to `DataUseLegalBasis`). Set `CanDataSubjectOptOut` deliberately for each purpose.
+
+**Detection hint:** `PurposeId` on `DataUsePurpose`, or a purpose insert without `CanDataSubjectOptOut`.
+
+---
+
+## Anti-Pattern 8: Forgetting Electronic Signature Evidence
+
+**What the LLM generates:** An electronic consent design that records status and time, with no mention of IP address, email, or browser.
+
+**Why it happens:** Evidence capture is a settings decision, not a field on the consent object, so the model does not see it.
+
+**Correct pattern:** Decide evidence requirements with compliance and deploy `PrivacySettings` with the needed `authorizationCapture*` fields (API 59.0, default false), plus `authorizationLockingAndVersioning` if records must lock after capture.
+
+**Detection hint:** An electronic signature design with no `PrivacySettings` decision.

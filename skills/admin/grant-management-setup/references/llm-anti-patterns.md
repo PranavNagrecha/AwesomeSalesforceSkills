@@ -32,9 +32,11 @@ Never mix API names from both platforms in a single answer.
 For Nonprofit Cloud for Grantmaking orgs:
 - Award record: FundingAward (not outfunds__Funding_Request__c)
 - Payment tranche: FundingDisbursement (not outfunds__Disbursement__c)
-- Deliverable: FundingAwardRequirement (no OFM equivalent)
-- SOQL: SELECT Id, Name, AwardAmount__c FROM FundingAward WHERE Status = 'Active'
+- Deliverable: FundingAwardRequirement (not outfunds__Requirement__c)
+- SOQL: SELECT Id, Name, Amount, AwardeeId FROM FundingAward WHERE Status = 'Active'
   NOT: SELECT Id, Name FROM outfunds__Funding_Request__c
+(Corrected 2026-10-03: the award amount field is Amount, not AwardAmount__c, and OFM
+does have a requirement object, outfunds__Requirement__c.)
 ```
 
 **Detection hint:** Any response containing `outfunds__` namespace prefixes for an org confirmed to be on Nonprofit Cloud for Grantmaking is incorrect. Search response for `outfunds__` and flag if present in an NPC context.
@@ -51,7 +53,9 @@ For Nonprofit Cloud for Grantmaking orgs:
 ```
 FundingDisbursement = one record per planned payment tranche, created at award setup:
 - One FundingAward can have many FundingDisbursements
-- Create all disbursement tranches upfront with Status = Draft or Scheduled
+- Create all disbursement tranches upfront with Status = Scheduled
+  (there is no Draft value; the documented values are Scheduled, Pending Approval,
+  Approved, Processing, Paid, Returned, Cancelled)
 - Update Status to Paid when the payment is sent
 - Do NOT create a single FundingDisbursement for the total award amount
 ```
@@ -99,3 +103,26 @@ There is no "upgrade" toggle. This is a data migration and re-implementation pro
 ```
 
 **Detection hint:** If the response uses phrases like "simply export and import," "upgrade the package," or "map the fields over" without acknowledging full automation rebuilds, it is understating the migration complexity. Flag any migration guidance that omits the need to rebuild Flows and automation.
+
+---
+
+## Anti-Pattern 6: Inventing The Requirement Lifecycle Instead Of Reading The Picklists
+
+**What the LLM generates:** "FundingAwardRequirement uses a fixed Open, Submitted, Approved lifecycle. Add a custom Rejected value and a Type of Progress Report or Site Visit."
+
+**Why it happens:** A plausible three-step lifecycle is easy to describe, and the model fills field values from general grants vocabulary.
+
+**Correct pattern:**
+
+```
+FundingAwardRequirement (Nonprofit Cloud Developer Guide, Version 67.0):
+- Status: Open, In Progress, Submitted, Delayed, Approved, Rejected
+- ApprovalStatus: New, In Review, Approved, Rejected
+- IsSubmitted, SubmittedDate: submission facts
+- Type: Combined Report, Contract, Financial Report, Narrative Report
+- FundingDisbursementId: the tranche the requirement gates
+Document which status field carries which meaning before building automation.
+```
+
+**Detection hint:** A lifecycle with only three values, a custom "Rejected" value, or `Type` values such as "Progress Report" or "Site Visit".
+

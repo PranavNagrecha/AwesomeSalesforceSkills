@@ -42,6 +42,61 @@ Requirements document captures the data source matrix:
 
 **What practitioners do:** They default to "create a standard Report type" without assessing whether cross-object joins, external data, predictive features, or audience-specific views are required.
 
-**What goes wrong:** Standard Reports cannot join more than two objects efficiently, cannot use external data, and have limited row-level security customization. Practitioners build standard Reports, then realize they cannot meet the requirements, and must migrate to CRM Analytics mid-project.
+**What goes wrong:** Standard Reports cannot use external data and have limited row-level security customization. UNVERIFIED (2026-10-03): the claim that standard Reports "cannot join more than two objects efficiently" is not grounded in the guides read for this pass; check custom report type limits for the specific case. Practitioners build standard Reports, then realize they cannot meet the requirements, and must migrate to CRM Analytics mid-project.
 
 **Correct approach:** Always complete a CRM Analytics vs standard Reports decision step at the start of requirements gathering. Use the decision criteria: cross-object joins, external data, predictive needs, complex row-level security, and large dataset aggregation are the primary indicators for CRM Analytics.
+
+---
+
+## Example 3: The Requirements Package as a Structured Artifact
+
+**Context:** The finance dashboard from Example 2 is approved for build. The developer asks for a single artifact that holds sources, fields, refresh, and audiences, so nothing is re-elicited mid-build.
+
+**Solution:** Capture the package as YAML in the project repository. Each key traces to a question in the SKILL.md table.
+
+```yaml
+platform_decision:
+  choice: CRM Analytics
+  reason: "Joins Salesforce Opportunity data with Snowflake billing data; external data cannot feed standard Reports"
+  license: CRM Analytics Plus   # 10 billion row allocation; 2 concurrent dataflow runs in production
+sources:
+  - name: Opportunity
+    type: salesforce_local_sync      # lands as a connected object; needs a recipe to become a dataset
+    fields: [Id, AccountId, Amount, StageName, CloseDate, OwnerId]
+    integration_user_access_checked: true
+    refresh: eventdriven              # after the local sync, one counted run per day
+  - name: Account
+    type: salesforce_local_sync
+    fields: [Id, Name, Industry, Region__c, Billing_Id__c]
+    integration_user_access_checked: true
+    refresh: eventdriven
+  - name: billing.invoices
+    type: external_connection         # counts against org limits; confirm with the integration owner
+    fields: [account_billing_id, invoice_amount, invoice_date]
+    refresh: daily
+transformations:
+  - join: "Opportunity LOOKUP Account on AccountId = Id"   # keep every Opportunity
+  - join: "Account LOOKUP billing.invoices on Billing_Id__c = account_billing_id"
+  - computed: "FiscalQuarter from CloseDate, fiscal year starts February"
+datasets:
+  - name: Finance_Revenue
+    estimated_rows: 2500000
+    row_security:
+      mechanism: predicate
+      predicate: "'Region__c' == \"$User.Sales_Region__c\""
+      security_user_needs_read_on: [User.Sales_Region__c]
+audiences:
+  - role: Finance Analyst
+    app_access: EditAllContents
+    rows: own region
+  - role: CFO
+    app_access: View
+    rows: all regions   # needs a predicate branch or a separate dataset; decide before build
+refresh_budget:
+  counted_runs_per_day_existing: 9
+  counted_runs_per_day_added: 2
+  limit: 60
+```
+
+**Why it works:** Every build decision the developer needs is in one reviewed file. The `security_user_needs_read_on` line prevents the predicate query error described in gotcha 6, and the refresh budget shows the plan fits the 60-run limit. The deployable form of the audience section is in `metadata-examples.md`.
+

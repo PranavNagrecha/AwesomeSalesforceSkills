@@ -8,6 +8,8 @@
 
 - **Operational Excellence** — Einstein Discovery setup introduces ongoing operational obligations: model refresh scheduling, post-refresh activation, bulk scoring job monitoring, and writeback field auditing. These are admin-managed tasks with no automated reminders in the platform. Runbooks documenting each recurring step are essential for sustainable operation. Teams that configure Einstein Discovery and then treat it as self-maintaining will encounter silent model drift, stale scores, and eventual data quality issues.
 
+Note added 2026-10-03: the statements above about default field-level security, activation after refresh, and bulk-only scoring are help-only claims (UNVERIFIED (2026-10-03)). Grounded additions: a prediction definition (`DiscoveryGoal`) holds up to ten active models with ordered segment filters; removing its `pushbackField` deletes the writeback field; model fields carry `isSensitive` and `isDisparateImpact` flags for fairness review (Security); and `terminalStateFilters` define the observed outcomes used for accuracy monitoring (Reliability).
+
 ## Architectural Tradeoffs
 
 **Insights-Only vs. Insights and Predictions:** Choosing "Insights only" avoids writeback field creation, FLS concerns, and scoring job management, but provides no live scores on records. This is appropriate when the team's goal is analytical exploration (understanding what drives outcomes) rather than operational scoring (surfacing predictions on active records). Choosing "Insights and Predictions" adds operational overhead but enables record-level scoring and what-if analysis.
@@ -26,7 +28,15 @@
 
 ## Official Sources Used
 
-- Manage and Deploy Models in Einstein Discovery — https://help.salesforce.com/s/articleView?id=sf.bi_edd_story_deploy.htm
-- Einstein Discovery Basics: Create a Model (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
-- Einstein Discovery Prediction Writeback Fields in Salesforce — https://help.salesforce.com/s/articleView?id=sf.bi_edd_prediction_writeback.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for the 2026-10-03 pass (fetched with plain `curl`; line numbers cite the `pdftotext -layout` extraction):
+
+- Metadata API Developer Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (DiscoveryAIModel write-operation note, file layout, algorithm and prediction types, model field flags, source types L54449-54745; DiscoveryGoal definition, ten-model limit, `pushbackField` deletion note, `terminalStateFilters`, deployed model filters, pushback type, sample, and manifest L54747-55190)
+- Analytics Platform Setup Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_admin_guide_setup.pdf (CRM Analytics Growth, Plus, and Einstein Predictions licences L1622)
+- CRM Analytics REST API Developer Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/bi_dev_guide_rest.pdf (points smartdatadiscovery prediction calls to the separate Einstein Discovery REST API Developer Guide, L529-530)
+
+Listed by the original author and not re-read in this pass (help.salesforce.com, Trailhead retired page, and architect.salesforce.com did not serve readable content; the Einstein Discovery REST API guide URLs returned 404 or empty JSON on 2026-10-03):
+
+- Manage and Deploy Models in Einstein Discovery: https://help.salesforce.com/s/articleView?id=sf.bi_edd_story_deploy.htm
+- Einstein Discovery Basics: Create a Model (Trailhead): https://trailhead.salesforce.com/ (page retired; see host index for current equivalent)
+- Einstein Discovery Prediction Writeback Fields in Salesforce: https://help.salesforce.com/s/articleView?id=sf.bi_edd_prediction_writeback.htm
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -13,6 +13,8 @@ triggers:
   - "how do I design a skills-based routing model with overflow to backup queues"
   - "what capacity units should I assign per channel and how does interruptible work factor in"
   - "how to set Omni-Channel capacity weights for cases vs chats vs phone calls"
+  - "size agent capacity so blended agents can take a call while holding messaging sessions"
+  - "stop Omni-Channel from pushing new work to agents who are already full"
 tags:
   - omni-channel
   - capacity-model
@@ -35,9 +37,9 @@ outputs:
   - Presence Status and Presence Configuration design
   - Interruptible work flag recommendations per channel
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-03
 ---
 
 # Omni-Channel Capacity Model
@@ -56,23 +58,38 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What is the measured handle time and concurrency per work type, and which queues route each one?" | Weights live on routing configurations, so one work type can carry several weights (Gotcha 6) | A weight per routing configuration from data, not defaults | Capacity reflects effort, and every queue charges the same for the same work |
+| "May an agent hold messaging sessions while taking a call, and how many?" | Voice must take all primary capacity; interruptible work uses its own pool (Gotchas 3, 7) | `isInterruptible` per channel and an `interruptibleCapacity` per presence configuration | Blended agents get the concurrency the platform allows, no more |
+| "When is a case finished for capacity purposes: tab closed, or status says done?" | Tab-based channels free capacity on unfinished work (Gotcha 5) | A capacity model per service channel, with status mappings for case work | Agents are not over-assigned on cases that span days |
+| "Which skills are required, and which can be dropped after a wait?" | Only Additional skills fall back (Gotcha 4) | Skills marked Additional with a `dropAdditionalSkillsTimeout`, and overflow assignees for the rest | Niche work reaches an agent instead of waiting all day |
+| "Does anyone assign work by changing the owner instead of through queues?" | Work assigned outside Omni-Channel consumes no capacity (Gotcha 8) | A list of manual and automated assignment paths to reroute | The capacity numbers describe the agent's real load |
+| "When will capacity changes be made, and how will you confirm agents picked them up?" | Each live session records its configured capacity (Gotcha 2) | A change window and a `UserServicePresence` check | Tuning takes effect when planned, and you can prove it |
+
+What proper configuration adds over "just setting weights": the agent's total, each routing configuration's weight, the channel's capacity model, and the interruptible pool agree with each other, so routing sends the work an agent can actually take.
+
 ## Core Concepts
 
 ### Agent Capacity and Capacity Units
 
-Every agent who receives work through Omni-Channel has a total capacity defined in their Presence Configuration. This is a numeric value — commonly 10 or 15 — representing the maximum workload budget. Each incoming work item consumes a number of capacity units defined on its Service Channel. When the agent's remaining capacity drops below the cost of a pending work item, that item routes to another agent or waits in queue.
+Every agent who receives work through Omni-Channel has a total capacity defined in their Presence Configuration (`PresenceUserConfig.capacity`). This is a numeric value, commonly 10 or 15, representing the maximum workload budget. Each incoming work item consumes the capacity set on the routing configuration that routed it (`QueueRoutingConfig.capacityWeight` or `capacityPercentage`). When the agent's remaining capacity drops below the cost of a pending work item, that item routes to another agent or waits in queue.
 
-The capacity model supports two modes: **tab-based capacity** (each tab consumes exactly 1 unit regardless of channel) and **status-based capacity** (the Presence Configuration sets the ceiling and Service Channels define variable weights). Status-based capacity is the recommended model for any org handling more than one channel type.
+Each service channel chooses when capacity is released (`ServiceChannel.capacityModel`): **tab-based** releases it when the work tab is closed in the console; **status-based** keeps it consumed until the work's status field says completed or the work is reassigned. Status-based capacity is the better fit for case and email work that spans sessions. (Corrected: the earlier text described tab-based as "1 unit per tab" and placed weights on the Service Channel; see `references/gotchas.md` Gotchas 5 and 6.)
 
-### Service Channel Weights
+### Routing Configuration Weights
 
-Each Service Channel (Case, Chat, Voice, Messaging, Custom) has a configurable capacity weight — the number of units one work item of that type consumes. Industry-standard starting points:
+Each routing configuration carries the weight (or percentage) that one work item routed through it consumes; the Service Channel names the object and capacity model. Practitioner starting points per work type:
 
 | Channel | Typical Weight | Rationale |
 |---|---|---|
 | Case | 5 | Moderate complexity, longer handle time, not real-time |
 | Chat / Messaging | 3 | Real-time but agents can handle 2-3 concurrently |
-| Voice (Phone) | 10 | Fully occupies the agent — no concurrent work possible |
+| Voice (Phone) | Equal to the agent's total capacity (or `capacityPercentage` 100) | The platform requires voice to consume the entire capacity (Gotcha 7) |
 
 These weights are starting points. Calibrate them using your org's average handle time data and agent feedback after the first two weeks of operation.
 
@@ -84,9 +101,9 @@ A well-designed skills matrix prevents the failure mode where a narrow specialis
 
 ### Presence Statuses and Presence Configurations
 
-Presence Statuses define the named states an agent can select (Available, Available - Chat Only, Break, Training). Each status maps to a Presence Configuration that sets the capacity ceiling and which Service Channels the agent can receive. This is the mechanism that controls when and what work an agent receives.
+Presence Statuses define the named states an agent can select (Available, Available - Chat Only, Break, Training) and list the Service Channels that status receives; a status with no channels is an Away status. Presence Configurations are assigned to users or profiles and set the capacity ceiling (`capacity`), the interruptible ceiling (`interruptibleCapacity`), decline and auto-accept behaviour, and the status applied on decline or push timeout. (Corrected: statuses do not map to configurations.)
 
-Presence Configurations also control the **interruptible** flag per channel. When a channel is marked interruptible, a higher-priority work item (e.g., a phone call) can be pushed to the agent even if they are working on an interruptible item (e.g., a case). The interruptible item is not closed — it remains assigned but the agent's focus shifts.
+Interruptibility is set on the **Service Channel** (`isInterruptible`): interruptible work consumes interruptible capacity instead of primary capacity, so primary work such as a phone call can still reach an agent who holds interruptible work. A routing configuration can override the channel with `capacityType`. (Corrected: the earlier text placed the interruptible flag on the Presence Configuration.)
 
 ---
 
@@ -99,9 +116,9 @@ Presence Configurations also control the **interruptible** flag per channel. Whe
 **How it works:**
 
 1. Set agent total capacity to 10 in the Presence Configuration.
-2. Configure Service Channel weights: Voice = 10, Case = 5, Chat = 3.
-3. Mark Case and Chat as interruptible so a phone call (weight 10) can preempt them.
-4. Result: an agent handling 1 case (5) + 1 chat (3) = 8 units used, 2 remaining. A second chat (3) would exceed capacity, so it routes elsewhere. A phone call (10) interrupts the current interruptible work.
+2. Configure routing configuration weights: Voice = 10 (the full capacity), Case = 5, Chat = 3.
+3. Mark the chat or messaging Service Channel as interruptible and set `interruptibleCapacity` so chats draw on the interruptible pool.
+4. Result: an agent handling 1 case (5 primary) and 1 chat (3 interruptible) can take a second chat if the interruptible pool allows, but not a phone call, because the case holds primary capacity and voice needs all of it. UNVERIFIED (2026-10-03): how the interruptible pool interacts with voice pushes in every edition is described in Salesforce Help only; pilot it.
 
 **Why not the alternative:** Using tab-based capacity (1 unit per item) treats a phone call the same as a chat, leading to agents juggling a phone call alongside two chats — a recipe for poor customer experience and agent burnout.
 
@@ -124,7 +141,7 @@ Presence Configurations also control the **interruptible** flag per channel. Whe
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Single-channel org (cases only) | Tab-based capacity, 1 unit per item | Simplicity — no weighting needed when all work is equal |
+| Single-channel org (cases only) | One routing configuration weight; status-based capacity on the case channel | Simplicity; capacity is held until the case is done |
 | Multi-channel org (cases + chat + voice) | Status-based capacity with channel weights | Prevents voice calls from competing equally with chats |
 | Seasonal volume spikes | Overflow to secondary queues with relaxed skills | Avoids hiring for peak; cross-trained agents absorb overflow |
 | High agent turnover | Fewer, broader skills per agent | Reduces single-point-of-failure risk in the skills matrix |
@@ -140,7 +157,7 @@ Step-by-step instructions for designing or tuning an Omni-Channel capacity model
 2. **Define capacity units and weights.** Choose a total capacity ceiling (10 is the standard starting point). Assign weights to each channel proportional to agent effort — use Voice=10, Case=5, Chat=3 as defaults and adjust based on AHT data.
 3. **Build the skills matrix.** Map every agent to their skills (language, product, tier). Ensure no skill has fewer than 3 agents assigned to avoid single-point bottlenecks. Document the matrix in a spreadsheet or the capacity model template.
 4. **Design Presence Statuses and Configurations.** Create statuses that reflect real agent modes (Available - All Channels, Available - Chat Only, Available - Cases Only). Map each status to a Presence Configuration with the appropriate capacity ceiling and allowed channels.
-5. **Configure interruptible flags.** Mark channels where work can be paused (cases, messaging) as interruptible. Never mark voice as interruptible — a phone call cannot be paused.
+5. **Configure interruptible flags.** Mark channels where work can be paused (cases, messaging) as interruptible on the Service Channel, and size `interruptibleCapacity` on the Presence Configuration. Never mark voice as interruptible: a phone call cannot be paused. Express the deployable result as metadata (`references/examples.md`, Example 3).
 6. **Set up overflow and secondary routing.** For each specialized queue, define a secondary routing target and a timeout threshold (recommended: 60-120 seconds). Test that overflow actually routes to backup agents.
 7. **Validate and monitor.** Deploy to a pilot group of 5-10 agents. Monitor queue wait times, overflow rates, and agent utilization for two weeks. Adjust weights and capacity ceilings based on data before full rollout.
 
@@ -163,13 +180,13 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The full list with sources is in `references/gotchas.md`. The ones that most often break a capacity model:
 
-1. **Capacity is consumed at assignment, not acceptance.** When a work item is pushed to an agent, their capacity is reduced immediately — even before the agent clicks Accept. If the agent declines or the item times out, capacity is restored, but during the pending period the agent appears "fuller" than they actually are. This causes uneven distribution during high-volume periods.
-2. **Presence Configuration changes require agent re-login.** If you update a Presence Configuration's capacity value, agents currently logged in to Omni-Channel will not pick up the change until they go offline and come back online. There is no live-push of configuration changes.
-3. **Interruptible does not mean auto-close.** Marking a channel as interruptible allows a higher-priority item to be pushed to the agent, but the interrupted work item stays assigned. Agents must manually return to it. If agents forget, you end up with stale assigned items that block future routing.
-
----
+| Gotcha | Consequence |
+|---|---|
+| Capacity is taken at assignment (Gotcha 1) | Slow accepts and push timeouts make agents look full while idle |
+| Weights live on routing configurations (Gotcha 6) | The same work type can cost different amounts in different queues |
+| Voice takes the whole agent (Gotcha 7) | Raising agent capacity without changing the voice weight breaks the voice rule |
 
 ## Output Artifacts
 
@@ -184,8 +201,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Official Sources Used
 
-- Omni-Channel Overview — https://help.salesforce.com/s/articleView?id=sf.omnichannel_intro.htm
-- Service Presence Introduction — https://help.salesforce.com/s/articleView?id=sf.service_presence_intro.htm
+See `references/well-architected.md` for the sources read for this revision.
 
 ---
 

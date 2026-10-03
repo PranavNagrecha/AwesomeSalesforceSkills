@@ -103,3 +103,29 @@ Any field whose type is not confirmed as a Measure CANNOT be aggregated.
 ```
 
 **Detection hint:** KPI register or formula documentation lists fields without "Measure" or "Dimension" type designation.
+
+---
+
+## Anti-Pattern 6: Joining Actuals And Targets With An Inner Cogroup
+
+**What the LLM generates:**
+```saql
+q = cogroup opp by 'Territory', quota by 'Territory';
+q = foreach q generate opp.'Territory' as 'Territory',
+    sum(opp.'Amount') / sum(quota.'Target_Amount') * 100 as 'Attainment';
+```
+
+**Why it happens:** `cogroup` reads like a SQL join, and the model does not account for groups that exist on only one side.
+
+**Correct pattern:**
+```
+The default cogroup is inner: "unmatched records are dropped" (SAQL Guide, cogroup).
+Start from the stream that defines the population and use a left outer cogroup:
+  q = group quota by 'Territory' left, opp by 'Territory';
+  q = foreach q generate quota.'Territory' as 'Territory',
+      trunc(coalesce(sum(opp.'Amount'), 0) / sum(quota.'Target_Amount') * 100, 2)
+      as 'Percent_Attained';
+Territories with a target and no bookings now show 0 instead of disappearing.
+```
+
+**Detection hint:** An attainment or ratio query with `cogroup ... by` and no `left`, `right`, or `full` keyword, or with no `coalesce()` around the side that can be empty.

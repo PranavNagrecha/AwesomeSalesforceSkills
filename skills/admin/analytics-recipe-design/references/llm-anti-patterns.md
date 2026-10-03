@@ -1,140 +1,143 @@
-# LLM Anti-Patterns — Analytics Recipe Design
+# LLM Anti-Patterns: Analytics Recipe Design
 
-Common mistakes AI coding assistants make when generating or advising on Analytics Recipe Design.
-These patterns help the consuming agent self-check its own output.
+Common mistakes AI coding assistants make when generating or advising on CRM Analytics Data Prep recipes. Use these to self-check output before handing it to a user. Facts cited here are grounded in `gotchas.md`.
 
 ## Anti-Pattern 1: Recommending Inner Join When Lookup Is Required
 
-**What the LLM generates:** The assistant suggests an Inner join for an enrichment use case (e.g., "join Opportunities to Accounts to add Account Industry"), without noting that this will silently drop Opportunity rows that have no matching Account.
+**What the LLM generates:** An Inner join for an enrichment request ("join Opportunities to Accounts to add Industry") with no warning that Opportunities lacking a matching Account disappear.
 
-**Why it happens:** "Inner join" is the most commonly documented join type in SQL training data. LLMs default to it as the prototypical join and conflate "joining two datasets" with "Inner join semantics." The Lookup join type is specific to CRM Analytics and is not present in generic SQL training data, so the model does not surface it without prompting.
+**Why it happens:** Inner join is the prototypical join in SQL training data. The Lookup join type is specific to CRM Analytics, so the model does not surface it unless asked.
 
 **Correct pattern:**
 
 ```
-When the requirement is: "add columns from dataset B to every row of dataset A"
-→ Use: Lookup join (not Inner)
+Requirement: "add columns from dataset B to every row of dataset A"
+Use: joinType = Lookup (or LeftOuter)
 
-Lookup: preserves all left-side rows, appends matched right-side columns, writes null for unmatched rows
-Inner:  drops any left-side row that has no match in the right dataset — SILENT DATA LOSS
+Lookup: keeps every left row, fills matched right columns, nulls where unmatched
+Inner:  removes every left row with no match; the run still reports success
 ```
 
-**Detection hint:** Look for recommendations containing "Inner join" in an enrichment context (phrases like "add details", "enrich", "look up", "append attributes from"). Flag and ask: "Does this join need to preserve all rows from the primary dataset?"
+**Detection hint:** "Inner join" next to words like enrich, add details, look up, or append attributes. Ask: must every row of the primary dataset survive?
 
 ---
 
-## Anti-Pattern 2: Embedding Schedule Configuration Inside the Recipe Definition
+## Anti-Pattern 2: Inventing a Cron-Style Schedule Endpoint
 
-**What the LLM generates:** The assistant provides a recipe JSON body or deployment configuration that includes a `schedule` field, `cronExpression`, or `refreshInterval` property inside the recipe definition object, suggesting this is how recipe scheduling is configured.
+**What the LLM generates:** `POST /wave/recipes/{id}/schedules` with `scheduleType`, `cronExpression`, and `timeZone`, or a `schedule` block inside the recipe body.
 
-**Why it happens:** In many ETL tools and job schedulers, the schedule is co-located with the job definition. LLMs generalize this pattern to CRM Analytics recipes without knowing that Salesforce separates the schedule resource from the recipe resource.
+**Why it happens:** Most job schedulers accept cron expressions, and most REST APIs nest schedules under the job resource. The model pattern-matches to that shape. An earlier version of this skill made the same mistake.
 
 **Correct pattern:**
 
 ```
-# WRONG — schedule does not exist in recipe body
-POST /wave/recipes
-{ "name": "My Recipe", "schedule": { "cron": "0 0 3 * * ?" } }  ← has no effect
-
-# CORRECT — schedule is a separate API resource
-POST /wave/recipes/{recipeId}/schedules
+PUT /services/data/v67.0/wave/asset/<recipeId>/schedule
 {
-  "scheduleType": "cron",
-  "cronExpression": "0 0 3 * * ?",
-  "timeZone": "America/Los_Angeles"
+  "frequency": "weekly",
+  "daysOfWeek": ["Monday", "Thursday"],
+  "time": { "hour": 0, "minute": 45, "timeZone": "America/Los_Angeles" }
 }
 ```
 
-**Detection hint:** Any response that includes `schedule`, `cron`, `refreshInterval`, or `frequency` as a property inside a recipe body JSON should be flagged. The schedule is always a POST to the `/schedules` sub-resource.
+`frequency` is `hourly`, `weekly`, `monthly`, `monthlyrelative`, or `eventdriven`. GET and DELETE use the same URL. The recipe's `scheduleAttributes` field is read-back only.
+
+**Detection hint:** Any `cronExpression`, any `/schedules` (plural) path under `/wave/recipes`, or any schedule property inside a recipe POST or PATCH body.
 
 ---
 
-## Anti-Pattern 3: Using SAQL Functions in Formula Node Expressions
+## Anti-Pattern 3: Using the Recipe Id to Run the Recipe
 
-**What the LLM generates:** The assistant writes formula node expressions using SAQL syntax — for example, `toDate(CloseDate, "yyyy-MM-dd")`, `dateValue()`, `sum(Amount)`, or `groupby()` — inside a recipe Formula node.
+**What the LLM generates:** `POST /wave/dataflowjobs` with `"dataflowId": "05vB..."` (the recipe Id), or a call to a non-existent `/wave/recipes/<id>/run` endpoint.
 
-**Why it happens:** CRM Analytics is strongly associated with SAQL in training data. LLMs conflate the query language (SAQL, used in lenses and dashboard queries) with the recipe expression language (used in Formula nodes). The two languages are syntactically different and have overlapping but distinct function libraries.
+**Why it happens:** The model assumes the run endpoint takes the Id of the thing being run.
+
+**Correct pattern:** Read `targetDataflowId` (starts with `02KB`) from `GET /wave/recipes/<recipeId>?format=R3`, then POST `{"dataflowId":"02KB...","command":"start"}` to `/wave/dataflowjobs`. Stop a running job with `PATCH /wave/dataflowjobs/<jobId>` and `{"command":"stop"}`.
+
+**Detection hint:** A `dataflowId` that starts with `05v`, or any recipe "run" endpoint other than `/wave/dataflowjobs`.
+
+---
+
+## Anti-Pattern 4: Writing SAQL or Salesforce Formula Syntax in Formula Nodes
+
+**What the LLM generates:** `toDate(CloseDate, "yyyy-MM-dd")`, `sum(Amount)`, or `BLANKVALUE()` inside a recipe Formula node, presented as known-good.
+
+**Why it happens:** CRM Analytics is strongly associated with SAQL, and Salesforce is strongly associated with its own formula language. The recipe engine is neither.
+
+**Correct pattern:** A recipe formula's `expressionType` is `Sql` or `Legacy`, and each SQL formula field declares a result type (`Text`, `Number`, `DateOnly`, `DateTime`, `Multivalue`). Put aggregation in an Aggregate node upstream. Validate every expression in the formula editor, and say so in the answer, because the function reference is not in the REST guide.
+
+**Detection hint:** `toDate`, `dateValue`, `epoch_to_date`, `group by`, or an aggregate function inside a Formula node; or a function list stated as fact without "validate in the editor".
+
+---
+
+## Anti-Pattern 5: Getting Incremental Behavior Wrong in Either Direction
+
+**What the LLM generates:** Either "the recipe only processes changed records" with no mention of run mode, or "recipes can never run incrementally" followed by a hand-built filter-and-append pattern.
+
+**Why it happens:** Older guidance said recipes always reprocess full input. The current API lists `runMode` values `Full`, `Incremental`, and `Streaming` (API 57.0), and the model has seen both claims.
+
+**Correct pattern:** Read the recipe's `runMode` first. With `Full`, budget for full reprocessing. Use the native run mode where it applies. Keep the manual filter, append, and second Output pattern only when the native mode is unavailable, and document it in the recipe description.
+
+**Detection hint:** Any incremental claim that does not mention `runMode`.
+
+---
+
+## Anti-Pattern 6: Confusing Bucket Types
+
+**What the LLM generates:** A measure bucket on a numeric-looking text field (ZIP code, "1/2/3" priority), or a dimension bucket on a true measure.
+
+**Why it happens:** The model infers field type from names and sample values instead of the dataset schema.
 
 **Correct pattern:**
 
 ```
-# WRONG — SAQL syntax does not work in recipe Formula nodes
-toDate(CloseDate, "yyyy-MM-dd")       ← SAQL date function, not available in recipes
-dateValue(CloseDate)                   ← SAQL function, not available in recipes
-
-# CORRECT — Recipe expression language equivalents
-DATE(YEAR(CloseDate), MONTH(CloseDate), DAY(CloseDate))
-YEAR(CloseDate)
-MONTH(CloseDate)
-DAY(CloseDate)
+Measure field   -> measure bucket with numeric ranges
+Dimension field -> dimension bucket with discrete value groups
+Date field      -> date bucket with calendar periods
+Numeric text    -> cast in a Formula node first, or use a dimension bucket
 ```
 
-**Detection hint:** Flag any formula expression containing `toDate`, `dateValue`, `epoch_to_date`, `groupby`, `sum(`, `count(`, or other SAQL aggregate/date functions. These are not valid in recipe Formula nodes.
+**Detection hint:** A Bucket node design that never states the source field kind.
 
 ---
 
-## Anti-Pattern 4: Assuming Recipes Support Native Incremental Loads
+## Anti-Pattern 7: Adding a Security Predicate to the Recipe After the Dataset Exists
 
-**What the LLM generates:** The assistant describes a recipe design that will "process only new or changed records since the last run" as if this is a native recipe capability, without flagging that recipes reprocess the full input on every run.
+**What the LLM generates:** "Add `'OwnerId' == \"$User.Id\"` to the Output node and rerun the recipe" for a dataset that users already open.
 
-**Why it happens:** Incremental/delta loading is a standard feature of ETL tools and is so commonly expected that LLMs assume it exists unless explicitly told otherwise. The concept of "incremental recipe" appears in some Salesforce documentation contexts (e.g., Connected Data Sources can have incremental sync), which LLMs may conflate with recipe-level incremental processing.
+**Why it happens:** The model assumes every recipe run reapplies every recipe setting.
+
+**Correct pattern:** The recipe's Security Predicate applies when the dataset is created. For an existing dataset, edit the predicate on the dataset. Set the predicate before the first run on new recipes. Tell the user that `$User` predicates need a new session to pick up changed values.
+
+**Detection hint:** Predicate advice for an existing dataset that only touches the recipe.
+
+---
+
+## Anti-Pattern 8: Wildcard-Retrieving Recipes for Deployment
+
+**What the LLM generates:** A `package.xml` with `<members>*</members>` for `WaveRecipe` and nothing for `WaveDataflow`, or a hand-written `WaveRecipe` file with a made-up `dataflow` ID.
+
+**Why it happens:** Wildcards work for most metadata types, and the model does not know the recipe depends on a separate dataflow component.
+
+**Correct pattern:** Name each `WaveRecipe` and its `WaveDataflow` explicitly, retrieve both from the source org, and recreate schedules in the target org with the Schedule resource. See `metadata-examples.md`.
+
+**Detection hint:** `WaveRecipe` in a manifest without a matching `WaveDataflow`, or a `dataflow` value that was not retrieved.
+
+---
+
+## Anti-Pattern 9: Omitting Row Count Reconciliation After Joins
+
+**What the LLM generates:** A complete recipe design with Join nodes and no step to compare input and output row counts, or a step that compares against the editor preview.
+
+**Why it happens:** Reconciliation happens after the run, so design-time answers skip it. The preview looks like a run but executes as the Security User and shows only rows the previewing user can access.
 
 **Correct pattern:**
 
 ```
-# WRONG — assumption
-"The recipe will automatically process only records modified since the last run."
-
-# CORRECT — explicit statement of behavior
-"Recipes reprocess the full input dataset on every run. There is no native incremental
-load support. To approximate incremental behavior:
-1. Add a Filter node to restrict rows to a recent date window (e.g., LastModifiedDate >= 30 days ago)
-2. Use an Append node to union the filtered output with a stored historical snapshot dataset
-3. Add a second Output node to persist the updated historical snapshot for the next run
-This is an approximation, not true CDC. Full reprocessing always occurs."
+After the first real job:
+1. Note the row count of each Load node's dataset.
+2. Note the row count of the output dataset.
+3. If output < primary input and the join is Inner or RightOuter, check for unintended drops.
+Do not use the editor preview for this comparison.
 ```
 
-**Detection hint:** Flag any response that says recipes will "only process changed records", "detect new rows", "run incrementally", or "pick up where it left off" without explicitly implementing the filter-append workaround pattern.
-
----
-
-## Anti-Pattern 5: Confusing Bucket Node Types (Measure vs Dimension vs Date)
-
-**What the LLM generates:** The assistant recommends a Measure bucket for a field that is stored as a string dimension (e.g., a status code like "1", "2", "3" stored as text), or recommends a Dimension bucket for a numeric measure field. The recipe either fails to validate or produces incorrect bucket assignments.
-
-**Why it happens:** LLMs infer field type from the field name or sample values rather than from the actual dataset schema. A field named `Priority` with values "1", "2", "3" looks numeric to an LLM but may be stored as a Dimension (string) in the dataset schema, making it incompatible with a Measure bucket.
-
-**Correct pattern:**
-
-```
-# Check the field type in the dataset schema before configuring a Bucket node
-
-If field is a Measure (numeric):   → Use Measure bucket with numeric range definitions
-If field is a Dimension (string):  → Use Dimension bucket with discrete value groupings
-If field is a Date:                → Use Date bucket with calendar period definitions
-
-# For numeric-looking string fields: either cast to number in a preceding Formula node,
-# or use a Dimension bucket with explicit discrete value matching ("1" → "Low", etc.)
-```
-
-**Detection hint:** Any recipe design that specifies a Bucket node without explicitly stating the source field type (Measure / Dimension / Date) and confirming it matches the bucket type configuration should be flagged for schema verification.
-
----
-
-## Anti-Pattern 6: Omitting Row Count Verification After Join Nodes
-
-**What the LLM generates:** The assistant provides a complete recipe design that includes Join nodes but does not include any step to verify the output row count against the input row count after the recipe runs.
-
-**Why it happens:** LLMs describe the "happy path" of recipe construction. Row count verification is a runtime validation step that occurs after the recipe runs, not a canvas configuration step, so it is often omitted from design-time guidance.
-
-**Correct pattern:**
-
-```
-After every recipe run that includes a Join node:
-1. Note the row count of the left-input Load node dataset (visible in Analytics Studio dataset detail)
-2. Note the row count of the Output dataset
-3. If Output rows < Left input rows and the join type is Inner or RightOuter, investigate for
-   unintended row drops — switch to Lookup or LeftOuter if enrichment (not filtering) is the intent
-```
-
-**Detection hint:** Any recipe workflow recommendation that includes a Join node but contains no post-run row count comparison step is incomplete. Flag and add: "Verify output row count against input row count after the first run."
+**Detection hint:** A recipe workflow with a Join node and no post-run count comparison.

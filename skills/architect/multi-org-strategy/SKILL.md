@@ -240,7 +240,7 @@ Use this mode when cross-org integrations are failing, hitting limits, or behavi
 
 Salesforce-to-Salesforce is a native Salesforce feature that allows records to be published from one org and subscribed in another. It exists and continues to function, but Salesforce considers it a legacy integration approach.
 
-**Do not use S2S for new integrations.** Reasons:
+**Do not use S2S for new integrations.** Reasons (UNVERIFIED (2026-10-03): the four reasons below come from Salesforce Help and field experience, which this revision could not fetch; the grounded facts are the `PartnerNetworkConnection` lifecycle and availability rules in `references/gotchas.md` Gotcha 1):
 
 - S2S uses SOAP API under the hood, consuming API call limits on both orgs for every record exchange.
 - It does not scale to high record volumes — each record publication is a separate API transaction.

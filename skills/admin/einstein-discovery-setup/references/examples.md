@@ -22,7 +22,7 @@ After enabling predictions in the Deploy tab and running the bulk scoring job, t
 
 After both steps, reps will see the current prediction score on the record page. The score updates only when the next bulk scoring job runs — not when the rep edits the record.
 
-**Why it works:** Einstein Discovery writeback fields are created with no FLS and are not automatically added to any page layout. The bulk scoring job populates the field value in the database, but FLS gates visibility. Without explicit FLS assignment, the field is invisible even to system administrators viewing records.
+**Why it works:** Field-level security gates who can see any custom field, and a new field is not on any layout until someone adds it. UNVERIFIED (2026-10-03): that Einstein Discovery creates writeback fields with no field-level security at all, that the field is prefixed `Einstein_`, and that it is invisible even to administrators, are help-only claims carried from an earlier version of this example. Granting access explicitly is safe either way.
 
 ---
 
@@ -46,7 +46,7 @@ Step-by-step:
 
 The admin should add this activation step to the operational runbook and, if possible, configure an alert or calendar reminder for after each scheduled refresh window.
 
-**Why it works:** Einstein Discovery does not auto-activate refreshed model versions because activation is an intentional quality gate — admins should review model metrics before rolling out a new version to production scoring. The system provides no automatic reminder or warning when scoring is running against a stale model version, so the manual activation step must be operationally tracked.
+**Why it works (as reported, UNVERIFIED (2026-10-03): help-only):** Einstein Discovery does not auto-activate refreshed model versions because activation is an intentional quality gate — admins should review model metrics before rolling out a new version to production scoring. The system provides no automatic reminder or warning when scoring is running against a stale model version, so the manual activation step must be operationally tracked.
 
 ---
 
@@ -57,3 +57,28 @@ The admin should add this activation step to the operational runbook and, if pos
 **What goes wrong:** The three-step story creation wizard lives exclusively in CRM Analytics Studio (App Launcher > Analytics Studio > Create > Story). Setup-based Einstein menus contain related configuration (enabling Einstein features, reviewing prediction definitions) but not the full story authoring experience. Admins who cannot find the wizard may incorrectly conclude that Einstein Discovery is not provisioned or that their license is insufficient.
 
 **Correct approach:** Always launch story creation from Analytics Studio. Verify that the CRM Analytics license is provisioned and that the admin user has the CRM Analytics Admin permission set assigned. Then navigate to App Launcher > Analytics Studio > Create > Story to access the three-step wizard.
+
+---
+
+## Example 3: Promoting a Prediction Definition Without Losing the Writeback Field
+
+**Context:** The win prediction from Example 1 is approved in a full sandbox. The release team promotes metadata with the Salesforce CLI.
+
+**Problem:** A previous release retrieved the `DiscoveryGoal` from a developer sandbox where writeback was never configured. The file had no `pushbackField`, and deploying it deleted the production writeback field and its scores.
+
+**Solution:** Retrieve from the org that holds the real configuration, and fail the release if a goal file lost its `pushbackField`:
+
+```bash
+# Retrieve the prediction definition and the model it deploys
+sf project retrieve start --metadata "DiscoveryGoal:Opportunity_Win_Prediction" "DiscoveryAIModel:Opportunity_Win_Model" --target-org fullsandbox
+
+# Gate: every goal that had a pushbackField on main must still have one
+for f in $(git diff --name-only origin/main -- 'force-app/main/default/discovery/*.goal-meta.xml'); do
+  if git show "origin/main:$f" 2>/dev/null | grep -q "<pushbackField>" && ! grep -q "<pushbackField>" "$f"; then
+    echo "BLOCK: $f dropped pushbackField; deploying it deletes the writeback field"; exit 1
+  fi
+done
+```
+
+**Why it works:** The Metadata API guide states that removing a pushback field from the goal metadata deletes the field from the Salesforce object. The gate turns that rule into a check the release cannot skip. UNVERIFIED (2026-10-03): the source-format file name (`<name>.goal-meta.xml`) follows the usual `-meta.xml` convention for the `.goal` suffix; confirm it against a real retrieve.
+

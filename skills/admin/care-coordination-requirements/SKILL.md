@@ -12,6 +12,8 @@ triggers:
   - "How does care coordination for Slack work and what are the prerequisites?"
   - "What are the ICM object families for care coordination process design in Salesforce?"
   - "Difference between CareBarrier and CarePlanProblem for SDOH vs care plan workflows"
+  - "design a hospital discharge handoff to outpatient care coordinators in Health Cloud"
+  - "decide whether care gaps should be calculated, imported, or entered by coordinators"
 tags:
   - health-cloud
   - care-coordination
@@ -23,7 +25,7 @@ tags:
 inputs:
   - Health Cloud org with Integrated Care Management (ICM) enabled
   - Documented care coordination process requirements (care team roles, handoff triggers, SDOH categories)
-  - HealthCloudICM permission set availability
+  - Health Cloud permission set licenses and permission sets assigned to coordinators
 outputs:
   - ICM object family mapping to care coordination process requirements
   - SDOH barrier tracking design using CareDeterminant/CareBarrier objects
@@ -33,14 +35,16 @@ dependencies:
   - admin/health-cloud-patient-setup
   - admin/care-plan-configuration
   - admin/care-program-management
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-10
+updated: 2026-10-03
 ---
 
 # Care Coordination Requirements
 
-Use this skill when mapping care coordination process requirements for Health Cloud Integrated Care Management (ICM): designing care team workflows, transition of care handoffs, SDOH barrier tracking, and care gap identification. This skill guides requirements gathering and process-to-object mapping. It does NOT cover the technical implementation of individual components — for Apex, Flow, or configuration build steps, consult the associated implementation skills.
+Use this skill when mapping care coordination process requirements for Health Cloud Integrated Care Management (ICM): care team workflows, transition of care handoffs, SDOH barrier tracking, and care gap identification. This skill covers requirements gathering and process-to-object mapping. It does NOT cover building individual components; for Apex, Flow, or configuration build steps, use the implementation skills listed at the end.
+
+Licence gate: every object named here is a Health Cloud object. The developer guide titles itself "Agentforce Health Developer Guide" in Summer '26; the social determinants objects additionally require the Health Cloud managed package and its permission sets.
 
 ---
 
@@ -48,10 +52,27 @@ Use this skill when mapping care coordination process requirements for Health Cl
 
 Gather this context before working on anything in this domain:
 
-- Confirm Integrated Care Management (ICM) is enabled in Setup. ICM has two separate checkboxes: (1) Managing Care Plans and (2) Calculating Care Gaps. Both must be enabled for full ICM functionality.
-- Identify which coordination scenarios apply: SDOH barriers, referral management, care gap detection, care episodes, or all of the above. Each maps to a different ICM object family.
-- Confirm the HealthCloudICM permission set is available and will be assigned to all care coordinators and care team members who interact with ICM objects.
-- Identify whether Care Coordination for Slack is required. This is a separate add-on that requires both Slack and Health Cloud integration to be configured first — it is not included in base Health Cloud licensing.
+- Confirm the ICM data model is enabled. The Health Cloud developer guide says: "go to Setup and enable the FHIR R4-Aligned Data Model setting on the FHIR R4 Support Settings page and the Enhanced Care Plans setting on the Integrated Care Management Settings page." UNVERIFIED (2026-10-03): earlier versions of this skill described two other checkboxes ("Managing Care Plans" and "Calculating Care Gaps"); those labels are not in the guide.
+- Identify which coordination scenarios are in scope: SDOH barriers, referrals, care gaps, care episodes. Each maps to a different object family.
+- Confirm permission set licenses and permission sets for coordinators. The social determinants objects "are visible to users with the Health Cloud and the Health Cloud Platform permission set licenses and the Health Cloud Permission Set License and Health Cloud Social Determinants permission sets." UNVERIFIED (2026-10-03): a permission set named `HealthCloudICM`, cited by earlier versions of this skill, is not named in the guide.
+- If Slack-based coordination is in scope, the org setting is `IndustriesSettings.enableCareMgmtSlackAccess` ("Care Coordination for Slack app", API 56.0). UNVERIFIED (2026-10-03): that the app is a separately purchased add-on is a commercial claim not stated in the guides read.
+
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before mapping a single object. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Where do care gaps come from: calculated from clinical measures, imported from a payer system, or opened by a coordinator?" | `CareGap.RecordOriginType` distinguishes `Calculated`, `Imported`, and `ManuallyCreated` (gotcha 1) | The origin per gap source and who owns each | Gap lists a coordinator can trust, with the source system recorded on every record |
+| "Who can close or exclude a gap, and what reason must they record?" | `CareGap.Status` is not writable; closure runs through `MeasureEvaluationStatus` and `StatusReason` (gotcha 2) | A closure and exclusion policy with required reasons | An auditable gap lifecycle instead of edits that fail or vanish |
+| "Is the barrier always tied to a Case, or sometimes just to the patient?" | `CareBarrier.CaseId` is optional; the patient lookup is not (gotcha 4) | The rule for when a Case is created | Barriers that appear in the right views without forcing empty Cases |
+| "Will barriers be written by screening automation or an integration?" | The guide's CareBarrier supported-calls list omits `create()` (gotcha 5) | A sandbox insert test planned before design sign-off | No late redesign of the screening flow |
+| "Do referrals and episodes need the FHIR-aligned objects?" | `ClinicalServiceRequest` needs the FHIR-Aligned Clinical Data Model org pref (gotcha 6) | The org preferences to enable, in order | Objects that exist when the build starts |
+| "Is Slack part of the care team's working day?" | Care Coordination for Slack is a separate org setting (gotcha 7) | The Slack decision and its prerequisites | No Slack-dependent workflow designed into an org where the app is off |
+
+What a proper requirements map adds over "just using the objects": every gap, barrier, referral, and episode has an owner, an origin, and a lifecycle that the platform allows, decided before anyone builds a flow.
 
 ---
 
@@ -59,32 +80,31 @@ Gather this context before working on anything in this domain:
 
 ### ICM Object Families
 
-Integrated Care Management organizes care coordination across four object families:
+| Family | Objects | API version | Notes |
+|---|---|---|---|
+| SDOH (social determinants) | `CareBarrier`, `CareBarrierDeterminant`, `CareBarrierType`, `CareDeterminant`, `CareDeterminantType`, `CareInterventionType` | 45.0 | Needs the Health Cloud managed package and the Social Determinants permission sets |
+| Referrals | `ClinicalServiceRequest`, `ClinicalServiceRequestDetail` | See note | Listed among objects that need the FHIR-Aligned Clinical Data Model org pref |
+| Care gaps | `CareGap`, `CareGapCriteriaResult`, `ClinicalMeasure`, `ClinicalMeasureCriteria`, `ClinicalMeasureCriteriaGrp` | 59.0 | Gaps are evaluated against clinical measures |
+| Care episodes | `CareEpisode`, `CareEpisodeDetail` | 57.0 | Based on the FHIR EpisodeOfCare resource |
+| Care plans | `CarePlan`, `CarePlanActivity`, `CarePlanTemplate`, `CarePlanTemplateProblem`, `GoalAssignment`, `ProblemDefinition`, `GoalDefinition`, `ActionPlanTemplateAssignment` | 56.0 to 57.0 | The PGI (problem, goal, intervention) library |
 
-1. **SDOH (Social Determinants of Health):** `CareDeterminant`, `CareBarrier`, `CareBarrierType`. Used to track social factors that affect health outcomes (food insecurity, housing instability, transportation barriers). CareBarrier records link to both Account (patient) and Case, and are resolved via Tasks.
+UNVERIFIED (2026-10-03): the API version for `ClinicalServiceRequest` (51.0 in earlier versions of this skill) was not re-read for this pass.
 
-2. **Referrals:** `ClinicalServiceRequest` (API v51.0+). Tracks clinical referrals from one provider to another. Requires the HealthCloudICM permission set.
-
-3. **Care Gaps:** `CareGap` (API v59.0+). Represents a gap in preventive care or chronic disease management (e.g., overdue screening, missing vaccination). CareGap records are system-generated by external clinical rules engines or ingested via FHIR R4 APIs — they cannot be manually created by end users.
-
-4. **Care Episodes:** `CareEpisode` (API v57.0+). Represents a defined period of care for a patient (e.g., a hospital admission, a chronic condition management episode). Supports care team coordination across a defined time window.
-
-### SDOH Barrier vs. CarePlanProblem
+### SDOH Barrier vs Care Plan Problem
 
 This is the most commonly confused distinction in care coordination requirements:
 
-- **CareBarrier** — An SDOH obstacle at the social determinants level. Linked to Account+Case. Resolved via Task closure. Example: "Patient lacks transportation to appointments."
-- **CarePlanProblem** — A clinical problem or diagnosis goal tracked within a care plan. Part of the ICM care plan hierarchy (ProblemDefinition → GoalDefinition → ActionPlanTemplate). Example: "Uncontrolled Type 2 Diabetes."
+| Concept | Object | What it represents |
+|---|---|---|
+| Social barrier | `CareBarrier` | "The circumstances or obstacles affecting a patient or member"; status `Open` or `Addressed` |
+| Care plan problem (instantiated) | `HealthCondition` | `ProblemDefinition` records "create HealthCondition records that serve as problems in care plans" |
+| Care plan problem (template) | `CarePlanTemplateProblem` | Positions a problem in a care plan template |
 
-They are used at different workflow stages: SDOH barriers are identified during social screening; care plan problems are clinical priorities in an active care plan. Confusing them leads to incorrect object usage and broken workflow automation.
+There is no standard object named `CarePlanProblem`. The name exists only as the legacy managed-package object `HC24__CarePlanProblem__c`. A barrier can be linked to a care gap through `CareGap.CareBarrierId`.
 
-### Care Gap Constraints
+### Care Gap Lifecycle
 
-CareGap records (API v59.0+) have an important constraint: **they cannot be created manually**. They are system-generated by:
-- An external clinical rules engine (e.g., a payer's quality analytics system)
-- Ingestion via FHIR R4 APIs from an EHR system
-
-A care coordinator cannot create a CareGap record directly in the UI or via standard Flow DML. Any process design that assumes manual care gap creation must be redesigned to use an external integration or the Business Rules Engine.
+`CareGap` (API 59.0) supports `create()`, `update()`, and `upsert()`. Records carry a `RecordOriginType` of `Calculated`, `Imported`, or `ManuallyCreated`, a reporting period, and source-system fields. `Status` (`Open`, `Closed`, `Excluded`) has no Create or Update property in the field list. Coordinators act through `MeasureEvaluationStatus`, which includes `ManuallyOpened`, `ManuallyClosed`, and `ManuallyExcluded`, with `StatusReason` holding "the reason for force closing the care gap".
 
 ---
 
@@ -92,29 +112,26 @@ A care coordinator cannot create a CareGap record directly in the UI or via stan
 
 ### Transition of Care Handoff Design
 
-**When to use:** A patient is being discharged from a hospital and transitioning to outpatient care coordination.
+**When to use:** A patient is discharged from hospital and moves to outpatient care coordination.
 
 **How it works:**
-1. On hospital discharge, a CareEpisode record is created covering the inpatient stay, assigned to the inpatient care team.
-2. An outbound ClinicalServiceRequest (referral) is created to the receiving outpatient care coordinator.
-3. The outpatient coordinator accepts the referral and creates a new CarePlan for post-discharge management.
-4. SDOH screening identifies transportation and food security barriers — CareBarrier records are created linked to patient Account and a Case.
-5. Care Gaps identified by the payer's quality system are ingested via FHIR R4 API and displayed to the outpatient coordinator on the patient timeline.
-6. The care coordinator resolves barriers by closing Tasks linked to CareBarrier records.
-
-**Why not the alternative:** Without structured ClinicalServiceRequest referrals and CareEpisode records, transition of care handoffs rely on informal communication and cannot be measured or reported.
+1. On discharge, a `CareEpisode` record covers the inpatient stay; `CareEpisodeDetail` can reference the referral that started it or the diagnoses it addresses.
+2. A `ClinicalServiceRequest` (referral) goes to the receiving outpatient team.
+3. The outpatient coordinator accepts the referral and creates a `CarePlan` for post-discharge management.
+4. SDOH screening identifies transportation and food barriers; `CareBarrier` records are linked to the patient and, where coordination work is needed, to a Case.
+5. Care gaps arrive by calculation or import and appear in the coordinator's list.
+6. The coordinator works barrier interventions through tasks, and an Action Plan on the Case can generate them (see `references/metadata-examples.md`).
 
 ### SDOH Screening and Barrier Resolution
 
-**When to use:** A care coordinator conducts social needs screening and identifies SDOH barriers that require intervention.
+**When to use:** A coordinator runs social needs screening and finds barriers that need intervention.
 
 **How it works:**
-1. Care coordinator completes a social screening (typically via a Discovery Framework assessment form).
-2. For each identified social barrier, create a CareBarrier record linked to the patient Account and a Case.
-3. Set the CareBarrierType to categorize the barrier (food, housing, transportation, etc.).
-4. Create Tasks linked to the CareBarrier for specific intervention actions.
-5. When the intervention is completed, close the Task. The CareBarrier status updates based on task completion.
-6. Track SDOH barrier resolution rates via CareBarrier reports for population health management.
+1. Run the screening assessment; `CareBarrier.SurveyResponseId` can reference the survey response.
+2. For each positive finding, record a barrier with its `CareBarrierType` and `Priority` (`Low`, `Normal`, `High`).
+3. Create a Case when a community resource intervention must be tracked.
+4. Generate intervention tasks on the Case.
+5. Set the barrier's `Status` to `Addressed` when the intervention is complete. UNVERIFIED (2026-10-03): earlier versions of this skill said the barrier status updates automatically when tasks close; the guide does not describe that automation.
 
 ---
 
@@ -122,44 +139,51 @@ A care coordinator cannot create a CareGap record directly in the UI or via stan
 
 | Situation | Recommended Object | Reason |
 |---|---|---|
-| Social screening identified food insecurity | CareBarrier + CareBarrierType | SDOH social factor, not a clinical diagnosis |
-| Patient has uncontrolled diabetes needing care planning | CarePlanProblem | Clinical problem within care plan hierarchy |
-| Patient is overdue for A1c screening | CareGap (system-generated) | Preventive care quality measure gap; cannot be created manually |
-| Patient referred to a specialist | ClinicalServiceRequest | Clinical referral with provider network integration |
-| Defined period of inpatient care | CareEpisode | Episode of care with time-bounded care team coordination |
-| Care coordination via Slack required | Care Coordination for Slack add-on | Separate SKU; requires Slack + HC integration prerequisites |
+| Screening found food insecurity | `CareBarrier` with a `CareBarrierType` | Social determinant, not a clinical diagnosis |
+| Uncontrolled diabetes needs a care plan problem | `HealthCondition` instantiated from a `ProblemDefinition` | Clinical problem in the PGI hierarchy |
+| Patient overdue for A1c screening | `CareGap` evaluated against a `ClinicalMeasure` | Quality measure gap with origin, period, and status |
+| Coordinator knows of a gap the engine missed | `CareGap` with `RecordOriginType` = `ManuallyCreated` | The data model records manual origin explicitly |
+| Patient referred to a specialist | `ClinicalServiceRequest` | Clinical referral; needs the FHIR-aligned org pref |
+| Defined period of inpatient care | `CareEpisode` | Episode of care based on FHIR EpisodeOfCare |
 
 ---
 
 ## Recommended Workflow
 
-1. **Enable and verify ICM prerequisites** — confirm both ICM checkboxes are enabled (Managing Care Plans + Calculating Care Gaps). Verify HealthCloudICM permission set is assigned to all care coordinator users.
-2. **Map care coordination scenarios to ICM object families** — for each care coordination scenario in scope, identify which of the four ICM object families applies (SDOH/Referrals/Care Gaps/Care Episodes). Document the process-to-object mapping before any configuration begins.
-3. **Design SDOH barrier tracking** — define CareDeterminant and CareBarrierType picklist values for the SDOH categories in scope. Map screening assessment responses to CareBarrier creation triggers. Define Task workflow for barrier resolution.
-4. **Design care gap display requirements** — identify which external systems will generate CareGap records and via which mechanism (FHIR R4 ingestion or direct API write). Design the care coordinator UI to display care gaps appropriately — do not design any manual creation workflow.
-5. **Design transition of care handoffs** — map each handoff scenario to ClinicalServiceRequest referral + CareEpisode creation. Define which care team roles initiate vs. receive handoffs. Document referral status workflow.
-6. **Validate Care Coordination for Slack requirements** — if Slack coordination is needed, confirm the Slack + Health Cloud integration is deployed and the add-on license is provisioned before designing Slack-based care team workflows.
+1. **Verify prerequisites.** Confirm the FHIR R4-Aligned Data Model setting and the Enhanced Care Plans setting are enabled, the FHIR-Aligned Clinical Data Model org pref is on if referrals are in scope, and coordinators hold the Health Cloud permission set licenses and Social Determinants permission sets.
+2. **Map scenarios to object families.** For each scenario in scope, name the objects from the table above and the record that anchors it (patient account, Case, care plan).
+3. **Design SDOH tracking.** Define `CareBarrierType` and `CareDeterminantType` values, the screening-to-barrier rule, when a Case is created, and the intervention tasks. Test a barrier insert in a sandbox before sign-off.
+4. **Design care gap sourcing and lifecycle.** Decide which gaps are calculated, imported, or manually created; who may close or exclude them; and the reasons they must record.
+5. **Design transition of care handoffs.** Map each handoff to `ClinicalServiceRequest` and `CareEpisode`, and name the roles that send and receive.
+6. **Decide on Slack.** If Slack is in scope, confirm `enableCareMgmtSlackAccess` and its prerequisites before designing Slack-dependent steps. Deployable settings are in `references/metadata-examples.md`.
 
 ---
 
 ## Review Checklist
 
-- [ ] ICM enabled (both checkboxes: Managing Care Plans and Calculating Care Gaps)
-- [ ] HealthCloudICM permission set available for care coordinators
-- [ ] Process-to-object mapping documented for each care coordination scenario
-- [ ] CareBarrier vs. CarePlanProblem distinction clarified for all relevant workflows
-- [ ] Care gap ingestion mechanism identified (external system, FHIR API) — no manual creation process designed
-- [ ] Care Coordination for Slack add-on license confirmed if Slack workflows are in scope
+- [ ] FHIR R4-Aligned Data Model and Enhanced Care Plans settings confirmed
+- [ ] Permission set licenses and Social Determinants permission sets confirmed for coordinators
+- [ ] Process-to-object mapping documented for each scenario
+- [ ] Barrier vs care plan problem distinction applied (`CareBarrier` vs `HealthCondition`)
+- [ ] Care gap origin (calculated, imported, manual) and closure policy documented
+- [ ] Barrier insert tested in a sandbox
+- [ ] Slack decision recorded with the `enableCareMgmtSlackAccess` setting
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **CareGap records cannot be manually created** — CareGap (API v59.0+) is a system-generated object. Care coordinators and admins cannot create CareGap records via the UI, standard Flow DML, or bulk data import. Any process design requiring manual care gap creation must be redesigned to use an external clinical rules engine or FHIR R4 API ingestion.
+The deep versions, with sources, live in `references/gotchas.md`.
 
-2. **ICM requires two separate Setup checkboxes** — Integrated Care Management has two distinct settings: "Enable Integrated Care Management for Managing Care Plans" and "Enable Integrated Care Management for Calculating Care Gaps." Enabling only one checkbox limits ICM functionality and causes objects from the unenabled section to be unavailable.
-
-3. **Care Coordination for Slack is a separate add-on, not base Health Cloud** — Many implementations discover after go-live that Slack-based care team coordination requires a separate purchased add-on and that Slack + Health Cloud integration must already be deployed. This add-on should be confirmed in the licensing contract before care coordination workflows that depend on Slack notifications are designed.
+| # | Gotcha | One-line consequence |
+|---|---|---|
+| 1 | Care gaps can be calculated, imported, or manually created | Designs that forbid manual gaps block a supported workflow |
+| 2 | `CareGap.Status` is not writable | Flows that set Status fail; use `MeasureEvaluationStatus` |
+| 3 | ICM needs two named settings plus licences | Objects are missing at build time |
+| 4 | `CareBarrier.CaseId` is optional | Forcing a Case on every barrier creates empty Cases |
+| 5 | The guide lists no `create()` call for `CareBarrier` | Screening automation may fail to insert barriers |
+| 6 | Referrals need the FHIR-Aligned Clinical Data Model org pref | `ClinicalServiceRequest` is unavailable without it |
+| 7 | Slack coordination is its own setting | Slack steps silently do nothing when the app is off |
 
 ---
 
@@ -167,15 +191,16 @@ A care coordinator cannot create a CareGap record directly in the UI or via stan
 
 | Artifact | Description |
 |---|---|
-| ICM object family mapping | Document mapping each care coordination scenario to its ICM objects |
-| SDOH screening to barrier resolution workflow | Process flow from social screening through CareBarrier creation and Task resolution |
-| Care gap integration requirements | Specification for external system integration to populate CareGap records |
-| Transition of care handoff design | ClinicalServiceRequest + CareEpisode workflow for care transitions |
+| ICM object family mapping | Each care coordination scenario mapped to its objects |
+| SDOH screening to barrier resolution workflow | From screening through barrier, Case, tasks, and `Addressed` |
+| Care gap sourcing and lifecycle | Origin per source, closure and exclusion policy, required reasons |
+| Transition of care handoff design | `ClinicalServiceRequest` and `CareEpisode` workflow for care transitions |
 
 ---
 
 ## Related Skills
 
-- admin/care-plan-configuration — ICM care plan template setup (ProblemDefinition, GoalDefinition, ActionPlanTemplate)
-- admin/care-program-management — Care program enrollment that precedes coordination workflow
-- admin/referral-management-health — ClinicalServiceRequest referral configuration for handoffs
+- `admin/care-plan-configuration`: ICM care plan template setup (ProblemDefinition, GoalDefinition, ActionPlanTemplate)
+- `admin/care-program-management`: care program enrollment that precedes coordination workflow
+- `admin/referral-management-health`: `ClinicalServiceRequest` referral configuration for handoffs
+- `admin/clinical-data-requirements`: FHIR-aligned clinical data model prerequisites

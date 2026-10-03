@@ -1,6 +1,6 @@
 ---
 name: grant-management-setup
-description: "Use when configuring grant tracking in a Salesforce nonprofit org — NPSP Outbound Funds Module (Opportunity-based, managed package) or Nonprofit Cloud for Grantmaking (separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for recording donor gifts and receipts — use admin/gift-entry-and-processing. NOT for reporting program outcomes to a funder — use admin/program-outcome-tracking-design."
+description: "Use when configuring grant tracking in a Salesforce nonprofit org: NPSP Outbound Funds Module (open-source outfunds managed package) or Nonprofit Cloud for Grantmaking (separate license). Trigger keywords: grant management, funding awards, disbursement tranches, grantmaking setup, OFM, FundingAward, FundingDisbursement, FundingAwardRequirement. NOT for recording donor gifts and receipts, use admin/gift-entry-and-processing. NOT for reporting program outcomes to a funder, use admin/program-outcome-tracking-design."
 category: admin
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -10,6 +10,8 @@ triggers:
   - "How do I set up grant tracking in our NPSP org?"
   - "We need to track funding award disbursements by tranche — which Salesforce platform should we use?"
   - "What is the difference between NPSP Outbound Funds Module and Nonprofit Cloud for Grantmaking?"
+  - "turn on Grantmaking and set up funding awards with disbursement schedules and report requirements"
+  - "block the next grant payment until the grantee's report is approved"
 tags:
   - npsp
   - grants
@@ -28,9 +30,9 @@ outputs:
   - "Grant lifecycle and status workflow documentation"
   - "Decision matrix for platform selection"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-10-03
 ---
 
 # Grant Management Setup
@@ -43,10 +45,25 @@ This skill activates when a practitioner needs to configure grant tracking in a 
 
 Gather this context before working on anything in this domain:
 
-- **Which platform is installed?** Run a SOQL query or check Installed Packages: NPSP (managed package `npsp`) vs. Nonprofit Cloud (NPC). These are architecturally incompatible. Do not mix guidance between them.
-- **Is Nonprofit Cloud for Grantmaking licensed?** This is a separately licensed product within NPC. Even orgs on NPC may not have it provisioned. Verify in Setup → Company Information → Licenses or confirm with the org's Account Executive.
-- **What is the grant disbursement model?** Single lump-sum payment vs. multi-tranche scheduled disbursements determines whether the simpler OFM path suffices or whether FundingDisbursement tranches are needed.
-- **Are deliverables or requirements tracked per award?** FundingAwardRequirement exists only in Nonprofit Cloud for Grantmaking. OFM has no native deliverable-tracking object.
+- **Which platform is installed?** Check Installed Packages for `npsp` (NPSP), `outfunds` (Outbound Funds Module), and the Grants Management managed package, and check Setup > Grantmaking Settings. These products do not share objects. Do not mix guidance between them.
+- **Is Grantmaking licensed and turned on?** Grantmaking objects need the Grantmaking licence, the feature turned on, and the Manage Funding Awards system permission. Turning Grantmaking on cannot be undone (`references/gotchas.md`, Gotchas 1 and 2).
+- **What is the disbursement model?** Single payment or scheduled tranches. Both products model tranches: `FundingDisbursement` in Grantmaking, `outfunds__Disbursement__c` in Outbound Funds.
+- **Which deliverables gate which payments?** Both products have a requirement object that can point at a disbursement: `FundingAwardRequirement.FundingDisbursementId` and `outfunds__Requirement__c.Disbursement__c`. (Corrected: an earlier version said Outbound Funds has no deliverable-tracking object.)
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which grants product is installed or licensed today: Outbound Funds, Grants Management, or Grantmaking?" | The products share no objects, and Grantmaking cannot be turned off once on (Gotcha 1) | A named platform path, confirmed from installed packages and Setup | No automation is built against objects the org does not have |
+| "Who needs to create awards, who reviews reports, and do grantees use a portal?" | Access needs the licence, the feature, and Manage Funding Awards; portals use a separate permission set (Gotcha 2) | A permission set group per persona, including Experience Cloud users | Users see the objects on day one without hand-built permissions |
+| "Which requirement status means what: the grantee's state, the review decision, or both?" | Requirements carry `Status` and `ApprovalStatus`, and Rejected is standard (Gotcha 3) | A field-meaning table and the standard values in use | Reports and automation read the same field for the same question |
+| "Which payments wait for which reports, and who releases them?" | The requirement-to-disbursement link exists, but enforcement is your automation (Gotcha 5) | Requirement-to-tranche mapping and a release rule | A tranche cannot be marked Paid before its report is approved |
+| "Do applications come through Individual Application or the Spring '26 Application Form model?" | Individual Application gets no future enhancements and needs an Application RecordType Config (Gotcha 7) | A chosen application model and its record type setup | New programmes start on the model that will keep improving |
+| "How are amendments and multi-year terms recorded?" | One agreement is one award with master-detail tranches; changes go on amendments (Gotcha 8) | An amendment process and the award `Status` rule | Committed totals report once, not once per tranche |
+
+What proper configuration adds over "just creating awards": one award per agreement with its tranches and requirements as children, statuses whose meaning is written down, and payment release tied to the reports that should gate it.
 
 ---
 
@@ -54,40 +71,36 @@ Gather this context before working on anything in this domain:
 
 ### Platform Path 1: NPSP Outbound Funds Module (OFM)
 
-The Outbound Funds Module is a separate managed package (originally open-source, now Salesforce-maintained) that runs on top of NPSP. It uses the `outfunds__Funding_Request__c` and `outfunds__Disbursement__c` objects and ties grant tracking to the Opportunity record via a lookup. The data model is Opportunity-centric: a grant award is represented as a Funding Request linked to an Opportunity, and disbursements are child records of the Funding Request.
+The Outbound Funds Module is a managed package, namespace `outfunds`, published as "a community developed and maintained Open Source Commons project." Its objects are `Funding_Program__c`, `Funding_Request__c`, `Funding_Request_Role__c`, `Disbursement__c`, `Requirement__c`, and `Review__c`. A grant is a Funding Request (with `Requested_Amount__c`, `Awarded_Amount__c`, `Status__c`, term dates, and rollups such as `Total_Disbursed__c`); disbursements and requirements are its children, and a requirement can look up the disbursement it relates to. An NPSP extension package (`outfundsnpspext`) links disbursements to NPSP General Accounting Units through `GAU_Expenditure__c`.
 
 Key constraints of OFM:
-- No native deliverable/requirement tracking object — organizations must build custom objects or use Chatter/Tasks for deliverable management.
-- Status fields on Funding Request are picklists with no enforced lifecycle; transitions are not platform-governed.
-- Reporting surfaces through standard NPSP dashboards only if relationships are correctly mapped.
-- OFM is not compatible with Nonprofit Cloud for Grantmaking objects — you cannot migrate data between them without full data transformation.
+- Status fields are package picklists; transitions are not governed by the platform.
+- Support comes from the Open Source Commons community, not a Salesforce product line.
+- OFM is not compatible with Grantmaking objects: moving between them is a data transformation.
+- (Corrected: the earlier text said OFM ties grants to the Opportunity through a lookup and has no requirement object; the package source shows neither an Opportunity field on `Funding_Request__c` nor a missing requirement object.)
 
-### Platform Path 2: Nonprofit Cloud for Grantmaking (NC Grantmaking)
+### Platform Path 2: Nonprofit Cloud for Grantmaking (Grantmaking)
 
-Nonprofit Cloud for Grantmaking (part of the Agentforce Nonprofit product line as of 2024) uses three purpose-built objects that replace the OFM data model entirely:
+Grantmaking is a platform feature available in Nonprofit Cloud for Grantmaking and Public Sector Solutions. Its standard objects include `FundingOpportunity`, `FundingAward`, `FundingAwardAmendment`, `FundingDisbursement`, `FundingAwardRequirement`, `FundingAwardRqmtSection`, `Budget` and related budget objects, and the application objects. The three objects most grant setups touch:
 
-- **FundingAward** — the top-level grant award record. Stores the awarded amount, funding source, grantee (Account), and overall status. Replaces `outfunds__Funding_Request__c`.
-- **FundingDisbursement** — a child of FundingAward representing a single payment tranche. One FundingAward can have many FundingDisbursements, each with its own scheduled date, amount, and payment status. This is the correct object for multi-tranche grant disbursements.
-- **FundingAwardRequirement** — a child of FundingAward representing a deliverable, report, or compliance condition tied to the award. Has a platform-governed status lifecycle: **Open → Submitted → Approved**. Each requirement has a due date, assignee, and type (e.g., Progress Report, Final Report, Site Visit).
+| Object | Key fields | Notes |
+|---|---|---|
+| `FundingAward` | `Amount` (total award), `AwardeeId` (business or person account), `ContactId`, `FundingOpportunityId`, `IndividualApplicationId` or `ApplicationFormId`, `StartDate`, `EndDate`, `Status` (Active, Cancelled, Completed) | One record per grant agreement |
+| `FundingDisbursement` | `FundingAwardId` (master-detail), `Amount`, `ScheduledDate`, `DisbursementDate`, `IsApproved`, `PaymentMethodType`, `Status` (Scheduled, Pending Approval, Approved, Processing, Paid, Returned, Cancelled) | A payment "made or scheduled to be made"; no Draft value |
+| `FundingAwardRequirement` | `FundingAwardId` (master-detail), `FundingDisbursementId`, `Type` (Combined Report, Contract, Financial Report, Narrative Report), `DueDate`, `AssignedContactId`, `AssignedUserId`, `Status` (Open, In Progress, Submitted, Delayed, Approved, Rejected), `ApprovalStatus` (New, In Review, Approved, Rejected), `IsSubmitted`, `SubmittedDate` | A deliverable or milestone for an award or a disbursement |
 
-These objects are standard Salesforce objects on the NPC data model, not custom objects from a managed package. They are governed by Salesforce's object permission model and can be used in standard reports, flows, and Apex without managed-package API name prefixes.
+These are standard objects without package prefixes, available only with the Grantmaking licence, Grantmaking turned on, and the Manage Funding Awards permission. UNVERIFIED (2026-10-03): the earlier statement that Grantmaking is "part of the Agentforce Nonprofit product line as of 2024" was not found in a fetched source.
 
-### FundingAwardRequirement Status Lifecycle
+### Requirement Status Model
 
-The status field on FundingAwardRequirement follows a fixed, platform-intended progression:
-
-1. **Open** — the requirement has been created and is pending action from the grantee or internal staff.
-2. **Submitted** — the grantee has submitted the deliverable (e.g., uploaded a report); internal review is pending.
-3. **Approved** — the deliverable has been reviewed and accepted; the requirement is closed.
-
-There is no "Rejected" terminal state in the standard lifecycle — rejected submissions should revert to Open with notes, or organizations can extend the picklist. Do not treat this lifecycle as freely customizable without documenting the deviation.
+The earlier version of this skill described a fixed Open, Submitted, Approved lifecycle with no Rejected state; the NPC Guide documents six `Status` values and a separate `ApprovalStatus`. A workable convention: `Status` tracks where the deliverable is (Open, In Progress, Submitted, Delayed), and the reviewer's decision is recorded both in `ApprovalStatus` (In Review, Approved, Rejected) and by moving `Status` to Approved or Rejected. A rejected deliverable goes back to Open or In Progress for resubmission, with feedback in `Description`. Document whichever convention you choose.
 
 ### Architectural Incompatibility Between Platforms
 
-OFM and Nonprofit Cloud for Grantmaking share no common objects, no shared APIs, and no native migration path. An org running NPSP + OFM that migrates to NPC must:
+OFM and Grantmaking share no common objects, no shared APIs, and no native migration path. An org moving from OFM to Grantmaking must:
 1. Transform `outfunds__Funding_Request__c` → `FundingAward`
 2. Transform `outfunds__Disbursement__c` → `FundingDisbursement`
-3. Build net-new `FundingAwardRequirement` records (no OFM equivalent)
+3. Transform `outfunds__Requirement__c` → `FundingAwardRequirement`, mapping `Status__c` and `Type__c` values to the standard picklists
 4. Re-map all Flows, reports, and automation that reference OFM API names
 
 This is a data migration project, not a configuration toggle.
@@ -96,29 +109,29 @@ This is a data migration project, not a configuration toggle.
 
 ## Common Patterns
 
-### Pattern: Multi-Tranche Disbursement Schedule in NC Grantmaking
+### Pattern: Multi-Tranche Disbursement Schedule in Grantmaking
 
-**When to use:** The grant award requires multiple scheduled payments (quarterly disbursements, milestone-based tranches) and the org is on Nonprofit Cloud for Grantmaking.
-
-**How it works:**
-1. Create a `FundingAward` record with total awarded amount and grantee Account.
-2. Create one `FundingDisbursement` child record per tranche. Set `ScheduledDate`, `DisbursementAmount`, and `Status` (Draft → Scheduled → Paid).
-3. Build a Flow or approval process to update `FundingAward.Status` when all `FundingDisbursement` records reach "Paid."
-4. Report on disbursement pipeline using standard FundingDisbursement list views filtered by ScheduledDate.
-
-**Why not the alternative:** Do not model tranches as separate FundingAward records — this breaks parent-child rollup reporting and severs the link between award terms and disbursements.
-
-### Pattern: Deliverable Tracking Using FundingAwardRequirement
-
-**When to use:** Grants require grantees to submit interim reports, final reports, or site visit confirmations before disbursements are released.
+**When to use:** The award pays in several scheduled tranches and the org uses Grantmaking.
 
 **How it works:**
-1. Create `FundingAwardRequirement` records linked to the parent `FundingAward` at award setup time.
-2. Assign each requirement a `Type` (Progress Report, Final Report, Site Visit), a `DueDate`, and an `AssignedTo` user or queue.
-3. Use a Flow triggered on `FundingAwardRequirement.Status = Submitted` to notify the grants manager for review.
-4. Grants manager approves — status advances to Approved. Gate disbursement release using a validation rule or Flow that checks all requirements are Approved before a FundingDisbursement can move to "Paid."
+1. Create one `FundingAward` with `Amount` = the total award, `AwardeeId` = the grantee account, and `Status` = Active.
+2. Create one `FundingDisbursement` per tranche with `Amount`, a future `ScheduledDate`, and `Status` = Scheduled.
+3. Move each tranche through Pending Approval, Approved, Processing, and Paid, setting `DisbursementDate` when paid.
+4. Set `FundingAward.Status` to Completed when every tranche is Paid or Cancelled (a Flow can do this).
 
-**Why not the alternative:** Using Tasks or Chatter posts for deliverable tracking produces no structured data, cannot be reported on in aggregate, and cannot be used as a gating condition in automation.
+**Why not the alternative:** Do not model tranches as separate `FundingAward` records: this breaks parent-child reporting and duplicates requirements.
+
+### Pattern: Deliverable Tracking and Payment Gating With FundingAwardRequirement
+
+**When to use:** Grantees must submit reports before later tranches are released.
+
+**How it works:**
+1. At award setup, create one `FundingAwardRequirement` per deliverable with `Type`, `DueDate`, `AssignedContactId` (grantee) or `AssignedUserId`, `Status` = Open, and `FundingDisbursementId` = the tranche it gates.
+2. When the grantee submits, set `IsSubmitted`, `SubmittedDate`, and `Status` = Submitted; notify the grants manager.
+3. The reviewer sets `ApprovalStatus` and `Status` to Approved or Rejected.
+4. Enforce the gate: validation rules for same-record rules, and a record-triggered flow on `FundingDisbursement` that blocks `Status` = Paid while any requirement pointing at it is not Approved (`references/examples.md`, Example 3).
+
+**Why not the alternative:** Tasks or Chatter posts produce no structured data, cannot be reported in aggregate, and cannot gate automation.
 
 ---
 
@@ -126,25 +139,23 @@ This is a data migration project, not a configuration toggle.
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Org is on NPSP (managed package), no NPC license | NPSP Outbound Funds Module (OFM) | OFM is the only purpose-built grant tracking tool available on the NPSP platform |
-| Org is on Nonprofit Cloud with Grantmaking license | Nonprofit Cloud for Grantmaking (FundingAward/FundingDisbursement/FundingAwardRequirement) | Purpose-built objects, enforced status lifecycle, native platform governance |
-| Org is on Nonprofit Cloud but Grantmaking is NOT licensed | Do not use NC Grantmaking objects; evaluate OFM on NPC or custom objects | FundingAward and related objects are not accessible without the Grantmaking license |
-| Org needs multi-tranche disbursements with deliverable gating | Nonprofit Cloud for Grantmaking | FundingDisbursement + FundingAwardRequirement provide native tranche and deliverable tracking; OFM requires heavy customization for the same |
-| Org needs to migrate from OFM to NC Grantmaking | Full data transformation project required | No native migration path; all OFM objects and automation must be rebuilt on NC objects |
-| New nonprofit org evaluating Salesforce for grantmaking | Implement Nonprofit Cloud for Grantmaking directly | No migration cost; immediately accesses purpose-built Grantmaking data model |
+| Org is on NPSP, no Grantmaking licence | Outbound Funds Module (plus `outfundsnpspext` for GAU accounting) | Purpose-built package with requests, disbursements, and requirements |
+| Org has the Grantmaking licence | Grantmaking (`FundingAward`, `FundingDisbursement`, `FundingAwardRequirement`) | Standard objects, applications, budgets, amendments, Experience Cloud components |
+| Org is on Nonprofit Cloud but Grantmaking is NOT licensed | Do not use Grantmaking objects; evaluate OFM or buy the licence | The objects are not accessible without the licence |
+| Org has the Grants Management managed package | Do not turn on Grantmaking in that org without a plan | Salesforce recommends against running both; Grantmaking cannot be turned off |
+| Org needs to migrate from OFM to Grantmaking | Full data transformation project | No native migration path |
+| New nonprofit org evaluating Salesforce for grantmaking | Grantmaking on the Spring '26 Application Form model | No migration cost; the model receiving enhancements |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Identify the platform path** — Confirm whether the org runs NPSP (check for `npsp` namespace in Installed Packages) or Nonprofit Cloud (check for NPC license). Confirm whether Nonprofit Cloud for Grantmaking is separately licensed. Do not proceed until the platform path is unambiguous.
-2. **Assess grant requirements** — Document whether the org needs: (a) single lump-sum vs. multi-tranche disbursements, (b) deliverable/requirement tracking per award, (c) grantee portal access, and (d) reporting integration with fundraising data. Match requirements to the decision matrix above.
-3. **Configure the data model for the chosen path** — For OFM: install the Outbound Funds Module managed package, configure Funding Request and Disbursement page layouts, and map the Funding Request lookup to the Opportunity. For NC Grantmaking: configure FundingAward, FundingDisbursement, and FundingAwardRequirement page layouts, field sets, and record types per award program.
-4. **Build status lifecycle automation** — For NC Grantmaking: build Flows to govern FundingAwardRequirement status transitions (Open → Submitted → Approved) and to block FundingDisbursement payment release until requirements are met. For OFM: build Flows on Funding Request and Disbursement status picklists (no platform-enforced lifecycle).
-5. **Validate with end-to-end test data** — Create a test FundingAward (or OFM Funding Request), add disbursement tranches, create requirements, walk through the full status lifecycle, and confirm reporting surfaces correctly in standard reports and dashboards.
-6. **Document the platform path and customizations** — Record which platform path the org uses, all customized picklist values, all automation built on top of the standard lifecycle, and any deviations from the standard FundingAwardRequirement progression. This documentation is critical for future migrations and support.
+1. **Identify the platform path**: Confirm installed namespaces (`npsp`, `outfunds`, Grants Management) and the Grantmaking licence; do not proceed until the path is unambiguous.
+2. **Assess grant requirements**: Document tranches, deliverables and the tranches they gate, grantee portal access, application model, and reporting needs. Match them to the decision table above.
+3. **Turn on and grant access**: For Grantmaking: Setup > Quick Find "Grantmaking" > Grantmaking Settings > turn on (irreversible); assign Grantmaking Manager (and Grantmaking for Experience Cloud for portal users) through permission set groups; configure the application model and, for Individual Application, the Application RecordType Config.
+4. **Configure the data model**: Page layouts, field sets, and record types for awards, disbursements, and requirements; write down the requirement status convention.
+5. **Build lifecycle automation**: Validation rules for same-record rules and a record-triggered flow for the disbursement gate (`references/examples.md`, Example 3); a flow to complete awards.
+6. **Validate end to end and document**: Create a test award with tranches and requirements, walk every status, confirm reports, then record the platform path, picklist conventions, and automation for future support and migrations.
 
 ---
 
@@ -152,23 +163,25 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking work in this area complete:
 
-- [ ] Platform path (OFM vs. NC Grantmaking) is confirmed in writing — not assumed
-- [ ] Nonprofit Cloud for Grantmaking license is verified if NC objects are in use
-- [ ] FundingDisbursement tranches are linked to the correct parent FundingAward (not separate awards)
-- [ ] FundingAwardRequirement status lifecycle (Open → Submitted → Approved) is not bypassed by automation
-- [ ] No OFM API names (outfunds__) appear in automation built for NC Grantmaking, and vice versa
+- [ ] Platform path (OFM vs. Grantmaking vs. Grants Management) is confirmed in writing, not assumed
+- [ ] Grantmaking licence, feature switch, and Manage Funding Awards permission are verified if Grantmaking objects are in use
+- [ ] `FundingDisbursement` tranches are children of the correct `FundingAward` (not separate awards)
+- [ ] Requirement status convention (`Status` and `ApprovalStatus`) is documented and automation follows it
+- [ ] Gating requirements reference their tranche through `FundingDisbursementId`, and a Paid tranche cannot bypass them
+- [ ] No OFM API names (`outfunds__`) appear in automation built for Grantmaking, and vice versa
 - [ ] Reports and dashboards reference the correct object set for the chosen platform
-- [ ] Migration incompatibility is documented if there is any future plan to move between platforms
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The full list with sources is in `references/gotchas.md`. The ones that most often break a grants setup:
 
-1. **Nonprofit Cloud for Grantmaking requires a separate license** — Being on Nonprofit Cloud (NPC) does not automatically grant access to FundingAward, FundingDisbursement, or FundingAwardRequirement objects. These are gated behind a separate Grantmaking product license. Attempting to use these objects in an unlicensed org produces object-not-found errors that are indistinguishable from misconfiguration.
-2. **OFM and NC Grantmaking are architecturally incompatible** — There is no supported migration path between the two platforms. Data transformation is required for every object type, and all automation, reports, and Flows must be rebuilt from scratch. Do not plan an "upgrade" as if it is a configuration change.
-3. **FundingAwardRequirement status is a fixed picklist, not a configurable workflow** — The Open → Submitted → Approved progression is the standard intended lifecycle. Adding custom picklist values (e.g., "Rejected," "On Hold") is technically possible but breaks standard Flow templates and Trailhead guidance. Deviations must be intentional and documented.
+| Gotcha | Consequence |
+|---|---|
+| Three different grants products; Grantmaking cannot be turned off (Gotcha 1) | Enabling it in the wrong org is permanent and confuses users |
+| Two requirement status fields, with Rejected standard (Gotcha 3) | The earlier "Open, Submitted, Approved only" model was wrong; reports disagree if fields are mixed |
+| Disbursement statuses have no Draft (Gotcha 4) | Automation built on Draft never fires; use Scheduled |
 
 ---
 

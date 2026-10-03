@@ -76,6 +76,8 @@ Build and activation dependency order:
 
 **Detection hint:** Requirements include nested FlexCard references but have no build dependency sequence or activation order section.
 
+UNVERIFIED (2026-10-03): the activation-order constraint itself is a help-only claim (see `gotchas.md` gotcha 7). A build-order section costs nothing and stays correct either way.
+
 ---
 
 ## Anti-Pattern 5: Confusing Requirements Gathering (This Skill) with Implementation (Card Designer)
@@ -94,3 +96,64 @@ Implementation (how to configure in Card Designer) belongs in omnistudio/flexcar
 ```
 
 **Detection hint:** Requirements document includes Card Designer configuration steps, element properties, or JSON condition syntax formatted as developer instructions rather than stakeholder-readable requirements.
+
+---
+
+## Anti-Pattern 6: Editing `OmniUiCard` Records With Data Tools
+
+**What the LLM generates:** "Export the OmniUiCard records, change the names in a spreadsheet, and update them with Data Loader," or "delete the old card versions from the OmniUiCard object."
+
+**Why it happens:** Cards are stored as records, and the model treats any record as fair game for data tools.
+
+**Correct pattern:** The Industries guide marks `OmniUiCard` "for internal use only" and says not to create, edit, or delete its records, because doing so "may result in errors with your implementation". Move and retire cards only through OmniStudio deployment tooling, and write that rule into the requirements.
+
+**Detection hint:** Any SOQL, DML, or data-load step against `OmniUiCard`.
+
+---
+
+## Anti-Pattern 7: Placing an Internal Card on a Public Page Without a Guest Access Design
+
+**What the LLM generates:** "Drag the card onto the public Experience Cloud page and set the object OWD to Public Read Only so guests can see it."
+
+**Why it happens:** The model reuses internal sharing advice for guests.
+
+**Correct pattern:** Guest org-wide defaults are Private for all objects and cannot be changed. The only way to give unauthenticated guests record access is a guest user sharing rule, and it can grant only Read Only access. Specify the sharing rule criteria and remove edit actions from the guest-facing state.
+
+**Detection hint:** Guest-facing card requirements that mention changing OWD, or that keep edit actions.
+
+---
+
+## Anti-Pattern 8: Leaving Action Permissions Out of the Register
+
+**What the LLM generates:** An action register with type, trigger, and outcome, but no statement of the access each action needs.
+
+**Why it happens:** Actions are demoed by administrators, who have every permission, so the gap never shows.
+
+**Correct pattern:** Add a permission column: Apex class access, object create or edit, and field access per audience. Turn it into a permission set per audience (see `metadata-examples.md`) and test every action as a user from each audience.
+
+**Detection hint:** An action that writes data with no permission named for the users who click it.
+
+---
+
+## Anti-Pattern 9: Specifying Calculations Through the Deprecated OmniStudio Business REST APIs
+
+**What the LLM generates:** A card action or Integration Procedure that calls `/connect/omnistudio/evaluation-services` to run an expression set.
+
+**Why it happens:** Older OmniStudio material documents those endpoints.
+
+**Correct pattern:** The Industries guide states those APIs "have been deprecated as of API version 55.0" and directs callers to the Business Rules Engine Business APIs. Name the Business Rules Engine API in the requirements.
+
+**Detection hint:** Any `evaluation-services` path in a FlexCard requirement.
+
+---
+
+## Anti-Pattern 10: Stating Card Designer Lists as Settled Fact
+
+**What the LLM generates:** "FlexCards support exactly five data source types and five action types," used to reject a stakeholder request.
+
+**Why it happens:** Earlier material presented these lists as complete, and the model repeats them.
+
+**Correct pattern:** The fetchable guides confirm Integration Procedures and Data Mappers as FlexCard data sources; the complete source and action lists are help-only. Ask the developer to confirm against this org's Card Designer before declaring a requirement unbuildable.
+
+**Detection hint:** A requirement rejected only because it is "not one of the five types".
+

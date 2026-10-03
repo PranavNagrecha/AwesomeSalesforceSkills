@@ -14,6 +14,7 @@ triggers:
   - "guided selling wizard auto-selects wrong product or adds duplicate lines to the quote"
   - "choose between Standard, Enhanced, or Custom search type in CPQ guided selling"
   - "guided selling shows no products even though products match the answers rep entered"
+  - "add an inventory filter to a CPQ guided selling prompt with the product search plugin"
 tags:
   - cpq
   - guided-selling
@@ -30,7 +31,7 @@ inputs:
   - "Whether the Quote Process should be the org-wide default or pricebook-specific"
   - "Existing SBQQ__QuoteProcess__c and SBQQ__ProcessInput__c record structure if troubleshooting"
 outputs:
-  - "SBQQ__QuoteProcess__c record with SBQQ__GuidedProductSelection__c = true"
+  - "SBQQ__QuoteProcess__c record configured for guided selling"
   - "SBQQ__ProcessInput__c records mapping each wizard question to a Product2 classification field"
   - "Mirrored custom fields on SBQQ__ProcessInput__c matching Product2 API names (if custom fields used)"
   - "Documented search type choice and rationale"
@@ -38,26 +39,45 @@ outputs:
 dependencies:
   - cpq-product-catalog-setup
   - products-and-pricebooks
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-10-03
 ---
 
 # CPQ Guided Selling
 
-Use this skill when configuring or troubleshooting the Salesforce CPQ Guided Selling wizard. Guided Selling lets reps answer a structured set of questions, and CPQ filters the product catalog to show only products that match every answer. This skill covers Quote Process and ProcessInput record setup, classification field mirroring, search type selection, Auto Select Product behavior, and common filtering failures. It does not cover OmniStudio product selection flows, standard Salesforce product browsing, CPQ product bundle setup, or CPQ pricing rules.
+Use this skill when configuring or troubleshooting the Salesforce CPQ Guided Selling wizard. Reps answer a structured set of questions, and CPQ filters the catalog to products that match. This skill covers Quote Process and Process Input setup, classification field mirroring, the Enhanced and Custom plugin modes, Auto Select Product behavior, and common filtering failures. It does not cover OmniStudio product selection, standard product browsing, bundle setup, or pricing rules.
+
+Product status: the Salesforce CPQ Developer Guide (Summer '26) states that the Salesforce CPQ managed package "continues to be available for existing customers, however, there is no longer any new feature development", and recommends Revenue Cloud for new implementations. Use this skill for orgs already on CPQ.
+
+Field-name caution: the CPQ object reference is published only on help.salesforce.com, which did not fetch for this pass. UNVERIFIED (2026-10-03): the field API names below for `SBQQ__QuoteProcess__c` and `SBQQ__ProcessInput__c` (`SBQQ__GuidedProductSelection__c`, `SBQQ__SearchType__c`, `SBQQ__AutoSelectProduct__c`, `SBQQ__SearchField__c`, `SBQQ__Operator__c`, `SBQQ__InputType__c`, `SBQQ__Label__c`, `SBQQ__Active__c`, `SBQQ__Required__c`, `SBQQ__Order__c`) and `Pricebook2.SBQQ__GuidedSelling__c` come from earlier versions of this skill and are not in the CPQ Developer Guide or the CPQ Plugins Guide. Confirm each in Object Manager before writing data loads or automation. The documented names are `SBQQ__Quote__c.SBQQ__QuoteProcessId__c` and `SBQQ__Quote__c.SBQQ__Pricebook__c`, and the quote process's Product Search Executor and Product Configuration Initializer fields (labels).
 
 ---
 
 ## Before Starting
 
-Gather this context before working on anything in this domain:
+- Confirm the CPQ managed package (`SBQQ__`) is installed and the Quote Process and Process Input objects exist.
+- Identify every Product2 field the wizard filters on. For custom fields, plan a field with the same API name on the Process Input object (see Core Concepts).
+- Decide whether plain guided selling is enough, or whether the product search plugin is needed: Enhanced mode (the plugin appends a WHERE clause) or Custom mode (the plugin builds the whole query).
+- Decide how the Quote Process is chosen: the org default, or set per quote (`SBQQ__Quote__c.SBQQ__QuoteProcessId__c`).
+- Decide whether Auto Select Product should add the single match automatically.
 
-- Confirm the Salesforce CPQ managed package (`SBQQ__`) is installed and the objects `SBQQ__QuoteProcess__c` and `SBQQ__ProcessInput__c` exist in the org schema.
-- Identify every Product2 classification field the wizard should filter against. For standard Product2 fields (Family, Description, etc.) no additional setup is needed. For custom fields (e.g., `Product_Category__c`, `Deployment_Model__c`), a mirrored field with the identical API name must exist on `SBQQ__ProcessInput__c` — this is the most common source of silent filtering failure.
-- Confirm which search type the business needs: Standard (basic equality or contains filter), Enhanced (multi-select, allows rep to pick multiple values per question), or Custom (Apex class implementing `SBQQ.ProductSearchPlugin`). Custom requires developer involvement.
-- Determine whether the Quote Process should be the org-wide default (set in CPQ Settings) or pricebook-specific (set on the Pricebook2 record via `SBQQ__GuidedSelling__c`).
-- Identify whether Auto Select Product should be enabled. When enabled, CPQ automatically adds the product to the quote if exactly one product matches the guided selling answers. If more than one matches, the wizard shows the results list instead of auto-adding.
+---
+
+## Questions to Ask Before Configuring
+
+Ask these before creating a Quote Process. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Is this org staying on CPQ, or moving to Revenue Cloud?" | The CPQ package has no new feature development (gotcha 1) | A decision on how much to invest in custom plugin code | Effort spent where the platform is still developed |
+| "Which Product2 fields do the questions filter on, and are any custom?" | Custom fields need a same-name field on Process Input (gotcha 2) | A field list with types, mirrored where custom | Answers that actually filter instead of returning the whole catalog |
+| "Can every answer be expressed as a simple field filter, or is extra logic needed (inventory, region, ranking)?" | Extra logic means the product search plugin, in Enhanced or Custom mode (gotcha 3) | The plugin mode, or a decision not to use one | No Apex where configuration was enough, and correct Apex where it was not |
+| "Which quote fields would plugin logic need?" | Plugins see only a subset of quote fields by default; others need SOQL (gotcha 4) | The quote fields the plugin must query | Plugin logic that works on the first quote |
+| "Should a bundle be pre-configured from the answers?" | The configuration initializer works only for standard product option fields (gotcha 6) | Which option fields the answers set | No initializer built for fields it cannot set |
+| "Do all possible single matches have a price book entry in every price book used?" | Auto Select can fail on a missing entry (gotcha 7) | A price book coverage check | Auto Select that adds a line instead of raising an error |
+
+What a proper configuration adds over "just turning on the wizard": every answer narrows the catalog as intended, plugin code exists only where configuration cannot express the rule, and reps never see an unexplained empty or unfiltered result.
 
 ---
 
@@ -65,90 +85,54 @@ Gather this context before working on anything in this domain:
 
 ### Quote Process and the Guided Selling Wizard
 
-A `SBQQ__QuoteProcess__c` record is the top-level configuration object for Guided Selling. Setting `SBQQ__GuidedProductSelection__c = true` on this record activates the wizard mode — without this flag the Quote Process does not show the guided selling wizard when a rep adds a product to a CPQ quote.
+A Quote Process record (`SBQQ__QuoteProcess__c`) holds the wizard configuration; its Process Input records (`SBQQ__ProcessInput__c`) are the questions. A quote records the quote process it uses in `SBQQ__QuoteProcessId__c` (CPQ Developer Guide, quote model JSON). The quote process can also name a Product Search Executor (a Visualforce page that further filters guided selling results) and a Product Configuration Initializer (a Visualforce page that preselects bundle options from the answers); both are entered as `c__` followed by the page name.
 
-The Quote Process is activated for a quote in one of two ways:
-1. **Org-wide default:** Set the Quote Process in CPQ Settings (Setup > Installed Packages > CPQ Settings > Quote section). All new quotes use this wizard unless overridden.
-2. **Pricebook-specific:** Set `SBQQ__GuidedSelling__c` on a specific `Pricebook2` record to a Quote Process Id. Quotes using that pricebook launch the associated wizard.
+UNVERIFIED (2026-10-03): earlier versions of this skill said the wizard activates only when `SBQQ__GuidedProductSelection__c` is true, that the org default is set in CPQ Settings, and that a price book can carry its own quote process in `Pricebook2.SBQQ__GuidedSelling__c`. These are help-only claims; confirm the field and setting names in the org.
 
-When a rep clicks "Add Products" on a CPQ quote and a Quote Process is active, the wizard opens and presents the ProcessInput questions in order. The rep's answers are used to filter `Product2` records using the configured operator and field mapping.
+### Process Input Questions and Field Mapping
 
-### ProcessInput Records and Field Mapping
-
-Each `SBQQ__ProcessInput__c` record defines one question in the wizard. Key fields:
-
-| Field | Purpose |
-|---|---|
-| `SBQQ__QuoteProcess__c` | Parent Quote Process lookup |
-| `SBQQ__Label__c` | Question label displayed to the rep |
-| `SBQQ__Active__c` | Whether this question appears in the wizard |
-| `SBQQ__Required__c` | Whether the rep must answer before proceeding |
-| `SBQQ__Order__c` | Display sequence within the wizard |
-| `SBQQ__SearchField__c` | The API name of the Product2 field this answer filters against |
-| `SBQQ__Operator__c` | Filter operator: equals, not equals, contains, starts with, greater than, less than |
-| `SBQQ__InputType__c` | How the rep enters the answer: text input, picklist, or product family |
-
-The runtime mechanism: when the rep submits their answers, CPQ reads the answer value stored on the ProcessInput record and executes a SOQL filter against `Product2` using the `SBQQ__SearchField__c` API name and `SBQQ__Operator__c`. The answer value at runtime is held on the ProcessInput record itself — this is why the ProcessInput must have a field with the same API name as the Product2 field being filtered.
+Each Process Input defines one question: its label, order, whether it is active and required, how the rep answers, the Product2 field it filters, and the operator. The plugin guide confirms the runtime shape: the answers reach the plugin as a map whose "key is a Product2 API name and the value is the desired search value". UNVERIFIED (2026-10-03): the field-level detail of how CPQ stores each answer on the Process Input record is help-only.
 
 ### Custom Classification Field Mirroring
 
-When a wizard question filters against a **custom field** on `Product2` (e.g., `Product_Category__c`), CPQ reads the answer value from a field of the same API name on `SBQQ__ProcessInput__c`. This means:
+When a question filters on a custom Product2 field (for example `Deployment_Model__c`), earlier versions of this skill state that a field with the identical API name and a compatible type must exist on `SBQQ__ProcessInput__c`, and that without it the question silently applies no filter. UNVERIFIED (2026-10-03): this mechanism is help-only. It is the first thing to check when answers return the whole catalog, and the mirror field is deployable metadata (see `references/metadata-examples.md`).
 
-1. The custom field (e.g., `Product_Category__c`) must exist on `Product2`.
-2. A field with the **identical API name** (`Product_Category__c`) must also exist on `SBQQ__ProcessInput__c`.
-3. Both fields must have compatible data types (text, picklist, number).
-4. `SBQQ__SearchField__c` on the ProcessInput record must be set to the API name (`Product_Category__c`).
+### Standard, Enhanced, and Custom Search
 
-If the mirror field on `SBQQ__ProcessInput__c` is missing, the wizard appears to work — the question shows and the rep can answer — but the answer silently produces no filter, and CPQ returns all products regardless of the answer. This is the most common guided selling bug reported in production.
-
-### Search Types
-
-CPQ Guided Selling supports three search types, set on the `SBQQ__QuoteProcess__c` record via `SBQQ__SearchType__c`:
-
-| Search Type | Behavior | When to use |
+| Mode | What runs | Grounding |
 |---|---|---|
-| Standard | Basic filter: one answer per question, equality or contains operators | Most use cases; straightforward classification filtering |
-| Enhanced | Multi-select: rep can pick multiple values per question; any match returns the product | When a product should appear for multiple answer values (e.g., compatible with both "SMB" and "Enterprise") |
-| Custom | Executes an Apex class implementing `SBQQ.ProductSearchPlugin` interface | Complex search logic, external system lookups, or scoring/ranking requirements |
+| Standard | CPQ's own filter from the Process Input answers, no plugin | UNVERIFIED (2026-10-03): help-only |
+| Enhanced | CPQ's query plus a WHERE fragment returned by `getAdditionalSuggestFilters(quote, fieldValuesMap)` | CPQ Plugins Guide: `isSuggestCustom` returning false selects Enhanced searching |
+| Custom | The plugin's `suggest(quote, fieldValuesMap)` builds and runs the whole query and returns `List<PricebookEntry>` | CPQ Plugins Guide: `isSuggestCustom` returning true selects Custom searching |
 
-For Custom search, the Apex class must implement the `search(SBQQ.ProductSearchContext ctx)` method from the `SBQQ.ProductSearchPlugin` interface and return a `List<Id>` of matching product IDs. The class name is registered in CPQ Settings under the "Product Search" section.
+The guided selling interface of `SBQQ.ProductSearchPlugin` has five methods: `isInputHidden(quote, fieldName)`, `getInputDefaultValue(quote, fieldName)`, `isSuggestCustom(quote, fieldValuesMap)`, `suggest(quote, fieldValuesMap)`, and `getAdditionalSuggestFilters(quote, fieldValuesMap)`. CPQ calls `isInputHidden` and `getInputDefaultValue` for each input, then `isSuggestCustom`, then either `suggest` or `getAdditionalSuggestFilters`. Earlier versions of this skill described a `search(SBQQ.ProductSearchContext ctx)` method returning `List<Id>`; that signature is not in the guide. UNVERIFIED (2026-10-03): the claim that Enhanced mode renders multi-select questions with OR matching is help-only.
 
 ### Auto Select Product
 
-When `SBQQ__AutoSelectProduct__c = true` on the Quote Process, and the guided selling answers return exactly one matching product, CPQ skips the results list and adds that product directly to the quote. If zero products match, the wizard shows an empty results screen. If two or more products match, the standard product results grid is shown for manual selection.
-
-This feature is useful for high-specificity wizards where the combination of answers is expected to uniquely identify a SKU. It should not be enabled when the answer set is broad enough to return multiple matches, as it can produce confusing behavior where a product appears on the quote without the rep explicitly choosing it.
+When Auto Select is on and the answers return exactly one product, CPQ adds it to the quote without showing the results list. With zero matches the wizard shows an empty result; with two or more it shows the results grid. UNVERIFIED (2026-10-03): this behavior and the field name `SBQQ__AutoSelectProduct__c` are help-only.
 
 ---
 
 ## Common Patterns
 
-### Pattern: Standard Guided Selling with Custom Classification Fields
+### Pattern: Guided Selling with Custom Classification Fields
 
-**When to use:** The product catalog has custom classification fields (e.g., industry, deployment model, service tier) and reps should answer a sequence of dropdown questions to narrow the catalog.
-
-**How it works:**
-1. Create custom fields on `Product2` for each classification dimension (e.g., `Industry__c` as a Picklist, `Deployment_Model__c` as a Picklist).
-2. Create matching custom fields with the **identical API names** on `SBQQ__ProcessInput__c` using compatible data types.
-3. Populate the classification fields on all `Product2` records in the catalog.
-4. Create a `SBQQ__QuoteProcess__c` record: set `SBQQ__GuidedProductSelection__c = true`, `SBQQ__SearchType__c = 'Standard'`.
-5. Create one `SBQQ__ProcessInput__c` per question, setting `SBQQ__SearchField__c` to the API name, `SBQQ__Operator__c` to `equals`, `SBQQ__InputType__c` to `Picklist`, and `SBQQ__Order__c` for sequence.
-6. Set the Quote Process as the org-wide default in CPQ Settings or attach it to the relevant Pricebook2 record.
-7. Test by opening a CPQ quote, clicking "Add Products," and stepping through the wizard.
-
-**Why not the alternative:** Using Product Families alone for guided selling limits classification to a single field. Custom classification fields on Product2 allow multi-dimensional filtering without modifying the managed package schema.
-
-### Pattern: Enhanced Search for Multi-Value Product Eligibility
-
-**When to use:** A product should appear in results when the rep's answer matches any of several applicable values — for example, a product that applies to both "Healthcare" and "Financial Services" industries.
+**When to use:** The catalog has custom classification fields (industry, deployment model, service tier) and reps should narrow it with dropdown questions.
 
 **How it works:**
-1. Configure the classification field on `Product2` and `SBQQ__ProcessInput__c` as above.
-2. Set `SBQQ__SearchType__c = 'Enhanced'` on the Quote Process.
-3. In Enhanced mode, the wizard renders a multi-select input for each question. The rep can select multiple values, and CPQ returns products that match any of the selected values for each question.
-4. Ensure the classification field on Product2 stores values that exactly match the picklist values presented in the wizard — case-sensitive text matching is used.
+1. Create the custom fields on Product2.
+2. Create same-name, same-type fields on `SBQQ__ProcessInput__c` (deployable, see `references/metadata-examples.md`).
+3. Populate the classification fields on every product that should appear.
+4. Create the Quote Process for guided selling.
+5. Create one Process Input per question, pointing at the Product2 field API name.
+6. Make the Quote Process the default or assign it to the quotes that need it.
+7. Test from a quote with Add Products, answering every question.
 
-**Why not the alternative:** Standard search with "contains" operator can partially approximate multi-value matching but is fragile when values share substrings. Enhanced search is the supported, purpose-built mechanism for OR-matching across classification values.
+### Pattern: Enhanced Mode for a Business Rule the Questions Cannot Express
+
+**When to use:** Reps answer the questions, but the results must also respect a rule they do not control, such as "urgent shipments only show products with inventory above 3".
+
+**How it works:** Implement `SBQQ.ProductSearchPlugin` with `isSuggestCustom` returning false, and return an extra WHERE fragment from `getAdditionalSuggestFilters` (the guide's own example returns `AND Product2.Inventory_Level__c > 3` when the "Urgent Shipment" input is "Yes"). Register the class on the Plugins tab of the CPQ package settings. UNVERIFIED (2026-10-03): the guide describes that tab for the quote calculator and recommended products plugins but does not name the product search plugin field. The full class, test, and manifest are in `references/metadata-examples.md`.
 
 ---
 
@@ -156,56 +140,55 @@ This feature is useful for high-specificity wizards where the combination of ans
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Filtering on standard Product2 fields (Family, Description) | Set `SBQQ__SearchField__c` to the standard field API name | No mirror field needed; standard fields are always available on ProcessInput |
-| Filtering on a custom Product2 field | Create mirror field with identical API name on `SBQQ__ProcessInput__c` | Required for CPQ to store and apply the answer at runtime |
-| Rep should select multiple values per question | Use Enhanced search type | Standard search only supports single-value input per question |
-| Search logic depends on external data or scoring | Implement `SBQQ.ProductSearchPlugin` Apex class; use Custom search type | Only Custom search allows Apex-controlled filtering logic |
-| Wizard should auto-add product when exactly one match | Set `SBQQ__AutoSelectProduct__c = true` on Quote Process | Built-in; only enable when answers reliably produce a single match |
-| Default wizard for all quotes | Set Quote Process in CPQ Settings as org default | Applies to all new quotes regardless of pricebook |
-| Different wizard per pricebook | Set `SBQQ__GuidedSelling__c` on Pricebook2 | Allows different question sets per price list context |
-| Question should be optional (rep can skip) | Set `SBQQ__Required__c = false` on ProcessInput | CPQ skips the filter for that question if the rep leaves it blank |
+| Filter on standard Product2 fields | Point the question at the standard field API name | No mirror field needed |
+| Filter on a custom Product2 field | Mirror field with the same API name on Process Input | Required for the answer to filter (help-only mechanism) |
+| Extra rule the rep does not control | Plugin in Enhanced mode (`getAdditionalSuggestFilters`) | CPQ keeps its query; the plugin appends a WHERE fragment |
+| Results need external data or ranking | Plugin in Custom mode (`suggest`) | The plugin owns the whole query and returns price book entries |
+| Results need a post-filter the rep cannot override | Product Search Executor on the quote process | A Visualforce page that filters guided selling results |
+| Answers should preselect bundle options | Product Configuration Initializer | Works only for standard product option fields |
+| New implementation, no CPQ yet | Evaluate Revenue Cloud | The CPQ package has no new feature development |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Confirm CPQ installation and identify classification fields.** Verify `SBQQ__QuoteProcess__c` and `SBQQ__ProcessInput__c` exist. List all Product2 fields the wizard will filter against. For each custom field, flag that a mirror field is required on `SBQQ__ProcessInput__c`.
-2. **Create mirror custom fields on SBQQ__ProcessInput__c.** For every custom Product2 classification field involved in guided selling, create a field on `SBQQ__ProcessInput__c` with the identical API name and a compatible data type. This step is a prerequisite — skipping it causes silent filtering failures that are difficult to diagnose after the fact.
-3. **Populate Product2 classification fields.** Ensure all products that should appear in guided selling results have values on the classification fields. Products with null values in a filtered field will not appear when the wizard applies that filter with an `equals` operator.
-4. **Create the Quote Process record.** Set `SBQQ__GuidedProductSelection__c = true`. Choose the appropriate `SBQQ__SearchType__c` (Standard, Enhanced, or Custom). Set `SBQQ__AutoSelectProduct__c` if single-match auto-add is required.
-5. **Create ProcessInput records.** For each question, create a `SBQQ__ProcessInput__c` record: set the parent Quote Process, label, order, search field API name, operator, input type, and required flag. Verify that `SBQQ__SearchField__c` matches the exact API name of the Product2 field (and the mirror field on ProcessInput).
-6. **Activate the Quote Process.** Either set it as the org-wide default in CPQ Settings or link it to the relevant Pricebook2 via `SBQQ__GuidedSelling__c`. Test by opening a new CPQ quote and clicking "Add Products" to confirm the wizard launches.
-7. **Test all answer combinations and verify filtering.** Test each question with a valid answer that should match products and confirm results are non-empty. Test with an answer that should produce zero matches. Test optional questions by leaving them blank and verify all products pass that filter. If any filter silently returns all products, check the mirror field on `SBQQ__ProcessInput__c`.
+1. **Confirm the platform and fields.** CPQ installed and staying in use; every filter field listed; custom fields flagged for mirroring; every CPQ field API name confirmed in Object Manager.
+2. **Deploy the mirror fields.** Create the same-name fields on `SBQQ__ProcessInput__c` from metadata, with field-level security for the users who run the wizard.
+3. **Populate classification data.** Every product that should appear has values on the filter fields; null values never match an equals filter.
+4. **Create the Quote Process and Process Inputs.** One input per question, pointing at Product2 field API names.
+5. **Add plugin logic only if needed.** Enhanced mode for appended filters, Custom mode for full control. Use bind variables, query any quote fields the plugin needs, and register the class on the Plugins tab of the CPQ package settings.
+6. **Activate and test.** Make the Quote Process the default or assign it, then test every question with matching, non-matching, and blank answers, and test Auto Select against every price book.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] `SBQQ__GuidedProductSelection__c = true` is set on the Quote Process record
-- [ ] Every custom Product2 classification field used in guided selling has a mirror field with identical API name on `SBQQ__ProcessInput__c`
-- [ ] `SBQQ__SearchField__c` on each ProcessInput matches the exact Product2 field API name (case-sensitive)
-- [ ] All product records have non-null values on the classification fields they should be filtered by
-- [ ] Search type (Standard / Enhanced / Custom) is explicitly set on the Quote Process
-- [ ] ProcessInput records have unique, ordered `SBQQ__Order__c` values
-- [ ] Required vs. optional questions are correctly marked with `SBQQ__Required__c`
-- [ ] The Quote Process is activated (org-wide default or pricebook-level assignment confirmed)
-- [ ] Auto Select Product behavior has been tested — if enabled, confirmed the answer set reliably produces a single match
-- [ ] End-to-end wizard test completed in a sandbox with real CPQ quotes
+- [ ] CPQ field API names confirmed in Object Manager (help-only names flagged in this skill)
+- [ ] Every custom Product2 filter field has a same-name field on `SBQQ__ProcessInput__c`, with field-level security granted
+- [ ] Filter fields populated on every product that should appear
+- [ ] Plugin used only where questions cannot express the rule; mode (Enhanced or Custom) documented
+- [ ] Plugin SOQL uses bind variables, not string concatenation
+- [ ] Quote fields the plugin needs are queried explicitly
+- [ ] Quote Process activated (default or assigned)
+- [ ] Auto Select tested against every price book in use
+- [ ] End-to-end wizard test completed in a sandbox
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+The deep versions, with sources, live in `references/gotchas.md`.
 
-1. **Missing mirror field on SBQQ__ProcessInput__c causes silent all-product return** — When a ProcessInput's `SBQQ__SearchField__c` references a custom field that does not exist on `SBQQ__ProcessInput__c`, CPQ cannot store the rep's answer at runtime. The wizard accepts the input but applies no filter — every product in the catalog appears in results. There is no error message. The only diagnostic is to check field existence on the ProcessInput object.
-2. **Products with null classification field values are excluded by equals-operator filters** — If `SBQQ__Operator__c = 'equals'` and a Product2 record has a null value on the filtered field, it will never appear in guided selling results for that question, even if the rep selects a catch-all or leaves the question blank with Required = false. Products must be data-complete on all classification fields used in the wizard.
-3. **Auto Select Product fires even when the single match is not in the active pricebook** — If the Quote Process has `SBQQ__AutoSelectProduct__c = true` and the one matching product is not in the quote's active pricebook, CPQ will attempt to add it and generate a pricebook entry error at line creation. Always confirm pricebook coverage for products surfaced by guided selling before enabling Auto Select.
-4. **SBQQ__GuidedProductSelection__c = false deactivates the wizard without deleting the record** — A Quote Process with `SBQQ__GuidedProductSelection__c = false` does not launch the wizard; "Add Products" falls back to the standard product selector. This is an easy configuration mistake when cloning Quote Process records — always verify this flag on newly created or cloned records.
+| # | Gotcha | One-line consequence |
+|---|---|---|
+| 1 | CPQ package has no new feature development | Large new investments may be stranded |
+| 2 | Missing mirror field returns the whole catalog | No error, just unfiltered results |
+| 3 | Enhanced and Custom are plugin modes chosen by `isSuggestCustom` | Wrong method gets ignored |
+| 4 | Plugins see only some quote fields | Logic fails on null quote values |
+| 5 | The guide's sample plugin concatenates strings into SOQL | Copying it invites SOQL injection |
+| 6 | Initializer sets only standard product option fields | Custom option fields stay unset |
+| 7 | Auto Select needs a price book entry for the single match | Rep sees an error instead of a line |
+| 8 | Null classification values never match equals filters | Valid products disappear |
 
 ---
 
@@ -213,16 +196,18 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| SBQQ__QuoteProcess__c record | Top-level guided selling configuration with GuidedProductSelection, SearchType, and AutoSelectProduct settings |
-| SBQQ__ProcessInput__c records | One per wizard question; defines label, field mapping, operator, order, and required status |
-| Mirror custom fields on SBQQ__ProcessInput__c | Custom fields matching Product2 classification field API names; required for custom-field-based filtering |
-| Guided selling configuration checklist | Completed checklist documenting all setup decisions and test results |
+| Quote Process record | Guided selling configuration, with executor and initializer if used |
+| Process Input records | One per question; label, field, operator, order, required |
+| Mirror custom fields on Process Input | Deployable `CustomField` metadata matching Product2 API names |
+| Product search plugin (if needed) | Apex class implementing `SBQQ.ProductSearchPlugin`, with test |
+| Guided selling configuration checklist | Setup decisions and test results |
 
 ---
 
 ## Related Skills
 
-- cpq-product-catalog-setup — Use to configure the Product2 catalog and product bundles before setting up guided selling classification fields
-- products-and-pricebooks — Use for standard Product2 and pricebook setup that guided selling filters operate against
-- cpq-pricing-rules — Use when guided selling results feed into a pricing configuration that uses price rules or discount schedules
-- quote-to-cash-requirements — Use during requirements gathering to confirm whether guided selling is the right product selection mechanism
+- `admin/cpq-product-catalog-setup`: Product2 catalog and bundles before guided selling
+- `admin/products-and-pricebooks`: standard Product2 and price book setup that guided selling filters
+- `admin/cpq-pricing-rules`: price rules and discount schedules applied after selection
+- `admin/quote-to-cash-requirements`: whether guided selling is the right selection mechanism
+- `apex/cpq-apex-plugins`: deeper plugin development beyond the guided selling interface

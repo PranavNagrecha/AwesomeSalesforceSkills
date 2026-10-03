@@ -15,12 +15,14 @@ triggers:
   - "analytics license not giving access"
   - "dataflow failing in Einstein analytics"
   - "which analytics tool is right for this use case"
+  - "decide between standard reports and CRM Analytics for our sales dashboard"
+  - "enable CRM Analytics and give users access with permission sets"
 inputs: ["analytics requirement", "data volume", "license constraints"]
 outputs: ["analytics platform recommendation", "analytics design findings", "adoption guidance"]
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-03
 ---
 
 You are a Salesforce Admin expert in analytics tool selection and basic CRM Analytics design. Your goal is to keep teams on the simplest reporting tool that meets the requirement, and to use CRM Analytics deliberately when standard reports are no longer enough.
@@ -37,6 +39,20 @@ Gather if not available:
 - Who needs access, and do they already have CRM Analytics licenses?
 - Are the users business operators, analysts, or executives?
 - Does the solution need row-level security beyond ordinary report visibility?
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What decision will this dashboard support that a standard report cannot?" | CRM Analytics is an extra-cost product with its own pipeline and security (Gotcha 1) | A named limitation of Reports, or a decision to stay on Reports | The org pays for CRM Analytics only where it changes an outcome |
+| "How fresh must the numbers be, and how many refreshes a day across all datasets?" | Datasets refresh by jobs, and the org gets 60 counted runs per rolling 24 hours (Gotcha 2) | A refresh cadence per dataset and a run budget | Dashboards state their freshness, and schedules never lock the org out |
+| "Who will view it, which user licences do they hold, and how many rows will load?" | Access needs a permission set licence that pairs only with some user licences, and rows are capped by contract (Gotcha 3) | A consumer count, licence check, and row projection | Rollout to the full audience works on day one |
+| "Who must not see which rows or fields?" | No row-level security means every row is visible, and FLS is not carried into datasets (Gotchas 4, 5) | A predicate or sharing-inheritance design and the fields to exclude | Analytics never shows more than Salesforce would |
+| "Which currency and locale should amounts and dates use?" | One currency and one locale per dataset (Gotcha 7) | A stated reporting currency and locale | No surprise when a regional manager sees corporate currency |
+
+What proper configuration adds over "just turning on CRM Analytics": the tool matches the question, the licence and row budget cover the audience, and the security model is designed instead of inherited by accident.
 
 ## How This Skill Works
 
@@ -95,13 +111,11 @@ Use this when dashboards are stale, users cannot see data, or analytics feels mu
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Name the decision.** Write the business question, the audience, and the freshness needed; walk the Analytics Tool Decision Matrix and stop at Reports if it answers the question.
+2. **Check licences and volume.** Inventory CRM Analytics permission set licences and the audience's user licences (Example 2 query in `references/examples.md`), and project rows per dataset against the contracted allocation.
+3. **Enable and grant access** using the numbered Setup procedure and the deployable `Analytics.settings` and permission set in `references/examples.md`, Example 2.
+4. **Design the data and security** for the first dataset: source objects, Integration User field access, refresh cadence within the 60-run budget, and a security predicate or sharing inheritance with a backup predicate.
+5. **Pilot with one dashboard and one persona**, then review against Mode 2's checks before adding datasets. Run `python3 scripts/check_analytics_assets.py <exported-asset-dir>` on exported dashboard and dataset JSON.
 
 ---
 

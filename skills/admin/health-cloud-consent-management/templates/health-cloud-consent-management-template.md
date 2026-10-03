@@ -20,9 +20,9 @@ Use this template when configuring or troubleshooting Health Cloud patient conse
 
 | Object | Record Name | Key Fields |
 |--------|-------------|------------|
-| DataUsePurpose | | PurposeId, CanDataSubjectOptOut |
+| DataUsePurpose | | Name, CanDataSubjectOptOut, LegalBasisId |
 | AuthorizationForm | | IsSignatureRequired |
-| AuthorizationFormText | | IsDefault = true, Locale, SummaryAuthFormText |
+| AuthorizationFormText | | AuthorizationFormId, Locale, SummaryAuthFormText (then set AuthorizationForm.DefaultAuthFormTextId) |
 | AuthorizationFormDataUse | | AuthorizationFormId, DataUsePurposeId |
 | AuthorizationFormConsent | Per-patient | Status, ConsentGiverId, AuthorizationFormTextId |
 
@@ -30,7 +30,7 @@ Use this template when configuring or troubleshooting Health Cloud patient conse
 
 - [ ] DataUsePurpose records created for each clinical use category
 - [ ] AuthorizationForm records created for each consent form type
-- [ ] AuthorizationFormText created with IsDefault = true and correct Locale
+- [ ] AuthorizationFormText created per language with the correct Locale, and AuthorizationForm.DefaultAuthFormTextId set to the fallback text
 - [ ] AuthorizationFormDataUse junction records created
 - [ ] Enrollment Flow creates AuthorizationFormConsent with Status = Seen when form is shown
 - [ ] Enrollment Flow updates Status to Signed after patient acknowledgment
@@ -38,7 +38,7 @@ Use this template when configuring or troubleshooting Health Cloud patient conse
 
 ## Withdrawal Workflow Checklist
 
-- [ ] Withdrawal workflow updates AuthorizationFormConsent.Status to Withdrawn
+- [ ] Withdrawal workflow records Status = Rejected (new record or update with field history); no deletion
 - [ ] Withdrawal workflow does NOT delete the AuthorizationFormConsent record
 - [ ] Withdrawal date/time and capture source are recorded
 - [ ] Related enrollment status updated if needed
