@@ -33,7 +33,7 @@ Before creation:
 - [ ] Einstein Setup toggle is On in the target org.
 - [ ] Agentforce feature toggle is Active (Setup > Agentforce Agents).
 - [ ] Einstein Trust Layer reviewed: data masking and ZDR settings confirmed.
-- [ ] EinsteinServiceAgent User exists and has the Einstein Agent User permission set assigned.
+- [ ] A dedicated agent user exists and holds a permission set that carries the Agent User license, plus a narrow data-access permission set.
 - [ ] Experience Cloud site exists and is published (if using Embedded Service channel).
 - [ ] Omni-Channel is configured with a routing configuration and queue (if using Messaging for Web channel).
 
@@ -72,7 +72,7 @@ that shapes how the agent should interact with users.)
 
 | Field | Value |
 |---|---|
-| Agent User Name | EinsteinServiceAgent User (or custom) |
+| Agent User Name | Dedicated agent user (username) |
 | Permission Set Name | |
 | Objects agent user can Read | |
 | Objects agent user can Read/Write | |

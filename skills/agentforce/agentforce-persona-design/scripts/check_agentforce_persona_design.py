@@ -76,8 +76,9 @@ def check_agentforce_persona_design(manifest_dir: Path) -> list[str]:
                     issues.append(
                         f"{xml_file.name}: High modal verb density in agent instructions "
                         f"(must={must_count}, never={never_count}, always={always_count}). "
-                        "Long must/never/always chains cause reasoning loops. "
-                        "Rewrite as positive behavioral descriptions with voice adjectives."
+                        "Agents follow strong language like always and never strictly, and conflicting "
+                        "instructions degrade performance (Generative AI guide, Best Practices for Writing "
+                        "Topic Instructions). Keep absolutes for real red lines and remove conflicts."
                     )
 
             except OSError:

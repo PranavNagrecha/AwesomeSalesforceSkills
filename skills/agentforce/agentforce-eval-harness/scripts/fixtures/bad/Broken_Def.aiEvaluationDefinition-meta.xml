@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AiEvaluationDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <name>bad__name_</name>
+    <subjectName>Returns_Service_Agent</subjectName>
+    <subjectType>BOT</subjectType>
+    <testCase>
+        <number>1</number>
+        <inputs>
+            <utterance>Close case 5005g00000AbCdEFGH and email jane.doe@example.com</utterance>
+        </inputs>
+        <expectation>
+            <name>topic_match</name>
+            <expectedValue>Case_Management</expectedValue>
+        </expectation>
+        <expectation>
+            <name>bot_response_rating</name>
+        </expectation>
+        <expectation>
+            <name>action_sequence_match</name>
+            <expectedValue>Close_Case</expectedValue>
+        </expectation>
+        <expectation>
+            <name>coherence</name>
+            <expectedValue>a coherent answer</expectedValue>
+        </expectation>
+    </testCase>
+    <testCase>
+        <number>2</number>
+        <inputs>
+        </inputs>
+        <expectation>
+            <name>string_comparison</name>
+            <parameter>
+                <name>operator</name>
+                <value>matches</value>
+                <isReference>false</isReference>
+            </parameter>
+            <parameter>
+                <name>actual</name>
+                <value>$.generatedData.invokedActions[*][?(@.function.name == 'Close_Case_With_A_Very_Long_Action_Name_That_Keeps_Going')].function.input.caseNumber</value>
+                <isReference>false</isReference>
+            </parameter>
+        </expectation>
+    </testCase>
+</AiEvaluationDefinition>

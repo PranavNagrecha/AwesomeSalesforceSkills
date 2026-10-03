@@ -113,12 +113,13 @@ Review assertions that go with it:
 
 1. `Social_Security_Number__c` appears in no grounding selector — grep the field API
    name across the action and selector classes; the expected result count is zero.
-2. The field is classified on the object so its sensitivity is discoverable, and Trust
-   Layer masking covers the corresponding PII category as a backstop.
+2. The field is classified on the object so its sensitivity is discoverable. Do not count
+   Trust Layer masking as a backstop: the Generative AI guide states that data masking
+   through the Trust Layer is disabled for agents.
 3. A negative test exists: as a low-privilege user, ask the agent for a contact owned by
    another user and assert it cannot answer.
 
-**Why it works:** the three controls sit at different boundaries and fail independently —
-projection (the data never reaches the model), access mode (the row never reaches the
-query result), masking (the value is filtered on the way out). Reviews that check only
-the third one pass agents that leak.
+**Why it works:** the controls sit at different boundaries and fail independently.
+Projection keeps the data from reaching the model, and access mode keeps the row out of the
+query result. An output filter is a third layer only where one actually runs; for agents,
+Trust Layer masking does not, so a review that relies on it passes agents that leak.

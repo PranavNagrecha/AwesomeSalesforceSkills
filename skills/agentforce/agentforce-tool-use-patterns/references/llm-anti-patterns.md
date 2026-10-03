@@ -38,7 +38,7 @@ public class Result {
 
 **Why it happens:** LLMs transfer from generic REST patterns.
 
-**Correct pattern:** Semantic names + explicit format: `@InvocableVariable(label='Order Number', description='...') public String orderNumber;`
+**Correct pattern:** Semantic names + explicit format: `@InvocableVariable(label='Order Number' description='...') public String orderNumber;`. The Apex Developer Guide examples separate annotation parameters with whitespace, not commas.
 
 **Detection hint:** Variables named `id`, `value`, `input`, `data` with no context.
 
@@ -50,7 +50,7 @@ public class Result {
 
 **Why it happens:** LLMs author the annotation once and don't revisit when adding HTTP logic.
 
-**Correct pattern:** `@InvocableMethod(label='...', callout=true)` whenever HTTP is involved.
+**Correct pattern:** `@InvocableMethod(label='...' callout=true)` whenever HTTP is involved. The Apex Developer Guide documents the modifier's effect in screen flows (transaction control when there is uncommitted work); declare it anyway so the same invocable is safe when a flow reuses it.
 
 **Detection hint:** `HttpRequest` or `Http.send` inside an invocable without `callout=true`.
 
@@ -62,7 +62,7 @@ public class Result {
 
 **Why it happens:** LLMs default to throw/catch.
 
-**Correct pattern:** Pair a throw-path (fatal) with an `error` output field (recoverable). Agent prompts branch on `error`.
+**Correct pattern:** Report failures in an `error` output field and keep one result per input, in the same order. The Apex Developer Guide says to wrap results in an object that reports failures and to return the same number of results as inputs even if errors occur. Subagent instructions branch on `error`.
 
 **Detection hint:** Return DTOs without an `error` or `status` field.
 
@@ -125,3 +125,40 @@ public class Result {
 **Correct pattern:** Description in terms of user intent, not exact phrases: "USE WHEN the user wants to cancel an order they've already placed."
 
 **Detection hint:** Descriptions containing quoted user phrases.
+
+---
+
+## Anti-Pattern 11: Telling the author that output descriptions do not matter
+
+**What the LLM generates:** Advice to spend effort only on the method description and input descriptions, because "outputs are not shown to the model".
+
+**Why it happens:** Assistants generalize from function-calling APIs where only the call signature is described.
+
+**Correct pattern:** Write output instructions that say what the value is and what the agent should do with it. Set "Show in conversation" on outputs the agent may repeat, and make sure at least one output has `copilotAction:isUsedByPlanner` set to `true`; the Metadata API reference says the planner returns random responses otherwise.
+
+**Detection hint:** Blank output descriptions in `output/schema.json`, or checker rule TU-020.
+
+---
+
+## Anti-Pattern 12: Reusing a Flow-style invocable that takes collections or sObjects
+
+**What the LLM generates:** An agent action wired to `run(List<List<Account>> accounts)` or a request class with `List<Id> recordIds`.
+
+**Why it happens:** The invocable already exists for Flow, so reusing it looks efficient.
+
+**Correct pattern:** Give the agent its own invocable with primitive request fields. The Generative AI guide (Spring '26) says custom actions that reference Apex or flows support only primitive data types and that collections aren't supported.
+
+**Detection hint:** Checker rule TU-004 (collection-typed invocable variable) and TU-003 (generic Object).
+
+---
+
+## Anti-Pattern 13: Formatting the tool output for display inside the action
+
+**What the LLM generates:** An action that returns pre-built HTML or Markdown tables so the agent "shows it nicely".
+
+**Why it happens:** Assistants assume the action controls rendering.
+
+**Correct pattern:** Return plain values and let the agent compose the reply. The Generative AI guide states that when you create a custom action you can't specify how the output appears; it is formatted automatically. When a custom UI is genuinely needed, use custom Lightning types, which the Agentforce Developer Guide documents for that purpose.
+
+**Detection hint:** Output fields named `html`, `markdown` or `table`, or strings containing tags.
+

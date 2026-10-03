@@ -13,6 +13,8 @@ triggers:
   - "rag pattern agentforce"
   - "citations in agent response"
   - "freshness sla for retrievers"
+  - "set up an Agentforce data library for my knowledge articles"
+  - "limit which knowledge articles my agent can search"
 tags:
   - agentforce
   - data-cloud
@@ -29,9 +31,9 @@ outputs:
   - Freshness SLA and refresh plan
   - Citation / transparency pattern
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Data Cloud Grounding For Agentforce
@@ -56,6 +58,26 @@ answers that cite their sources.
 > API names, in older Help articles, and in many orgs; nothing about behaviour
 > changed with the rename.
 
+## Questions to Ask Before Configuring
+
+Ask these before creating a library or a retriever. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which content sources, and which data space?" | A library holds Knowledge or files, never both, and its data space and source are fixed at creation (Gotcha 8) | One library per source, in the right data space | No rebuild when the second source arrives |
+| "Who may see which content?" | Retriever access follows Data Cloud permission sets, not CRM sharing (Gotcha 1) | Data categories per audience and the permission sets that govern the retriever | Answers that cannot surface content the user should not see |
+| "How fresh must answers be?" | Indexing takes time and cannot be changed mid-run (Gotchas 2, 3) | A freshness window per subagent, and actions for live data | Accurate expectations and no stale answers presented as current |
+| "How will grounding reach production?" | Retrievers and search indexes do not deploy (Gotcha 10) | A script that creates the library in each org before the template deploys | Repeatable promotions instead of manual rebuilds |
+| "What will the retriever search with?" | Search text is limited to 255 characters from globals and prompt inputs (Gotcha 11) | A short question input designed into the template | Queries that fit the limit and are reproducible |
+| "Must answers cite sources?" | Source links need the Knowledge domain URL and citations turned on (Gotcha 7) | Citation settings for the library, template and agent runtime | Verifiable answers and a debugging trail |
+
+## Platform Building Blocks
+
+- **Data library.** Created in Setup, Agent Builder, `sf agent adl create` or the ADL Connect API. It provisions the data stream, search index and retriever, and the Answer Questions with Knowledge action uses it. Source types: Knowledge, file upload (SFDRIVE), or an existing active custom retriever (CLI help).
+- **Retriever.** "The bridge between search indexes and prompt templates." A default retriever is created with each search index; custom retrievers are built in Einstein Studio. In a prompt template you set Search Text, Output Fields and Number of Results.
+- **Agent runtime switches.** In Agent Script, `citation` and `groundedness` in the `runtime` block control citation enrichment and the check of responses against source content.
+- **What does not deploy.** Retrievers and search indexes are not in change sets or Metadata API deployments; create them in each org first. `references/metadata-examples.md` shows the script and the template.
+
 ## Recommended Workflow
 
 1. **List the questions the agent must answer.** Work backwards from real user
@@ -69,13 +91,18 @@ answers that cite their sources.
 4. **Decide chunking.** For unstructured, chunk by semantic boundary (article
    section, call segment) not fixed token count when possible. Preserve a
    stable doc_id + section_id in metadata for citation.
-5. **Enforce sharing at retrieval time.** Apply user-context filters so the
-   retriever never returns rows the running user cannot see. Never rely on the
-   LLM to redact.
+5. **Enforce access at retrieval time.** Retriever access is controlled by Data
+   Cloud permission sets, so scope libraries by data category and data space,
+   choose Output Fields narrowly, and never rely on the LLM to redact. Search
+   text can use only globals and prompt inputs (255 characters).
 6. **Set a freshness SLA.** State how stale data can be before the answer is
    wrong. Align Data Cloud refresh cadence to that SLA, not vice versa.
 7. **Return citations.** Every grounded answer should include source doc_ids
-   or record Ids the user can open.
+   or record Ids the user can open: turn on sources for the library with the
+   Knowledge domain URL set, and `isCitationEnabled` on the prompt template.
+8. **Script the promotion.** Create the library in each target org with
+   `sf agent adl create` and wait for `READY` before deploying the template that
+   uses its retriever.
 
 ## Retriever Selection
 
@@ -86,6 +113,8 @@ answers that cite their sources.
 | "How do I handle policy X?" | Vector (Knowledge) | Chunk by section |
 | "What does the transcript of the last call say?" | Vector + metadata filter | Filter by call_id |
 | Blend ("account summary + last case note") | Hybrid | Two retrievers, ranked and fused |
+
+UNVERIFIED (2026-10-03): the "structured (DMO)" retriever rows above, with record filters such as `UnifiedIndividualId`. The sources read describe retrievers over search indexes that hold structured and unstructured content; for live record facts, an action that reads the record at answer time is the documented-safe choice.
 
 ## Grounding Strategy Per Subagent
 
@@ -103,10 +132,9 @@ Over-packing the subagent prompt with facts is the #1 token waste.
 
 Three layers:
 
-1. **Data Cloud data space / sharing rules** — baseline visibility.
-2. **Retriever filter** — always pass the calling user's identifiers so the
-   retriever limits to rows they are allowed to see.
-3. **Agent response scrubbing** — last line of defense, not primary.
+1. **Data Cloud data space and permission sets**: baseline visibility; access to retrievers and their data is controlled by Data Cloud permission sets.
+2. **Library scope and retriever settings**: data category rules on Knowledge libraries and narrow Output Fields. UNVERIFIED (2026-10-03): the earlier advice to pass the calling user's identifiers into the retriever filter; search text accepts only globals and prompt inputs, so any such filter must be designed through those.
+3. **Agent response scrubbing**: last line of defense, not primary. Trust Layer data masking is disabled for agents.
 
 If the retriever returns data the user should not see, you have a compliance
 incident, not a UX bug.
@@ -140,7 +168,4 @@ template then includes "Source: <title> (<id>)". This enables:
 
 ## Official Sources Used
 
-- Agentforce — Ground Your Agent — https://help.salesforce.com/s/articleView?id=sf.agentforce_grounding.htm
-- Data Cloud retriever — https://help.salesforce.com/s/articleView?id=sf.c360_a_data_cloud_retriever.htm
-- Data Cloud DMOs — https://help.salesforce.com/s/articleView?id=sf.c360_a_data_model_objects.htm
-- Salesforce Architects — Data Cloud guidance — https://architect.salesforce.com/
+See `references/well-architected.md` for the sources read for this revision.

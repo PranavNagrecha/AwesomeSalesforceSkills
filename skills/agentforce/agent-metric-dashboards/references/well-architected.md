@@ -193,6 +193,22 @@ alert as a positive act.
 
 ## Official Sources Used
 
+Read and checked on 2026-10-03 for this revision:
+
+- Data Cloud DMO reference, AI Agent Session DMO (`ssot__AiAgentSession__dlm`, end type values, channel, timestamps): https://developer.salesforce.com/docs/data/data-cloud-dmo-mapping/guide/c360dm-si-aiagentsessiondmo-dmo.html
+- Data Cloud DMO reference, AI Agent Interaction DMO (`ssot__AiAgentInteraction__dlm`, `TopicApiName`, interaction type): https://developer.salesforce.com/docs/data/data-cloud-dmo-mapping/guide/c360dm-si-aiagentinteractiondmo-dmo.html
+- Data Cloud DMO reference, AI Agent Interaction Step DMO (`ssot__AiAgentInteractionStep__dlm`, step types, action name, error text): https://developer.salesforce.com/docs/data/data-cloud-dmo-mapping/guide/c360dm-si-aiagentinteractionstepdmo-dmo.html
+- Data Cloud DMO reference, AI Agent Interaction Message DMO and AI Agent Session Participant DMO: https://developer.salesforce.com/docs/data/data-cloud-dmo-mapping/guide/c360dm-si-aiagentinteractionmessagedmo-dmo.html and https://developer.salesforce.com/docs/data/data-cloud-dmo-mapping/guide/c360dm-si-aiagentsessionparticipantdmo-dmo.html
+- Data Cloud DMO reference, Ai Agent Generative Ai Usage DMO (`AiAgentGenerativeAiUsage_std__dlm`, token counts, available in 260 and later): https://developer.salesforce.com/docs/data/data-cloud-dmo-mapping/guide/c360dm-si-aiagentgenerativeaiusagedmo-dmo.html
+- Agentforce Developer Guide, Export Agentforce Session Tracing Data (Beta) (endpoint, limits, prerequisites, OTLP format): https://developer.salesforce.com/docs/ai/agentforce/guide/otel-api.html
+- Agentforce Developer Guide, Considerations for the Testing API (results may change): https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-considerations.html
+- Generative AI guide, Spring '26: Agentforce Analytics, Utterance Analysis, Agentforce Analytics Reports (report and dashboard names and definitions), Agentforce Analytics Data Cloud Objects, Enable Enhanced Event Logs, Generative AI Billable Usage Types (Digital Wallet, credits): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+- Metadata API Developer Guide, Summer '26 (API 67.0), MktCalcInsightObjectDef (fields, folder, sample): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+
+### Carried forward from earlier versions (not re-read on 2026-10-03)
+
+These were not re-read for this revision. help.salesforce.com articles do not return their text to a fetch, so claims that rest only on a Help article are marked UNVERIFIED in the skill.
+
 - About Agentforce Session Tracing (Help) — https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_about.htm&type=5
 - Set Up Agentforce Session Tracing (Help) — https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_setup.htm&type=5
 - Data Model for Agentforce Session Tracing (Help) — https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_data_model.htm&type=5

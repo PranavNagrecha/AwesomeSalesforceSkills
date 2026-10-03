@@ -24,6 +24,8 @@ triggers:
   - "test that my AI agent doesn't hallucinate"
   - "agent hallucination eval"
   - "agent eval"
+  - "write regression evals for my Agentforce agent before a prompt change"
+  - "turn my agent eval fixtures into an AiEvaluationDefinition for CI"
 inputs:
   - Agent under test (with topics, actions, prompts)
   - Production transcripts or synthetic scenarios
@@ -34,9 +36,9 @@ outputs:
   - Baseline run with scores
   - CI job that runs evals on every prompt change
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Agentforce Eval Harness
@@ -45,6 +47,19 @@ updated: 2026-08-14
 > Behaviour did not change and the API surface did not rename — metadata types
 > and evaluation expectation names still say *topic*. This skill leads with
 > *subagent*; the fixture format below keeps its `topic:` key.
+
+## Questions to Ask Before Configuring
+
+Ask these before writing the first fixture. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which agent version is under test, and who activates new versions?" | An `AiEvaluationDefinition` without `subjectVersion` tests the latest active version (Gotcha 11) | A pinned `vN` and an owner who bumps it in the promotion PR | Baselines stay comparable across releases instead of moving on every activation |
+| "Which sandbox runs the evals, and what does a run cost?" | Runs consume Einstein Requests even in a sandbox, and evals must never run in production (Gotchas 5, 7) | A named eval sandbox and a per-PR budget | Tiered runs (P0 per PR, P1 daily) instead of a surprise bill or polluted production data |
+| "Which subagents and actions exist, and which failures have users already hit?" | Coverage is defined by intent; Utterance Analysis shows unsupported requests (Gotchas 4, 10) | A list of subagents with two or more P0 cases each, plus the production failure clusters | Fixtures that test this agent's routing and refusals, not the base model |
+| "Where may test data come from?" | Production transcripts must never be copied into test cases (Gotcha 16) | A rule that values are synthesized or scrubbed, plus a test-data manifest for placeholders | Fixtures that are safe in source control and survive a sandbox refresh |
+| "How will CI decide pass or fail?" | Exit code 1 means execution errors, not failed assertions (Gotcha 12) | A gate that parses each `metricScore` from JSON or JUnit output | A blocked PR always means a real regression, never a flaky pipeline |
+| "Which checks are deterministic and which need a judge?" | `bot_response_rating` is semantic; tool calls are exact (Gotchas 1, 14) | A split: subagent, action and argument checks in `AiEvaluationDefinition`; rubric scores in the harness | Each failure points at one layer, so the fix is obvious |
 
 ## Core concept — three eval dimensions
 
@@ -55,6 +70,10 @@ An agent can fail in three independent ways. The harness must score each dimensi
 | **Correctness** | Did the agent do the right thing with the right arguments? | Called `Cancel_Order` with the wrong order number |
 | **Grounding** | Did the agent cite / rely on real data, not hallucinations? | Quoted a policy that doesn't exist |
 | **Tone / Safety** | Is the output appropriate (safe refusals, no PII leaks, no legal advice)? | Shared another customer's email in a response |
+
+## Platform layer: AiEvaluationDefinition
+
+The harness's deterministic checks have a platform home. An `AiEvaluationDefinition` (Metadata API, API 63.0 and later) holds test cases with an utterance, optional context variables and conversation history, and expectations such as `topic_sequence_match`, `action_sequence_match`, `bot_response_rating`, the quality metrics, and custom `string_comparison` or `numeric_comparison` checks. A definition holds at most 1,000 cases, and an org runs at most 10 at once. `references/metadata-examples.md` shows a complete definition, its package.xml entry, the CLI run, and a field-by-field mapping from the fixture format below. Running and interpreting Testing Center results in depth belongs to `agentforce/agent-testing-and-evaluation`.
 
 ## Fixture format
 
@@ -99,11 +118,11 @@ Turn 2 (user provides "A7842"):
 ## Recommended Workflow
 
 1. **Audit the agent's subagents and actions.** Every subagent needs ≥ 2 P0 eval cases. Every action needs ≥ 1 case that exercises it.
-2. **Collect real transcripts from UAT or production** (anonymized). These are better than synthetic cases — they capture actual user phrasing patterns.
+2. **Mine UAT and production sessions for failure patterns, then write generalized cases.** Real phrasing beats invented phrasing, but never paste a raw transcript: scrub or synthesize every value first (Gotcha 16).
 3. **Write one case per failure mode.** Not just happy paths; explicitly test ambiguity, refusal, escalation, and multi-turn correction.
 4. **Author the rubric in calibration pairs.** Two engineers score the same reference answer independently; if they disagree on a score, tighten the rubric definition before scaling.
 5. **Establish the baseline.** Run the harness once against the current agent; commit scores to a baseline file.
-6. **Wire CI.** On every prompt or action change, re-run the harness and diff against baseline. Fail the PR if any P0 case regresses.
+6. **Wire CI.** Project the deterministic checks into an `AiEvaluationDefinition` (see `references/metadata-examples.md`), lint it with `python3 scripts/check_agentforce_eval_harness.py --manifest-dir force-app`, deploy it, and run `sf agent test run --result-format json`. On every prompt or action change, re-run the harness and diff against baseline. Fail the PR if any P0 case regresses, judged from each `metricScore`, never from the exit code alone.
 7. **Review quarterly.** Eval sets drift — user intent patterns change, new product features emerge. Budget engineering time to keep the fixture set fresh.
 
 ## Key patterns
@@ -204,7 +223,7 @@ Eval harnesses are batch-oriented by nature. Bulk concerns:
 
 ## Error handling
 
-- **Agent unavailable / sandbox down:** mark the run as `infra-failure`, don't score, re-queue.
+- **Agent unavailable / sandbox down:** mark the run as `infra-failure`, don't score, re-queue. A `sf agent test run` exit code of 1 belongs here: it signals execution errors, not failed assertions.
 - **Tool errors during eval:** capture the error but don't mark the case as "agent failed" — the eval may be testing exactly this recovery.
 - **Judge model disagrees with itself across runs:** re-score 3× and use majority; if still flaky, rewrite the rubric.
 
@@ -225,7 +244,4 @@ This IS the testing skill. Meta-testing:
 
 ## Official Sources Used
 
-- Salesforce Developer — Einstein Trust Layer: https://developer.salesforce.com/docs/einstein/genai/guide/trust-layer.html
-- Salesforce Help — Agentforce Testing Center: https://help.salesforce.com/s/articleView?id=sf.copilot_testing.htm
-- Salesforce Architects — Evaluating AI Systems: https://architect.salesforce.com/
-- Salesforce Developer — Agentforce Metrics and Monitoring: https://developer.salesforce.com/docs/einstein/genai/guide/
+See `references/well-architected.md` for the sources read for this revision.

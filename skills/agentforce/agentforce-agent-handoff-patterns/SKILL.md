@@ -13,6 +13,8 @@ triggers:
   - "transfer conversation context to omni channel"
   - "agent deflection fallback rules"
   - "agentforce hand back after human resolution"
+  - "route a conversation from my agent to a live service rep"
+  - "set up an escalation flow for my Agentforce service agent"
 tags:
   - agentforce
   - handoff
@@ -28,9 +30,9 @@ outputs:
   - "context package schema"
   - "user-facing messaging per handoff type"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Agentforce Agent Handoff Patterns
@@ -53,7 +55,33 @@ Three kinds of handoff matter: agent-to-human (Omni-Channel), agent-to-agent (sw
 - Confirm Omni-Channel queue structure and presence model.
 - Confirm whether hand-back (returning to the agent after human resolution) is a requirement.
 
+## Questions to Ask Before Configuring
+
+Ask these before designing any transfer. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Is the agent built in the legacy builder or in Agent Script?" | Legacy agents escalate only through the standard Escalation topic; Agent Script uses `@utils.escalate` with a connection block (Gotchas 6, 7) | The escalation mechanism to configure | A transfer that actually routes instead of a custom topic that never does |
+| "Which Omni-Channel flow and queue receive the conversation, and what happens when nobody is available?" | Escalation needs a fallback queue for Messaging Session, and a fallback route if the primary is down (Gotchas 1, 9) | The flow, the queue, and the fallback behaviour | No customer stranded in a silent wait |
+| "Which conditions trigger a handoff?" | The Escalation topic escalates only on explicit request until widened (Gotcha 6) | A trigger list across user, confidence, scope, policy, authorization and technical | Handoffs that follow policy, not just "let me speak to a human" |
+| "What must the rep see so the customer does not repeat themselves?" | A transcript dump is not a summary (Gotcha 3) | The context package fields and where they are written | A case the rep can act on in seconds |
+| "Does the conversation ever come back to the agent, or move between agents?" | Transitions are one way and restart the target; connected subagents are independent agents (Gotchas 4, 5, 12) | The hand-back or delegation design, with the variables that carry state | No repeated questions after a detour |
+| "Which channel and agent type serve the customer?" | Only Agentforce Service Agent connects to enhanced Messaging (Gotcha 10) | A confirmed channel and agent type | A design that can be connected |
+
 ## Core Concepts
+
+### Platform Mechanics
+
+| Destination | Legacy builder | Agent Script | Source |
+|---|---|---|---|
+| Service rep (Omni-Channel) | Standard Escalation topic, which routes through its outbound Omni-Channel flow; no custom topic can do this | `@utils.escalate` plus a `connection messaging` block naming the Omni-Channel flow | Generative AI guide, Agent Topic: Escalation; Agentforce Developer Guide, Utils and Agent Script Blocks |
+| Fallback when the primary route is unavailable | `Bot.defaultOutboundFlow` (API 65.0 and later) and a fallback queue for Messaging Session | Same | Metadata API reference, Bot; Enhanced Chat example |
+| Another agent | Multi-agent configuration | `connected_subagent` block, used as a reasoning action | Agentforce Developer Guide, Agent Script Blocks |
+| Another subagent in the same agent | Topic routing | `@utils.transition to @subagent.Name` (one way) | Agentforce Developer Guide, Utils |
+| Workflow (case, callback) | Custom action on the Escalation topic or the owning subagent | Custom action, then escalate or end | Generative AI guide, Agent Topic: Escalation |
+| End of conversation | Not applicable | `@utils.end_session` | Agentforce Developer Guide, Utils |
+
+`references/metadata-examples.md` shows the context-package action, the Agent Script escalation block and the fallback element to review.
 
 ### Handoff Trigger Types
 
@@ -96,11 +124,11 @@ If the agent will resume after human resolution (common in hybrid service models
 
 ### Pattern 1: Structured Escalation To Omni-Channel
 
-On trigger: create a case with a structured description, route to the queue, deliver a friendly transfer message, end the agent session. The case captures the context package in a standard format.
+On trigger: run a custom action that creates a case with a structured description, then escalate through the Escalation topic's Omni-Channel flow (legacy builder) or `@utils.escalate` (Agent Script) with an escalation message. The case captures the context package in a standard format.
 
 ### Pattern 2: Warm Agent-To-Agent Handoff
 
-One agent hands to another without losing conversation continuity. The receiving agent reads a summary (not the verbatim history) to avoid token bloat and topic confusion.
+One agent hands to another without losing conversation continuity. In Agent Script the receiver is a `connected_subagent`, a complete independent agent, so pass a summary and the variables it needs rather than the verbatim history.
 
 ### Pattern 3: Confidence-Triggered Escalation
 
@@ -142,18 +170,19 @@ If no suitable human is available or the query is out-of-scope with no sensible 
 2. Map each to a destination.
 3. Design the context package (fields, format, size).
 4. Write user messaging per handoff type.
-5. Implement the transfer mechanism (case creation, queue route, workflow spawn).
-6. Verify hand-back works if required.
+5. Implement the transfer mechanism from the Platform Mechanics table: the context-package action, then the Escalation topic flow or `@utils.escalate` with its connection block, plus the fallback queue and fallback route.
+6. Test in preview with and without an available rep, and verify hand-back works if required.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. Omni-Channel routing honors agent presence; if no one is available, the conversation can sit indefinitely unless you add fallbacks.
+1. Escalation needs a fallback queue for the Messaging Session object; without fallbacks, a conversation can wait with no one available.
 2. Case routing by owner vs queue has different audit trails.
 3. Context dumped as raw text into a case description is unsearchable and bloats storage.
-4. Agent-to-agent handoff resets subagent context — the new agent does not see the previous subagent's instructions.
-5. Hand-back requires the original agent session to still be alive, or you need an explicit resumption mechanism.
+4. Agent-to-agent handoff starts an independent agent: the new agent does not see the previous subagent's instructions.
+5. Hand-back is not automatic; within one agent, transitions are one way and restart the target subagent. UNVERIFIED (2026-10-03): how a session resumes after a human takes over.
+6. In the legacy builder, only the standard Escalation topic can route to service reps.
 
 ## Proactive Triggers
 
@@ -177,3 +206,4 @@ If no suitable human is available or the query is out-of-scope with no sensible 
 - `agentforce/agentforce-guardrails` — guardrails that fire authorization handoffs.
 - `admin/omni-channel-routing-setup` — destination queue design.
 - `agentforce/agentforce-service-ai-setup` — service-agent integration.
+- `agentforce/agentforce-agent-creation`: channel connection and activation, which must precede routing.

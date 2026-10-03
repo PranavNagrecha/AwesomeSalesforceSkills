@@ -5,10 +5,13 @@ domain is a dashboard specification that invents a `Conversation__c` object and
 a token ledger the org does not have, and is therefore never built.
 
 The real source is **Agentforce Session Tracing**, whose data model is a
-collection of Data Cloud DLOs and DMOs — including `AIAgentSession`
-(session-level detail), `AIAgentSessionParticipant` (who was on the session —
-Contact, Lead, or Account), `AIAgentInteraction` (turn-by-turn), and
-`AIAgentInteractionMessage` (message detail)
+collection of Data Cloud DLOs and DMOs, including `AIAgentSession`
+(session-level detail, object API name `ssot__AiAgentSession__dlm`),
+`AIAgentSessionParticipant` (who was on the session: Contact, Lead, or Account;
+`ssot__AiAgentSessionParticipant__dlm`), `AIAgentInteraction` (turn-by-turn;
+`ssot__AiAgentInteraction__dlm`), and `AIAgentInteractionMessage` (message
+detail; `ssot__AiAgentInteractionMessage__dlm`). The API names come from the Data
+Cloud DMO reference pages
 ([Data Model for Agentforce Session
 Tracing](https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_data_model.htm&type=5)).
 Tracing captures turns, messages, LLM calls, actions, metric scores, and
@@ -17,7 +20,7 @@ feedback.
 **Prerequisite that gates everything here:** Session Tracing and the Session
 Tracing Data Model are enabled under Setup → Einstein Audit, Analytics, and
 Monitoring Setup, and analytics appear **only for conversations that occur
-after** setup. Readers need the Data Cloud User permission set. If tracing was
+after** setup (UNVERIFIED 2026-10-03: the Help source does not fetch). Readers need Data Cloud access (UNVERIFIED 2026-10-03: the exact permission set name). If tracing was
 switched on last week, the dashboard's history starts last week.
 
 ---

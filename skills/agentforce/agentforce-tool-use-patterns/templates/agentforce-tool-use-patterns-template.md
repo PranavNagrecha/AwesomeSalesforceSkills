@@ -1,32 +1,42 @@
-# Agentforce Tool Use Patterns — Work Template
+# Agentforce Tool Use Patterns: Work Template
 
-Use this template when working on tasks in this area.
+Use this template when choosing and specifying the tools for one subagent.
 
 ## Scope
 
 **Skill:** `agentforce-tool-use-patterns`
 
-**Request summary:** (fill in what the user asked for)
+**Agent and subagent:** (agent API name, subagent API name)
 
-## Context Gathered
+**Serving channel:** (Builder preview only, Messaging, Agent API with its 120-second timeout)
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+## Capability Inventory
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+| Capability | Direction (read SF, read external, read unstructured, generate, write SF, write external) | Tool shape (decision tree branch) | `invocationTargetType` | Confirmation needed |
+|---|---|---|---|---|
+| | | | | |
 
-## Approach
+## Contract per Tool
 
-TODO: Which pattern from SKILL.md applies? Why?
+| Tool API name | Input (primitive type, description, user input?) | Output (description, show in conversation?, used by planner?) | Error field and values |
+|---|---|---|---|
+| | | | |
+
+## Chaining Order
+
+- Dependent step and the instruction that enforces it (by API name):
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
+- [ ] Every capability has one tool shape chosen from the decision tree.
+- [ ] Deterministic work uses Apex, flow or a standard action, not a prompt template.
+- [ ] Inputs are primitive; no collections or sObjects in agent-facing request classes.
+- [ ] Every output has an instruction; at least one is used by the planner.
+- [ ] Text outputs stay at or under 250 characters, or use a multiline or rich text type.
+- [ ] Invocables return one result per input, in order, with an error field.
+- [ ] `scripts/check_agentforce_tool_use_patterns.py --manifest-dir <dir>` reports no ERROR.
+- [ ] Eval cases exercise each tool alone and in its chain.
 
-- [ ] TODO
-- [ ] TODO
+## Deviations
 
-## Notes
-
-TODO: Record any deviations from the standard pattern and why.
+Record any departure from the patterns in SKILL.md and the reason for it.

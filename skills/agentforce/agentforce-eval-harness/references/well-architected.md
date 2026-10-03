@@ -45,6 +45,26 @@ When Salesforce refreshes the underlying LLM:
 
 ## Official Sources Used
 
+Read and checked on 2026-10-03 for this revision:
+
+- Metadata API Developer Guide, Summer '26 (API 67.0), AiEvaluationDefinition (fields, `subjectVersion` default, API 63.0 availability): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Agentforce Developer Guide, Build Tests in Metadata API (test case inputs, context variables, conversation history, sample definition): https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-build-tests.html
+- Agentforce Developer Guide, Add Custom Evaluation Criteria to a Test Case (string and numeric operators, 100-character parameters, JSONPath into generatedData): https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-custom-evaluation-criteria.html
+- Agentforce Developer Guide, Considerations for the Testing API (Einstein Requests in sandboxes, 10 in-progress runs, 1,000 test cases, results may change): https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-considerations.html
+- Agentforce Developer Guide, Use Test Results to Improve Your Agent (what each expectation measures, semantic outcome test, PASS or FAILED): https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-use-results.html
+- Agentforce Developer Guide, Deploy and Run Tests in the Command Line (API name of Agentforce (Default) is Copilot_for_Salesforce): https://developer.salesforce.com/docs/ai/agentforce/guide/testing-api-cli.html
+- Agentforce Developer Guide, Run Agent Tests (sf agent test run, resume, results, retrieve): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-test-run.html
+- Agentforce Developer Guide, Generate a Test Spec File (legacy versus new testing process, required spec fields): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-test-spec.html
+- Agentforce Developer Guide, Troubleshoot Agentforce DX Issues (exit code 1 semantics, publish and activate before testing): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-troubleshooting.html
+- Agentforce Developer Guide, Headless Example: Optimize an Agent by Analyzing Production Data (no raw production transcripts in test cases, sandbox first, full-suite gate): https://developer.salesforce.com/docs/ai/agentforce/guide/headless-examples-agent-optimize.html
+- Agentforce Developer Guide, Export Agentforce Session Tracing Data (Beta) (settings required to read traces): https://developer.salesforce.com/docs/ai/agentforce/guide/otel-api.html
+- Generative AI guide, Spring '26, Troubleshooting Agents and Agentforce Analytics (non-determinism, Utterance Analysis clusters): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+- Salesforce CLI help text, `sf agent activate --help` and `sf agent test run --help` (CLI 2.151.7: `--version` is the number of `vX`; result formats json, human, junit, tap)
+
+### Carried forward from earlier versions (not re-read on 2026-10-03)
+
+These were not re-read for this revision. help.salesforce.com articles do not return their text to a fetch, so claims that rest only on a Help article are marked UNVERIFIED in the skill.
+
 - Salesforce Help — Agentforce Testing Center: https://help.salesforce.com/s/articleView?id=sf.copilot_testing.htm
 - Salesforce Developer — Einstein Trust Layer: https://developer.salesforce.com/docs/einstein/genai/guide/trust-layer.html
 - Salesforce Architects — Evaluating AI Systems: https://architect.salesforce.com/

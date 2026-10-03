@@ -1,0 +1,11 @@
+{
+  "properties": {
+    "result": {
+      "title": "Result",
+      "description": "Outcome.",
+      "lightning:type": "lightning__textType",
+      "copilotAction:isDisplayable": true
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

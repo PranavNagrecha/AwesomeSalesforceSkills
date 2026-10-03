@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiFunction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Returns the status of one shipment identified by its carrier tracking number. It never changes data.</description>
+    <invocationTarget>ShipmentLookupAction</invocationTarget>
+    <invocationTargetType>apex</invocationTargetType>
+    <isConfirmationRequired>false</isConfirmationRequired>
+    <masterLabel>Look Up Shipment</masterLabel>
+</GenAiFunction>

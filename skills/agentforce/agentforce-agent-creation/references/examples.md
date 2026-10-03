@@ -17,7 +17,8 @@ Correct sequence:
    - API Name: CC_Support_Agent  (immutable — choose carefully)
    - Role: "Customer service representative for Coral Cloud, helping guests
             with reservations, session bookings, and experience inquiries."
-   - Agent User: select EinsteinServiceAgent User from dropdown (do not type).
+   - Agent User: select the dedicated agent user, or create one with New Agent User.
+     It needs a permission set that carries the Agent User license.
    - Enable Enhanced Event Logs checkbox.
 4. Add topics and actions in Agentforce Builder.
 5. Review Agent Instructions for tone, constraints, and fallback wording.
@@ -27,7 +28,8 @@ Correct sequence:
    - Set routing rule: Route To = Agentforce Service Agent > CC Support Agent.
 8. In Experience Builder: add Embedded Messaging component to target page.
 9. Publish the Experience Cloud site.
-10. Wait up to 10 minutes for CDN propagation before testing with a guest user.
+10. Test with a guest user. (UNVERIFIED 2026-10-03: the earlier "wait up to 10 minutes
+    for CDN propagation" figure.)
 ```
 
 **Why it works:** Activation happens before channel publishing. The Embedded Service deployment captures the Active agent state at publish time. Reversing the order leaves the deployment pointing at a Draft agent.
@@ -38,7 +40,7 @@ Correct sequence:
 
 **Context:** A team builds and tests an Agentforce agent in a Full Sandbox. The agent is Active, working, and ready to go to production. After deploying metadata via Salesforce CLI, production users cannot find the agent.
 
-**Problem:** The agent arrives in production in Inactive state. Metadata deployment never carries activation state between orgs. The team did not plan for a manual activation step in the production release runbook.
+**Problem:** Nobody activated the agent in production. Activation is a separate step in every org, and the runbook stopped at the deploy. UNVERIFIED (2026-10-03): the earlier statement that metadata deployment never carries activation state; the sources read show activation as its own command, not the arrival state.
 
 **Solution:**
 
@@ -51,12 +53,12 @@ Sandbox preparation:
 Deploy to production:
 - sf project deploy start --metadata Bot,BotVersion,GenAiPlannerBundle,GenAiPlugin,GenAiFunction
 
-Post-deployment activation in production (manual step — must be in release runbook):
-1. Setup > Agentforce Agents — find the agent, status shows Inactive.
-2. Open the agent in Agentforce Builder.
-3. Click Activate.
-4. Republish any Embedded Service Deployment that references the agent.
-5. Smoke test with Conversation Preview before declaring the release complete.
+Post-deployment activation in production (must be in the release runbook):
+1. sf agent activate --api-name <AgentApiName> --version <N> --target-org prod
+   (or open the agent in Agentforce Builder and click Activate).
+2. Confirm the agent user is the production user (string replacement or manual update).
+3. Republish any Embedded Service Deployment that references the agent.
+4. Smoke test with Conversation Preview or `sf agent test run` before declaring the release complete.
 ```
 
 **Why it works:** Treating activation as a deliberate production step rather than an assumed carry-over prevents silent failures. It also gives the release team a clean gate for go/no-go in production.
@@ -65,8 +67,8 @@ Post-deployment activation in production (manual step — must be in release run
 
 ## Anti-Pattern: Typing The Agent User Name Instead Of Using The Dropdown
 
-**What practitioners do:** During agent creation, they type the EinsteinServiceAgent User name directly into the Agent User field rather than selecting it from the dropdown picker.
+**What practitioners do:** During agent creation, they type the agent user's name directly into the Agent User field rather than selecting it from the dropdown picker.
 
-**What goes wrong:** The agent passes setup validation but the agent user is misconfigured. At runtime, agent actions fail because the system user context is not correctly established. The error is not immediately obvious — the agent may appear active but silently fail to complete tasks or retrieve records.
+**What goes wrong:** UNVERIFIED (2026-10-03): the earlier report that a typed user name passes validation but leaves actions failing at runtime. No source read describes this failure. What is documented is that the agent user determines what the agent can access, so a wrong or under-permissioned user makes actions fail.
 
-**Correct approach:** Always use the Agent User dropdown picker. Navigate to Setup > Agentforce Agents > New Agent, scroll to the Agent User field, and select the user from the list. If the EinsteinServiceAgent User does not appear, verify the user exists and has the Einstein Agent User permission set assigned before returning to agent setup.
+**Correct approach:** Use the Agent User dropdown: select the dedicated user or create one with New Agent User. If the user does not appear, verify it exists and holds a permission set that carries the Agent User license. In Agent Script, set `default_agent_user` in the access block to the user's username.

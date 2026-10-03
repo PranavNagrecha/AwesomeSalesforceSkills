@@ -119,3 +119,51 @@ Common mistakes AI coding assistants make when authoring evals.
 **Correct pattern:** Fixture count based on user-intent coverage. One action may need 5 fixtures (happy, ambiguous, refused, escalated, corrected); one subagent (called a topic before April 2026) may need 15. Coverage is defined by intent, not code.
 
 **Detection hint:** Fixture-to-action or fixture-to-subagent ratio of 1:1.
+
+---
+
+## Anti-Pattern 11: Generating an AiEvaluationDefinition with no subjectVersion
+
+**What the LLM generates:** A regression definition that names the agent in `subjectName` and stops there.
+
+**Why it happens:** The Metadata API sample is copied with its required fields only, and `subjectVersion` is optional.
+
+**Correct pattern:** Pin `subjectVersion` in every regression definition. Without it the latest active version is tested, so the baseline changes whenever anyone activates a version. Bump the pinned version in the same PR that promotes the agent.
+
+**Detection hint:** `scripts/check_agentforce_eval_harness.py` rule AIEVAL-004.
+
+---
+
+## Anti-Pattern 12: Treating `sf agent test run` exit code 1 as "tests failed"
+
+**What the LLM generates:** A CI step such as `sf agent test run ... || exit 1` with no parsing of the result.
+
+**Why it happens:** Assistants map the command onto unit-test runners, where a non-zero exit means an assertion failed.
+
+**Correct pattern:** Write the result with `--result-format json` (or `junit`) and `--output-dir`, then gate on each case's `metricScore`. Exit code 1 means execution errors, which need a different response (fix the pipeline, not the agent).
+
+**Detection hint:** A pipeline that never reads the JSON or JUnit output of the run.
+
+---
+
+## Anti-Pattern 13: Turning every rubric dimension into a `string_comparison`
+
+**What the LLM generates:** Custom evaluations that compare whole responses with `equals`, or JSONPath expressions longer than 100 characters.
+
+**Why it happens:** Custom evaluations look like the deterministic assertion the harness wants, so the assistant uses them for wording too.
+
+**Correct pattern:** Use custom evaluations only for values the agent passes to or receives from an action. Keep each parameter at 100 characters or fewer and remember that string operators are case sensitive. Leave wording quality to `bot_response_rating` and the harness judge.
+
+**Detection hint:** Rules AIEVAL-011 and AIEVAL-012 in the checker; any `string_comparison` whose `actual` parameter is not a JSONPath into `generatedData`.
+
+---
+
+## Anti-Pattern 14: Pasting a production transcript in as the fixture
+
+**What the LLM generates:** A fixture whose input transcript is a real conversation, names and order numbers included.
+
+**Why it happens:** Real transcripts are the best evidence of how users phrase things, so the assistant keeps them verbatim.
+
+**Correct pattern:** Keep the phrasing pattern and replace every value with a synthesized one or a placeholder. The Agentforce Developer Guide says never to copy raw production records or transcripts into a test case, even temporarily.
+
+**Detection hint:** Rules AIEVAL-019 and FIX-006 (email, phone or SSN patterns) and FIX-005 (record IDs).

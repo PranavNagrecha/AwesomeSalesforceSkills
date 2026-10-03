@@ -1,0 +1,12 @@
+{
+  "properties": {
+    "status": {
+      "title": "Status",
+      "description": "Shipment status to tell the user.",
+      "lightning:type": "lightning__textType",
+      "copilotAction:isDisplayable": true,
+      "copilotAction:isUsedByPlanner": true
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

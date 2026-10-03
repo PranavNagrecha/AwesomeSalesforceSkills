@@ -16,7 +16,7 @@ Key UX considerations:
 Operational Excellence governs how the org manages and maintains Einstein Sales AI over time:
 - **Model retraining cadence:** Opportunity Scoring retrains weekly. Admins should monitor model AUC metrics monthly to detect drift as win rates, deal cycles, or product mix changes.
 - **EAC configuration governance:** EAC configuration profiles should be version-controlled as metadata if possible and reviewed when onboarding new sales teams or roles. Proliferation of poorly-scoped profiles leads to missing activity data.
-- **License tracking:** Einstein Generative AI licensing is separate from Einstein for Sales. A formal license audit process prevents surprise gaps when new features are requested.
+- **License tracking:** entitlement names are easy to confuse ("Einstein for Sales", "Sales Cloud Einstein", "Einstein 1 Sales"). The Spring '26 Generative AI guide lists Einstein for Sales among the add-ons carrying generative AI usage, which contradicts the earlier claim that generative AI licensing is separate from it. A formal license audit against Company Information prevents surprise gaps when new features are requested.
 - **Exclusion rule maintenance:** EAC exclusion domain lists require ongoing maintenance as new partner/vendor domains emerge. A stale exclusion list will allow personal or legal email to sync into Salesforce.
 
 ---
@@ -25,7 +25,7 @@ Operational Excellence governs how the org manages and maintains Einstein Sales 
 
 ### EAC vs. Manual Activity Logging
 
-EAC reduces the manual data entry burden on reps but introduces a reporting gap: EAC-synced activities are not in standard Activity objects. Orgs that need deep activity reporting must accept either (a) EAC + Einstein Activity Capture report types with limitations, or (b) investing in CRM Analytics datasets that include EAC data. There is no configuration that makes EAC data appear in standard Activity report types.
+EAC reduces the manual data entry burden on reps but introduces a reporting gap: EAC-synced activities are not in standard Activity objects. Orgs that need deep activity reporting must accept either (a) EAC + Einstein Activity Capture report types with limitations, or (b) investing in CRM Analytics datasets that include EAC data. Correction (2026-10-03): the earlier statement that no configuration makes EAC data appear in standard Activity report types is contradicted by the Metadata API's "Sync Email as Salesforce Activity" setting (`EACSettings.syncEmailToCoreActivity`, API 63.0 and later); test it before choosing between (a) and (b).
 
 **Tradeoff decision:** If compliance or coaching programs rely on standard activity reports, validate EAC report capabilities in a full-copy sandbox before committing to EAC as the activity capture strategy.
 
@@ -43,11 +43,21 @@ Einstein Opportunity Scoring is a managed ML model that Salesforce trains automa
 
 2. **Skipping EAC exclusion domain configuration before rollout** — Enabling EAC without configuring exclusion rules will sync all email correspondence — including personal email, legal communications, and HR conversations — into Salesforce records. This is a privacy and compliance risk. Exclusion rules must be a pre-launch gate, not a post-launch cleanup.
 
-3. **Promising generative email drafting without verifying the Einstein Generative AI license** — Building rep training materials, change management, or business cases around AI email composition before confirming the org has the Einstein Generative AI entitlement creates expensive expectation mismatches at go-live.
+3. **Promising generative email drafting without verifying the entitlement**: Building rep training materials, change management, or business cases around AI email composition before confirming the org has the Einstein Generative AI entitlement creates expensive expectation mismatches at go-live.
 
 ---
 
 ## Official Sources Used
+
+Read and checked on 2026-10-03 for this revision:
+
+- Object Reference, Summer '26: Opportunity (`IqScore`, label Opportunity Score, 1 to 99, API 41.0), SalesAIScoreCycle and SalesAIScoreModelFactor (fields, special access rules, usage query), ScoreIntelligence (internal use only): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Metadata API Developer Guide, Summer '26 (API 67.0): OpportunityScoreSettings, EACSettings (all fields including `syncEmailToCoreActivity`, `enableInboxActivitySharing`, `relationshipGraphPref`), OpportunitySettings (Pipeline Inspection fields, deprecated `enableOpportunityInsightsInMobile`), Settings wildcard rule, Bot and BotVersion (Lead Nurturing and Sales Coach agents not supported): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Generative AI guide, Spring '26: Agents Glossary (Agentforce (Default) formerly Einstein Copilot for Salesforce), Generative AI Billable Usage Types (Einstein Requests availability by add-on; SDR and Sales Coach usage), Einstein Generative AI Features (Einstein Sales Emails, Sales Summaries), Explore Agent Types, Considerations for Agents (tone does not affect Draft or Revise Email): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+
+### Carried forward from earlier versions (not re-read on 2026-10-03)
+
+These were not re-read for this revision. help.salesforce.com articles do not return their text to a fetch, so claims that rest only on a Help article are marked UNVERIFIED in the skill.
 
 - Einstein for Sales overview — https://help.salesforce.com/s/articleView?id=sf.einstein_sales.htm
 - Einstein Opportunity Scoring — https://help.salesforce.com/s/articleView?id=sf.einstein_opp_scoring.htm

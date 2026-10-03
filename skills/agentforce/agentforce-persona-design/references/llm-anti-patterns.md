@@ -7,7 +7,7 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** A bulleted list of rules like "You must always greet the user. You must never use jargon. You must always acknowledge the customer's concern. You must never provide financial advice." placed in agent-level system instructions.
 
-**Why it happens:** LLMs default to rule-list formatting for instructions because it mirrors how constraints are typically presented in fine-tuning data and system prompt engineering examples. The Agentforce-specific behavior where modal verb chains cause reasoning loops is not captured in general LLM training.
+**Why it happens:** LLMs default to rule-list formatting for instructions because it mirrors how constraints are typically presented in fine-tuning data and system prompt engineering examples. UNVERIFIED (2026-10-03): the earlier claim that modal verb chains cause reasoning loops. The documented behaviour is that agents follow strong language like "always" and "never" strictly and that conflicting instructions degrade performance (Generative AI guide, Best Practices for Writing Topic Instructions).
 
 **Correct pattern:**
 ```
@@ -58,21 +58,27 @@ Route users to the appropriate agent via channel configuration or an entry-point
 
 ---
 
-## Anti-Pattern 4: Suggesting Persona Is Configurable in Metadata XML or Apex
+## Anti-Pattern 4: Saying Persona Has No Metadata Home, or Inventing One
 
-**What the LLM generates:** Code showing how to set an agent's persona via Apex or by editing GenAiPlugin metadata XML fields.
+**What the LLM generates:** Either "persona is only free text in the instructions box, there is nothing structured", or invented elements such as an `instructions` field on `BotVersion` or a persona attribute on `GenAiPlugin`. An earlier version of this file made the first claim and named a `BotVersion` instructions field; both are wrong.
 
-**Why it happens:** LLMs know that Agentforce configuration is represented as metadata and that many Salesforce behaviors are configurable via Apex or metadata. They extrapolate that persona must also be a structured metadata field, when in fact it is free-form text in the instructions field of the agent definition.
+**Why it happens:** Assistants know agents are metadata and either over-generalize ("everything is a field") or under-generalize ("persona is just prose").
 
 **Correct pattern:**
-```
-Persona instructions are free-form text in the agent's system instructions field.
-In Agent Builder UI: Edit the "Instructions" text area in the agent configuration.
-In metadata: The instructions text is in the BotVersion metadata's instructions field,
-but this is not structured — it is a single text block, not keyed persona attributes.
+```text
+Where persona actually lives (Metadata API reference; Agentforce Developer Guide, Agent Script Blocks):
+
+Tone             BotVersion.toneType = Casual | Formal | Neutral (builder: Language Settings)
+Instructions     Agent Script system.instructions in the AiAuthoringBundle .agent file
+System messages  Agent Script system.messages.welcome and .error (both required)
+Context          Agent Script config.role, config.company, config.description
+
+BotVersion has no instructions field; its role and company fields are
+"Reserved for internal use". Read retrieved metadata to review persona,
+and change it in the builder or the Agent Script file.
 ```
 
-**Detection hint:** Any Apex code or structured metadata field references when the question is about persona or tone configuration.
+**Detection hint:** References to `BotVersion.instructions`, persona attributes on `GenAiPlugin`, or Apex that "sets the agent persona".
 
 ---
 
@@ -80,7 +86,7 @@ but this is not structured — it is a single text block, not keyed persona attr
 
 **What the LLM generates:** Advice that once "AI Assist has approved the instructions, the agent will consistently follow them in production."
 
-**Why it happens:** LLMs familiar with code analysis tools (linters, static analyzers) transfer the concept that "passing the analyzer = correct behavior at runtime." AI Assist is a design-time tool, not a runtime enforcer.
+**Why it happens:** LLMs familiar with code analysis tools (linters, static analyzers) transfer the concept that "passing the analyzer = correct behavior at runtime." AI Assist is a design-time tool, not a runtime enforcer. UNVERIFIED (2026-10-03): AI Assist is described only in a blog source; the testing advice holds for any authoring-time review.
 
 **Correct pattern:**
 ```
@@ -93,3 +99,28 @@ Runtime validation requires:
 ```
 
 **Detection hint:** Any statement that "AI Assist ensures the agent will..." or "AI Assist validates that the agent will..." in a context about production behavior.
+
+---
+
+## Anti-Pattern 6: Writing Tone Into Prose While Ignoring the Tone Setting
+
+**What the LLM generates:** Three paragraphs of "be formal and polished" instructions, with no mention of the Language Settings tone, which is still on its Casual default.
+
+**Why it happens:** Assistants assume tone can only be expressed in the prompt.
+
+**Correct pattern:** Set the tone (Formal, Neutral or Casual) first, then use instructions for what the setting cannot express: vocabulary, how to acknowledge frustration, red lines. Expect actions with a specified tone, such as Draft or Revise Email, to keep their own tone (Generative AI guide, Considerations for Agents).
+
+**Detection hint:** Persona guidance that never mentions the tone setting or `toneType`.
+
+---
+
+## Anti-Pattern 7: A Welcome Message That Hides the Bot
+
+**What the LLM generates:** "Hi, I'm Sarah! How can I help you today?" with no sign that Sarah is automated, sometimes followed by a long paragraph of capabilities.
+
+**Why it happens:** Assistants optimize for warmth and engagement.
+
+**Correct pattern:** Introduce the agent as a bot or AI assistant and pair a human-sounding name with its job ("Hi, I'm Robbie, an automated returns agent"), stay under the 800-character limit, and add consent wording if data use needs it (Generative AI guide, Define System Messages).
+
+**Detection hint:** A welcome message with a first name and no word such as "automated", "AI" or "assistant".
+

@@ -16,7 +16,9 @@ Agent user setup checklist:
 
 1. Create or designate the agent user:
    - Dedicated user (not a shared admin account)
-   - License: Salesforce or appropriate platform license
+   - A permission set that contains the Agent User license (the
+     Generative AI guide names "Agentforce Service Agent User" as the
+     example for a Service Agent)
    - Profile: custom profile with minimum necessary permissions
    - Do NOT use System Administrator profile
 
@@ -171,48 +173,59 @@ Only deploy to production after all test categories pass.
 
 ---
 
-## Anti-Pattern 5: Confusing Agent States — Draft, Active, and Inactive
+## Anti-Pattern 5: Claiming Agents Have No Versions, Then Editing the Live Agent
 
-**What the LLM generates:** "Deactivate the old agent version and activate the new one" as if agents have version-based activation like OmniStudio components. Agentforce agents have three states (Draft, Active, Inactive) but do not support side-by-side versioning — there is one agent definition that is either active or not.
+**What the LLM generates:** "Agentforce agents are not versioned and there is no rollback, so make your changes directly on the active agent during a maintenance window." This was the advice in an earlier version of this file, and it is wrong for current releases.
 
-**Why it happens:** LLMs apply versioning mental models from Flows, OmniScripts, or managed packages. Agentforce agents are not versioned in the same way. Changes to an active agent take effect immediately (or after save and re-activation), and there is no rollback to a "previous version."
+**Why it happens:** Older guidance described a single agent definition that is either active or inactive. The Spring '26 Generative AI guide even keeps a line saying "Versioning agents isn't supported" in its limits section, while the same guide's activation section and the developer guide describe versions.
 
 **Correct pattern:**
 
 ```text
-Agent lifecycle states:
+Agent versions (Agentforce Developer Guide, Define Agent Metadata v67 and Earlier;
+Salesforce CLI `sf agent activate --help`):
 
-Draft:
-- Agent is being configured
-- Not visible to any channel or user
-- Safe to make changes
+Draft version      AiAuthoringBundle                 editable
+Committed version  AiAuthoringBundle + Bot/BotVersion  not editable; create a new version
+Legacy agent       Bot + BotVersion                  inactive versions editable
 
-Active:
-- Agent is live and handling conversations
-- Changes require careful planning
-- Editing topics or actions on an active agent affects
-  live conversations after save
-
-Inactive:
-- Agent is disabled — no conversations routed to it
-- Channel deployments using this agent will show fallback behavior
-- Use to temporarily disable an agent
+- Only one version is active at a time.
+- Activating a committed version deactivates the one that was active.
+- `sf agent activate --api-name My_Agent --version 3` activates v3.
 
 Change management:
-- There is NO built-in versioning or rollback
-- Before making breaking changes to an active agent:
-  1. Document current configuration (export or screenshot)
-  2. Test changes in sandbox first
-  3. Schedule a maintenance window if possible
-  4. Make changes and monitor conversation quality immediately
-
-For significant refactors:
-- Create a NEW agent with the updated configuration
-- Test the new agent end-to-end
-- Swap the channel assignment from old agent to new agent
-- Deactivate the old agent
+1. Create a new version and make the change there.
+2. Test it in preview and with the eval suite.
+3. Activate it. To roll back, activate the previous version.
+4. Avoid deactivating the live agent to edit it: deactivation interrupts
+   open conversations and users are not notified.
 ```
 
-**Detection hint:** Flag instructions that reference "agent versions" or "activate version 2." Check for active agents being edited without a rollback plan. Flag agents being deactivated without updating channel assignments.
+**Detection hint:** Advice that says agents have no versions or no rollback, or that edits topics and actions on the active agent.
 
 ---
+
+---
+
+## Anti-Pattern 6: Hand-Editing Retrieved Agent Metadata to Fix It
+
+**What the LLM generates:** "Retrieve the GenAiPlannerBundle, change the topic list in the XML, and deploy it back."
+
+**Why it happens:** Agents are metadata, and editing XML is how assistants fix most metadata.
+
+**Correct pattern:** Change the agent in Agentforce Builder or in its Agent Script file, publish, and re-retrieve. The only retrieved-metadata change the Agentforce Developer Guide sanctions is replacing the agent username with string replacement; it warns that uploading other edited agent metadata can corrupt the org.
+
+**Detection hint:** Instructions that modify `Bot`, `BotVersion` or `GenAiPlannerBundle` XML by hand before a deploy.
+
+---
+
+## Anti-Pattern 7: A Wildcard Manifest for Agent Promotion
+
+**What the LLM generates:** A package.xml with `*` for `Bot`, `ApexClass`, `Flow` and `GenAiPromptTemplate`, used for every release.
+
+**Why it happens:** Wildcards look complete and need no maintenance.
+
+**Correct pattern:** Name the agent version (`BotVersion` such as `My_Agent.v2`, with the matching `GenAiPlannerBundle` and `AiAuthoringBundle`) and name each Apex class, flow and prompt template it uses. The developer guide warns that wildcards for those types "can pull excessive data, leading to very long deployments or timeouts". Deploy the full agent once before single-version deploys.
+
+**Detection hint:** `<members>*</members>` next to `ApexClass`, `Flow` or `GenAiPromptTemplate` in an agent release manifest.
+

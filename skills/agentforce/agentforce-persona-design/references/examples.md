@@ -4,7 +4,7 @@
 
 **Context:** A financial services company is deploying an Agentforce agent named "Aria" on their customer-facing web chat. Brand guidelines specify: empathetic, trustworthy, concise, no financial jargon, always acknowledge the customer's concern before offering a resolution.
 
-**Problem:** The initial agent instructions were written as a list of rules: "Never use jargon. Always acknowledge concerns. Must be empathetic." The agent's responses were formulaic, inconsistent, and occasionally ignored the tone rules during complex queries. AI Assist flagged "always" and "must" as chain conflicts.
+**Problem:** The initial agent instructions were written as a list of rules: "Never use jargon. Always acknowledge concerns. Must be empathetic." The agent's responses were formulaic, inconsistent, and occasionally ignored the tone rules during complex queries. (UNVERIFIED 2026-10-03: the AI Assist review step in this example rests on a blog source.)
 
 **Solution:**
 Agent-level system instructions after revision:
@@ -16,7 +16,7 @@ When a customer is frustrated or confused, acknowledge their experience directly
 Keep responses focused and concise — aim for 2-3 sentences unless a detailed explanation is genuinely needed.
 ```
 
-**Why it works:** The revision uses voice adjectives ("empathy and quiet confidence", "plain language") that the LLM uses to calibrate tone rather than evaluating rule compliance. The behavioral guidance for edge cases (frustration, scope limits) is descriptive rather than prohibitive, reducing reasoning loop risk.
+**Why it works:** The revision uses voice adjectives ("empathy and quiet confidence", "plain language") that the LLM uses to calibrate tone rather than evaluating rule compliance. The behavioral guidance for edge cases (frustration, scope limits) is descriptive rather than prohibitive, which avoids conflicting absolutes; the Generative AI guide says agents follow "always" and "never" strictly and that conflicting instructions degrade performance.
 
 ---
 

@@ -1,0 +1,10 @@
+{
+  "required": ["subscriptionId", "reason"],
+  "properties": {
+    "subscriptionId": {
+      "lightning:type": "lightning__textType",
+      "maxLength": 500
+    }
+  },
+  "lightning:type": "lightning__textType"
+}

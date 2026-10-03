@@ -50,6 +50,24 @@ Rule: start with Flow. Escalate to Apex when Flow limits bind.
 
 ## Official Sources Used
 
+Read and checked on 2026-10-03 for this revision:
+
+- Metadata API Developer Guide, Summer '26 (API 67.0), GenAiFunction (fields, `invocationTargetType` values, input and output schema folders, 250-character text type, `copilotAction:isUsedByPlanner`), GenAiPlugin, GenAiPlannerBundle usage notes, GenAiPromptTemplate: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Apex Developer Guide, Summer '26 (API 67.0), InvocableMethod Annotation (supported modifiers, inputs and outputs, size and order, error wrapping, managed packages), Making Callouts to External Systems from Invocable Actions, Versioned Behavior Changes 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Generative AI guide, Spring '26: Considerations for Custom Actions, Agents Limits (15 actions per topic), Create a Custom Action for Agents, Best Practices for Agent Action Instructions, Agent Actions and Large Language Model Use, Troubleshooting Agents, Ground with Retrieval Augmented Generation, Einstein Data Library: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+- Object Reference, Summer '26, Order (OrderNumber maximum 30 characters, Status, TotalAmount, EffectiveDate): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Apex Reference Guide, Summer '26 (UserInfo.getDefaultCurrency, Decimal.toPlainString, Assert class): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf
+- Agentforce Developer Guide, Create Custom Actions Using Apex InvocableMethod: https://developer.salesforce.com/docs/ai/agentforce/guide/agent-invocablemethod.html
+- Agentforce Developer Guide, Agent Script Blocks (runtime `groundedness` and `citation`): https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-blocks.html
+- Agentforce Developer Guide, Agent API Considerations (120-second timeout, not supported for Agentforce (Default)): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api-considerations.html
+- Agentforce Developer Guide, Apex REST agent action Limits and AuraEnabled agent action Limits (remove catalog registrations from actions first): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-apex-limits.html and https://developer.salesforce.com/docs/ai/agentforce/guide/agent-auraenabled-limits.html
+- Agentforce Developer Guide, Enhance the Agent UI with Custom LWCs and Lightning Types: https://developer.salesforce.com/docs/ai/agentforce/guide/lightning-types.html
+- Agentforce Developer Guide, Troubleshoot Agentforce DX Issues (publishing does not deploy Apex or flows): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-troubleshooting.html
+
+### Carried forward from earlier versions (not re-read on 2026-10-03)
+
+These were not re-read for this revision. help.salesforce.com articles do not return their text to a fetch, so claims that rest only on a Help article are marked UNVERIFIED in the skill.
+
 - Salesforce Developer — `@InvocableMethod` Annotation: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_annotation_InvocableMethod.htm
 - Salesforce Help — Agentforce Actions: https://help.salesforce.com/s/articleView?id=sf.copilot_actions.htm
 - Salesforce Help — Prompt Builder: https://help.salesforce.com/s/articleView?id=sf.prompt_builder.htm

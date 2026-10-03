@@ -1,55 +1,163 @@
-# Gotchas — Einstein Copilot for Sales
+# Gotchas: Einstein Copilot for Sales
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious behaviours in the Sales Cloud Einstein features this skill covers. Gotchas 1 to 5 are carried from the earlier version; two of them are corrected by sources read for this revision (Gotchas 2 and 3), and claims that rest only on Help articles that do not fetch are marked UNVERIFIED. Gotchas 6 to 13 are cited.
 
-## Gotcha 1: Opportunity Scoring Requires 200+ Closed Opportunities in the Last 2 Years — or It Silently Does Nothing
+## Gotcha 1: Opportunity Scoring needs enough closed history, counted won and lost separately
 
-**What happens:** When an org enables Opportunity Scoring with fewer than 200 closed-won *or* fewer than 200 closed-lost opportunities (IsClosed = true, CloseDate within the last 730 days, each opportunity open for at least 2 days) — the floors are checked separately, so a lopsided pipeline fails even with a large combined total — the feature appears active in Setup and the `Opportunity Score` field is present on layouts — but no scores are ever generated. The Setup screen shows "Insufficient Data" as the model training status. Opportunity records display blank score fields with no inline error message to the rep.
+**What happens:** The feature is on and the score field is on layouts, but no scores ever appear.
 
-**When it occurs:** Any org that is relatively new, has migrated from another CRM without importing historical closed opportunities, or has had low pipeline volume. The two-year window is also a trap for orgs that have been on Salesforce for years but only started closing deals recently.
+**When it occurs:** The org has too little closed history, or a lopsided pipeline (many wins, few losses).
 
-**How to avoid:** Before enabling Opportunity Scoring in a customer rollout, run the SOQL count query against the production org:
-```text
-SELECT COUNT() FROM Opportunity WHERE IsClosed = true AND CloseDate >= LAST_N_DAYS:730
-```
-If the count is below 200, communicate the dependency clearly to stakeholders and defer the feature enablement. Consider importing historical closed-won and closed-lost data if available from a prior system.
+**How to avoid:** Count closed-won and closed-lost separately before enabling, with the two queries in `references/metadata-examples.md`. The earlier version of this gotcha gave a single combined count query, which contradicts its own two-floor rule; it is corrected there.
+
+**Source:** UNVERIFIED (2026-10-03): the thresholds (at least 200 closed-won and 200 closed-lost in the last 24 months, each open at least two days) and the "Insufficient Data" status come from Help articles that do not fetch. Object Reference: `IqScore` is populated only when Einstein Opportunity Scoring is enabled.
 
 ---
 
-## Gotcha 2: EAC Synced Activities Are Not Stored in Standard Salesforce Activity Objects and Do Not Appear in Standard Reports
+## Gotcha 2: Activity Capture data and standard activity reports
 
-**What happens:** After EAC is enabled and syncing, sales managers build Activity reports (or use existing ones) expecting to see rep email activity. The reports return no EAC-synced emails or calendar events. The data appears only in the Activity Timeline component on record pages, not in reports built on the `Activities`, `Tasks`, or `Events` report types.
+**What happens:** Managers build activity reports and do not see emails and events that appear in the Activity Timeline.
 
-**When it occurs:** Any org that relies on Activity reports for rep performance tracking, coaching dashboards, or compliance auditing. It also affects integrations and automation that query `Task` or `Event` objects expecting EAC-synced data to be present there.
+**When it occurs:** Activity Capture syncs into its own store and the org relies on standard Task and Event reports.
 
-**How to avoid:** Understand that EAC data lives in a separate data store and is surfaced through the Activity Timeline UI component and through specialized Einstein Activity Capture report types (available in the Report Type setup when EAC is enabled). If reporting on EAC activity is a hard requirement, use the `Einstein Activity Capture` report types added by the feature, or use CRM Analytics (Einstein Analytics) datasets that include EAC data. Do not promise standard report compatibility without validating this first.
+**How to avoid:** Validate reporting needs before committing to Activity Capture. Check whether "Sync Email as Salesforce Activity" (`EACSettings.syncEmailToCoreActivity`, API 63.0 and later) meets the need, and test it in a sandbox.
 
----
+**Correction:** the earlier skill said no configuration makes Activity Capture data appear in standard activity reporting. The Metadata API reference now documents a "Sync Email as Salesforce Activity" setting. UNVERIFIED (2026-10-03): exactly which report types then include the synced email.
 
-## Gotcha 3: Einstein Generative Email (AI Email Drafting) Requires Einstein Generative AI License — Not Just Einstein for Sales
-
-**What happens:** An org with Einstein for Sales enabled cannot find or activate the "Write Email with Einstein" (generative email drafting) button for reps. The feature simply does not appear in the email activity composer. Admins search Setup for "Generative Email" and find the setting greyed out or absent.
-
-**When it occurs:** Orgs that purchased Einstein for Sales add-on only (without Einstein 1 Sales edition or the separate Einstein Generative AI / Einstein GPT entitlement). Einstein for Sales includes Opportunity Scoring, EAC, Pipeline Inspection, and the older Einstein Email Recommendations (suggested replies based on templates) — but NOT generative AI drafting from a natural-language prompt.
-
-**How to avoid:** Before scoping a generative email feature in a Sales rollout, verify the license manifest at Setup > Company Information > Feature Licenses. The required entitlement is labeled "Einstein Generative AI" (or the edition is "Einstein 1 Sales"). If it is absent, do not build user enablement materials or training that reference AI email drafting. Escalate to the account team to add the Einstein Generative AI entitlement or upgrade to Einstein 1 Sales.
+**Source:** Metadata API reference, EACSettings (`syncEmailToCoreActivity`). UNVERIFIED (2026-10-03): the separate data store and report-type behaviour, which rest on Help articles.
 
 ---
 
-## Gotcha 4: Pipeline Inspection AI Insights Panel Shows Nothing Until Opportunity Scoring Model Is Fully Trained
+## Gotcha 3: "Einstein for Sales" and "Sales Cloud Einstein" are different entitlements
 
-**What happens:** An admin enables Pipeline Inspection for the forecast team. The Pipeline Inspection view loads the deal table correctly, but the AI Insights side panel is empty. No deal health flags, no score changes, no risk indicators appear. There is no error message — just an empty panel that looks broken.
+**What happens:** A project promises generative email on the assumption that the add-on excludes it, or promises model-factor reporting on the wrong license.
 
-**When it occurs:** Pipeline Inspection is enabled before Opportunity Scoring has completed its initial model training pass (which takes 24–72 hours), or Pipeline Inspection is enabled in an org where Opportunity Scoring has never been activated. The two features are independently toggled in Setup, so it is easy to enable one without the other.
+**When it occurs:** Similar product names are treated as one SKU.
 
-**How to avoid:** Always enable and confirm Opportunity Scoring model training status (Setup > Einstein > Opportunity Scoring > status = "Active") before enabling Pipeline Inspection or presenting it to users. Make model training status part of the go-live checklist for any Einstein Sales rollout. If Pipeline Inspection is already live with an empty insights panel, do not immediately escalate to Salesforce Support — check Opportunity Scoring status first.
+**How to avoid:** Read the Feature Licenses and Permission Set Licenses on the Company Information page and map each feature to the entitlement its documentation names.
+
+**Correction:** the earlier version said the Einstein for Sales add-on does not include generative email drafting. The Spring '26 Generative AI guide lists the Einstein for Sales add-on among those that carry Einstein generative AI usage (Einstein Requests, available in Enterprise, Performance and Unlimited editions with an Einstein for Sales, Einstein for Platform or Einstein for Service add-on), and lists Einstein Sales Emails as a generative feature. Model-factor access, by contrast, is documented against a "Sales Cloud Einstein license".
+
+**Source:** Generative AI guide, Generative AI Billable Usage Types and Einstein Generative AI Features; Object Reference, SalesAIScoreCycle and SalesAIScoreModelFactor special access rules.
 
 ---
 
-## Gotcha 5: Einstein Relationship Insights Requires EAC Email Sync History — It Is Not Instant
+## Gotcha 4: Pipeline Inspection needs more than the toggle
 
-**What happens:** An org enables Einstein Relationship Insights and assigns the permission set to users. Reps open contact or account records and see no relationship connections displayed — the panel shows "No connections found" universally, for all contacts and accounts.
+**What happens:** Pipeline Inspection is enabled and the insights panel is empty.
 
-**When it occurs:** EAC email sync was enabled at the same time as Relationship Insights, or EAC has been enabled for fewer than 30 days with low email volume. The relationship graph is built by mining email correspondence patterns over time. There is no relationship data to surface until the email sync has accumulated sufficient history. Also occurs if EAC is not enabled at all — Relationship Insights cannot function without email data.
+**When it occurs:** The setting is on but the Setup configuration is incomplete, or scoring has not produced data yet.
 
-**How to avoid:** Confirm that EAC has been running and syncing emails for at least 30 days with meaningful email volume before presenting Relationship Insights to users. Set realistic expectations in training: the feature improves over time as email history grows. Do not position it as a feature that delivers value immediately on Day 1 of rollout.
+**How to avoid:** Finish the Pipeline Inspection setup steps (turn on `enableExpandedPipelineInspectionSetup` to get the guided page). Confirm scoring is producing `IqScore` values before presenting AI insights.
+
+**Source:** Metadata API reference, OpportunitySettings (`enablePipelineInspection` also enables historical trending and "additional configuration in Setup is required"; the Flow Chart needs Revenue Insights access; Revenue Insights is an additional cost). UNVERIFIED (2026-10-03): that the AI insights panel depends on a trained scoring model.
+
+---
+
+## Gotcha 5: Relationship features need mail history
+
+**What happens:** Relationship views show no connections in the first weeks.
+
+**When it occurs:** Activity Capture was turned on at the same time as the relationship feature.
+
+**How to avoid:** Let Activity Capture run first and set expectations that relationship data grows with history. The Buyer Relationship Map has its own setting (`relationshipGraphPref`, API 61.0 and later).
+
+**Source:** Metadata API reference, EACSettings (`relationshipGraphPref`: "whether Buyer Relationship Map is enabled"). UNVERIFIED (2026-10-03): the earlier claims about Einstein Relationship Insights requiring 30 days of Activity Capture history.
+
+---
+
+## Gotcha 6: The score field is `Opportunity.IqScore`, not a custom field
+
+**What happens:** A report, flow or integration references `Opportunity_Score__c` and fails.
+
+**When it occurs:** The field's API name is guessed from its label.
+
+**How to avoid:** Use `IqScore` (label Opportunity Score), an integer from 1 to 99.
+
+**Correction:** the earlier skill named the fields `Opportunity_Score__c` (0 to 99) and `Opportunity_Score_Change__c`. The Object Reference documents `IqScore` on a 1 to 99 scale; UNVERIFIED (2026-10-03): any standard score-change field.
+
+**Source:** Object Reference (Summer '26), Opportunity, `IqScore`.
+
+---
+
+## Gotcha 7: Model factors need a permission that is off by default
+
+**What happens:** An admin cannot see why the model scores the way it does, and a model-factor report is empty for most users.
+
+**When it occurs:** The View Scoring Model Factors permission was never granted.
+
+**How to avoid:** Grant View Scoring Model Factors to the people who review the model. Query `SalesAIScoreModelFactor` for active factors ordered by `ScoreCorrelation`.
+
+**Source:** Object Reference, SalesAIScoreCycle and SalesAIScoreModelFactor ("users need a Sales Cloud Einstein license with the 'View Scoring Model Factors' permission enabled. The permission isn't enabled by default").
+
+---
+
+## Gotcha 8: Activity Capture shares with everyone by default unless you change it
+
+**What happens:** New users' captured emails and events are visible to everyone in the org.
+
+**When it occurs:** Activity Capture is enabled with default settings.
+
+**How to avoid:** Set `enableInboxActivitySharing` to false and `enableEnforceEacSharingPref` to true before rollout, turn on `sensitiveEmailFilter`, and decide `enableEACForEveryonePref` (default true: users without Activity Capture can still see captured emails and events in their timeline).
+
+**Source:** Metadata API reference, EACSettings (`enableInboxActivitySharing` default true sets new users' sharing to Everyone; `enableEACForEveryonePref` default true; `provisionProductivityFeatures` must be true for `enableActivityCapture`).
+
+---
+
+## Gotcha 9: Settings wildcards do not retrieve individual feature settings
+
+**What happens:** A manifest with `<members>*</members>` under `Settings` does not give the team the one settings file it expected, or pulls every setting.
+
+**When it occurs:** Feature settings are listed like other metadata.
+
+**How to avoid:** Name each settings member (`OpportunityScore`, `EAC`, `Opportunity`).
+
+**Source:** Metadata API reference, OpportunityScoreSettings and EACSettings ("The wildcard character * ... doesn't apply to metadata types for feature settings").
+
+---
+
+## Gotcha 10: Einstein Opportunity Insights on mobile is retired
+
+**What happens:** A rollout plan promises deal predictions and follow-up reminders in the mobile app from the old Opportunity Insights feature.
+
+**When it occurs:** Older material is reused.
+
+**How to avoid:** Use Opportunity Scoring and Pipeline Inspection instead and remove Opportunity Insights from plans.
+
+**Source:** Metadata API reference, OpportunitySettings (`enableOpportunityInsightsInMobile` is "Deprecated in API version 59.0 and later because the feature is no longer available").
+
+---
+
+## Gotcha 11: Some sales agents cannot be moved with Bot metadata
+
+**What happens:** A team tries to promote a Sales Coach or Lead Nurturing agent with a Bot manifest and the deploy does not carry it.
+
+**When it occurs:** Sales agents are treated like service agents in the release process.
+
+**How to avoid:** Plan to configure those agents in each org.
+
+**Source:** Metadata API reference, Bot and BotVersion: "Bot metadata deployment and retrieval are not supported for Lead Nurturing and Sales Coach Agents."
+
+---
+
+## Gotcha 12: Sales agent usage is billed per conversation, and the definition differs by agent
+
+**What happens:** Consumption forecasts are wrong because "a conversation" means different things.
+
+**When it occurs:** The SDR and Sales Coach agents are budgeted like chat sessions.
+
+**How to avoid:** Budget SDR by leads contacted (one conversation per initial email to a lead, with a restart consuming another) and Sales Coach by feedback requests (one per "Get Feedback" click).
+
+**Source:** Generative AI guide, Generative AI Billable Usage Types (Agentforce: SDR and Agentforce: Sales Coach subtypes).
+
+---
+
+## Gotcha 13: Agent tone settings do not change email drafting tone
+
+**What happens:** The agent's tone is set to Formal and drafted sales emails still sound casual.
+
+**When it occurs:** Tone is expected to flow into the Draft or Revise Email action.
+
+**How to avoid:** Tune email tone in the action's prompt template, not in agent tone settings. Reps review and customize Einstein Sales Emails before sending.
+
+**Source:** Generative AI guide, Considerations for Agents ("Tone settings don't affect the output of agent actions that have a specified tone, such as Draft or Revise Email") and Einstein Generative AI Features (Einstein Sales Emails).

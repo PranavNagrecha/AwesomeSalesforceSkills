@@ -13,13 +13,16 @@ Too similar; the LLM can't discriminate.
 **Solution:**
 
 ```apex
+// Excerpt: the two method annotations only, each from its own class
+// (Apex allows one @InvocableMethod per class). Parameters are separated by
+// whitespace, as in the Apex Developer Guide examples.
 @InvocableMethod(
-    label='Look Up Order (by order number)',
-    description='Retrieve one specific order by its customer-facing order number (like "A7842"). USE WHEN the user provides an order number. DO NOT use for browsing or listing — use Look_Up_Customer_Orders instead.'
+    label='Look Up Order (by order number)'
+    description='Retrieve one specific order by its customer-facing order number (like "A7842"). USE WHEN the user provides an order number. DO NOT use for browsing or listing; use Look_Up_Customer_Orders instead.'
 )
 
 @InvocableMethod(
-    label='List Recent Orders',
+    label='List Recent Orders'
     description='Retrieve a list of a customer\'s recent orders (last 12 months). USE WHEN the user asks to "see my orders" or "find an order" without providing an order number. DO NOT use when the user already provided an order number.'
 )
 ```

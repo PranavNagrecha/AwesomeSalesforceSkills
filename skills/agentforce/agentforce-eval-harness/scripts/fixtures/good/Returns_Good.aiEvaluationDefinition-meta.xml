@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AiEvaluationDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Clean fixture: every rule should pass</description>
+    <name>Returns_Good</name>
+    <subjectName>Returns_Service_Agent</subjectName>
+    <subjectType>AGENT</subjectType>
+    <subjectVersion>v3</subjectVersion>
+    <testCase>
+        <number>1</number>
+        <inputs>
+            <utterance>I want to return my last order</utterance>
+        </inputs>
+        <expectation>
+            <name>topic_sequence_match</name>
+            <expectedValue>Order_Returns</expectedValue>
+        </expectation>
+        <expectation>
+            <name>action_sequence_match</name>
+            <expectedValue>["Look_Up_Order"]</expectedValue>
+        </expectation>
+        <expectation>
+            <name>completeness</name>
+        </expectation>
+    </testCase>
+    <testCase>
+        <number>2</number>
+        <inputs>
+            <utterance>Tell me a joke about couriers</utterance>
+        </inputs>
+        <expectation>
+            <name>action_sequence_match</name>
+            <expectedValue>[]</expectedValue>
+        </expectation>
+        <expectation>
+            <label>no refund amount quoted</label>
+            <name>numeric_comparison</name>
+            <parameter>
+                <name>operator</name>
+                <value>less_than</value>
+                <isReference>false</isReference>
+            </parameter>
+            <parameter>
+                <name>actual</name>
+                <value>$.generatedData.invokedActions.length()</value>
+                <isReference>true</isReference>
+            </parameter>
+            <parameter>
+                <name>expected</name>
+                <value>1</value>
+                <isReference>false</isReference>
+            </parameter>
+        </expectation>
+    </testCase>
+</AiEvaluationDefinition>

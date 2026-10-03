@@ -62,11 +62,15 @@ What is NOT captured:
 - Emails from unmatched email addresses (no contact/lead match)
 
 Critical distinction:
-- Captured activities are NOT standard Task/Event records
+- Captured activities are NOT standard Task/Event records by default
 - They appear in the Activity Timeline on the record page
-- They are NOT queryable via SOQL on Task or Event
-- They are NOT included in standard Salesforce reports
+- They are NOT queryable via SOQL on Task or Event by default
+- They may not be included in standard Salesforce reports
 - They ARE included in Einstein Activity reports (Analytics)
+- UNVERIFIED (2026-10-03): the bullets above rest on Help articles; the
+  Metadata API now documents "Sync Email as Salesforce Activity"
+  (EACSettings.syncEmailToCoreActivity, API 63.0+), so test it before
+  ruling out standard reporting
 
 Configuration checklist:
 1. Connect email provider (OAuth consent required per user)
@@ -225,3 +229,40 @@ The readiness query must GROUP BY IsWon. A single COUNT hides the failure.
 ```
 
 **Detection hint:** the phrases `Won + Lost combined`, `any mix of Won and Lost`, or `200 closed opportunities` without the word *each* are the tell. Mechanically: a readiness query of the form `SELECT COUNT() FROM Opportunity WHERE IsClosed = true AND CloseDate = LAST_N_DAYS:730` **without** `GROUP BY IsWon` cannot evaluate the real gate, whatever threshold it compares against.
+
+---
+
+## Anti-Pattern 7: Guessing the Opportunity Score Field API Name
+
+**What the LLM generates:** Reports, flows or SOQL that reference `Opportunity_Score__c` or `Opportunity_Score_Change__c`.
+
+**Why it happens:** The label "Opportunity Score" is turned into a custom-field-shaped API name.
+
+**Correct pattern:** The standard field is `Opportunity.IqScore` (label Opportunity Score), an integer from 1 to 99, populated when Einstein Opportunity Scoring is enabled (Object Reference). Query model factors from `SalesAIScoreModelFactor` with the View Scoring Model Factors permission.
+
+**Detection hint:** Any `Opportunity_Score__c` reference in an org that has not created such a custom field.
+
+---
+
+## Anti-Pattern 8: Enabling Activity Capture With Default Sharing
+
+**What the LLM generates:** "Turn on Einstein Activity Capture, connect accounts, and you're done."
+
+**Why it happens:** Defaults are assumed to be safe.
+
+**Correct pattern:** Review the sharing defaults before any mail syncs. `EACSettings.enableInboxActivitySharing` defaults to true, which sets new users' activity sharing to Everyone; set it to false, set `enableEnforceEacSharingPref` to true, and turn on `sensitiveEmailFilter` (Metadata API reference, EACSettings). Configure exclusion rules in Setup.
+
+**Detection hint:** A rollout plan for Activity Capture that does not mention activity sharing.
+
+---
+
+## Anti-Pattern 9: Promoting Sales Agents Like Service Agents
+
+**What the LLM generates:** A Bot and BotVersion manifest to move a Sales Coach or Lead Nurturing agent from sandbox to production.
+
+**Why it happens:** Agent promotion guidance is written for service agents.
+
+**Correct pattern:** The Metadata API reference states that Bot metadata deployment and retrieval are not supported for Lead Nurturing and Sales Coach Agents. Plan to configure those agents in each org.
+
+**Detection hint:** A release manifest that names a Sales Coach or Lead Nurturing agent under `Bot`.
+

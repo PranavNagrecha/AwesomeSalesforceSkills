@@ -26,7 +26,7 @@ Use this template when enabling, reviewing, or troubleshooting Einstein Sales AI
 | License / Entitlement | Required By | Status (Confirmed / Not Confirmed) |
 |---|---|---|
 | Einstein for Sales add-on OR Einstein 1 Sales edition | Opportunity Scoring, EAC, Pipeline Inspection, Email Recommendations, Relationship Insights | |
-| Einstein Generative AI (Einstein GPT) | Generative Email Drafting / AI email composition | |
+| Generative AI entitlement (confirm name on Company Information) | Generative Email Drafting / AI email composition | |
 | Sales Cloud Einstein | Pipeline Inspection (specifically) | |
 
 **How to verify:** Setup > Company Information > Feature Licenses
@@ -88,7 +88,7 @@ If count < 200: Do NOT enable Opportunity Scoring yet. Document plan for reachin
 
 **Score fields to add to Opportunity page layout:**
 - [ ] `Opportunity Score` field
-- [ ] `Score Change` field (direction indicator)
+- [ ] `Opportunity Score` (`IqScore`, 1 to 99)
 - [ ] Score factor fields (optional — top positive/negative drivers)
 
 ---
@@ -109,7 +109,7 @@ If count < 200: Do NOT enable Opportunity Scoring yet. Document plan for reachin
 **Feature type in scope:**
 
 - [ ] Einstein Email Recommendations (included with Einstein for Sales — no additional license)
-- [ ] Einstein Generative Email / AI Email Drafting (requires Einstein Generative AI license)
+- [ ] Einstein Generative Email / AI Email Drafting (entitlement confirmed on Company Information)
 
 **Trust Layer review completed before enabling generative email:**
 - [ ] Einstein Trust Layer audit trail reviewed
@@ -149,9 +149,9 @@ Follow this sequence to avoid blank panels and user trust issues:
 - [ ] EAC exclusion domains configured before email sync started
 - [ ] EAC configuration profile assigned to all target users with correct object scope
 - [ ] Opportunity Scoring model status is Active before user rollout
-- [ ] Opportunity Score and Score Change fields on Opportunity page layout and list views
+- [ ] Opportunity Score (`IqScore`) on Opportunity page layout and list views
 - [ ] Pipeline Inspection AI insights visible in Forecast page (not empty panel)
-- [ ] Einstein Generative AI license confirmed if generative email drafting is in scope
+- [ ] Generative AI entitlement confirmed if generative email drafting is in scope
 - [ ] Einstein Trust Layer reviewed before enabling generative email
 - [ ] Einstein Relationship Insights warm-up period communicated to users
 - [ ] `python3 check_einstein_sales.py --manifest-dir path/to/metadata` passes with no issues

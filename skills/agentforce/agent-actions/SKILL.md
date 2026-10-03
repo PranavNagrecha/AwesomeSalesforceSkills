@@ -13,6 +13,8 @@ triggers:
   - "agent action naming and input schema"
   - "destructive agent action needs confirmation"
   - "agent action error handling review"
+  - "add a confirmation step before my agent updates a record"
+  - "write instructions for an agent action's inputs and outputs"
 tags:
   - agentforce
   - agent-actions
@@ -28,9 +30,9 @@ outputs:
   - "action contract and naming review findings"
   - "error-handling and confirmation guidance"
 dependencies: []
-version: 2.0.1
+version: 2.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Agent Actions
@@ -60,6 +62,19 @@ Gather if not available:
 - Who is accountable for the business contract this action implements? (Action failures become their incident.)
 
 ---
+
+## Questions to Ask Before Configuring
+
+Ask these before building or reviewing an action. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Does this action read, or does it change or send something?" | Writes need "Require user confirmation", which adds a turn and an LLM call (Gotcha 3) | A read or write label per action and the confirmation decision | A brake on every side effect, and no confirmation noise on reads |
+| "Which business rule must hold every single time?" | Rules in instructions are followed most of the time, not always (Gotcha 7) | The list of rules to enforce inside the Apex class or flow | The rule holds even when the model misreads an instruction |
+| "Which values must the user supply, and which can the agent find?" | "Require input" and "Collect data from user" decide what the agent asks for (Gotcha 8) | Per-input settings and an instruction for each input | Fewer wrong guesses and fewer unnecessary questions |
+| "Which subagent owns this job, and how many actions does it already have?" | Unassigned actions never fire, and more than 15 per topic degrades performance (Gotchas 5, 6) | The owning subagent and its action count | Reliable selection instead of a crowded tool belt |
+| "Which user does the action run as, and what can that user reach?" | The agent user determines what the agent can access (Gotcha 10) | The agent user and the objects, fields and classes it needs | Least-privilege access that matches the action's write scope |
+| "What should the agent say on failure?" | Raw exceptions are weak contracts, and outputs drive the reply (Gotchas 4, 9) | Error codes, user-safe messages and planner-visible outputs | Recoverable failures the agent can explain |
 
 ## Core Concepts
 
@@ -107,7 +122,7 @@ Destructive or customer-visible side effects should be confirmation-aware. Failu
 - **Always-confirm:** every invocation waits for user confirmation (e.g. sending legal contracts).
 - **Threshold-confirm:** confirmation triggers above a threshold (e.g. order > $10k).
 - **Two-phase:** action returns a preview, user confirms, action is invoked a second time to commit.
-- **Agent-declared:** action declares `requiresConfirmation: true` and the agent runtime handles the UX.
+- **Agent-declared:** the action has "Require user confirmation" turned on (`isConfirmationRequired` in `GenAiFunction` metadata) and the agent runtime asks before running it.
 
 **Error patterns:**
 - **Recoverable:** action returns `success: false` + error code; agent can retry with different inputs.
@@ -164,7 +179,7 @@ The `@InvocableVariable` descriptions ARE the LLM's documentation. Write them we
 **When to use:** The action creates, updates, deletes, or externally sends something significant.
 
 **Structure:**
-1. Register the action with `requiresConfirmation=true` (where the platform supports it; otherwise via prompt-instruction pattern).
+1. Turn on "Require user confirmation" on the agent action (`isConfirmationRequired` = `true` in the `GenAiFunction`). See `references/metadata-examples.md`.
 2. The action's description explicitly states "requires user confirmation before execution".
 3. Agent prompt guidance reinforces: "for any action that sends contracts, cancels orders, or updates financial fields, require explicit user confirmation".
 4. On user decline, action is never invoked; agent explains to user what was NOT done.
@@ -206,7 +221,7 @@ Read-only actions should be plentiful; mutation actions should be scarce. The as
 - [ ] Inputs are narrow, typed, and not overloaded with generic payloads.
 - [ ] Outputs communicate business success or failure clearly (not raw exceptions).
 - [ ] Destructive or external side effects require deliberate confirmation behavior.
-- [ ] Total action set is small enough to stay understandable (< 20 actions per agent).
+- [ ] Each subagent has no more than 15 actions, the documented performance guidance; the whole agent stays understandable.
 - [ ] Read-only lookup actions are separated from mutation actions.
 - [ ] `@InvocableVariable` descriptions are informative (LLM reads them).
 - [ ] Apex invocable actions are bulk-safe (`List<T>` signature).
@@ -214,13 +229,11 @@ Read-only actions should be plentiful; mutation actions should be scarce. The as
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the business task, action type, side-effect profile, and invocation rate
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; name and shape the contract deliberately
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Inventory and classify.** List each capability the subagent needs and mark it read or write, with its owner and expected invocation rate. Writes get the confirmation decision now.
+2. **Pick the reference action.** Flow for declarative orchestration, Apex invocable for strict contracts or service logic, prompt template for generation only. Put every must-always-hold rule inside the reference action.
+3. **Write the action instructions.** One to three sentences on what it does, when to use it and what it does not do; an instruction per input and output; then set Require input, Collect data from user, Show in conversation and Require user confirmation. `references/metadata-examples.md` shows the metadata form.
+4. **Assign and lint.** Add the action to its subagent (15 or fewer actions per topic), then run `python3 scripts/check_agent_actions.py --manifest-dir force-app/main/default` and the contract linter in `agentforce/agentforce-tool-use-patterns`.
+5. **Test in preview, then in evals.** Use the utterances you expect to trigger the action, confirm the read-back and the decline path for writes, and add the cases to the eval harness (`agentforce/agentforce-eval-harness`).
 
 ---
 
@@ -228,14 +241,14 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 1. **A technically valid invocable action can still be a poor agent action** — generic names and overloaded schemas hurt tool selection.
 2. **Prompt-template actions are not the right tool for transactional mutation** — generation and side effects should not be blurred.
-3. **Too many actions reduce action selection quality** — a larger tool belt is not always a better one; 20 is a soft upper bound.
+3. **Too many actions reduce action selection quality**: a larger tool belt is not always a better one. The documented guidance is no more than 15 actions per topic (subagent); the earlier "20 per agent" figure was a local heuristic.
 4. **Raw exceptions are weak agent outputs** — business-safe result structures help the agent explain failure and recover.
-5. **Apex invocable actions share the agent session's governor budget** — CPU + SOQL + DML all contend. A heavy action exhausts the budget for subsequent actions in the same session.
+5. **Apex invocable actions run under governor limits**: CPU, SOQL and DML limits apply to the action's transaction. UNVERIFIED (2026-10-03): the earlier claim that all actions in a session share one governor budget; no source read describes how action transactions are scoped within a session.
 6. **`@InvocableVariable(label=...)` is what the agent sees, not the Apex variable name** — use clear labels.
 7. **Flow-backed actions can be deactivated out from under the agent** — deploy gates should include "agent-referenced Flow activation" verification.
 8. **Managed-package invocable actions may have opaque contracts** — the agent can call them but may not understand the outputs; wrap in a clarifying Apex invocable.
-9. **Actions in Guest-user Agentforce contexts bypass user-specific security** — explicitly audit Guest-invoked actions.
-10. **Running-user context is the agent's assigned User record** — not the end-customer interacting with the agent. Sharing implications differ from typical UI flows.
+9. **Actions in customer-facing agents run as the agent user, not as the customer**: the customer's own identity is not enforced unless the action checks it. Explicitly audit actions reachable by unauthenticated visitors. UNVERIFIED (2026-10-03): the earlier wording that Guest contexts "bypass" security; the documented model is that the agent user determines access.
+10. **Running-user context is the agent's assigned User record**: not the end customer interacting with the agent. Sharing implications differ from typical UI flows. The Generative AI guide states that the agent user determines what the agent can access and do.
 
 ## Proactive Triggers
 
@@ -244,7 +257,7 @@ Surface these WITHOUT being asked:
 - **Action with generic verb (`Process`, `Handle`, `Execute`)** → Flag as High. LLM can't select confidently.
 - **Mutation action with no confirmation design** → Flag as Critical. User-visible side-effect without a brake.
 - **Raw exception in action output** → Flag as High. Agent can't explain the failure.
-- **Action set > 25 per agent** → Flag as Medium. Tool-belt bloat; consolidate.
+- **More than 15 actions in one subagent** → Flag as Medium. Above the documented performance guidance; split or consolidate.
 - **InvocableVariable description empty or trivial** → Flag as High. LLM documentation missing.
 - **Apex action not bulk-safe (single-instance signature)** → Flag as High. Scale risk.
 - **Mutation action in a Guest-user agent without security review** → Flag as Critical.

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Does everything.</description>
+    <developerName>Bad_Topic</developerName>
+    <genAiFunctions>
+        <functionName>Tool_00</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_01</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_02</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_03</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_04</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_05</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_06</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_07</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_08</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_09</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_10</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_11</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_12</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_13</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_14</functionName>
+    </genAiFunctions>
+    <genAiFunctions>
+        <functionName>Tool_15</functionName>
+    </genAiFunctions>
+    <language>en_US</language>
+    <masterLabel>Bad Topic</masterLabel>
+    <pluginType>Topic</pluginType>
+</GenAiPlugin>

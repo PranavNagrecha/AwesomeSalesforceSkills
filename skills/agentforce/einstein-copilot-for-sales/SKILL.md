@@ -12,6 +12,8 @@ triggers:
   - "How do I set up AI email generation for Sales reps in Sales Cloud?"
   - "Pipeline Inspection AI insights are not appearing for my forecast — what do I need to configure?"
   - "Einstein Relationship Insights is enabled but showing no connections — what are the requirements?"
+  - "check if my org has enough closed opportunities for Einstein Opportunity Scoring"
+  - "turn on Einstein Activity Capture with metadata settings"
 tags:
   - einstein
   - copilot
@@ -33,14 +35,14 @@ outputs:
   - Pipeline Inspection AI insights visible to forecast managers
   - Email recommendations and composition enabled for reps
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Einstein Copilot for Sales
 
-This skill activates when a practitioner needs to enable, configure, review, or troubleshoot the sales-specific AI features in Sales Cloud: Opportunity Scoring, Einstein Activity Capture (EAC), AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. It does NOT cover core Agentforce agent creation, subagent design (subagents were called topics before April 2026), or Einstein Trust Layer setup — use the dedicated skills for those areas.
+This skill activates when a practitioner needs to enable, configure, review, or troubleshoot the sales-specific AI features in Sales Cloud: Opportunity Scoring, Einstein Activity Capture (EAC), AI email generation, Pipeline Inspection AI insights, and Einstein Relationship Insights. Terminology: the Generative AI guide says the default Agentforce agent was formerly known as Einstein Copilot for Salesforce; this skill keeps its older name for search, and covers the Sales Cloud Einstein features rather than the agent. It does NOT cover core Agentforce agent creation, subagent design (subagents were called topics before April 2026), or Einstein Trust Layer setup, use the dedicated skills for those areas.
 
 ---
 
@@ -48,11 +50,24 @@ This skill activates when a practitioner needs to enable, configure, review, or 
 
 Gather this context before working on anything in this domain:
 
-- **License type:** Confirm whether the org has Einstein for Sales (add-on), Einstein 1 Sales edition, or only core Sales Cloud. Different features require different licenses — Opportunity Scoring and EAC are included in Einstein for Sales; Pipeline Inspection requires Sales Cloud Einstein specifically; Einstein email generation requires the Einstein Generative AI (Einstein GPT) license layer on top of Einstein for Sales.
-- **Data readiness:** Opportunity Scoring requires **at least 200 closed-WON opportunities AND at least 200 closed-LOST opportunities** in the last 24 months, each with a lifespan of at least 2 days — two separate floors, not 200 combined. EAC requires a connected Microsoft Exchange/Office 365 or Google Workspace account.
-- **Sandbox limitations:** Einstein Opportunity Scoring does not train in sandboxes. The model trains on production data only. Scores may not appear in sandboxes even when the feature is enabled.
+- **License type:** Confirm on the Company Information page which entitlements exist. The names are easy to confuse: the Generative AI guide lists the **Einstein for Sales** add-on as one that carries generative AI usage (Einstein Requests), while scoring model factors are documented against a **Sales Cloud Einstein** license (Object Reference). UNVERIFIED (2026-10-03): the earlier per-feature license mapping (which features each SKU includes); it came from Help articles that do not fetch, and its claim that generative email needs a license beyond Einstein for Sales contradicts the Generative AI guide.
+- **Data readiness:** Opportunity Scoring requires **at least 200 closed-WON opportunities AND at least 200 closed-LOST opportunities** in the last 24 months, each with a lifespan of at least 2 days, two separate floors, not 200 combined. UNVERIFIED (2026-10-03): these figures rest on a Help article that does not fetch. EAC requires a connected Microsoft Exchange/Office 365 or Google Workspace account.
+- **Sandbox limitations:** Einstein Opportunity Scoring does not train in sandboxes. The model trains on production data only. Scores may not appear in sandboxes even when the feature is enabled. UNVERIFIED (2026-10-03): Help-only claim.
 
 ---
+
+## Questions to Ask Before Configuring
+
+Ask these before enabling any feature. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which entitlements does the org actually have?" | "Einstein for Sales" and "Sales Cloud Einstein" are different entitlements with different features (Gotcha 3) | A feature-to-entitlement map read from Company Information | No promise that the org cannot deliver |
+| "How many closed-won and closed-lost opportunities exist in the last 24 months?" | Scoring needs both floors, counted separately (Gotcha 1) | Two counts from the readiness queries | A go or no-go for scoring before anyone waits for scores |
+| "Who should see captured email, and what must never sync?" | Activity Capture shares with everyone by default for new users (Gotcha 8) | Sharing defaults, the sensitive-email filter and exclusion rules | Private-by-default capture that passes a privacy review |
+| "Which reports must show captured activity?" | Captured activity may not appear in standard activity reports (Gotcha 2) | The reports that must work and the sync setting to test | A reporting plan validated before rollout |
+| "Who needs to see why a deal scores low?" | Model factors need a permission that is off by default (Gotcha 7) | The users to grant View Scoring Model Factors | Explainable scores for the people who coach on them |
+| "Will these settings be promoted as metadata?" | Settings members must be named, and settings deploys write every element sent (Gotcha 9) | A settings bundle in source control | The same configuration in every org |
 
 ## Core Concepts
 
@@ -64,7 +79,7 @@ Einstein Opportunity Scoring uses a machine learning model trained on your org's
 
 **Data requirements:** **at least 200 closed-WON opportunities AND at least 200 closed-LOST opportunities** in the last 24 months, each with a lifespan of at least 2 days. "Any mix" is wrong — an org with 350 won and 20 lost fails. Salesforce additionally expects the standard `Stage` field to be in use and at least 12 months of opportunity history with an update in each month. If either floor is unmet, the feature activates but the model defers training and no scores are generated. The scoring model uses standard and custom fields on Opportunity and related objects; adding high-signal custom fields to the model is supported via the Opportunity Scoring configuration screen.
 
-**Score fields:** `Opportunity_Score__c` (numeric 0–99), `Opportunity_Score_Change__c` (direction of change since last scoring run), and score factor fields that surface top positive/negative drivers. These are standard Einstein fields added to page layouts by the admin.
+**Score fields:** the standard field is `Opportunity.IqScore` (label Opportunity Score), "the likelihood, measured on a scale of 1 to 99, that an opportunity will be won", available from API 41.0 when Einstein Opportunity Scoring is enabled (Object Reference). Model factors are queryable from `SalesAIScoreModelFactor` with the View Scoring Model Factors permission. The earlier names `Opportunity_Score__c` (0 to 99) and `Opportunity_Score_Change__c` were wrong; UNVERIFIED (2026-10-03): any standard score-change field. Add the score to page layouts and list views.
 
 ### Einstein Activity Capture (EAC)
 
@@ -80,7 +95,7 @@ Einstein Activity Capture automatically syncs emails and calendar events between
 
 Pipeline Inspection is a Sales Cloud view that surfaces AI-powered insights about deal health and forecast changes alongside the pipeline table. The AI insights highlight opportunities with significant score changes, deals at risk due to inactivity, and gaps between committed forecasts and historical close rates.
 
-**Requirements:** Pipeline Inspection requires Sales Cloud Einstein or the Einstein for Sales add-on and must be enabled separately from Opportunity Scoring (Setup > Sales > Pipeline Inspection). Users need the `Sales Cloud Einstein` or `Einstein Analytics for Sales` permission. Pipeline Inspection AI insights draw on Opportunity Scoring data — Opportunity Scoring must be trained and returning scores before insights appear.
+**Requirements:** Pipeline Inspection is enabled separately from Opportunity Scoring (`OpportunitySettings.enablePipelineInspection`, which also turns on historical trending; additional Setup configuration is required, per the Metadata API reference). UNVERIFIED (2026-10-03): the earlier license and permission names for Pipeline Inspection, and the claim that its AI insights need a trained scoring model.
 
 **What insights surface:** Deal change indicators (score up/down), activity gaps (no logged activity in N days relative to deal stage), forecast risk flags (committed deals with low scores), and pipeline trend comparisons week-over-week.
 
@@ -89,7 +104,7 @@ Pipeline Inspection is a Sales Cloud view that surfaces AI-powered insights abou
 Einstein provides two related email AI capabilities for Sales reps:
 
 1. **Einstein Email Recommendations** (older feature): Surfaces suggested email replies in the activity composer based on the email thread context. Requires Einstein for Sales license and the `Einstein Email Recommendations` permission set.
-2. **Einstein Email Composition / Generative Email** (Spring '25+): Uses generative AI to draft full emails from a prompt or from opportunity context. Requires an Einstein Generative AI (Einstein GPT) license — this is NOT included in the base Einstein for Sales add-on and must be purchased separately or included with Einstein 1 Sales. Drafts are grounded through the Einstein Trust Layer before being shown to the rep.
+2. **Einstein Email Composition / Generative Email** (Spring '25+): Uses generative AI to draft full emails from a prompt or from opportunity context. The Spring '26 Generative AI guide lists Einstein Sales Emails as a generative feature and the Einstein for Sales add-on among the add-ons that carry generative AI usage, which contradicts the earlier statement that this is not included in Einstein for Sales. Confirm the entitlement on Company Information. Reps review and customize the emails before sending them.
 
 ### Einstein Relationship Insights
 
@@ -107,9 +122,9 @@ Einstein Relationship Insights mines email content and news sources to surface p
 
 1. Verify license: Confirm Einstein for Sales or Einstein 1 Sales is provisioned (Setup > Company Information > Feature Licenses).
 2. Enable Einstein: Setup > Einstein > Sales > toggle each feature on sequentially (Opportunity Scoring first, then EAC, then Pipeline Inspection, then email features).
-3. Assign permission sets: Assign `Sales Cloud Einstein` or `Einstein for Sales User` permission sets to target users. Do not use profiles alone — Einstein features are permission-set gated.
+3. Assign the feature permission sets to target users (UNVERIFIED 2026-10-03: the earlier names `Sales Cloud Einstein` and `Einstein for Sales User`). Grant View Scoring Model Factors to reviewers who need model explanations; it is off by default.
 4. Configure EAC: Setup > Einstein > Einstein Activity Capture > Connect Accounts. Create a Configuration profile defining sync direction, object scope (Contacts, Leads, Opportunities), and exclusion domains. Assign the profile to users.
-5. Add score fields to layouts: Add `Opportunity Score` and `Score Change` fields to the Opportunity page layout and add the Pipeline Inspection component to the Forecast page.
+5. Add the score field to layouts: add `Opportunity Score` (`IqScore`) to the Opportunity page layout and list views, and finish the Pipeline Inspection setup steps.
 6. Wait for model training: Opportunity Scoring training is asynchronous. Monitor Setup > Einstein > Opportunity Scoring for training status. Scores appear only after the first training pass completes (24–72 hours).
 
 **Why not enabling all at once without verification:** Enabling Pipeline Inspection before Opportunity Scoring is trained results in the AI insights panel showing no data, which users perceive as a bug rather than a training lag.
@@ -144,7 +159,7 @@ Einstein Relationship Insights mines email content and news sources to surface p
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Org has fewer than 200 closed-won **or** fewer than 200 closed-lost opps | Do not enable Opportunity Scoring yet; focus on pipeline growth | Model will not train; feature activates but returns no scores, creating confusion |
-| Reps need AI-drafted emails | Verify Einstein Generative AI license before enabling; do not assume Einstein for Sales covers it | Email composition is a separate SKU (Einstein 1 Sales or Einstein GPT add-on) |
+| Reps need AI-drafted emails | Verify the generative AI entitlement on Company Information before enabling | The Generative AI guide lists Einstein for Sales among the add-ons with generative AI usage; the earlier "separate SKU" claim is contradicted |
 | Pipeline Inspection shows no AI insights | Confirm Opportunity Scoring model is trained and returning scores first | Pipeline Inspection AI insights depend entirely on Opportunity Scoring data |
 | EAC emails not relating to opportunities | Check that the configuration profile object scope includes Opportunities and that contact email addresses match | EAC relates by email address match only |
 | Einstein Relationship Insights returns no connections | Confirm EAC email sync has been running for 30+ days with sufficient email volume | The relationship graph requires historical email data to mine; it is not instant |
@@ -155,13 +170,11 @@ Einstein Relationship Insights mines email content and news sources to surface p
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Map entitlements to features.** Read Feature Licenses and Permission Set Licenses on the Company Information page, and record which entitlement each requested feature needs.
+2. **Check data readiness.** Run the two closed-opportunity counts in `references/metadata-examples.md`; defer scoring if either floor is unmet.
+3. **Deploy settings in order.** `EAC.settings` first with private sharing defaults and the sensitive-email filter, then `OpportunityScore.settings`, then the Pipeline Inspection elements of `Opportunity.settings`; finish the Setup steps each feature still requires.
+4. **Grant access.** Assign the feature permission sets and View Scoring Model Factors to the reviewers who need explanations; run `python3 scripts/check_einstein_copilot_for_sales.py --manifest-dir force-app/main/default` against the retrieved metadata.
+5. **Verify with data.** Query `IqScore` on open opportunities after training, query active model factors, and confirm a new Activity Capture user defaults to Don't Share.
 
 ---
 
@@ -170,13 +183,13 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 Run through these before marking Einstein Sales AI work complete:
 
 - [ ] Einstein for Sales or Einstein 1 Sales license confirmed in Setup > Company Information > Feature Licenses
-- [ ] Correct permission sets (`Sales Cloud Einstein` or `Einstein for Sales User`) assigned to all target users
+- [ ] Feature permission sets assigned to all target users (UNVERIFIED 2026-10-03: the earlier set names `Sales Cloud Einstein` and `Einstein for Sales User`)
 - [ ] Opportunity Scoring model training status confirmed as complete (not "In Progress" or "Insufficient Data")
 - [ ] EAC Connected Accounts show no authentication errors and at least one configuration profile is assigned to users
-- [ ] `Opportunity Score` and `Score Change` fields added to Opportunity page layout and list views
+- [ ] `Opportunity Score` (`IqScore`) added to the Opportunity page layout and list views
 - [ ] Pipeline Inspection component added to Forecast page and AI insights visible for at least one deal
 - [ ] EAC exclusion domains configured to prevent personal/legal email from syncing
-- [ ] If email composition is required: Einstein Generative AI (Einstein GPT) license confirmed and feature enabled
+- [ ] If email composition is required: the generative AI entitlement confirmed on Company Information and the feature enabled
 - [ ] Einstein Relationship Insights: EAC email sync confirmed running before expecting connection data
 
 ---
@@ -187,11 +200,11 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Opportunity Scoring does not train in sandboxes** — Enabling Opportunity Scoring in a full sandbox activates the UI and fields but the model will never produce scores. The ML model trains exclusively on production org data. Do not use sandbox to validate that scoring is working end-to-end.
 
-2. **EAC synced activities are NOT in standard Activity report types** — EAC email and calendar data is stored in a specialized data store and surfaced through the Activity Timeline component. Standard reports on `Activities`, `Tasks`, or `Events` do NOT include EAC-synced items unless the org uses specific Einstein Activity Capture report types. This surprises managers who expect EAC data to appear in their existing activity dashboards.
+2. **EAC synced activities may not appear in standard Activity report types**: EAC email and calendar data is surfaced through the Activity Timeline component, and standard reports on `Activities`, `Tasks`, or `Events` may not include it (UNVERIFIED 2026-10-03: Help-only). Test the "Sync Email as Salesforce Activity" setting (`EACSettings.syncEmailToCoreActivity`, API 63.0 and later) before telling managers their dashboards cannot show captured email.
 
-3. **Einstein email composition requires Einstein Generative AI license, not just Einstein for Sales** — Einstein for Sales includes Opportunity Scoring, EAC, Pipeline Inspection, and Email Recommendations. It does NOT include generative email drafting (Einstein Generative Email). That feature requires the Einstein 1 Sales edition or the separate Einstein Generative AI add-on. Orgs that purchase only Einstein for Sales will see no email composition button.
+3. **Check the entitlement behind generative email**: the Spring '26 Generative AI guide lists the Einstein for Sales add-on among those carrying generative AI usage and lists Einstein Sales Emails as a generative feature, which contradicts the earlier claim that Einstein for Sales excludes generative email. Confirm on Company Information which entitlement your org holds.
 
-4. **Pipeline Inspection AI insights require Opportunity Scoring to be trained** — Pipeline Inspection can be enabled independently of Opportunity Scoring but its AI insights panel will show no data until Opportunity Scoring has completed model training. The feature does not display an explicit dependency warning; it simply shows an empty insights panel, which looks like a bug.
+4. **Pipeline Inspection needs its Setup configuration**: the setting alone is not enough ("additional configuration in Setup is required", Metadata API reference). UNVERIFIED (2026-10-03): that its AI insights stay empty until scoring has trained.
 
 ---
 

@@ -1,0 +1,13 @@
+{
+  "required": ["trackingNumber"],
+  "properties": {
+    "trackingNumber": {
+      "title": "Tracking Number",
+      "description": "The carrier tracking number from the user's message.",
+      "lightning:type": "lightning__textType",
+      "maxLength": 40,
+      "copilotAction:isUserInput": true
+    }
+  },
+  "lightning:type": "lightning__objectType"
+}

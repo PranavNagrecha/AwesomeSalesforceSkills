@@ -67,10 +67,10 @@ WHERE IsClosed = true
 
 ---
 
-## Anti-Pattern: Assuming Einstein for Sales Includes Generative Email Drafting
+## Anti-Pattern: Assuming Which Entitlement Covers Generative Email Drafting
 
 **What practitioners do:** An admin purchases Einstein for Sales, enables it, assigns the `Einstein for Sales User` permission set, and then goes to Setup to enable "Einstein Generative Email" or "Einstein Copilot for Sales Email Composition." They cannot find the setting or the setting is greyed out.
 
-**What goes wrong:** Einstein for Sales includes Opportunity Scoring, EAC, Pipeline Inspection insights, and Einstein Email Recommendations (the older, template-based reply suggestions). It does NOT include the generative AI email drafting capability that allows reps to compose full emails from a prompt. That capability is part of Einstein Generative AI (Einstein GPT), which is included in Einstein 1 Sales edition or purchasable as a separate add-on. Without the generative AI license, the compose-with-AI button does not appear in the email activity composer.
+**What goes wrong:** The team guesses which entitlement includes generative email. An earlier version of this example said Einstein for Sales does not include it; the Spring '26 Generative AI guide contradicts that, listing the Einstein for Sales add-on among those that carry generative AI usage and Einstein Sales Emails among the generative features. Names such as "Einstein for Sales", "Sales Cloud Einstein" and "Einstein 1 Sales" are easy to confuse, and guessing leads to promises the org cannot keep. UNVERIFIED (2026-10-03): the exact Setup symptom (missing or greyed-out setting) when the entitlement is absent.
 
-**Correct approach:** Before committing to a feature rollout that includes AI email drafting, verify the org's license manifest at Setup > Company Information > Feature Licenses. Look for "Einstein Generative AI" or confirm the edition is "Einstein 1 Sales." If only "Einstein for Sales" appears, either upgrade to Einstein 1 Sales or purchase the Einstein Generative AI add-on before building user enablement materials that reference email drafting.
+**Correct approach:** Before committing to a rollout that includes AI email drafting, read Feature Licenses and Permission Set Licenses at Setup > Company Information, map the feature to the entitlement its current documentation names, and confirm with the account team when the names are ambiguous. Build enablement materials only after the feature is visible in a sandbox.

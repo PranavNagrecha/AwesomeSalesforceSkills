@@ -4,7 +4,7 @@
 
 ### Security
 
-Agent creation introduces a privileged runtime identity (the EinsteinServiceAgent User) and a data access surface that differs from standard user profiles. Every agent channel exposes Salesforce record data to an LLM. Before activating an agent, the Trust Layer must be reviewed for data masking and zero-data-retention configuration. The agent user's permission set governs what records the agent can ground prompts with at runtime — scoping it too broadly creates data exposure risk; scoping it too narrowly breaks agent functionality.
+Agent creation introduces a privileged runtime identity (the agent user) and a data access surface that differs from standard user profiles. Every agent channel exposes Salesforce record data to an LLM. Before activating an agent, review the Trust Layer for zero-data retention and audit; Trust Layer data masking is disabled for agents, so data exposure is controlled through the agent user's permissions. The agent user's permission set governs what records the agent can ground prompts with at runtime, scoping it too broadly creates data exposure risk; scoping it too narrowly breaks agent functionality.
 
 ### User Experience
 
@@ -12,7 +12,7 @@ The agent's Role description, Company context, and Agent Instructions directly s
 
 ### Reliability
 
-An agent that is not Active, not published on its channel, or not correctly configured for its target environment cannot serve users. The activation-not-carried-across-environments behavior means reliability depends on correct promotion procedures, not just correct code. Any broken dependency — subagents (called topics before April 2026), actions, agent user, Trust Layer — degrades reliability silently: the agent may activate but fail to complete tasks.
+An agent that is not Active, not published on its channel, or not correctly configured for its target environment cannot serve users. Activation is a separate step in each org, so reliability depends on correct promotion procedures, not just correct code. Any broken dependency, subagents (called topics before April 2026), actions, agent user, Trust Layer, degrades reliability silently: the agent may activate but fail to complete tasks.
 
 ## Architectural Tradeoffs
 
@@ -26,11 +26,31 @@ An agent that is not Active, not published on its channel, or not correctly conf
 
 1. **Activating before subagent design is complete** — produces an agent that appears live but cannot reliably execute tasks. Activation should be the last step after subagents, actions, instructions, and the agent user are verified. An agent with placeholder subagents gives users a negative first impression that is difficult to recover from.
 
-2. **Assuming sandbox activation carries to production** — every environment requires its own explicit activation. Teams that omit a production activation step from their release runbook deploy a permanently Inactive agent. This is one of the most common Agentforce production incidents.
+2. **Assuming sandbox activation carries to production**: every environment requires its own explicit activation (`sf agent activate`). Teams that omit a production activation step from their release runbook ship an agent nobody can reach. UNVERIFIED (2026-10-03): the earlier claim that this is one of the most common production incidents.
 
-3. **Over-provisioning the agent user permission set** — the EinsteinServiceAgent User's permission set is the security boundary for LLM data access. Assigning a broad profile (e.g., System Administrator) bypasses field-level security and object permissions. Scope the permission set to exactly what the agent's subagents and actions require.
+3. **Over-provisioning the agent user permission set**: the agent user's permission sets are the security boundary for LLM data access. Assigning a broad profile (e.g., System Administrator) bypasses field-level security and object permissions. Scope the permission set to exactly what the agent's subagents and actions require.
 
 ## Official Sources Used
+
+Read and checked on 2026-10-03 for this revision:
+
+- Generative AI guide, Spring '26: Set Up Agents, Create an Agent from a Type (agent user and license permission set), Explore Agent Types, Manage Agent Settings, Enable Enhanced Event Logs, Define System Messages (800 characters), Update Language Settings, Activate or Deactivate Your Agent, Considerations for Agents (channels, languages), Agents Limits (20 agents), Trust and Agents (masking disabled for agents): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+- Metadata API Developer Guide, Summer '26 (API 67.0): Bot (type values, messaging channel providers set in the UI, `defaultOutboundFlow`), BotVersion, GenAiPlannerBundle, GenAiPlanner (API 60.0 to 63.0), EinsteinGptSettings (`enableEinsteinGptPlatform`; malformed sample): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Agentforce Developer Guide, Agent Metadata V67 and Earlier: A Shallow Dive: https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-metadata.html
+- Agentforce Developer Guide, Use Metadata to Move an Agent to a New Org (API 68.0 types, agent username, committed agents, matching versions): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-deploy-metadata.html
+- Agentforce Developer Guide, Define Agent Metadata (v67 and Earlier) and Manifest Defining a Single Agent Version (v67 and Earlier): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-api-v67-earlier.html and https://developer.salesforce.com/docs/ai/agentforce/guide/package-singleagent67.html
+- Agentforce Developer Guide, Example: Configure String Replacement for Agent Username: https://developer.salesforce.com/docs/ai/agentforce/guide/string-replace-example.html
+- Agentforce Developer Guide, Manage an Agent (activate and deactivate from the CLI): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-manage.html
+- Agentforce Developer Guide, Troubleshoot Agentforce DX Issues (publish does not deploy Apex or flows; activation in CI; committed agents need Bot/BotVersion; template packaging limitation): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-troubleshooting.html
+- Agentforce Developer Guide, Agent Script Blocks (config `developer_name` rules, `agent_type`, `enable_enhanced_event_logs`, access `default_agent_user`): https://developer.salesforce.com/docs/ai/agentforce/guide/ascript-blocks.html
+- Agentforce Developer Guide, Multi-Surface Example: Build and Deploy an Enhanced Chat Agent (agent must be active before routing; fallback queue; embedded deployment on external or Experience Builder sites): https://developer.salesforce.com/docs/ai/agentforce/guide/headless-examples-enhanced-chat-agent.html
+- Agentforce Developer Guide, Agent API Considerations (not for Agentforce (Default); 120-second timeout): https://developer.salesforce.com/docs/ai/agentforce/guide/agent-api-considerations.html
+- Agentforce Developer Guide, Customizing User Interface Using Custom Lightning Types with Top-Level Editor and Top-Level Renderer Overrides (activating a committed version deactivates the active one): https://developer.salesforce.com/docs/ai/agentforce/guide/lightning-types-example-full-editor-renderer.html
+- Salesforce CLI help text, `sf agent activate --help` (CLI 2.151.7: one active version; `--version` is the number of `vX`)
+
+### Carried forward from earlier versions (not re-read on 2026-10-03)
+
+These were not re-read for this revision. help.salesforce.com articles do not return their text to a fetch, so claims that rest only on a Help article are marked UNVERIFIED in the skill.
 
 - Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/get-started-agents.html
 - Agentforce DX Metadata Types — https://developer.salesforce.com/docs/ai/agentforce/guide/agent-dx-metadata.html

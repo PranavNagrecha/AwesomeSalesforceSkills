@@ -144,3 +144,38 @@ question has an answer that is not "we would have to reproduce it".
 
 Source: EventLogFile object reference —
 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_eventlogfile.htm
+
+## Anti-Pattern 8: Counting Trust Layer masking as an agent control
+
+Assistants describe the Einstein Trust Layer as masking PII in every prompt and sign off on
+grounding that selects regulated fields "because the Trust Layer will mask them".
+
+Wrong: "Sensitive fields are masked by the Trust Layer before the prompt reaches the LLM."
+Right: For agents, Trust Layer data masking is disabled (Generative AI guide, Trust and Agents).
+Exclude regulated fields from the agent user's field permissions and from every grounding
+selector, and test with a negative case. Zero-data retention is a provider-side control,
+not masking.
+
+## Anti-Pattern 9: Reviewing action code without its API version
+
+Assistants read an action class, see no `WITH USER_MODE`, and report "runs in system mode",
+or see no sharing keyword and report "inherits sharing", without checking the version.
+
+Wrong: One verdict for every class regardless of API version.
+Right: Record the API version per class. From API 67.0, Apex runs in user context by default and
+classes without a sharing declaration run in the current user context; at 66.0 and earlier,
+system mode is the default (Apex Developer Guide, Versioned Behavior Changes). Then require
+an explicit sharing keyword and access mode anyway.
+
+## Anti-Pattern 10: Skipping the planner bundle
+
+Assistants review users, permission sets and Apex, and never open the retrieved
+`GenAiPlannerBundle`.
+
+Wrong: A review with no statement about which subagents an unverified user can reach.
+Right: Read the bundle's `ruleExpressions` and `ruleExpressionAssignments`: every subagent that
+touches a customer's own records should be locked behind a verification variable, and
+verified IDs should flow through `attributeMappings` rather than user input (Metadata API
+reference, GenAiPlannerBundle). Fix findings in the builder, not by editing retrieved
+metadata.
+

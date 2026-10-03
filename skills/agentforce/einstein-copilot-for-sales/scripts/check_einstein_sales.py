@@ -30,21 +30,28 @@ from pathlib import Path
 # Constants
 # ---------------------------------------------------------------------------
 
+# UNVERIFIED (2026-10-03): these permission set API names were not found in the
+# sources read; the rule only looks for name fragments and stays advisory.
 REQUIRED_PERMISSION_SETS = {
     "SalesCloudEinsteinUser",
     "EinsteinForSalesUser",
     "EinsteinSalesAnalyticsAdmin",
 }
 
+# Object Reference (Summer '26), Opportunity: the standard score field is IqScore
+# (label "Opportunity Score", 1 to 99). The earlier constants OpportunityScore and
+# OpportunityScoreChangeType are not field API names, so they never matched a layout.
 EINSTEIN_SALES_SCORE_FIELDS = {
-    "OpportunityScore",
-    "OpportunityScoreChangeType",
+    "IqScore",
 }
 
 # Metadata file patterns to locate
 PERMISSION_SET_GLOB = "**/*.permissionset-meta.xml"
 LAYOUT_GLOB = "**/*Opportunity*.layout-meta.xml"
-SETTINGS_GLOB = "**/Sales.settings-meta.xml"
+# Metadata API reference: OpportunityScoreSettings lives in OpportunityScore.settings
+# (field enableOpportunityScoring); EACSettings lives in EAC.settings.
+SETTINGS_GLOB = "**/OpportunityScore.settings-meta.xml"
+EAC_SETTINGS_GLOB = "**/EAC.settings-meta.xml"
 PROFILE_GLOB = "**/*.profile-meta.xml"
 
 SF_NAMESPACE = "http://soap.sforce.com/2006/04/metadata"
@@ -138,7 +145,7 @@ def check_opportunity_score_fields_on_layout(manifest_dir: Path, verbose: bool) 
             if not any(score_field.lower() in f.lower() for f in field_names_in_layout):
                 issues.append(
                     f"Einstein score field '{score_field}' not found on layout '{layout_file.name}'. "
-                    "Add the Opportunity Score and Score Change fields to the Opportunity page layout "
+                    "Add the Opportunity Score field (API name IqScore) to the Opportunity page layout "
                     "so reps can see scores on records."
                 )
 
@@ -153,8 +160,8 @@ def check_sales_settings_metadata(manifest_dir: Path, verbose: bool) -> list[str
     if not settings_files:
         if verbose:
             issues.append(
-                "Sales.settings-meta.xml not found in manifest directory. "
-                "Retrieve Sales settings to validate Einstein feature enablement flags."
+                "OpportunityScore.settings-meta.xml not found in manifest directory. "
+                "Retrieve Settings:OpportunityScore to validate that enableOpportunityScoring is true."
             )
         return issues
 
@@ -164,18 +171,18 @@ def check_sales_settings_metadata(manifest_dir: Path, verbose: bool) -> list[str
             issues.append(f"Could not parse settings file: {sf.name}")
             continue
 
-        # Look for enableEinsteinOpportunityScoring or similar flags
+        # OpportunityScoreSettings has one documented field: enableOpportunityScoring.
         einstein_flags: dict[str, str] = {}
         for elem in root.iter():
             tag = _strip_ns(elem.tag)
-            if "einstein" in tag.lower() or "opportunityscore" in tag.lower():
+            if tag == "enableOpportunityScoring":
                 einstein_flags[tag] = (elem.text or "").strip()
 
         if verbose and not einstein_flags:
             issues.append(
                 f"No Einstein-related settings found in {sf.name}. "
-                "If Einstein Opportunity Scoring should be enabled, verify the setting "
-                "is present and set to 'true' in Sales settings metadata."
+                "If Einstein Opportunity Scoring should be enabled, set enableOpportunityScoring "
+                "to true in OpportunityScore.settings."
             )
 
         for flag, value in einstein_flags.items():
@@ -189,19 +196,22 @@ def check_sales_settings_metadata(manifest_dir: Path, verbose: bool) -> list[str
 
 
 def check_eac_exclusion_rules_present(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Warn if EAC configuration profiles exist but have no exclusion domain rules."""
-    issues: list[str] = []
+    """Check EAC.settings against the documented EACSettings privacy defaults.
 
-    # EAC config profiles are typically in ConnectedApp or EinsteinActivityCaptureSettings
-    eac_settings_glob = "**/*EinsteinActivityCapture*.settings-meta.xml"
-    eac_files = _find_files(manifest_dir, eac_settings_glob)
+    Metadata API reference, EACSettings: enableActivityCapture needs
+    provisionProductivityFeatures; enableInboxActivitySharing defaults to true
+    (new users share activity with Everyone). Exclusion lists are configured in
+    Setup; no exclusion field is documented in EACSettings, so this rule no
+    longer looks for one.
+    """
+    issues: list[str] = []
+    eac_files = _find_files(manifest_dir, EAC_SETTINGS_GLOB)
 
     if not eac_files:
         if verbose:
             issues.append(
-                "No Einstein Activity Capture settings metadata found. "
-                "If EAC is enabled, retrieve EinsteinActivityCapture settings and re-run "
-                "to validate exclusion rules are configured."
+                "No EAC.settings metadata found. If Einstein Activity Capture is enabled, "
+                "retrieve Settings:EAC and re-run to validate sharing defaults."
             )
         return issues
 
@@ -211,19 +221,21 @@ def check_eac_exclusion_rules_present(manifest_dir: Path, verbose: bool) -> list
             issues.append(f"Could not parse EAC settings file: {eac_file.name}")
             continue
 
-        # Look for exclusion domain/address configuration elements
-        exclusion_elements: list[str] = []
-        for elem in root.iter():
-            tag = _strip_ns(elem.tag)
-            if "exclusion" in tag.lower() or "exclude" in tag.lower():
-                exclusion_elements.append(tag)
-
-        if not exclusion_elements:
+        values = {_strip_ns(elem.tag): (elem.text or "").strip().lower() for elem in root.iter()}
+        if values.get("enableActivityCapture") == "true" and values.get("provisionProductivityFeatures") != "true":
             issues.append(
-                f"EAC settings file '{eac_file.name}' found but contains no exclusion rule "
-                "configuration. Configure domain and address exclusion rules before EAC goes live "
-                "to prevent personal and legal email from syncing into Salesforce records. "
-                "See: Setup > Einstein > Einstein Activity Capture > Configuration > Exclusions."
+                f"{eac_file.name}: enableActivityCapture is true but provisionProductivityFeatures is not; "
+                "the Metadata API reference says provisionProductivityFeatures must be true to use Activity Capture."
+            )
+        if values.get("enableActivityCapture") == "true" and values.get("enableInboxActivitySharing", "true") == "true":
+            issues.append(
+                f"{eac_file.name}: enableInboxActivitySharing is true or unset (default true), so new users "
+                "share captured activity with Everyone. Set it to false and set enableEnforceEacSharingPref "
+                "to true before rollout. Configure exclusion rules in Setup."
+            )
+        if values.get("enableActivityCapture") == "true" and values.get("sensitiveEmailFilter") != "true":
+            issues.append(
+                f"{eac_file.name}: sensitiveEmailFilter is not true; turn it on to keep sensitive emails from being shared."
             )
 
     return issues
@@ -259,9 +271,9 @@ def check_pipeline_inspection_dependency(manifest_dir: Path, verbose: bool) -> l
     if pipeline_refs and not opp_scoring_refs:
         issues.append(
             "Pipeline Inspection configuration detected but no Opportunity Scoring settings found. "
-            "Pipeline Inspection AI insights require Opportunity Scoring to be enabled and the "
-            "model to be trained. Enable Opportunity Scoring first and confirm model status is "
-            "'Active' before relying on Pipeline Inspection AI insights."
+            "Enable Opportunity Scoring (OpportunityScore.settings) and confirm scores exist before "
+            "presenting Pipeline Inspection insights. UNVERIFIED (2026-10-03): that the insights "
+            "panel depends on a trained scoring model; Pipeline Inspection also needs its own Setup steps."
         )
 
     return issues

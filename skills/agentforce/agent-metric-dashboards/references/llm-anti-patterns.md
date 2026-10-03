@@ -16,8 +16,10 @@ suffixes. The naming is a plausible interpolation, and nothing in the request
 tells it that a platform-provided data model exists.
 
 **Correct pattern:** the source is Agentforce Session Tracing's Data Cloud data
-model — `AIAgentSession`, `AIAgentSessionParticipant`, `AIAgentInteraction`,
-`AIAgentInteractionMessage`, `AIAgentInteractionStep`
+model: `AIAgentSession`, `AIAgentSessionParticipant`, `AIAgentInteraction`,
+`AIAgentInteractionMessage`, `AIAgentInteractionStep` (object API names such as
+`ssot__AiAgentSession__dlm`, per the Data Cloud DMO reference), plus the token
+counts in `AiAgentGenerativeAiUsage_std__dlm` from Spring '26
 ([Data Model for Agentforce Session
 Tracing](https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_data_model.htm&type=5)).
 Agentforce Observability additionally reports total sessions, deflected
@@ -218,3 +220,34 @@ on the dashboard rather than letting a truncated trend imply a launch date.
 
 **Detection hint:** a dashboard plan with no prerequisite section, or one where
 the trailing window predates the tracing setup date.
+
+---
+
+## Anti-Pattern 12: Reporting from Agent Builder event logs
+
+**What the LLM generates:** "Export the agent's event logs from Agent Builder each month and chart them."
+
+**Why it happens:** Event logs are the most visible place where sessions appear.
+
+**Correct pattern:** Event logs are for debugging: they store information for 7 days, and without enhanced event logs the conversation text is hidden (Generative AI guide, Enable Enhanced Event Logs). Build reporting on the session tracing DMOs or the standard Agentforce Analytics reports.
+
+---
+
+## Anti-Pattern 13: Treating the "deflected" end type as success
+
+**What the LLM generates:** A headline tile, "Deflection rate: 71%", computed from sessions whose end type is deflected.
+
+**Why it happens:** The platform supplies the classification, so it looks authoritative.
+
+**Correct pattern:** `ssot__AiAgentSessionEndType__c` (resolved, escalated, deflected, other) is a starting signal, not a success measure. Show deflected sessions with the repeat-contact rate on the same tile, and call the number causal only with a control arm.
+
+---
+
+## Anti-Pattern 14: Promising an analytics dashboard without checking the Data Cloud setup
+
+**What the LLM generates:** A dashboard plan that assumes Agent Analytics is free and available everywhere.
+
+**Why it happens:** Analytics looks like a reporting feature, not a Data Cloud workload.
+
+**Correct pattern:** Agent Analytics consumes Data Cloud credits and is unavailable on Data Cloud One companion orgs or when Data Cloud One is the agent's data space (Generative AI guide, Agentforce Analytics). Confirm the topology and budget before committing to the design.
+

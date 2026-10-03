@@ -13,7 +13,14 @@ from pathlib import Path
 INVOKABLE_RE = re.compile(r"@InvocableMethod", re.IGNORECASE)
 LIST_SIGNATURE_RE = re.compile(r"\(\s*List<", re.IGNORECASE)
 GENERIC_NAME_RE = re.compile(r"\b(doAction|execute|runProcess|handleRequest)\b", re.IGNORECASE)
-OBJECT_PARAM_RE = re.compile(r"\bObject\b|\bMap<", re.IGNORECASE)
+OBJECT_PARAM_RE = re.compile(r"\bObject\b|\bMap\s*<", re.IGNORECASE)
+# Only the contract counts: @InvocableVariable declarations and the @InvocableMethod signature.
+# A Map used inside the method body is an implementation detail, not part of the agent contract.
+CONTRACT_DECL_RE = re.compile(
+    r"@InvocableVariable\s*(?:\([^)]*\))?\s*(?:(?:public|global|static|final)\s+)+([\w<>.,\s]+?)\s+\w+\s*;"
+    r"|@InvocableMethod\s*(?:\([^)]*\))?\s*(?:(?:public|global|static)\s+)+([\w<>.,\s]+?\s+\w+\s*\([^)]*\))",
+    re.IGNORECASE | re.DOTALL,
+)
 REQUIRED_VAR_RE = re.compile(r"@InvocableVariable\s*\([^)]*required\s*=\s*true", re.IGNORECASE)
 ACTION_RE = re.compile(r"\baction\b", re.IGNORECASE)
 CONFIRM_RE = re.compile(r"confirm|confirmation|are you sure", re.IGNORECASE)
@@ -72,7 +79,8 @@ def main() -> int:
             action_files += 1
             if not LIST_SIGNATURE_RE.search(text):
                 findings.append(f"HIGH {path}: invocable method does not appear to accept a List input; verify it is safe for agent use")
-            if OBJECT_PARAM_RE.search(text):
+            contract_text = " ".join(part for match in CONTRACT_DECL_RE.findall(text) for part in match if part)
+            if OBJECT_PARAM_RE.search(contract_text):
                 findings.append(f"REVIEW {path}: generic Object or Map types found in invocable contract; prefer narrower agent-friendly schemas")
             if GENERIC_NAME_RE.search(text):
                 findings.append(f"REVIEW {path}: generic action naming found in Apex; use a business-capability name instead")

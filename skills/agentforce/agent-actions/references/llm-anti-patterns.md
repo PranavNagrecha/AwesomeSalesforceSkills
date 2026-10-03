@@ -26,7 +26,7 @@ Requires confirmation before execution:
 - Financial operations (apply discount, adjust price)
 
 Implementation:
-- Set "Require Confirmation" = true on the action definition
+- Turn on "Require user confirmation" on the agent action (`isConfirmationRequired` = `true` in the `GenAiFunction`)
 - Include a human-readable summary of what will change
 - Show the key field values that will be written
 - Allow the user to cancel before execution
@@ -192,3 +192,38 @@ Error handling rules:
 **Detection hint:** Flag agent-facing Apex actions that do not wrap DML or callout operations in try-catch blocks. Check for actions that surface raw exception messages without translation.
 
 ---
+
+## Anti-Pattern 6: Encoding a Hard Business Rule Only in Action Instructions
+
+**What the LLM generates:** An action description such as "Only refund orders placed in the last 30 days" with no check in the Apex class or flow.
+
+**Why it happens:** Instructions feel like configuration, and editing text is faster than editing code.
+
+**Correct pattern:** Enforce the rule in the reference action and return a clear business result when it fails. Keep the instruction as an explanation. The Generative AI guide says to build sensitive or deterministic rules into the action itself, because instructions are interpreted by a nondeterministic LLM.
+
+**Detection hint:** Instructions containing "only", "never" or numeric thresholds with no matching condition in the referenced class or flow.
+
+---
+
+## Anti-Pattern 7: Creating the Action and Forgetting to Assign It
+
+**What the LLM generates:** Step-by-step instructions that end at "create the custom agent action", followed by "now ask the agent".
+
+**Why it happens:** In most frameworks, registering a tool makes it available.
+
+**Correct pattern:** Add the action to the subagent that owns the job, keep that subagent at 15 actions or fewer, and restart the preview conversation before testing. An agent uses only actions assigned to it through a topic.
+
+**Detection hint:** A design that names an action but no owning subagent.
+
+---
+
+## Anti-Pattern 8: Adding Inputs to a Standard Action's Flow and Expecting the Standard Action to Pass Them
+
+**What the LLM generates:** "Open the flow behind the standard action, add a new input variable, and the agent will start sending it."
+
+**Why it happens:** The standard action looks like a thin wrapper, so editing the wrapped flow seems sufficient.
+
+**Correct pattern:** Behaviour changes in the reference flow or template are picked up, but new or removed inputs and outputs need a custom agent action that replaces the standard one (Generative AI guide, Editing Standard Agent Action Reference Actions).
+
+**Detection hint:** A change plan that edits a standard action's reference flow signature without creating a custom action.
+

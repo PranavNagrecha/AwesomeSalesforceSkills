@@ -11,6 +11,8 @@ triggers:
   - "how much does each agent conversation cost"
   - "agent latency p95"
   - "agentforce roi dashboard"
+  - "build an Agentforce dashboard for adoption and deflection"
+  - "query agent session data in Data Cloud"
 tags:
   - agentforce
   - observability
@@ -23,9 +25,9 @@ outputs:
   - "Einstein Analytics / CRM Analytics dashboard"
   - "weekly rollup email"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Agent Metric Dashboards
@@ -37,28 +39,48 @@ executive reviewer can read without being misled.
 
 ## The Prerequisite That Gates Everything
 
-Agentforce Session Tracing must be enabled — Setup → Einstein Audit, Analytics,
-and Monitoring Setup → Agentforce Session Tracing plus the Session Tracing Data
-Model — **before** the conversations you want to measure. Analytics appear only
-for conversations occurring after setup; there is no backfill. Readers need the
-Data Cloud User permission set or the dashboard is empty for them.
+Agentforce Session Tracing must be enabled (Setup, Einstein Audit, Analytics,
+and Monitoring Setup, Agentforce Session Tracing) **before** the conversations you
+want to measure. UNVERIFIED (2026-10-03): the earlier statements, sourced to Help
+articles that do not fetch, that analytics never backfill and that readers need
+the "Data Cloud User" permission set; plan as if both are true. Agent Analytics
+runs on Data Cloud, consumes credits, and is not available on Data Cloud One
+companion orgs (Generative AI guide, Agentforce Analytics).
 
 This makes dashboard enablement a row on the go-live checklist
 (`agentforce/agent-deployment-checklist`), not an analytics backlog item.
 
+## Questions to Ask Before Configuring
+
+Ask these before building a tile. Each one traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "When was session tracing turned on, and is it on in every org that matters?" | The dashboard has no history before tracing (Gotcha 1) | A data start date and a go-live checklist row | A trend nobody misreads as a launch date |
+| "Is there a control arm, or only a before-and-after?" | Deflection without a holdout measures the world (Gotchas 3, 4, 5) | A holdout design or an honest tile label | Causal claims only where they are earned |
+| "What does cost mean here: tokens, credits or currency?" | Token counts are queryable from the usage DMO; currency is not (Gotcha 7) | Driver tiles plus a monthly reconciliation with consumption reporting | A cost view that is true and actionable |
+| "Who reads the dashboard, and do they have Data Cloud access and folder access?" | Readers without access see nothing (Gotcha 2) | A permission set group and a shared folder | A dashboard that works for its audience on day one |
+| "Which events must annotate the trends?" | Model and version changes move metrics silently (Gotcha 8) | Agent activations, prompt activations, model changes as series | Step changes explained at a glance |
+| "Who owns each alert, and how was its threshold chosen?" | Untuned alerts get muted (Gotcha 12) | An owner and a distribution-based threshold per alert | Alerts that are still read in month four |
+
 ## Where The Numbers Actually Come From
 
-| KPI | Source | Notes |
+| KPI | Source (DMO label, object API name) | Notes |
 |---|---|---|
-| Sessions | `AIAgentSession` (Data Cloud DMO) | Also reported directly by Agentforce Observability |
-| Turns per session | `AIAgentInteraction` ÷ `AIAgentSession` | Turn-by-turn detail |
-| Deflected sessions, average latency | Agentforce Observability | Reported as first-class insights |
-| Escalation rate | Action data on `AIAgentInteraction` | Sessions whose action sequence includes the transfer action |
-| Action failure rate | `AIAgentInteractionStep` | Group by action; sort by rate, not volume |
+| Sessions | AI Agent Session, `ssot__AiAgentSession__dlm` | Also in the standard Total Session report |
+| Turns per session | AI Agent Interaction, `ssot__AiAgentInteraction__dlm` ÷ sessions | `ssot__TopicApiName__c` gives the subagent per turn |
+| Deflected and escalated sessions | `ssot__AiAgentSessionEndType__c` on the session (resolved, escalated, deflected, other) | Also the standard Deflection Session report |
+| Average latency | Standard Latency report | Compute p50 and p95 from interaction timestamps yourself |
+| Action failure rate, LLM calls per turn | AI Agent Interaction Step, `ssot__AiAgentInteractionStep__dlm` | Step types UserInputStep, LLMExecutionStep, FunctionStep; group by action, sort by rate |
+| Tokens | Ai Agent Generative Ai Usage, `AiAgentGenerativeAiUsage_std__dlm` (Spring '26 and later) | Token counts per request; no currency |
 | Quality, feedback | Session-tracing metric scores and feedback signals | Calibrate against human labels quarterly |
 
-There is no standard `Conversation__c` and no queryable per-token cost. A spec
-that names them is a data-engineering project, not a dashboard.
+There is no standard `Conversation__c`. A spec that names it is a data-engineering
+project, not a dashboard. Token counts are queryable from the usage DMO; a
+currency rate is not in org data (this corrects the earlier "no queryable
+per-token cost"). Object and field names come from the Data Cloud DMO reference;
+`references/metadata-examples.md` has a deployable calculated insight and the
+driver queries.
 
 ## Adoption Signals
 
@@ -70,9 +92,10 @@ after the first week.
 
 1. Enable Session Tracing and the Session Tracing Data Model before activation;
    assign Data Cloud User to every intended reader and verify with a real one.
-2. Build the volume and efficiency tiles from `AIAgentSession` and
-   `AIAgentInteraction`: sessions, turns per session, LLM calls per turn, p50 and
-   p95 latency. Split agent latency from action latency — different owners,
+2. Build the volume and efficiency tiles from `ssot__AiAgentSession__dlm`,
+   `ssot__AiAgentInteraction__dlm` and `ssot__AiAgentInteractionStep__dlm`:
+   sessions, turns per session, LLM calls per turn, p50 and p95 latency. Deploy
+   the daily session counts as a calculated insight (`references/metadata-examples.md`). Split agent latency from action latency, different owners,
    different fixes.
 3. Make deflection causal or rename it. Randomise a holdout arm at the routing
    layer and report `(rate_control − rate_treatment) / rate_control` with both
@@ -82,8 +105,9 @@ after the first week.
    72-hour repeat-contact rate, CSAT with `n` and response rate, aggregate with
    the per-subagent breakdown sorted by rate (*subagent* is the April 2026
    rename of *topic*; the metadata names did not change).
-5. Report cost as drivers (sessions × turns/session × LLM-calls/turn) and take
-   absolute cost from Salesforce consumption reporting. Reconcile monthly; never
+5. Report cost as drivers (sessions × turns/session × LLM-calls/turn, plus tokens
+   from `AiAgentGenerativeAiUsage_std__dlm`) and take absolute cost from
+   Salesforce consumption reporting (Digital Wallet). Reconcile monthly; never
    compute a currency figure from org data alone.
 6. Annotate every trend with agent version activations, prompt template
    activations, and model version changes — model versions move without a
@@ -122,8 +146,4 @@ after the first week.
 
 ## Official Sources Used
 
-- About Agentforce Session Tracing — https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_about.htm&type=5
-- Set Up Agentforce Session Tracing — https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_setup.htm&type=5
-- Data Model for Agentforce Session Tracing — https://help.salesforce.com/s/articleView?id=ai.generative_ai_session_trace_data_model.htm&type=5
-- Export Agentforce Session Tracing Data (OTel API) — https://developer.salesforce.com/docs/ai/agentforce/guide/otel-api.html
-- Data Model and Calculated Fields for Agent Analytics — https://help.salesforce.com/s/articleView?id=ai.generative_ai_agent_analytics_data_model.htm&type=5
+See `references/well-architected.md` for the sources read for this revision.

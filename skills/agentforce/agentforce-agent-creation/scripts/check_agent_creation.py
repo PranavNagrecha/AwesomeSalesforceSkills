@@ -114,8 +114,8 @@ def check_planner_bundle_exists(manifest_dir: Path) -> list[str]:
     if legacy_planner_files and not bundle_files:
         issues.append(
             "GenAiPlanner metadata found but no GenAiPlannerBundle. "
-            "GenAiPlanner is deprecated as of API v64. "
-            "Consider migrating to GenAiPlannerBundle for current releases."
+            "GenAiPlanner is available only in API 60.0 to 63.0; GenAiPlannerBundle replaces it from API 64.0. "
+            "Retrieve with API 64.0 or later to get GenAiPlannerBundle."
         )
     return issues
 
@@ -147,7 +147,14 @@ def check_actions_exist(manifest_dir: Path) -> list[str]:
 
 
 def check_bot_active_status(manifest_dir: Path) -> list[str]:
-    """Warn if any Bot definition is not set to Active."""
+    """Warn if any Bot definition is not set to Active.
+
+    Note (2026-10-03): the Metadata API reference field list for Bot has no
+    ``status`` element, so on standard retrieved metadata this rule finds
+    nothing. Activation is checked in the org with ``sf agent activate`` or
+    Agentforce Builder, not in Bot XML. The rule is kept for exports that add
+    a status element.
+    """
     issues: list[str] = []
     bot_files = find_files(manifest_dir, "*.bot-meta.xml")
     for bot_file in bot_files:
@@ -156,7 +163,7 @@ def check_bot_active_status(manifest_dir: Path) -> list[str]:
             issues.append(
                 f"{bot_file.name}: Agent status is '{status}' — not Active. "
                 "Users cannot interact with an agent that is not in Active state. "
-                "Remember: activation does not carry between environments; activate manually in each target org."
+                "Activate the intended version explicitly in each target org (sf agent activate)."
             )
     return issues
 
@@ -172,7 +179,7 @@ def check_api_name_patterns(manifest_dir: Path) -> list[str]:
             if fragment in stem:
                 issues.append(
                     f"{bot_file.name}: API Name '{bot_file.stem}' contains '{fragment}'. "
-                    "Agent API Names are immutable after creation. "
+                    "Changing an agent API name later means rebuilding or re-promoting the agent. "
                     "Verify this is the intended permanent name."
                 )
                 break
@@ -196,7 +203,7 @@ def check_permission_sets_not_sysadmin(manifest_dir: Path) -> list[str]:
                 issues.append(
                     f"{ps_file.name}: Permission set contains '{perm}'. "
                     "Agent user permission sets should be scoped narrowly. "
-                    "Avoid granting broad data permissions to the EinsteinServiceAgent User."
+                    "Avoid granting broad data permissions to the agent user."
                 )
     return issues
 
