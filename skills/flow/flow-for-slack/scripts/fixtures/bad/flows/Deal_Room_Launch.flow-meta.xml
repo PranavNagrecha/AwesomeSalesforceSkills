@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Create_Deal_Room</name>
+        <label>Create Deal Room</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <actionName>slackCreateChannel</actionName>
+        <actionType>slackCreateChannel</actionType>
+        <connector>
+            <targetReference>Send_Launch_Button</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Send_Launch_Button</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>slackChannelName</name>
+            <value>
+                <stringValue>Enterprise Deal: ACME</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_Launch_Button</name>
+        <label>Send Launch Button</label>
+        <locationX>176</locationX>
+        <locationY>288</locationY>
+        <actionName>slackSendMessageToLaunchFlow</actionName>
+        <actionType>slackSendMessageToLaunchFlow</actionType>
+        <faultConnector>
+            <targetReference>Create_Deal_Room</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>flowApiName</name>
+            <value>
+                <stringValue>Background_Approval</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <environments>Default</environments>
+    <label>Deal Room Launch</label>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <object>Opportunity</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <scheduledPaths>
+            <name>After_Commit</name>
+            <label>After Commit</label>
+            <connector>
+                <targetReference>Create_Deal_Room</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+</Flow>

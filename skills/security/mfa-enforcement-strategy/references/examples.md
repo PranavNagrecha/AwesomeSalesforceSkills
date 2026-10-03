@@ -1,4 +1,4 @@
-# Examples — MFA Enforcement Strategy
+# Examples: MFA Enforcement Strategy
 
 ## Example 1: SSO-First Enterprise With Lingering Salesforce Passwords
 
@@ -33,6 +33,14 @@
 | 3 | EMEA/APAC | 4 weeks | Same metrics; localized comms sent |
 
 Pair each phase with **predictable office hours**, **printed recovery steps** for regions with device restrictions, and a **named rollback approver**.
+
+Each phase gate is measured with the registration query from [metadata-examples.md](metadata-examples.md):
+
+```soql
+SELECT COUNT(Id) FROM TwoFactorMethodsInfo
+WHERE HasSalesforceAuthenticator = false AND HasTotp = false AND HasSecurityKey = false
+  AND HasBuiltInAuthenticator = false AND HasU2F = false
+```
 
 **Why it works:** MFA adoption is a **change management** problem as much as a configuration task. Phasing limits blast radius while preserving a firm end state.
 

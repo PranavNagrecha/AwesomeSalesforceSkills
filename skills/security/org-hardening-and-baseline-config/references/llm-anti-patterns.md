@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — Org Hardening and Baseline Config
+# LLM Anti-Patterns: Org Hardening and Baseline Config
 
 Common mistakes AI coding assistants make when generating or advising on Salesforce org hardening and baseline security configuration.
 These patterns help the consuming agent self-check its own output.
@@ -12,10 +12,13 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 
 ```
-Health Check measures a subset of org security settings (password, session, network).
-It does not cover CSP Trusted Sites governance, CORS allowlist sprawl, clickjack
-protections, release update hygiene, or exception management. A high score is
-necessary but not sufficient for a hardened org.
+Health Check scores the org against one baseline (the Salesforce Baseline
+Standard or a custom baseline) of High-, Medium-, Low-Risk and Informational
+settings. It does not review who owns each CSP Trusted Site or CORS origin,
+profile-level session and password overrides, or release update hygiene.
+A high score is necessary but not sufficient for a hardened org.
+UNVERIFIED (2026-10-03): the exact list of settings in the Salesforce
+Baseline Standard is published only in Salesforce Help.
 ```
 
 **Detection hint:** If the advice mentions Health Check as the sole or primary measure of org hardening, it is incomplete.
@@ -35,7 +38,7 @@ Before adding a CSP Trusted Site or CORS entry:
 1. Document the domain, the business reason, and the requesting team.
 2. Assign an owner responsible for periodic review.
 3. Select only the minimum CSP directives needed (not all directives).
-4. Record a review date — exceptions should not persist indefinitely without revalidation.
+4. Record a review date: exceptions should not persist indefinitely without revalidation.
 ```
 
 **Detection hint:** If advice adds a trusted site with no mention of ownership, justification, or review cadence, the governance layer is missing.
@@ -51,12 +54,15 @@ Before adding a CSP Trusted Site or CORS entry:
 **Correct pattern:**
 
 ```
-Trusted IP Ranges (Network Access) only skip the email verification challenge.
-They do NOT prevent logins from outside those ranges.
+Trusted IP Ranges (Network Access) let users log in without device
+activation (identity verification). They do NOT prevent logins from
+outside those ranges.
 
-To hard-restrict logins by IP, use Login IP Ranges on the profile:
+To restrict logins by IP, use Login IP Ranges on the profile:
 Setup > Profiles > [Profile Name] > Login IP Ranges.
-This denies login entirely from IPs outside the configured ranges.
+Add Session Settings > "Enforce login IP ranges on every request"
+(enforceIpRangesEveryRequest) to apply the ranges to every request,
+not only at login.
 ```
 
 **Detection hint:** If the recommendation uses "Trusted IP Ranges" or "Network Access" to restrict logins rather than to bypass email verification, the control is misidentified.
@@ -72,11 +78,11 @@ This denies login entirely from IPs outside the configured ranges.
 **Correct pattern:**
 
 ```
-Release updates — especially security-related critical updates — are part of the
+Release updates, especially security-related critical updates, are part of the
 hardening baseline. They should be reviewed on a fixed operational cadence
 (quarterly at minimum) alongside Health Check, browser trust settings, and
-stale exception review. Delaying them creates preventable risk and surprise
-breakage when Salesforce auto-activates them.
+stale exception review. UNVERIFIED (2026-10-03): enforcement dates for each
+release update are published only in Salesforce Help; read them there.
 ```
 
 **Detection hint:** If a hardening checklist omits release updates or frames them as low-priority maintenance, the operational cadence is incomplete.
@@ -108,7 +114,7 @@ A hardening baseline is not a one-time task. It requires:
 
 **What the LLM generates:** Security-only recommendations that ignore integration team constraints, browser requirements, or admin workflows.
 
-**Why it happens:** LLMs generate advice from a single-domain perspective. Org hardening is inherently cross-functional — security, admins, and integration teams all affect the baseline.
+**Why it happens:** LLMs generate advice from a single-domain perspective. Org hardening is inherently cross-functional, security, admins, and integration teams all affect the baseline.
 
 **Correct pattern:**
 
@@ -122,3 +128,42 @@ immediate rollbacks.
 ```
 
 **Detection hint:** If the advice assumes a single-admin-controls-everything model without mentioning integration or browser requirements, it is likely to cause downstream conflicts.
+
+---
+
+## Anti-Pattern 7: Deploying a Partial `networkAccess` List
+
+**What the LLM generates:** A `Security.settings-meta.xml` snippet with only the one new IP range under `<networkAccess>`, presented as "add this range."
+
+**Why it happens:** LLMs treat metadata deploys as merges.
+
+**Correct pattern:**
+
+```
+The deployed ipRanges list REPLACES the org's trusted ranges.
+1. sf project retrieve start --metadata "Settings:Security"
+2. Add the new <ipRanges> entry to the full existing list
+3. Review the diff for removed ranges, then deploy
+Leave <networkAccess> out of settings files that don't manage IP ranges.
+```
+
+**Detection hint:** A settings snippet with a single `ipRanges` element and no instruction to retrieve the existing list first.
+
+---
+
+## Anti-Pattern 8: Hardening Org-Wide Settings While Ignoring Profile Overrides
+
+**What the LLM generates:** "Set the org session timeout to 30 minutes and the minimum password length to 12; every user is now covered."
+
+**Why it happens:** LLMs know the org-wide Session Settings and Password Policies pages but not the profile-level metadata types.
+
+**Correct pattern:**
+
+```
+ProfileSessionSetting.sessionTimeout overrides the org-wide timeout for
+that profile's users, and org-wide changes don't reach them.
+ProfilePasswordPolicy overrides org-wide password policies the same way.
+Retrieve both types and review every override before claiming coverage.
+```
+
+**Detection hint:** Hardening advice that mentions only org-wide session or password settings.

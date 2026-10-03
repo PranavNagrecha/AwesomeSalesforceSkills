@@ -1,29 +1,63 @@
-# Examples — Release Management
+# Examples: Release Management
 
 ## Example 1: Validation Deploy + Quick Deploy for a Large Org
 
 **Scenario:** A financial services org with 800 Apex classes and a 45-minute test suite needs to deploy 12 components to production on Saturday night.
 
-**Problem:** Running a full test suite during a Saturday-night deployment window is risky. If tests fail at 1am, the team is debugging live on production.
+**Problem:** Running the full test suite inside a Saturday-night window is risky. If tests fail at 1am, the team debugs live on production.
 
 **Solution:**
-1. On Wednesday: run `sf project deploy validate --source-dir force-app --test-level RunLocalTests --wait 120` against production. Save the returned deploy ID.
-2. On Saturday night: run `sf project deploy quick --job-id 0Af...savedId`. This skips the test run and deploys the pre-validated package in minutes.
-3. If the quick deploy fails (expired ID because production was modified after validation): fall back to `sf project deploy start --test-level RunLocalTests --wait 120`.
 
-**Why it works:** The validation deploy is a full rehearsal without committing changes. Quick Deploy consumes the 10-day validated deploy ID. The rehearsal window allows defect resolution before deployment night.
+```bash
+# Wednesday: rehearse against production; record the 0Af job ID in the release plan
+sf project deploy validate \
+  --manifest manifest/package.xml \
+  --test-level RunLocalTests \
+  --target-org prod \
+  --wait 120
+
+# Saturday night: deploy the validated set without re-running tests
+sf project deploy quick --job-id 0AfXXXXXXXXXXXXXXX --target-org prod --wait 30
+
+# The quick deploy prints a NEW deploy ID; monitor that one
+sf project deploy report --job-id <quickDeployId> --target-org prod
+```
+
+If the quick deploy is rejected (for example the validation is more than 10 days old), fall back to a full deploy with `sf project deploy start --manifest manifest/package.xml --test-level RunLocalTests --target-org prod --wait 120`.
+
+**Why it works:** The validation is a full rehearsal that commits nothing. Quick deploy consumes the validated job ID within its 10-day window. The rehearsal leaves days to resolve defects.
 
 ---
 
 ## Example 2: Rollback After a Defective Apex Trigger Deployment
 
-**Scenario:** A retail org deploys a new version of `AccountTrigger`. Within 20 minutes, support reports all new Account creates are failing — a null pointer in the new trigger code.
+**Scenario:** A retail org deploys a new version of `AccountTrigger`. Within 20 minutes, support reports all new Account creates are failing with a null pointer in the new trigger code.
 
 **Problem:** The deployment succeeded but the trigger has a runtime defect. Every Account creation is broken.
 
 **Solution:**
-1. The team retrieves the pre-deployment backup taken 30 minutes before go-live: `sf project retrieve start --manifest pre-release-backup.xml`.
-2. Redeploys the backup: `sf project deploy start --manifest pre-release-backup.xml --test-level RunSpecifiedTests --tests AccountTriggerTest`.
-3. Within 10 minutes, the prior trigger version is restored.
 
-**Why it works:** The pre-release backup was taken as part of the release workflow. Without it, the team would reconstruct the prior Apex code from Git history, increasing rollback time from 10 minutes to 60+ minutes.
+```bash
+# BEFORE the release (part of the go/no-go checklist): archive the production version
+# in Metadata API format. The CLI writes backups/2026-10-03/unpackaged.zip by default.
+sf project retrieve start \
+  --manifest manifest/package.xml \
+  --target-org prod \
+  --target-metadata-dir backups/2026-10-03 \
+  --single-package
+
+# DURING the incident: redeploy the archived zip, never a fresh retrieve
+sf project deploy start \
+  --metadata-dir backups/2026-10-03/unpackaged.zip \
+  --single-package \
+  --test-level RunSpecifiedTests \
+  --tests AccountTriggerTest \
+  --target-org prod \
+  --wait 60
+```
+
+The prior trigger version is restored once the deploy finishes. `RunSpecifiedTests` requires the listed tests to cover each deployed class and trigger at 75% or more.
+
+**Why it works:** The backup was retrieved before the release, so it holds the old trigger. A retrieve run during the incident would fetch the defective version that is now in production. Without the archive, the team rebuilds the old code from git history under pressure. The `--single-package` flag on both commands keeps `package.xml` at the root of the zip, which is the layout the deploy expects when the same flag is passed.
+
+A complete release folder (sfdx-project.json, package.xml, backup and deploy commands, and the FlowSettings file) is in [metadata-examples.md](metadata-examples.md).

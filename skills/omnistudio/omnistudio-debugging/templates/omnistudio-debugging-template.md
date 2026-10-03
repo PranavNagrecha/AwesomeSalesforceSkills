@@ -27,7 +27,7 @@ Use this template when diagnosing a broken OmniScript, DataRaptor, or Integratio
 
 **Named Credentials in play (list names):**
 
-**Remote Site Settings required (list domains):**
+**Remote Site Settings required (domains called without a named credential):**
 
 **Custom Settings or Custom Metadata the asset depends on:**
 
@@ -89,7 +89,7 @@ Use this template when diagnosing a broken OmniScript, DataRaptor, or Integratio
 - [ ] Fix identified in: [ ] Asset configuration  [ ] Named Credential  [ ] Remote Site Setting  [ ] Active version activation  [ ] Data path / null guard  [ ] Error handling
 - [ ] Specific change made:
 - [ ] Re-tested after fix using same debug method
-- [ ] `rollbackOnError: true` confirmed on IP root
+- [ ] Try-Catch Block returns a specific error output for steps whose failure must reach the caller
 - [ ] `failureResponse` on critical elements is meaningful (not placeholder copy)
 - [ ] Navigation Actions tested in deployed context (not just Preview)
 
@@ -102,9 +102,9 @@ Use this template when diagnosing a broken OmniScript, DataRaptor, or Integratio
 - [ ] IP Debug tab used with production-representative input JSON
 - [ ] All HTTP actions use Named Credentials confirmed present in target org
 - [ ] DataRaptor Preview run with input matching the runtime user's data shape
-- [ ] `rollbackOnError: true` set at IP root
+- [ ] Try-Catch Block and Response Action reviewed so failures reach the caller
 - [ ] Failure response text is meaningful and user-safe
-- [ ] Remote Site Settings verified for all outbound HTTP domains
+- [ ] Remote Site Settings verified for HTTP endpoints that are not named credentials (named credential endpoints need none)
 
 ---
 

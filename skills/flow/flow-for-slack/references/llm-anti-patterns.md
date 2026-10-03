@@ -1,12 +1,12 @@
-# LLM Anti-Patterns — Flow for Slack
+# LLM Anti-Patterns: Flow for Slack
 
 ## Anti-Pattern 1: Presenting Slack Actions as Always Available in Flow Builder
 
 **What the LLM generates:** "In Flow Builder, add an Action element and search for 'Send Slack Message' to post a notification to Slack."
 
-**Why it happens:** LLMs present the action as a standard part of Flow Builder without mentioning prerequisites. The managed package, org connection, and permission sets are not part of base Flow Builder knowledge.
+**Why it happens:** LLMs present the action as a standard part of Flow Builder without mentioning prerequisites. The Slack Apps Setup steps, app installation, and permissions are not part of base Flow Builder knowledge.
 
-**Correct pattern:** Before prescribing Slack actions in Flow Builder, confirm: (1) Salesforce for Slack managed package is installed, (2) org is connected to a Slack workspace, (3) running user has Sales Cloud for Slack or Slack Service User permission set, (4) workspace OAuth token is active. Without all four, actions are invisible or fail at runtime.
+**Correct pattern:** Before prescribing Slack actions in Flow Builder, confirm: (1) Salesforce for Slack Integrations is enabled in Setup > Slack Apps Setup, (2) the Salesforce Slack app is installed in the workspace from the Slack App Directory, (3) the running user has the Connect Salesforce with Slack system permission plus the app's permission set (Slack Sales User or Slack Service User), (4) the user has connected their Salesforce account in Slack. UNVERIFIED (2026-10-03): a separate AppExchange managed package is not part of the setup in the Summer '26 Slack Integrations guide.
 
 **Detection hint:** Instructions that say "search for Send Slack Message in Flow Builder" without mentioning prerequisites are incomplete.
 
@@ -18,7 +18,7 @@
 
 **Why it happens:** Developers want to send notifications "immediately" when a record changes. They place the action before save, not realizing that callouts (including Slack) are prohibited in synchronous contexts.
 
-**Correct pattern:** Slack actions must be placed in the after-save, asynchronous execution path. The record will be committed first, then the Slack message will be sent. There is no way to send a Slack message before the record is saved — nor is this typically a real business requirement.
+**Correct pattern:** Place Slack actions on an `AsyncAfterCommit` path of an after-save flow, which "runs asynchronously after a save" (Metadata API, FlowScheduledPath). The record is committed first, then the message is sent. UNVERIFIED (2026-10-03): Salesforce Help states the async-path requirement for Slack actions; the fetched sources don't.
 
 **Detection hint:** Any Flow design with a Slack action in the before-save trigger path is incorrect.
 
@@ -42,7 +42,7 @@
 
 **Why it happens:** LLMs design the happy path and often omit fault handling as an "advanced topic."
 
-**Correct pattern:** Every Slack action element in Flow should have a fault connector leading to a fault handler — at minimum, a Create Record action that logs the fault message, or an assignment that stores the fault and sends an alert. Slack actions fail silently without fault paths, leaving no trace when permissions change or the OAuth token is revoked.
+**Correct pattern:** Every Slack action element in Flow should have a fault connector leading to a fault handler, at minimum, a Create Record action that logs the fault message, or an assignment that stores the fault and sends an alert. Slack actions fail silently without fault paths, leaving no trace when permissions change or the OAuth token is revoked.
 
 **Detection hint:** Flow designs with action elements and no fault connector (no red connector from the action element) are missing fault handling.
 
@@ -57,3 +57,43 @@
 **Correct pattern:** Use Salesforce Flow Core Actions (Salesforce → Slack direction) for Salesforce-initiated Slack notifications. Use Slack Workflow Builder (Slack → Salesforce direction) for Slack-initiated Salesforce actions. They are complementary, not the same tool.
 
 **Detection hint:** Instructions that conflate "Slack Workflow Builder" with "Flow Core Actions for Slack" as interchangeable tools are incorrect.
+
+---
+
+## Anti-Pattern 6: Pointing Send Message to Launch Flow at an Autolaunched Flow
+
+**What the LLM generates:** "Use Send Message to Launch Flow so clicking the Slack button runs your autolaunched approval flow."
+
+**Why it happens:** The action name suggests a generic trigger, and an earlier version of this very skill said the target must be autolaunched.
+
+**Correct pattern:**
+
+```text
+slackSendMessageToLaunchFlow sends a message "that includes a button that a
+recipient can use to launch a screen flow" (Metadata API).
+- Target: a screen flow saved with <environments>Slack</environments>
+- Background logic: call a subflow or autolaunched flow from that screen flow
+```
+
+**Detection hint:** A launch-flow button whose target flow has no screens or lacks the Slack environment.
+
+---
+
+## Anti-Pattern 7: Building Channel Names Without Slack's Rules
+
+**What the LLM generates:** `Channel Name = {!$Record.Name}` on Create Slack Channel, or a rule that "only hyphens are allowed."
+
+**Why it happens:** LLMs don't know Slack's naming constraints, or half-remember them.
+
+**Correct pattern:**
+
+```text
+Slack: "Channel names may only contain lowercase letters, numbers, hyphens,
+and underscores, and must be 80 characters or less."
+Formula sketch:
+  LEFT(SUBSTITUTE(LOWER(TRIM({!$Record.Name})), " ", "-"), 60)
+then strip characters outside [a-z0-9-_] before calling Create Slack Channel.
+```
+
+**Detection hint:** A raw record field passed as the channel name, or advice that bans underscores.
+

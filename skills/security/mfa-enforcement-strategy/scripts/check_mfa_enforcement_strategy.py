@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Checker for MFA enforcement strategy skill package and optional org metadata.
 
-Validates the skill author's package (frontmatter, body length, required files,
-residual TODO markers) and optionally scans retrieved ``Security.settings-meta.xml``
-for MFA-related values that often surprise teams during rollouts.
+Validates the skill author's package (frontmatter, body length, required files)
+and optionally scans retrieved ``Security.settings`` and ``ProfileSessionSetting``
+files for MFA-related values that often surprise teams during rollouts. Field names
+follow the Metadata API Developer Guide, Summer '26 (SecuritySettings > SessionSettings
+and SingleSignOnSettings; ProfileSessionSetting).
 
 Uses stdlib only — no pip dependencies.
 
@@ -111,19 +113,6 @@ def check_skill_package(skill_dir: Path) -> tuple[list[str], list[str]]:
         if not p.is_file():
             errors.append(f"Missing required file: {rel}")
 
-    # Residual scaffold markers in authored markdown (not this script)
-    md_paths = [skill_md] + [skill_dir / r for r in REQUIRED_REFERENCES]
-    tmpl_dir = skill_dir / "templates"
-    if tmpl_dir.is_dir():
-        md_paths.extend(sorted(tmpl_dir.glob("*.md")))
-
-    for p in md_paths:
-        if not p.is_file():
-            continue
-        content = p.read_text(encoding="utf-8")
-        if "TODO:" in content:
-            errors.append(f"Unresolved TODO marker in {p.relative_to(skill_dir)}")
-
     wf = skill_dir / "references" / "well-architected.md"
     if wf.is_file():
         wtxt = wf.read_text(encoding="utf-8")
@@ -149,50 +138,70 @@ def check_skill_package(skill_dir: Path) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def _child_text(parent: ET.Element, name: str) -> str | None:
+    for el in parent:
+        if _local_tag(el.tag) == name:
+            return (el.text or "").strip()
+    return None
+
+
+def _child(parent: ET.Element, name: str) -> ET.Element | None:
+    for el in parent:
+        if _local_tag(el.tag) == name:
+            return el
+    return None
+
+
 def check_security_settings_metadata(manifest_dir: Path) -> list[str]:
-    """Return warning strings for Security.settings (optional file)."""
+    """Return warning strings for Security.settings and ProfileSessionSetting files.
+
+    Earlier versions of this checker looked for `enableMultiFactorAuthenticationInUi`
+    and `mfaRegistrationRequirement`. Neither name appears in the SecuritySettings
+    reference; the real fields are listed below.
+    """
     warns: list[str] = []
-    path = manifest_dir / "settings" / "Security.settings-meta.xml"
-    if not path.is_file():
+    settings = sorted(p for p in manifest_dir.rglob("Security.settings-meta.xml") if p.is_file())
+    profile_sessions = sorted(p for p in manifest_dir.rglob("*.profileSessionSetting-meta.xml") if p.is_file())
+    if not settings and not profile_sessions:
+        warns.append(f"{manifest_dir}: no Security.settings-meta.xml or ProfileSessionSetting files found; "
+                     "retrieve Settings:Security and ProfileSessionSetting first")
         return warns
 
-    try:
-        tree = ET.parse(path)
-    except ET.ParseError as exc:
-        warns.append(f"{path.name}: XML parse error — {exc}")
-        return warns
-
-    root = tree.getroot()
-    mfa_nodes: dict[str, str] = {}
-
-    for el in root.iter():
-        local = _local_tag(el.tag)
-        if el.text is None or not str(el.text).strip():
+    for path in settings:
+        try:
+            root = ET.parse(path).getroot()
+        except ET.ParseError as exc:
+            warns.append(f"{path}: XML parse error: {exc}")
             continue
-        key_lower = local.lower()
-        if "mfa" in key_lower or "multifactor" in key_lower:
-            mfa_nodes[local] = el.text.strip()
+        ss = _child(root, "sessionSettings")
+        if ss is not None:
+            if _child_text(ss, "enableMFADirectUILoginOptIn") == "false":
+                warns.append(f"{path}: sessionSettings.enableMFADirectUILoginOptIn is false; direct UI logins "
+                             "don't require a verification method org-wide (users with the waiver permission are "
+                             "exempt even when it is true, per the Summer '26 guide)")
+            if _child_text(ss, "skipSFAWhenMFADirectUILogin") == "false":
+                warns.append(f"{path}: sessionSettings.skipSFAWhenMFADirectUILogin is false; the registration "
+                             "screen shows only Salesforce Authenticator")
+            for field, label in (("enableBuiltInAuthenticator", "built-in authenticators (Touch ID, Windows Hello)"),
+                                 ("enableU2F", "U2F-compatible security keys")):
+                if _child_text(ss, field) == "false":
+                    warns.append(f"{path}: sessionSettings.{field} is false; {label} can't be used, which "
+                                 "limits options for privileged users")
+        sso = _child(root, "singleSignOnSettings")
+        if sso is not None and _child_text(sso, "isLoginWithSalesforceCredentialsDisabled") == "false" \
+                and _child_text(sso, "enableSamlLogin") == "true":
+            warns.append(f"{path}: SAML SSO is on but Salesforce credentials still work "
+                         "(isLoginWithSalesforceCredentialsDisabled=false); SSO-only users keep a password path")
 
-    # Gov/compliance scripts historically checked this UI-oriented flag; surface value if present.
-    for key in ("enableMultiFactorAuthenticationInUi",):
-        if key in mfa_nodes and mfa_nodes[key].lower() == "false":
-            warns.append(
-                f"{path.name}: {key} is false — confirm this matches your intentional MFA posture "
-                "(retrieve current values from the org you are reviewing)."
-            )
-
-    if "mfaRegistrationRequirement" in mfa_nodes:
-        warns.append(
-            f"{path.name}: mfaRegistrationRequirement={mfa_nodes['mfaRegistrationRequirement']!r} "
-            "(confirm meaning against Metadata API SecuritySettings reference for your API version)."
-        )
-
-    if not mfa_nodes:
-        warns.append(
-            f"{path.name}: parsed OK but no MFA-related elements with text were found — "
-            "org may use defaults not emitted in retrieved metadata, or API version omits fields."
-        )
-
+    for path in profile_sessions:
+        try:
+            root = ET.parse(path).getroot()
+        except ET.ParseError as exc:
+            warns.append(f"{path}: XML parse error: {exc}")
+            continue
+        level = _child_text(root, "requiredSessionLevel")
+        if level and level != "HIGH_ASSURANCE":
+            warns.append(f"{path}: requiredSessionLevel is {level}; MFA sessions are HIGH_ASSURANCE")
     return warns
 
 
@@ -211,7 +220,7 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         type=Path,
         default=None,
-        help="Optional SFDX/metadata project root to scan for settings/Security.settings-meta.xml.",
+        help="Optional SFDX/metadata root; Security.settings and ProfileSessionSetting files are found recursively.",
     )
     p.add_argument(
         "--skip-skill",

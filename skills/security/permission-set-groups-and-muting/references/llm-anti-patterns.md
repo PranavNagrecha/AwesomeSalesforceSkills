@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — Permission Set Groups and Muting
+# LLM Anti-Patterns: Permission Set Groups and Muting
 
 Common mistakes AI coding assistants make when generating or advising on Salesforce Permission Set Groups (PSGs) and muting permission sets.
 These patterns help the consuming agent self-check its own output.
@@ -38,8 +38,10 @@ migration path is:
 1. Audit what permissions currently live on profiles.
 2. Move feature-specific access into focused permission sets.
 3. Compose permission sets into PSGs.
-4. Reduce profiles to thin bases (login hours, page layouts, record types,
-   IP restrictions — the things that ONLY profiles can control).
+4. Reduce profiles to thin bases: login hours, login IP ranges, page layout
+   assignments, and the default record type. Record type access itself can
+   be granted by permission sets and PSGs (Security Guide), so it does not
+   have to stay on the profile.
 
 Layering PSGs on top of feature-heavy profiles creates duplicate access paths
 that are harder to audit, not easier.
@@ -58,7 +60,7 @@ that are harder to audit, not easier.
 **Correct pattern:**
 
 ```
-A PSG should represent a meaningful access bundle — either a job function
+A PSG should represent a meaningful access bundle, either a job function
 (e.g., "Service Console Agent") or a feature set (e.g., "CPQ Quote Management").
 Dumping all of a team's permission sets into one group creates a bundle that:
 - Cannot be reused across other personas
@@ -75,7 +77,7 @@ represents in one sentence, it is too broad.
 
 ## Anti-Pattern 4: Using Muting as a Substitute for Proper Permission Set Design
 
-**What the LLM generates:** "The PSG grants too many permissions — create muting permission sets to suppress each one."
+**What the LLM generates:** "The PSG grants too many permissions, create muting permission sets to suppress each one."
 
 **Why it happens:** LLMs reach for muting as a fix for permission design problems. Training data shows muting as a powerful tool without emphasizing that excessive muting signals a design flaw.
 
@@ -110,7 +112,7 @@ Composed access can behave differently than designers expect. Before rolling
 out PSGs:
 1. Assign the PSG to a test user on the target profile.
 2. Log in as the test user and walk through critical business workflows.
-3. Verify that the effective access matches the design — check object CRUD,
+3. Verify that the effective access matches the design: check object CRUD,
    field visibility, tab access, and record type availability.
 4. Test with muting applied to confirm subtracted permissions are actually
    removed from the effective set.
@@ -147,3 +149,49 @@ Never remove profile access before confirming the PSG replacement works.
 ```
 
 **Detection hint:** If the advice migrates from profiles to PSGs in a single step without a phased approach or rollback plan, the risk of access disruption is high.
+
+---
+
+## Anti-Pattern 7: Writing Muting XML as If `false` Removed the Permission
+
+**What the LLM generates:** A muting permission set with `<allowDelete>false</allowDelete>` or `<editable>false</editable>` "to block delete" or "to make the field read-only."
+
+**Why it happens:** In every other permission file, `false` means "no access," so the LLM reuses that reading.
+
+**Correct pattern:**
+
+```
+In a MutingPermissionSet, a setting that is ENABLED is turned OFF for the
+group. To remove Delete on Case for the group:
+  <objectPermissions>
+      <allowDelete>true</allowDelete>   <!-- true = mute delete -->
+      <object>Case</object>
+  </objectPermissions>
+To make a field read-only for the group, mute edit only:
+  <fieldPermissions>
+      <editable>true</editable>          <!-- true = mute edit -->
+      <field>Case.Priority</field>
+      <readable>false</readable>         <!-- false = keep read -->
+  </fieldPermissions>
+```
+
+**Detection hint:** A muting permission set whose entries are mostly `false`.
+
+---
+
+## Anti-Pattern 8: Deploying a Trimmed Permission Set File
+
+**What the LLM generates:** A permission set XML containing only the one new object permission, presented as "deploy this to add access."
+
+**Why it happens:** LLMs assume metadata deploys merge, which is true for some types but not for permission sets.
+
+**Correct pattern:**
+
+```
+Since API 40.0, a deployed permission set file is the complete definition;
+missing grants are removed. Retrieve the full permission set, add the new
+grant, review the diff, then deploy it together with the PSG and muting set
+that reference it.
+```
+
+**Detection hint:** A permission set snippet with one or two entries and no instruction to retrieve the existing file first.

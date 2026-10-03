@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — OmniScript Design Patterns
+# LLM Anti-Patterns: OmniScript Design Patterns
 
 Common mistakes AI coding assistants make when generating or advising on OmniStudio OmniScript design.
 These patterns help the consuming agent self-check its own output.
@@ -45,10 +45,13 @@ Sub-OmniScript pattern:
 ```text
 Save and Resume implementation:
 
-Enable in OmniScript properties:
-- "Save for Later" = true
-- Configure save action (DataRaptor Load to store state)
-- Configure resume action (DataRaptor Extract to restore state)
+Configure in the OmniScript Setup panel:
+- Save Options (Trailhead lists them among the script-wide Setup
+  panel settings)
+- UNVERIFIED (2026-10-03): the exact property names and whether the
+  built-in save uses OmniScriptSavedSession records (an internal-use
+  object in the Industries guide) or a custom Data Mapper are documented
+  only in Salesforce Help; check before designing storage
 
 Design considerations:
 1. Save should capture ALL user inputs up to the current step
@@ -61,7 +64,7 @@ Design considerations:
 Storage options:
 - Custom object (Application_Draft__c) for structured persistence
 - ContentVersion for document-heavy applications
-- Platform Cache for short-lived sessions (risky — cache can evict)
+- Platform Cache for short-lived sessions (risky, cache can evict)
 ```
 
 **Detection hint:** Flag multi-step OmniScripts (5+ steps) for processes that take >5 minutes without save-and-resume configuration. Check for missing save action in OmniScript properties.
@@ -154,8 +157,10 @@ OmniScript reference management:
 
 Problem: hardcoded Type/SubType in multiple locations
   FlexCard action: Type = "LoanApplication", SubType = "NewLoan"
-  Apex: OmniProcess.invoke('LoanApplication', 'NewLoan', ...)
-  Navigation: /omniscript/LoanApplication/NewLoan
+  Apex or LWC launch code that passes the same two strings
+  Navigation URLs or Lightning page properties that embed them
+(Do not invent an Apex launch API. OmniProcess is an internal-use object
+in the Industries guide, not a callable class.)
 
 If you rename the OmniScript, all references break.
 
@@ -173,3 +178,43 @@ Mitigation:
 ```
 
 **Detection hint:** Flag hardcoded OmniScript Type/SubType strings in Apex, FlexCard actions, or LWC navigation code. Check for centralized reference management.
+
+---
+
+## Anti-Pattern 6: Giving Two Active OmniScripts the Same Type, SubType, and Language
+
+**What the LLM generates:** "Clone the Edit Account OmniScript, keep Type `team` and SubType `editAccount`, and activate both so each team has its own copy."
+
+**Why it happens:** LLMs treat the OmniScript Name as the identifier.
+
+**Correct pattern:**
+
+```text
+Identity = Type + SubType + Language (Trailhead).
+"Only one active Omniscript may have the same Type, SubType, and Language
+at any time." The Name doesn't need to be unique.
+Give the copy a different SubType (for example editAccountPartner), or
+make it a new version of the same script instead of a second script.
+```
+
+**Detection hint:** Two OmniScripts with matching Type, SubType, and Language both marked active.
+
+---
+
+## Anti-Pattern 7: Editing the Active Version in Place
+
+**What the LLM generates:** "Open the active OmniScript, change the step, and save; users get the change immediately."
+
+**Why it happens:** Flow-like mental model of saving a definition.
+
+**Correct pattern:**
+
+```text
+Only one version can be active at a time. To change an active
+OmniScript, create a new version, test it in Preview, then activate it.
+The active version keeps serving users while you work (Trailhead,
+"Create a Simple Omniscript"). Record which version is active in each
+environment after every deployment.
+```
+
+**Detection hint:** Instructions that modify an active OmniScript without "New Version" and "Activate" steps.

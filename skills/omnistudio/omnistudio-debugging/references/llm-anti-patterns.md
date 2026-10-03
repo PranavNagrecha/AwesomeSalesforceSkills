@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — OmniStudio Debugging
+# LLM Anti-Patterns: OmniStudio Debugging
 
 Common mistakes AI coding assistants make when generating or advising on debugging OmniStudio components.
 These patterns help the consuming agent self-check its own output.
@@ -16,7 +16,7 @@ OmniStudio debugging tools (use before debug logs):
 
 1. OmniScript Preview Mode:
    - Test OmniScript without publishing or deploying
-   - View data JSON at each step in the browser console
+   - Read the Data JSON pane, which updates as you fill fields
    - Identify which step fails or produces wrong data
 
 2. Integration Procedure Test Execution:
@@ -28,9 +28,10 @@ OmniStudio debugging tools (use before debug logs):
    - Test Extract/Transform/Load with sample input
    - View mapped output before integrating with IP or OmniScript
 
-4. Action Debugger (browser console):
-   - Enable in OmniScript runtime: add ?debug=true to URL
-   - Shows request/response for each server action
+4. Action Debugger (designer Preview):
+   - Shows request/response for each action; search, copy nodes, clear logs
+   - UNVERIFIED (2026-10-03): runtime debug switches such as a URL
+     parameter are documented only in Salesforce Help
 
 Use Apex debug logs ONLY when the issue is in Apex code called
 by an OmniStudio component (Apex Remote Action, custom LWC controller).
@@ -42,7 +43,7 @@ by an OmniStudio component (Apex Remote Action, custom LWC controller).
 
 ## Anti-Pattern 2: Not Checking the OmniScript Data JSON Between Steps
 
-**What the LLM generates:** "The OmniScript is not working — check the integration" without first inspecting the data JSON that flows between OmniScript steps, which often reveals the actual issue (wrong field mapping, missing data, incorrect merge field path).
+**What the LLM generates:** "The OmniScript is not working, check the integration" without first inspecting the data JSON that flows between OmniScript steps, which often reveals the actual issue (wrong field mapping, missing data, incorrect merge field path).
 
 **Why it happens:** LLMs troubleshoot by suggesting external checks (API logs, debug logs) rather than the OmniScript's internal data flow. The data JSON is the central debugging artifact in OmniStudio but is not widely discussed in training data.
 
@@ -55,10 +56,10 @@ The OmniScript maintains a JSON data structure that grows as
 the user progresses through steps. This JSON is THE source of truth.
 
 How to inspect:
-1. In Preview mode: open browser Developer Console
-2. At each step transition, log the OmniScript data:
-   - React-based OmniScript: inspect component state
-   - LWC-based OmniScript: use the OmniStudio debug panel
+1. In the designer Preview, read the Data JSON pane (it updates as
+   you enter values; copy it with one click)
+2. Use Reset Data to reload the canvas and refresh the Data JSON and
+   the Action Debugger between attempts
 
 What to check in the data JSON:
 - Is the field value present under the expected key?
@@ -97,7 +98,7 @@ Environment differences that affect OmniStudio:
 3. Permissions: guest users or external users in production may lack
    permissions that sandbox test users have
 
-4. Named Credentials: secrets are not deployed — HTTP Actions will
+4. Named Credentials: secrets are not deployed, HTTP Actions will
    fail if credentials are not configured in target org
 
 5. Custom Metadata / Custom Settings: values may differ between environments
@@ -126,7 +127,11 @@ Debugging production issues:
 ```text
 Integration Procedure response diagnosis:
 
-Execute IP in test mode and inspect the response:
+Execute the IP in the designer Preview pane and read Errors/Debug Output.
+The structure below is ILLUSTRATIVE ONLY. UNVERIFIED (2026-10-03): the
+real per-step keys (for example whether a vlcStatus key appears) depend
+on the runtime and are not documented in the fetched sources; read the
+actual debug output instead of expecting these names:
 
 {
   "IPResult": {
@@ -157,7 +162,7 @@ Key fields to check:
 
 ## Anti-Pattern 5: Confusing Preview Mode Behavior with Runtime Behavior
 
-**What the LLM generates:** "Test the OmniScript in Preview mode — if it works there, deploy it" without noting that Preview mode runs with the designer's permissions, may use different data, and does not reflect the actual runtime context (record page, Experience Cloud, mobile).
+**What the LLM generates:** "Test the OmniScript in Preview mode, if it works there, deploy it" without noting that Preview mode runs with the designer's permissions, may use different data, and does not reflect the actual runtime context (record page, Experience Cloud, mobile).
 
 **Why it happens:** Preview mode is convenient and LLMs treat it as equivalent to production testing. The differences between Preview and runtime are subtle but important.
 
@@ -189,3 +194,47 @@ Testing checklist:
 ```
 
 **Detection hint:** Flag OmniScript testing plans that only include Preview mode without runtime testing. Check for missing user permission and context testing.
+
+---
+
+## Anti-Pattern 6: Adding Remote Site Settings for Named Credential Callouts
+
+**What the LLM generates:** "The HTTP action fails in production because the Remote Site Setting is missing; add one for the endpoint."
+
+**Why it happens:** Remote Site Settings are the classic answer to callout failures, and the LLM doesn't check how the endpoint is defined.
+
+**Correct pattern:**
+
+```text
+Apex Developer Guide: "If the callout specifies a named credential as the
+endpoint, you don't need to configure remote site settings."
+- Endpoint is a named credential -> check the credential, its auth, and
+  its endpoint in the target org
+- Endpoint is a raw URL -> check the RemoteSiteSetting (a deployable
+  Metadata API type) and move the call to a named credential
+```
+
+**Detection hint:** Remote Site Setting advice for an HTTP action whose endpoint is a named credential.
+
+---
+
+## Anti-Pattern 7: Prescribing `rollbackOnError` on the Integration Procedure Root to Surface Errors
+
+**What the LLM generates:** "Set `rollbackOnError: true` at the IP root so failures reach the OmniScript."
+
+**Why it happens:** `rollbackOnError` is a documented DataRaptor (OmniDataTransform) field, and the LLM transfers it to Integration Procedures and to error surfacing.
+
+**Correct pattern:**
+
+```text
+OmniIntegrationProcedure metadata (Summer '26) has no rollbackOnError field.
+Documented ways to control what the caller sees:
+- Try-Catch Block: "Returns specified output or calls an Apex class if a
+  step within it fails" (Trailhead)
+- Response Action: decides what data goes back to the caller
+For DataRaptor Loads, rollbackOnError decides whether partial work commits;
+it does not by itself send an error message to the OmniScript.
+```
+
+**Detection hint:** `rollbackOnError` recommended on an Integration Procedure as the fix for silent failures.
+

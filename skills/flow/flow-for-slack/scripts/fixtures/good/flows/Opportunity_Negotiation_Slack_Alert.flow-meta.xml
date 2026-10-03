@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/flows/Opportunity_Negotiation_Slack_Alert.flow-meta.xml -->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Post_Negotiation_Alert</name>
+        <label>Post Negotiation Alert</label>
+        <locationX>176</locationX>
+        <locationY>288</locationY>
+        <actionName>slackPostMessage</actionName>
+        <actionType>slackPostMessage</actionType>
+        <faultConnector>
+            <targetReference>Log_Slack_Failure</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>slackAppIdForToken</name>
+            <value>
+                <elementReference>$CustomMetadata.Slack_Config__mdt.Sales_Alerts.App_Id__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>slackWorkspaceIdForToken</name>
+            <value>
+                <elementReference>$CustomMetadata.Slack_Config__mdt.Sales_Alerts.Workspace_Id__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>slackConversationId</name>
+            <value>
+                <elementReference>$CustomMetadata.Slack_Config__mdt.Sales_Alerts.Channel_Id__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>slackMessage</name>
+            <value>
+                <elementReference>AlertText</elementReference>
+            </value>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <description>Posts to the deal-alerts Slack channel after an Opportunity moves to Negotiation. Slack action runs on the async path.</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity Negotiation Slack Alert {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity Negotiation Slack Alert</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Log_Slack_Failure</name>
+        <label>Log Slack Failure</label>
+        <locationX>440</locationX>
+        <locationY>288</locationY>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Slack alert failed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <runInMode>DefaultMode</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Negotiation/Review</stringValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <name>Post_After_Commit</name>
+            <label>Post After Commit</label>
+            <connector>
+                <targetReference>Post_Negotiation_Alert</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+    <textTemplates>
+        <name>AlertText</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Negotiation: {!$Record.Name} for {!$Record.Account.Name}. Owner: {!$Record.Owner.Name}.</text>
+    </textTemplates>
+</Flow>

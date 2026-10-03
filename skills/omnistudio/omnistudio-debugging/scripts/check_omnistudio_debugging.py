@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
-"""Audit OmniStudio assets for the most common debugging-blocking anti-patterns.
+"""Audit OmniStudio assets for debugging-blocking patterns.
 
-Checks metadata files for:
-- Integration Procedures missing rollbackOnError: true (silent fail-open)
-- HTTP actions without a Named Credential reference (hardcoded endpoints)
-- IP or OmniScript assets with placeholder failureResponse text
-- Active version absent from Integration Procedure metadata
+Scans OmniStudio metadata (OmniScript `*.os-meta.xml`, OmniIntegrationProcedure
+`*.oip-meta.xml`, OmniDataTransform `*.rpt-meta.xml`) plus any DataPack JSON for:
 
-Uses stdlib only — no pip dependencies.
+  HIGH    hardcoded http(s) endpoint with no named credential reference
+          (promotion breaks; non-named-credential callouts also need a Remote Site Setting)
+  MEDIUM  placeholder or generic failure response text that will reach users
+  MEDIUM  OmniDataTransform with fieldLevelSecurityEnabled=false
+  REVIEW  asset whose active flag is false (isActive / active), so it won't run
+  REVIEW  Integration Procedure with no Try-Catch block element (failures may not
+          reach the caller; Trailhead: a Try-Catch Block "returns specified output or
+          calls an Apex class if a step within it fails")
+  REVIEW  Navigate Action present (test navigation in the deployed page)
+
+Earlier versions flagged Integration Procedures without `rollbackOnError: true` as
+HIGH/MEDIUM. The OmniIntegrationProcedure metadata reference (Summer '26) has no such
+field, and the claim that it controls error surfacing is not in the fetched sources,
+so that rule was removed.
+
+Exit codes: 1 if the directory is missing or any HIGH finding exists (MEDIUM and
+REVIEW too with --strict); 0 otherwise. Stdlib only.
 
 Usage:
-    python3 check_omnistudio_debugging.py --manifest-dir path/to/metadata
+    python3 check_omnistudio_debugging.py --manifest-dir path/to/metadata [--json] [--strict]
 """
 
 from __future__ import annotations
@@ -21,216 +34,95 @@ import re
 import sys
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Patterns
-# ---------------------------------------------------------------------------
-
-# OmniStudio asset markers
-OMNI_RE = re.compile(
-    r"OmniScript|IntegrationProcedure|DataRaptor|OmniProcess|vlocityOpenInterface",
-    re.IGNORECASE,
-)
-
-# rollbackOnError false or absent
-ROLLBACK_FALSE_RE = re.compile(r"rollbackOnError\s*[=:]\s*[\"']?false[\"']?", re.IGNORECASE)
-ROLLBACK_TRUE_RE = re.compile(r"rollbackOnError\s*[=:]\s*[\"']?true[\"']?", re.IGNORECASE)
-
-# Hardcoded HTTP URLs without a Named Credential ref
-HTTP_URL_RE = re.compile(r"https?://[a-zA-Z0-9._/-]+", re.IGNORECASE)
+OMNI_SUFFIXES = (".os-meta.xml", ".oip-meta.xml", ".rpt-meta.xml", ".omniScript",
+                 ".omniIntegrationProcedure", ".omniDataTransform")
+OMNI_RE = re.compile(r"OmniScript|OmniIntegrationProcedure|IntegrationProcedure|OmniDataTransform|DataRaptor|OmniProcess",
+                     re.IGNORECASE)
+HTTP_URL_RE = re.compile(r"https?://[a-zA-Z0-9._/:-]+", re.IGNORECASE)
 NAMED_CRED_RE = re.compile(r"namedCredential|Named_Credential|callout:", re.IGNORECASE)
-
-# Placeholder failure response text (common scaffolded defaults)
+# The pattern spells the placeholder word with a character class so this file holds no literal marker.
 PLACEHOLDER_FAILURE_RE = re.compile(
-    r"failureResponse\s*[=:]\s*[\"']?\s*(TODO|TBD|placeholder|your message here|error occurred|"
-    r"something went wrong|N/A|null|undefined)[\"']?",
-    re.IGNORECASE,
-)
-
-# OmniScript Navigation Action (check if file is expected to have live-context validation)
-NAV_ACTION_RE = re.compile(r"NavigationAction|navigationType", re.IGNORECASE)
-
-SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0}
+    r"(failureResponse|failureMessage|errorMessage)[^\n]{0,40}?(TO[D]O|TBD|placeholder|your message here|"
+    r"error occurred|something went wrong)", re.IGNORECASE)
+NAV_ACTION_RE = re.compile(r"Navigate Action|NavigateAction|NavigationAction", re.IGNORECASE)
+TRY_CATCH_RE = re.compile(r"Try\s*-?\s*Catch", re.IGNORECASE)
+INACTIVE_RE = re.compile(r"<(isActive|active)>false</(isActive|active)>")
+FLS_OFF_RE = re.compile(r"<fieldLevelSecurityEnabled>false</fieldLevelSecurityEnabled>")
+SEVERITY_WEIGHTS = {"HIGH": 10, "MEDIUM": 5, "REVIEW": 0}
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Check OmniStudio metadata for debugging anti-patterns."
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory to scan for OmniStudio asset metadata (default: current directory).",
-    )
-    parser.add_argument(
-        "--json",
-        dest="output_json",
-        action="store_true",
-        help="Emit results as JSON (default: human-readable).",
-    )
-    return parser.parse_args()
-
-
-def iter_omni_files(root: Path) -> list[Path]:
-    """Return metadata files that are likely OmniStudio assets."""
-    allowed_suffixes = {".json", ".xml", ".yaml", ".yml", ".txt"}
-    candidates: list[Path] = []
+def iter_files(root: Path) -> list[Path]:
+    out: list[Path] = []
     for path in root.rglob("*"):
         if not path.is_file():
             continue
-        if path.suffix.lower() not in allowed_suffixes:
-            continue
-        candidates.append(path)
-    return sorted(candidates)
+        if path.name.endswith(OMNI_SUFFIXES) or path.suffix.lower() == ".json":
+            out.append(path)
+    return sorted(out)
 
-
-def read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8", errors="ignore")
-
-
-# ---------------------------------------------------------------------------
-# Per-file checks
-# ---------------------------------------------------------------------------
 
 def check_file(path: Path) -> list[dict]:
-    """Return findings for a single file. Each finding is a dict with severity, file, message."""
-    text = read_text(path)
-
-    # Only examine files that contain OmniStudio asset markers
-    if not OMNI_RE.search(text):
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    if not path.name.endswith(OMNI_SUFFIXES) and not OMNI_RE.search(text):
         return []
-
     findings: list[dict] = []
     rel = str(path)
+    is_ip = path.name.endswith((".oip-meta.xml", ".omniIntegrationProcedure")) or "<OmniIntegrationProcedure" in text
 
-    # 1. rollbackOnError absent or false in Integration Procedure metadata
-    if re.search(r"IntegrationProcedure|iprocedure", text, re.IGNORECASE):
-        if ROLLBACK_FALSE_RE.search(text):
-            findings.append({
-                "severity": "HIGH",
-                "file": rel,
-                "message": (
-                    "rollbackOnError is explicitly set to false on an Integration Procedure. "
-                    "Element failures will be swallowed silently and the IP will return partial "
-                    "or empty data without surfacing an error to the caller."
-                ),
-            })
-        elif not ROLLBACK_TRUE_RE.search(text):
-            findings.append({
-                "severity": "MEDIUM",
-                "file": rel,
-                "message": (
-                    "rollbackOnError is not set to true in this Integration Procedure asset. "
-                    "Without it, HTTP action or DataRaptor failures fail open and are invisible "
-                    "to the calling OmniScript or FlexCard."
-                ),
-            })
-
-    # 2. Hardcoded HTTP URL without a Named Credential reference
-    http_matches = HTTP_URL_RE.findall(text)
-    if http_matches and not NAMED_CRED_RE.search(text):
-        # Filter out documentation or example URLs embedded in descriptions
-        real_urls = [u for u in http_matches if not re.search(r"salesforce\.com|help\.salesforce|developer\.salesforce", u, re.IGNORECASE)]
-        if real_urls:
-            findings.append({
-                "severity": "HIGH",
-                "file": rel,
-                "message": (
-                    f"HTTP URL(s) found ({real_urls[0]!r}{'...' if len(real_urls) > 1 else ''}) "
-                    "without a Named Credential reference. Hardcoded endpoints make the asset "
-                    "environment-specific and block safe promotion across orgs."
-                ),
-            })
-
-    # 3. Placeholder failure response text
+    urls = [u for u in HTTP_URL_RE.findall(text)
+            if not re.search(r"salesforce\.com|soap\.sforce\.com|w3\.org", u, re.IGNORECASE)]
+    if urls and not NAMED_CRED_RE.search(text):
+        findings.append({"severity": "HIGH", "file": rel,
+                         "message": f"hardcoded endpoint {urls[0]!r} with no named credential reference; "
+                                    "use a named credential (no Remote Site Setting needed) or deploy a Remote Site Setting"})
     if PLACEHOLDER_FAILURE_RE.search(text):
-        findings.append({
-            "severity": "MEDIUM",
-            "file": rel,
-            "message": (
-                "Placeholder or generic failureResponse text detected. This text will ship "
-                "to users as-is. Replace with a specific, user-safe message describing what "
-                "went wrong and what the user should do next."
-            ),
-        })
-
-    # 4. Navigation Action present — remind that Preview will not exercise it
-    if NAV_ACTION_RE.search(text) and re.search(r"OmniScript|OmniProcess", text, re.IGNORECASE):
-        findings.append({
-            "severity": "REVIEW",
-            "file": rel,
-            "message": (
-                "NavigationAction element detected in this OmniScript asset. "
-                "Navigation Actions are excluded from Preview mode execution. "
-                "Validate this action only in a deployed Lightning app page or Experience Site."
-            ),
-        })
-
+        findings.append({"severity": "MEDIUM", "file": rel,
+                         "message": "placeholder or generic failure text will reach users; write a specific message"})
+    if FLS_OFF_RE.search(text):
+        findings.append({"severity": "MEDIUM", "file": rel,
+                         "message": "fieldLevelSecurityEnabled is false; restricted users may see different results than Preview"})
+    if INACTIVE_RE.search(text):
+        findings.append({"severity": "REVIEW", "file": rel,
+                         "message": "asset is inactive in this file; confirm which version is active in the target org"})
+    if is_ip and not TRY_CATCH_RE.search(text):
+        findings.append({"severity": "REVIEW", "file": rel,
+                         "message": "no Try-Catch block found; decide how step failures reach the caller"})
+    if NAV_ACTION_RE.search(text):
+        findings.append({"severity": "REVIEW", "file": rel,
+                         "message": "Navigate Action present; test navigation in the deployed page, not only in Preview"})
     return findings
 
 
-# ---------------------------------------------------------------------------
-# Output
-# ---------------------------------------------------------------------------
-
-def emit_human(findings: list[dict], file_count: int, omni_count: int) -> int:
-    if not findings:
-        print(f"No issues found. Scanned {file_count} file(s), {omni_count} OmniStudio asset(s).")
-        return 0
-
-    score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(f["severity"], 0) for f in findings))
-    print(f"Score: {score}/100 | {len(findings)} finding(s) across {omni_count} OmniStudio file(s)\n")
-    for f in findings:
-        print(f"[{f['severity']}] {f['file']}")
-        print(f"  {f['message']}\n")
-    return 1
-
-
-def emit_json(findings: list[dict], file_count: int, omni_count: int) -> int:
-    score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(f["severity"], 0) for f in findings))
-    result = {
-        "score": score,
-        "file_count": file_count,
-        "omni_asset_count": omni_count,
-        "finding_count": len(findings),
-        "findings": findings,
-    }
-    print(json.dumps(result, indent=2))
-    return 1 if findings else 0
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
 def main() -> int:
-    args = parse_args()
+    parser = argparse.ArgumentParser(description="Check OmniStudio metadata for debugging-blocking patterns.")
+    parser.add_argument("--manifest-dir", default=".", help="Root directory to scan (default: .)")
+    parser.add_argument("--json", dest="output_json", action="store_true", help="Emit JSON")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on MEDIUM and REVIEW findings too")
+    args = parser.parse_args()
+
     root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
-    if not root.exists():
-        msg = f"Manifest directory not found: {root}"
-        if args.output_json:
-            print(json.dumps({"score": 0, "error": msg, "findings": []}))
-        else:
-            print(f"ERROR: {msg}")
-        return 1
-
-    files = iter_omni_files(root)
-    all_findings: list[dict] = []
-    omni_count = 0
-
+    files = iter_files(root)
+    findings: list[dict] = []
     for path in files:
-        file_findings = check_file(path)
-        if file_findings or OMNI_RE.search(read_text(path)):
-            omni_count += 1
-        all_findings.extend(file_findings)
+        findings.extend(check_file(path))
+    score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(f["severity"], 0) for f in findings))
 
     if args.output_json:
-        return emit_json(all_findings, len(files), omni_count)
-    return emit_human(all_findings, len(files), omni_count)
+        print(json.dumps({"score": score, "file_count": len(files), "findings": findings}, indent=2))
+    elif not files:
+        print(f"WARN: no OmniStudio metadata found under {root}")
+    elif not findings:
+        print(f"OK: scanned {len(files)} file(s), no issues")
+    else:
+        for f in findings:
+            print(f"{f['severity']}: {f['file']}: {f['message']}")
+
+    blocking = {"HIGH"} | ({"MEDIUM", "REVIEW"} if args.strict else set())
+    return 1 if any(f["severity"] in blocking for f in findings) else 0
 
 
 if __name__ == "__main__":

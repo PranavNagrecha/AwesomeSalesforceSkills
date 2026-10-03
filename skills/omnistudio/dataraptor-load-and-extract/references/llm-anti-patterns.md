@@ -1,83 +1,105 @@
-# LLM Anti-Patterns — DataRaptor Load and Extract
+# LLM Anti-Patterns: DataRaptor Load and Extract
 
-Common mistakes AI coding assistants make when generating or advising on DataRaptor Load and Extract.
+Common mistakes AI coding assistants make when building or advising on DataRaptor (Omnistudio Data Mapper) Extract and Load. Each entry gives the mistake, why it happens, and the correct move.
 
-## Anti-Pattern 1: Recommending Bulk Load via DataRaptor for High-Volume Operations
+## Anti-Pattern 1: Recommending a Load for Migrations or Loop-Driven Bulk Writes
 
-**What the LLM generates:** Instructions to use DataRaptor Load to insert or update hundreds or thousands of records, sometimes in a loop.
+**What the LLM generates:** Instructions to use a DataRaptor Load to insert or update thousands of records, often by looping over a JSON array in an Integration Procedure.
 
-**Why it happens:** LLMs know DataRaptor Load writes to Salesforce and generalize it as a bulk-capable tool. They do not know it uses standard DML without Bulk API support.
+**Why it happens:** LLMs know a Load writes to Salesforce and generalize it as a bulk tool.
 
 **Correct pattern:**
-- DataRaptor Load: use for single-record or small-set (< ~50 records) conversational DML only
-- For bulk operations: use Bulk API 2.0, Apex Database.executeBatch(), or Data Loader outside the OmniStudio context
 
-**Detection hint:** Any Load configuration in a loop, or any suggestion to use Load for data migration, batch sync, or large record imports.
+```text
+Load is platform DML, not the Bulk API.
+- Called once per record from an IP loop: each call is its own DML, so the
+  150-statement transaction limit binds first.
+- Called once with many records: above synchronousProcessThreshold the Load
+  runs as Apex batch jobs (processSuperBulk spreads it further), so the call
+  returns before the data exists.
+For migrations and integrations, use Bulk API 2.0, Batch Apex, or Data Loader.
+```
+
+**Detection hint:** A Load inside a loop, or a Load proposed for data migration or nightly sync.
 
 ---
 
-## Anti-Pattern 2: Not Checking iferror After Load Steps
+## Anti-Pattern 2: Writing Raw SOQL Into an Extract
 
-**What the LLM generates:** Integration Procedure configurations with a DataRaptor Load step followed immediately by a success response, with no iferror check.
+**What the LLM generates:** "Set the Extract's SOQL to `SELECT Id, Name, (SELECT Id FROM Contacts) FROM Account WHERE Id = :accountId`."
 
-**Why it happens:** LLMs model Load as a synchronous operation that throws on failure (like Apex DML). In OmniStudio, Load does not throw — it returns failure info in the output JSON.
+**Why it happens:** LLMs know Extracts read data and assume the designer takes a SOQL string.
 
 **Correct pattern:**
-After every Load step, add an explicit check:
-- Set Values or Conditional step: check `<LoadStepName>:iferror` for non-empty value
-- If `iferror` is present, surface the `<LoadStepName>:iferror:message` to the user or log it
-- Only proceed to a success path if `iferror` is absent
 
-**Detection hint:** Any Integration Procedure that has a Load step with no subsequent check for the `iferror` output path.
+```text
+The Extract tab takes objects, not SOQL:
+  Step 1  Object Account   Extract Output Path Account   Filter Id = AccountId (input parameter)
+  Step 2  Object Contact   Extract Output Path Contact   Filter AccountId = Account:Id
+Then map Account:Name, Contact fields, etc. on the Output tab.
+(The cross-step "Account:Id" filter form is UNVERIFIED (2026-10-03) in the
+fetched docs; confirm it in your org's designer.)
+```
+
+**Detection hint:** A SOQL statement, a bind variable (`:accountId`), or a sub-select presented as DataRaptor Extract configuration.
 
 ---
 
-## Anti-Pattern 3: Using Object Label Instead of API Relationship Name in Output Mapping
+## Anti-Pattern 3: Claiming the Upsert Key Must Be an External ID Field
 
-**What the LLM generates:** Output mapping configurations using the object label (e.g., `Contact`) or the field label instead of the SOQL relationship API name (e.g., `Contacts`).
+**What the LLM generates:** "Mark `External_Customer_ID__c` as External ID on the field definition, or the Load can't upsert."
 
-**Why it happens:** LLMs use the label form of object names which they see more frequently in natural language training data.
+**Why it happens:** The LLM carries over the Apex `upsert` and Data Loader rule.
 
-**Correct pattern:**
-Use the API relationship name exactly as it appears in SOQL. For Account → Contact: `Contacts` (plural). Check in Setup > Object Manager > Relationships to confirm the SOQL relationship name.
+**Correct pattern:** Any mapped field can be an Upsert Key. When all Upsert Keys together match a unique existing record, the Load updates it; otherwise it creates a record. Uniqueness of the key values is the designer's responsibility (Trailhead, Data Mapper Load).
 
-**Detection hint:** Any output mapping path that uses a singular object name for a child relationship (e.g., `Contact`, `Case`, `Opportunity`) instead of the SOQL plural relationship name.
-
----
-
-## Anti-Pattern 4: Using Turbo Extract for Cross-Object Data
-
-**What the LLM generates:** Turbo Extract configuration for a use case that requires parent-child relationship data.
-
-**Why it happens:** LLMs see "Turbo" as a superior option and default to it without knowing its limitations.
-
-**Correct pattern:**
-Turbo Extract supports only direct field reads on the base object. For any cross-object data (parent fields via lookup, child records via sub-select), use standard DataRaptor Extract.
-
-**Detection hint:** Any Turbo Extract recommendation where the output mapping includes relationship fields (dot-notation to parent fields or array paths to child records).
+**Detection hint:** "must be designated as External ID" in DataRaptor Load guidance.
 
 ---
 
-## Anti-Pattern 5: Assuming Multi-Object Load Is Atomic
+## Anti-Pattern 4: Assuming Multi-Object Loads Are Always Non-Atomic (or Always Atomic)
 
-**What the LLM generates:** Multi-object Load configuration for a complex data entry pattern, with the assumption that if one object fails, nothing is committed.
+**What the LLM generates:** Either "a multi-object Load never rolls back, so write compensating logic" or "the Load is a transaction, so a failure undoes everything."
 
-**Why it happens:** LLMs model DML as transactional from their experience with database systems where multi-statement operations are atomic by default.
+**Why it happens:** LLMs answer from general database intuition instead of the Load's settings.
 
-**Correct pattern:**
-DataRaptor Load does not provide rollback for multi-object operations. Design Loads as single-object where possible. For complex multi-object scenarios requiring atomicity, use Apex DML in a single transaction with proper savepoint and rollback logic.
+**Correct pattern:** The behavior is a setting. `rollbackOnError` true means the Load does not commit if there is an error; false commits what was executed. `errorIgnored` true continues past errors. State which setting the design uses.
 
-**Detection hint:** Any multi-object DataRaptor Load for a business operation that requires all-or-nothing semantics (e.g., creating an Order Header + Order Items where both must succeed).
+**Detection hint:** Any statement about Load atomicity that doesn't name `rollbackOnError`.
 
 ---
 
-## Anti-Pattern 6: Justifying the Bulk Warning With Fabricated Governor Arithmetic
+## Anti-Pattern 5: Using Turbo Extract When Formulas or Reshaping Are Needed (or Avoiding It for Parent Fields)
+
+**What the LLM generates:** A Turbo Extract with formulas and nested output mapping, or the opposite claim that Turbo Extract can't read any related-object field.
+
+**Why it happens:** "Turbo" sounds strictly better, and the limits are remembered vaguely.
+
+**Correct pattern:** Turbo Extract reads a single object type "with support for fields from related objects," and it does not support formulas or complex output mappings. Use a standard Extract for several objects, formulas, or reshaped output.
+
+**Detection hint:** Formulas or multi-level output mapping on a Turbo Extract, or "Turbo Extract can't read parent fields."
+
+---
+
+## Anti-Pattern 6: Testing a Load in Preview Against Shared Data
+
+**What the LLM generates:** "Paste the OmniScript JSON into the Load's Preview tab in UAT and click Execute to check the mapping."
+
+**Why it happens:** Preview sounds like a dry run.
+
+**Correct pattern:** Load Preview saves records permanently ("Objects Created ... saved permanently"). Preview Loads only in a developer sandbox or scratch org, with throwaway target records.
+
+**Detection hint:** Load Preview suggested in UAT, staging, or production.
+
+---
+
+## Anti-Pattern 7: Justifying the Bulk Warning With Fabricated Governor Arithmetic
 
 **What the LLM generates:** The right conclusion ("don't use Data Mapper Load for bulk") supported by numbers that do not add up:
 
-> "Data Mapper Load uses standard DML — one DML statement per record iteration. For 500 records, this consumes 500 DML statements in a single transaction, quickly hitting governor limits. The Integration Procedure fails with `Too many DML statements`."
+> "Data Mapper Load uses standard DML, one DML statement per record iteration. For 500 records, this consumes 500 DML statements in a single transaction, quickly hitting governor limits. The Integration Procedure fails with `Too many DML statements`."
 
-**Why it happens:** The model reaches a correct recommendation and then **back-fills a mechanism to justify it**, because a bare "don't do this" reads as weaker than a causal explanation. The back-fill is never checked against the limit it invokes: the DML **statement** limit is 150, so a run that genuinely issued one statement per record would fail at iteration 151 and never reach 500. The "500" is picked as a round illustrative volume, not derived. A second confusion feeds it — the DML **rows** limit is 10,000, and models routinely blur "statements" and "rows" into a single "DML limit", which makes 500 feel comfortably inside a ceiling it is not being measured against.
+**Why it happens:** The model reaches a correct recommendation and then **back-fills a mechanism to justify it**, because a bare "don't do this" reads as weaker than a causal explanation. The back-fill is never checked against the limit it invokes: the DML **statement** limit is 150, so a run that genuinely issued one statement per record would fail at iteration 151 and never reach 500. The "500" is picked as a round illustrative volume, not derived. A second confusion feeds it, the DML **rows** limit is 10,000, and models routinely blur "statements" and "rows" into a single "DML limit", which makes 500 feel comfortably inside a ceiling it is not being measured against.
 
 This matters beyond pedantry. A reader who trusts the arithmetic concludes the safe threshold is somewhere near 500 and builds a 300-record loop that fails in production. Fabricated supporting detail attached to correct advice is more dangerous than no detail, because it converts a directional warning into a false quantitative permission.
 
@@ -89,12 +111,13 @@ Per-transaction limits (Apex Developer Guide, sync and async alike):
   Total records processed as a result of DML statements    : 10,000
 
 A LOOP-DRIVEN Load therefore dies at the 151st iteration, on statements
-— not on rows, which are nowhere near their ceiling.
+,  not on rows, which are nowhere near their ceiling.
 
 The claim that is safe to make without further checking:
-  "Data Mapper Load writes via platform DML, not the Bulk API, so the
-   entire write is bounded by the calling transaction's governor limits.
-   It is unsuitable for high-volume writes."
+  "Data Mapper Load writes via platform DML, not the Bulk API. Below
+   synchronousProcessThreshold the write is bounded by the calling
+   transaction's governor limits; above it the Load uses Apex batch jobs
+   (OmniDataTransform metadata). It is not a data-migration tool."
 
 The claim that needs a source before you make it:
   any statement about how many DML statements Load issues internally for
@@ -103,4 +126,4 @@ The claim that needs a source before you make it:
   Mapper Load documentation; do not infer it from the loop case.
 ```
 
-**Detection hint:** Whenever generated guidance pairs a record count with `Too many DML statements`, check the count against 150 — any figure above it that is described as "consuming N DML statements" before failing is fabricated arithmetic. Second, mechanical and general: grep for the phrase `DML limit` / `DML limits` used without the word `statements` or `rows`. Salesforce has two distinct DML ceilings that differ by a factor of ~67, and guidance that does not name which one it means has not checked either.
+**Detection hint:** Whenever generated guidance pairs a record count with `Too many DML statements`, check the count against 150, any figure above it that is described as "consuming N DML statements" before failing is fabricated arithmetic. Second, mechanical and general: grep for the phrase `DML limit` / `DML limits` used without the word `statements` or `rows`. Salesforce has two distinct DML ceilings that differ by a factor of ~67, and guidance that does not name which one it means has not checked either.

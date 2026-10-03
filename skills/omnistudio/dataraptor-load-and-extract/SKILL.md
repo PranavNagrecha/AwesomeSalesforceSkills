@@ -12,6 +12,8 @@ triggers:
   - "how do I configure a DataRaptor upsert with an external ID"
   - "what is the difference between DataRaptor Extract and Turbo Extract"
   - "how do I map SOQL relationship query results to output JSON in DataRaptor"
+  - "build a Data Mapper Load that updates the account from the OmniScript"
+  - "deploy an OmniDataTransform with the Salesforce CLI"
 tags:
   - dataraptor
   - omnistudio
@@ -29,14 +31,14 @@ outputs:
   - "Diagnosis of iferror behavior and recommended error handling"
 dependencies: []
 runtime_orphan: true
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-03
 ---
 
 # DataRaptor Load and Extract
 
-Use this skill when building or troubleshooting DataRaptor Extract (reading data from Salesforce via SOQL) or DataRaptor Load (writing data to Salesforce via DML) in OmniStudio. This covers multi-object extracts, Turbo Extract vs standard Extract selection, load upsert configuration, output mapping, and error handling patterns.
+Use this skill when building or troubleshooting a DataRaptor Extract (read Salesforce data into JSON) or a DataRaptor Load (write JSON into Salesforce records) in OmniStudio. Current product documentation calls DataRaptors **Omnistudio Data Mappers**, and the metadata type is `OmniDataTransform`. This skill covers multi-object extracts, Turbo Extract selection, Load upsert keys, transaction behavior, and error handling.
 
 ---
 
@@ -44,10 +46,24 @@ Use this skill when building or troubleshooting DataRaptor Extract (reading data
 
 Gather this context before working on anything in this domain:
 
-- Identify whether you need to read data (Extract) or write data (Load). These are different DataRaptor types with different configuration surfaces.
-- For Extract: know the SOQL relationships you need — cross-object lookups use dot notation, parent-child relationships use sub-selects.
-- For Load: know the DML operation (insert, update, upsert, delete) and the upsert key field if using upsert.
-- Be aware that DataRaptor Load does NOT support Bulk API — it uses standard row-at-a-time DML. Do not use DataRaptor Load for high-volume data operations.
+- Read or write? Extract and Turbo Extract read; Load writes; Transform reshapes data without touching records.
+- For Extract: which objects, which filters, and which input parameters (for example `AccountId`) the caller passes.
+- For Load: which objects receive data, which fields identify an existing record (the Upsert Keys), and which fields must be present (Is Required For Upsert).
+- Which runtime the org uses: Omnistudio for Managed Packages or Omnistudio on the standard runtime. Trailhead modules and metadata types differ between them.
+- How many records one call carries. A Load can hand work to Apex batch jobs above a threshold, which changes its transaction behavior.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| Which fields uniquely identify an existing record for the Load? | Any mapped field can be an Upsert Key; when all Upsert Keys match one record the Load updates it, otherwise it creates a new one. | The right match fields instead of guessed ones. | No duplicate records from a key that does not match uniquely. |
+| Which fields must be present before a record is written? | When an Is Required For Upsert field is empty, the Load skips that record. | A short, deliberate required list. | Missing data is caught, and skips are expected rather than mysterious. |
+| Must a multi-object Load be all-or-nothing? | `rollbackOnError` decides whether a failure rolls back what was already executed; `errorIgnored` lets processing continue past errors. | A stated transaction rule per Load. | Partial writes happen only where the business accepts them. |
+| Will the Extract run for users who should not see every field? | The Options tab can check the user's field access before running (`fieldLevelSecurityEnabled`). | FLS behavior chosen per Extract. | Guest and external users don't receive fields their profile hides. |
+| Can the Extract response be cached, and for how long? | Responses can be stored in session or org platform cache with a time to live. | A cache type and TTL that match how fresh the data must be. | Fewer queries without showing stale data. |
+| How many records will one Load call carry? | `synchronousProcessThreshold` and `processSuperBulk` move large inputs to Apex batch jobs. | Sizing that keeps interactive calls synchronous. | Predictable behavior for both the interactive and the bulk path. |
 
 ---
 
@@ -55,71 +71,66 @@ Gather this context before working on anything in this domain:
 
 ### DataRaptor Extract
 
-DataRaptor Extract is an OmniStudio data retrieval tool that executes SOQL queries and maps results to output JSON. Key behaviors:
+An Extract reads one or more Salesforce objects and returns JSON, XML, or custom output through mappings (Trailhead, Omnistudio Data Mappers). You don't write raw SOQL. On the **Extract** tab you add objects in sequence. Each one has an **Extract Output Path** (the top-level JSON node), filters made of a field, a comparison operator, and "either a quoted literal value, an input parameter, or another field of the same source object" (Trailhead), and the fields to return. Related objects are added as later steps whose filter points at an earlier step's output, for example `Contact.AccountId = Account:Id`. UNVERIFIED (2026-10-03): the `Account:Id` cross-step filter form is common practice and matches the `Account:Type` path style in the `OmniDataTransformItem` sample, but the fetched sources do not state it directly.
 
-| Setting | Behavior |
+| Tab | Purpose |
 |---|---|
-| SOQL base object | The primary FROM object. Cross-object fields use dot notation (e.g., `Account.Name`). |
-| Parent-to-child relationships | Use SOQL sub-selects to retrieve child records. |
-| Output mapping | Maps SOQL field paths to JSON keys in the output, using dot-notation to define nested JSON structure. |
-| Preview tab | Always test your extract in the Preview tab before embedding in an Integration Procedure. |
+| Extract | Objects, filters, and Extract Output Paths |
+| Formulas | Formulas whose results map to output JSON |
+| Output | Map extract-step JSON to the output JSON |
+| Options | Field-level security check, platform cache type, time to live |
+| Preview | Run with Key/Value input parameters and inspect the response |
+
+Extracts also support paging through sorted data by values or offsets. Data Mappers can read external objects and custom metadata with no extra syntax.
 
 ### Turbo Extract vs Standard Extract
 
-DataRaptor Turbo Extract is a faster read-only variant:
-- Supports only direct field reads — no relationship queries, no sub-selects
-- Cannot traverse parent-child relationships
-- Significantly faster for simple lookups
-- Use Turbo Extract for single-object field retrieval where performance matters
-
-Standard Extract supports relationship queries, sub-selects, and complex output mapping. Use it when you need cross-object data.
+A Turbo Extract "retrieves and filters data from a single Salesforce object type with support for fields from related objects." It does not support formulas or complex output mappings, and it has simpler configuration and better runtime performance (Trailhead). Use a standard Extract when you need several objects, formulas, or reshaped output.
 
 ### DataRaptor Load
 
-DataRaptor Load is an OmniStudio DML tool for writing records to Salesforce sObjects. Key behaviors:
+A Load writes data to one or more Salesforce objects from JSON or XML input. It updates existing records and creates new ones in the same run (Trailhead).
 
 | Setting | Behavior |
 |---|---|
-| Supported operations | Insert, Update, Upsert, Delete. |
-| Upsert key | For upsert operations, specify the External ID field for matching. Must be designated as External ID on the field definition. |
-| Multi-object support | A single Load can write to multiple objects in sequence. |
-| Error handling | Load returns an `iferror` node in output JSON when DML fails. Check this node downstream in your Integration Procedure. |
-| No Bulk API | Uses standard DML — row-at-a-time. Not suitable for high-volume operations. |
-| No rollback on partial failure | Records written to early objects in a multi-object Load are not rolled back if a later object fails. |
+| Objects tab | The objects to write, in sequence |
+| Fields tab | Input JSON Path to Domain Object Field mappings |
+| Upsert Key | Any mapped field can be one; all Upsert Keys together must match a unique record to update it |
+| Is Required For Upsert | If such a field has no data, the record is skipped |
+| `rollbackOnError` | True: don't commit if there is an error. False: commit what was executed |
+| `errorIgnored` | True: continue processing after errors |
+| `synchronousProcessThreshold` / `processSuperBulk` | Above the threshold the Load uses Apex batch jobs; super bulk spreads the upsert over several batch jobs |
+| Preview | Writes real records ("Objects Created ... saved permanently") |
+
+UNVERIFIED (2026-10-03): whether a Load can delete records, and the exact error node an Integration Procedure receives from a failed Load (often described as `iferror`), are not stated in the fetchable sources. Check the Data Mapper Load page in Salesforce Help and the Integration Procedure debug output before relying on either.
 
 ---
 
 ## Common Patterns
 
-### Multi-Object Relationship Extract
+### Account With Related Contacts in One Extract
 
-**When to use:** Need to retrieve an Account and its related Contacts together for an OmniScript.
-
-**How it works in Extract configuration:**
-1. Set base object to `Account`
-2. SOQL: `SELECT Id, Name, (SELECT Id, LastName, Email FROM Contacts) FROM Account WHERE Id = :accountId`
-3. Output mapping: `Name` → `account.name`, use the Contacts sub-select relationship name for nested child records
-
-**Why not two separate extracts:** Single extract with sub-select is more efficient — one SOQL query vs two. Child records are automatically nested in output JSON.
-
-### Upsert with External ID
-
-**When to use:** Receiving data from an external system where records may or may not already exist.
-
-**How it works in Load configuration:**
-1. Set operation to `Upsert`
-2. Specify the External ID field (e.g., `External_Id__c`) — must be designated as External ID on the field
-3. Map the incoming JSON path to `External_Id__c` and all other fields to update
-
-### Handling iferror in Load
-
-**When to use:** Any Load step that needs to handle DML failures gracefully.
+**When to use:** An OmniScript needs an Account and its Contacts together.
 
 **How it works:**
-1. After the Load step in your Integration Procedure, add a conditional check
-2. Check output path `<LoadStepName>:iferror` — if present, a DML error occurred
-3. Read `<LoadStepName>:iferror:message` for the error description
-4. Branch on the error to return a user-friendly message or attempt compensating actions
+1. Extract step 1: object `Account`, Extract Output Path `Account`, filter `Id = AccountId` (input parameter).
+2. Extract step 2: object `Contact`, Extract Output Path `Contact`, filter `AccountId = Account:Id`.
+3. Output tab: map `Account:Name` to `Account:Name`, and the `Contact` step fields to a list node such as `Account:Contacts`.
+4. Preview with `AccountId` set to a real record ID.
+
+**Why not two separate Extracts:** one Extract is one server call from the Integration Procedure and returns the nested JSON the OmniScript needs.
+
+### Upsert by Business Key
+
+**When to use:** Records arrive from an external system and may or may not exist yet.
+
+**How it works:**
+1. Objects tab: add `Contact`.
+2. Fields tab: map `customer:externalId` to `External_Customer_ID__c` and mark it **Upsert Key** and **Is Required For Upsert**.
+3. Map the remaining fields.
+4. Decide `rollbackOnError` for the Load and handle the Load response in the Integration Procedure.
+
+The deployable `OmniDataTransform` files for both patterns are in [references/metadata-examples.md](references/metadata-examples.md).
 
 ---
 
@@ -127,44 +138,52 @@ DataRaptor Load is an OmniStudio DML tool for writing records to Salesforce sObj
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Single object, simple fields, performance-sensitive | Turbo Extract | Faster, no query overhead |
-| Cross-object data (parent + child) | Standard Extract with sub-select | Turbo Extract does not support relationships |
-| Writing to Salesforce from OmniScript | DataRaptor Load | Purpose-built DML tool |
-| Writing high volumes, or driving a Load from a loop | Do NOT use DataRaptor Load | Load is platform DML, not Bulk API, so it is bounded by the calling transaction (150 DML statements / 10,000 DML rows). A loop-driven Load dies at the 151st iteration. Use Batch Apex or Bulk API 2.0 separately |
-| Need to detect write failure | Check `iferror` in Load output | Load does not throw; returns error info in output JSON |
-| Need atomic multi-object write | Aware: no rollback | Load fails forward; design compensating actions |
+| One object plus parent fields, no formulas, performance-sensitive | Turbo Extract | Simpler and faster; supports related-object fields on a single object |
+| Several objects, formulas, or reshaped output | Standard Extract | Turbo Extract has no formulas or complex output mapping |
+| Write from an OmniScript | Load called from an Integration Procedure | The documented data flow for saving OmniScript data |
+| Large write volumes | Size `synchronousProcessThreshold`, or use Bulk API or Batch Apex outside OmniStudio | Load is not the Bulk API; above the threshold it switches to Apex batch jobs |
+| All-or-nothing multi-object write | `rollbackOnError = true` | Commits nothing if any step errors |
+| Writes must not duplicate records | Upsert Keys that match uniquely plus Is Required For Upsert | Non-matching keys create new records |
 
 ---
 
 ## Recommended Workflow
 
-1. **Determine operation type.** Read → Extract. Write → Load.
-2. **For Extract:** Write and validate the SOQL in Developer Console first. Confirm it returns expected data.
-3. **For Extract:** Design output mapping — map each SOQL field path to desired JSON key path. Test in Preview tab.
-4. **For Load:** Identify DML operation and input JSON structure. Map each input path to the target sObject field.
-5. **For Load with upsert:** Confirm the External ID field exists on the object and is marked External ID. Map it in Input Mapping.
-6. **Test using the Preview tab** before embedding in an Integration Procedure.
-7. **Add error handling** downstream in the Integration Procedure — check `iferror` output path from any Load step.
+1. Decide the type (Extract, Turbo Extract, Load, Transform) and the runtime (managed package or standard) before building.
+2. For an Extract, add objects with Extract Output Paths and filters, then map output and set the Options tab (FLS check, cache type, TTL).
+3. For a Load, add objects, map Input JSON Paths, choose Upsert Keys and Is Required For Upsert fields, and set `rollbackOnError`.
+4. Preview an Extract with real input parameters; Preview a Load only in a sandbox, because Preview saves records.
+5. Retrieve the `OmniDataTransform` source and run `python3 skills/omnistudio/dataraptor-load-and-extract/scripts/check_dataraptor_load_and_extract.py --source-dir force-app` to flag Loads without upsert keys, FLS off, and Turbo Extracts with formulas.
+6. Call the Data Mapper from an Integration Procedure and handle its response before returning success to the OmniScript.
 
 ---
 
 ## Review Checklist
 
-- [ ] Extract SOQL validated in Developer Console before configuring the DataRaptor
-- [ ] Output mapping tested in Preview tab and JSON structure confirmed
-- [ ] Turbo Extract used where only simple field reads are needed
-- [ ] Load upsert key field confirmed as External ID on the sObject
-- [ ] Integration Procedure checks `iferror` output from Load steps
-- [ ] No loop-driven Load exceeds ~150 iterations — that is the per-transaction DML **statement** limit, and it is what binds first (the DML **row** limit is 10,000 and is not the constraint here). Bulk API is not supported by Data Mapper Load
-- [ ] Multi-object Load: team aware there is no rollback on partial failure
+- [ ] Extract objects, filters, and Extract Output Paths produce the JSON shape the caller expects in Preview
+- [ ] Turbo Extract used only for single-object reads without formulas or complex output mapping
+- [ ] Load Upsert Keys match a unique record; Is Required For Upsert fields chosen deliberately
+- [ ] `rollbackOnError` set to match the business transaction rule
+- [ ] FLS check (`fieldLevelSecurityEnabled`) decided for Extracts used by restricted users
+- [ ] Cache type and TTL fit the freshness requirement
+- [ ] Load Preview run only in a sandbox
+- [ ] Integration Procedure handles the Load response before reporting success
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **DataRaptor Load does not use Bulk API** — Row-at-a-time DML means governor limits apply. For anything over a few dozen records, this causes performance problems or limit violations.
-2. **No rollback on multi-object Load failure** — If Load writes to Object A then fails on Object B, Object A records are already committed. Design single-object Loads where possible, or implement compensating actions.
-3. **Output mapping path uses API relationship name, not label** — SOQL child relationship paths must use the API relationship name (e.g., `Contacts`, not `Contact`). Using the label causes empty output.
+Full write-ups with sources are in [references/gotchas.md](references/gotchas.md).
+
+| Gotcha | One-line summary |
+|---|---|
+| Preview writes | Load Preview saves records permanently. |
+| Upsert Key | Any field can be a key; a non-unique match or no match creates a new record. |
+| Required For Upsert | Empty required fields skip the record silently. |
+| Rollback | `rollbackOnError` false commits partial work. |
+| Volume | Above `synchronousProcessThreshold` the Load runs as Apex batch jobs. |
+| Internal objects | `OmniDataTransform` records are internal; don't edit them with DML. |
+| Metadata switch | `enableOmniStudioMetadata` can't be turned off once on. |
 
 ---
 
@@ -172,13 +191,14 @@ DataRaptor Load is an OmniStudio DML tool for writing records to Salesforce sObj
 
 | Artifact | Description |
 |---|---|
-| DataRaptor Extract configuration | SOQL query, input variables, output field mappings |
-| DataRaptor Load configuration | Operation type, upsert key, input field mappings, error handling note |
+| DataRaptor Extract configuration | Objects, filters, input parameters, output mappings, options |
+| DataRaptor Load configuration | Objects, field mappings, Upsert Keys, required fields, rollback rule |
+| `OmniDataTransform` source | `omniDataTransforms/<UniqueName>.rpt-meta.xml` under version control |
 
 ---
 
 ## Related Skills
 
-- dataraptor-patterns — DataRaptor Transform operations (different type)
-- integration-procedures — Using DataRaptor as steps within an Integration Procedure
-- omnistudio-debugging — Debugging DataRaptor Preview and Integration Procedure execution
+- omnistudio/dataraptor-patterns: DataRaptor Transform operations and Extract vs Load design tradeoffs
+- omnistudio/integration-procedures: using DataRaptors as steps within an Integration Procedure
+- omnistudio/omnistudio-debugging: debugging DataRaptor Preview and Integration Procedure execution

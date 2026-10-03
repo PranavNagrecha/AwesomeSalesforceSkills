@@ -1,12 +1,12 @@
-# Well-Architected Notes — MFA Enforcement Strategy
+# Well-Architected Notes: MFA Enforcement Strategy
 
 ## Relevant Pillars
 
-- **Security** — MFA enforcement is a foundational **Trusted** control: it reduces credential theft impact, supports least-privilege session establishment, and pairs with SSO and session policies for defense in depth. Official Salesforce security guidance frames MFA as part of the broader identity and access model, not an isolated checkbox.
-- **Performance** — Poorly staged rollouts can spike help desk volume and IdP load during registration waves. Spread cutovers and cache IdP capacity assumptions in peak windows (month-end, retail peaks).
-- **Scalability** — At large user counts, **operational scalability** matters: standard verification methods, automated provisioning for security keys, and repeatable runbooks scale better than bespoke per-team exceptions.
-- **Reliability** — Authentication is on the critical path for every business process that touches Salesforce. Treat MFA changes like a release: canary populations, measurable SLOs on login success rate, and rollback owners.
-- **Operational Excellence** — Runbooks, training, metrics on registration completion, and post-incident reviews when lockouts occur are core to **Easy** and **Adaptable** operations—teams should improve the program each cycle without emergency heroics.
+- **Security**: MFA enforcement is a foundational **Trusted** control: it reduces credential theft impact, supports least-privilege session establishment, and pairs with SSO and session policies for defense in depth. Official Salesforce security guidance frames MFA as part of the broader identity and access model, not an isolated checkbox.
+- **Performance**: Poorly staged rollouts can spike help desk volume and IdP load during registration waves. Spread cutovers and cache IdP capacity assumptions in peak windows (month-end, retail peaks).
+- **Scalability**: At large user counts, **operational scalability** matters: standard verification methods, automated provisioning for security keys, and repeatable runbooks scale better than bespoke per-team exceptions.
+- **Reliability**: Authentication is on the critical path for every business process that touches Salesforce. Treat MFA changes like a release: canary populations, measurable SLOs on login success rate, and rollback owners.
+- **Operational Excellence**: Runbooks, training, metrics on registration completion, and post-incident reviews when lockouts occur are core to **Easy** and **Adaptable** operations, teams should improve the program each cycle without emergency heroics.
 
 ## Architectural Tradeoffs
 
@@ -16,29 +16,31 @@
 
 ## Anti-Patterns
 
-1. **MFA theater** — Announcing enforcement without closing SSO bypass or shared credentials. Auditors and attackers both focus on the weakest path.
-2. **Unbounded exemptions** — Treating exemptions as permanent configuration rather than time-bound risk acceptance. Creates untestable security posture.
-3. **Ignoring integration blast radius** — Assuming “users will figure it out” for automation accounts. Data pipelines are often less visible than UI lockouts but more expensive when broken.
+1. **MFA theater**: Announcing enforcement without closing SSO bypass or shared credentials. Auditors and attackers both focus on the weakest path.
+2. **Unbounded exemptions**: Treating exemptions as permanent configuration rather than time-bound risk acceptance. Creates untestable security posture.
+3. **Ignoring integration blast radius**: Assuming “users will figure it out” for automation accounts. Data pipelines are often less visible than UI lockouts but more expensive when broken.
 
 ## Related skill navigation
 
 Cross-check these when MFA work touches adjacent controls (from repository skill graph):
 
-- `security/session-management-and-timeout` — session lifetime and reauthentication complement MFA
-- `security/oauth-token-management` and `security/connected-app-security-policies` — OAuth clients in the same identity story
-- `security/login-forensics` — evidence when diagnosing login failures after MFA changes
-- `admin/integration-user-management` — integration users and MFA-resistant OAuth patterns
+- `security/session-management-and-timeout`: session lifetime and reauthentication complement MFA
+- `security/oauth-token-management` and `security/connected-app-security-policies`, OAuth clients in the same identity story
+- `security/login-forensics`: evidence when diagnosing login failures after MFA changes
+- `admin/integration-user-management`: integration users and MFA-resistant OAuth patterns
 
 ## Official Sources Used
 
-- Salesforce Help: [Enable MFA for Your Entire Org](https://help.salesforce.com/s/articleView?id=xcloud.security_mfa_org_wide_setting.htm&type=5) — org-wide UI MFA enforcement posture and Setup orientation
-- Salesforce Help: [Exclude Exempt Users from MFA](https://help.salesforce.com/s/articleView?id=xcloud.security_mfa_exclude_exempt_users.htm&type=5) — exemption concepts and operational boundaries
-- Salesforce Help: [Prepare for MFA Enforcement for All Employee Users](https://help.salesforce.com/s/articleView?id=005321561&language=en_US&type=1) — 2026 enforcement scope (direct UI and SSO, production and sandbox), the Release Group stagger, ACR/AMR signal condition, and removal of the exemption permission's waiver behavior. Article IDs `000396727` and `000389313` now resolve to this same article.
-- Salesforce Help: [Prepare for Phishing-Resistant MFA Enforcement for Privileged Users including Admins](https://help.salesforce.com/s/articleView?id=005321563&language=en_US&type=1) — the profile and permissions that trigger PRMFA, and which verification methods qualify (device-bound and cloud-synced passkeys, security keys, CBA, admin-generated temporary codes)
-- Salesforce Help: [Security-Related Product Updates to the Salesforce Platform](https://help.salesforce.com/s/articleView?id=005317465&language=en_US&type=1) — consolidated timeline that distinguishes the all-employee MFA wave from the PRMFA wave
+- Salesforce Security Guide, Summer '26 (release 262): Multi-Factor Authentication (contractual requirement for direct and SSO logins; MFA default for direct login in production), Device Activation, Transaction Security (MFA action unavailable in Lightning Experience, mobile, and API) - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf
+- Metadata API Developer Guide, Summer '26: SecuritySettings > SessionSettings (`enableMFADirectUILoginOptIn` and the waiver override, `skipSFAWhenMFADirectUILogin`, `enableBuiltInAuthenticator`, `enableU2F`, `enableLightningLogin`, `identityConfirmationOnTwoFactorRegistrationEnabled`), SingleSignOnSettings (`isLoginWithSalesforceCredentialsDisabled`), NetworkAccess, ProfileSessionSetting and SessionSecurityLevel - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Object Reference, Summer '26: TwoFactorMethodsInfo (registered methods, Manage MFA in API, UncommittedWork note), PermissionSetAssignment `ExpirationDate` - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
 
-**Read the three `help.salesforce.com` articles above signed in.** Verified 2026-08-14: an unauthenticated fetch of `articleView?id=<any-id>&type=1` returns a JavaScript shell of identical size carrying no article text — zero occurrences of "phishing" or "Multi-Factor" — and it returns that same shell for a fabricated article ID, so a public fetch can confirm neither the content nor the existence of these articles. Treat any enforcement date attributed to them by a tool that cannot hold a session as unverified; the schedule in `SKILL.md` is presented as two competing published sets for exactly this reason.
-- Salesforce Security Guide — https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5 — security model context for identity controls
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — Trusted and Operational Excellence framing for identity programs
-- Integration Patterns — https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html — when SSO and API clients participate in the same MFA story
-- Metadata API Developer Guide — SecuritySettings — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_securitysettings.htm — retrieving org security settings as metadata for review pipelines
+### Cited but not fetchable (UNVERIFIED (2026-10-03))
+
+These Salesforce Help articles back the 2026 enforcement statements in `SKILL.md`. An unauthenticated fetch returns only a script shell, so their content was not read for this revision:
+
+- Salesforce Help: Enable MFA for Your Entire Org - https://help.salesforce.com/s/articleView?id=xcloud.security_mfa_org_wide_setting.htm&type=5
+- Salesforce Help: Exclude Exempt Users from MFA - https://help.salesforce.com/s/articleView?id=xcloud.security_mfa_exclude_exempt_users.htm&type=5
+- Salesforce Help: Prepare for MFA Enforcement for All Employee Users - https://help.salesforce.com/s/articleView?id=005321561&language=en_US&type=1
+- Salesforce Help: Prepare for Phishing-Resistant MFA Enforcement for Privileged Users including Admins - https://help.salesforce.com/s/articleView?id=005321563&language=en_US&type=1
+- Salesforce Help: Security-Related Product Updates to the Salesforce Platform - https://help.salesforce.com/s/articleView?id=005317465&language=en_US&type=1

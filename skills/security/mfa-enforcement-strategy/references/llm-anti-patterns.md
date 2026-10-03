@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — MFA Enforcement Strategy
+# LLM Anti-Patterns: MFA Enforcement Strategy
 
 Common mistakes AI coding assistants make when generating or advising on MFA enforcement strategy for Salesforce.
 These patterns help the consuming agent self-check its own output.
@@ -28,7 +28,7 @@ Trusted IP and network features address session or network policy; they are not 
 **Correct pattern:**
 
 ```
-SSO with MFA at the IdP can satisfy Salesforce MFA expectations for users who authenticate through that SSO path, when direct Salesforce login is not a realistic bypass. Under 2026 enforcement, the SSO path counts only when the IdP passes a standard-MFA or phishing-resistant-MFA signal to Salesforce via ACR or AMR (RFC 8176); an IdP that enforces MFA but sends no such claim still causes Salesforce to prompt users to register a verification method. Validate both IdP authentication strength and remaining Salesforce login channels against official Salesforce MFA and SSO documentation.
+SSO with MFA at the IdP can satisfy Salesforce MFA expectations for users who authenticate through that SSO path, when direct Salesforce login is not a realistic bypass. UNVERIFIED (2026-10-03), Salesforce Help only: under 2026 enforcement, the SSO path counts only when the IdP passes a standard-MFA or phishing-resistant-MFA signal to Salesforce via ACR or AMR (RFC 8176); an IdP that enforces MFA but sends no such claim still causes Salesforce to prompt users to register a verification method. Validate both IdP authentication strength and remaining Salesforce login channels against official Salesforce MFA and SSO documentation.
 ```
 
 **Detection hint:** Absolute words (“always,” “automatically”) paired with “SSO” and “MFA” with no mention of direct login, the ACR/AMR claim, or user population scope.
@@ -44,7 +44,14 @@ SSO with MFA at the IdP can satisfy Salesforce MFA expectations for users who au
 **Correct pattern:**
 
 ```
-Retrieve SecuritySettings via Metadata API and compare against the official SecuritySettings type reference. Describe settings at the level you have verified from retrieved metadata or Setup screenshots; flag uncertainty instead of fabricating XML.
+Retrieve SecuritySettings via Metadata API and compare against the official SecuritySettings type reference. The real MFA-related fields in the Summer '26 reference live under sessionSettings and singleSignOnSettings:
+  sessionSettings/enableMFADirectUILoginOptIn      org-wide MFA for direct UI logins
+  sessionSettings/skipSFAWhenMFADirectUILogin      registration screen lists all methods
+  sessionSettings/enableBuiltInAuthenticator       Touch ID / Windows Hello
+  sessionSettings/enableU2F                        U2F-compatible security keys
+  sessionSettings/enableLightningLogin             Salesforce Authenticator passwordless login
+  singleSignOnSettings/isLoginWithSalesforceCredentialsDisabled   SSO-only redirect
+Names such as enableMultiFactorAuthenticationInUi or mfaRegistrationRequirement do not appear in the reference; this skill's own checker used them until 2026-10-03.
 ```
 
 **Detection hint:** Unusual element names with no Salesforce doc citation, or XML that mixes Profile and Settings types inconsistently.
@@ -92,7 +99,7 @@ Org-wide MFA enforcement and per-event step-up (Transaction Security Policies) s
 **Correct pattern:**
 
 ```
-Salesforce Authenticator and TOTP apps remain valid standard MFA, but they do not satisfy the phishing-resistant MFA requirement that applies to users with the System Administrator profile or the Modify All Data, View All Data, Customize Application, or Author Apex permission. That population needs a security key, a built-in authenticator (Touch ID, Windows Hello), a passkey, or certificate-based authentication. Enumerate it from effective permission assignments, not from the profile name.
+UNVERIFIED (2026-10-03), Salesforce Help only: Salesforce Authenticator and TOTP apps remain valid standard MFA, but they do not satisfy the phishing-resistant MFA requirement that applies to users with the System Administrator profile or the Modify All Data, View All Data, Customize Application, or Author Apex permission. That population needs a security key, a built-in authenticator (Touch ID, Windows Hello), a passkey, or certificate-based authentication. Enumerate it from effective permission assignments, not from the profile name.
 ```
 
 **Detection hint:** Any answer that names Salesforce Authenticator or a TOTP app as sufficient for admins, or that scopes the privileged population by profile alone and never mentions the four permissions travelling on permission sets.
@@ -101,9 +108,9 @@ Salesforce Authenticator and TOTP apps remain valid standard MFA, but they do no
 
 ## Anti-Pattern 7: Stating a Specific 2026 MFA Enforcement Date as Settled Fact
 
-**What the LLM generates:** A confident single date — “MFA is enforced in sandboxes on June 22, 2026” — often with a fabricated verbatim quotation attributed to a `help.salesforce.com` article.
+**What the LLM generates:** A confident single date, “MFA is enforced in sandboxes on June 22, 2026”, often with a fabricated verbatim quotation attributed to a `help.salesforce.com` article.
 
-**Why it happens:** `help.salesforce.com/s/articleView` serves a JavaScript shell with no article text, and returns the same contentless page for every article ID including invented ones. A fetching tool that cannot hold a session gets nothing back and reconstructs plausible dates instead of reporting the failure — which is why repeated passes over the same URL have produced mutually incompatible dates.
+**Why it happens:** `help.salesforce.com/s/articleView` serves a JavaScript shell with no article text, and returns the same contentless page for every article ID including invented ones. A fetching tool that cannot hold a session gets nothing back and reconstructs plausible dates instead of reporting the failure, which is why repeated passes over the same URL have produced mutually incompatible dates.
 
 **Correct pattern:**
 
@@ -112,3 +119,23 @@ Two date sets have been published for the 2026 MFA and PRMFA waves and the sched
 ```
 
 **Detection hint:** A precise enforcement date paired with a quoted sentence attributed to a `help.salesforce.com` article ID, with no acknowledgement of the Release Group stagger or of the revised schedule.
+
+---
+
+## Anti-Pattern 8: Promising a Step-Up Prompt From a Transaction Security Policy in Lightning
+
+**What the LLM generates:** "Add a Transaction Security policy with the multi-factor authentication action so users re-verify before exporting reports in Lightning."
+
+**Why it happens:** The action is named "Multi-Factor Authentication," and the LLM assumes it prompts everywhere.
+
+**Correct pattern:**
+
+```
+The Security Guide states the multi-factor authentication action isn't
+available in the Salesforce mobile app, Lightning Experience, or via API for
+any events; the block action is used instead. For step-up in Lightning, use
+session security levels (HIGH_ASSURANCE on the profile session setting or the
+resource) and org-wide MFA.
+```
+
+**Detection hint:** A Transaction Security MFA action recommended for Lightning or API users.

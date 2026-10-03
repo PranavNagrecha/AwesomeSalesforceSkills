@@ -1,6 +1,6 @@
 ---
 name: omnistudio-debugging
-description: "Use when diagnosing failures, unexpected output, or silent errors in OmniScript, DataRaptor, or Integration Procedure assets. Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault path d — use omnistudio/omnistudio-performance."
+description: "Use when diagnosing failures, unexpected output, or silent errors in OmniScript, DataRaptor (Data Mapper), or Integration Procedure assets. Triggers: 'omniscript not working', 'dataraptor returns empty', 'integration procedure error', 'debug an omniscript'. NOT for Apex debugging, LWC console errors unrelated to OmniStudio, or Flow fault paths; for slow OmniStudio assets use omnistudio/omnistudio-performance."
 category: omnistudio
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -20,6 +20,8 @@ triggers:
   - "how do I see what data an OmniStudio action is sending and receiving"
   - "omniscript preview mode behaves differently from the live component"
   - "integration procedure worked in sandbox but fails in production"
+  - "debug why my omniscript action returns no data"
+  - "trace an integration procedure step by step in preview"
 inputs:
   - "OmniScript, DataRaptor, or Integration Procedure asset name and version"
   - "Error message text, screenshot, or debug log output"
@@ -31,14 +33,14 @@ outputs:
   - "Recommendations to make future failures observable"
 dependencies: []
 runtime_orphan: true
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 # OmniStudio Debugging
 
-This skill activates when a practitioner needs to diagnose and fix a broken, silent, or misbehaving OmniScript, DataRaptor, or Integration Procedure. It provides structured debug procedures for each asset type, explains platform-specific tracing tools, and surfaces the non-obvious behaviors that make OmniStudio failures hard to read.
+This skill activates when a practitioner needs to diagnose and fix a broken, silent, or misbehaving OmniScript, DataRaptor (Omnistudio Data Mapper), or Integration Procedure. It gives a debug procedure per asset type, names the tracing tool for each, and lists the platform behaviors that make OmniStudio failures hard to read.
 
 ---
 
@@ -46,42 +48,65 @@ This skill activates when a practitioner needs to diagnose and fix a broken, sil
 
 Gather this context before working on anything in this domain:
 
-- Which asset type is failing: OmniScript, DataRaptor (Extract / Load / Transform / Turbo Extract), or Integration Procedure?
-- Is the failure happening in Preview mode, in a deployed LWC, or in a production FlexCard?
-- What is the user context — internal, authenticated portal, or guest? Debug tool access and behavior differ by context.
-- Is the asset version active? Inactive versions do not execute.
-- Was a recent change deployed? Environment-specific dependencies (Named Credentials, Remote Site Settings, Custom Settings) may not have been promoted.
+- Which asset type is failing: OmniScript, DataRaptor (Extract, Turbo Extract, Load, Transform), or Integration Procedure?
+- Is the failure in a designer Preview, in a deployed Lightning page or Experience Cloud site, or in a FlexCard?
+- What is the user context: internal, authenticated portal, or guest? Field access and record visibility differ by context.
+- Which version is active in this environment? Only one OmniScript version is active at a time, and the `isActive` flag travels in the metadata.
+- What changed recently? Named credential endpoints and secrets, custom settings, and custom metadata values often differ between orgs.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| Does the failure reproduce in the designer Preview with the same input JSON? | The OmniScript Preview has a Data JSON pane and an Action Debugger; the Integration Procedure Preview pane has Errors/Debug Output. | Moves the investigation from "it's broken" to one failing step. | Every later fix is checked with the same input. |
+| Which version is active in this org, and does the deployed file say `isActive` true? | Only one OmniScript version is active at a time; Integration Procedure and Data Mapper metadata carry `isActive` / `active` flags. | Confirms you are debugging the code that actually runs. | Release runbooks record the active version per environment. |
+| Is the missing data dropped by a Response Action, a cache block, or a skipped block? | A Response Action trims what returns; a Cache Block serves stored output; a block whose Execution Conditional Formula is false is skipped. | Explains "no error, no data" cases. | Each block's purpose and condition are documented. |
+| How should failures surface to the caller? | A Try-Catch Block returns specified output or calls an Apex class when a step fails. | A defined error contract between IP and OmniScript. | Users see a real message instead of an empty screen. |
+| Does the HTTP action use a named credential endpoint? | Apex callouts to a named credential endpoint need no Remote Site Setting; other endpoints do. | The right environment check for callout failures. | No time lost adding Remote Site Settings that don't apply. |
+| Is the Data Mapper checking field access, and who runs it? | The Options tab can check field access before running; Preview runs as the designer user. | A test plan that uses a representative user. | Restricted users get the same result in production as in testing. |
 
 ---
 
 ## Core Concepts
 
-### 1. OmniStudio Has Three Separate Debug Surfaces
+### 1. OmniStudio Has Separate Debug Surfaces
 
-OmniStudio does not use a unified debugger. Each asset type has its own tracing mechanism:
+| Asset | Tool | What it shows |
+|---|---|---|
+| OmniScript | Designer Preview: Context ID, Data JSON pane, Action Debugger | Live data JSON as you fill the script; each action's request and response, searchable, with copyable nodes (Trailhead) |
+| Integration Procedure | Designer Preview pane with Errors/Debug Output | Input parameters, execution result, and per-step debug output (Trailhead) |
+| DataRaptor | Designer Preview tab | Response for Key/Value input parameters (Extract); objects created or updated (Load), which are saved permanently |
 
-- **OmniScript Preview + Action Debugger**: The OmniScript designer's built-in Preview tab renders the script in a sandbox iframe and exposes the Action Debugger panel. The Action Debugger shows each element's input, output, and error state as the user traverses the script. Navigation Action elements are explicitly excluded from Preview — they do not fire in the Preview tab because there is no app context to navigate into. This is platform-enforced, not a bug. (Source: Salesforce Help — Preview and Test an OmniScript.)
+UNVERIFIED (2026-10-03): Salesforce Help states that Navigate Action elements don't run in the OmniScript Preview, and that DataRaptor Extract Preview shows the generated query. Neither statement appears in the fetched sources; test navigation in the deployed page either way.
 
-- **Integration Procedure Debug Mode**: The IP designer has a dedicated Debug tab. When you enter input JSON and click Run, the platform executes the IP server-side and returns a step-by-step execution log. The debug log shows each action element's input, output, response code, and error information. This is the primary tool for diagnosing HTTP action failures, response mapping issues, and incorrect sequencing. (Source: Salesforce Help — Debug and Activate an Integration Procedure.)
+### 2. Silent Failures Are Common
 
-- **DataRaptor Preview**: The DataRaptor designer provides a Preview tab where you can supply sample input, run the asset, and inspect the raw output. For Extract assets this shows the generated SOQL and the raw result set. For Load assets it shows the DML being attempted. For Transform assets it shows input-to-output mapping results. Preview runs in the context of the authenticated designer user, so it will reflect that user's record access and FLS.
+Several documented behaviors produce "no error, no data":
 
-### 2. Silent Failures Are the Default
+- A block whose **Execution Conditional Formula** evaluates to false is skipped (Trailhead, Integration Procedure Designer).
+- A **Response Action** limits what the IP sends back, so data visible in the IP debug output can be absent in the OmniScript.
+- A **Cache Block** returns stored output from session or org cache until it expires.
+- A DataRaptor Load **skips** records whose Is Required For Upsert fields are empty.
+- A Load with `errorIgnored` true continues after errors; with `rollbackOnError` false it commits partial work.
 
-OmniStudio elements do not throw errors to the user interface by default when they encounter a problem. An Integration Procedure whose HTTP action returns a 500, a DataRaptor Extract that finds no matching records, or an OmniScript Set Values element that references a missing path will all complete without visible error unless explicit error handling and response configuration has been added. This is the most common source of "it's not working but there's no error" reports. The platform follows a fail-open pattern: elements that produce no result pass forward silently unless `rollbackOnError` or a Response Action is configured.
+Design error handling on purpose: a Try-Catch Block "returns specified output or calls an Apex class if a step within it fails."
 
 ### 3. Environment Parity Is Rarely Guaranteed
 
-OmniStudio assets that work in sandbox often fail in production for reasons unrelated to the asset itself:
+OmniStudio assets that work in a sandbox often fail in production for reasons outside the asset:
 
-- **Named Credentials** must be separately configured in each org. An HTTP action that works in sandbox against a sandbox Named Credential will fail immediately in production if the production credential is missing, uses different auth, or points to a different endpoint.
-- **Custom Settings and Custom Metadata** used by DataRaptors or Integration Procedures for dynamic values may not have been populated after a deployment.
-- **Remote Site Settings** must be active in every org where outbound callouts are made from OmniStudio HTTP actions.
-- **Active version mismatch**: deploying a new version of an asset does not automatically activate it. If the old version is still active in production and the new one is in sandbox, the behavior will differ.
+- **Named credentials**: the `NamedCredential` definition is metadata, but credentials and per-org endpoints often differ. An HTTP action that works in a sandbox fails if the production credential is missing or points elsewhere.
+- **Remote Site Settings**: required for callouts to endpoints that are not named credentials. "If the callout specifies a named credential as the endpoint, you don't need to configure remote site settings" (Apex Developer Guide). `RemoteSiteSetting` is a deployable Metadata API type.
+- **Custom settings and custom metadata** read by Data Mappers or IPs may not be populated after deployment.
+- **Active version**: a deployment can bring a new version without making it the active one, or carry `isActive` true unexpectedly. Check after every deployment.
 
-### 4. The Action Debugger Shows Element-Level Granularity
+The retrieve-and-diff script, a Remote Site Setting file, and a repeatable Preview input record are in [references/metadata-examples.md](references/metadata-examples.md).
 
-When running an OmniScript in Preview mode, the Action Debugger panel (accessible via the debug icon in the script designer) shows a real-time tree of every element execution. Each node in the tree includes the element name, type, input data node values, output data node values, and any error returned. This is the fastest way to confirm whether a DataRaptor action, Integration Procedure action, or HTTP action inside an OmniScript is receiving and returning the expected payload. Expanding a node shows the full JSON that was sent and received by that element.
+### 4. The Action Debugger Shows Element-Level Detail
+
+In the OmniScript Preview, the Action Debugger lists each action's request and response. Search for the action, expand it, and copy the node you need. "Reset Data" reloads the canvas and refreshes the Data JSON and the Action Debugger (Trailhead, "Dig into the Omniscript Designer"). Action element labels, not names, appear in the debugger, so give actions clear labels.
 
 ---
 
@@ -89,41 +114,38 @@ When running an OmniScript in Preview mode, the Action Debugger panel (accessibl
 
 ### Mode 1: Debug an OmniScript
 
-Use when: an OmniScript is not rendering correctly, steps are skipped, actions return unexpected results, or the script behaves differently in Preview vs deployment.
+Use when an OmniScript is not rendering correctly, steps are skipped, actions return unexpected results, or Preview and deployment behave differently.
 
-1. Open the OmniScript in the designer. Confirm the version shown is the active version you expect to be running.
-2. Click the Preview tab. Run through the failing path manually.
-3. Open the Action Debugger (debug icon, top-right of the preview pane). Expand the node for the failing element.
-4. Check the Input section: does it contain the expected data? If it is empty or missing fields, trace backward to the element that should have populated the data node.
-5. Check the Output section: is the shape correct? If the output is empty, the element ran but returned nothing — check for silent null handling.
-6. If a Navigation Action is not firing in Preview, that is expected platform behavior. Navigation Actions require a live app or community context and are excluded from Preview. Test Navigation Actions in the deployed component.
-7. For OmniScript Apex actions, check the Apex class return type and confirm it implements `omnistudio.VlocityOpenInterface2`. If the class does not implement the expected interface, the action will silently fail.
-8. Once root cause is identified, fix the data path, null guard, or action configuration and re-preview.
+1. Open the OmniScript and confirm the version in the header is the version that is active in the org you are debugging.
+2. Open Preview, enter a real record ID in Context ID, and run the failing path.
+3. Open the Action Debugger and find the failing action by its label. Check the request: does it contain the expected data? If not, trace back to the element that should have populated it in the Data JSON.
+4. Check the response: is the shape right? An empty response usually points to the Integration Procedure or Data Mapper behind it; run that asset's own Preview with the same input.
+5. For navigation problems, test in the deployed Lightning page or site, not only in Preview.
+6. For Remote Action and Apex-backed elements, confirm the class and method names match and that the class implements the interface your OmniStudio runtime expects. UNVERIFIED (2026-10-03): the interface name (for example `omnistudio.VlocityOpenInterface2` in the managed package) is documented only in Salesforce Help.
+7. Fix the data path, condition, or action configuration and re-run Preview with Reset Data.
 
 ### Mode 2: Audit a DataRaptor
 
-Use when: a DataRaptor returns empty results, produces unexpected field values, fails to write records, or maps data incorrectly.
+Use when a DataRaptor returns empty results, unexpected values, fails to write, or maps data incorrectly.
 
-1. Open the DataRaptor in the designer. Confirm the type: Extract, Turbo Extract, Load, or Transform.
-2. Navigate to the Preview tab. Supply representative sample input matching the expected caller contract.
-3. For **Extract**: inspect the generated SOQL shown in the preview. Confirm the WHERE clause uses the correct input field path. If the query returns no records, the filter values may not match. The preview runs in the context of the logged-in designer user — if that user lacks access to the records, the result will be empty.
-4. For **Turbo Extract**: Turbo Extract does not support multi-level relationships or complex input mapping. If the asset was recently changed from Extract to Turbo Extract to gain performance, verify none of the removed capabilities are needed.
-5. For **Load**: review the field mapping against actual field API names and data types. A field name case mismatch or missing required field will cause a silent DML failure unless error bubbling is configured in the calling Integration Procedure.
-6. For **Transform**: walk input-to-output mapping row by row. JSONPath mismatches are common when the upstream response shape changes.
-7. Check whether the DataRaptor is called from an Integration Procedure. If so, run the IP debug first — the IP debug log will show the DataRaptor call's input, output, and error state without needing to isolate the DataRaptor.
+1. Confirm the type: Extract, Turbo Extract, Load, or Transform.
+2. For an Extract or Turbo Extract, open Preview and enter Key/Value input parameters that match what the caller sends. Check the filters and the Extract Output Paths.
+3. If the result is empty, check record visibility and field access for the running user. Preview runs as the designer user; turn on the Options-tab field access check (`fieldLevelSecurityEnabled`) for restricted users and test as one of them.
+4. For a Turbo Extract, remember it reads a single object (with related-object fields) and supports no formulas or complex output mappings.
+5. For a Load, check Upsert Keys and Is Required For Upsert fields: empty required fields skip the record. Preview writes real records, so preview Loads only in a developer sandbox.
+6. If the DataRaptor is called from an Integration Procedure, run the IP Preview first; its debug output shows the DataRaptor step's input and output in context.
 
-### Mode 3: Troubleshoot an Integration Procedure Error
+### Mode 3: Troubleshoot an Integration Procedure
 
-Use when: an Integration Procedure returns unexpected data, silently fails, behaves differently across environments, or produces an error message.
+Use when an IP returns unexpected data, silently fails, behaves differently across environments, or reports an error.
 
-1. Open the Integration Procedure in the designer. Go to the Debug tab (not the designer canvas).
-2. Paste or type the JSON input the IP should receive. Ensure required fields are present.
-3. Click Run. The platform executes the IP synchronously and returns a full step-level execution log.
-4. Review the log top-to-bottom. For each element, check: status (success / error), input, response, and error.
-5. For **HTTP action failures**: check the status code. 401 or 403 usually means the Named Credential is missing or misconfigured. 404 usually means the endpoint URL is wrong. 500 is a server-side error from the external system. A timeout (no response) means the external system did not respond within the configured limit or the Remote Site Setting is blocking the call.
-6. For **DataRaptor action failures inside an IP**: the IP debug log will show the DataRaptor's input and output at that step. If the output is empty, run the DataRaptor in isolation to confirm whether the issue is data shape or access.
-7. Confirm `rollbackOnError` is set at the root. If it is not, a failing step may not surface to the caller.
-8. If the IP works in sandbox but not production: compare Named Credential names, check that the production Remote Site Setting exists, and verify that Custom Settings or Metadata values the IP depends on are populated in production.
+1. Open the IP designer and use the Preview pane, not the canvas.
+2. Enter the input JSON the IP should receive, including required keys.
+3. Execute and read Errors/Debug Output top to bottom: each step's input, output, and errors.
+4. For steps that never appear in the output, check the enclosing block's Execution Conditional Formula.
+5. For HTTP action failures: 401 or 403 usually means the named credential is missing or misconfigured; 404 means a wrong endpoint path; 5xx is the external system; a callout to a non-named-credential endpoint with no Remote Site Setting fails before it is sent.
+6. For data that exists in the debug output but not in the caller, check the Response Action and any Cache Block.
+7. If the IP works in a sandbox but not in production, compare named credentials, Remote Site Settings for non-named-credential endpoints, custom setting values, and the active version.
 
 ---
 
@@ -131,26 +153,23 @@ Use when: an Integration Procedure returns unexpected data, silently fails, beha
 
 | Situation | Debug Tool | Why |
 |---|---|---|
-| OmniScript element not running or producing wrong output | OmniScript Preview + Action Debugger | Shows real-time per-element input/output in the designer |
-| Navigation Action not firing in Preview | Expected — test in deployed component | Navigation Actions are excluded from Preview by design |
-| DataRaptor Extract returning no records | DataRaptor Preview tab | Renders generated SOQL and raw result set |
-| Integration Procedure HTTP action returning error | IP Debug tab | Shows status code, request, response at each step |
-| IP works in sandbox, fails in production | Verify Named Credentials, Remote Site Settings, active version in prod | Environment-specific dependencies not promoted |
-| DataRaptor failing inside an IP | Run IP Debug first, then isolate DataRaptor | IP debug shows the DataRaptor input/output in context |
-| Silent failure with no error message | Check `rollbackOnError` and Response Action config | OmniStudio elements fail open without explicit error handling |
+| OmniScript element produces the wrong output | Preview + Data JSON + Action Debugger | Shows each action's request and response |
+| Navigation not working | Deployed page or site | Navigation needs the real app context |
+| DataRaptor Extract returns nothing | DataRaptor Preview with caller's input, then test as a restricted user | Input or access is the usual cause |
+| IP HTTP action returns an error | IP Preview Errors/Debug Output | Shows the failing step and its response |
+| Data in IP debug output but missing in OmniScript | Response Action and Cache Block review | The IP trims or caches what it returns |
+| Steps silently skipped | Execution Conditional Formula on the enclosing block | False condition skips the block |
+| Works in sandbox, fails in production | Named credential, Remote Site Setting (non-named-credential endpoints), custom settings, active version | Environment-specific dependencies |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Identify the asset and the active version in the failing environment, and capture the exact input JSON or Context ID.
+2. Reproduce in the designer Preview of the closest asset (Action Debugger for OmniScripts, Errors/Debug Output for IPs, Preview for DataRaptors).
+3. Walk downstream to the first step whose output is wrong, checking conditions, Response Actions, caches, and Load skip rules on the way.
+4. Retrieve the assets and run `python3 skills/omnistudio/omnistudio-debugging/scripts/check_omnistudio_debugging.py --manifest-dir force-app` to flag placeholder failure messages, inactive assets, FLS off, and partial-commit Loads.
+5. Fix, re-run the same Preview input, then verify in the deployed context as a representative user and record the active version.
 
 ---
 
@@ -159,25 +178,29 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 Run through these before marking debugging work complete:
 
 - [ ] Confirmed the active version in the target environment is the version that was tested
-- [ ] Action Debugger used to trace element-level input and output in the OmniScript
-- [ ] IP Debug tab used with production-representative input JSON before marking IP as working
-- [ ] All HTTP actions have a Named Credential name confirmed to exist in the target environment
-- [ ] DataRaptor Preview run with sample input that matches the caller's actual data shape
-- [ ] `rollbackOnError` confirmed at IP root to ensure failures are surfaced
-- [ ] Response Action or failure response text is meaningful, not placeholder copy
-- [ ] Remote Site Settings verified in target environment for outbound HTTP actions
+- [ ] Action Debugger used to trace element-level requests and responses in the OmniScript
+- [ ] IP Preview run with production-representative input JSON; Errors/Debug Output reviewed
+- [ ] Response Actions, Cache Blocks, and Execution Conditional Formulas checked for dropped data
+- [ ] HTTP actions use named credentials, or Remote Site Settings exist for their endpoints
+- [ ] DataRaptor tested as a representative user with the field access check decided
+- [ ] Try-Catch Blocks return meaningful output to the caller
+- [ ] Load Preview run only in a developer sandbox
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full write-ups with sources are in [references/gotchas.md](references/gotchas.md).
 
-1. **Navigation Actions are silently skipped in Preview** — OmniScript Preview mode does not execute Navigation Action elements. This is documented platform behavior, not a bug. Teams that rely on Preview to validate full end-to-end flows will miss broken navigation paths. Always test Navigation Actions in a deployed LWC or Experience Site context.
-
-2. **DataRaptor Preview reflects the designer user's access** — When a DataRaptor Extract returns zero records in Preview, it does not mean the SOQL is wrong. It may mean the logged-in designer user simply lacks visibility to those records. Always test with a user whose profile and permissions match the actual runtime context, or verify the generated SOQL directly against a SOQL query tool.
-
-3. **IP active version and deployed version can diverge without warning** — Deploying or importing a new IP version via a change set does not automatically activate it. If a sandbox IP was activated and the deployment moved a new version to production without activating it, the old version silently remains active in production. Always verify the active version after any deployment.
+| Gotcha | One-line summary |
+|---|---|
+| Skipped blocks | A false Execution Conditional Formula skips the block with no error. |
+| Response Action | Data in the IP debug output can be trimmed before it reaches the caller. |
+| Cache Block | Cached output hides fixes until the cache expires. |
+| Load Preview | Previewing a Load writes real records. |
+| Named credentials | Callouts to named credential endpoints need no Remote Site Setting. |
+| Active version | Deployments don't guarantee the intended version is active. |
+| Preview identity | Preview runs as the designer user, not the end user. |
 
 ---
 
@@ -185,15 +208,15 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Debug finding report | Root cause of the OmniStudio failure with the specific element, data node, or configuration item identified |
-| Environment delta checklist | List of Named Credentials, Remote Site Settings, Custom Settings, and active version states to verify between environments |
-| Remediation steps | Ordered fix list addressing the root cause and adding observable error handling to prevent recurrence |
+| Debug finding report | Root cause with the specific element, data node, or configuration item |
+| Environment delta checklist | Named credentials, Remote Site Settings for non-named-credential endpoints, custom settings, and active versions to compare between orgs |
+| Remediation steps | Ordered fix list, plus the error handling (Try-Catch, Response Action) that makes the next failure visible |
 
 ---
 
 ## Related Skills
 
-- `omnistudio/integration-procedures` — Use when the Integration Procedure design itself needs to change, not just be debugged.
-- `omnistudio/dataraptor-patterns` — Use when the DataRaptor asset pattern is fundamentally wrong and needs to be redesigned.
-- `omnistudio/omniscript-design-patterns` — Use when the OmniScript structure is the root cause, not a configuration or data mapping error.
-- `omnistudio/omnistudio-security` — Use when debug output reveals a data exposure or access control problem.
+- `omnistudio/integration-procedures`: Use when the Integration Procedure design itself needs to change, not just be debugged.
+- `omnistudio/dataraptor-patterns`: Use when the DataRaptor asset pattern is fundamentally wrong and needs to be redesigned.
+- `omnistudio/omniscript-design-patterns`: Use when the OmniScript structure is the root cause, not a configuration or data mapping error.
+- `omnistudio/omnistudio-security`: Use when debug output reveals a data exposure or access control problem.

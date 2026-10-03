@@ -15,6 +15,8 @@ triggers:
   - "is 2GP or 1GP managed package recommended for new ISV development on Salesforce"
   - "unlocked packages isn't working"
   - "we're having issues with unlocked packages"
+  - "choose a package type and namespace before we start building"
+  - "split our org metadata into unlocked packages"
 tags:
   - packaging
   - unlocked-packages
@@ -34,14 +36,14 @@ outputs:
   - "AppExchange eligibility summary per package type"
   - "Upgrade path implications for the selected approach"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
 # Package Development Strategy
 
-Use this skill when making the foundational decision about which Salesforce package type to use for a project — and specifically the namespace decision, which is permanent. Covers unmanaged, unlocked, 1GP managed, and 2GP managed package types across the spectrum of internal use to ISV AppExchange distribution.
+Use this skill when making the foundational decision about which Salesforce package type to use for a project, and especially the namespace decision, which can't be undone. It covers unmanaged, unlocked, 1GP managed, and 2GP managed package types, from internal use to ISV AppExchange distribution.
 
 ---
 
@@ -50,10 +52,23 @@ Use this skill when making the foundational decision about which Salesforce pack
 Gather this context before working on anything in this domain:
 
 - Is this for **internal use** (within one customer org), **multi-org internal distribution**, or **AppExchange ISV distribution**?
-- Is **IP protection** (code obfuscation) required? Only managed packages provide IP protection.
-- Is an **upgrade path** required? Unmanaged packages have no upgrade mechanism — each install is a one-time copy.
-- Does the project require a **namespace**? Managed packages require a namespace. Unlocked packages can optionally use a namespace. The namespace decision is permanent and cannot be changed after it is linked to the Dev Hub.
-- Is there an existing Dev Hub? Unlocked and 2GP packages require a Dev Hub. 1GP packages use a separate org-centric packaging model.
+- Is **IP protection** required? In a managed package, Apex class, trigger, and Visualforce component code is obfuscated in the installing org, except global method signatures (2GP Developer Guide). Unlocked package metadata can be modified in a production org.
+- Is an **upgrade path** required? Unmanaged packages have no upgrade mechanism. UNVERIFIED (2026-10-03): the unmanaged package behavior is documented in Salesforce Help, not in the 262 packaging PDFs.
+- Does the project need a **namespace**? Managed packages require one. Unlocked packages can be created with `--no-namespace`. A package's namespace can't be changed or added after the package is created.
+- Is there a Dev Hub? Unlocked and managed 2GP packages are owned by a Dev Hub. A managed 1GP package is owned by its packaging org.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| Will this ever be listed on AppExchange or sold to other companies? | The Salesforce DX guide says AppExchange partners should use managed 2GP; unlocked packages are "the right package type for most use cases" only when you don't plan AppExchange distribution. | Rules package types in or out on day one. | No rebuild from unlocked to managed later, with new namespaced API names. |
+| Do subscribers need to be blocked from reading or changing the code? | Managed package Apex is obfuscated except global signatures; unlocked package metadata can be changed directly in production. | Decides managed vs unlocked on a real requirement. | Governance matches the package type (who may edit packaged metadata in production). |
+| Which namespace string, registered in which namespace org, linked to which Dev Hub? | After a namespace is associated with an org it can't be changed or reused, and after a package is created its namespace and Dev Hub can't be changed. | One deliberate, brand-stable namespace. | Package transfer stays possible later (a package with its own namespace can be transferred with that namespace). |
+| Do the planned packages depend on each other or on unpackaged org metadata? | Org-dependent unlocked packages validate dependencies at install time, install only into orgs that contain the metadata, and can't depend on other packages. | A dependency graph that the chosen package variant supports. | Package versions install in a predictable order with explicit `dependencies`. |
+| Who may delete package versions, and what pins a `04t` version? | Released unlocked versions can be deleted and deletion is permanent; installs of a deleted version fail. Released managed 2GP versions can't be deleted. | A retention rule per package type. | Pipelines never break because a pinned version vanished. |
+| Is a patch path needed for managed 2GP? | Patch versioning must be enabled by Partner Support and is available only to packages that passed security review. | Starts the enablement early. | A hotfix path exists before the first customer escalation. |
 
 ---
 
@@ -61,38 +76,32 @@ Gather this context before working on anything in this domain:
 
 ### The Four Package Types on the Control vs. Mutability Spectrum
 
-| Package Type | Upgrade Path | IP Protection | AppExchange | Namespace Required | Source-Driven |
+| Package Type | Upgrade Path | IP Protection | AppExchange | Namespace | Source-Driven |
 |---|---|---|---|---|---|
-| Unmanaged | No | No | No | No | No |
-| Unlocked | Yes | No | No | Optional | Yes |
-| 1GP Managed | Yes | Yes | Yes | Yes | No (org-centric) |
-| 2GP Managed | Yes | Yes | Yes | Yes | Yes |
+| Unmanaged | No (UNVERIFIED (2026-10-03), Help only) | No | No | No | No |
+| Unlocked | Yes | No | Not the intended channel | Optional (`--no-namespace`) | Yes |
+| 1GP Managed | Yes | Yes | Yes | Yes, one package per namespace | No (packaging org is the source of truth) |
+| 2GP Managed | Yes | Yes | Yes | Yes, many packages per namespace | Yes (version control is the source of truth) |
 
 **Unmanaged packages** are a one-time install with no upgrade path. Installed components can be freely modified by the subscriber org. Use only for code samples, templates, or when a subscriber org intentionally takes ownership of the code.
 
-**Unlocked packages** support source-driven development, version-controlled releases, and org-to-org upgrades. They have no code obfuscation and cannot be listed on AppExchange as a protected managed application. Best for internal cross-team distribution or large org decomposition.
+**Unlocked packages** support source-driven development, versioned releases, and upgrades. "Metadata in unlocked packages can be modified in a production org" (Salesforce DX Developer Guide), so they suit internal business apps and large-org decomposition, not protected commercial products.
 
-**1GP managed packages** provide IP protection (Apex classes are non-readable in subscriber orgs) and AppExchange distribution. They use an org-centric development model (not source-controlled via CLI). 1GP is the legacy managed package approach — Salesforce recommends 2GP for all new managed package development.
+**1GP managed packages** provide IP protection and AppExchange distribution. The packaging org owns the package and holds its metadata. Some 1GP operations, such as package create and uninstall, can't be automated, and patches need patch orgs.
 
-**2GP managed packages** are Salesforce's recommended approach for new ISV products. They provide IP protection, AppExchange distribution, CLI-based automation, and support multiple packages per namespace (unlike 1GP which is limited to one package per namespace). Development is source-driven via the Salesforce DX model.
+**2GP managed packages** are the Salesforce recommendation for ISVs listing on AppExchange. The Dev Hub owns the package, version control is the source of truth, every operation runs through Salesforce CLI, and multiple packages can share one namespace with `@namespaceAccessible` for public Apex.
 
-### The Permanent Namespace Constraint
+### The Namespace Constraint
 
-**Namespace choice is irreversible.** Specifically:
-- A namespace linked to a Dev Hub for 2GP cannot be transferred, reused, or unlinked
-- A namespace-less unlocked package cannot be retroactively namespaced after installation in subscriber orgs
-- A managed package namespace cannot be renamed
+Namespace mistakes are hard to undo. The documented rules are:
+- A namespace is created in a separate Developer Edition org (the namespace org) and linked to the Dev Hub through Namespace Registries. "After you associate a namespace with an org, you can't change it or reuse it."
+- A namespace is assigned to a managed 2GP at creation and can't be changed. One 2GP package can't use more than one namespace.
+- "After you create a package, you can't change or add a namespace, or change the Dev Hub the package is associated with." This applies to unlocked packages too.
+- A managed 2GP package can still be transferred to another Dev Hub through a Salesforce Customer Support case. The namespace must be linked to both Dev Hubs first. Giving a sellable product its own namespace "enables you to transfer the namespace with the package."
 
-This is the most consequential architectural decision in package strategy — it must be made correctly the first time. Before creating any managed package, verify that the namespace string is acceptable for long-term product branding and does not conflict with existing namespaces in the ecosystem.
+### Unlocked Packages Are Not the AppExchange Vehicle
 
-### Unlocked Packages Cannot Be Listed on AppExchange as Protected Apps
-
-A common misconception is that unlocked packages are suitable for AppExchange distribution. **Unlocked packages:**
-- Have no code obfuscation — Apex classes are readable in subscriber orgs
-- Cannot be listed on AppExchange as a protected managed product
-- Are appropriate only for apps where the subscriber org is expected to view and modify the source
-
-For any product requiring IP protection or AppExchange listing as a commercial product, only 2GP managed (preferred) or 1GP managed packages apply.
+Unlocked packages expose modifiable metadata and are positioned for internal apps. For any product that needs IP protection or an AppExchange listing, use managed 2GP (preferred) or managed 1GP.
 
 ---
 
@@ -100,30 +109,33 @@ For any product requiring IP protection or AppExchange listing as a commercial p
 
 ### Pattern: Unlocked Packages for Internal Org Decomposition
 
-**When to use:** A large enterprise org has grown beyond manageability and needs to be decomposed into independently deployable packages for different teams (Sales Automation, Service, Shared Platform).
+**When to use:** A large enterprise org needs to be split into independently deployable packages for different teams (Sales Automation, Service, Shared Platform).
 
 **How it works:**
 1. Define package boundaries based on team ownership and functional domains.
-2. Create a separate unlocked package per domain in the Dev Hub.
-3. Define package dependencies (Service package depends on Shared Platform package).
-4. Each team has independent release cycles with version pinning on dependencies.
-5. CI/CD pipeline builds and installs each package in the correct dependency order.
+2. Create one unlocked package per domain in the Dev Hub (`sf package create --package-type Unlocked --path <dir> --name <name>`).
+3. Declare package dependencies in `sfdx-project.json` (Service depends on Shared Platform).
+4. Let each team release independently with pinned dependency versions (`2.1.0.RELEASED` or an explicit version).
+5. Have CI/CD build and install each package in dependency order.
+6. Use an org-dependent unlocked package only for metadata that can't yet be untangled from unpackaged org metadata.
 
-**Why not one monolithic deployment:** Monolithic deployments create release coupling between teams — a Service bug blocks a Sales release. Package decomposition enables independent deployment.
+**Why not one monolithic deployment:** monolithic deployments couple team releases, so a Service bug blocks a Sales release. Packages give each domain its own version history.
 
 ### Pattern: 2GP Managed Package for ISV AppExchange Product
 
 **When to use:** Building a commercial Salesforce application for distribution on AppExchange.
 
 **How it works:**
-1. Register a namespace in a dedicated Namespace Registry org.
-2. Link the namespace to the Dev Hub.
-3. Create the 2GP managed package via CLI: `sf package create --name "MyApp" --package-type Managed`.
-4. Develop components in a scratch org, package them, and create a version: `sf package version create`.
-5. Promote the version to Released before submitting to AppExchange security review.
-6. Submit for AppExchange listing and security review.
+1. Create and register the namespace in a separate Developer Edition org.
+2. Link the namespace org to the Dev Hub (App Launcher > Namespace Registries > Link Namespace).
+3. Set the namespace in `sfdx-project.json` and create the package: `sf package create --name "Expense Manager" --path force-app --package-type Managed`.
+4. Develop in scratch orgs and create versions with `sf package version create --package "Expense Manager" --code-coverage --installation-key-bypass --wait 30`.
+5. Promote a version that meets 75% coverage with `sf package version promote --package <04t>`; beta versions install only in scratch orgs and sandboxes.
+6. Submit for AppExchange security review and listing.
 
-**Why not 1GP:** 1GP requires org-centric development without Salesforce DX tooling, has no source control integration, and limits you to one package per namespace. Salesforce officially recommends 2GP for all new ISV development.
+The full project file and command sequence are in [references/metadata-examples.md](references/metadata-examples.md).
+
+**Why not 1GP:** 1GP keeps metadata in a packaging org, allows one package per namespace, uses linear versioning, and needs patch orgs. Salesforce recommends managed 2GP for ISVs listing on AppExchange.
 
 ---
 
@@ -132,24 +144,23 @@ For any product requiring IP protection or AppExchange listing as a commercial p
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Internal enterprise org decomposition | Unlocked packages | Source-driven, versioned, no IP protection needed |
-| ISV commercial AppExchange product | 2GP managed package | IP protection, multi-package per namespace, DX tooling |
-| Legacy ISV product on 1GP | Evaluate 2GP migration | 1GP is legacy; 2GP is recommended for new development |
+| ISV commercial AppExchange product | Managed 2GP | IP protection, many packages per namespace, CLI-first |
+| Legacy ISV product on 1GP | Evaluate 2GP migration | The 2GP guide says adopting 2GP for new packages avoids a future migration |
 | Code sample or starter template | Unmanaged package | No upgrade needed; subscriber takes ownership |
-| AppExchange listing required, ISV product | 2GP or 1GP managed only | Unlocked packages cannot be AppExchange ISV listings |
-| Need to namespace an existing unlocked package | Start over — not retroactively possible | Namespace cannot be added after subscriber installs |
+| AppExchange listing required | Managed 2GP or 1GP only | Unlocked packages are positioned for internal apps |
+| Need a namespace on an existing namespace-less unlocked package | Create a new package with the namespace | A package's namespace can't be added after creation |
+| Metadata can't yet be separated from unpackaged org metadata | Org-dependent unlocked package, as a stepping stone | Validation moves to install time; no dependencies on other packages |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Classify the distribution intent** — Internal only, multi-org internal, or AppExchange commercial distribution? AppExchange distribution requires a managed package.
-2. **Assess IP protection requirement** — If IP protection (code obfuscation) is required, only managed packages (2GP preferred) apply. Eliminate unlocked from consideration.
-3. **Decide on namespace** — If proceeding with managed package: select the namespace string carefully. It is permanent. Verify it is not already registered and is acceptable as a long-term product brand identifier.
-4. **Check Dev Hub availability** — Unlocked and 2GP packages require a Dev Hub. Confirm Dev Hub is enabled and the namespace (for managed) is linked.
-5. **Select package type** — Apply the decision matrix above. For most new projects: unlocked (internal) or 2GP managed (ISV/AppExchange).
-6. **Document the decision** — Record the package type, namespace, distribution intent, and upgrade path approach. This is a foundational architectural decision.
+1. **Classify the distribution intent** (internal, multi-org internal, AppExchange) and record it in the decision record template.
+2. **Assess IP protection and production-edit governance**: obfuscated managed code vs modifiable unlocked metadata.
+3. **Decide the namespace**: pick a brand-stable string, register it in a dedicated namespace org, and link it to the Dev Hub that will own the packages. One namespace per sellable product keeps a transfer path open.
+4. **Draft `sfdx-project.json`** with `packageDirectories`, `namespace`, `versionNumber` ending in `NEXT`, and pinned `dependencies`, then run `python3 skills/devops/package-development-strategy/scripts/check_package_development_strategy.py --project-dir .` to catch namespace, keyword, and dependency mistakes.
+5. **Set the version retention and deletion policy**: who holds Delete Second-Generation Packages, and which `04t` IDs pipelines pin.
+6. **Document the decision**: package type, namespace, distribution intent, dependency graph, and upgrade path.
 
 ---
 
@@ -158,24 +169,29 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 Run through these before marking work in this area complete:
 
 - [ ] Distribution intent documented (internal / multi-org / AppExchange)
-- [ ] IP protection requirement assessed — if yes, only managed packages
-- [ ] Namespace selected and its permanence acknowledged
-- [ ] Dev Hub confirmed available and namespace linked (for managed/unlocked)
+- [ ] IP protection requirement assessed; if yes, only managed packages
+- [ ] Namespace selected, registered in a namespace org, linked to the owning Dev Hub
 - [ ] Unlocked package NOT selected for AppExchange ISV distribution
-- [ ] For 2GP: CLI tooling (sf package create, sf package version create) confirmed
+- [ ] `sfdx-project.json` passes the skill checker (namespace, `NEXT`, dependency keywords)
+- [ ] Version deletion policy and Delete Second-Generation Packages assignment documented
 - [ ] Package type decision documented with rationale
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Unlocked packages provide no IP protection** — Recommending unlocked packages for ISV products or AppExchange commercial listings is incorrect. Unlocked packages have no code obfuscation and cannot be listed as a protected commercial product on AppExchange.
+Full write-ups with sources are in [references/gotchas.md](references/gotchas.md).
 
-2. **Namespace choice is permanent and cannot be transferred** — A namespace linked to a Dev Hub is bound to that Dev Hub permanently. Teams that discover they chose the wrong namespace after linking cannot undo the decision. The namespace must be abandoned and a new one selected.
-
-3. **1GP is org-centric and not DX-compatible** — 1GP managed packages require development in the packaging org and do not support Salesforce DX source-format development. Teams expecting to use Git + CLI workflows with 1GP will face significant friction. 2GP should be used for all new managed package development.
-
-4. **Installing a namespace-less unlocked package in a subscriber org locks out future namespacing** — Once an unlocked package without a namespace is installed in a subscriber org, adding a namespace to that package later is not possible without breaking the existing installation. The subscriber org would need to uninstall and reinstall a new namespaced package.
+| Gotcha | One-line summary |
+|---|---|
+| Namespace association | After a namespace is associated with an org it can't be changed or reused. |
+| Package namespace | A package's namespace and Dev Hub can't be changed after creation. |
+| Unlocked vs AppExchange | Unlocked metadata is editable in production; AppExchange products use managed 2GP. |
+| Beta versions | Every version is beta until promoted; betas install only in scratch orgs and sandboxes and can't be upgraded. |
+| Deletion rules | Released unlocked versions are deletable (permanent); released managed 2GP versions are not. |
+| Org-dependent packages | Install only where the dependent metadata exists, and can't depend on other packages. |
+| Skip validation | Versions built with `--skip-validation` can't be promoted. |
+| InstalledPackage | Metadata installs cover managed 1GP only and must deploy alone. |
 
 ---
 
@@ -184,14 +200,14 @@ Run through these before marking work in this area complete:
 | Artifact | Description |
 |---|---|
 | Package type decision record | Selected package type, namespace, rationale, and distribution intent |
-| Namespace selection documentation | Chosen namespace, verification that it is available, permanence acknowledgment |
+| Namespace selection documentation | Chosen namespace, namespace org, linked Dev Hub, permanence acknowledgment |
 | Dependency graph | Package dependency diagram for multi-package architectures |
-| AppExchange eligibility assessment | Documents whether the selected package type supports AppExchange listing |
+| AppExchange eligibility assessment | Whether the selected package type supports AppExchange listing |
 
 ---
 
 ## Related Skills
 
-- `devops/scratch-org-management` — Use for scratch org configuration and shape management used in 2GP package development
-- `devops/ci-cd-pipeline-architecture` — Use for CI/CD pipeline design around package version creation and installation
-- `devops/salesforce-dx-project-structure` — Use for SFDX project structure and source format layout for package development
+- `devops/scratch-org-management`: scratch org configuration and shape management used in 2GP package development
+- `architect/ci-cd-pipeline-architecture`: CI/CD pipeline design around package version creation and installation
+- `devops/salesforce-dx-project-structure`: SFDX project structure and source format layout for package development

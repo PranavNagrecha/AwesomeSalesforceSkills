@@ -4,7 +4,8 @@
 Validates a local Salesforce metadata directory for common change set
 deployment mistakes:
 
-  1. Profile metadata detected — flags overwrite risk.
+  1. Profile metadata detected: flags the always-deployed sections (user
+     permissions, login IP ranges, login hours) for review.
   2. Custom fields referenced in layouts but missing from the metadata tree.
   3. Flows present without a companion post-deploy note about activation.
   4. Apex classes present with no corresponding *Test* class.
@@ -14,9 +15,9 @@ Uses stdlib only — no pip dependencies.
 Usage:
     python3 check_change_set_deployment.py [--manifest-dir path/to/metadata]
 
-The manifest-dir should be the root of a retrieved Salesforce metadata
-structure, e.g. the directory that contains subdirectories like
-`classes/`, `flows/`, `objects/`, `profiles/`, `layouts/`.
+The manifest-dir can be the root of a retrieved Salesforce metadata or
+source tree. The checker finds `classes/`, `flows/`, `objects/`,
+`profiles/`, and `layouts/` directories anywhere below it.
 """
 
 from __future__ import annotations
@@ -47,30 +48,53 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+
+
+def _find_dirs(root: Path, name: str) -> list[Path]:
+    """Return every directory called `name` at or below root (root itself included)."""
+    found = [d for d in root.rglob(name) if d.is_dir()]
+    if (root / name).is_dir() and (root / name) not in found:
+        found.append(root / name)
+    return sorted(set(found))
+
+
+def _files(root: Path, dirname: str, pattern: str) -> list[Path]:
+    out: list[Path] = []
+    for d in _find_dirs(root, dirname):
+        out.extend(d.glob(pattern))
+    return sorted(set(out))
+
 # ---------------------------------------------------------------------------
 # Individual checks
 # ---------------------------------------------------------------------------
 
 def check_profiles_present(manifest_dir: Path) -> list[str]:
-    """Flag any Profile metadata files found in the manifest directory.
+    """Flag Profile metadata and the sections that always deploy with it.
 
-    Profiles in change sets are full-replace — not merge — which can silently
-    overwrite production-only customizations.
+    The Metadata API scopes profile settings to the other components in the
+    same deployment, except user permissions, login IP ranges, and login hours,
+    which are always included (Metadata API Developer Guide, Profile > Usage).
+    Those three sections are where production-only values get replaced.
     """
     issues: list[str] = []
-    profiles_dir = manifest_dir / "profiles"
-    if profiles_dir.is_dir():
-        profile_files = list(profiles_dir.glob("*.profile-meta.xml"))
-        if profile_files:
-            names = [f.stem.replace(".profile-meta", "") for f in profile_files]
-            issues.append(
-                f"PROFILE OVERWRITE RISK: {len(profile_files)} profile(s) found in "
-                f"manifest: {', '.join(sorted(names))}. "
-                "Profile deploys are full-replace operations. Any production-only "
-                "customizations not present in the source profile will be silently "
-                "removed. Prefer permission sets for new access grants. If profiles "
-                "must be deployed, reconcile source and target XML before upload."
-            )
+    profile_files = _files(manifest_dir, "profiles", "*.profile-meta.xml") + \
+        _files(manifest_dir, "profiles", "*.profile")
+    if not profile_files:
+        return issues
+    for pf in profile_files:
+        name = pf.name.replace(".profile-meta.xml", "").replace(".profile", "")
+        try:
+            text = pf.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        always = [tag for tag in ("userPermissions", "loginIpRanges", "loginHours") if f"<{tag}>" in text]
+        detail = (f" It carries {', '.join(always)}, which deploy regardless of the other components."
+                  if always else "")
+        issues.append(
+            f"PROFILE REVIEW: profile '{name}' is in the deployment.{detail} "
+            "Settings for components in the same deployment also change. Compare these "
+            "sections with the target org before upload, and prefer permission sets for new access."
+        )
     return issues
 
 
@@ -81,17 +105,16 @@ def check_layouts_missing_fields(manifest_dir: Path) -> list[str]:
     against the object folder in the manifest.
     """
     issues: list[str] = []
-    layouts_dir = manifest_dir / "layouts"
-    if not layouts_dir.is_dir():
+    layout_files = _files(manifest_dir, "layouts", "*.layout-meta.xml")
+    if not layout_files:
         return issues
 
     # Build a set of known custom fields from objects/ directory
     # Supports both metadata-api format (objects/<ObjectName>/<fields>/<FieldName>.field-meta.xml)
     # and the flat sfdx format.
     known_fields: set[str] = set()  # "ObjectName.FieldAPIName"
-    objects_dir = manifest_dir / "objects"
-    if objects_dir.is_dir():
-        # Metadata API format: objects/<ObjName>/fields/<FieldName>.field-meta.xml
+    for objects_dir in _find_dirs(manifest_dir, "objects"):
+        # Source format: objects/<ObjName>/fields/<FieldName>.field-meta.xml
         for field_file in objects_dir.rglob("*.field-meta.xml"):
             parts = field_file.parts
             # Find the object name (parent of "fields" dir)
@@ -103,7 +126,7 @@ def check_layouts_missing_fields(manifest_dir: Path) -> list[str]:
             except (ValueError, IndexError):
                 pass
 
-    for layout_file in layouts_dir.glob("*.layout-meta.xml"):
+    for layout_file in layout_files:
         try:
             tree = ET.parse(layout_file)
         except ET.ParseError:
@@ -144,11 +167,7 @@ def check_layouts_missing_fields(manifest_dir: Path) -> list[str]:
 def check_flows_without_activation_note(manifest_dir: Path) -> list[str]:
     """Flag Flow metadata to remind the practitioner that deployment != activation."""
     issues: list[str] = []
-    flows_dir = manifest_dir / "flows"
-    if not flows_dir.is_dir():
-        return issues
-
-    flow_files = list(flows_dir.glob("*.flow-meta.xml"))
+    flow_files = _files(manifest_dir, "flows", "*.flow-meta.xml")
     if not flow_files:
         return issues
 
@@ -179,9 +198,10 @@ def check_flows_without_activation_note(manifest_dir: Path) -> list[str]:
         issues.append(
             f"FLOW ACTIVATION REMINDER: {len(active_flows)} flow(s) are marked Active "
             f"in the source metadata: {', '.join(sorted(active_flows))}. "
-            "Verify that activation is intentional for the target org. Deploying an "
-            "Active flow version to production will deactivate the previous active "
-            "version — confirm this is the expected behavior."
+            "In production they deploy INACTIVE unless 'Deploy processes and flows as "
+            "active' (FlowSettings enableFlowDeployAsActiveEnabled) is on. When it is on, "
+            "deploying an active flow runs Apex tests and checks flow test coverage. "
+            "Decide which path this release takes."
         )
     if inactive_flows:
         issues.append(
@@ -197,11 +217,7 @@ def check_flows_without_activation_note(manifest_dir: Path) -> list[str]:
 def check_apex_classes_missing_tests(manifest_dir: Path) -> list[str]:
     """Detect Apex classes that have no corresponding test class in the manifest."""
     issues: list[str] = []
-    classes_dir = manifest_dir / "classes"
-    if not classes_dir.is_dir():
-        return issues
-
-    all_cls_files = list(classes_dir.glob("*.cls"))
+    all_cls_files = _files(manifest_dir, "classes", "*.cls")
     if not all_cls_files:
         return issues
 
@@ -237,9 +253,9 @@ def check_apex_classes_missing_tests(manifest_dir: Path) -> list[str]:
         issues.append(
             f"MISSING TEST CLASSES: {len(untested)} Apex class(es) in the manifest "
             f"have no corresponding test class: {', '.join(sorted(untested))}. "
-            "Production deployments require 75% aggregate Apex coverage. Ensure test "
-            "classes covering these classes are included in the change set or already "
-            "exist in the target org with sufficient coverage."
+            "Default and Run local tests need 75% overall coverage; Run specified tests "
+            "needs 75% on each deployed class and trigger. Include test classes that cover "
+            "these classes, or confirm they exist in the target org."
         )
 
     return issues

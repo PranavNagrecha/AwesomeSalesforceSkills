@@ -5,6 +5,10 @@ Scans a Salesforce SFDX project directory for release management anti-patterns:
 - Apex classes lacking test coverage annotations
 - Deployment manifests that include destructive changes without a backup pattern
 - Package.xml files referencing NoTestRun test level in CI scripts
+- CI scripts that quick deploy with --use-most-recent (the CLI only looks back 3 days,
+  although a validated job ID stays valid for 10 days)
+- CI scripts that pass --ignore-errors to a production deploy (Metadata API requires
+  rollbackOnError=true for production)
 
 Uses stdlib only — no pip dependencies.
 
@@ -16,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -54,6 +59,58 @@ def check_notest_run_in_scripts(project_dir: Path) -> list[str]:
                         )
                 except (OSError, PermissionError):
                     pass
+    return issues
+
+
+def _ci_files(project_dir: Path) -> list[Path]:
+    """Shell, YAML, and JSON files in the usual CI locations."""
+    found: list[Path] = []
+    script_extensions = {".sh", ".yml", ".yaml", ".json"}
+    for ci_dir in [project_dir / ".github" / "workflows", project_dir / ".github",
+                   project_dir / ".circleci", project_dir / ".gitlab", project_dir,
+                   project_dir / "scripts"]:
+        if not ci_dir.exists():
+            continue
+        for ext in script_extensions:
+            found.extend(ci_dir.glob(f"*{ext}"))
+    return sorted(set(found))
+
+
+def check_quick_deploy_lookback(project_dir: Path) -> list[str]:
+    """Flag quick deploys that rely on --use-most-recent instead of an explicit --job-id."""
+    issues: list[str] = []
+    for file in _ci_files(project_dir):
+        try:
+            content = file.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for line in content.splitlines():
+            if "deploy quick" in line and ("--use-most-recent" in line or re.search(r"\s-r(\s|$)", line)):
+                issues.append(
+                    f"{file}: 'sf project deploy quick --use-most-recent' only finds validations "
+                    f"from the last 3 days, although the job ID is valid for 10. Pass --job-id explicitly."
+                )
+                break
+    return issues
+
+
+def check_ignore_errors_production(project_dir: Path) -> list[str]:
+    """Flag --ignore-errors on deploy commands in files that mention production."""
+    issues: list[str] = []
+    for file in _ci_files(project_dir):
+        try:
+            content = file.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        if "production" not in content.lower() and "prod" not in content.lower():
+            continue
+        for line in content.splitlines():
+            if "deploy start" in line and "--ignore-errors" in line:
+                issues.append(
+                    f"{file}: '--ignore-errors' on a deploy in a production pipeline. "
+                    f"Metadata API requires rollbackOnError=true for production; fix the failing component instead."
+                )
+                break
     return issues
 
 
@@ -99,6 +156,8 @@ def check_release_management(project_dir: Path) -> list[str]:
     issues.extend(check_notest_run_in_scripts(project_dir))
     issues.extend(check_destructive_changes_without_backup_note(project_dir))
     issues.extend(check_sfdx_project_json(project_dir))
+    issues.extend(check_quick_deploy_lookback(project_dir))
+    issues.extend(check_ignore_errors_production(project_dir))
 
     return issues
 

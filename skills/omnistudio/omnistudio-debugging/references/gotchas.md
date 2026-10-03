@@ -1,51 +1,99 @@
-# Gotchas — OmniStudio Debugging
+# Gotchas: OmniStudio Debugging
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious platform behaviors that cause real production problems in this domain. Each gotcha names the source it rests on, or marks the claim UNVERIFIED.
 
-## Gotcha 1: Navigation Actions Are Silently Excluded from OmniScript Preview
+## Gotcha 1: A False Execution Conditional Formula Skips the Block Silently
 
-**What happens:** A practitioner runs an OmniScript in the designer's Preview tab and observes that the Navigation Action element does nothing — the script completes without redirecting. The element configuration looks correct. Debugging the element yields no errors in the Action Debugger.
+**What happens:** Several Integration Procedure steps never run, and the debug output shows no error. The enclosing block's Execution Conditional Formula evaluated to false.
 
-**When it occurs:** Any time a Navigation Action element is present in an OmniScript and the practitioner is testing via the Preview tab in the OmniScript designer. This affects every practitioner who relies on Preview for full end-to-end validation.
+**When it occurs:** Blocks whose conditions reference a key that is missing or spelled differently in the input JSON.
 
-**How to avoid:** Never use Preview to validate Navigation Action elements. The OmniScript Preview environment does not have a Lightning app or Experience Site routing context, so Navigation Actions are platform-excluded from Preview execution (documented in Salesforce Help — Preview and Test an OmniScript). Test Navigation Actions only in a deployed Lightning app page or Experience Site. Use the Action Debugger in Preview only to validate that the data node feeding the Navigation Action is correctly populated — not to confirm the navigation itself fires.
+**How to avoid:** When a step is missing from the debug output, read the enclosing block's condition first. Test with input JSON that contains every key the conditions read.
 
----
-
-## Gotcha 2: DataRaptor Preview Reflects the Designer User's Access, Not the Runtime User's
-
-**What happens:** A DataRaptor Extract appears to work correctly when previewed by the designer (a system administrator). The same asset returns zero records when executed by a community portal user or an internal user with a restricted profile. No error is raised — the DataRaptor silently returns an empty result set.
-
-**When it occurs:** Whenever a DataRaptor Extract retrieves records that are subject to OWD settings, sharing rules, or profile-level restrictions that differ between the designer and the intended runtime user. Particularly common in Experience Site implementations where internal admins build assets for external users.
-
-**How to avoid:** Test DataRaptors that serve restricted users by running the OmniScript as a representative user in the deployment context. Inspect the generated SOQL from Preview and manually run it against the restricted user's access to observe the difference. If full system-level access is required by the business scenario, use an Apex action with appropriate sharing controls, explicitly documented and reviewed for security implications.
+**Source:** Trailhead, "Explore the Integration Procedure Designer": "All blocks have one property in common, an Execution Conditional Formula. If this formula evaluates to true or isn't defined, the block is executed. If it evaluates to false, the block is skipped."
 
 ---
 
-## Gotcha 3: Deploying a New IP Version Does Not Activate It
+## Gotcha 2: The Response Action Trims What the Caller Receives
 
-**What happens:** A team deploys a new Integration Procedure version to production via a change set. The IP continues behaving as the old version. The new element configuration changes are not reflected. The new version exists in the designer but is marked Inactive.
+**What happens:** The IP debug output shows the right data, but the OmniScript's Action Debugger shows the field missing. The Response Action only sends back the node it was configured with.
 
-**When it occurs:** Every change set or Metadata API deployment of an OmniStudio asset. Activation is a separate manual step that deployments do not perform automatically.
+**When it occurs:** A new field is added to a Data Mapper or HTTP step, but the Response Action still returns the old node.
 
-**How to avoid:** After every OmniStudio asset deployment, explicitly verify and activate the intended version in the target org's designer. Document this as a required post-deployment step in the release runbook. Run the IP Debug tab after activation with a representative input payload to confirm the new version's behavior before declaring the release complete.
+**How to avoid:** When data exists in the IP but not in the caller, check the Response Action configuration before the Data Mapper.
 
----
-
-## Gotcha 4: IP Elements Fail Open Without rollbackOnError
-
-**What happens:** An Integration Procedure includes a critical HTTP action that fails (returns a 500 or receives no response). The IP does not surface an error to the calling OmniScript or FlexCard. The experience appears to complete normally, but the expected data is absent. No user-visible error occurs.
-
-**When it occurs:** Any IP where `rollbackOnError` is not set to `true` at the root and where individual HTTP or DataRaptor action elements have no `failureResponse` configured. This is the OmniStudio default — elements fail open unless explicitly configured to propagate failure.
-
-**How to avoid:** Set `rollbackOnError: true` at the IP root. Configure a meaningful `failureResponse` on every element whose failure should stop execution. The calling OmniScript or FlexCard must then be designed to check an error indicator in the IP response and surface a real user-facing message when the IP did not succeed.
+**Source:** Trailhead, "Explore the Integration Procedure Designer" ("The Response Action limits what is sent back") and "Get Started with Omnistudio Integration Procedures" ("The Integration Procedure's Response Action trims the data returning to the browser from the server").
 
 ---
 
-## Gotcha 5: Remote Site Settings Are Not Promoted by Change Sets
+## Gotcha 3: Cache Blocks Hide Fixes Until They Expire
 
-**What happens:** An HTTP action inside an IP works in sandbox but fails silently in production. The Named Credential exists and is correctly configured in both orgs. The IP Debug log shows a connection failure with no meaningful status code.
+**What happens:** A fix to a Data Mapper is deployed, but users keep seeing old results. The calling IP wraps the step in a Cache Block that serves stored output from session or org cache.
 
-**When it occurs:** After promoting an Integration Procedure that uses HTTP actions to a production org where the Required Remote Site Setting for that external domain was never created or is inactive. Remote Site Settings control whether the org can make outbound HTTP calls to a domain. Without a matching active Remote Site Setting, callouts fail at the network level before the Named Credential is even evaluated.
+**When it occurs:** IPs that use Cache Blocks, and Data Mappers with a platform cache type and time to live.
 
-**How to avoid:** Treat Remote Site Settings as a required manual promotion step alongside Named Credentials. After any deployment involving HTTP actions, verify in Setup that an active Remote Site Setting exists for every external domain the IP calls. Include Remote Site Setting validation in the deployment runbook and post-deployment smoke test.
+**How to avoid:** Note every Cache Block and cached Data Mapper during debugging. Test with a fresh session, or wait for the cache to expire, before concluding a fix failed.
+
+**Source:** Trailhead, "Explore the Integration Procedure Designer" (Cache Block "saves the output of the steps within it to a session or org cache"). Trailhead, "Explore Data Mapper Features" (Platform Cache Type, Time to Live in Minutes).
+
+---
+
+## Gotcha 4: Previewing a DataRaptor Load Writes Real Records
+
+**What happens:** While debugging a Load, a developer runs Preview with production-like JSON in UAT. The records are created or updated for real.
+
+**When it occurs:** Any Load Preview.
+
+**How to avoid:** Debug Loads in a developer sandbox or scratch org with throwaway target records, or debug them through the calling IP in a sandbox.
+
+**Source:** Trailhead, "Build a Data Mapper Turbo Extract and Data Mapper Load": "The Objects Created panel lists the resulting objects, which are saved permanently."
+
+---
+
+## Gotcha 5: Named Credential Callouts Don't Need Remote Site Settings
+
+**What happens:** An HTTP action fails in production. The team spends hours adding Remote Site Settings, which change nothing, because the endpoint is a named credential and the real problem is the production credential.
+
+The opposite mistake also happens: an HTTP action that calls a raw URL works in a sandbox with a Remote Site Setting that was never created in production.
+
+**When it occurs:** Environment promotion of IPs with HTTP actions.
+
+**How to avoid:** Check how the endpoint is defined. For a named credential, verify the credential, its authentication, and its endpoint in the target org. For a raw URL, verify the Remote Site Setting; `RemoteSiteSetting` is a Metadata API type, so deploy it with the release. UNVERIFIED (2026-10-03): the fetched sources state the named-credential rule for Apex callouts; that IP HTTP actions follow the same rule is inferred from the IP runtime making Apex callouts.
+
+**Source:** Apex Developer Guide, "Adding Remote Site Settings": "If the callout specifies a named credential as the endpoint, you don't need to configure remote site settings." Metadata API Developer Guide, RemoteSiteSetting type.
+
+---
+
+## Gotcha 6: A Deployment Doesn't Guarantee the Intended Version Is Active
+
+**What happens:** A team deploys a new IP or OmniScript version. Production keeps the old behavior because the old version is still active, or the deployed file carried `isActive` false.
+
+**When it occurs:** Any deployment of OmniStudio assets, through metadata or DataPacks.
+
+**How to avoid:** After every deployment, open the asset in the target org and confirm the active version. In metadata, check `isActive` (OmniScript, OmniIntegrationProcedure) and `active` (OmniDataTransform) in the files you deploy.
+
+**Source:** Industries Common Resources Developer Guide, OmniScript and OmniIntegrationProcedure `isActive`, OmniDataTransform `active`. Trailhead, "Create a Simple Omniscript" ("Only one version of an Omniscript can be active at a time").
+
+---
+
+## Gotcha 7: Preview Runs as the Designer, Not the End User
+
+**What happens:** A DataRaptor Extract works in Preview for an admin and returns nothing, or fewer fields, for a portal user.
+
+**When it occurs:** Extracts that serve users with narrower sharing or field access than the designer.
+
+**How to avoid:** Test as a representative user in the deployed context. Turn on the Options-tab field access check for Extracts that serve restricted users, so the designer sees the same field filtering.
+
+**Source:** Trailhead, "Explore Data Mapper Features" (Options tab: check the user's access permissions for the fields). UNVERIFIED (2026-10-03): that Preview executes with the designer's sharing and field access is consistent with the platform but not stated in the fetched sources.
+
+---
+
+## Gotcha 8: Navigation Doesn't Behave the Same in Preview
+
+**What happens:** A Navigate Action seems to do nothing in the OmniScript designer Preview.
+
+**When it occurs:** Testing end-to-end journeys only in Preview.
+
+**How to avoid:** Use Preview to confirm the data the Navigate Action needs, and test the navigation itself in the deployed Lightning page or Experience Cloud site.
+
+**Source:** Trailhead, "Design a Simple Omniscript" (Navigate Action sends "the user back to a previous page after the interaction is complete"). UNVERIFIED (2026-10-03): the statement that Navigate Actions are excluded from Preview is documented only in Salesforce Help.

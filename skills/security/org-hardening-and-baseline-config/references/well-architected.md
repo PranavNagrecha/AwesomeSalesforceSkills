@@ -19,6 +19,7 @@
 
 ## Official Sources Used
 
-- Salesforce Security Guide - https://help.salesforce.com/s/articleView?id=sf.security_overview.htm&type=5
-- Security Health Check - https://help.salesforce.com/s/articleView?id=sf.security_health_check.htm&type=5
-- Critical Updates and Release Settings - https://help.salesforce.com/s/articleView?id=sf.release_updates.htm&type=5
+- Salesforce Security Guide, Summer '26 (release 262): Security Health Check (baselines, risk groups, Fix Risks limitations, custom baselines), Device Activation, Session Security, Profiles > Login IP Ranges and "Enforce login IP ranges on every request" - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf
+- Metadata API Developer Guide, Summer '26: SecuritySettings (NetworkAccess replace semantics, PasswordPolicies, SessionSettings clickjack, CSRF, `requireHttpOnly`, `enforceIpRangesEveryRequest`, `sessionTimeout`, declarative sample and package.xml), CspTrustedSite, CorsWhitelistOrigin, ProfileSessionSetting, ProfilePasswordPolicy - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Salesforce CLI 2.151.7 source-deploy-retrieve metadata registry (directory and suffix names for `cspTrustedSites`, `corsWhitelistOrigins`, `profileSessionSettings`), local install at /usr/local/lib/sf/node_modules/@salesforce/source-deploy-retrieve/lib/src/registry/metadataRegistry.json
+- Salesforce CLI 2.151.7 local `--help` output for `project retrieve start` and `project deploy start`

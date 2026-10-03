@@ -8,10 +8,10 @@
 
 ## Prerequisites Check
 
-- [ ] Salesforce for Slack managed package installed (Setup > Installed Packages)
+- [ ] Salesforce for Slack Integrations enabled (Setup > Slack Apps Setup) and the Salesforce Slack app installed in the workspace
 - [ ] Salesforce org connected to Slack workspace (Setup > Slack > Manage Slack Connection)
-- [ ] Running user has Sales Cloud for Slack OR Slack Service User permission set
-- [ ] Workspace OAuth token is active (not revoked)
+- [ ] Running user has Connect Salesforce with Slack plus the app's permission set (Slack Sales User or Slack Service User)
+- [ ] Running user has connected their Salesforce account in Slack (Slack User Mappings)
 
 ## Slack Action Selection
 

@@ -1,4 +1,4 @@
-# Examples — OmniScript Design Patterns
+# Examples: OmniScript Design Patterns
 
 ## Example 1: Thin Enrollment Journey With Backend Delegation
 
@@ -35,6 +35,28 @@ All paths normalize into the same submission payload before final review
 ```
 
 **Why it works:** The branch is meaningful to users but still converges into a predictable data shape for processing.
+
+---
+
+## Example 3: Shared Address Capture as an Embeddable Child
+
+**Context:** Three journeys (enrollment, claims, account change) each collect a mailing address with the same validation.
+
+**Problem:** Each team copied the address steps. A validation fix had to be made three times, and one copy was missed.
+
+**Solution:**
+
+```text
+Child OmniScript   Type: shared   SubType: captureAddress   Language: English
+                   isOmniScriptEmbeddable: true
+Parents            enrollment / claims / accountChange
+                   each embeds shared/captureAddress/English with the Omniscripts element
+Release rule       new child version -> test in each parent's Preview -> activate
+```
+
+The child's metadata skeleton is in [metadata-examples.md](metadata-examples.md).
+
+**Why it works:** One child script owns the shared steps. Its identity (Type, SubType, Language) stays stable, so every parent keeps pointing at it, and only one version is active at a time.
 
 ---
 

@@ -19,6 +19,7 @@
 
 ## Official Sources Used
 
-- Permission Set Groups - https://help.salesforce.com/s/articleView?id=sf.perm_set_groups.htm&type=5
-- Muting Permission Sets - https://help.salesforce.com/s/articleView?id=sf.perm_set_groups_muting_overview.htm&type=5
-- Permission Sets Overview - https://help.salesforce.com/s/articleView?id=sf.perm_sets_overview.htm&type=5
+- Metadata API Developer Guide, Summer '26 (release 262): PermissionSetGroup (fields, `status`, `hasActivationRequired`, retrieve PermissionSet with the group, package.xml sample), MutingPermissionSet ("settings enabled by MutingPermissionSet are turned off"), PermissionSet (API 40.0+ full-content deploy) - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Object Reference, Summer '26: PermissionSetGroup (`Status` values, aggregate ObjectPermissions query), PermissionSetGroupComponent (recalculation), MutingPermissionSet, FieldPermissions > Muting Permissions, PermissionSetAssignment (`ExpirationDate`), PermissionSet (`IsOwnedByProfile`, `PermissionSetGroupId`, `Type`) - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
+- Salesforce Security Guide, Summer '26: Revoke Permissions and Access (grants are additive; muting permission sets in PSGs), Object Permissions, record type assignment through permission sets and PSGs - https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf
+- Salesforce CLI 2.151.7 source-deploy-retrieve metadata registry (`permissionsetgroups`, `mutingpermissionsets` directory and suffix names), local install at /usr/local/lib/sf/node_modules/@salesforce/source-deploy-retrieve/lib/src/registry/metadataRegistry.json
