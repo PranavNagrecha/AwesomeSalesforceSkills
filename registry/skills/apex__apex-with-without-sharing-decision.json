@@ -34,14 +34,15 @@
     "504b85230a081d747a77",
     "5170d940edea8d26d632",
     "540d472c50beb1105895",
-    "609fb39010804bf16b7f",
-    "64dc334b48f3c402feea",
     "678e89871d38ce80ba77",
     "6bdf4afdf189120b16b0",
+    "6c5c1c769c0fbb6ff316",
     "6fb15264cfbf05ebac31",
     "7251a738f6544bdfa0da",
+    "7aefb4b1f79982d39cfa",
+    "7c0cfbe1ee3308b5e391",
     "7c9c19ae8272d8406592",
-    "82da0f87ac67ef084921",
+    "7e922ec33fc9107c29d0",
     "856eca80c5885ffce1da",
     "86a9b1110be62636fbad",
     "87a4498a45f9a27fe7ae",
@@ -55,6 +56,7 @@
     "975f6d53a23d97eece37",
     "99a291b62976a6ac6fd7",
     "9d2b9d312f336f85e298",
+    "9fa807f4d958e39680ed",
     "a60223f086f9c5da8c44",
     "aa9d743dc2a7eaf423ed",
     "b4ae42d3fe524e02459e",
@@ -71,10 +73,10 @@
     "ce21b7e9b4901245427d",
     "d81d67d252567cf58c76",
     "dc4749a0cc8df54e4094",
+    "e072aa77a82393063827",
     "e23b635f3367ed0768f1",
     "e382a4bed7e9410502dd",
     "e3fbd7d7699b6184967f",
-    "e960d41f6c0cdf0fd7ea",
     "edc41666d25e4a7f6d93",
     "ee5aaeded71ddfb449ca",
     "ef8d01975aba959876f2",
@@ -82,9 +84,10 @@
     "f1a86253d47917af2b1b",
     "f48911f9a59bb626b294",
     "f4937fdfebd77e7799d4",
-    "f846181a5caf0aaac060"
+    "f846181a5caf0aaac060",
+    "facd6989be5bca138a84"
   ],
-  "content_hash": "6e5892c7369b5d9ad0e69c6166e9a1afa33dda411b541da8d7ee408538415ebb",
+  "content_hash": "40b03deb327f4b631df10ba42dc508234395dcdf1fbc68b3330ddd637ad1e603",
   "dependencies": [],
   "description": "Choosing the sharing keyword on an Apex class: with sharing vs without sharing vs inherited sharing, how it flows through called methods, and when WITH USER_MODE overrides it. NOT for enforcing CRUD/FLS on the records themselves \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for granting row access via __Share records \u2014 use apex/apex-managed-sharing.",
   "file_location": "skills/apex/apex-with-without-sharing-decision",
@@ -135,7 +138,7 @@
   "templates": [
     "skills/apex/apex-with-without-sharing-decision/templates/apex-with-without-sharing-decision-template.md"
   ],
-  "updated": "2026-08-13",
+  "updated": "2026-10-03",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

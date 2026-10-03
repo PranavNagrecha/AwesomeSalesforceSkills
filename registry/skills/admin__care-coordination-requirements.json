@@ -1,6 +1,7 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "026ad71597306a147eab",
     "041877ba6b9ee5386466",
     "0a421f31b210b462858c",
     "0c7338b43be2214df8e9",
@@ -17,6 +18,7 @@
     "2502089fe60c5f16a1c3",
     "26efe564413e8a3f54ae",
     "2a969681e1608cfe47c1",
+    "2b244892ce2d58fc6ad0",
     "2c6ba9f5bf5b43e9be6a",
     "2f09d6f3ced30321d408",
     "357252b728b3392d6012",
@@ -84,7 +86,7 @@
     "fd52ab7426181e1a00e1",
     "fd53bb213dca9dace1ac"
   ],
-  "content_hash": "cf84928ac690e98959537a6bc41665c9880eb0f079850fa0294df07ae4572d51",
+  "content_hash": "02f244f54ae175cba8daca95d57c9c15f57f37745a049cb58c9db98825f89ffe",
   "dependencies": [
     "admin/health-cloud-patient-setup",
     "admin/care-plan-configuration",

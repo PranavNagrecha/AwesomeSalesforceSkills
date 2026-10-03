@@ -8,6 +8,7 @@
     "07854a9e8bc8e7f2197c",
     "07bed7fd19065d9412e8",
     "08b9d066d657d24bb8b0",
+    "0a6e9c7d4be1b233e1fd",
     "168f071f11717d71c420",
     "1e015c9a05d57cdf0719",
     "1f7dfef3996ea99fbc03",
@@ -94,7 +95,7 @@
     "f63868e89c1558af0b81",
     "ff4c8fb54ee31e3cf28f"
   ],
-  "content_hash": "8e5ea1d9f26e1516aa1f252317cc7cc0612ec07f7cb3376eb369fd538616d7d8",
+  "content_hash": "5bd6b6087a1ff61d9073736ac130d4ec618f5ea4db84f70959e43a026b98df84",
   "dependencies": [],
   "description": "Designing Omni-Channel capacity models for service orgs: agent capacity allocation, channel weighting (cases, chats, calls), skills matrix design, overflow strategy, presence configuration, and interruptible work patterns. Use when planning capacity units, defining Service Channel weights, or designing agent skills-based routing capacity. NOT for enabling Omni-Channel, creating Service Channels or routing rules - use admin/omni-channel-routing-setup. NOT for cross-channel strategy and channel-to-feature mapping - use architect/multi-channel-service-architecture.",
   "file_location": "skills/architect/omni-channel-capacity-model",
