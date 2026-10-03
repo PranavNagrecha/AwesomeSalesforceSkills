@@ -382,6 +382,10 @@ files, and checkers that grepped their own SKILL.md.
   Choice Set and Record Choice Set. (The retrieval fixture `flow record choice
   set dynamic picklist choice collection` was later re-pointed to the
   specialist skill; see "Fixed — retrieval fixtures".)
+- **Release notes from the changelog.** `scripts/release_notes.py` builds the
+  GitHub Release title and body for an `mcp-v*` tag from the matching
+  `CHANGELOG.md` sections, and `publish-mcp.yml` passes them to the release;
+  a tag without a changelog section cannot publish.
 - **Repository presentation.** `scripts/generate_agent_roster.py` writes
   `docs/agents.md` (the roster of all 98 agents by class and tier, `--check`
   for CI); `scripts/build_site.py` renders the skills, domains and docs into a
