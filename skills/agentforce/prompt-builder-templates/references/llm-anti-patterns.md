@@ -37,10 +37,11 @@ is wrong.
 
 ```
 Each template type has a specific deployment surface:
-- Field Generation → populates a specific field via Einstein button on record page
-- Record Summary → generates a summary panel on the record page
-- Sales Email → drafts emails in the activity composer
-- Flex → general-purpose for agent actions, quick actions, screen flows
+- Field Generation → users click a button on a record field to run it (added to the
+  field on a Lightning record page)
+- Record Summary → used by the Summarize Record invocable action and agent action
+- Sales Email → drafts emails in Einstein Sales Emails
+- Flex → content other types don't cover; you define the resources (flows, actions)
 
 Using Flex when Field Generation is correct means:
 - The Einstein button for field population will not appear.
@@ -54,82 +55,87 @@ Match the template type to the intended deployment surface.
 
 ---
 
-## Anti-Pattern 3: Assuming Flow Grounding Errors Surface in Prompt Builder
+## Anti-Pattern 3: Debugging a Template-Triggered Prompt Flow in Flow Builder Debug
 
-**What the LLM generates:** "If the Flow fails, Prompt Builder will show an error" or debugging advice that checks only the Prompt Builder UI.
+**What the LLM generates:** "Open the flow in Flow Builder and click Debug to see why the prompt is empty."
 
-**Why it happens:** LLMs assume errors propagate visually. Template-Triggered Prompt Flows that fail at runtime (invalid SOQL, governor limit, null variable) fail SILENTLY — the merge field returns an empty string.
+**Why it happens:** Debug is the standard flow troubleshooting step, so the model assumes it works for every flow type.
 
 **Correct pattern:**
 
 ```
-If a Template-Triggered Prompt Flow errors at runtime, the merge field that
-references the flow returns an EMPTY STRING — not an error message. The
-resolved prompt appears valid but the grounded data is missing, causing the
-LLM to hallucinate or produce generic output.
+Flow Builder's Debug option isn't available for a Template-Triggered Prompt
+Flow (GenAI guide, Flow Changes After the Pilot).
 
 Debugging Flow-grounded templates:
-1. Test the underlying flow independently in Flow Builder.
-2. Check for SOQL errors, governor limit hits, and null variable assignments.
-3. Only after the flow passes independently, test it through the template.
-4. Compare the Resolved Prompt output against expected data to confirm the
-   flow merge field is populated.
+1. Preview the template in Prompt Builder with a real record and read the
+   resolution: the flow merge field shows the text the Create Prompt
+   Instructions elements produced.
+2. Check that every flow input is present in the template; for flows,
+   all inputs are required.
+3. Check that nobody changed the flow's inputs after the template was built;
+   that breaks the template and blocks new versions.
 ```
 
-**Detection hint:** If the advice assumes Flow errors will be visible in Prompt Builder, it will miss silent failures that cause blank or hallucinated output.
+UNVERIFIED (2026-10-03): the earlier claim that a failing flow returns an empty string with no error was not found in a fetched source.
+
+**Detection hint:** Advice to "Debug" a Template-Triggered Prompt Flow in Flow Builder.
 
 ---
 
-## Anti-Pattern 4: Ignoring the Manage Prompt Templates Permission in Package Subscriber Orgs
+## Anti-Pattern 4: Ignoring Permission Sets in the Target Org
 
-**What the LLM generates:** "Package the prompt template and install it in the subscriber org" without mentioning the permission requirement.
+**What the LLM generates:** "Package the prompt template and install it in the subscriber org" without mentioning permission sets.
 
-**Why it happens:** LLMs describe packaging steps without covering subscriber-side prerequisites. The package installs successfully without the permission — the failure is at invocation time, not install time.
+**Why it happens:** LLMs describe packaging steps without covering target-side prerequisites.
 
 **Correct pattern:**
 
 ```
-When prompt templates are distributed via a managed package:
-- The package installs successfully WITHOUT the subscriber having the Manage
-  Prompt Templates permission.
-- The templates exist in the subscriber org but CANNOT be invoked.
-- No error appears during installation — the failure surfaces only when users
-  try to use the template.
+Prompt Builder access is granted by permission sets (GenAI guide, Enable
+Prompt Builder):
+- Prompt Template Manager: create and manage templates (needs Setup access)
+- Prompt Template User: run templates
+Metadata API: GenAiPromptTemplate is available only if Prompt Builder is
+enabled and the deploying user has Prompt Template Manager.
 
-Document the Manage Prompt Templates permission requirement as a prerequisite
-in package installation instructions. Verify the permission is assigned in the
-subscriber org before marking the deployment complete.
+Document both permission sets as installation prerequisites and assign
+them before marking the deployment complete.
 ```
 
-**Detection hint:** If the advice packages prompt templates without documenting the subscriber permission requirement, post-deployment support escalations are inevitable.
+UNVERIFIED (2026-10-03): the earlier claim that a managed package installs without the permission and templates then fail silently at invocation was not found in a fetched source.
+
+**Detection hint:** A deployment plan for prompt templates that names neither permission set.
 
 ---
 
-## Anti-Pattern 5: Mismatching Apex Capability Type with Template API Name
+## Anti-Pattern 5: Forcing a CapabilityType Onto Every Apex Grounding Class
 
-**What the LLM generates:** An @InvocableMethod with a capability type that does not exactly match the template type identifier.
+**What the LLM generates:** `@InvocableMethod(capabilityType='FlexTemplate://Renewal_Outreach')` with a warning that any mismatch silently drops the data.
 
-**Why it happens:** LLMs generate Apex annotations from general patterns without verifying the exact capability type string format, which differs by template type.
+**Why it happens:** Older Prompt Builder guidance required a CapabilityType (Spring '24 pilot changes), and models repeat it.
 
 **Correct pattern:**
 
 ```
-The capability type in the @InvocableMethod annotation must EXACTLY match the
-template type identifier:
-- Flex template: FlexTemplate://your_template_api_name
-- Sales Email: PromptTemplateType://einstein_gpt__salesEmail
-- Other types have their own format
+CapabilityType is optional and ties the class to ONE template type
+(GenAI guide, Ground with Apex Merge Fields):
+- Sales Email:          PromptTemplateType://einstein_gpt__salesEmail
+- Field Generation:     PromptTemplateType://einstein_gpt__fieldCompletion
+- Record Summary:       PromptTemplateType://einstein_gpt__recordSummary
+- Record Prioritization PromptTemplateType://einstein_gpt__recordPrioritization
+- Flex:                 FlexTemplate://template_API_Name  (no longer needed;
+                        the guide recommends removing CapabilityType=FlexTemplate://*)
+- einstein_gpt__caseEmailDraft: don't specify a CapabilityType
 
-A single character mismatch causes the Apex data to be SILENTLY excluded from
-the resolved prompt. No error appears in Prompt Builder or debug logs.
-
-After creating the Apex class:
-1. Verify the capability type string character by character.
-2. Test with Save & Preview to confirm the Apex data appears in the Resolved
-   Prompt panel.
+Contract either way:
+- Input:  List<Request>; only the first element has data
+- Output: List<Response> with one @InvocableVariable String Prompt
+- Flex:   Request variable API names match the template input API names
+          for String inputs and for object types used more than once
 ```
 
-**Detection hint:** If the advice creates an @InvocableMethod for Apex grounding without verifying the exact capability type string format, the grounding data will be silently excluded.
+**Detection hint:** `FlexTemplate://` in new Apex, or a claim that a mismatch drops data "silently."
 
 ---
 
@@ -143,7 +149,7 @@ After creating the Apex class:
 
 ```
 Newly created custom objects and custom fields do NOT appear in the Prompt
-Builder Insert Resource panel until the admin logs out and logs back in.
+Builder Resource picker until the admin logs out and logs back in.
 
 If you create a field and immediately try to add it as a merge field in the
 same session, it will not appear in the picker. This is a session cache issue,
@@ -152,8 +158,20 @@ not a permissions or configuration problem.
 Workflow:
 1. Create the custom field.
 2. Log out and log back in (or open a new session).
-3. Navigate to Prompt Builder and the field will appear in the Insert Resource
-   panel.
+3. Navigate to Prompt Builder and the field will appear in the Resource picker.
 ```
 
 **Detection hint:** If the advice creates a field and immediately uses it in Prompt Builder without mentioning the session refresh requirement, the field will not appear and the practitioner will waste time troubleshooting.
+
+---
+
+## Anti-Pattern 7: Using Flow Merge Syntax in a Prompt Template
+
+**What the LLM generates:** A template body with `{!$Record.Subject}` or `{!Flow:MyFlow.prompt}`.
+
+**Why it happens:** The model mixes Flow Builder formula syntax with Prompt Builder merge fields.
+
+**Correct pattern:** Record merge fields use the template input: `{!$Input:Case.Subject}`, `{!$Input:Account.Name}`. Flow merge fields use `{!$Flow:FlowApiName.Prompt}` as in the Metadata API sample (`{!$Flow:Fetch_Products.Prompt}`). Insert merge fields from the Resource picker instead of typing them.
+
+**Detection hint:** `$Record.` or `{!Flow:` (without `$`) inside a prompt template body.
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <activeVersionIdentifier>acct_brief_1</activeVersionIdentifier>
+    <masterLabel>Account Brief</masterLabel>
+    <relatedEntity>Account</relatedEntity>
+    <templateVersions>
+        <content>Write a two-sentence brief for {!$Input:Account.Name} in {!$Input:Account.Industry}. {!$Flow:Get_Open_Cases.Prompt}</content>
+        <inputs>
+            <apiName>Account</apiName>
+            <definition>SOBJECT://Account</definition>
+            <referenceName>Input:Account</referenceName>
+            <required>true</required>
+        </inputs>
+        <status>Published</status>
+        <versionIdentifier>acct_brief_1</versionIdentifier>
+    </templateVersions>
+    <type>einstein_gpt__fieldCompletion</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>

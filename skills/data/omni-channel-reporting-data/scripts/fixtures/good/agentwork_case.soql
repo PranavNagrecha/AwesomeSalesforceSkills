@@ -1,0 +1,4 @@
+SELECT Id, WorkItemId, OriginalGroup.Name, RequestDateTime, AcceptDateTime, CloseDateTime,
+       SpeedToAnswer, HandleTime, ActiveTime, CapacityModel, Status
+FROM AgentWork
+WHERE WorkItem.Type = 'Case' AND CloseDateTime = LAST_MONTH

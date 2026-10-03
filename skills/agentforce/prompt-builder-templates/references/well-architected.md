@@ -37,16 +37,23 @@ Flex templates are the most flexible type but have no default deployment surface
 
 2. **Treating grounding as optional** — Publishing a prompt template that relies entirely on LLM knowledge without grounding it to org data accepts hallucination as a feature behavior. For any use case where factual accuracy matters (customer-facing content, legal terms, financial data), grounding to authoritative CRM or external system data is mandatory, not optional.
 
-3. **Bypassing permission planning for packaged templates** — Distributing prompt templates in a managed package without documenting the Manage Prompt Templates permission requirement in the install guide results in silent feature failure in subscriber orgs. This is systematically misdiagnosed as a packaging bug rather than a permission gap.
+3. **Bypassing permission planning for packaged templates** — Distributing prompt templates without documenting the Prompt Template Manager and Prompt Template User permission sets in the install guide leaves the target org unable to manage or run them. UNVERIFIED (2026-10-03): the earlier claim that this fails silently in subscriber orgs was not found in a fetched source.
 
 ## Official Sources Used
 
-- Prompt Template Types — https://help.salesforce.com/s/articleView?id=ai.prompt_builder_standard_template_types.htm&language=en_US&type=5
-- Ground Prompt Templates with Salesforce Resources — https://help.salesforce.com/s/articleView?language=en_US&id=ai.prompt_builder_ground_template.htm&type=5
-- Prompt Builder Key Concepts — https://help.salesforce.com/s/articleView?id=ai.prompt_builder_key_concepts.htm&language=en_US&type=5
-- Add Flow Merge Fields to a Flex Prompt Template — https://help.salesforce.com/s/articleView?id=sf.prompt_builder_add_flows_flex.htm&language=en_US&type=5
-- Add Apex Merge Fields to a Flex Prompt Template — https://help.salesforce.com/s/articleView?id=sf.prompt_builder_add_apex_flex.htm&language=en_US&type=5
-- Ground Your Prompt Templates with Data Using Flow or Apex (Salesforce Developer Blog) — https://developer.salesforce.com/blogs/2024/04/ground-your-prompt-templates-with-data-using-flow-or-apex
-- Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
-- Einstein Platform Services — https://developer.salesforce.com/docs/einstein/genai/guide/overview.html
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-03):
+
+- Quickstart Your Einstein Generative AI Solution, Spring '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf. Prompt Builder chapter: Enable Prompt Builder (Sales Emails, Prompt Template Manager and Prompt Template User), Activate and Deactivate, Use Multiple Versions, Changing LLM Configurations, Prompt Template Types, Ground Prompt Templates (record, Flow, Apex, data graph, DMO, related list, record snapshot, retriever), Best Practices (Instructions block), Prompt Builder Limits and Limitations, Fix Pilot Prompt Templates, Add Apex Merge Fields (Field Generation and Flex examples), Work with Large Prompts; Considerations for Einstein Generative AI (300 requests per minute); Einstein Trust Layer chapter.
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. GenAiPromptTemplate (suffix, folder, access rule, fields, type values, deprecated activeVersion and versionNumber, Published immutability, data providers, sample and package.xml), GenAiPromptTemplateActv, EinsteinGptSettings (enableEinsteinGPTDeployPromptTemplatesAsActive).
+
+Listed in the original version and not re-read (Salesforce Help pages do not fetch; developer.salesforce.com returned 403 on 2026-10-03):
+
+- Prompt Template Types: https://help.salesforce.com/s/articleView?id=ai.prompt_builder_standard_template_types.htm&language=en_US&type=5 (same content read in the PDF above).
+- Ground Prompt Templates with Salesforce Resources: https://help.salesforce.com/s/articleView?language=en_US&id=ai.prompt_builder_ground_template.htm&type=5 (same content read in the PDF above).
+- Prompt Builder Key Concepts: https://help.salesforce.com/s/articleView?id=ai.prompt_builder_key_concepts.htm&language=en_US&type=5
+- Add Flow Merge Fields to a Flex Prompt Template: https://help.salesforce.com/s/articleView?id=sf.prompt_builder_add_flows_flex.htm&language=en_US&type=5
+- Add Apex Merge Fields to a Flex Prompt Template: https://help.salesforce.com/s/articleView?id=sf.prompt_builder_add_apex_flex.htm&language=en_US&type=5 (same content read in the PDF above).
+- Ground Your Prompt Templates with Data Using Flow or Apex (Salesforce Developer Blog): https://developer.salesforce.com/blogs/2024/04/ground-your-prompt-templates-with-data-using-flow-or-apex
+- Agentforce Developer Guide: https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
+- Einstein Platform Services: https://developer.salesforce.com/docs/einstein/genai/guide/overview.html
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

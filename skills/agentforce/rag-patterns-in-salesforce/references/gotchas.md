@@ -1,61 +1,109 @@
-# Gotchas — RAG Patterns in Salesforce
+# Gotchas: RAG Patterns in Salesforce
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious behaviours that make retrieval return the wrong passages, nothing at all, or something that cannot be deployed. Each gotcha names its source. "Data Cloud Guide" means the Data Cloud guide, Summer '26 (data_cloud.pdf), chapters Use Search for AI, Automation, and Analytics, Use AI Models (Retrievers), and Data Cloud Limits and Guidelines. "GenAI Guide" means Quickstart Your Einstein Generative AI Solution, Spring '26 (generative_ai.pdf).
 
-## Gotcha 1: HTML Tags in Knowledge Article Body Corrupt Embeddings
+## Gotcha 1: Stripping HTML From Knowledge Removes the Chunk Boundaries
 
-**What happens:** When a `KnowledgeArticleVersion.Body` field is mapped to a Data Cloud DMO without HTML stripping, the embedding model receives raw HTML markup as part of the chunk text. Tags like `<p>`, `<ul>`, `<li>`, `<strong>`, and entities like `&nbsp;` are tokenized and encoded as semantic content. This skews cosine similarity scores — chunks with structurally similar HTML scaffolding score closer to each other than chunks with semantically related content.
+**What happens:** A team strips HTML from article bodies before indexing, and chunks start running across sections, mixing two procedures in one passage.
 
-**When it occurs:** Any time the Knowledge → Data Cloud CRM connector maps the `Body` field directly without a Data Transform stripping HTML. This is the default path if no transformation is applied, so it affects every standard Knowledge-RAG implementation that does not explicitly address it.
+**When it occurs:** "Semantic-based passage extraction uses the semantic meaning inherent in HTML tags to chunk a document into passages. HTML elements such as headings (<h1>), lists (<ul>), or even bold text (<strong>) acting as a subheading, are considered logical boundaries." "Passage extraction chunking strategies work best for HTML files. For PDF files, passage-extraction chunking depends on how the text has been encoded." Text and HTML files "Can't chunk files with tabular data." Correction (2026-10-03): earlier versions of this skill said HTML corrupts embeddings and must be stripped.
 
-**How to avoid:** Create a Data Cloud Data Transform that applies a regex-based HTML strip to the `Body` field before writing to the DMO used for vector indexing. Test by inspecting a sample chunk in the Data Cloud UI — if angle brackets or entity codes appear in the stored text, stripping is not working.
+**How to avoid:** Keep well-formed HTML with real headings and block tags. Fix articles that use line breaks instead of headings. Add the Title as a prepend field so every chunk carries its article's name. Convert tables to prose before indexing.
 
----
-
-## Gotcha 2: Metadata Pre-Filters Can Return Zero Candidates Silently
-
-**What happens:** Metadata filters in the Grounding configuration are applied as pre-filters before ANN ranking. If the filter condition matches zero records in the index (e.g., a typo in a filter value, a merge field that resolves to null, or a case-sensitive mismatch), the vector search returns zero chunks. The agent then responds with no grounding context, appearing to ignore the knowledge base entirely. No error is surfaced to the agent user — the response simply looks ungrounded.
-
-**When it occurs:** Most commonly when filter merge fields like `{!topic.productLine}` (the merge-field namespace kept the old name when topics were renamed subagents in April 2026) resolve to null because the context variable was not populated by the time the Grounding call executes (e.g., the account record was not loaded yet, or the subagent action that sets the variable fires after the retrieval step). Also occurs when filter values are compared case-sensitively against DMO field values that were ingested with inconsistent casing.
-
-**How to avoid:** In Agent Preview, check the Grounding tab for "0 chunks retrieved" results. Validate filter merge field values by adding a Debug action before the retrieval step to log the resolved value. Use case-insensitive filter operators where available, or normalize casing during Data Transform ingest. Add a fallback Grounding configuration without the filter as a secondary retriever for the same subagent, triggered when the primary returns zero results.
+**Source:** Data Cloud Guide, Chunking Strategies (Semantic-based Passage Extraction; Window-based Passage Extraction; Prepend Field Chunking); Search Index Reference (Supported File Formats).
 
 ---
 
-## Gotcha 3: Einstein Trust Layer Masking Silently Degrades Chunk Content
+## Gotcha 2: Non-Latin Text Can Overflow the 512-Token Chunk
 
-**What happens:** The Einstein Trust Layer applies data masking to chunks that contain fields classified as sensitive (PII, financial, health data) under the org's field classification taxonomy. Masked values are replaced with placeholder tokens (e.g., `[MASKED]`) before the chunk reaches the LLM. The chunk still counts toward the top-K budget and appears in the Grounding tab as "retrieved," but the LLM receives a chunk with critical content redacted. The agent may generate a response acknowledging the document exists while being unable to use its content — or worse, may hallucinate the masked values.
+**What happens:** Japanese articles retrieve poorly while English ones work.
 
-**When it occurs:** When source DMO fields that appear in chunk text are classified as sensitive under Data Cloud's field taxonomy. Common examples: `Email__c`, `Phone__c`, `SSN__c` in a customer-facing knowledge DMO, or `Price__c` fields in a product spec DMO where pricing data is classified as confidential.
+**When it occurs:** "In Data Cloud, the max token limit is set to 512 by default." Data Cloud estimates tokens from words for Latin-based languages and from punctuation marks for non-Latin languages, so "512 punctuation marks can exceed 512 tokens... not all text that is included in the chunk gets included in the embedding."
 
-**How to avoid:** Before enabling RAG grounding in production, export the Trust Layer audit log for a representative set of retrieval queries and inspect for masking events. If content-critical fields are being masked, either: (1) reclassify the field as non-sensitive if that is appropriate given data governance policy, or (2) restructure the DMO to exclude sensitive fields from the text column that feeds the vector index, keeping them only as filterable metadata columns that are never chunked.
+**How to avoid:** Set a max token limit below 512 for non-Latin content, and choose Multilingual E5-Large where content is multilingual (supported models: E5-Large V2, Multilingual E5-Large, Whisper-Large-V3).
 
----
-
-## Gotcha 4: Vector Index Does Not Refresh Automatically on Knowledge Article Publish
-
-**What happens:** When a Knowledge article is published or updated, it does not immediately appear in vector search results. The Data Cloud Data Stream defaults to **scheduled batch refresh**, not near-real-time. New articles remain invisible to the retriever until the next scheduled refresh window executes, which may be hours later depending on the configured schedule.
-
-**When it occurs:** Any org where the Knowledge → Data Cloud Data Stream was created without explicitly enabling continuous (near-real-time) refresh mode. The Salesforce UI does not warn that retrieval results may be stale.
-
-**How to avoid:** Open the Data Stream configuration in Data Cloud and confirm the refresh mode. If Knowledge articles are published frequently and freshness matters for agent quality, switch to continuous mode. Document the refresh lag in the RAG system runbook so that support staff know not to expect newly published articles to be retrievable immediately.
+**Source:** Data Cloud Guide, How the Max Token Setting Affects Chunking; Search Index Reference (Supported Embedding Models).
 
 ---
 
-## Gotcha 5: top-K Retrieved Chunks Consume Prompt Token Budget
+## Gotcha 3: Retriever Filters Only Work on the Index's Filter Fields
 
-**What happens:** Each retrieved chunk is inserted into the prompt payload before the LLM call. With `top_k = 10` and `chunk_size = 512 tokens`, retrieval alone contributes up to 5,120 tokens to the prompt. For agents using GPT-4 class models with a 128K context window this is rarely a problem, but for configurations with shorter windows, or when the prompt template also includes long CRM record fields and conversation history, total prompt size can exceed the model's context limit. When this happens, the platform silently truncates either the conversation history or the retrieved chunks — and the agent degrades without a clear error.
+**What happens:** In Einstein Studio, the Filter Documents to Return option is missing, or the product field the team wants is not in the list.
 
-**When it occurs:** During load testing or when subagents have complex system prompts combined with high top-K values and large chunk sizes. Also occurs when conversation history accumulates over a long multi-turn session.
+**When it occurs:** "Retriever filters are available only if the search index that you selected has filter fields defined." A custom retriever takes "up to 10 conditions," and an index allows at most 10 pre-filter fields with text values up to 1,024 characters. In a prompt template, the retriever's Search Text "is limited to globals and prompt inputs. It can't use other sources, such as related list, Flow, or Apex," and is limited to 255 characters.
 
-**How to avoid:** During QA, monitor total prompt token consumption using the Einstein Trust Layer audit log (which records input and output token counts per call). Tune `top_k` and `chunk_size` together — reducing top-K from 10 to 5 halves retrieval token cost with minimal recall impact for most use cases. Set a prompt token budget guard in the subagent's system prompt length design.
+**How to avoid:** Design filter fields when creating the index (Advanced Setup), and keep search text short and built from prompt inputs. UNVERIFIED (2026-10-03): the earlier `{!topic.product}` filter syntax on a subagent "Grounding record" is not documented anywhere fetched.
+
+**Source:** Data Cloud Guide, Create a Custom Retriever (step 3); Unstructured Data and Search Index Guidelines and Limits. GenAI Guide, Ground with Retrieval Augmented Generation (Retriever Settings; Considerations).
 
 ---
 
-## Gotcha 6: Scratch Org Packaging Requires Data Kits for Vector Index Configuration
+## Gotcha 4: Ten Search Indexes Per Data Cloud Instance, and Deletion Has an Order
 
-**What happens:** Vector search index configuration, DMO definitions, and Data Stream mappings are Data Cloud metadata artifacts. They are not automatically included in a 2GP package's metadata retrieval using standard `force:source:retrieve`. Attempting to deploy a RAG-enabled agent package to a scratch org without the Data Kit component results in a broken Grounding configuration — the agent deploys but the retriever references a non-existent index.
+**What happens:** A new project cannot create its index, and an admin cannot delete an old one.
 
-**When it occurs:** In any 2GP DevOps pipeline that does not explicitly include Data Cloud metadata via Data Kits. This catches teams who package the Agentforce agent and prompt template correctly but overlook the Data Cloud side of the RAG configuration.
+**When it occurs:** The limit is 10 search indexes per Data Cloud instance. "Before a search index can be deleted, all retrievers associated with the search index, including the default retriever, must be deleted." A retriever can be deleted only "if it has no dependencies from prompt templates," and Prompt Builder requires removing references from "any version of any prompt templates that use it" before a retriever is deleted or deactivated. Deleting an unstructured data lake object with an index also requires deleting the retrievers, then the index.
 
-**How to avoid:** Use Data Kits (introduced in Summer '24) to package Data Cloud components — DMO definitions, Data Streams, and vector search index configurations — alongside the agent package. The Data Cloud Developer Guide documents the Data Kit structure and `datakit.json` manifest format. Validate by deploying the full package to a new scratch org and running a test retrieval query before marking a CI build green.
+**How to avoid:** Keep an index register with owners. Retire indexes by removing retriever references from every template version, deleting custom and default retrievers, then deleting the index.
+
+**Source:** Data Cloud Guide, Unstructured Data and Search Index Guidelines and Limits; Delete a Retriever; Delete a UDLO With a Search Index. GenAI Guide, Ground with Retrieval Augmented Generation (Active Retrievers).
+
+---
+
+## Gotcha 5: Retrievers and Indexes Don't Deploy With the Prompt Template
+
+**What happens:** A template deploys to production and fails because its retriever does not exist there.
+
+**When it occurs:** "If a prompt uses an Einstein Search retriever, the change sets don't include the retriever or search index metadata. You must manually create the retriever in the destination org before deploying the retriever. This rule applies to change sets and Metadata API deployments." Search index configurations can be added to a data kit and recreated from it.
+
+**How to avoid:** Deploy the index configuration through a data kit, create the retriever in the target org with the same API name, then deploy the templates. Keep the retriever settings (filters, output fields, number of results) in the decision record so they can be rebuilt exactly.
+
+**Source:** GenAI Guide, Prompt Builder Limitations (Limitations for Einstein Search). Data Cloud Guide, Add a Search Index Configuration to a Data Kit; Create a Search Index Configuration from a Data Kit.
+
+---
+
+## Gotcha 6: Search Indexes Don't Support Customer-Managed Keys
+
+**What happens:** A compliance review finds indexed content that policy says must be encrypted with the org's own key.
+
+**When it occurs:** "Search indexes don't support encryption with customer managed keys. Data in search indexes cannot be encrypted with customer managed keys when customers enable this capability in Data Cloud."
+
+**How to avoid:** Classify content before indexing, and keep content that requires customer-managed key encryption out of search indexes.
+
+**Source:** Data Cloud Guide, Use Search for AI, Automation, and Analytics (note).
+
+---
+
+## Gotcha 7: Oversized Files Are Stored but Never Chunked
+
+**What happens:** A 6 MB HTML manual uploads without error and is never retrieved.
+
+**When it occurs:** Text or HTML files larger than 4 MB, and PDFs larger than 100 MB, "are added to unstructured data lake objects and unstructured data model objects, but they aren't chunked or vectorized." Data library uploads carry the same limits ("up to 4 MB for text or HTML files, or 100 MB for PDF files").
+
+**How to avoid:** Split large documents before upload and check that each file produced chunks in the chunk DMO.
+
+**Source:** Data Cloud Guide, Unstructured Data and Search Index Guidelines and Limits. GenAI Guide, Select Files to Upload (note).
+
+---
+
+## Gotcha 8: A Data Library's Data Space and Source Are Permanent
+
+**What happens:** A team builds a library on uploaded files, later wants Knowledge, and has to start over.
+
+**When it occurs:** "After you choose a data space, you can't change it later." "A data library can't support Knowledge and file uploads simultaneously... After you choose a library's data source, you can't change it later." "Each feature can use one data library at a time."
+
+**How to avoid:** Decide the data space and source before creating the library. Use separate libraries for Knowledge and files, and remember each feature uses only one.
+
+**Source:** GenAI Guide, Add a Data Library; Choose A Data Source for Your Library; Assign Data Libraries to Features.
+
+---
+
+## Gotcha 9: Masking Doesn't Clean Retrieved Text for Agents
+
+**What happens:** A retrieved transcript containing a customer's phone number appears in an agent's prompt as written.
+
+**When it occurs:** "Data masking through the Einstein Trust Layer is disabled to improve the performance and accuracy of agents." For prompt templates, pattern-based masking scans all prompt text but only for its listed data types, and field-based masking covers only record merge fields and related lists. Correction (2026-10-03): earlier versions said masked fields inside chunks are redacted and silently empty chunks.
+
+**How to avoid:** Keep sensitive values out of indexed content, choose output fields deliberately, and review the GenAIGatewayRequest audit report for what was actually sent.
+
+**Source:** GenAI Guide, Agentforce Agents (Einstein Trust Layer section); Large Language Model Data Masking; Generative AI Audit and Feedback Data (retrieved data collected).

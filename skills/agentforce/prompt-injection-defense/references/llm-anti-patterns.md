@@ -63,19 +63,21 @@ https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_cl
 ## Anti-Pattern 2: Treating Trust Layer masking as an authorization control
 
 Assistants respond to "stop the agent leaking data" by turning on data masking and
-stopping. Masking is a pre-prompt transformation on what is sent to the model and a
-filter on what comes back — it addresses PII appearing in text. It does not decide
-whether an action is allowed to run, and it does not stop tool-use coercion, which is
-the actual mechanism behind most damaging injections.
+stopping. Masking replaces detected sensitive values in the prompt before it reaches
+the model and restores them in the response; it is not an output filter, and it is
+disabled for agents ("Data masking through the Einstein Trust Layer is disabled to
+improve the performance and accuracy of agents"). It does not decide whether an action
+is allowed to run, and it does not stop tool-use coercion, which is the actual
+mechanism behind most damaging injections.
 
 ❌ "PII masking is enabled, so the agent is safe."
-✅ Two separate controls, both required: Trust Layer masking for text exposure, and
-server-side re-validation plus least-privilege sharing in every action for business
-policy. Write one adversarial test for each; a masking test cannot pass for a policy
-bug.
+✅ Remove sensitive fields from agent grounding (narrow projections, user-mode queries),
+and enforce business policy with server-side re-validation plus least-privilege sharing
+in every action. Write one adversarial test for each; a masking setting cannot pass for
+a policy bug.
 
-Source: Einstein Trust Layer —
-https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm
+Source: Quickstart Your Einstein Generative AI Solution, Agentforce Agents (Einstein Trust Layer section):
+https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
 
 ## Anti-Pattern 3: Piling one instruction per incident onto the subagent
 
@@ -133,8 +135,24 @@ degrades invisibly.
 
 ❌ A slide deck titled "Agent security sign-off".
 ✅ The payload set, the expected refusal, and the identity under test committed beside
-the agent metadata and re-run through Agentforce Testing Center on every change, so the
-guardrail has a pass/fail gate rather than a memory.
+the agent metadata as an AiEvaluationDefinition (Metadata API v63.0+) and re-run through
+Agentforce Testing Center on every change, so the guardrail has a pass/fail gate rather
+than a memory.
 
 Source: Agentforce Testing Center —
 https://help.salesforce.com/s/articleView?id=sf.agentforce_testing_center.htm
+
+## Anti-Pattern 8: Accepting Verdicts From the Model as Action Inputs
+
+An action signature such as `refund(orderId, statusIsDelivered)` lets the model fill in
+the very fact the policy depends on, and an injected turn can simply assert it.
+
+❌ `@InvocableVariable public Boolean isEligible;` checked before a DML statement.
+✅ Accept only identifiers from the model, re-query status and eligibility under user
+mode inside the action, and refuse in code. The skill checker flags verdict-named
+Boolean request variables (`PI-TRUST-01`).
+
+Source: Quickstart Your Einstein Generative AI Solution, Best Practices for Writing Topic
+Instructions ("Build sensitive or deterministic business rules into the logic of an
+action itself").
+

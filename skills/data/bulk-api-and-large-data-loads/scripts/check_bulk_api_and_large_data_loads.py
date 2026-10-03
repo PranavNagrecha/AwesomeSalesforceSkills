@@ -120,7 +120,7 @@ def check_bulk_api_result_retrieval(files: list[Path]) -> list[str]:
         if not has_upload_complete:
             issues.append(
                 f"{rel}: References Bulk API ingest but no UploadComplete signal found. "
-                "Jobs remain in Open state indefinitely without PATCH {{state: UploadComplete}}. "
+                "Jobs stay Open without PATCH {state: UploadComplete} and are capped at 24 hours open. "
                 "The job will never start processing without this call."
             )
 

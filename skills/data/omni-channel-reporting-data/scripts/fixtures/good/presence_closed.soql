@@ -1,0 +1,4 @@
+SELECT UserId, SUM(StatusDuration) secondsInStatus
+FROM UserServicePresence
+WHERE StatusStartDate = YESTERDAY AND StatusEndDate != null
+GROUP BY UserId

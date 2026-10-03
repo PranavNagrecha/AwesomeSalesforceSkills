@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceAISetupDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <appSourceType>ARTICLE_RECOMMENDATION</appSourceType>
+    <name>Recs</name>
+    <setupStatus>SERVING</setupStatus>
+    <supportedLanguages>en</supportedLanguages>
+</ServiceAISetupDefinition>

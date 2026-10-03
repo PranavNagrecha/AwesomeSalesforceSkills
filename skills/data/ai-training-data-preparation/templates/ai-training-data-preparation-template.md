@@ -7,7 +7,7 @@ Use this template when preparing data for an Einstein Discovery story or Einstei
 ## Scope
 
 **Project / Object being modeled:** _______________
-**Einstein product:** [ ] Einstein Prediction Builder (binary only, no CRM Analytics required)  [ ] Einstein Discovery (requires CRM Analytics)
+**Einstein product:** [ ] Einstein Studio predictive model (Data Cloud; regression or binary)  [ ] Einstein Prediction Builder (Setup; confirm supported outcome types)  [ ] Einstein Discovery (requires CRM Analytics)
 **Outcome field:** _______________
 **Outcome type:** [ ] Binary (yes/no)  [ ] Regression (numeric value)  [ ] Multi-class (category)
 
@@ -38,9 +38,11 @@ Use this template when preparing data for an Einstein Discovery story or Einstei
 
 | Metric | Required | Actual |
 |---|---|---|
-| Total rows with outcome populated | 400 min | |
-| Positive-class rows (EPB) | 200 min | |
-| Negative-class rows (EPB) | 200 min | |
+| Total rows with outcome populated | 400 min (Einstein Studio) | |
+| Columns including outcome | 3 to 50 (Einstein Studio) | |
+| Positive-class rows (EPB) | 200 min (UNVERIFIED review threshold) | |
+| Negative-class rows (EPB) | 200 min (UNVERIFIED review threshold) | |
+| Checker run | `scripts/check_ai_training_data_preparation.py` exit 0 | |
 
 ---
 

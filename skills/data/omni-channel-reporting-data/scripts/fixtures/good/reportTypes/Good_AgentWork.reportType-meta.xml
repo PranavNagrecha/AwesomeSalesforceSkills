@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>AgentWork</baseObject>
+    <category>other</category>
+    <deployed>true</deployed>
+    <label>Good AgentWork</label>
+    <sections>
+        <columns><checkedByDefault>true</checkedByDefault><field>SpeedToAnswer</field><table>AgentWork</table></columns>
+        <columns><checkedByDefault>true</checkedByDefault><field>OriginalGroup.Name</field><table>AgentWork</table></columns>
+        <masterLabel>Assignment</masterLabel>
+    </sections>
+</ReportType>

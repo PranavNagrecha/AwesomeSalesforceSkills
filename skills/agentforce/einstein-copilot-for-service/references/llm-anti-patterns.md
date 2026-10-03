@@ -11,6 +11,11 @@ These patterns help the consuming agent self-check its own output.
 
 **Correct pattern:**
 
+UNVERIFIED (2026-10-03): the numeric prerequisites in this block (400 cases, 6 months,
+25 examples per value, 48 hours, max 3 fields) come from earlier versions and were not
+found in a fetched source. Treat them as review thresholds, and measure acceptance
+from AIInsightFeedback after go-live (`references/examples.md`, Example 4).
+
 ```text
 Einstein Case Classification prerequisites:
 
@@ -26,8 +31,9 @@ Enablement:
 2. Setup > Einstein Case Classification > Enable
 3. Select fields to classify (max 3 fields recommended)
 4. Wait for model training (up to 48 hours)
-5. Review model accuracy in the Einstein model card
-6. Start with "recommend" mode (not auto-apply) to validate
+5. Review acceptance per field (AIRecordInsight, AIInsightValue, AIInsightFeedback)
+6. Start with recommendations (not auto-apply), and leave runAssignmentRules /
+   reRunAttributeBasedRules off until acceptance is proven
 
 Common failures:
 - Model does not build: fewer than 400 cases or too many
@@ -74,7 +80,7 @@ Common issue: "Article Recommendations enabled but no suggestions appear"
 They are complementary, not interchangeable.
 ```
 
-**Detection hint:** Flag Article Recommendation guides that do not mention the case-article attachment history requirement. Check for orgs enabling the feature with fewer than 1000 historical case-article pairs.
+**Detection hint:** Flag Article Recommendation guides that skip the language list and field ranking (ServiceAISetupDefinition supportedLanguages, ServiceAISetupField fieldPosition). UNVERIFIED (2026-10-03): the earlier case-article attachment requirement and the 1,000-pair threshold.
 
 ---
 
@@ -85,6 +91,12 @@ They are complementary, not interchangeable.
 **Why it happens:** Reply Recommendations is positioned as an easy-to-enable feature. LLMs skip the data and channel requirements. The model needs patterns from successful past conversations to generate relevant suggestions.
 
 **Correct pattern:**
+
+Correction (2026-10-03): the Object Reference describes the mechanism as a model that
+"analyzes closed chats for frequently used text snippets," then ReplyText records that an
+admin reviews and publishes to quick text; only published replies are recommended. The
+volume, per-channel, feedback-loop, and "suggestions appear as the customer types" details
+below are UNVERIFIED.
 
 ```text
 Reply Recommendations prerequisites:
@@ -186,6 +198,9 @@ Layer 2: Einstein Case Classification (optional enhancement)
 Layer 3: Routing Rules (connects classification to routing)
 - Assignment Rules or Omni-Channel Flow uses classification values
   to route to the correct queue or skilled agent
+- EinsteinAgentSettings runAssignmentRules / reRunAttributeBasedRules
+  (default false) make those rules run again after classification
+  updates field values
 - Example: if Einstein sets Priority = High AND Type = Billing,
   route to the Senior Billing Agents queue
 
@@ -203,3 +218,26 @@ Verification:
 **Detection hint:** Flag Einstein routing advice that does not mention Omni-Channel as a prerequisite. Check for classification fields not referenced in any routing or assignment rule. Flag orgs with Einstein Case Classification enabled but no Omni-Channel configuration.
 
 ---
+
+## Anti-Pattern 6: Expecting Classification to Re-Route Cases by Itself
+
+**What the LLM generates:** "Once Case Classification sets the Type, Omni-Channel will route the case to the right queue."
+
+**Why it happens:** The model assumes field changes always trigger routing.
+
+**Correct pattern:** EinsteinAgentSettings `runAssignmentRules` and `reRunAttributeBasedRules` decide whether assignment rules or skills-based routing rules run after classification updates field values, and both default to false. Set the one that matches your routing, or call `applyCaseClassificationRecommendations` in a flow and route from there.
+
+**Detection hint:** A classification design that mentions routing but neither setting.
+
+---
+
+## Anti-Pattern 7: Publishing Generated Replies Without Review
+
+**What the LLM generates:** "Select all generated replies and publish them to quick text."
+
+**Why it happens:** Bulk publish looks efficient.
+
+**Correct pattern:** ReplyText records are built from closed chats, "they may contain customer data," and each should be edited before publishing. Check for PUBLISH_FAILED records after publishing.
+
+**Detection hint:** A Reply Recommendations rollout plan with no review step.
+

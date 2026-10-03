@@ -24,7 +24,7 @@ Answer these before taking action:
 |---|---|
 | Data Cloud provisioned and Vector Search feature enabled? | Yes / No / Unknown |
 | Source content type (Knowledge, DMO, file-based, custom)? | |
-| HTML or markup present in source text fields? | Yes / No |
+| HTML headings and lists present (needed by passage extraction)? | Yes / No |
 | Embedding model preference (Salesforce-managed / BYO via Model Builder)? | |
 | Metadata fields available for filtering (list field API names)? | |
 | Refresh cadence requirement (near-real-time / scheduled batch)? | |
@@ -44,7 +44,7 @@ Answer these before taking action:
 | Source DMO and field | | |
 | Embedding model | | |
 | Chunk size (tokens) | | |
-| Chunk overlap (tokens) | | |
+| Max tokens per chunk (512 default; lower for non-Latin) | | |
 | Refresh mode | | |
 | Metadata pre-filter (if any) | | |
 
@@ -52,7 +52,7 @@ Answer these before taking action:
 
 | Parameter | Value | Rationale |
 |---|---|---|
-| Top-K | | |
+| Number of results (retriever) | | |
 | Metadata filter expression | | |
 | Subagent / prompt template attached to | | |
 | Fallback behavior if zero chunks returned | | |
@@ -76,16 +76,16 @@ Custom pattern notes:
 
 - [ ] Data Cloud Vector Search feature confirmed enabled
 - [ ] Data Stream created with correct source connector and field mappings
-- [ ] HTML / markup stripped from source text field before indexing (if applicable)
+- [ ] HTML kept well-formed with real headings; tables converted to prose
 - [ ] Metadata filter fields populated with consistent casing during ingest
-- [ ] Vector search index created with documented chunk size, overlap, embedding model
+- [ ] Search index created with documented chunking strategy, max tokens, embedding model, search type, filter fields
 - [ ] Grounding configuration record created and linked to subagent or prompt template
-- [ ] Top-K set to documented value with rationale
+- [ ] Number of results set with a prompt-size rationale
 - [ ] Metadata pre-filter tested with at least one known-matching and one known-non-matching value
 - [ ] Agent Preview Grounding tab reviewed — chunks visible and relevant for 5+ test queries
 - [ ] Einstein Trust Layer audit log reviewed — no unexpected masking events
 - [ ] Data Stream refresh cadence confirmed and documented in runbook
-- [ ] Prompt template `{!grounding.chunks}` merge field placed after role-framing, before task instruction (if using Prompt Builder)
+- [ ] Retriever added from the Resource picker; context before the Instructions block (if using Prompt Builder)
 - [ ] Total prompt token consumption measured and within model context window budget
 - [ ] Data Kit includes vector index configuration (if packaging to scratch org or sandbox)
 
@@ -100,7 +100,7 @@ Before enabling the index for production agent traffic, verify source content qu
 | Only published (Online) Knowledge articles are indexed | Pass / Fail |
 | Archived articles excluded from Data Stream filter | Pass / Fail |
 | No draft or outdated documents present in DMO | Pass / Fail |
-| HTML stripped from all text columns used for chunking | Pass / Fail |
+| Checker run (`scripts/check_rag_patterns_in_salesforce.py`) with no ERROR | Pass / Fail |
 | Sensitive fields excluded from chunked text columns | Pass / Fail |
 
 ---

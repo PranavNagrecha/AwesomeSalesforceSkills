@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Old RAG</masterLabel>
+    <templateVersions>
+        <content>Context: {!grounding.chunks} Answer the question.</content>
+        <status>Draft</status>
+        <templateDataProviders>
+            <definition>einstein_search://Policy_Passages</definition>
+            <label>Policy Passages</label>
+            <referenceName>EinsteinSearch:Policy_Passages</referenceName>
+        </templateDataProviders>
+    </templateVersions>
+    <type>einstein_gpt__flex</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>

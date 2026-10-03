@@ -8,12 +8,15 @@
 
 **Solution:**
 
-1. In Trust Layer Setup, confirm data masking is toggled On and the following categories are selected: Names, Email Addresses, Phone Numbers (Business and Mobile), Credit Card Numbers.
+1. In Setup, open Einstein Trust Layer and confirm large language model data masking is on (it is on by default) and that Name, Email Address, Phone Number, and Credit Card are selected in the pattern-based list.
 2. Open Prompt Builder and load a prompt template used by Service Replies.
 3. Select a test record that contains known PII values (a test customer with a real-format phone number and name).
-4. Use the "Preview" function in Prompt Builder.
-5. In the preview output, confirm that the customer name appears as `PERSON_0` and the phone number as `PHONE_0` — not as the raw values.
-6. Confirm that the response from the LLM restores the original values in the final output shown to the agent.
+4. Use the Preview function in Prompt Builder.
+5. In the resolution, confirm the customer name and phone number appear as placeholder text, and open View Your Data Masking Details to see which placeholder maps to which value.
+6. Confirm that the response restores the original values (demasked values are shown in italics).
+7. After data collection is on, run the GenAIGatewayRequest report with Timestamp, Model, # promptTokens, Prompt, and MaskedPrompt to confirm the same masking in real traffic.
+
+UNVERIFIED (2026-10-03): the placeholder tokens below illustrate the idea; the guide does not show the exact placeholder format.
 
 ```text
 Expected masked prompt fragment (sent to LLM):
@@ -29,35 +32,28 @@ Expected demasked response fragment (shown to user):
 
 ## Example 2: Using the Audit Trail to Investigate a Compliance Inquiry
 
-**Context:** An internal audit team asks for a log of all AI-generated responses produced for a specific case over the past 30 days, including whether agents accepted or modified those responses.
+**Context:** An internal audit team asks for evidence of what was sent to the LLM for Service Replies over the past 30 days, which responses were flagged for toxicity, and whether agents accepted or modified them.
 
-**Problem:** Without audit trail enabled, there are no interaction-level records. Even with it enabled, practitioners may not know how to locate records in Data 360 or what fields are available.
+**Problem:** Earlier versions of this example described an "Audit Trail toggle" and invented field names. The guide's path is different: audit data appears only after Einstein generative AI data collection and storage is turned on and the report package is installed.
 
 **Solution:**
 
-1. Confirm audit trail is enabled: Setup > Einstein Setup > Go to Einstein Trust Layer > Audit Trail toggle is On.
-2. Navigate to Data 360 and access the Einstein AI interaction dataset.
-3. Filter by the date range (last 30 days) and by the case object or feature type (Service Replies).
-4. Each interaction record contains:
-   - Timestamp of the interaction
-   - Original prompt text (including grounded CRM data as sent to the LLM)
-   - Toxicity scores by category (composite 0–1 scale)
-   - Raw LLM output (before user review)
-   - User decision: accepted, rejected, or modified
-   - If modified: the final text the user submitted
-5. Export or share these records with the audit team as the compliance artifact.
+1. Confirm data collection is on in Einstein Setup and the GenAI data streams in Data Cloud show a successful last run.
+2. In Data Cloud, Reports tab, create a report from the GenAIGatewayRequest report type. Add Timestamp, Model, # promptTokens, Prompt, and MaskedPrompt. Filter Feature to Service Replies and Timestamp to the last 30 days.
+3. Create a second report from GenAIGatewayResponse with GenAIContentCategory. Add Timestamp, ResponseText, DetectorType, Category, and Value. Filter DetectorType equals toxicity.
+4. For accept, modify, and reject decisions, use the feedback DMOs (GenAIFeedback `action__c`, GenAIAppGeneration `generationUpdate__c` for the modified text).
+5. Export both reports as the compliance artifact, and note that Salesforce also keeps audit and feedback data for 30 days for compliance purposes.
 
 ```text
-Sample audit record fields:
-  interaction_timestamp: 2026-03-15T14:22:31Z
-  feature: EinsteinServiceReplies
-  toxicity_score_composite: 0.03
-  user_decision: modified
-  original_llm_output: "I understand your frustration..."
-  user_final_output: "I understand your concern and will escalate this immediately."
+DMO fields used (Field API names from the Data Model for Generative AI Audit and Feedback):
+  GenAIGatewayRequest : timestamp__c, feature__c, model__c, provider__c, prompt__c,
+                        maskedPrompt__c, enablePiiMasking__c, promptTokens__c,
+                        promptTemplateDevName__c, promptTemplateVersionNo__c
+  GenAIContentCategory: detectorType__c, category__c, value__c, parent__c
+  GenAIFeedback       : action__c, feedback__c, generationId__c, userId__c
 ```
 
-**Why it works:** The audit trail captures the complete interaction lifecycle. The user decision field provides evidence of human oversight, which is often required for AI compliance frameworks.
+**Why it works:** The request DMO holds the hydrated and masked prompt side by side, the content category DMO holds detector results by category, and the feedback DMOs hold the human decision.
 
 ---
 
@@ -65,23 +61,23 @@ Sample audit record fields:
 
 **Context:** A Prompt Builder template works correctly in preview without data masking, but fails or returns a truncated response when masking is enabled on the org.
 
-**Problem:** Data masking reduces the effective context window to 65,536 tokens. A large prompt template with extensive dynamic grounding (Data Cloud records, knowledge articles) exceeds this limit when masking is active, causing the LLM call to fail silently or return an incomplete response.
+**Problem:** Earlier versions said data masking reduces the effective context window to 65,536 tokens. UNVERIFIED (2026-10-03): that figure is not in the Generative AI guide. What the guide does document is that a prompt too large for the model gets an automatic summary in the Resolution panel, and that masking can affect grounding.
 
 **Solution:**
 
-1. Estimate the token count of the fully-grounded prompt at runtime (use a token estimation utility or Prompt Builder's token counter if available).
-2. If the grounded prompt exceeds 65,536 tokens, reduce the scope of dynamic grounding — limit the number of knowledge articles retrieved, truncate long text fields, or remove low-value context.
+1. Preview the template with masking on and the largest realistic record; check whether the Resolution panel shows an automatic summary.
+2. Read `promptTokens__c` for real calls in the GenAIGatewayRequest report, and reduce grounding scope (fewer retrieved articles, shorter long-text fields) where prompts are summarized or responses truncate.
 3. Re-test with masking active and verify the response is complete.
 4. Document the token budget headroom as part of the prompt template design standards.
 
 ```text
-Token budget with data masking active:
-  Hard limit:  65,536 tokens
-  Recommended target: <= 50,000 tokens (leave headroom for response)
+Prompt size review:
+  Source of truth: promptTokens__c and totalTokens__c in GenAIGatewayRequest
+  Signal: automatic summary shown in the Prompt Builder Resolution panel
   Grounding fields to audit: Long text areas, Knowledge Article bodies, multi-record retrievals
 ```
 
-**Why it works:** The context window constraint is a hard platform limit when masking is active. Reducing grounding scope is the only remediation — there is no configuration to raise this limit.
+**Why it works:** Measured token counts from real traffic replace an unverified fixed limit, and the automatic summary is the documented sign that a prompt is too large.
 
 ---
 

@@ -14,6 +14,8 @@ triggers:
   - "how do I choose between Einstein Discovery and Einstein Prediction Builder for my use case"
   - "fill rate below threshold is causing Einstein to drop fields from my model"
   - "we're having issues with machine learning"
+  - "audit a training extract for leakage and fill rate before building an Einstein Studio predictive model"
+  - "check whether my CSV has enough rows and columns to train a model in Model Builder"
 tags:
   - einstein
   - machine-learning
@@ -26,20 +28,23 @@ inputs:
   - "Outcome field (the value the model should predict)"
   - "License context: CRM Analytics license available or not"
   - "Minimum row count and data completeness metrics per field"
+  - "A CSV extract of the training data, for the bundled checker"
 outputs:
   - "Feature field selection checklist with fill-rate thresholds"
   - "Outcome field definition and leakage audit"
   - "Data preparation checklist for Einstein Discovery story or EPB model"
   - "Decision matrix: Einstein Discovery vs Einstein Prediction Builder"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
 # AI Training Data Preparation
 
-Use this skill when setting up data for Salesforce Einstein ML models — specifically Einstein Discovery (story-based ML requiring CRM Analytics license) and Einstein Prediction Builder (binary classification, no CRM Analytics license required). This skill covers outcome field design, fill-rate analysis, leakage detection, and feature field curation.
+Use this skill when setting up data for a Salesforce predictive model: an Einstein Studio predictive model built in Model Builder on Data Cloud data, an Einstein Discovery story in CRM Analytics, or an Einstein Prediction Builder prediction on Salesforce objects. It covers outcome design, fill rates, leakage, cardinality, and class balance, and ships a checker that audits a training extract before anything trains.
+
+Grounding note (2026-10-03): the numeric requirements that a fetched official source states belong to Einstein Studio predictive models (Data Cloud guide, "Create Predictive AI Models From Scratch"). The Einstein Discovery and Prediction Builder thresholds in earlier versions of this skill come from Salesforce Help pages, which do not fetch; they are kept below with UNVERIFIED markers.
 
 ---
 
@@ -47,57 +52,72 @@ Use this skill when setting up data for Salesforce Einstein ML models — specif
 
 Gather this context before working on anything in this domain:
 
-- Which Einstein product is in scope: Einstein Discovery (regression, multi-class, binary — requires CRM Analytics license) or Einstein Prediction Builder (binary only, no CRM Analytics license)?
+- Which product is in scope: Einstein Studio predictive model (Data Cloud, regression or binary classification), Einstein Discovery (CRM Analytics license), or Einstein Prediction Builder (Setup, on Salesforce objects)?
 - What is the exact outcome field: binary yes/no, a numeric value, or a category?
-- What is the row count and fill rate for the intended training object?
+- What are the row count, column count, and fill rate for the intended training data?
 - Are any candidate predictor fields derived from post-outcome data (leakage risk)?
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What exactly is the outcome, and when in the record's life is it known?" | Fields set at or after the outcome leak it, and a model that looks too accurate is the symptom (Gotcha 1) | An outcome definition plus a "known before" date for every predictor | Accuracy in training is the accuracy users get on open records |
+| "How many rows and columns will the training data have?" | Einstein Studio predictive models need 400 to 20 million rows and 3 to 50 columns (Gotcha 2) | Counts from the actual extract, not the object | The model trains on the first attempt instead of failing setup |
+| "Which predictors are free-text or ID-like with many distinct values?" | Einstein Studio supports up to 100 categories per variable, and high-cardinality fields rarely help (Gotcha 3) | A list of fields to bucket, drop, or consolidate | Predictors the model can use, and explanations people can read |
+| "What fills the gaps in sparse fields, and why are they sparse?" | Nulls become an Unspecified category, and dropping too many rows hides real patterns (Gotcha 4) | A per-field rule: impute, bucket, or exclude | Sparse fields help or are removed on purpose, not by accident |
+| "Is the type, data source, and goal final?" | After an Einstein Studio model is created, Choose Type, Select Data, and Set Goal can't be edited (Gotcha 5) | Sign-off on type, source, and goal before Save & Train | No rebuild because the outcome direction was wrong |
+| "How rare is the positive outcome?" | A rare outcome lets a model look accurate while predicting the majority class (Gotcha 6) | Class counts and a threshold plan | The business sees useful recall, not a flat "no" for everyone |
 
 ---
 
 ## Core Concepts
 
-### Minimum Row and Fill-Rate Thresholds
+### Data Requirements by Product
 
-Einstein Discovery requires a **minimum of 400 rows** where the outcome field is populated. Fields with a fill rate below approximately **70%** are silently dropped from feature selection during story creation — the platform does not warn you that a field was excluded. If a key predictor has low fill rate, the model trains without it and accuracy degrades without explanation.
+**Einstein Studio predictive models (grounded).** The data source must have at least 400 and at most 20 million rows, and at least 3 columns (1 outcome plus 2 others) and at most 50. Supported use cases are regression (continuous numbers) and binary classification (two-value text outcomes). "Created models in Einstein Studio support up to 100 categories per variable"; categories with fewer than 25 observations can be consolidated into Other, and null values go into a category called Unspecified.
 
-Einstein Prediction Builder requires at least **200 records** where the outcome condition is true and at least 200 where it is false, with a recommended minimum of 400 total records for stable predictions.
+**Einstein Discovery.** Earlier versions of this skill said Einstein Discovery requires a minimum of 400 rows where the outcome is populated, and that fields with a fill rate below about 70% are silently dropped from feature selection. UNVERIFIED (2026-10-03): both figures come from Salesforce Help and were not found in a fetched source; the Analytics Platform Setup Guide points to "Einstein Discovery Limits" without listing them. Treat 70% as a review threshold, not a platform rule.
+
+**Einstein Prediction Builder.** Earlier versions said EPB requires at least 200 records where the outcome is true and 200 where it is false, with 400 total recommended. UNVERIFIED (2026-10-03): not found in a fetched source. The Metadata API types behind predictions are MLDataDefinition (`includedFields`, `excludedFields`, `trainingFilter`, `scoringFilter`, `segmentFilter`; `entityDeveloperName` and `type` can't be updated after creation) and MLPredictionDefinition (`predictionField`, `pushbackField`, `status` Enabled, Disabled, or Draft).
 
 ### Outcome Field Design and Leakage
 
-The outcome field must represent a value that was **unknown at the time the predictors were captured**. Fields that are created or populated as a direct result of the outcome (e.g., a "Closed Won Reason" field that only exists after an opportunity closes) are proxy fields and introduce leakage. Models trained with leakage show inflated accuracy metrics during training but fail in production because the proxy fields are unavailable at prediction time.
+"Leakage occurs when the data used to train your model includes one or more variables that contain the information that you're trying to predict. This can result in models that are extremely accurate when, in actuality, they are problematic." The outcome must be unknown at the time the predictors were captured. Fields created or populated as a result of the outcome (a "Closed Won Reason" filled at close) are proxies. For Einstein Studio models, an accuracy rating of "too high means the model is perfect or nearly perfect, which indicates potential data leakage or overfitting."
 
-Einstein Discovery flags predictors with over **30% correlation to the outcome** as potential leakage candidates and marks them for scrutiny in story settings. These fields must be reviewed manually — high correlation alone does not confirm leakage, but undocumented high-correlation fields are a red flag.
+Earlier versions said Einstein Discovery flags predictors with over 30% correlation to the outcome as leakage candidates. UNVERIFIED (2026-10-03): not found in a fetched source. The Data Cloud glossary does say correlation "is quantified as a percentage" and is "not causation," so a high correlation is a prompt to investigate, not proof.
 
-### Einstein Discovery vs Einstein Prediction Builder
+### Choosing Between the Products
 
-These are distinct products with distinct data paths:
-
-- **Einstein Prediction Builder (EPB)**: Binary outcomes only (e.g., "Will this opportunity close?"), works on standard and custom objects, no CRM Analytics license required. Training begins automatically when field selection is saved in Setup.
-- **Einstein Discovery**: Supports regression (continuous numeric), binary, and multi-class outcomes. Requires a CRM Analytics license. Stories are built in Analytics Studio. Training pipeline is a separate batch job that must be explicitly initiated.
-
-The data preparation steps differ: EPB reads directly from Salesforce objects; Einstein Discovery requires the data to be accessible in CRM Analytics via a Data Sync or dataflow. Fields excluded from the CRM Analytics dataset cannot be included in an Einstein Discovery story.
+- **Einstein Studio predictive model**: regression or binary classification on Data Cloud data, built in Model Builder; usable in flows, prediction jobs, batch data transforms, agents, prompt templates, Apex, and REST.
+- **Einstein Discovery**: stories in CRM Analytics; needs a CRM Analytics license (the Setup Guide lists Einstein Discovery support under CRM Analytics Plus). The Einstein Discovery REST API lists a story's `sourceType` as AnalysisSetup, AnalyticsDataset, LiveDataset, or Report, so the data must already sit in one of those; for a dataset source, new object fields need the dataflow or recipe updated and run first.
+- **Einstein Prediction Builder**: predictions on Salesforce objects configured in Setup. The earlier statement that EPB supports binary outcomes only is UNVERIFIED (2026-10-03): the MLPredictionDefinition `type` values include BinaryClassification, Regression, and MulticlassClassification, but the reference does not say which ones Prediction Builder offers.
 
 ---
 
 ## Common Patterns
 
-### Pattern: Outcome Field Audit Before Story Creation
+### Pattern: Outcome and Predictor Audit Before Training
 
-**When to use:** Before creating any Einstein Discovery story or enabling an EPB prediction.
+**When to use:** Before creating any model, story, or prediction.
 
 **How it works:**
-1. Run a SOQL aggregate query to count rows where outcome field is NOT NULL vs total rows.
-2. Calculate fill rate: `COUNT(outcome_field) / COUNT(Id)`. If below 80%, investigate data entry gaps.
-3. Check whether the outcome field is populated at the same time as predictors or only after the event you are predicting — if populated after, it is a leakage candidate.
-4. For EPB: verify binary balance. If the positive class is less than 5% of total records, the model will have low precision for positive predictions.
+1. Extract the candidate training rows to CSV with the outcome and every candidate predictor.
+2. Run `python3 scripts/check_ai_training_data_preparation.py --manifest-dir <folder> --outcome <field> --type binary|regression`.
+3. Resolve every ERROR (row and column limits, outcome shape, predictors identical to the outcome).
+4. Review every WARN: post-outcome field names, high cardinality, low fill, constant columns, rare positive class.
+5. Record which fields were dropped and why.
 
-**Why not skip this:** Einstein Discovery's silent field-dropping means a 50% fill-rate predictor disappears from the feature set with no error. You will not know it is missing unless you explicitly audit field inclusion in story settings after training.
+**Why not skip this:** A leaking field or an unusable categorical can make a model look excellent in training and useless on open records.
 
 ### Pattern: Feature Field Selection Matrix
 
-**When to use:** When curating which fields to include as predictors in a story or EPB model.
+**When to use:** When curating which fields to include as predictors.
 
-**How it works:** Build a field inventory with three columns: (1) fill rate, (2) business meaning (does the field exist before or after the outcome?), (3) correlation-to-outcome suspicion level. Exclude: post-outcome fields, formula fields that derive directly from the outcome, and fields with fill rate below 70%. Include: fields populated during creation or progression of the record, not at closure.
+**How it works:** Build a field inventory with: fill rate, when the field is populated relative to the outcome, distinct-value count, and correlation-to-outcome suspicion. Exclude post-outcome fields, formulas derived from the outcome, ID-like fields, and fields you cannot fill. Collapse collinear fields ("customers who live in the city of Tampa also live in the state of Florida") to one.
 
 ---
 
@@ -105,26 +125,23 @@ The data preparation steps differ: EPB reads directly from Salesforce objects; E
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Binary yes/no outcome, no CRM Analytics license | Einstein Prediction Builder | EPB runs on native Salesforce objects; no Analytics Studio needed |
-| Continuous (regression) or multi-class outcome | Einstein Discovery only | EPB supports binary classification only |
-| CRM Analytics license available, need explainability | Einstein Discovery | Story UI provides feature contribution, what-if analysis |
-| Training data has < 400 outcome-positive rows | Fix data volume first | Both products need minimum rows; results below threshold are unreliable |
-| Key predictor field has < 70% fill rate | Improve fill rate via validation rules | Field will be dropped silently by Einstein Discovery |
-| Predictor field correlated > 30% with outcome | Review for leakage; exclude if post-outcome | High correlation on a post-outcome proxy inflates model accuracy artificially |
+| Regression or binary outcome on Data Cloud data | Einstein Studio predictive model | Grounded requirements: 400 to 20 million rows, 3 to 50 columns |
+| Need stories, what-if analysis in CRM Analytics | Einstein Discovery | Requires a CRM Analytics license and a dataset |
+| Prediction on a Salesforce object configured in Setup | Einstein Prediction Builder | Data definition and prediction deploy as MLDataDefinition and MLPredictionDefinition |
+| Fewer than 400 training rows | Fix data volume first | Below the Einstein Studio minimum; results would not train |
+| Categorical predictor with more than 100 values | Bucket or consolidate first | Einstein Studio supports up to 100 categories per variable |
+| Model accuracy rated "too high" | Hunt for leakage before activating | The Data Cloud guide names leakage or overfitting as the cause |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Confirm product scope** — Determine whether Einstein Discovery or EPB is required based on outcome type (binary vs regression/multi-class) and license availability.
-2. **Audit outcome field** — Run a fill-rate check on the outcome field. Verify it is populated before (not because of) the predicted event. Flag any proxy leakage candidates.
-3. **Inventory predictor fields** — List all candidate feature fields. Check fill rate for each. Mark fields below 70% as at-risk. Mark fields populated post-outcome as leakage candidates.
-4. **Check minimum row counts** — Count rows where outcome is populated. For EPB, count positive-class and negative-class rows separately.
-5. **Remediate gaps** — Fix fill-rate issues before enabling training. Use required fields, validation rules, or process automation to enforce data completeness on key predictors.
-6. **Configure training** — For EPB: enable in Setup and select fields (trains automatically on save). For Einstein Discovery: confirm data is in CRM Analytics via Data Sync, create story, review field inclusion list after training.
-7. **Validate model output** — Review confusion matrix, precision/recall, and feature contribution. If a known-important field is absent, check whether it was silently dropped.
+1. **Confirm product scope** with the Decision Guidance table, based on outcome type, data location, and license.
+2. **Define the outcome** and the date each predictor becomes known; list post-outcome fields to exclude.
+3. **Extract and audit** the training data to CSV and run `scripts/check_ai_training_data_preparation.py` with `--outcome` and `--type`; fix every ERROR.
+4. **Remediate** fill-rate, cardinality, and collinearity warnings: impute, bucket, consolidate, or exclude, and write down each decision.
+5. **Configure training**: for Einstein Studio, confirm type, data, and goal before Save & Train because they can't be edited later; for Prediction Builder, set `includedFields` and `excludedFields` explicitly and deploy with `status` Draft (`references/metadata-examples.md`).
+6. **Validate the model**: check the accuracy rating (performant, too low, too high), top predictors, and confirm no excluded or leaking field appears among them.
 
 ---
 
@@ -132,23 +149,23 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking work in this area complete:
 
-- [ ] Outcome field fill rate is above 80% (minimum 400 rows with outcome populated)
-- [ ] Outcome field is populated before (not as a result of) the predicted event
-- [ ] No post-outcome proxy fields included as predictors
-- [ ] All key predictor fields have fill rate above 70%
-- [ ] For EPB: positive-class and negative-class records are both >= 200
-- [ ] For Einstein Discovery: data is accessible in CRM Analytics dataset
-- [ ] After training: confirmed key predictor fields appear in feature contributions list
+- [ ] Outcome field defined, and populated before (not as a result of) the predicted event
+- [ ] No post-outcome proxy fields among predictors
+- [ ] Row and column counts inside the target product's limits (Einstein Studio: 400 to 20 million rows, 3 to 50 columns)
+- [ ] Categorical predictors at or under 100 distinct values, or consolidated
+- [ ] Sparse predictors have a written impute, bucket, or exclude decision
+- [ ] Checker run on the extract with zero ERROR
+- [ ] After training: accuracy not rated "too high", and key predictors appear among top predictors
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Silent field dropping below ~70% fill rate** — Einstein Discovery silently excludes fields with low fill rates from feature selection. There is no error or warning in the story UI. You only discover this by checking the field list in story settings after training.
+1. **Too-high accuracy is a warning**: Einstein Studio rates accuracy as performant, too low, or too high; "too high" indicates potential leakage or overfitting.
 
-2. **EPB trains automatically on save** — Unlike Einstein Discovery, EPB begins training immediately when you save field selection in Setup. If your data quality is not ready, a bad model becomes immediately active.
+2. **Setup choices freeze**: After an Einstein Studio model is created, Choose Type, Select Data, and Set Goal can't be edited.
 
-3. **Einstein Discovery requires CRM Analytics data access** — Fields must be in the CRM Analytics dataset. If you add a new field to the Salesforce object after Data Sync is configured, you must update the dataflow or recipe to include it before it becomes available for story training.
+3. **Einstein Discovery reads from its story source**: Stories read an AnalyticsDataset, LiveDataset, or Report source, not the object directly. A field added to the object after the dataflow or recipe was built is not in a dataset source until the dataflow or recipe includes it and runs.
 
 ---
 
@@ -156,9 +173,10 @@ Run through these before marking work in this area complete:
 
 | Artifact | Description |
 |---|---|
-| Field fill-rate audit | SOQL-based fill rate per candidate predictor field |
+| Training extract audit | Checker output: row and column limits, outcome shape, leakage, cardinality, fill, balance |
 | Outcome leakage checklist | Documents whether each high-correlation field was populated before or after the predicted event |
-| EPB vs Einstein Discovery decision record | Documents which product was selected and why |
+| Product decision record | Documents which product was selected and why |
+| Prediction Builder metadata | MLDataDefinition and MLPredictionDefinition files with explicit included and excluded fields |
 
 ---
 

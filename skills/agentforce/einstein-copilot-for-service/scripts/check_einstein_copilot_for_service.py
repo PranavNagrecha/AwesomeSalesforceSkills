@@ -1,370 +1,197 @@
 #!/usr/bin/env python3
-"""check_einstein_copilot_for_service.py — Validator for Einstein for Service prerequisites.
+"""Check Einstein for Service settings metadata (Case Classification, Article and Reply Recommendations).
 
-Inspects a Salesforce metadata deployment directory (sfdx project or retrieved
-metadata) to surface missing configuration, permissions, and layout gaps that
-would prevent Einstein for Service AI features from working correctly.
+Stdlib only. Point --manifest-dir at a source-format folder (for example force-app/main/default)
+plus any manifest folder. Rules encode the Metadata API Developer Guide v67.0 (EinsteinAgentSettings,
+AIReplyRecommendationsSettings, ServiceAISetupDefinition, ServiceAISetupField, ExternalAIModel).
 
-Uses stdlib only — no pip dependencies.
+Correction (2026-10-03): the previous version of this checker required permission sets named
+ServiceCloudEinsteinUser, EinsteinForServiceUser, or EinsteinCaseClassification and layout
+components with guessed names. No fetched source documents those names, so those rules are gone.
 
-Usage:
-    python3 check_einstein_copilot_for_service.py [--manifest-dir path/to/metadata] [--verbose]
+Rules
+  ES-XML-01    ERROR  A settings or setup file does not parse.
+  ES-CLS-01    WARN   einsteinAgentRecommendations is true but runAssignmentRules and reRunAttributeBasedRules
+                      are both off (both default false), so classified values don't re-route cases.
+  ES-CLS-02    WARN   A CaseClassification settings file (renamed to EinsteinAgentSettings in API 52.0).
+  ES-REPLY-01  WARN   enableGenReplyRecommendations is true while enableServiceEinsteinGPTGrounding is false.
+  ES-ART-01    ERROR  ServiceAISetupDefinition for ARTICLE_RECOMMENDATION has no supportedLanguages (required).
+  ES-ART-02    ERROR  ServiceAISetupField maps CASE_* types to a non-Case entity or ARTICLE_* types to Case,
+                      has a fieldPosition below 1, or repeats a position within one setup definition.
+  ES-ART-03    WARN   ServiceAISetupDefinition setupStatus is RETIRED or ARCHIVED in a deployment.
+  ES-MODEL-01  ERROR  package.xml uses a wildcard member for ExternalAIModel, which doesn't support it.
+  ES-MODEL-02  WARN   ExternalAIModel externalModelStatus is PAUSED or DISABLED.
 
-What it checks:
-    - Permission set metadata presence for Einstein for Service
-    - Presence of Einstein Case Classification component on Case page layouts
-    - Service settings metadata for Einstein feature flags
-    - Case Classification field configuration (picklist-only fields)
-    - Knowledge settings enablement (required for Article Recommendations and Service Replies)
-    - Reply Recommendations configuration presence
+Usage
+  python3 check_einstein_copilot_for_service.py --manifest-dir force-app/main/default [--strict]
+  python3 check_einstein_copilot_for_service.py --self-test
+
+Exit codes: 0 clean (WARN allowed unless --strict); 1 on ERROR, a missing folder, or WARN with --strict.
 """
-
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import xml.etree.ElementTree as ET
+from collections import defaultdict
 from pathlib import Path
 
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-REQUIRED_PERMISSION_SETS = {
-    "ServiceCloudEinsteinUser",
-    "EinsteinForServiceUser",
-    "EinsteinCaseClassification",
-}
-
-# Component names expected on Case page layouts for Einstein for Service
-EINSTEIN_SERVICE_COMPONENTS = {
-    "EinsteinCaseClassification",
-    "ArticleRecommendations",
-    "EinsteinArticleRecommendations",
-}
-
-# Metadata file patterns
-PERMISSION_SET_GLOB = "**/*.permissionset-meta.xml"
-CASE_LAYOUT_GLOB = "**/*Case*.layout-meta.xml"
-SERVICE_SETTINGS_GLOB = "**/Service.settings-meta.xml"
-KNOWLEDGE_SETTINGS_GLOB = "**/Knowledge.settings-meta.xml"
-FLEXIPAGE_GLOB = "**/*.flexipage-meta.xml"
-
-SF_NAMESPACE = "http://soap.sforce.com/2006/04/metadata"
+CASE_TYPES = {"CASE_DESC", "CASE_SUBJ"}
+ARTICLE_TYPES = {"ARTICLE_TITLE", "ARTICLE_CONTENT", "ARTICLE_SUMMARY"}
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _find_files(root: Path, pattern: str) -> list[Path]:
-    return sorted(root.glob(pattern))
+def _local(tag: str) -> str:
+    return tag.split("}", 1)[1] if "}" in tag else tag
 
 
-def _parse_xml_safe(path: Path) -> ET.Element | None:
+def _values(root: ET.Element) -> dict[str, str]:
+    return {_local(el.tag): (el.text or "").strip() for el in root}
+
+
+def _parse(path: Path, out: list[tuple[str, str, str]]) -> ET.Element | None:
     try:
         return ET.parse(path).getroot()
-    except ET.ParseError:
+    except ET.ParseError as exc:
+        out.append(("ERROR", "ES-XML-01", f"{path}: does not parse ({exc})."))
         return None
 
 
-def _strip_ns(tag: str) -> str:
-    """Strip XML namespace prefix from an element tag."""
-    return tag.split("}")[-1] if "}" in tag else tag
+def scan(root: Path) -> tuple[int, list[tuple[str, str, str]]]:
+    out: list[tuple[str, str, str]] = []
+    files = [p for p in root.rglob("*") if p.is_file()]
+    agent = [p for p in files if p.name.startswith("EinsteinAgent.settings")]
+    legacy = [p for p in files if p.name.startswith("CaseClassification.settings")]
+    reply = [p for p in files if p.name.startswith("AIReplyRecommendations.settings")]
+    definitions = [p for p in files if ".serviceAISetupDescription" in p.name or ".serviceAISetupDefinition" in p.name]
+    fields = [p for p in files if ".serviceAiSetupField" in p.name or ".serviceAISetupField" in p.name]
+    models = [p for p in files if ".externalAIModel" in p.name]
+    manifests = [p for p in files if p.name == "package.xml"]
 
-
-def _text(element: ET.Element, child_tag: str) -> str:
-    child = element.find(f"{{{SF_NAMESPACE}}}{child_tag}")
-    if child is None:
-        child = element.find(child_tag)
-    return (child.text or "").strip() if child is not None else ""
-
-
-def _read_text_safe(path: Path) -> str:
-    try:
-        return path.read_text(encoding="utf-8", errors="ignore")
-    except OSError:
-        return ""
-
-
-# ---------------------------------------------------------------------------
-# Individual checks
-# ---------------------------------------------------------------------------
-
-def check_permission_sets_exist(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Warn if none of the Einstein for Service permission sets are found in metadata."""
-    issues: list[str] = []
-    found: set[str] = set()
-
-    for ps_file in _find_files(manifest_dir, PERMISSION_SET_GLOB):
-        stem = ps_file.stem.replace(".permissionset-meta", "")
-        for required in REQUIRED_PERMISSION_SETS:
-            if required.lower() in stem.lower():
-                found.add(required)
-
-    if not found:
-        issues.append(
-            "No Einstein for Service permission set metadata found in manifest directory. "
-            "Expected at least one of: "
-            + ", ".join(sorted(REQUIRED_PERMISSION_SETS))
-            + ". Ensure permission sets are retrieved and included in the deployment. "
-            "Einstein for Service features are permission-set gated."
-        )
-
-    return issues
-
-
-def check_case_layout_has_einstein_component(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Check that Case page layout XML references Einstein Classification or Article components."""
-    issues: list[str] = []
-    layout_files = _find_files(manifest_dir, CASE_LAYOUT_GLOB)
-
-    if not layout_files:
-        if verbose:
-            issues.append(
-                "No Case layout metadata found — cannot verify Einstein for Service components "
-                "are present on the Case page layout. Retrieve Case layouts and re-run."
-            )
-        return issues
-
-    for layout_file in layout_files:
-        content = _read_text_safe(layout_file)
-        if not content:
-            issues.append(f"Could not read layout file: {layout_file.name}")
+    for path in agent:
+        node = _parse(path, out)
+        if node is None:
             continue
-
-        found_component = any(
-            comp.lower() in content.lower() for comp in EINSTEIN_SERVICE_COMPONENTS
-        )
-
-        if not found_component:
-            issues.append(
-                f"No Einstein for Service component (Case Classification or Article "
-                f"Recommendations) found on layout '{layout_file.name}'. "
-                "Add the Einstein Case Classification component and the Einstein Article "
-                "Recommendations component to the Case record page layout or service console "
-                "so agents can see suggestions and recommendations."
-            )
-
-    return issues
-
-
-def check_service_settings_metadata(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Check Service settings metadata for Einstein feature flags if present."""
-    issues: list[str] = []
-    settings_files = _find_files(manifest_dir, SERVICE_SETTINGS_GLOB)
-
-    if not settings_files:
-        if verbose:
-            issues.append(
-                "Service.settings-meta.xml not found in manifest directory. "
-                "Retrieve Service settings to validate Einstein feature enablement flags."
-            )
-        return issues
-
-    for sf in settings_files:
-        root = _parse_xml_safe(sf)
-        if root is None:
-            issues.append(f"Could not parse settings file: {sf.name}")
+        v = _values(node)
+        if v.get("einsteinAgentRecommendations", "").lower() == "true" and \
+                v.get("runAssignmentRules", "false").lower() != "true" and \
+                v.get("reRunAttributeBasedRules", "false").lower() != "true":
+            out.append(("WARN", "ES-CLS-01",
+                        f"{path}: classification is on but neither assignment rules nor skills-based rules re-run after it updates fields."))
+    for path in legacy:
+        out.append(("WARN", "ES-CLS-02", f"{path}: CaseClassificationSettings was renamed EinsteinAgentSettings in API 52.0; use EinsteinAgent.settings."))
+    for path in reply:
+        node = _parse(path, out)
+        if node is None:
             continue
-
-        einstein_flags: dict[str, str] = {}
-        for elem in root.iter():
-            tag = _strip_ns(elem.tag)
-            if "einstein" in tag.lower() or "classification" in tag.lower():
-                einstein_flags[tag] = (elem.text or "").strip()
-
-        for flag, value in einstein_flags.items():
-            if value.lower() == "false":
-                issues.append(
-                    f"Einstein service setting '{flag}' is explicitly set to false in {sf.name}. "
-                    "If this feature is intended to be active, update the flag to true and redeploy."
-                )
-
-    return issues
-
-
-def check_knowledge_enabled(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Warn if Knowledge settings metadata is absent or Knowledge is not enabled.
-
-    Article Recommendations and Service Replies require an active Knowledge base.
-    """
-    issues: list[str] = []
-    knowledge_files = _find_files(manifest_dir, KNOWLEDGE_SETTINGS_GLOB)
-
-    if not knowledge_files:
-        if verbose:
-            issues.append(
-                "Knowledge.settings-meta.xml not found in manifest directory. "
-                "Einstein Article Recommendations and Service Replies with Einstein both require "
-                "Salesforce Knowledge to be enabled with published articles. "
-                "Retrieve Knowledge settings and confirm Knowledge is enabled before enabling "
-                "these features."
-            )
-        return issues
-
-    for kf in knowledge_files:
-        root = _parse_xml_safe(kf)
-        if root is None:
-            issues.append(f"Could not parse Knowledge settings file: {kf.name}")
+        v = _values(node)
+        if v.get("enableGenReplyRecommendations", "").lower() == "true" and v.get("enableServiceEinsteinGPTGrounding", "").lower() == "false":
+            out.append(("WARN", "ES-REPLY-01", f"{path}: Einstein Service Replies is on with Service AI Grounding off."))
+    for path in definitions:
+        node = _parse(path, out)
+        if node is None:
             continue
-
-        # Look for an enabled flag in Knowledge settings
-        for elem in root.iter():
-            tag = _strip_ns(elem.tag)
-            if tag.lower() in ("enableknowledge", "enabled"):
-                if (elem.text or "").strip().lower() == "false":
-                    issues.append(
-                        f"Knowledge appears to be disabled in {kf.name}. "
-                        "Einstein Article Recommendations and Service Replies with Einstein "
-                        "require Salesforce Knowledge to be enabled with published articles. "
-                        "Enable Knowledge before activating these Einstein for Service features."
-                    )
-
-    return issues
-
-
-def check_reply_recommendations_training_data(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Detect Reply Recommendations config and warn if Training Data job reference is missing."""
-    issues: list[str] = []
-
-    # Search all XML files for Reply Recommendations references
-    reply_rec_refs: list[Path] = []
-    for xml_file in _find_files(manifest_dir, "**/*.xml"):
-        content = _read_text_safe(xml_file)
-        if "replyrecommendation" in content.lower() or "ReplyRecommendation" in content:
-            reply_rec_refs.append(xml_file)
-
-    if not reply_rec_refs:
-        return issues  # Feature not referenced — no check needed
-
-    # If Reply Recommendations is referenced, warn about the Training Data dependency
-    training_data_refs: list[Path] = []
-    for xml_file in _find_files(manifest_dir, "**/*.xml"):
-        content = _read_text_safe(xml_file)
-        if "trainingdata" in content.lower() or "TrainingData" in content:
-            training_data_refs.append(xml_file)
-
-    if reply_rec_refs and not training_data_refs:
-        issues.append(
-            "Einstein Reply Recommendations configuration detected but no Training Data "
-            "configuration found. Reply Recommendations requires an explicit Training Data job "
-            "to be run in Setup > Service > Einstein Reply Recommendations > Training Data "
-            "before the model can generate suggestions. Enabling the feature toggle alone "
-            "is not sufficient — the Training Data job must complete successfully first."
-        )
-
-    return issues
-
-
-def check_case_classification_fields_are_picklists(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Warn if any Case field configured for classification is not a picklist type.
-
-    Case Classification only supports picklist fields. Custom text or formula fields
-    cannot be included in the classification model.
-    """
-    issues: list[str] = []
-
-    # Look for CaseClassification metadata files
-    for xml_file in _find_files(manifest_dir, "**/*.xml"):
-        content = _read_text_safe(xml_file)
-        if "CaseClassification" not in content and "caseClassification" not in content:
+        v = _values(node)
+        if v.get("appSourceType") == "ARTICLE_RECOMMENDATION" and not v.get("supportedLanguages"):
+            out.append(("ERROR", "ES-ART-01", f"{path}: supportedLanguages is required for ARTICLE_RECOMMENDATION."))
+        if v.get("setupStatus") in ("RETIRED", "ARCHIVED"):
+            out.append(("WARN", "ES-ART-03", f"{path}: setupStatus {v.get('setupStatus')} deploys an inactive configuration."))
+    positions: dict[str, list[int]] = defaultdict(list)
+    for path in fields:
+        node = _parse(path, out)
+        if node is None:
             continue
-
-        # Parse and look for field references
-        root = _parse_xml_safe(xml_file)
-        if root is None:
-            continue
-
-        for elem in root.iter():
-            tag = _strip_ns(elem.tag)
-            if tag.lower() in ("field", "fieldname"):
-                field_val = (elem.text or "").strip()
-                if field_val and verbose:
-                    # Surface all configured fields so the operator can verify they are picklists
-                    pass  # Field inventory surfaced below
-
-        # If classification config exists, surface an informational note when verbose
-        if verbose:
-            issues.append(
-                f"Case Classification configuration found in {xml_file.name}. "
-                "Verify that all fields selected for classification are picklist fields on the "
-                "Case object. Case Classification does not support text, formula, or numeric "
-                "fields. Non-picklist fields in the classification config will cause model "
-                "training failures or silent field exclusion."
-            )
-            break  # Only emit this once
-
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# Main orchestrator
-# ---------------------------------------------------------------------------
-
-def run_all_checks(manifest_dir: Path, verbose: bool) -> list[str]:
-    """Run all Einstein for Service prerequisite checks and return collected issues."""
-    all_issues: list[str] = []
-
-    checks = [
-        ("Permission set metadata", check_permission_sets_exist),
-        ("Case layout Einstein components", check_case_layout_has_einstein_component),
-        ("Service settings metadata", check_service_settings_metadata),
-        ("Knowledge enabled", check_knowledge_enabled),
-        ("Reply Recommendations Training Data", check_reply_recommendations_training_data),
-        ("Case Classification field types", check_case_classification_fields_are_picklists),
-    ]
-
-    for check_name, check_fn in checks:
+        v = _values(node)
+        mapping, entity = v.get("fieldMappingType", ""), v.get("entity", "")
+        if (mapping in CASE_TYPES and entity != "Case") or (mapping in ARTICLE_TYPES and entity == "Case"):
+            out.append(("ERROR", "ES-ART-02", f"{path}: fieldMappingType {mapping} does not fit entity {entity}."))
         try:
-            issues = check_fn(manifest_dir, verbose)
-            all_issues.extend(issues)
-        except Exception as exc:
-            all_issues.append(f"Check '{check_name}' failed unexpectedly: {exc}")
+            pos = int(v.get("fieldPosition", "0"))
+        except ValueError:
+            pos = 0
+        if pos < 1:
+            out.append(("ERROR", "ES-ART-02", f"{path}: fieldPosition must be a positive number (1 is most important)."))
+        else:
+            positions[v.get("setupDefinition", "")].append(pos)
+    for definition, used in positions.items():
+        duplicates = sorted({p for p in used if used.count(p) > 1})
+        if duplicates:
+            out.append(("ERROR", "ES-ART-02", f"{root}: setup definition {definition} repeats fieldPosition {duplicates}."))
+    for path in models:
+        node = _parse(path, out)
+        if node is None:
+            continue
+        status = _values(node).get("externalModelStatus", "")
+        if status in ("PAUSED", "DISABLED"):
+            out.append(("WARN", "ES-MODEL-02", f"{path}: externalModelStatus {status}; confirm before promoting."))
+    for path in manifests:
+        node = _parse(path, out)
+        if node is None:
+            continue
+        for types in (t for t in node if _local(t.tag) == "types"):
+            name = next(((c.text or "").strip() for c in types if _local(c.tag) == "name"), "")
+            members = [(c.text or "").strip() for c in types if _local(c.tag) == "members"]
+            if name == "ExternalAIModel" and "*" in members:
+                out.append(("ERROR", "ES-MODEL-01", f"{path}: ExternalAIModel doesn't support the * wildcard; list members by name."))
+    count = len(agent) + len(legacy) + len(reply) + len(definitions) + len(fields) + len(models) + len(manifests)
+    return count, out
 
-    return all_issues
 
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Validate Einstein for Service prerequisites in a Salesforce metadata directory. "
-            "Checks permission sets, page layouts, Knowledge settings, Service settings, "
-            "Reply Recommendations Training Data dependency, and Case Classification field config."
-        ),
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory containing Salesforce metadata (default: current directory).",
-    )
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Emit informational warnings for missing metadata in addition to errors.",
-    )
-    return parser.parse_args()
+def self_test() -> int:
+    import tempfile
+    here = Path(__file__).resolve().parent
+    _, good = scan(here / "fixtures" / "good")
+    _, bad = scan(here / "fixtures" / "bad")
+    expected = {"ES-XML-01", "ES-CLS-01", "ES-CLS-02", "ES-REPLY-01", "ES-ART-01", "ES-ART-02", "ES-ART-03",
+                "ES-MODEL-01", "ES-MODEL-02"}
+    seen = {rule for _, rule, _ in bad}
+    md = (here.parent / "references" / "metadata-examples.md").read_text(encoding="utf-8")
+    names = {"<EinsteinAgentSettings": "EinsteinAgent.settings-meta.xml",
+             "<AIReplyRecommendationsSettings": "AIReplyRecommendations.settings-meta.xml",
+             "<ServiceAISetupDefinition": "Def.serviceAISetupDescription-meta.xml",
+             "<ServiceAISetupField": "Fld.serviceAiSetupField-meta.xml",
+             "<Package": "package.xml"}
+    own: list[tuple[str, str, str]] = []
+    with tempfile.TemporaryDirectory() as tmp:
+        for block in re.findall(r"```xml\n(.*?)```", md, flags=re.DOTALL):
+            for marker, filename in names.items():
+                if marker in block:
+                    (Path(tmp) / filename).write_text(block, encoding="utf-8")
+        _, own = scan(Path(tmp))
+    ok = not good and expected <= seen and not own
+    print(f"good fixtures: {len(good)} finding(s) (expected 0)")
+    for f in good:
+        print("   ", *f)
+    print(f"bad fixtures: rules seen {sorted(seen)}; missing {sorted(expected - seen)}")
+    print(f"skill examples: {len(own)} finding(s) (expected 0)")
+    for f in own:
+        print("   ", *f)
+    print("SELF-TEST", "PASS" if ok else "FAIL")
+    return 0 if ok else 1
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir).resolve()
-
-    if not manifest_dir.exists():
-        print(f"ERROR: Manifest directory not found: {manifest_dir}", file=sys.stderr)
-        return 2
-
-    issues = run_all_checks(manifest_dir, verbose=args.verbose)
-
-    if not issues:
-        print("OK: No Einstein for Service prerequisite issues found.")
+    ap = argparse.ArgumentParser(description="Check Einstein for Service settings metadata.")
+    ap.add_argument("--manifest-dir", default=".", help="Source folder to scan (default: current directory).")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN findings as failures.")
+    ap.add_argument("--self-test", action="store_true", help="Run the bundled fixtures and exit.")
+    args = ap.parse_args()
+    if args.self_test:
+        return self_test()
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    count, findings = scan(root)
+    if count == 0:
+        print(f"WARN: no Einstein for Service settings, setup definitions, models, or package.xml under {root}; nothing checked.")
         return 0
-
-    for issue in issues:
-        print(f"ISSUE: {issue}")
-
-    return 1
+    for severity, rule, message in findings:
+        print(f"{severity} {rule}: {message}")
+    errors = sum(1 for f in findings if f[0] == "ERROR")
+    warns = sum(1 for f in findings if f[0] == "WARN")
+    print(f"Checked {count} file(s): {errors} error(s), {warns} warning(s).")
+    return 1 if errors or (args.strict and warns) else 0
 
 
 if __name__ == "__main__":

@@ -1,0 +1,9 @@
+{
+  "fileFormat": {"charsetName": "UTF-8", "fieldsDelimitedBy": ",", "fieldsEnclosedBy": "\"", "numberOfLinesToIgnore": 1},
+  "objects": [{"connector": "ErpCsvConnector", "fullyQualifiedName": "TerritoryMap", "label": "Territory Map", "name": "TerritoryMap",
+    "fields": [
+      {"fullyQualifiedName": "TerritoryMap.Territory_Code", "name": "Territory_Code", "label": "Territory Code", "type": "Text", "isUniqueId": true},
+      {"fullyQualifiedName": "TerritoryMap.Quota", "name": "Quota", "label": "Quota", "type": "Numeric", "precision": 18, "scale": 2, "defaultValue": "0"},
+      {"fullyQualifiedName": "TerritoryMap.Start_Date", "name": "Start_Date", "label": "Start Date", "type": "Date", "format": "yyyy-MM-dd"}
+    ]}]
+}

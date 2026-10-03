@@ -1,89 +1,81 @@
-# Examples — Model Builder and BYOLLM
+# Examples: Model Builder and BYOLLM
 
-## Example 1: Registering an Azure OpenAI Deployment as an External LLM
+Steps follow the Data Cloud guide (Bring Your Own Large Language Model; Add a Foundation Model; Configure and Test a Model in Model Playground) and the Generative AI guide (Large Language Model Support; Changing LLM Configurations; Agentforce Agents considerations), Summer '26. Correction (2026-10-03): earlier versions of these examples used "Setup > Model Builder > Add Model," a Named Credential field, a Test Connection button, and aliases that Agentforce agents reference. Those are replaced with the documented flow, and the agent example is corrected because agents don't use BYO models.
 
-**Context:** A financial services org has a Microsoft Enterprise Agreement and an existing Azure OpenAI deployment (`gpt-4o`, deployed in the EU West region) that their security team has approved. The team wants to power Agentforce agents with this deployment rather than Salesforce-standard models, to satisfy a data residency requirement that all AI calls remain within the EU.
+## Example 1: Connecting an Azure OpenAI Deployment for a Prompt Builder Template
 
-**Problem:** Without Model Builder BYOLLM registration, Agentforce would default to Salesforce-hosted models whose data residency may not satisfy the EU boundary requirement. The team also needs the API key stored securely — not hardcoded in any configuration field.
+**Context:** A financial services org has an approved Azure OpenAI `gpt-4o` deployment in an EU region and wants its client-letter prompt template to run on it.
 
-**Solution:**
+**Problem:** The first plan was to point the service agent at the deployment. The guide says the agent reasoning engine uses OpenAI GPT-4o and that bringing your own model isn't supported for agents, so the BYO model is scoped to Prompt Builder.
 
-Step 1 — Create the External Credential in Setup > Named Credentials > External Credentials:
+**Solution (configuration procedure):**
 
-```
-Label:          AzureOpenAI_EUWest
-Name:           AzureOpenAI_EUWest
-Auth Protocol:  Custom
-Principals:
-  - Sequence Number: 1
-    Name: OrgPrincipal
-    Parameters:
-      - Name: api-key
-        Value: <paste Azure OpenAI key here>
-        Sensitive: true
-```
+1. Confirm Einstein Generative AI is enabled and that Azure OpenAI is not blocked in EinsteinGptSettings.
+2. Einstein Studio > Generative tab > Add Foundation Model > Azure OpenAI.
+3. Endpoint name `AzureOpenAI_EUWest`; URL `https://<resource>.openai.azure.com` (HTTPS on port 443).
+4. Authentication details from the Azure portal; model information: the Azure deployment name `gpt-4o`.
+5. Save & Test, enter the exact model name, Connect, name it `AzureOpenAI_EUWest_GPT4o`, and select the model version.
+6. Model Playground > Create model: select the foundation model, keep penalties at 0, enable data masking in prompt settings, and test three real prompts.
+7. Save the configuration as `ClientLetters_AzureEU`.
+8. In Prompt Builder, open the client-letter template, Save As > Save as a New Version, select `ClientLetters_AzureEU` in the model configuration panel, preview, and activate.
+9. Set `disableAIProviderRegionFallback` to true in EinsteinGptSettings so Azure OpenAI requests do not fall back outside the endpoint region. File `force-app/main/default/settings/EinsteinGpt.settings-meta.xml` (full policy file in `references/metadata-examples.md`):
 
-Step 2 — Create the Named Credential:
-
-```
-Label:       Azure OpenAI EU West
-Name:        AzureOpenAI_EUWest_NC
-URL:         https://<resource-name>.openai.azure.com
-Credential:  AzureOpenAI_EUWest (External Credential from step 1)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<EinsteinGptSettings xmlns="http://soap.sforce.com/2006/04/metadata">
+    <disableAIProvAzureOpenAI>false</disableAIProvAzureOpenAI>
+    <disableAIProviderRegionFallback>true</disableAIProviderRegionFallback>
+    <enableEinsteinGptPlatform>true</enableEinsteinGptPlatform>
+</EinsteinGptSettings>
 ```
 
-Step 3 — Register the model in Setup > Model Builder > Add Model:
-
-```
-Provider Type:      Azure OpenAI
-Model ID:           gpt-4o
-Endpoint:           https://<resource-name>.openai.azure.com/openai/deployments/gpt-4o
-API Version:        2024-02-01
-Named Credential:   AzureOpenAI_EUWest_NC
-```
-
-Step 4 — Test Connection: click the Test button and confirm a success response.
-
-Step 5 — Create a model alias `FinServ_AgentAlias` pointing to the registered Azure OpenAI model. Configure all Agentforce agents in the org to reference `FinServ_AgentAlias`.
-
-**Why it works:** The Named Credential/External Credential pattern ensures the Azure API key never appears in plaintext in any Salesforce configuration field or log. The alias indirection means the security team can rotate the underlying model or key by updating a single record rather than touching every agent and prompt template individually.
+**Why it works:** The connection lives in Einstein Studio, the configuration is tested before use, and the change reaches users only when a new template version is activated. UNVERIFIED (2026-10-03): the authentication fields shown for Azure OpenAI in Add Foundation Model were not listed in the fetched guide; follow the screen.
 
 ---
 
-## Example 2: Cost-Optimizing a High-Volume Email Summarization Feature
+## Example 2: Cutting Cost on a High-Volume Summarization Template
 
-**Context:** A service org uses an Agentforce feature to summarize long customer email threads before presenting them to service agents. The feature runs approximately 50,000 times per day. The org is currently using the default alias backed by a frontier model (GPT-4o), and provider costs have become significant.
+**Context:** An email-thread summarization template runs about 50,000 times a day on GPT-4o.
 
-**Problem:** GPT-4o is priced at a premium per token. For a summarization task (no complex reasoning, no tool use, no multi-step agent behavior), the quality improvement over a smaller model does not justify the cost difference at 50,000 daily calls.
+**Problem:** Summarization does not need GPT-4o's reasoning, and "Changing the model can affect your usage."
 
 **Solution:**
 
-Step 1 — Register a cost-optimized model. The team decides to use `gpt-4o-mini` (available on their existing OpenAI API subscription). They already have an OpenAI Named Credential in the org from a previous integration. In Model Builder, they add a new model record:
+1. GPT-4o Mini is a Salesforce-managed model, so no BYO connection is needed.
+2. In Prompt Builder, Save As > Save as a New Version of the summarization template, choose GPT-4o Mini in the model configuration panel, and keep the original version active.
+3. Preview the new version on a sample of 50 real threads and compare against the active version.
+4. Check the volume against the org's default 300 generation requests per minute; schedule the batch flow to stay under it.
+5. Activate the new version when quality is acceptable. Rolling back means activating the previous version.
 
+A retrieved template then shows two versions with different models, only one of them active (excerpt; the full file shape is in `references/metadata-examples.md`):
+
+```xml
+<!-- excerpt of GenAiPromptTemplate: two templateVersions, one active -->
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <activeVersionIdentifier>summary_v2</activeVersionIdentifier>
+    <templateVersions>
+        <primaryModel>sfdc_ai__DefaultOpenAIGPT4</primaryModel>
+        <status>Published</status>
+        <versionIdentifier>summary_v1</versionIdentifier>
+    </templateVersions>
+    <templateVersions>
+        <primaryModel>REPLACE_WITH_GPT4O_MINI_API_NAME</primaryModel>
+        <status>Published</status>
+        <versionIdentifier>summary_v2</versionIdentifier>
+    </templateVersions>
+</GenAiPromptTemplate>
 ```
-Provider Type:      OpenAI
-Model ID:           gpt-4o-mini
-Named Credential:   OpenAI_API_NC   (existing credential)
-```
 
-Step 2 — Test Connection: passes.
+UNVERIFIED (2026-10-03): the API name for GPT-4o Mini is not listed in a fetched source; copy it from a retrieved template after selecting the model in Prompt Builder.
 
-Step 3 — Create a new alias `SummarizationModel` pointing to `gpt-4o-mini`. This is a new alias, separate from the `DefaultAgent` alias used by complex agentic tasks. The new alias does not touch any existing alias.
-
-Step 4 — Update the email summarization prompt template to reference `SummarizationModel` instead of the default alias.
-
-Step 5 — Run a 500-call sample test in sandbox with the new alias and compare output quality against the frontier model results. Quality is acceptable for the summarization use case.
-
-Step 6 — Deploy the prompt template change to production.
-
-**Why it works:** Creating a separate alias for summarization isolates the cost optimization. The `DefaultAgent` alias powering complex agentic tasks continues to use GPT-4o unaffected. If the summarization model quality degrades, the team can update `SummarizationModel` to point to a higher-quality model without any changes to the consuming prompt template — only the alias mapping changes.
+**Why it works:** Each template version carries its own model, only the active version's model is used, and the previous version stays available for an instant rollback.
 
 ---
 
-## Anti-Pattern: Updating the Shared Default Alias to Test a New Model
+## Anti-Pattern: Editing the Shared Configuration to Try a New Model
 
-**What practitioners do:** An admin wants to try a new model (e.g., a newly released Anthropic Claude version) and directly updates the org's primary model alias to point to the new model so they can "see how it performs" in the live org.
+**What practitioners do:** An admin opens the model configuration used by several templates and switches its settings to try a newer model.
 
-**What goes wrong:** The alias change is global and immediate. Every Agentforce agent, prompt template, and Einstein feature that references that alias switches to the new model simultaneously — including production features used by sales reps and service agents at that moment. If the new model has different function calling behavior, lower quality on a specific task, or a different output format that downstream parsing relies on, all affected features degrade or fail at once. There is no rollback mechanism other than switching the alias back manually.
+**What goes wrong:** "Updating model settings can affect the performance of associated prompts," so every template on that configuration changes at once.
 
-**Correct approach:** Always create a new, isolated alias (e.g., `Test_ClaudeV3`) pointing to the new model. Test this alias exclusively in sandbox using a copy of the prompt templates. Only after validation is complete — and ideally after a business hours window — update the production alias or swap features to the new alias one at a time.
+**Correct approach:** Create a new configuration in Model Playground, attach it to a new version of one template, test, and activate template by template.

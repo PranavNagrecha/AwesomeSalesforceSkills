@@ -21,3 +21,38 @@
 **Solution:** The data preparation work focused on: (1) verifying that at least 200 positive-class (escalated) records existed (they had 180 — just under the minimum); (2) working with the service team to find proxy datasets from legacy system import and recovering 400+ escalated cases; (3) identifying that `Resolution_Time__c` was a post-escalation field and removing it; (4) adding `Customer_Tier__c`, `Product_Category__c`, and `Days_Without_Response__c` as features. After remediation, the model reached useful recall at the 40% prediction threshold.
 
 **Why it works:** EPB requires at least 200 positive-class records. Severe class imbalance (< 5% positive) also requires adjusting the prediction threshold below the default 50% to achieve usable recall.
+
+---
+
+## Example 3: Fill-Rate and Class Audit Before Any Training
+
+**Context:** The same case-escalation team needs numbers, not impressions, before choosing fields.
+
+**Solution:** One aggregate SOQL query gives the fill rate per candidate field, and a second gives the class counts. Save as `soql/escalation_fill_rate.soql`:
+
+```sql
+SELECT COUNT(Id) total_rows,
+       COUNT(Escalated_Date__c) outcome_known,
+       COUNT(Customer_Tier__c) tier_filled,
+       COUNT(Product_Category__c) category_filled,
+       COUNT(Days_Without_Response__c) days_filled,
+       COUNT(Resolution_Time__c) resolution_filled
+FROM Case
+WHERE CreatedDate = LAST_N_DAYS:730
+```
+
+```sql
+SELECT IsEscalated, COUNT(Id) n
+FROM Case
+WHERE CreatedDate = LAST_N_DAYS:730
+GROUP BY IsEscalated
+```
+
+Then export the candidate rows to `extract/case_escalation.csv` and run the checker with the outcome named:
+
+```bash
+python3 skills/data/ai-training-data-preparation/scripts/check_ai_training_data_preparation.py \
+  --manifest-dir extract --outcome IsEscalated --type binary
+```
+
+**Why it works:** `COUNT(field)` counts non-null values, so each ratio to `total_rows` is that field's fill rate. The checker then catches what SOQL cannot: a predictor identical to the outcome, more than 100 categories, ID-like columns, and row or column counts outside the Einstein Studio bounds (400 to 20 million rows, 3 to 50 columns). `Resolution_Time__c` should be excluded regardless of fill rate, because it is set after escalation.

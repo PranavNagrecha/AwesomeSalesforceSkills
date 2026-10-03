@@ -42,8 +42,8 @@ Use this template when configuring, validating, or reviewing Einstein Trust Laye
 | Sensitive data categories configured | (list selected: Names, Emails, Phones, SSNs, Credit Cards) | |
 | Features where masking is confirmed active | (list features) | Note: not all features support masking |
 | Prompt Builder preview tested with PII record | Yes / No | Placeholders must appear in preview output |
-| Context window budget assessed (limit: 65,536 tokens with masking) | Yes / No | |
-| Estimated max token count for largest grounded prompt | (number) | Must be under 65,536 |
+| Largest prompt previewed with masking on (no automatic summary in Resolution panel) | Yes / No | |
+| Max promptTokens__c observed in GenAIGatewayRequest | (number) | 65,536 cap from earlier versions is UNVERIFIED |
 
 ### Toxicity Detection
 

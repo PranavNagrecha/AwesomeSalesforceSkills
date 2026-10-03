@@ -15,6 +15,8 @@ triggers:
   - "how do I configure zero data retention for Einstein AI features"
   - "einstein trust layer isn't working"
   - "we're having issues with einstein trust layer"
+  - "verify that data masking hides PII in a prompt template before go-live"
+  - "build a Data Cloud report of masked prompts and toxicity scores for an audit"
 tags:
   - einstein-trust-layer
   - data-masking
@@ -33,9 +35,9 @@ outputs:
   - Decision guidance on grounding strategy and data exposure scope
   - Review checklist confirming security posture for generative AI deployments
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Einstein Trust Layer
@@ -50,9 +52,9 @@ Gather this context before working on anything in this domain:
 
 - **Data 360 must be provisioned.** The Einstein Trust Layer depends on Data 360 for audit trail storage. Without it, audit trail cannot be enabled and some Trust Layer features will be unavailable.
 - **Einstein Generative AI must be turned on.** Navigate to Setup > Einstein Setup and toggle "Turn on Einstein" to On before accessing the Trust Layer configuration page.
-- **Which Einstein features are in scope?** Data masking behavior and applicability differ by feature. As of Spring '25, data masking is available for embedded features (Service Replies, Work Summaries, Prompt Builder previews) but disabled for Agentforce agents by default. Confirm the features before setting expectations.
-- **The most common wrong assumption:** Practitioners assume Trust Layer controls are on by default and apply uniformly. In practice, data masking must be explicitly enabled, and it does not apply to all Einstein features identically.
-- **Context window constraint:** When data masking is active, all models are limited to a context size of 65,536 tokens. Prompts that exceed this limit will fail or be truncated.
+- **Which Einstein features are in scope?** Data masking behavior and applicability differ by feature. The Generative AI guide states: "Data masking through the Einstein Trust Layer is disabled to improve the performance and accuracy of agents." Masking applies to Prompt Builder and features that use prompt templates; "LLM Data Masking isn't always available in all features." Confirm the features before setting expectations.
+- **The most common wrong assumption:** Practitioners assume Trust Layer controls apply uniformly. In practice, masking does not apply to agents, field-based masking covers only record merge fields and related lists, and audit data is collected only after data collection is turned on. Correction (2026-10-03): earlier versions said data masking must be explicitly enabled; the Set up Einstein Trust Layer steps say "Data Masking is enabled by default," with the most commonly used data types turned on at initial setup.
+- **Context window constraint:** Earlier versions said that when data masking is active, all models are limited to a context size of 65,536 tokens. UNVERIFIED (2026-10-03): this figure does not appear in the Generative AI guide; Prompt Builder instead documents that "When a prompt is too large for the model to use, a summary is generated automatically in the Resolution panel." Test large prompts with masking on.
 
 ---
 
@@ -60,32 +62,32 @@ Gather this context before working on anything in this domain:
 
 ### Zero Data Retention (ZDR)
 
-Salesforce holds contractual zero data retention agreements with external LLM providers (including OpenAI). Under these agreements, prompts and responses sent through the LLM gateway are never stored or used for model training by the provider. Data passes through OpenAI's enterprise API and is discarded immediately after the response is generated — it does not persist outside Salesforce infrastructure.
+Salesforce holds zero data retention agreements with external LLM providers; the guide names OpenAI and Azure OpenAI. Under the policy, "data sent to the LLM from Salesforce isn't retained and is deleted after a response is sent back to Salesforce," no data is used for model training or product improvements by third-party LLMs, and no human at the provider looks at it. Data passes through OpenAI's enterprise API and is discarded immediately after the response is generated; it does not persist outside Salesforce infrastructure.
 
-ZDR applies specifically to data sent to external LLMs. It does not mean that Salesforce itself does not store anything — the audit trail within Data 360 retains interaction records for compliance purposes.
+ZDR applies specifically to data sent to external LLMs. It does not mean that Salesforce itself does not store anything: audit and feedback data are stored in your Data Cloud instance for as long as you choose, and "additionally, audit and feedback data are stored by Salesforce for 30 days for compliance purposes."
 
 ### Data Masking
 
-Before a prompt is sent to an external LLM, the Trust Layer uses named entity recognition (NER) and pattern-matching to identify PII and PCI data. Detected entities are replaced with typed placeholders (e.g., `PERSON_0`, `EMAIL_0`, `CREDITCARD_0`). A temporary mapping is held within the Trust Layer. When the LLM returns its response, the Trust Layer demasks — restoring original values before presenting the result to the user.
+Before a prompt is sent to an external LLM, the Trust Layer identifies sensitive data two ways. Pattern-based masking uses regular expressions, context words, and machine learning models (for names of people and companies) across all prompt text. Field-based masking uses Shield Platform Encryption or data classification metadata, and "supports only merge fields that are referenced in record merge fields and related lists." Detected values are replaced with placeholder text, and the Trust Layer "temporarily stores the relationship between the original entities and their respective placeholders" to demask the response. UNVERIFIED (2026-10-03): the exact placeholder format (for example `PERSON_0`) is not shown in the guide; Prompt Builder's View Your Data Masking Details dialog shows the real placeholders.
 
-Default masked data types include: names (individual and organizational), email addresses, phone numbers (business and mobile), credit card numbers, and US Social Security Numbers. Administrators can configure which data types to mask from the setup UI.
+Pattern-based data types are Company Name, Credit Card (16 or 17 digits), Email Address, IBAN, Name, Passport, and Phone Number in English, French, German, Italian, Japanese, and Spanish, plus US driver's license, US ITIN, and US Social Security number in English (United States) only. "At initial setup, the most commonly used entries are turned on, and less frequently used entries are off." Administrators choose types in Einstein Trust Layer setup.
 
 Important constraints:
 - No model can guarantee 100% detection accuracy. Cross-region or multi-country data patterns may reduce detection effectiveness.
 - Data masking requires valid-format data to trigger. A malformed SSN or an invalid credit card number will not be masked.
-- Context window is capped at 65,536 tokens when data masking is active.
-- There is no programmatic way to handle masked data from the Models API — masking is fully managed by the Trust Layer.
-- Policy updates can take a few minutes to propagate after saving.
+- UNVERIFIED (2026-10-03): the 65,536-token context cap with masking active (see Before Starting).
+- UNVERIFIED (2026-10-03): that there is no programmatic way to handle masked data from the Models API.
+- Changes to masking entities "can take up to a few minutes" to take effect.
 
 ### Toxicity Detection
 
-After the LLM returns a response, the Trust Layer scores it for harmful content using a combination of rule-based filtering and a Salesforce Research transformer model (Flan-T5-base, trained on approximately 2.3 million prompts). Toxicity is scored across multiple categories including toxicity (general rudeness/unreasonableness), hate speech, violence, physical harm, sexual content, and profanity. The overall score is a composite value ranging from 0 to 1, with 1 representing maximum toxicity.
+After the LLM returns a response, the Trust Layer scans it for toxicity and records "a toxicity confidence score" and categories in Data Cloud. UNVERIFIED (2026-10-03): the model details from the original version (rule-based filtering plus a Flan-T5-base transformer trained on about 2.3 million prompts) come from a blog post, not the guide. Scores run from 0 to 1. For the safety category, 1 is safest and 0.5 to 1 is considered safe; for every other category, 0.5 and above is considered toxic. "When the isToxicityDetected field is false, it doesn't necessarily mean there isn't toxicity."
 
 The toxicity score accompanies the response and is recorded in the audit trail. Applications can consume the score to decide whether to present the response to the user.
 
 ### Grounding Controls
 
-Grounding connects AI prompts to organizational data so responses are contextually accurate. The Trust Layer supports three grounding modes:
+Grounding connects AI prompts to organizational data so responses are contextually accurate. The guide lists merge fields for record fields, flows, Apex, Data Cloud DMOs, and related lists, and states that retrieval is "based on the permissions of the user executing the prompt" and preserves role-based controls and field-level security. The original version described three grounding modes; UNVERIFIED (2026-10-03), as these names come from a blog post:
 
 - **Client-side grounding:** Merge fields on a record page populate with the currently displayed record's data during user interactions.
 - **Server-side grounding:** Flows or Apex calls query the database directly to inject context at processing time.
@@ -97,7 +99,7 @@ Grounding determines what CRM data is exposed to the LLM. Prompt defense is appl
 
 The audit trail records every AI interaction passing through the Trust Layer. Each record includes: the original prompt, safety scores from toxicity detection, the raw LLM output, user acceptance/rejection decision, and any user modifications before the output was used. Records are stored in Data 360.
 
-Audit trail is not active out of the box — it requires explicit enablement. Retention period is configurable. The audit trail is accessible for compliance review and can be surfaced through reports and dashboards within the org.
+To see audit data you must turn on Einstein generative AI data collection and storage and install the audit and feedback report package. Data lands in the default data space, Data Cloud refreshes the streams once every hour, and on average each LLM round trip ingests 24 records, which consume Data Cloud credits. Use the GenAIGatewayRequest report (Prompt, MaskedPrompt, promptTokens) to verify masking and the GenAIGatewayResponse with GenAIContentCategory report (DetectorType, Category, Value) to review toxicity.
 
 ---
 
@@ -147,15 +149,27 @@ Audit trail is not active out of the box — it requires explicit enablement. Re
 ---
 
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which features will send customer data to an LLM: agents, prompt templates, or embedded features?" | Masking is disabled for agents and isn't available in all features (Gotcha 1) | A feature list with masking coverage per feature | Nobody tells compliance that agent prompts are masked when they are not |
+| "Which sensitive fields arrive through Flow or Apex merge fields rather than record fields?" | Field-based masking covers only record merge fields and related lists (Gotcha 4) | A list of fields that rely on pattern-based masking alone | Sensitive values from code paths are classified, reshaped, or kept out |
+| "Which countries and languages do the records come from?" | Pattern types and phone formats are language and region specific, and no model is 100% accurate (Gotcha 3) | The data types and locales to test | Masking is tested on the data the org really holds |
+| "Is data collection on, and who reads the audit reports?" | Audit data exists only after collection is turned on, and each round trip ingests about 24 Data Cloud records (Gotchas 5, 6) | An owner, a report, and a credit estimate | Evidence exists on day one and the credit bill is expected |
+| "Will this be tested in a sandbox?" | Masking configuration, Data Cloud grounding, and audit data aren't available in sandbox staging environments (Gotcha 7) | A production-like test plan for those three | Go-live is not the first time masking is checked |
+| "Must LLM requests stay in a region?" | Geo-aware routing falls back to the US when a model isn't nearby, and that can't be disabled (Gotcha 9) | Model and provider choices per residency rule | Residency claims match how requests are routed |
+
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Confirm prerequisites: Einstein Generative AI on, Data Cloud configured, and the list of features in scope with their masking coverage (the Questions table).
+2. Commit the deployable switches (EinsteinAISettings `enableTrustPIIMasking` and `enableAIFeedbackWithDC`, EinsteinGptSettings provider blocks and region fallback) from `references/metadata-examples.md`. In Setup, open Einstein Trust Layer, review the pattern-based data types, and turn on masking for Shield Platform Encryption, compliance categories, and sensitivity levels; tag sensitive fields in Object Manager.
+3. Turn on Einstein generative AI data collection and storage, and install the audit and feedback report package.
+4. Verify masking in Prompt Builder preview (View Your Data Masking Details) and in the GenAIGatewayRequest report, using records with each data type and locale the org holds.
+5. Run `python3 scripts/check_einstein_trust_layer.py --manifest-dir <metadata root>` to catch disabled settings, region fallback, direct LLM callouts, and Flow or Apex merge fields that only pattern-based masking can cover.
+6. Review toxicity with the GenAIGatewayResponse with GenAIContentCategory report, and record the masking, audit, and residency decisions for compliance.
 
 ---
 
@@ -179,13 +193,13 @@ Run through these before marking Trust Layer configuration complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Data masking is disabled for Agentforce agents by default** — Practitioners who enable data masking in Trust Layer setup assume it applies to all AI features. As of Spring '25, data masking applies to embedded features (Service Replies, Work Summaries, Prompt Builder previews) but is not applied to agent prompts. PII in agent-grounded prompts can be sent in plain text to the external LLM. Always check release notes and the feature-specific Trust Layer coverage before assuming masking is active.
+1. **Data masking is disabled for Agentforce agents**: Practitioners who enable data masking in Trust Layer setup assume it applies to all AI features. The guide states that "Data masking through the Einstein Trust Layer is disabled to improve the performance and accuracy of agents." PII in agent-grounded prompts can be sent in plain text to the external LLM. Always check release notes and the feature-specific Trust Layer coverage before assuming masking is active.
 
 2. **Zero data retention applies to external LLMs only, not to the audit trail** — ZDR means the external LLM provider (e.g., OpenAI) does not retain the data after processing. The audit trail within Salesforce Data 360 does store interaction records, including the original prompt and LLM output. Practitioners who cite ZDR as a reason not to configure audit trail retention policies are creating a compliance gap — the audit trail must be independently governed.
 
 3. **Invalid-format PII is not masked** — The masking engine validates data format before applying placeholders. A social security number with incorrect formatting, a malformed email, or an invalid credit card number will pass through to the LLM unmasked. This is a silent failure — there is no error or warning. Testing masking with realistic production-format data is required to validate coverage.
 
-4. **Context window shrinks to 65,536 tokens when data masking is active** — Large prompt templates or heavily grounded prompts that work without masking may exceed the reduced context window and fail at runtime. Prompt size must be validated with masking active, not just in isolation.
+4. **Context window shrinks to 65,536 tokens when data masking is active** — UNVERIFIED (2026-10-03): not found in the Generative AI guide. Large prompt templates or heavily grounded prompts that work without masking should still be validated with masking active.
 
 5. **Audit trail requires explicit activation and is not retroactive** — Interactions that occur before audit trail is enabled are not logged. There is no backfill mechanism. Organizations that enable generative AI features before setting up the audit trail will have a compliance gap for that period.
 
@@ -204,5 +218,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- agentforce/agentforce-agent-design — use alongside this skill when building agents to validate what data is grounded and whether Trust Layer coverage applies to agent prompts
+- agentforce/agentforce-agent-creation: use alongside this skill when building agents to validate what data is grounded and whether Trust Layer coverage applies to agent prompts
 - data/data-quality-and-governance — for broader data governance, classification, and Shield Platform Encryption concerns outside of AI interaction security

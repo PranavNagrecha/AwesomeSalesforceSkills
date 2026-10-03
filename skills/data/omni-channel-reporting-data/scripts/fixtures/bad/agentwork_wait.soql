@@ -1,0 +1,1 @@
+SELECT Id, RequestDateTime, WaitTime, HandleTime FROM AgentWork WHERE IsTransfer = false

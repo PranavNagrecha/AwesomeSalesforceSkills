@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WaveXmd xmlns="http://soap.sforce.com/2006/04/metadata">
+    <dimensions>
+        <field>Region__c</field>
+        <isDerived>false</isDerived>
+        <label></label>
+        <members>
+            <label>North</label>
+            <member>N</member>
+        </members>
+    </dimensions>
+    <dimensions>
+        <field>Region__c</field>
+        <isDerived>false</isDerived>
+        <sortIndex>1</sortIndex>
+    </dimensions>
+    <measures>
+        <field>Salary__c</field>
+        <isDerived>false</isDerived>
+        <showInExplorer>false</showInExplorer>
+        <sortIndex>0</sortIndex>
+    </measures>
+</WaveXmd>

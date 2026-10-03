@@ -68,12 +68,15 @@ What defaults may miss:
 - Industry-specific sensitive data (medical record numbers,
   student IDs, financial account numbers)
 
-Configuration steps:
-1. Setup > Einstein Trust Layer > Data Masking
-2. Review default masking rules
-3. Add custom masking rules for org-specific PII fields
+Configuration steps (Generative AI guide, Select What Data To Mask):
+1. Setup > Einstein Trust Layer > Go to Einstein Trust Layer
+2. Review the pattern-based data types (some are on by default)
+3. Turn on masking for Shield Platform Encryption, compliance categories,
+   and data sensitivity levels; tag org-specific PII fields with the
+   right compliance category and sensitivity level in Object Manager
+   (field-based masking covers record merge fields and related lists only)
 4. Test masking with sample prompts in the Prompt Builder
-5. Monitor the audit trail for unmasked PII in prompts
+5. Monitor the GenAIGatewayRequest report (Prompt vs MaskedPrompt)
 
 Masking behavior:
 - Masked values are replaced with tokens before LLM transmission
@@ -196,8 +199,9 @@ Every Agentforce interaction flows through the Trust Layer:
   Prompt construction → TRUST LAYER → LLM → TRUST LAYER → Response
 
 Trust Layer controls that affect Agentforce:
-1. Data masking: PII in grounded record data is masked before
-   the agent's prompt reaches the LLM
+1. Data masking: DISABLED for agents ("Data masking through the
+   Einstein Trust Layer is disabled to improve the performance and
+   accuracy of agents"); keep sensitive fields out of agent grounding
 2. Toxicity detection: agent responses are checked before
    being displayed to the user
 3. Grounding: controls what retrieved data is included in prompts
@@ -205,8 +209,8 @@ Trust Layer controls that affect Agentforce:
 5. ZDR: ensures the LLM provider does not retain conversation data
 
 Agentforce deployment checklist (Trust Layer items):
-- [ ] Data masking configured for fields used in agent actions
-- [ ] Toxicity detection thresholds set for the use case
+- [ ] Sensitive fields kept out of agent actions and grounding (masking does not apply to agents)
+- [ ] Toxicity review report built (DetectorType = toxicity); UNVERIFIED (2026-10-03): no configurable toxicity threshold is documented
 - [ ] Audit trail enabled and access-controlled
 - [ ] ZDR verified with the model provider
 - [ ] Grounding controls reviewed (what data reaches the LLM)
@@ -216,6 +220,31 @@ Skipping Trust Layer configuration means accepting defaults.
 Defaults may not match your compliance, security, or privacy requirements.
 ```
 
-**Detection hint:** Flag Agentforce deployment guides that do not include Trust Layer configuration steps. Check for active agents in orgs where Trust Layer settings are at defaults. Flag missing data masking review for agent-accessible objects.
+**Detection hint:** Flag Agentforce deployment guides that do not include Trust Layer configuration steps. Check for active agents in orgs where Trust Layer settings are at defaults. Flag any agent design that claims PII in agent prompts is masked.
 
 ---
+
+---
+
+## Anti-Pattern 6: Reading isToxicityDetected = false as "Safe"
+
+**What the LLM generates:** "Filter the audit report to isToxicityDetected = true; everything else is clean."
+
+**Why it happens:** A boolean flag looks like a verdict.
+
+**Correct pattern:** "When the isToxicityDetected field is false, it doesn't necessarily mean there isn't toxicity." Review category scores: for the safety category 1 is safest, and for other categories 0.5 and above is toxic.
+
+**Detection hint:** A toxicity review plan that uses only `isToxicityDetected`.
+
+---
+
+## Anti-Pattern 7: Copying the Metadata API EinsteinGptSettings Sample
+
+**What the LLM generates:** The guide's sample verbatim, with `<enableEinsteinGptPlatform>true</reRunAttributeBasedRules>`.
+
+**Why it happens:** The model trusts official samples.
+
+**Correct pattern:** Write each element with matching tags (see `references/metadata-examples.md`) and parse the file before deploying. The skill checker reports a parse failure as `TL-XML-01`.
+
+**Detection hint:** Mismatched open and close tags in any settings file.
+

@@ -24,21 +24,23 @@ outputs:
   - Review findings for existing templates (permission gaps, inactive versions, missing grounding)
   - Troubleshooting guidance for templates returning blank or hallucinated responses
 triggers:
-  - how do I create a prompt template in Prompt Builder
-  - my prompt template is returning blank or empty output
-  - how do I ground a prompt template with related record data
-  - flex template not working as expected in agent action
-  - how do I share or package a prompt template across orgs
+  - "how do I create a prompt template in Prompt Builder"
+  - "my prompt template is returning blank or empty output"
+  - "how do I ground a prompt template with related record data"
+  - "flex template not working as expected in agent action"
+  - "how do I share or package a prompt template across orgs"
   - "prompt builder isn't working"
+  - "deploy a prompt template with the Metadata API without breaking the active version"
+  - "ground a Field Generation prompt template with an Apex merge field"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 # Prompt Builder Templates
 
-This skill activates when a practitioner needs to create a new prompt template in Prompt Builder, audit or review an existing template library, or diagnose why a prompt template is returning unexpected output. It covers all four standard template types — Field Generation, Record Summary, Sales Email, and Flex — and all grounding strategies.
+This skill activates when a practitioner needs to create a new prompt template in Prompt Builder, audit or review an existing template library, deploy templates between orgs, or diagnose why a prompt template is returning unexpected output. It covers the four core template types (Field Generation, Record Summary, Sales Email, and Flex) and every grounding resource Prompt Builder offers.
 
 ---
 
@@ -46,11 +48,26 @@ This skill activates when a practitioner needs to create a new prompt template i
 
 Gather this context before working on anything in this domain:
 
-- Confirm Einstein generative AI is enabled in the org (`Setup > Einstein > Generative AI Settings`). Prompt Builder is unavailable without this.
-- Identify the template type needed. Each type has a different deployment surface and a different set of allowed grounding approaches.
-- Confirm the user has the **Manage Prompt Templates** (also referred to as Prompt Template Manager) permission. Without it, the user cannot create, edit, activate, or package templates — and this permission is required even to see templates in packages.
-- Determine whether grounding data lives entirely inside Salesforce CRM, requires external systems, or requires Data Cloud. The answer drives the grounding strategy choice.
-- Only one version of a template can be active at a time. Understand whether there is an active version before making changes.
+- Confirm Einstein generative AI is set up, and that Sales Emails is turned on: the Generative AI guide's Enable Prompt Builder steps include "To build prompt templates, turn on Sales Emails."
+- Identify the template type needed. Each type has a different deployment surface and a different set of available merge fields.
+- Confirm permission sets: **Prompt Template Manager** for people who create and manage templates (the user must also have access to Setup), and **Prompt Template User** for end users who run them. The Metadata API also requires Prompt Template Manager to retrieve or deploy GenAiPromptTemplate.
+- Determine whether grounding data lives on the record, needs logic (Flow or Apex), lives in Data Cloud, or is unstructured (a retriever).
+- Only one version of a template can be active at a time, and an activated version becomes immutable. Know which version is active before making changes.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Where will the output appear: a record field, an email composer, a flow, or an agent action?" | Type decides the surface, the merge fields, and the Apex CapabilityType (Gotcha 9) | One template type per surface | The template shows up where users expect it, first time |
+| "How will this template move to production: change set, Metadata API, or package?" | Flex templates can't import or export metadata, retrievers don't travel, and the deploy setting can fail templates without an active version (Gotchas 5, 6, 7) | A deployment path and the setting for active-only deploys | Releases don't fail at the end, and no retriever is missing in production |
+| "Which data needs Flow or Apex rather than record merge fields?" | Changing a flow's or Apex class's inputs breaks the template and blocks new versions (Gotcha 3) | A frozen input contract for each Flow and Apex resource | Grounding code can evolve without stranding the template |
+| "Who changes templates, and how are changes recorded?" | Template changes aren't in the Setup Audit Trail, and activated versions are immutable (Gotchas 1, 4) | A version-naming rule and an external change log | Every live change can be traced and rolled back by activating the prior version |
+| "How many merge fields, related lists, and inputs will it use?" | Hard limits: 128,000 characters, 50 versions, 50 merge fields, 5 Flow, 5 Apex, 5 related list merge fields, 5 Flex inputs (Gotcha 8) | A resource count checked against the limits | The template is not redesigned after it is half built |
+| "Which records will the preview use?" | Records with no Name or an encrypted Name can't be previewed, and related list grounding follows the running user's page layout (Gotchas 2, 10) | A named preview record set per persona | Preview proves the same data real users will send |
 
 ---
 
@@ -58,87 +75,88 @@ Gather this context before working on anything in this domain:
 
 ### Template Types
 
-Salesforce Prompt Builder (part of Einstein 1 Studio) provides four standard prompt template types, each scoped to a specific deployment surface. (Source: [Prompt Template Types](https://help.salesforce.com/s/articleView?id=ai.prompt_builder_standard_template_types.htm&language=en_US&type=5))
+Prompt Builder lists these template types: Campaign Brief, Contextual Service Replies, Field Generation, Flex, Grounded Service Replies, Knowledge Answers, Provider Account Summary, Record Prioritization, Record Summary, Sales Emails, and Sales Pitch Coaching. The Metadata API `type` values for GenAiPromptTemplate are `einstein_gpt__fieldCompletion`, `einstein_gpt__salesEmail`, `einstein_gpt__recordSummary`, `einstein_gpt__flex`, and `einstein_gpt__caseEmailDraft`. (Source: Generative AI guide, Prompt Template Types; Metadata API, GenAiPromptTemplate.)
 
-**Field Generation** — Populates a specific field on a Salesforce record using an LLM response. The template is bound to an object and a target field. An Einstein button appears in Lightning Experience to trigger generation. Field Generation is unsupported for rich text area fields on Knowledge entities.
+**Field Generation**: populates a record field; in Lightning Experience users click a button to run the prompt and fill the field. Bind it to a field on a Lightning record page with Lightning App Builder. It can't be used for rich text areas on Knowledge (`__kav`) entities.
 
-**Record Summary** — Generates a natural-language summary of a Salesforce record (Opportunity, Case, Contact, etc.) by consuming record data and related activity. Displayed in a dedicated summary panel on the record page.
+**Record Summary**: summarizes a record and is used by the Summarize Record standard invocable action; agents use the Summarize Record standard agent action.
 
-**Sales Email** — Drafts personalized outbound emails for sales reps using record data such as Opportunity, Contact, and Account fields. Renders in the activity composer.
+**Sales Email**: drafts personalized customer email from record data. Merge fields are Recipient (contact or lead), Sender (user), and Current Organization.
 
-**Flex** — A general-purpose template type for any use case not covered by the three types above. Flex templates accept up to five custom inputs defined at authoring time. They can be surfaced via agent actions, quick actions, screen flows, or custom UI. Flex templates are the correct type to use when integrating with Agentforce agent actions.
+**Flex**: content for any purpose the other types don't cover; you define your own resources, up to 5 inputs. UNVERIFIED (2026-10-03): earlier versions said only Flex templates can be used by agent actions; the guide says custom actions that reference a prompt template can use any Salesforce-managed model but does not list which types an agent action accepts.
 
-**Structured Outputs (Spring '26).** Prompt Builder can bind a Flex (or other supported) template to a **Lightning type** so the model response is validated as JSON matching that type — platform-enforced structure instead of prompt-only "return JSON" instructions. Use this when an agent action or Flow must consume typed fields, not free-form prose. Preview still matters: schema validation catches shape errors, not business correctness.
+**Structured output (Spring '26).** GenAiPromptTemplateVersion has `responseFormat` (HTML, JSON, MarkDown) and `outputSchema` ("the expected JSON schema structure for the generated output"). UNVERIFIED (2026-10-03): the earlier claim that a template binds to a Lightning type for platform-validated JSON was not found in a fetched source. Preview still matters: a schema checks shape, not business correctness.
 
-### Grounding Strategies
+### Grounding Resources
 
-Grounding connects prompt template placeholders to real Salesforce data so the LLM produces contextually accurate output rather than hallucinated content. There are five grounding mechanisms, and they can be combined within a single template. (Source: [Ground Prompt Templates with Salesforce Resources](https://help.salesforce.com/s/articleView?language=en_US&id=ai.prompt_builder_ground_template.htm&type=5))
+Merge fields can reference record fields, flows, Apex, Data Cloud DMOs, related lists, data graphs, record snapshots, and retrievers. (Source: Generative AI guide, Ground Prompt Templates with Salesforce Resources.)
 
-**Record Merge Fields** — Pull field values directly from the anchor record using the Insert Resource panel. This is the simplest approach and covers the majority of single-object scenarios. Syntax resolves at runtime against the context record.
+**Record merge fields**: added as `Input:RecordName.FieldName`, for example `{!$Input:Account.Name}`. Correction (2026-10-03): earlier examples in this skill used `{!$Record.Subject}`, which is Flow syntax, not Prompt Builder syntax.
 
-**Flow Merge Fields** — Invoke a Template-Triggered Prompt Flow that is bound to the template. The flow uses an "Add Prompt Instructions" element (additive, can be used multiple times) to inject computed text. Use this approach when data assembly requires traversing multiple objects, running calculations, or filtering related records that cannot be expressed as a simple merge field.
+**Flow merge fields**: build a **Template-Triggered Prompt Flow**; "Other flow types aren't available to prompt templates." Each **Create Prompt Instructions** element adds instructions, and the flow's output fills the merge field (`{!$Flow:Get_Open_Cases_for_Account}`). Correction (2026-10-03): the element is Create Prompt Instructions, not "Add Prompt Instructions." For flows, all inputs are required and must be present in the template. Flow Builder's Debug option isn't available for this flow type.
 
-**Apex Merge Fields** — Call an `@InvocableMethod`-annotated Apex class. The method receives a `List<Request>` containing invocable variables mapped from template inputs, processes data (including callouts to external systems), and returns a `List<Response>` with a `prompt` string variable. The capability type assigned to the method must match the template type (e.g., `FlexTemplate://template_API_name` for Flex templates). Use Apex when external API calls, complex business logic, or transformations beyond Flow capability are required.
+**Apex merge fields**: one `@InvocableMethod` that takes `List<Request>` (only the first element has data) and returns `List<Response>` with a single String `Prompt` variable. A `CapabilityType` *can* be specified and ties the class to one template type: `PromptTemplateType://einstein_gpt__fieldCompletion`, `...salesEmail`, `...recordSummary`, `...recordPrioritization`, or `FlexTemplate://template_API_Name`. Correction (2026-10-03): earlier versions said the capability type must match or grounding fails. The guide now says the Flex capability "is no longer needed" and recommends removing `CapabilityType=FlexTemplate://*`; Apex inputs are optional unless annotated as required. Don't specify a CapabilityType for `einstein_gpt__caseEmailDraft`.
 
-**Related List Merge Fields** — Surface structured data from related records (e.g., last five cases on an Account). Limited to CRM data; cannot pull from external systems.
+**Related list merge fields**: fields come from the parent's page layout for the current user; "Record-level filters aren't applied"; Activities related lists aren't supported; a user without the related list on their layout or without Read access sends no related list data.
 
-**Einstein Search Retriever** — Unstructured content retrieval from external knowledge sources indexed by Einstein Search. Useful for surfacing knowledge article content, documentation, or product specifications.
+**Retrievers (RAG)**: default retrievers come with each Data Cloud search index; custom retrievers are built in Einstein Studio. Search text is limited to 255 characters, globals, and prompt inputs. See `agentforce/rag-patterns-in-salesforce`.
 
 ### Versioning and Activation
 
-Every save of a template creates a numbered version. Activation makes exactly one version live; only the active version is resolved at runtime. To make changes to a live template, save a new version, test it in preview, then activate the new version (which automatically deactivates the previous). Deactivating a template without activating a replacement disables the feature for all users immediately.
+"After you save a new prompt for the first time, it becomes Version 1." Save keeps working on the current version; Save As > Save as a New Version creates the next one. Correction (2026-10-03): earlier versions said every save creates a version. "Only one version of a template can be active at a time, and if no versions are active the template becomes unavailable to your users." "Activating a template version makes it immutable. Even if deactivated, any version that was ever active remains immutable." Each version can carry a different model configuration, and only the active version's model is used.
 
-Audit trail does not capture template creation or version changes. Maintain version discipline through naming conventions or an external change log.
+"Creating or updating a prompt template isn't tracked in the Setup Audit Trail." Maintain version discipline through naming conventions or an external change log.
 
 ### Einstein Trust Layer Integration
 
-All prompts generated from Prompt Builder templates pass through the Einstein Trust Layer before reaching the LLM. The Trust Layer masks sensitive data (PII, credentials) identified in the org's data masking rules, encrypts data in transit, and never stores prompt data outside Salesforce. This behavior is automatic and non-bypassable; it is not configured in Prompt Builder itself. (Source: [Einstein Trust Layer](https://help.salesforce.com/s/articleView?id=ai.einstein_trust_layer_about.htm&language=en_US&type=5))
+Prompts from Prompt Builder templates pass through the Einstein Trust Layer: secure data retrieval under the running user's permissions, system policies (prompt defense), data masking (on by default; field-based masking covers record merge fields and related lists), toxicity scoring, and audit. These are configured in Einstein Trust Layer setup, not in Prompt Builder. Masking is disabled for agents. (Source: Generative AI guide, Einstein Trust Layer chapter.)
 
 ---
 
 ## Common Patterns
 
-### Mode 1 — Create a New Prompt Template
+### Mode 1: Create a New Prompt Template
 
 **When to use:** A practitioner needs to build a net-new template from scratch for a defined use case.
 
 **How it works:**
 
-1. Confirm Einstein generative AI is enabled and the user has Manage Prompt Templates permission.
-2. Navigate to `Setup > Einstein 1 Studio > Prompt Builder > New Prompt Template`.
-3. Select the template type. For agent action integration, select **Flex**. For field population, select **Field Generation** and choose the target object and field.
-4. Write the prompt body in natural language. Use the **Insert Resource** panel to add merge fields rather than typing raw field API names — the panel validates field availability.
-5. Choose a grounding strategy based on data location and complexity (see Decision Guidance below).
-6. Use **Save & Preview** with a real record to inspect the Resolved Prompt (substituted merge fields) and the Generated Response side-by-side. Iterate on the prompt text and grounding before activating.
-7. Click **Activate** when the preview output meets quality expectations.
-8. For Field Generation: use App Builder to bind the activated template to the field's Einstein button on the record page. For Flex: assign the template to an agent action or quick action.
+1. Confirm Einstein generative AI is set up, Sales Emails is on, and the author has Prompt Template Manager.
+2. From Setup, in Quick Find enter Prompt Builder, and select Prompt Builder. Click New Prompt Template.
+3. Select the template type. For field population, select Field Generation and choose the object and field.
+4. Write the prompt body. Use the Resource picker to insert merge fields rather than typing API names. Separate context from instructions: on its own line write `Instructions:` and wrap the instructions in triple quotes.
+5. Choose grounding with the Decision Guidance table below.
+6. Preview with a real record: inspect the resolution (merge fields replaced with data, masked values shown as placeholders) and the response.
+7. Activate when the preview meets expectations. Remember the version becomes immutable.
+8. For Field Generation, add the template to the field on the Lightning record page. For Sales Email, add it to Einstein Sales Emails. Assign Prompt Template User to end users.
 
-**Why not skipping Preview:** Activating without previewing against real data is the primary cause of blank output in production — merge fields that look correct in the editor often fail to resolve against real records if the field API name or relationship traversal is wrong.
+**Why not skip Preview:** Merge fields that look correct in the editor can resolve to nothing on real records, and preview is where masking, related list access, and large-prompt summarization show up.
 
-### Mode 2 — Review or Audit an Existing Template Library
+### Mode 2: Review or Audit an Existing Template Library
 
 **When to use:** Assessing an org's prompt template posture before a release, or identifying why specific templates are not surfacing for users.
 
 **How it works:**
 
-1. Navigate to `Setup > Einstein 1 Studio > Prompt Builder`. Review all templates and note their active/inactive status and type.
-2. For each template, check that at least one version is active. Inactive templates produce no output and show no error to end users — they silently do nothing.
-3. Verify that users who need the template output have the correct permission set or profile settings. Field Generation and Record Summary require that the running user's profile or permission set includes access to the object and fields used in the template, in addition to the Manage Prompt Templates permission for authors.
-4. Confirm that any Flow or Apex grounding resources referenced in templates are themselves active and deployable to production.
-5. If templates are packaged, confirm subscribers have the Manage Prompt Templates permission — package installation succeeds without it, but templates cannot be invoked.
+1. Open Prompt Builder. Review all templates, their type, and active version.
+2. Check that each template in use has an active version; with none active, the template is unavailable to users.
+3. Verify end users have Prompt Template User and access to the objects and fields the template reads; related list grounding also depends on their page layout.
+4. Confirm every Flow and Apex resource is deployed, and that nobody has changed their inputs since the template was built.
+5. Count resources against the limits table (128,000 characters, 50 merge fields, 5 Flow, 5 Apex, 5 related list).
+6. If templates are packaged, confirm subscribers have the right permission sets. UNVERIFIED (2026-10-03): the earlier claim that packages install without the permission and templates then silently fail was not found in a fetched source.
 
-### Mode 3 — Troubleshoot Grounding Failures
+### Mode 3: Troubleshoot Grounding Failures
 
-**When to use:** A template that was previously working returns blank responses, partial responses, or clearly hallucinated content after a metadata change, deployment, or data change.
+**When to use:** A template that was previously working returns blank, partial, or generic responses after a metadata change, deployment, or data change.
 
 **How it works:**
 
-1. Open the template in Prompt Builder and use **Save & Preview** with a representative record.
-2. Inspect the **Resolved Prompt** panel. If merge fields appear unresolved (showing the raw token instead of a value), the field reference or relationship path is broken. Check whether the field was renamed, whether the object relationship changed, or whether the record used in preview is missing data.
-3. If the Resolved Prompt looks correct but the Generated Response is blank or wrong, the issue is likely in the prompt instruction quality, not the grounding. Refine the instruction text.
-4. For Flow-grounded templates: test the underlying Template-Triggered Prompt Flow independently in Flow Builder. If the flow fails, it fails silently in the template — the merge field returns empty string.
-5. For Apex-grounded templates: check that the `@InvocableMethod` capability type matches the template API name. A mismatch causes the Apex data to be silently excluded from the resolved prompt.
-6. Check Trust Layer masking. If data masking rules are active in production but not in the sandbox where the template was authored, sensitive fields may be masked out of the resolved prompt, causing the LLM to produce generic output. (See `einstein-trust-layer` skill for full masking diagnostics.)
+1. Preview with a representative record and read the resolution.
+2. If a merge field resolves to nothing, check the field path, the record's data, field-level access, and (for related lists) the running user's page layout.
+3. If the resolution looks right but the response is weak, refine the instructions rather than the grounding.
+4. For Flow-grounded templates: Flow Builder's Debug option isn't available for Template-Triggered Prompt Flows, so test through Prompt Builder preview. UNVERIFIED (2026-10-03): the earlier claim that a failing flow returns an empty string with no error was not found in a fetched source.
+5. For Apex-grounded templates: open the Developer Console before previewing; "you can see debug statements in the Developer Console." If the flow or class inputs were changed, the template no longer works and new versions can't be saved; restore the original inputs.
+6. Check Trust Layer masking: masked values appear as placeholders in preview, and the LLM sees only the placeholders. See `einstein-trust-layer`.
 
 ---
 
@@ -146,26 +164,24 @@ All prompts generated from Prompt Builder templates pass through the Einstein Tr
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Data lives on the context record or a directly related object | Record merge fields | Simplest, no code required, resolves at runtime with no latency overhead |
-| Data requires traversing multiple objects, filtering, or aggregation | Flow grounding (Template-Triggered Prompt Flow) | Declarative, testable in Flow Builder independently of the template |
-| Data requires external API call or logic beyond Flow capability | Apex grounding (`@InvocableMethod`) | Full Apex capability including HTTP callouts, complex queries, transformations |
-| Use case involves Agentforce agent action | Flex template | Only Flex supports the flexible input model used by agent actions |
-| Use case populates a specific record field via Einstein button | Field Generation | Bound directly to object + field; cannot use Flex for this surface |
-| Data includes unstructured knowledge articles or external docs | Einstein Search Retriever | Retrieves and chunks unstructured content before injecting into prompt |
-| Template needs to ship in a managed package | Any type, but author must ensure subscribers have Manage Prompt Templates | Package installs without the permission; templates silently fail without it |
+| Data lives on the context record or a directly related object | Record merge fields | Simplest, no code required, resolves at runtime |
+| Data requires traversing multiple objects, filtering, or aggregation | Template-Triggered Prompt Flow | Declarative; each Create Prompt Instructions element adds text |
+| Data requires an external callout, JSON formatting, or programmatic filtering | Apex merge field (`@InvocableMethod`) | The guide names SOQL, external APIs, JSON, and filtering as Apex use cases |
+| Use case involves an Agentforce agent action | Flex template (UNVERIFIED that it is the only type accepted) | Flex lets you define your own resources and inputs |
+| Use case populates a specific record field from a button | Field Generation | Bound to object and field on the Lightning record page |
+| Data includes unstructured articles, emails, or transcripts | Retriever (RAG in Data Cloud) | Search index plus retriever returns relevant chunks |
+| Template must deploy between orgs | GenAiPromptTemplate through the Metadata API, tested in a sandbox first for Flex | The guide says Flex template metadata can't be imported or exported (its examples include change sets and Flex-related Apex and flows), while the Metadata API lists `einstein_gpt__flex` as a valid type |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Answer the Questions table: surface, type, deployment path, grounding resources, resource counts, and preview records.
+2. Build the grounding first: record merge fields, then a Template-Triggered Prompt Flow or an `@InvocableMethod` Apex class with its test class, keeping their input contracts fixed.
+3. Create the template in Prompt Builder, write instructions in an `Instructions:` block, and preview with each persona's records.
+4. Activate the version, record the change in the external log, and assign Prompt Template User.
+5. Retrieve the GenAiPromptTemplate, run `python3 scripts/check_prompt_builder_templates.py --manifest-dir <project>` (limits, deprecated version tags, Apex Request and Response shape, published-status rules), and deploy using `references/metadata-examples.md`.
+6. In the target org, recreate any retriever before deploying, confirm the active version, and preview again.
 
 ---
 
@@ -173,14 +189,14 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Run through these before marking work in this area complete:
 
-- [ ] Template type matches the intended deployment surface (Flex for agent actions, Field Generation for field population, etc.)
-- [ ] At least one version is active
-- [ ] Preview tested against a real record showing correct Resolved Prompt and acceptable Generated Response
-- [ ] Grounding resources (Flows, Apex classes) are themselves active and deployed
-- [ ] Users who will invoke the template have the required object/field permissions in addition to Manage Prompt Templates
-- [ ] Trust Layer masking behavior has been validated in the environment where the template will run
-- [ ] If packaged: subscriber Manage Prompt Templates permission requirement is documented
-- [ ] Version history and change intent recorded (external log if Audit Trail is insufficient)
+- [ ] Template type matches the intended deployment surface
+- [ ] One version is active, and the change is recorded outside Setup Audit Trail
+- [ ] Preview tested against real records for each persona; resolution and response both checked
+- [ ] Flow and Apex resources deployed, with unchanged input contracts and Apex test coverage
+- [ ] Resource counts within the limits table
+- [ ] End users have Prompt Template User and access to the grounded objects and fields
+- [ ] Deployment path checked against the Flex and retriever limitations
+- [ ] Trust Layer masking behaviour validated in the org where the template runs
 
 ---
 
@@ -188,15 +204,15 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Silent failure on inactive templates** — When a template has no active version, it fails silently. End users see no Einstein button, no error, and no diagnostic message. The template simply does not render. This causes false debugging trails when practitioners assume the issue is a permission or page layout problem.
+1. **No active version means no template**: "if no versions are active the template becomes unavailable to your users." Users see nothing to click, which looks like a permission or layout problem.
 
-2. **Manage Prompt Templates required in package subscriber orgs** — When prompt templates are distributed via a managed package, the package installs successfully without the subscriber having Manage Prompt Templates permission. The templates exist in the org but cannot be invoked. This is undocumented in the package install flow and results in support escalations post-deployment.
+2. **Subscriber permissions for packaged templates**: UNVERIFIED (2026-10-03): earlier versions said packages install without Prompt Template Manager and templates then can't be invoked. Assign Prompt Template Manager to authors and Prompt Template User to end users in every org.
 
-3. **Flow grounding failures are silent in the resolved prompt** — If a Template-Triggered Prompt Flow errors at runtime (invalid SOQL, governor limit hit, null variable), the merge field that references the flow returns an empty string rather than surfacing the error. The resolved prompt appears valid but the grounded data is missing, which causes the LLM to hallucinate or produce generic output. Always test the flow independently before assuming the template is healthy.
+3. **Changing Flow or Apex inputs breaks the template**: "If you change the inputs for a flow or Apex class that's used as a resource in a prompt template, the prompt template no longer works and you can't save new versions of the prompt template."
 
-4. **Custom objects and fields not immediately available in Prompt Builder** — Newly created custom objects and custom fields do not appear in the Insert Resource panel until the admin logs out and logs back in. Practitioners who create a field and immediately try to add it as a merge field in the same session will not find it in the picker.
+4. **Custom objects and fields not immediately available in Prompt Builder**: "To use a new custom object or field immediately, log out and log back in."
 
-5. **Apex capability type mismatch breaks grounding silently** — The capability type string in the `@InvocableMethod` annotation must exactly match the template type identifier. For Flex templates this is `FlexTemplate://your_template_api_name`. For Sales Email it is `PromptTemplateType://einstein_gpt__salesEmail`. A single character mismatch causes the Apex data to be excluded from the resolved prompt with no error surfaced in Prompt Builder or debug logs.
+5. **CapabilityType is optional, and the Flex capability is retired**: Correction (2026-10-03): earlier versions said a capability type mismatch silently drops Apex data. The guide says the Flex capability "is no longer needed," recommends removing `CapabilityType=FlexTemplate://*`, and notes a CapabilityType ties a class to one template type.
 
 ---
 
@@ -205,9 +221,10 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | Activated prompt template | A named, versioned, active prompt template ready for binding to a deployment surface |
-| Grounding strategy decision | Written rationale for merge field vs. Flow vs. Apex choice based on data location and complexity |
-| Template review findings | Checklist-based assessment of active status, permissions, grounding health, and Trust Layer compatibility |
-| Troubleshooting report | Root cause and remediation steps for blank, partial, or hallucinated template output |
+| GenAiPromptTemplate metadata | Retrieved and checked template file with package.xml entry |
+| Grounding strategy decision | Written rationale for merge field vs. Flow vs. Apex vs. retriever choice |
+| Template review findings | Checklist-based assessment of active status, permissions, grounding health, limits, and Trust Layer behaviour |
+| Troubleshooting report | Root cause and remediation steps for blank, partial, or generic template output |
 
 ---
 

@@ -1,0 +1,10 @@
+{
+  "dimensions": [
+    {"field": "StageName", "label": "Stage",
+     "members": [{"member": "Closed Won", "label": "Closed (Won)"}]}
+  ],
+  "measures": [
+    {"field": "Amount", "label": "Amount", "format": {"customFormat": "[\"$#,###.##\",1]"}}
+  ],
+  "dates": []
+}

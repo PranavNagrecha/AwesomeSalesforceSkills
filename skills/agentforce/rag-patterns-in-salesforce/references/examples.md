@@ -1,100 +1,72 @@
-# Examples — RAG Patterns in Salesforce
+# Examples: RAG Patterns in Salesforce
 
-## Example 1: Grounding a Service Agent with Salesforce Knowledge Articles
+Steps and limits come from the Generative AI guide (Einstein Data Library; Ground with Retrieval Augmented Generation; Add a Retriever to a Prompt Template) and the Data Cloud guide (Chunking Strategies; Create a Custom Retriever; Search Index Reference), Summer '26. Correction (2026-10-03): earlier versions of these examples used a subagent "Grounding record," `Top-K`, a `{!topic.currentProductLine}` filter, `{!grounding.chunks}`, and HTML stripping. None of those are documented; the procedures below replace them.
 
-**Context:** A telecommunications company runs an Agentforce service agent to handle billing and technical support questions. The contact center has 2,400 published Knowledge articles. Without grounding, the agent gives generic answers and cannot reference org-specific troubleshooting steps.
+## Example 1: Grounding a Service Agent With Salesforce Knowledge Through a Data Library
 
-**Problem:** The agent responds with LLM training data rather than the company's actual resolution procedures. When a customer asks about a specific modem model's firmware reset process, the agent describes a generic router reset that does not match the device.
+**Context:** A telecom contact center runs an Agentforce service agent with 2,400 published Knowledge articles. Without grounding, the agent describes a generic router reset instead of the device-specific firmware procedure.
 
-**Solution:**
+**Solution (configuration procedure):**
 
-Step 1 — Connect Knowledge to Data Cloud via CRM connector. Map `KnowledgeArticleVersion` to a DMO named `KnowledgeArticle__dlm`. Include fields: `Title`, `Body__c` (HTML-stripped via transformation), `ArticleType`, `Language`.
+1. Setup > Einstein Data Library > New Library. Choose the data space carefully; it can't be changed later. Name it `Support_Knowledge`.
+2. Edit the library, open the Knowledge tab (a library holds Knowledge or files, never both, and the choice is permanent).
+3. Identifying fields: Title and Summary. Content fields: the article body field that holds troubleshooting steps.
+4. Knowledge Settings: turn on Filter by Knowledge Data Categories and select the Technical Support categories; turn on Show sources and enter the Knowledge domain URL.
+5. Save. Data streams, a search index, and a retriever are created and visible in Data Cloud.
+6. In Agent Builder, Knowledge tab, select `Support_Knowledge` as the data library and save. The Answer Questions with Knowledge action now answers from it.
+7. Preview with real questions ("How do I reset the firmware on the X200 modem?") and confirm the cited sources are the X200 articles.
 
-Step 2 — Create a vector search index on `KnowledgeArticle__dlm.Body__c`:
-```
-Index name:       knowledge_rag_index
-Embedding model:  Salesforce managed (sfdc-text-embedding-ada-002 equivalent)
-Chunk size:       512 tokens
-Chunk overlap:    64 tokens
-Refresh mode:     Continuous (near-real-time)
-```
-
-Step 3 — In Agentforce Setup, open the "Technical Support" subagent (called a topic before April 2026) and add a Grounding record:
-```
-Vector Index:     knowledge_rag_index
-Top-K:            5
-Metadata filter:  ArticleType = 'Technical'
-```
-
-Step 4 — Test in Agent Preview. The Grounding tab shows which article chunks were retrieved. Confirm retrieved chunks cite the correct modem model documentation.
-
-**Why it works:** The semantic query derived from the customer's message ("modem firmware reset") matches the embedding of the relevant article body at a high cosine similarity score, ranking it above generic content. The `ArticleType = 'Technical'` filter prevents billing articles from appearing in technical queries.
+**Why it works:** The library uses passage extraction on the article HTML, so headings and lists become chunk boundaries, and data categories keep billing articles out of technical answers. Keep the article HTML intact; stripping it would remove those boundaries.
 
 ---
 
-## Example 2: Filtered Retrieval Across a Multi-Product Knowledge Base
+## Example 2: Product-Scoped Retrieval With a Custom Retriever
 
-**Context:** A software company supports three distinct product lines (CRM, ERP, HR). All product documentation is stored in a single Data Cloud vector index on a `ProductDoc__dlm` DMO. A single Agentforce agent handles all product lines, but the current conversation context establishes which product the customer is using.
+**Context:** One `ProductDoc` DMO holds documentation for CRM, ERP, and HR products. "How do I reset my password" returns a mix of all three.
 
-**Problem:** Without filtering, a query like "how do I reset my password" retrieves chunks from all three product lines. The top-5 results may include two CRM chunks, two ERP chunks, and one HR chunk. The agent's response blends instructions from different UIs and confuses the customer.
+**Solution (configuration procedure):**
 
-**Solution:**
+1. Create the search index with Advanced Setup on the `ProductDoc` DMO and add `Product_Line__c` as a filter field (up to 10 filter fields per index).
+2. In Einstein Studio > Retrievers > New Retriever, select the data space, the DMO, and the index.
+3. Filter Documents to Return: one condition, `Product_Line__c` Equals `CRM`, with All Conditions Are Met.
+4. Return: maximum 5 results; output fields Chunk (label "Passage") and Title (label "Source title").
+5. Save as `ProductDoc_CRM` and activate it (only one version of a retriever can be active). Repeat for ERP and HR.
+6. Use the CRM retriever in the CRM support template, and so on.
 
-Step 1 — Ensure the DMO includes a `Product_Line__c` field populated during ingest (e.g., derived from the source folder or document tag).
-
-Step 2 — In the subagent context variables, resolve the current product line from the CRM record (e.g., `Account.Product_Line__c` from the linked account).
-
-Step 3 — Configure the Grounding metadata filter:
-```
-Product_Line__c = '{!topic.currentProductLine}'
-```
-
-Where `topic.currentProductLine` is a context variable resolved from the active case or account record at subagent invocation.
-
-Step 4 — Verify with the Grounding tab in Agent Preview: submit "reset my password" with `currentProductLine = 'CRM'` — confirm all 5 returned chunks are CRM-specific.
-
-**Why it works:** The pre-filter reduces the ANN candidate set to only CRM documents before similarity ranking. The agent receives a clean, product-scoped context and generates a product-accurate response.
+**Why it works:** Filters run only on fields the index defines as filter fields, so the field must be designed in at index creation. UNVERIFIED (2026-10-03): feeding a runtime value from the conversation into a retriever filter was not found in a fetched source, which is why this example uses one retriever per product.
 
 ---
 
-## Example 3: Prompt Template with Explicit Grounding Merge Field Placement
+## Example 3: Prompt Template With a Retriever Resource
 
-**Context:** A financial services firm uses a Flex prompt template in Prompt Builder to generate case summaries. The template must include both CRM record fields (case details) and retrieved chunks from an internal policy document index.
+**Context:** A financial services firm wants case summaries that cite internal policy passages.
 
-**Problem:** Without explicit merge field placement, retrieved policy chunks appear at the top of the system prompt, above the role-framing instruction. The LLM treats the policy text as part of its persona rather than as reference material, producing responses that blend policy language into the agent's voice inappropriately.
+**Solution:** Create a Flex template with a `Case` input, then:
 
-**Solution:**
+1. Write the context block with record merge fields: `{!$Input:Case.CaseNumber}`, `{!$Input:Case.Subject}`, `{!$Input:Case.Description}`.
+2. Resource > Einstein Search > the policy DMO > the `Policy_Passages` retriever.
+3. In the Configuration panel, Search Text: `case subject: Input.Case.Subject` (search text is limited to 255 characters, globals, and prompt inputs). Output Fields: Chunk. Number of Results: 5.
+4. After the context and the retrieved passages, add the instructions block:
 
-Prompt template structure (Flex template in Prompt Builder):
-```
-You are a financial services case assistant. Your role is to summarize cases accurately
-and cite internal policy when relevant. Do not invent policy details not present in the
-provided context.
-
-## Case Details
-Account: {!$Record.Account.Name}
-Case Number: {!$Record.CaseNumber}
-Subject: {!$Record.Subject}
-Description: {!$Record.Description}
-
-## Relevant Policy Context
-{!grounding.chunks}
-
-## Task
-Summarize the case and identify which policy sections, if any, apply to the customer's
-situation. If no policy chunk is relevant, state that explicitly.
+```text
+Instructions:
+"""
+Summarize the case in three sentences. Then list which policy passages above apply,
+quoting the passage title. If no passage applies, say "No matching policy."
+Use only the passages provided; do not add policy details that are not in them.
+"""
 ```
 
-The `{!grounding.chunks}` merge field is placed after CRM record fields and before the task instruction, ensuring the LLM treats retrieved content as reference material within the established role frame.
+5. Preview with a real case and read the retriever output in the resolution (shown as JSON).
 
-**Why it works:** The LLM processes the system prompt sequentially. Role and instruction framing precede the retrieved context, so the model applies the role frame to its interpretation of the retrieved policy text rather than being role-framed by the policy text itself.
+**Why it works:** The guide recommends separating context from instructions with an `Instructions:` line and triple quotes, and the retriever's number of results bounds how much of the prompt the passages take.
 
 ---
 
-## Anti-Pattern: Indexing Raw HTML from Knowledge Article Body
+## Anti-Pattern: Stripping HTML From Knowledge Before Indexing
 
-**What practitioners do:** Map the `Body` field from `KnowledgeArticleVersion` directly to the vector index without any transformation, treating it as plain text.
+**What practitioners do:** Run a transform that removes every HTML tag from the article body so "embeddings are not polluted by markup."
 
-**What goes wrong:** Knowledge article bodies contain HTML markup (`<p>`, `<ul>`, `<li>`, `<strong>`, `&nbsp;`, inline styles). The embedding model encodes HTML tags as semantic content. Chunks become dominated by tag tokens, lowering the signal-to-noise ratio of embeddings. Similarity scores for semantically relevant articles drop, and irrelevant articles with structurally similar HTML patterns may score higher than content-relevant ones.
+**What goes wrong:** Semantic-based passage extraction uses headings, lists, and bold subheadings as passage boundaries. Without them, Data Cloud falls back to block or sentence aggregation, and "there is no guarantee that passages are meaningfully grouped."
 
-**Correct approach:** Apply an HTML-stripping transformation in the Data Cloud Data Transform before the field is written to the DMO used for indexing. Data Cloud supports JavaScript-style string transformations in Data Transforms; use a regex or parse-based strip to remove all HTML tags and decode HTML entities before the `Body` field value reaches the vector index.
+**Correct approach:** Keep well-formed HTML, fix articles that fake headings with line breaks, and prepend the Title field so every chunk names its source.

@@ -1,51 +1,121 @@
-# Gotchas — Einstein Trust Layer
+# Gotchas: Einstein Trust Layer
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious Trust Layer behaviours that cause real production and compliance problems. Each gotcha names its source. "GenAI Guide" means Quickstart Your Einstein Generative AI Solution, Spring '26 (generative_ai.pdf), chapters Einstein Trust Layer, Einstein Generative AI Analytics, Prompt Builder, and Agentforce Agents. "Metadata API" means the Metadata API Developer Guide, Version 67.0.
 
-## Gotcha 1: Data Masking Does Not Apply to Agentforce Agents by Default
+## Gotcha 1: Data Masking Is Disabled for Agentforce Agents
 
-**What happens:** Administrators enable data masking in Einstein Trust Layer setup, confirm the toggle is On, and select sensitive data categories. They then deploy an Agentforce agent that grounds prompts with customer record data. PII (names, contact details) is sent to the external LLM in plain text — without any masking placeholder substitution — despite masking appearing to be enabled.
+**What happens:** Masking is on in Einstein Trust Layer setup, and an Agentforce agent still sends customer names and contact details to the LLM unmasked.
 
-**When it occurs:** When the org has data masking enabled at the Trust Layer level but the specific Einstein feature is an Agentforce agent. As of Spring '25, data masking is applied to embedded features (Einstein Service Replies, Einstein Work Summaries, Prompt Builder previews) but is not applied to Agentforce agent prompt pipelines by default. The Trust Layer setup UI does not clearly surface this feature-level distinction.
+**When it occurs:** Any agent. The Agentforce chapter states: "Data masking through the Einstein Trust Layer is disabled to improve the performance and accuracy of agents. All data accessed by agents, including personally identifiable information (PII), is protected in transit and isn't stored or used for training purposes by external LLM providers, as part of our strict zero-data retention policy." The Trust Layer chapter adds that "LLM Data Masking isn't always available in all features."
 
-**How to avoid:** Before assuming masking is active for a given feature, check the current Salesforce release notes for the specific masking coverage matrix. Test agent prompts using Prompt Builder or agent testing tools with known PII records and verify that placeholder tokens appear in the intermediate prompt, not raw values. Track the Salesforce roadmap for expanded agent masking coverage in future releases.
+**How to avoid:** Record masking coverage per feature before go-live. For agents, rely on access controls and ZDR, keep sensitive fields out of agent actions and grounding, and do not tell stakeholders that agent prompts are masked.
 
----
-
-## Gotcha 2: Zero Data Retention Does Not Prevent PII Transmission — It Only Governs Post-Processing Storage
-
-**What happens:** A team implements Einstein AI with ZDR in place and communicates to stakeholders that "customer data does not leave Salesforce" or "data is not shared with OpenAI." Both statements are incorrect. The prompt — which may contain PII if data masking is not separately enabled — does travel to OpenAI's enterprise API. ZDR means OpenAI discards it immediately after the response is generated and does not use it for training or store it beyond the API call. The data does leave Salesforce temporarily during the LLM call.
-
-**When it occurs:** Any time practitioners conflate ZDR with data masking, or use ZDR as the justification for not enabling data masking. This causes compliance gaps in regulated industries (healthcare, financial services) where even transient third-party exposure of PII or PHI may require controls or notification obligations.
-
-**How to avoid:** Treat ZDR and data masking as two separate controls with different scope. ZDR governs what the LLM provider retains after processing. Data masking governs what the LLM provider ever sees. Both must be configured for a complete data protection posture. Document this distinction explicitly in your org's AI governance documentation.
+**Source:** GenAI Guide, Agentforce Agents (Einstein Trust Layer section); Large Language Model Data Masking (Important note).
 
 ---
 
-## Gotcha 3: Invalid-Format PII Is Not Masked — and There Is No Warning
+## Gotcha 2: Zero Data Retention Is Not Masking
 
-**What happens:** Data masking appears to be working correctly for most records, but specific records with edge-case data formats pass PII through to the LLM unmasked. For example: a phone number stored in an unusual international format, a social security number stored with dashes in a non-standard position, or a credit card number with leading/trailing spaces from a data import. The Trust Layer's masking engine validates format and structure before applying placeholders — invalid-format values do not trigger masking. There is no error, warning, or audit flag when a value fails to be masked.
+**What happens:** A team tells stakeholders "customer data does not leave Salesforce" because ZDR is in place.
 
-**When it occurs:** When org data quality is inconsistent — common after data migrations, legacy imports, or integrations that do not enforce format validation. Also occurs with multi-country or cross-region data where the masking model's pattern detection is less reliable.
+**When it occurs:** ZDR and masking are conflated. ZDR means "data sent to the LLM from Salesforce isn't retained and is deleted after a response is sent back to Salesforce." The prompt still travels to the provider (the guide names OpenAI and Azure OpenAI) through the LLM gateway over TLS. Masking is what keeps sensitive values out of that prompt.
 
-**How to avoid:** Test data masking with a realistic sample of production-format records, not just clean test data. Include edge cases: international phone formats, SSNs from different countries, names with special characters. Review the Prompt Builder preview output for any unmasked values. Address upstream data quality issues (field validation rules, normalization on import) to ensure the masking engine can detect the fields it is meant to protect.
+**How to avoid:** Document ZDR (provider retention), masking (what the provider sees), and the audit trail (your own record) as three separate controls. Note that audit and feedback data "are stored by Salesforce for 30 days for compliance purposes," in addition to your Data Cloud retention.
 
----
-
-## Gotcha 4: Audit Trail Is Not Retroactive — There Is No Backfill for Interactions Before Enablement
-
-**What happens:** An organization enables Einstein AI features in production, uses them for weeks or months, and then enables the audit trail when a compliance request arrives. The audit trail captures only interactions from the point of enablement forward. All prior interactions are unrecoverable. The compliance team cannot produce records for the period before enablement.
-
-**When it occurs:** When audit trail is treated as an afterthought rather than a prerequisite for production deployment. Also occurs when audit trail is disabled temporarily for troubleshooting and not re-enabled promptly.
-
-**How to avoid:** Treat audit trail enablement as a prerequisite gate before any Einstein AI feature is accessible to production users. Include it in the Trust Layer setup checklist. Confirm the retention period is configured to match your compliance policy (e.g., 1 year, 7 years) before go-live. Monitor the audit trail enablement status as part of org health checks.
+**Source:** GenAI Guide, Einstein Trust Layer (Zero-Data Retention Policy); Einstein Trust Layer: Designed for Trust (Response Generation; Feedback and Audit).
 
 ---
 
-## Gotcha 5: The 65,536-Token Context Window Applies Only When Data Masking Is Active — Breaking Prompts That Worked Without It
+## Gotcha 3: Pattern-Based Masking Only Recognizes Listed Formats and Locales
 
-**What happens:** A prompt template is developed, tested, and approved with data masking disabled or in an org without Trust Layer masking active. The template uses extensive dynamic grounding — multiple Data Cloud retrievals, several knowledge articles, and a long system prompt. When data masking is subsequently enabled (as part of a security hardening step), the same prompt starts failing or returning truncated responses. The root cause is that data masking lowers the effective context window from the model's native limit to a hard ceiling of 65,536 tokens, and the fully-grounded prompt exceeds this limit.
+**What happens:** Most records mask correctly, but a phone number in an unsupported format, a 15-digit card number, or a non-US national ID reaches the LLM.
 
-**When it occurs:** When data masking is enabled after prompt templates are already designed and tested. Also occurs when dynamic grounding retrieves more records than anticipated at runtime, pushing a borderline prompt over the limit.
+**When it occurs:** Pattern-based detection depends on "how precisely the text matches the regular expression (regex) pattern, the uniqueness of the pattern, and the proximity of relevant context words." Credit cards are "16 or 17 digit." Phone formats are defined per region and language. US driver's license, ITIN, and SSN are supported in English (United States) only. "No model can guarantee 100% accuracy... cross-region and multinational use cases can affect the ability to detect specific data patterns."
 
-**How to avoid:** Design and test all prompt templates with data masking active from the start. Establish a token budget target of 50,000 tokens or less for the fully-grounded prompt to leave headroom for the response. Audit all dynamic grounding retrievals for worst-case token consumption. Trim long text area fields, limit the number of retrieved knowledge articles, and consider pagination patterns for large context requirements.
+**How to avoid:** Test with production-shaped records for every locale the org holds. Add field-based masking (Gotcha 4) for anything the patterns miss. Fix data quality at entry so values match their pattern.
+
+**Source:** GenAI Guide, Einstein Trust Layer Region and Language Support (pattern tables and Important note).
+
+---
+
+## Gotcha 4: Field-Based Masking Covers Only Record Merge Fields and Related Lists
+
+**What happens:** A field tagged with a data classification is masked when merged directly, but the same value returned by a Flow or Apex merge field arrives unmasked.
+
+**When it occurs:** "Field-Based masking supports only merge fields that are referenced in record merge fields and related lists." Pattern-based masking still scans all prompt text, including Flow and Apex output, but only for its listed data types.
+
+**How to avoid:** Turn on masking for Shield Platform Encryption, compliance categories, and sensitivity levels in Trust Layer setup, tag the fields in Object Manager, and prefer record merge fields for sensitive values. Review Flow and Apex merge fields for data the patterns cannot recognize. The skill checker flags prompt templates that use Flow or Apex data providers (`TL-PT-02`).
+
+**Source:** GenAI Guide, Large Language Model Data Masking (Important note; Field-Based Masking); LLM Data Masking Considerations and Limitations; Select What Data To Mask, step 5.
+
+---
+
+## Gotcha 5: Audit Data Exists Only After Data Collection Is Turned On
+
+**What happens:** A compliance request arrives for last quarter's AI interactions, and the GenAIGatewayRequest report is empty for that period.
+
+**When it occurs:** "To access the data stored in Data Cloud, you'll need to turn on the Einstein generative AI data collection and storage and install the report package." Data Cloud "refreshes the data streams once every hour." UNVERIFIED (2026-10-03): that interactions before collection is turned on cannot be backfilled is inferred from the setup steps; no fetched source states it either way.
+
+**How to avoid:** Turn on data collection and install the report package before any feature reaches production users. Check the streams are flowing (GenAI data streams with a successful last run) as part of go-live.
+
+**Source:** GenAI Guide, Audit Trail; Generative AI Audit and Feedback Data (Data Collection and Storage in Data Cloud).
+
+---
+
+## Gotcha 6: Audit Data Consumes Data Cloud Credits
+
+**What happens:** Data Cloud consumption jumps after a busy agent goes live.
+
+**When it occurs:** Audit and feedback data "consumes Data Cloud credits for ingestion, storage, and processing." "On average, each round trip to the large language model (LLM) and back results in 24 records being ingested into Data Cloud," and ingestion volume is the main driver. Reports and dashboards also consume Data Queries usage.
+
+**How to avoid:** Estimate credits from expected LLM calls times 24 records before go-live, set a retention period in Data Cloud that meets the compliance mandate without keeping more than needed, and delete audit data through the documented Remove Data Lake Objects process when allowed.
+
+**Source:** GenAI Guide, Billing Considerations for Audit and Feedback; Data Collection and Storage in Data Cloud.
+
+---
+
+## Gotcha 7: Sandboxes Can't Test Masking Configuration, Data Cloud Grounding, or Audit Data
+
+**What happens:** Everything passes in a sandbox, and production behaves differently once masking settings and audit reports are in play.
+
+**When it occurs:** "Einstein Trust Layer features that require Data Cloud aren't available for testing since Data Cloud isn't supported in sandbox staging environments." Not testable there: "LLM Data Masking configuration in Einstein Trust Layer Setup," "Grounding on Objects in Data Cloud," and "Logging and reviewing audit and feedback data in Data Cloud."
+
+**How to avoid:** Plan a controlled production verification for those three before go-live, with test records that carry each sensitive data type.
+
+**Source:** GenAI Guide, Einstein Trust Layer Limits (Einstein Trust Layer Support in Sandbox Environments).
+
+---
+
+## Gotcha 8: Toxicity Scores Read in Two Directions, and False Does Not Mean Safe
+
+**What happens:** A reviewer filters for high scores to find toxic responses and misses the safety category, or treats `isToxicityDetected = false` as clean.
+
+**When it occurs:** "The score for the safety category ranges from 0 through 1 with 1 being the safest," with 0.5 to 1 considered safe. For all other categories, "toxicity scores of 0.5 and above" are toxic. "When the isToxicityDetected field is false, it doesn't necessarily mean there isn't toxicity." Language support for toxicity detection differs by region, and region-specific language is harder to classify.
+
+**How to avoid:** Build the review report on DetectorType = toxicity and read each category with its own direction. Sample responses with `isToxicityDetected = false` in high-risk use cases.
+
+**Source:** GenAI Guide, Review Toxicity Scores (note); Einstein Trust Layer Region and Language Support (Toxicity Detection).
+
+---
+
+## Gotcha 9: Geo-Aware Routing Falls Back to the US
+
+**What happens:** An EU org assumes all LLM requests stay in the EU, and audit records show requests served in the US.
+
+**When it occurs:** "If a model isn't available in a nearby region, the requests are routed to the US. You can't disable geo-aware routing and rerouting to the US when models aren't available in a nearby region." For orgs that enabled the platform on or after June 13, 2024, the Einstein generative AI region matches the Data Cloud region. Separately, EinsteinGptSettings has `disableAIProviderRegionFallback`, which "Indicates whether the fallback of Azure OpenAI requests outside the model endpoint region for your org is turned off."
+
+**How to avoid:** Choose models available in the required region, set `disableAIProviderRegionFallback` to true when Azure OpenAI must not fall back, and use the Feedback and Audit data to confirm where requests went.
+
+**Source:** GenAI Guide, Geo-Aware LLM Request Routing (Proximity and Routing). Metadata API, EinsteinGptSettings.
+
+---
+
+## Gotcha 10: The 65,536-Token Limit Is Not in the Guide
+
+**What happens:** A team trims every prompt to a 65,536-token budget because an earlier version of this skill said masking caps the context window there.
+
+**When it occurs:** UNVERIFIED (2026-10-03): the figure does not appear in the Generative AI guide. What the guide documents is that "When a prompt is too large for the model to use, a summary is generated automatically in the Resolution panel," and that "Data masking can affect LLM prompt grounding."
+
+**How to avoid:** Test the largest realistic prompt with masking on, watch for the automatic summary in the Resolution panel, and size grounding from that test rather than from a fixed number.
+
+**Source:** GenAI Guide, Work with Large Prompts; LLM Data Masking Considerations and Limitations (Considerations).

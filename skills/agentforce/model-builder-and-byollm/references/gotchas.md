@@ -1,51 +1,109 @@
-# Gotchas — Model Builder and BYOLLM
+# Gotchas: Model Builder and BYOLLM
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious behaviours that waste a BYO model purchase, break prompts in production, or route requests where policy says they must not go. Each gotcha names its source. "Data Cloud Guide" means the Data Cloud guide, Summer '26 (data_cloud.pdf), chapter Use AI Models (Bring Your Own Large Language Model; Configure and Test a Model in Model Playground). "GenAI Guide" means Quickstart Your Einstein Generative AI Solution, Spring '26 (generative_ai.pdf). "Metadata API" means the Metadata API Developer Guide, Version 67.0.
 
-## Gotcha 1: Alias Changes Are Global, Immediate, and Silent
+## Gotcha 1: Agents Don't Use BYO Models
 
-**What happens:** When an administrator updates a model alias in Model Builder to point to a different model, the change takes effect instantly for every Agentforce agent, prompt template, and Einstein feature that references that alias — across all active sessions and users. There is no feature-level override, gradual rollout, or built-in audit notification. Features that were working correctly can degrade or break within seconds of an alias update if the new model has different capabilities (e.g., no function calling) or different output format expectations.
+**What happens:** A team connects its Azure OpenAI deployment to "power the service agent" and the agent's behaviour does not change.
 
-**When it occurs:** Any time a shared model alias is updated — whether for testing, cost optimization, or a model version upgrade — in a production org where multiple features reference the same alias.
+**When it occurs:** "The Agentforce platform supports OpenAI GPT-4o for reasoning engine calls. Agent actions can make calls to other predefined LLMs. Bringing your own model isn't supported, but custom actions that execute prompt templates can use any Salesforce-managed model." The same is repeated under Considerations for Custom Actions.
 
-**How to avoid:** Never test new models by updating a shared production alias. Create a purpose-specific alias (e.g., `Test_NewModel_Sandbox`) for testing. In sandbox, clone the relevant prompt templates to use the test alias. Only merge the alias change to production after thorough validation, and schedule the change during a low-usage window. Document all aliases and their consuming features in an ops reference before making any change.
+**How to avoid:** Use BYOLLM for Prompt Builder templates, the Models API, and custom apps. For agents, tune topics, actions, and prompt templates instead, and pick Salesforce-managed models for custom actions that run templates.
 
----
-
-## Gotcha 2: Sandbox and Production Model Configurations Are Not Automatically Synced
-
-**What happens:** Model Builder registrations, Named Credentials, External Credentials, and model alias configurations are environment-specific. They do not flow from sandbox to production via standard change sets, and the Metadata API coverage for Model Builder metadata types (such as `AIModel` and `GenAiModelDefinition`) is still maturing. Teams that carefully test a BYOLLM configuration in sandbox and then attempt to "promote" it to production often discover they must manually replicate every step — External Credential, Named Credential, model record, alias — in the production org. If any step is missed or misconfigured, the production deployment silently falls back to a default model or fails at runtime.
-
-**When it occurs:** Every sandbox-to-production promotion of any Model Builder configuration. Also occurs when refreshing a sandbox — the model configuration in the refreshed sandbox does not reflect production's current state.
-
-**How to avoid:** Treat Model Builder configuration as infrastructure-as-code. Document every Named Credential, External Credential, model ID, endpoint, and alias in a version-controlled runbook. Where the Salesforce CLI supports the relevant metadata types (`sf project deploy`), use it. Where it does not, follow the documented manual runbook exactly. After every production deployment, run Test Connection on all external model records and verify alias assignments.
+**Source:** GenAI Guide, Agentforce Agents considerations; Considerations for Custom Actions.
 
 ---
 
-## Gotcha 3: External Provider Rate Limits Surface as Generic Salesforce Errors
+## Gotcha 2: Editing a Model Configuration Changes Every Prompt That Uses It
 
-**What happens:** Salesforce does not enforce rate limiting on outbound calls to external LLM providers. When an external provider's rate limit (requests-per-minute or tokens-per-minute) is exceeded, the provider returns HTTP 429 responses. Salesforce surfaces these as generic "model request failed" or "LLM unavailable" errors in Agentforce and Einstein features — with no indication in standard Salesforce debug logs that the root cause is a provider-side rate limit. Support and development teams often spend significant time investigating Salesforce configuration before checking provider-side logs.
+**What happens:** An admin raises the temperature on a configuration to improve one template, and three other templates start producing looser output.
 
-**When it occurs:** Any high-volume use case (e.g., batch summarization, high-concurrency Agentforce agents) where the per-minute call volume to an external provider exceeds the tier limits on the provider subscription. Rate limits can also be hit suddenly after an org-wide feature rollout increases concurrent usage.
+**When it occurs:** "If your model is already associated with prompts, create a new model instead. Updating model settings can affect the performance of associated prompts." In Prompt Builder, "Each version of a prompt template can contain a different model configuration. Only the configuration model in the activated version is used," and activated versions are immutable. Correction (2026-10-03): earlier versions described this as a global "alias" switch with no audit log; the guide does not use the alias term.
 
-**How to avoid:** Before going live with a high-volume external model use case, determine the provider tier's rate limits (RPM and TPM) and estimate peak call volume. Upgrade the provider tier proactively rather than reactively. Set up provider-side usage dashboards and alerts (OpenAI Usage Dashboard, Azure Monitor, Anthropic Console) to detect rate limit approaches before they impact users. If rate limits cannot be raised sufficiently, consider using Salesforce-standard models for high-volume features (no external rate limits) and reserving the BYOLLM model for lower-volume, higher-quality tasks.
+**How to avoid:** Create a new configuration for any change, point a new template version at it, preview, and activate template by template.
 
----
-
-## Gotcha 4: Named Credential Permission Sets Must Be Explicitly Assigned
-
-**What happens:** The user context or running process that invokes an external model via Model Builder must have access to the underlying Named Credential granted via a Permission Set. If the Permission Set granting Named Credential access is not assigned to the relevant user, profile, or integration user, the outbound model call fails with a credential access error. This error typically surfaces as a generic LLM call failure in Agentforce rather than a clear permissions error, making it difficult to diagnose without checking Permission Set assignments first.
-
-**When it occurs:** When a Named Credential is newly created for an external model registration but the Permission Set granting access to that credential is not added to all users or profiles that will invoke Agentforce features backed by that model. Also occurs after a sandbox refresh if Permission Set assignments are not replicated.
-
-**How to avoid:** After creating any Named Credential for Model Builder use, immediately verify that the Permission Set granting access to that credential is assigned to the relevant users, integration users, and Agentforce running user profiles. Document this as a step in the BYOLLM deployment runbook and check it first whenever a specific user reports model failures that other users do not experience.
+**Source:** Data Cloud Guide, Edit a Model Configuration. GenAI Guide, Changing LLM Configurations.
 
 ---
 
-## Gotcha 5: Model Capability Mismatch for Agentforce Actions (Function Calling)
+## Gotcha 3: A Foundation Model in Use Can't Be Edited, and Deletion Is Permanent
 
-**What happens:** Agentforce agents with actions (Apex invocable actions, Flow actions, external service calls) require the backing model to support function calling (also called tool use). If an administrator assigns a model alias to a model that does not support function calling — for example, a text-completion-only model or an older base model — the agent will appear to work in simple Q&A scenarios but will fail with a runtime error when it attempts to invoke any action. The error message is often not specific about function calling support as the root cause.
+**What happens:** An admin tries to change the endpoint of a connected model and the edit is blocked, or deletes the model to start again and loses it.
 
-**When it occurs:** When selecting an external model for a BYOLLM registration without confirming function calling support in the provider's documentation. Also occurs when a provider deprecates or changes a model's capabilities without notice.
+**When it occurs:** "You can edit most of your foundation model settings as long as the model isn't a source for other models. If it's used as a source, you must first delete all associated model configurations." "You can't recover a model after it's deleted."
 
-**How to avoid:** Before assigning a model to an alias used by any Agentforce agent with actions, confirm in the provider's documentation that the model supports function calling / tool use. For OpenAI models, this is documented per model in the OpenAI model capabilities page. For Anthropic, all Claude 3+ models support tool use. For Azure OpenAI, function calling support depends on the specific deployment version. Run a Model Builder Test Connection and also run a brief manual agent test that triggers an action before considering the configuration production-ready.
+**How to avoid:** For an endpoint or credential change on a model in use, add a new foundation model, build configurations on it, move template versions, then retire the old one.
+
+**Source:** Data Cloud Guide, Edit or Delete a Foundation Model.
+
+---
+
+## Gotcha 4: The Endpoint Must Be HTTPS on Port 443, and Each Provider Needs Its Own Details
+
+**What happens:** Save & Test fails against a gateway on a custom port, or an Azure model connects to the wrong deployment.
+
+**When it occurs:** "To connect to a remote model endpoint, a standard HTTPS 443 port is required." "If you're connecting an Azure Open AI model, enter the Azure deployment." "If you're connecting an OpenAI fine-tuned model, select Yes when prompted during setup." "For Amazon Bedrock, use Anthropic" as the model type.
+
+**How to avoid:** Front any internal gateway with HTTPS on 443. Copy the Azure deployment name from the Azure OpenAI dashboard, and record each provider's details in the runbook. The skill checker flags LLM endpoints in metadata that use HTTP or another port (`MB-HTTPS-01`).
+
+**Source:** Data Cloud Guide, Add a Foundation Model (step 4).
+
+---
+
+## Gotcha 5: The Org Has a 300-Request-Per-Minute Generation Limit, Plus Provider Limits
+
+**What happens:** A batch flow that drafts emails for thousands of records starts failing partway through.
+
+**When it occurs:** "Customers have a default rate limit of 300 Large Language Model (LLM) generation requests per minute at their Salesforce Organization ID level. These generations can be triggered from Prompt Builder, Einstein Studio, or Models API (REST, Apex)." A BYO provider's own quota applies on top. Correction (2026-10-03): earlier versions said Salesforce does not rate-limit external LLM calls.
+
+**How to avoid:** Size bulk jobs below 300 generations per minute, throttle flows, and watch provider usage. Ask the account executive for a limit increase when volume needs it. Use Model Activity in Einstein Studio to see inference and error trends.
+
+**Source:** GenAI Guide, Considerations for Einstein Generative AI (Rate Limits). Data Cloud Guide, Monitor Model Activity.
+
+---
+
+## Gotcha 6: Deprecated Models Are Rerouted, and Can't Be Picked in Model Playground
+
+**What happens:** Output style changes overnight on a template nobody touched.
+
+**When it occurs:** "After the model is no longer available, Salesforce reroutes requests to the next closest replacement model on the Reroute Date." "When configuring a model in Einstein Studio Model Playground, deprecated models can't be selected." Rerouting notices are published "30 days prior to the model's retirement date." The guide lists GPT-4 32k, Azure GPT-3.5 Turbo 16k, and GPT-3.5 Turbo 16k as deprecated.
+
+**How to avoid:** Assign an owner to read the monthly Einstein Platform release notes. On a deprecation notice, create a configuration on the replacement "with the same hyperparameters as the retired model," retest templates (and agents end to end), then activate new versions before the reroute date.
+
+**Source:** GenAI Guide, Large Language Model Support (Deprecated Models; Prepare for Model Deprecation and Rerouting).
+
+---
+
+## Gotcha 7: Blocking a Provider Blocks It for Every Generative AI Feature
+
+**What happens:** Security blocks OpenAI in a settings deployment, and an existing template that runs on an OpenAI model stops working.
+
+**When it occurs:** EinsteinGptSettings has `disableAIProvOpenAI`, `disableAIProvAzureOpenAI`, `disableAIProvAWSBedrock`, and `disableAIProvVertexGemini`, each meaning the provider "is turned off and access to its models are blocked." UNVERIFIED (2026-10-03): which standard features depend on which provider is not listed in the fetched sources.
+
+**How to avoid:** Before blocking, list every template version's model and move affected templates to an allowed provider. The checker flags templates whose model names a blocked provider (`MB-PROV-01`).
+
+**Source:** Metadata API, EinsteinGptSettings.
+
+---
+
+## Gotcha 8: Geo-Aware Routing Falls Back to the US
+
+**What happens:** An EU org's audit data shows requests served from a US region.
+
+**When it occurs:** "If a model isn't available in a nearby region, the requests are routed to the US. You can't disable geo-aware routing and rerouting to the US when models aren't available in a nearby region." For orgs that enabled the platform on or after June 13, 2024, the generative AI region matches the Data Cloud region. Separately, `disableAIProviderRegionFallback` "Indicates whether the fallback of Azure OpenAI requests outside the model endpoint region for your org is turned off."
+
+**How to avoid:** Choose models available in the required region, set `disableAIProviderRegionFallback` to true when Azure OpenAI must stay in region, and confirm routing in the audit and feedback data.
+
+**Source:** GenAI Guide, Geo-Aware LLM Request Routing. Metadata API, EinsteinGptSettings.
+
+---
+
+## Gotcha 9: Playground Settings Are Not Saved With the Configuration
+
+**What happens:** A configuration that looked safe in Model Playground with masking on behaves differently in production.
+
+**When it occurs:** Playground prompt settings (responses per prompt, stop sequence, masking) "are used only during testing. They aren't saved with your model configuration." "If you don't enable masking in Model Playground, org-level data masking settings are applied." Temperature ranges 0 through 2, and "Only Anthropic models have this setting available for testing."
+
+**How to avoid:** Treat the playground as a test bench. Confirm org-level masking in Einstein Trust Layer setup, and verify the final behaviour in Prompt Builder preview with the template version that will go live.
+
+**Source:** Data Cloud Guide, Create a Model Configuration; Data Masking; Test Your Prompt.

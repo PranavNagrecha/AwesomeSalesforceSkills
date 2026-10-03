@@ -21,7 +21,7 @@ Answer these before taking action:
 | Question | Answer |
 |---|---|
 | Einstein generative AI enabled in this org? | Yes / No / Unknown |
-| User has Manage Prompt Templates permission? | Yes / No / Unknown |
+| Author has Prompt Template Manager; end users have Prompt Template User? | Yes / No / Unknown |
 | Template type needed or in scope | Field Generation / Record Summary / Sales Email / Flex |
 | Target object (for Field Generation) | |
 | Target field (for Field Generation) | |
@@ -64,8 +64,8 @@ Answer these before taking action:
 **Flow or Apex grounding resource names:**
 
 - Flow name: `_________________________` (must be Template-Triggered Prompt Flow type)
-- Apex class: `_________________________` (must have `@InvocableMethod` with matching `capabilityType`)
-- Capability type string: `FlexTemplate://______________________` or `PromptTemplateType://einstein_gpt______________`
+- Apex class: `_________________________` (one `@InvocableMethod`; `List<Request>` in, `List<Response>` with String `Prompt` out)
+- CapabilityType (optional; omit for Flex and for einstein_gpt__caseEmailDraft): `PromptTemplateType://einstein_gpt______________`
 
 ---
 
@@ -83,8 +83,8 @@ Answer these before taking action:
 
 - Templates with no active version: (list)
 - Templates with inactive grounding Flows: (list)
-- Templates with Apex capability type mismatch risk: (list)
-- Permission gaps (missing Manage Prompt Templates for users who invoke these templates): (describe)
+- Templates whose Flow or Apex inputs changed since the template was built: (list)
+- Permission gaps (Prompt Template Manager for authors, Prompt Template User for users): (describe)
 
 ---
 
@@ -101,7 +101,7 @@ Answer these before taking action:
 3. Resolved Prompt result: All tokens resolved / Unresolved tokens found (list below)
 4. Unresolved tokens: `{! _________________________ }` — reason: field renamed / relationship null / Flow failed / Apex mismatch
 5. Flow tested independently in Flow Builder: Pass / Fail / Not applicable
-6. Apex capability type verified against template API name: Match / Mismatch / Not applicable
+6. Apex contract checked by `scripts/check_prompt_builder_templates.py`: Pass / Fail / Not applicable
 7. Trust Layer masking checked: Masking active / Masking not active / Unknown
 
 **Root cause:** (one sentence)
@@ -117,9 +117,9 @@ Answer these before taking action:
 - [ ] Save & Preview run against a real record with populated data
 - [ ] Resolved Prompt panel shows all merge fields resolved to actual values
 - [ ] Grounding Flows tested independently in Flow Builder
-- [ ] Apex capabilityType string verified to match template API name exactly
+- [ ] Apex Request and Response contract verified; no `FlexTemplate://` CapabilityType
 - [ ] Running user object/field permissions confirmed for all fields used in merge fields
-- [ ] Manage Prompt Templates permission confirmed for all users who invoke the template
+- [ ] Prompt Template User assigned to everyone who runs the template
 - [ ] Trust Layer masking validated in the target environment
 - [ ] If packaged: subscriber permission requirement documented in release notes
 

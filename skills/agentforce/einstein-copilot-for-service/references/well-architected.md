@@ -17,7 +17,7 @@ Key UX considerations:
 Operational Excellence governs how the org manages Einstein for Service AI features over time after go-live:
 - **Model monitoring:** Case Classification models retrain on a Salesforce-managed schedule. Admins should spot-check classification accuracy monthly, particularly after significant changes to the case intake process or field picklist values.
 - **Article base maintenance:** Article Recommendations quality is tied to Knowledge article currency and completeness. A stale or incomplete Knowledge base produces stale recommendations. Schedule Knowledge article reviews as a recurring operational cadence.
-- **Training Data refresh for Reply Recommendations:** As agent messaging behaviors evolve, the Training Data corpus ages. Periodically re-run the Training Data job to incorporate recent high-quality agent responses.
+- **Reply library upkeep for Reply Recommendations:** As agent messaging behaviors evolve, the generated ReplyText library needs periodic review: new replies arrive as NEW, need editing for customer data, and only PUBLISHED replies are recommended. Correction (2026-10-03): earlier versions described a "Training Data corpus" refresh; the Object Reference describes the model plus review-and-publish steps.
 - **License tracking:** Einstein Generative AI licensing is separate from Service Cloud Einstein. A formal license audit process prevents surprise gaps when Work Summary or Service Replies are requested by the business.
 - **ECM review cadence:** Einstein Conversation Mining insights are only valuable if acted on. Establish a recurring review cadence (monthly or quarterly) where the Service Ops team reviews ECM insights and commits to specific bot or agent workflow improvements.
 
@@ -40,9 +40,9 @@ Einstein Case Classification can be configured to auto-populate fields on case c
 
 **Tradeoff decision:** For new implementations, start in suggestion mode. The feedback loop improves model accuracy faster and prevents large-scale routing errors caused by incorrect auto-populated values. Move to auto-populate only after the model has demonstrated consistent accuracy (80%+) over 4–6 weeks of suggestion-mode operation.
 
-### Einstein Auto-Routing vs. Static Omni-Channel Routing Rules
+### Classification-Driven Routing vs. Static Omni-Channel Routing Rules
 
-Static Omni-Channel routing rules are deterministic and fully controllable. Einstein Auto-Routing is probabilistic — it performs better as the classification model improves but introduces routing variance in the early model lifecycle. Orgs that need strict SLA compliance and predictable routing behavior may be better served by static rules with incremental AI augmentation rather than full AI-driven routing from day one.
+Static Omni-Channel routing rules are deterministic and fully controllable. Einstein Auto-Routing is probabilistic — it performs better as the classification model improves but introduces routing variance in the early model lifecycle. Orgs that need strict SLA compliance and predictable routing behavior may be better served by static rules with incremental AI augmentation rather than full AI-driven routing from day one. In metadata, classification reaches routing only when EinsteinAgentSettings `runAssignmentRules` or `reRunAttributeBasedRules` is true (both default false). UNVERIFIED (2026-10-03): "Einstein Auto-Routing" as a separate feature was not found in a fetched source.
 
 **Tradeoff decision:** Use Einstein Auto-Routing for routing dimensions (e.g., language routing, topic specialty routing) where static rules would require exhaustive maintenance. Keep static rules for the highest-stakes routing paths (e.g., VIP customers, escalation routing) where determinism matters more than efficiency.
 
@@ -68,9 +68,17 @@ Service Replies with Einstein produces AI-drafted responses grounded in Knowledg
 
 ## Official Sources Used
 
-- Einstein for Service overview — https://help.salesforce.com/s/articleView?id=sf.einstein_service.htm
-- Einstein Case Classification — https://help.salesforce.com/s/articleView?id=sf.einstein_case_classification.htm
-- Einstein Article Recommendations — https://help.salesforce.com/s/articleView?id=sf.einstein_article_recommendations.htm
-- Einstein Reply Recommendations — https://help.salesforce.com/s/articleView?id=sf.einstein_reply_recommendations.htm
-- Agentforce Developer Guide — https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-03):
+
+- Salesforce Object Reference, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf. Einstein insight objects and Considerations for Case Classification (AIRecordInsight, AIInsightValue up to 10 values with top three shown, AIInsightFeedback Explicit and Implicit, Defunct status); ReplyText (generation from closed chats, review and publish, Status and Source values, customer data warning); QuickText (Reply Recommendations); Case (Reason, Type, Priority field names).
+- Metadata API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. EinsteinAgentSettings (rename from CaseClassificationSettings, runAssignmentRules, reRunAttributeBasedRules), AIReplyRecommendationsSettings, ServiceAISetupDefinition, ServiceAISetupField, ExternalAIModel (no wildcard), invocable action values for Einstein Work summaries and the Einstein Case Classification flow.
+- Quickstart Your Einstein Generative AI Solution, Spring '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf. Einstein Generative AI Features (Service Replies, Work Summaries, edition availability), Standard Prompt Templates (Draft Service Replies, not used with agent), Citations in Service Replies, Einstein Data Library feature table, Einstein Trust Layer.
+
+Listed in the original version and not re-read (Salesforce Help does not fetch; developer.salesforce.com returned 403 on 2026-10-03):
+
+- Einstein for Service overview: https://help.salesforce.com/s/articleView?id=sf.einstein_service.htm
+- Einstein Case Classification: https://help.salesforce.com/s/articleView?id=sf.einstein_case_classification.htm (source of the 400-case and 24 to 72 hour figures, now marked UNVERIFIED).
+- Einstein Article Recommendations: https://help.salesforce.com/s/articleView?id=sf.einstein_article_recommendations.htm
+- Einstein Reply Recommendations: https://help.salesforce.com/s/articleView?id=sf.einstein_reply_recommendations.htm
+- Agentforce Developer Guide: https://developer.salesforce.com/docs/einstein/genai/guide/agentforce.html
+- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

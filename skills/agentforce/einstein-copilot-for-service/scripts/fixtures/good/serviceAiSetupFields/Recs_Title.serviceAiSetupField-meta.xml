@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceAISetupField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <entity>KnowledgeArticle</entity>
+    <field>Title</field>
+    <fieldMappingType>ARTICLE_TITLE</fieldMappingType>
+    <fieldPosition>2</fieldPosition>
+    <name>Recs_Title</name>
+    <setupDefinition>Recs</setupDefinition>
+</ServiceAISetupField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceAISetupField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <entity>Case</entity>
+    <field>Subject</field>
+    <fieldMappingType>CASE_SUBJ</fieldMappingType>
+    <fieldPosition>1</fieldPosition>
+    <name>Recs_Subject</name>
+    <setupDefinition>Recs</setupDefinition>
+</ServiceAISetupField>

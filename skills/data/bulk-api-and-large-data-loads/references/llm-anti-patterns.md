@@ -12,22 +12,21 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 
 ```text
-Mode selection for Bulk API 2.0:
+Bulk API 2.0 is parallel only. Its concurrencyMode field is "For future use...
+Currently only parallel mode is supported."
 
-Use Parallel (default) when:
+Stay on Bulk API 2.0 (parallel) when:
 - Records are independent (no shared parent records)
 - No triggers that update related records across batches
-- Insert-only operations with no lookup relationships being updated
+- Lock-prone rows can be sorted by parent ID into the same batch
 
-Use Serial when:
-- Updating child records that share common parent records (Account -> Contacts)
-- Triggers or Flows on the object update related records
-- Previous parallel loads failed with UNABLE_TO_LOCK_ROW errors
-- Loading to objects with complex sharing rules
-
-For Bulk API 2.0, sort your CSV by parent ID to reduce lock contention
-even in parallel mode.
+Move only the lock-prone load to a Bulk API 1.0 job with concurrencyMode Serial when:
+- Sorting by parent ID still leaves UNABLE_TO_LOCK_ROW or TooManyLockFailure errors
+- The load creates users, changes ownership on privately shared records,
+  updates user roles, or updates territory hierarchies
 ```
+
+Correction (2026-10-03): an earlier version of this entry listed "Use Serial" conditions under "Mode selection for Bulk API 2.0." Bulk API 2.0 has no serial setting.
 
 **Detection hint:** Flag Bulk API recommendations that do not mention serial mode or lock contention. Look for "parallel" recommendations on objects with master-detail or lookup relationships to high-volume parents.
 
@@ -121,16 +120,42 @@ Re-enable all automation and verify data integrity after the load completes.
 **Correct pattern:**
 
 ```text
-Bulk API 2.0 limits (verify current values in Salesforce docs):
+Bulk API 2.0 limits (Limits Quick Reference and Bulk Guide, Summer '26):
 
-Per upload: 150 MB maximum file size
-Per job: no explicit record count limit (governed by file size and time)
-Rolling 24-hour: 150 million records processed
-Rolling 24-hour: 15,000 batches (platform-created, not user-controlled in v2)
-Concurrent jobs: varies by org (typically 100 open jobs)
-Daily API requests: Bulk API jobs count separately from REST API daily limit
-
-Multiple CSV uploads can be added to the same job before closing it.
+Per job: 150 MB of CSV after base64 (upload at most 100 MB raw)
+Per job: no record count limit; batches of 10,000 are created automatically
+Rolling 24-hour: 150,000,000 records uploaded
+Rolling 24-hour: 15,000 batches, shared with Bulk API 1.0; only ingest jobs consume them
+Open job lifetime: 24 hours for ingest jobs; results retrievable for 7 days
+Daily API requests: Bulk API and Bulk API 2.0 calls count toward the org's
+API request allocation, alongside REST and SOAP
 ```
 
+Correction (2026-10-03): an earlier version said Bulk API jobs count separately from the daily API limit and that multiple CSV uploads can be added to one job. The Limits Quick Reference lists Bulk API and Bulk API 2.0 among the APIs that count toward the allocation, and caps job data at 150 MB per job. UNVERIFIED (2026-10-03): whether a second PUT within the 150 MB total is accepted on the same job; the earlier "typically 100 open jobs" figure was not found in a fetched source and is removed.
+
 **Detection hint:** Flag any claim of a per-job record count limit for Bulk API 2.0 (this is a v1 concept). Check for missing references to the 150 million record rolling 24-hour limit.
+
+---
+
+## Anti-Pattern 6: Leaving lineEnding at the Default for a Windows CSV
+
+**What the LLM generates:** A create-job body of `{"object":"Contact","operation":"insert","contentType":"CSV"}` for a file exported from Excel on Windows.
+
+**Why it happens:** Most tutorials show LF files from Unix tools. "The default line ending, if not specified, is LF," and Windows writes CRLF.
+
+**Correct pattern:** Ask what produced the file and set `"lineEnding": "CRLF"` when it uses CRLF, or normalize to LF first. Set `columnDelimiter` for semicolon or tab exports.
+
+**Detection hint:** A create-job body with no `lineEnding` for a source described as Excel, Windows, or a desktop export.
+
+---
+
+## Anti-Pattern 7: Granting hardDelete Without Naming Who Holds the Permission
+
+**What the LLM generates:** "Use `operation: hardDelete` to permanently remove the records" with no permission or approval step.
+
+**Why it happens:** The operation is a single word in the request body, so the model treats it like `delete`.
+
+**Correct pattern:** hardDelete records are not stored in the Recycle Bin, the "Bulk API Hard Delete" permission is disabled by default, and a Salesforce user license is required. Name the integration user, grant the permission through a permission set, and keep an extract of the deleted IDs.
+
+**Detection hint:** `hardDelete` in a recommendation without "Bulk API Hard Delete" in the same answer.
+

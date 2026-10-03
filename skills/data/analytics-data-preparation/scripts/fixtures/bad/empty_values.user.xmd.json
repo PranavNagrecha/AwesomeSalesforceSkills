@@ -1,0 +1,7 @@
+{
+  "dimensions": [
+    {"field": "Owner_SSN__c", "label": "", "showInExplorer": false},
+    {"field": "Owner_SSN__c", "label": "Owner SSN"}
+  ],
+  "measures": []
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Refund Email</masterLabel>
+    <templateVersions>
+        <content>Customer card {!$Input:Contact.Credit_Card__c}. Order history: {!$Flow:Get_Orders.Prompt}</content>
+        <status>Draft</status>
+        <templateDataProviders>
+            <definition>flow://Get_Orders</definition>
+            <label>Get Orders</label>
+            <referenceName>Flow:Get_Orders</referenceName>
+        </templateDataProviders>
+    </templateVersions>
+    <type>einstein_gpt__flex</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>

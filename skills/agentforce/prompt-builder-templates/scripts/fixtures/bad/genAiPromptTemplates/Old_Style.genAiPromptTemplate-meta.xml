@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <activeVersion>1</activeVersion>
+    <masterLabel>Old Style</masterLabel>
+    <templateVersions>
+        <content>Summarize {!$Record.Name} using {!Flow:Get_Notes.prompt}.</content>
+        <status>Published</status>
+        <versionNumber>1</versionNumber>
+    </templateVersions>
+    <type>einstein_gpt__summary</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>

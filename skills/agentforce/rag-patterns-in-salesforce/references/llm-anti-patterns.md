@@ -1,164 +1,157 @@
-# LLM Anti-Patterns — RAG Patterns in Salesforce
+# LLM Anti-Patterns: RAG Patterns in Salesforce
 
-Common mistakes AI coding assistants make when generating or advising on Retrieval-Augmented Generation (RAG) patterns in Salesforce using Data Cloud vector search.
-These patterns help the consuming agent self-check its own output.
+Common mistakes AI coding assistants make when advising on Retrieval-Augmented Generation (RAG) in Salesforce with Data Cloud search indexes, retrievers, and Einstein Data Libraries, with the correct move for each. Correction (2026-10-03): earlier versions of this file told readers to strip Knowledge HTML, tune `top_k` and chunk overlap on a subagent "Grounding config," and use `{!topic.product}` filters. Those settings are not documented; the entries below are rewritten against the Generative AI guide and the Data Cloud guide (Summer '26).
 
-## Anti-Pattern 1: Indexing Knowledge Article HTML Without Stripping Tags
+## Anti-Pattern 1: Stripping Knowledge HTML Before Indexing
 
-**What the LLM generates:** "Map the Knowledge article Body__c field directly to the vector search index."
+**What the LLM generates:** "Strip all HTML tags from the article body before you create the vector index."
 
-**Why it happens:** LLMs treat the Body field as clean text. Salesforce Knowledge stores article body as HTML, and training data does not consistently warn about markup contamination in embeddings.
+**Why it happens:** Generic RAG advice treats markup as noise.
 
 **Correct pattern:**
 
 ```
-Salesforce Knowledge stores article body as HTML. If Body__c is mapped directly
-to the vector index without stripping HTML tags, the embedding model encodes
-tag markup (<p>, <li>, &nbsp;, <div>) as semantic content. This degrades
-similarity scores and retrieval quality.
+Semantic-based passage extraction "uses the semantic meaning inherent in HTML
+tags to chunk a document into passages" (headings, lists, bold subheadings).
+Passage extraction "work[s] best for HTML files."
 
 Before indexing:
-- Pre-process the Body field using a Data Cloud formula or transformation
-  to strip HTML tags.
-- Verify the cleaned text in the DMO before enabling the vector index.
-- Test retrieval quality with a sample of representative queries after indexing.
+- Keep well-formed HTML with real headings and block tags.
+- Prepend the Title field so every chunk carries its article name.
+- Convert tables to prose (tabular data can't be chunked).
 ```
 
-**Detection hint:** If the advice maps a Knowledge article Body field directly to a vector index without HTML stripping, retrieval quality will be poor due to markup noise in embeddings.
+**Detection hint:** Any instruction to remove HTML from Knowledge or HTML files before indexing.
 
 ---
 
-## Anti-Pattern 2: Setting top-K Too High Without Considering Token Budget
+## Anti-Pattern 2: Setting Number of Results High Without a Token Budget
 
-**What the LLM generates:** "Set top_k to 10 to maximize retrieval coverage" without assessing the prompt token impact.
+**What the LLM generates:** "Set the retriever to return 15 results for maximum coverage."
 
-**Why it happens:** LLMs default to higher recall. Training data emphasizes retrieval completeness without modeling the downstream token budget constraint.
+**Why it happens:** Models default to higher recall and ignore what else the prompt must hold.
 
 **Correct pattern:**
 
 ```
-Each retrieved chunk consumes tokens in the final prompt. With top-K of 10 and
-a chunk size of 512 tokens, retrieval alone consumes 5,000+ tokens.
+Each retrieved chunk is added to the prompt. Max tokens per chunk default to 512,
+so 10 results can add roughly 5,000 tokens before record context and instructions.
 
-For a model with a 16K context window, this leaves limited space for:
-- System instructions
-- Conversation history
-- CRM record context from merge fields
-
-Calculate: top_k * chunk_size_tokens = retrieval token budget.
-Ensure this fits within the model's context window with room for all other
-prompt components. For shorter-context models, use top_k of 3-5 with smaller
-chunk sizes (256-384 tokens).
+- Set Number of Results in the retriever (Einstein Studio) or the prompt
+  template's Configuration panel.
+- Choose Output Fields deliberately (Chunk plus a title), not every field.
+- Preview and read the retriever JSON in the resolution to see what is sent.
 ```
 
-**Detection hint:** If the advice sets a high top-K without estimating the token impact against the model's context window, the prompt may crowd out conversation history or CRM context.
+**Detection hint:** A results count above 10 with no estimate of prompt size.
 
 ---
 
-## Anti-Pattern 3: Assuming Vector Index Auto-Refreshes on Article Publish
+## Anti-Pattern 3: Promising That Published Content Is Retrievable Immediately
 
-**What the LLM generates:** "Publish the Knowledge article and the agent will immediately use the updated content."
+**What the LLM generates:** "Publish the Knowledge article and the agent will use it right away."
 
-**Why it happens:** LLMs assume real-time data freshness. The default Data Stream refresh cadence is scheduled batch, not continuous.
+**Why it happens:** Models assume real-time freshness.
 
 **Correct pattern:**
 
 ```
-Near-real-time refresh is available for CRM Data Streams but requires EXPLICIT
-configuration of the refresh trigger. By default, new Data Streams use scheduled
-batch refresh.
+Content reaches retrieval through data streams, chunking, and vectorization.
+UNVERIFIED (2026-10-03): the exact refresh cadence for Knowledge-backed data
+library streams was not found in a fetched source.
 
-A newly published Knowledge article will NOT appear in retrieval results until
-the next scheduled refresh window unless the Data Stream is configured for
-continuous mode.
-
-After configuring the Data Stream:
-- Verify the refresh cadence in Data Cloud Data Stream settings.
-- For time-sensitive content, enable continuous/near-real-time refresh.
-- For static document corpuses, scheduled batch is sufficient and lower overhead.
+- Test the lag: publish a marker article and time when the agent can cite it.
+- Tell stakeholders the measured lag, not "immediately."
 ```
 
-**Detection hint:** If the advice assumes new content is immediately available for retrieval without configuring the Data Stream refresh mode, there will be a lag between publication and agent awareness.
+**Detection hint:** "immediately" or "real time" attached to newly published content.
 
 ---
 
-## Anti-Pattern 4: Using Exact-Match Metadata Filters on Free-Text Fields
+## Anti-Pattern 4: Filtering on Fields the Index Does Not Define
 
-**What the LLM generates:** "Add a metadata filter: Product_Name__c = '{!topic.product}'" where Product_Name__c is a free-text field with high cardinality.
+**What the LLM generates:** "In the retriever, filter where Product_Name__c equals the product the customer mentioned."
 
-**Why it happens:** LLMs generate filter syntax without assessing the field's data quality. Exact-match filters on free-text fields with inconsistent values produce empty candidate sets.
+**Why it happens:** Models assume any DMO field can be filtered and that conversation values flow into filters.
 
 **Correct pattern:**
 
 ```
-Metadata filters in the Grounding config are PRE-FILTERS applied before ANN
-ranking. If the filter is too restrictive (exact match on a free-text field
-with high cardinality or inconsistent values), the candidate set may be EMPTY
-even when relevant chunks exist.
+"Retriever filters are available only if the search index that you selected has
+filter fields defined." A custom retriever takes up to 10 conditions; an index
+allows up to 10 pre-filter fields.
 
-Best practices:
-- Use categorical fields (picklists, standardized values) for metadata filters.
-- Use LIKE or contains operators rather than exact match on text fields.
-- Test the filter against the actual data in the DMO to confirm it returns
-  candidates before deploying.
+- Add the filter field (a categorical value, not free text) when creating the index.
+- Build one retriever per scope, or use a dynamic retriever where a standard
+  template supports one.
+- UNVERIFIED (2026-10-03): passing a runtime conversation value into a filter.
 ```
 
-**Detection hint:** If the advice uses exact-match metadata filters on free-text fields without verifying data consistency, the retriever may return zero results.
+**Detection hint:** A filter on a field that is not a filter field of the index, or `{!topic.…}` inside a filter.
 
 ---
 
-## Anti-Pattern 5: Ignoring Trust Layer Masking Impact on Retrieved Chunks
+## Anti-Pattern 5: Assuming the Trust Layer Masks Retrieved Chunks for Agents
 
-**What the LLM generates:** RAG configuration without mentioning Trust Layer data masking behavior on retrieved content.
+**What the LLM generates:** "Retrieved PII is masked by the Trust Layer before it reaches the LLM."
 
-**Why it happens:** LLMs treat the RAG pipeline as a pure retrieval-to-prompt flow. The Trust Layer masking step between retrieval and prompt injection is specific to Salesforce and absent from general RAG training data.
+**Why it happens:** Models generalize masking from prompt templates to agents.
 
 **Correct pattern:**
 
 ```
-Retrieved chunks pass through the Einstein Trust Layer before reaching the LLM.
-If a chunk contains a field classified as PII under the Trust Layer data masking
-policy, the value is replaced with a placeholder token.
+"Data masking through the Einstein Trust Layer is disabled to improve the
+performance and accuracy of agents." For prompt templates, pattern-based masking
+scans all prompt text for its listed data types; field-based masking covers only
+record merge fields and related lists.
 
-The chunk still counts toward top-K but contributes NO useful content. This can
-cause the agent to appear to ignore retrieved documents.
-
-Before deploying RAG:
-- Review which fields in the source DMO are classified as PII.
-- Check the Trust Layer audit log during QA for masking events.
-- If key fields are being masked, reclassify them or restructure the source
-  content so critical information is not in masked fields.
+- Keep sensitive values out of indexed content.
+- Pick output fields that do not carry sensitive data.
+- Review the GenAIGatewayRequest audit report (prompt and masked prompt) in QA.
 ```
 
-**Detection hint:** If the advice configures RAG without considering Trust Layer masking, the agent may receive redacted chunks that appear to contain no useful content.
+**Detection hint:** A RAG design for an agent that relies on masking for privacy.
 
 ---
 
-## Anti-Pattern 6: Not Validating Chunk Size and Overlap Against Use Case
+## Anti-Pattern 6: Inventing Chunk Overlap and Size Recipes
 
-**What the LLM generates:** "Use the default chunk size" or "Set chunk size to 1024 tokens for maximum context" without evaluating the use case requirements.
+**What the LLM generates:** "Use 256-token chunks with 20% overlap for compliance content and 768 tokens with 15% overlap for broad content."
 
-**Why it happens:** LLMs either defer to defaults or maximize a single dimension. Chunk size and overlap are use-case-dependent parameters that require explicit tradeoff analysis.
+**Why it happens:** Recipes from other vector databases are repeated as if they were Data Cloud settings.
 
 **Correct pattern:**
 
 ```
-Chunk size and overlap directly affect retrieval precision and recall:
+Data Cloud documents chunking strategies (semantic and window-based passage
+extraction, conversation-based, prepend fields) and a max token limit (512 by
+default, lower for non-Latin languages). No overlap setting is documented.
 
-High-precision use cases (legal, compliance, narrow factual questions):
-  - Smaller chunks: 256-384 tokens
-  - Higher overlap: 20%
-  - Lower top-K: 3
-  - Reduces context dilution; each chunk is tightly focused
-
-High-recall use cases (broad knowledge bases, exploratory queries):
-  - Larger chunks: 512-768 tokens
-  - Standard overlap: 10-15%
-  - Higher top-K: 5-10
-  - Each chunk carries more context; covers multi-faceted queries
-
-Document the chunk size, overlap, and top-K choices in a decision record with
-the rationale tied to the specific use case requirements.
+- Pick the strategy for the content type.
+- Lower max tokens for non-Latin text.
+- Record the choice and test retrieval with representative questions.
 ```
 
-**Detection hint:** If the advice uses default or arbitrary chunk sizes without relating the choice to the use case's precision/recall requirements, retrieval quality will be suboptimal.
+**Detection hint:** Overlap percentages presented as Data Cloud configuration.
+
+---
+
+## Anti-Pattern 7: Expecting the Retriever to Deploy With the Template
+
+**What the LLM generates:** "Add the prompt template to the change set; the retriever goes with it."
+
+**Why it happens:** Models assume dependencies travel together.
+
+**Correct pattern:**
+
+```
+"If a prompt uses an Einstein Search retriever, the change sets don't include the
+retriever or search index metadata... This rule applies to change sets and
+Metadata API deployments."
+
+- Move the index configuration with a data kit.
+- Create and activate the retriever in the target org first.
+- Then deploy the template.
+```
+
+**Detection hint:** A deployment plan for a retriever-backed template with no retriever creation step.

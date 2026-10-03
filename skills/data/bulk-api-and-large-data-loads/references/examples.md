@@ -1,6 +1,6 @@
 # Examples — Bulk API and Large Data Loads
 
-## Example 1: Million-Record Account Migration with Serial Mode
+## Example 1: Million-Record Account Migration With Lock-Aware Ordering
 
 **Context:** A financial services customer is migrating 1.2 million Account records from a legacy CRM into Salesforce. The Account object has three Apex triggers that recalculate a custom rollup field on a parent Region object, and the org uses private sharing with complex sharing rules that trigger recalculation on ownership changes.
 
@@ -20,25 +20,27 @@ Step 2 — Defer sharing calculation (Setup > Defer Sharing Calculation)
 - This prevents ownership-change sharing recalculation from running
   for every inserted record during the load window.
 
-Step 3 — Create and submit the ingest job
-POST /services/data/v66.0/jobs/ingest/
+Step 3 - Create one ingest job per CSV file of at most 100 MB raw
+POST /services/data/v67.0/jobs/ingest/
 Body:
 {
   "object": "Account",
   "operation": "insert",
-  "contentType": "CSV"
+  "contentType": "CSV",
+  "lineEnding": "LF"
 }
 
-Step 4 — Upload data in chunks
-PUT /services/data/v66.0/jobs/ingest/{jobId}/batches
-(Repeat for each CSV chunk, staying under 100 MB raw per request)
+Step 4 - Upload that file
+PUT /services/data/v67.0/jobs/ingest/{jobId}/batches
+(One upload per job. Job data is capped at 150 MB after base64,
+so a larger extract is split into more jobs, not more PUTs.)
 
-Step 5 — Signal upload complete (MANDATORY)
-PATCH /services/data/v66.0/jobs/ingest/{jobId}
+Step 5 - Signal upload complete (MANDATORY)
+PATCH /services/data/v67.0/jobs/ingest/{jobId}
 Body: {"state": "UploadComplete"}
 
 Step 6 — Poll until terminal state
-GET /services/data/v66.0/jobs/ingest/{jobId}
+GET /services/data/v67.0/jobs/ingest/{jobId}
 Poll every 30 seconds. Stop when state is JobComplete or Failed.
 
 Step 7 — Retrieve ALL three result endpoints
@@ -53,7 +55,7 @@ Fix the root cause for each sf__Error category before resubmitting.
 Step 9 — Resume sharing calculation after load is confirmed complete.
 ```
 
-**Why it works:** Sorting by parent ID groups related records into the same internal batch, reducing lock collisions. Deferring sharing calculation eliminates the biggest source of contention during initial loads. Retrieving all three result endpoints ensures no records are silently lost.
+**Why it works:** Sorting by parent ID groups related records into the same internal batch, reducing lock collisions. Deferring sharing calculation removes a large source of contention during initial loads. Retrieving all three result endpoints ensures no records are silently lost. If lock errors persist after sorting, only that load moves to a Bulk API 1.0 job with `concurrencyMode` Serial (`references/rest-examples.md`, section 8); Bulk API 2.0 has no serial mode. Correction (2026-10-03): this example was previously titled "with Serial Mode" although every step used Bulk API 2.0, which is parallel only.
 
 ---
 

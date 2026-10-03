@@ -1,0 +1,10 @@
+{
+  "fileFormat": {"charsetName": "UTF-8", "fieldsDelimitedBy": ","},
+  "objects": [{"fullyQualifiedName": "Sales", "label": "Sales", "name": "Sales",
+    "fields": [
+      {"name": "Amount", "type": "Numeric", "precision": 20, "scale": 2, "isUniqueId": true},
+      {"name": "Order__Ref", "type": "Text", "isUniqueId": true},
+      {"name": "Close_Date", "type": "Date"},
+      {"name": "Margin", "type": "Numeric", "precision": 4, "scale": 4, "defaultValue": "0"}
+    ]}]
+}

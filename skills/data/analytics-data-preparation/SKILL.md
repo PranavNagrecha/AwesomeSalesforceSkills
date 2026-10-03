@@ -1,6 +1,6 @@
 ---
 name: analytics-data-preparation
-description: "Use this skill when customizing CRM Analytics dataset field metadata via the XMD (Extended Metadata) REST API, or augmenting recipes with external non-Salesforce data: field labels, display formats, measures vs dimensions, main XMD PATCH. Trigger keywords: XMD field labels, CRM Analytics main XMD update, dataset field formatting wave, analytics external data augmentation, WaveXmd REST API. NOT for recipe node transformation logic — use admin/analytics-recipe-design. NOT for dataflow node types or SOQL extraction — use admin/analytics-dataflow-development."
+description: "Use this skill when customizing CRM Analytics dataset field metadata via the XMD (Extended Metadata) REST API, or augmenting recipes with external non-Salesforce data: field labels, display formats, measures vs dimensions, user XMD PUT and WaveXmd deploys. Trigger keywords: XMD field labels, CRM Analytics main XMD update, dataset field formatting wave, analytics external data augmentation, WaveXmd REST API. NOT for recipe node transformation logic — use admin/analytics-recipe-design. NOT for dataflow node types or SOQL extraction — use admin/analytics-dataflow-development."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -14,6 +14,8 @@ triggers:
   - "can I use SOQL to read WaveXmd metadata from a CRM Analytics dataset"
   - "how do I back up the current XMD before making changes to a CRM Analytics dataset"
   - "PATCH main XMD CRM Analytics REST API field formatting overwriting"
+  - "deploy WaveXmd field labels for a CRM Analytics dataset with the Metadata API"
+  - "upload a CSV into a CRM Analytics dataset with the External Data API"
 tags:
   - crm-analytics
   - xmd
@@ -21,23 +23,25 @@ tags:
   - analytics
   - data-preparation
 inputs:
-  - "CRM Analytics dataset ID and API name"
+  - "CRM Analytics dataset ID or API name, and the current version ID"
   - "Field API names requiring label or format changes"
-  - "Target XMD layer: main (org-wide) or user (per-user)"
-  - "External data source details if augmenting datasets with non-CRM data"
+  - "Whether the XMD must travel in a package or deployment (Primary User XMD) or only live on one dataset version (Standard User XMD)"
+  - "External data source details if loading non-CRM data into a dataset"
 outputs:
-  - "XMD PATCH payload for field-level formatting and label changes"
-  - "Step-by-step XMD update procedure using the Wave REST API"
-  - "External data augmentation design using Files node and Augment node in recipe"
+  - "Complete user XMD JSON for a dataset version, or a WaveXmd metadata file for deployment"
+  - "Step-by-step XMD update procedure using the CRM Analytics REST API or Metadata API"
+  - "External Data API upload plan (InsightsExternalData header, 10 MB parts, metadata JSON)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
-# Analytics Data Preparation (XMD Metadata and External Augmentation)
+# Analytics Data Preparation (XMD Metadata and External Data)
 
-Use this skill when applying field-level metadata customizations to CRM Analytics datasets using the XMD REST API to set labels, aliases, date formats, number formats, and measure/dimension classification at the org level. Also covers the external data augmentation pattern for incorporating non-Salesforce data into CRM Analytics recipes.
+Use this skill when applying field-level formatting to CRM Analytics datasets through extended metadata (XMD): labels, member labels, number formats, hidden fields, colors, and dimension actions. It also covers loading non-Salesforce data into a dataset with the External Data API. Almost all XMD settings can now be made in the dataset edit page and lens UI; use the API path when the change must be repeatable or deployed.
+
+Correction (2026-10-03): earlier versions of this skill said to PATCH `/wave/datasets/{id}/xmds/main` as an additive merge. The CRM Analytics REST API Developer Guide documents the XMD resource under a dataset version (`/wave/datasets/<datasetID>/versions/<versionID>/xmds/<xmdType>`) with GET for all types and PUT "on Xmd User type only." It states that PUT "cannot be used to update System or Main Xmd types." No PATCH method is documented on the XMD resource, and the XMD guide says each upload "overwrites the current dataset customizations."
 
 ---
 
@@ -45,81 +49,84 @@ Use this skill when applying field-level metadata customizations to CRM Analytic
 
 Gather this context before working on anything in this domain:
 
-- What is the dataset ID (not API name — find via `GET /wave/datasets` or the Analytics Studio URL)?
-- Is the change org-wide (PATCH main XMD) or personal preference (PATCH user XMD)?
-- Are there external CSV files or Salesforce Files to be loaded as a recipe lookup source?
-- Is this a one-time metadata update or part of a deployment pipeline requiring automated XMD updates post-dataflow?
+- What are the dataset ID and its current version ID? Every XMD REST path includes `/versions/<versionID>/`.
+- Must the formatting survive a deployment or package install? Then it belongs in the Primary User XMD (WaveXmd metadata or the Dataset resource `userXmd` property), not only on the current dataset version.
+- Does the user have Edit CRM Analytics Dataflows or Upload External Data to CRM Analytics? One of them is required to edit XMD.
+- Is the external data a one-off reference table or a recurring feed? The External Data API limits jobs per dataset per day.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Should this formatting move between orgs or survive a package install?" | Standard User XMD is tied to a dataset version and can't be packaged; Primary User XMD can (Gotcha 3) | WaveXmd in source control, or a REST update on one version | Labels arrive with the deployment instead of being re-typed per org |
+| "Who else edits this dataset's XMD in the UI?" | Each upload overwrites the whole XMD, and REST or UI edits make an MDAPI retrieve return an empty XMD (Gotchas 2, 4) | One owner and one write path | A Friday UI tweak is not silently erased by Monday's deploy |
+| "Which fields are renamed or removed by the next dataflow or recipe change?" | XMD that references old field names causes errors when configuring actions (Gotcha 6) | A rename list reviewed with the XMD | Dashboards keep their labels and actions after the data change |
+| "Is hiding a field meant to keep data from users?" | Hidden fields are still reachable in SAQL, dashboard JSON, and the REST API (Gotcha 5) | Row-level security or a narrower dataset for sensitive data | Hiding is used for tidiness, and security is done where it holds |
+| "Does the external file have a header row, numeric columns, and a unique key?" | No header plus a default `numberOfLinesToIgnore` drops rows; numeric fields need a default value; only one text field can be the unique ID (Gotchas 7, 8) | A metadata JSON that matches the CSV column order | The upload succeeds first time and upserts match on the right key |
+| "How often will the external data refresh?" | 50 external data jobs per dataset per rolling 24 hours, and 50 GB per day across uploads (Gotcha 9) | A refresh cadence within those limits | Hourly feeds do not run out of jobs by mid-afternoon |
 
 ---
 
 ## Core Concepts
 
-### XMD Layer Hierarchy
+### XMD Types
 
-CRM Analytics uses a three-layer Extended Metadata (XMD) system:
+The REST API lists four XMD types: `asset`, `main`, `system`, and `user`. The Metadata API WaveXmd type uses the same names (System, User, Main, Asset).
 
-1. **System XMD** (`type=system`): Platform-generated. Immutable. Contains raw field API names and inferred data types. Cannot be modified — PATCH returns HTTP 400.
-2. **Main XMD** (`type=main`): Org-customizable. PATCH this layer to apply field label, format, and classification changes for all users.
-3. **User XMD** (`type=user`): Per-user customizations. Overrides main XMD only for the user who created the customization.
+1. **System XMD**: generated by the platform. The REST guide allows GET only.
+2. **Main XMD**: listed with system and user for each dataset version. The REST guide allows GET only, and neither the REST nor the XMD guide describes how to write it. UNVERIFIED (2026-10-03): that main XMD is the merged result of system and user XMD was not stated in a fetched source.
+3. **User XMD**: the writable layer. The XMD guide calls it the Standard User XMD and says it "defines custom formatting for dataset fields and values." It is dataset-wide: "If you modify the XMD for a dataset, every UI visualization that uses the dataset shows the modified format." Correction (2026-10-03): earlier versions said user XMD applies only to the user who created it.
+4. **Asset XMD**: XMD attached to an asset such as a dashboard, read with `GET /wave/assets/<assetID>/xmds/asset`.
 
-Resolution order at render time: user XMD → main XMD → system XMD (first non-null value wins).
+### Standard User XMD Versus Primary User XMD
 
-### XMD REST API Mechanics
+The Standard User XMD is tied to a dataset version, "that isn't packageable." The Primary User XMD is tied to the dataset container and "can be included in packages." Update it by deploying WaveXmd through the Metadata API, or by setting `userXmd` on `PATCH /wave/datasets/<datasetIdOrApiName>`. It is "applied to a dataset only after a dataflow that updates the dataset runs." Updating the Standard User XMD updates the Primary User XMD automatically, but not the other way round.
 
-```
-GET  /services/data/v{version}/wave/datasets/{datasetId}/xmds/{xmdtype}
-PATCH /services/data/v{version}/wave/datasets/{datasetId}/xmds/{xmdtype}
-```
+### XMD Rules That Catch People
 
-**Key behaviors:**
-- PATCH is an **additive merge** — include only properties you want to change.
-- System XMD PATCH returns HTTP 400.
-- WaveXmd is **NOT queryable via SOQL** — the REST API is the only interface. SOQL throws INVALID_TYPE.
-- Main XMD has no version history — PATCH is destructive. Always GET and save a backup before modifying.
+- Each upload overwrites; "Changes in the XMD aren't appended to previous customizations."
+- "XMD doesn't support empty strings."
+- Date labels can't be customized.
+- A query across several datasets is formatted with "the XMD of the first loaded dataset."
+- The `dataset` block is maintained by CRM Analytics; "Do not modify it."
+- WaveXmd is a Metadata API type (suffix `.xmd`, folder `wave`). No WaveXmd object appears in the Object Reference, so SOQL cannot read it. UNVERIFIED (2026-10-03): the exact SOQL error text.
 
-### External Data Augmentation Pattern
+### External Data API
 
-CRM Analytics recipes support loading external data via:
-1. **Files node (CSV)**: Upload a CSV to Salesforce Files (ContentDocument), then reference it in a Recipe Files node. Best for reference data such as product hierarchies, territory mappings, or cost tables that do not exist in Salesforce objects.
-2. **Augment node**: Join the Files node dataset to a primary dataset inside the recipe. The Augment node performs a left outer join keyed on a shared field.
+Load non-Salesforce data into a dataset by inserting an `InsightsExternalData` header (dataset alias in `EdgemartAlias`, `Format` Csv, `Operation` Overwrite, Append, Upsert, or Delete, `Action` None), uploading the CSV in parts under 10 MB to `InsightsExternalDataPart` with contiguous `PartNumber` values from 1, then setting `Action` to Process. Monitor `Status`. A metadata JSON file is recommended; without it "every field is treated as text."
 
-External CSV data loaded via Files node is NOT subject to automatic incremental sync — it must be manually re-uploaded or replaced via Salesforce Files API to refresh the data.
+The earlier "Files node plus Augment node in a recipe" pattern is kept as an option. UNVERIFIED (2026-10-03): recipe node names and file-input behaviour were not re-read in a fetched source (the CRM Analytics data integration guide PDF did not resolve under the 262 release path).
 
 ---
 
 ## Common Patterns
 
-### Pattern: PATCH Main XMD for Field Label Updates
+### Pattern: Change Labels and Formats on One Dataset Version
 
-**When to use:** After dataflow or recipe deployment when field API names from source objects are cryptic and dashboards display system names instead of business-readable labels.
-
-**How it works:**
-1. `GET /wave/datasets/{id}/xmds/main` — read and save as backup.
-2. Locate the target field in the `dimensions` or `measures` array.
-3. Construct the PATCH payload with only the `label` property changed:
-```json
-{
-  "dimensions": [
-    {
-      "field": "Account_Type__c",
-      "label": "Account Category"
-    }
-  ]
-}
-```
-4. `PATCH /wave/datasets/{id}/xmds/main`. Verify HTTP 200.
-5. Confirm label in Analytics Studio lens.
-
-### Pattern: External CSV Augmentation in Recipe
-
-**When to use:** When a recipe needs to enrich CRM Analytics data with a reference table not available as a Salesforce object (e.g., a product category mapping from an ERP system).
+**When to use:** A one-off fix on the current dataset version, with no need to deploy elsewhere.
 
 **How it works:**
-1. Upload CSV to Salesforce Files via UI or Content API.
-2. In Analytics Studio Recipe Builder, add a Files node and select the uploaded CSV.
-3. Add an Augment node joining the Files node to the primary data node on the shared key field.
-4. Ensure the join key exists in both sources with the same data type.
-5. Schedule the recipe. When the external CSV changes, update the Salesforce File before the next recipe run.
+1. `GET /wave/datasets/<datasetIdOrApiName>` and read the current version ID.
+2. `GET /wave/datasets/<id>/versions/<versionId>/xmds/user` and save the response as the backup and the starting point.
+3. Edit the saved JSON: change `label`, `members`, `format`, or `showInExplorer` on the target entries. Keep every other entry.
+4. `PUT /wave/datasets/<id>/versions/<versionId>/xmds/user` with the complete edited JSON.
+5. Confirm in a lens, and re-run step 2 to compare.
+
+### Pattern: Deployable Labels With WaveXmd
+
+**When to use:** Labels and formats must arrive with a deployment or package, and survive the next dataflow run.
+
+**How it works:** Keep a WaveXmd file in source control (`references/metadata-examples.md`), deploy it with the Metadata API, then run the dataflow or recipe that updates the dataset so the Primary User XMD is applied. Do not edit the same XMD in the UI afterwards, or an MDAPI retrieve returns an empty file.
+
+### Pattern: External CSV Through the External Data API
+
+**When to use:** A reference table or feed from outside Salesforce must become a dataset or update one.
+
+**How it works:** Build the metadata JSON in CSV column order, insert the header, upload 10 MB parts, set `Action` to Process, and poll `Status`. For later loads, set `Operation` to Append, Upsert, or Delete; set `Mode` to Incremental for faster appends. Upsert and incremental extract need exactly one text field with `isUniqueId: true`.
 
 ---
 
@@ -127,26 +134,24 @@ External CSV data loaded via Files node is NOT subject to automatic incremental 
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Field label change for all users | PATCH main XMD | Main XMD applies org-wide |
-| Personal field label preference | PATCH user XMD | User XMD is per-user only |
-| Read field schema without modifying | GET system XMD | System XMD has the raw schema |
-| SOQL query for WaveXmd | Use REST API instead | SOQL does not support WaveXmd |
-| Reference data from non-Salesforce source | Files node + Augment in recipe | CRM Analytics recipe supports CSV augmentation |
-| Reclassify numeric field to dimension | PATCH main XMD, move field to `dimensions` array | Measure/dimension classification is in main XMD |
+| One-off label change on the live dataset | Dataset edit page, or PUT the complete user XMD on the current version | Only the user XMD is writable through REST |
+| Labels must deploy to another org | WaveXmd through the Metadata API, then run the dataflow | Standard User XMD is version-bound and not packageable |
+| Read the generated schema | GET system XMD on the current version | System XMD is read-only and reflects the generated fields |
+| SOQL query for WaveXmd | Use the REST XMD resource or a Metadata API retrieve | No WaveXmd object exists for SOQL |
+| Reference data from a non-Salesforce source | External Data API with a metadata JSON | Documented limits, typed fields, and Append or Upsert for refreshes |
+| Hide a sensitive field | Row-level security or a dataset without the field | Hidden fields remain reachable through SAQL and REST |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Obtain the dataset ID** — Use `GET /wave/datasets?q={name}` or find the dataset ID in the Analytics Studio URL.
-2. **Back up current main XMD** — `GET /wave/datasets/{id}/xmds/main` and save the response. There is no recovery after PATCH.
-3. **Identify fields to update** — List field API names that need label, format, or classification changes. Confirm whether they appear in `dimensions` or `measures` in system XMD.
-4. **Construct PATCH payload** — Build a minimal additive-merge JSON containing only changed properties.
-5. **PATCH main XMD** — `PATCH /wave/datasets/{id}/xmds/main`. Verify HTTP 200.
-6. **For external augmentation** — Upload CSV to Salesforce Files, add Files node in recipe, connect Augment node on join key, re-run recipe, verify field availability in output dataset.
-7. **Validate in Analytics Studio** — Open a lens and confirm labels, formats, and classification are correct.
+1. Identify the dataset, its current version ID, and whether the change must be deployable; pick REST user XMD, WaveXmd, or the dataset edit page from the Decision Guidance table.
+2. Back up first: GET the user XMD for the version (or retrieve WaveXmd) and commit the JSON before editing.
+3. Edit the complete document: keep every existing entry, remove empty strings, and leave the `dataset` block alone.
+4. Validate with `python3 scripts/check_analytics_data_preparation.py --manifest-dir <folder with *.xmd, *.xmd.json, and external metadata JSON>`.
+5. Apply it: PUT the user XMD, or deploy WaveXmd and run the dataflow that updates the dataset.
+6. For external data, upload with the External Data API using a validated metadata JSON and confirm `Status` on the InsightsExternalData header.
+7. Confirm labels, formats, and member labels in a lens, and record which write path owns this dataset's XMD.
 
 ---
 
@@ -154,25 +159,26 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking work in this area complete:
 
-- [ ] Main XMD backed up before PATCH
-- [ ] PATCH targeted at `xmds/main` (not `xmds/system`)
-- [ ] PATCH payload is additive-merge format (not full replace)
-- [ ] HTTP 200 confirmed on PATCH response
-- [ ] Field labels verified in Analytics Studio lens
-- [ ] For external data: Augment node join key is the same data type in both sources
-- [ ] CSV refresh process documented for recurring updates
+- [ ] XMD backed up (GET on the version, or WaveXmd retrieved) before any write
+- [ ] Writes target the user XMD (REST PUT) or WaveXmd (Metadata API); nothing tries to write system or main
+- [ ] The uploaded XMD is complete, because each upload overwrites
+- [ ] No empty strings in the XMD; the `dataset` block untouched
+- [ ] Field labels verified in a lens after the write
+- [ ] For deployments: the dataflow or recipe ran after the WaveXmd deploy
+- [ ] For external data: metadata JSON in CSV column order, numeric fields with default values, at most one text unique ID
+- [ ] External data refresh cadence fits 50 jobs per dataset per rolling 24 hours
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **SOQL cannot query WaveXmd** — `SELECT … FROM WaveXmd` throws INVALID_TYPE. XMD is accessible only via the Wave REST API. Any documentation or code referencing SOQL for WaveXmd is incorrect.
+1. **No PATCH on the XMD resource**: The REST guide documents GET for all XMD types and PUT on the user type only. A PATCH to `xmds/main` is not a documented operation.
 
-2. **Modifying system XMD fails with HTTP 400** — System XMD is immutable. Always confirm the endpoint is `xmds/main`, not `xmds/system`.
+2. **Uploads replace, they do not merge**: Each XMD upload overwrites the current customizations. Send the full document every time.
 
-3. **Main XMD is not versioned — no undo after PATCH** — Always GET and save main XMD before modification. If PATCH is applied with incorrect data, the previous state is lost.
+3. **Version-bound XMD does not deploy**: The Standard User XMD is tied to a dataset version and can't be packaged. Use the Primary User XMD (WaveXmd) for anything that moves between orgs.
 
-4. **External CSV files are not auto-refreshed** — Files node data is static until the Salesforce File is manually updated. If the reference CSV changes frequently, build a Salesforce Files API upload step into the deployment pipeline.
+4. **Hidden is not secure**: Hidden fields are still available in dashboard JSON, SAQL, and the REST API.
 
 ---
 
@@ -180,9 +186,10 @@ Run through these before marking work in this area complete:
 
 | Artifact | Description |
 |---|---|
-| XMD backup JSON | GET response of main XMD before modification |
-| XMD PATCH payload | Minimal additive-merge JSON for field label/format changes |
-| External augmentation recipe plan | Node diagram for Files + Augment join configuration |
+| XMD backup JSON | GET response of the user XMD for the dataset version, or the retrieved WaveXmd |
+| Complete user XMD JSON | The full edited document for PUT on the version |
+| WaveXmd metadata file | Deployable Primary User XMD with package.xml entry |
+| External data upload plan | Metadata JSON, header values, part sizing, refresh cadence |
 
 ---
 

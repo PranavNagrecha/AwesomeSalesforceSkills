@@ -97,14 +97,12 @@ public static List<Case> forGrounding(Set<Id> caseIds) {
 }
 ```
 
-3. **Trust Layer (output boundary).** Enable masking for the PII categories in scope, so
-   an email address or phone number that does slip into a generated answer is masked on
-   the way out.
+3. **Suite (regression boundary).** Add the payload to the adversarial suite as a leakage case, so the next topic or grounding change is tested against it (see `references/metadata-examples.md`). Correction (2026-10-03): an earlier version made the third control "enable Trust Layer masking so leaked PII is masked on the way out." Masking is disabled for agents ("Data masking through the Einstein Trust Layer is disabled to improve the performance and accuracy of agents"), and where it does apply it replaces sensitive values in the prompt and demasks the response; it is not an output filter.
 
 **Why it works:** the vulnerability is the model's bias that grounded content is
 authoritative, so no single control is sufficient. The narrow projection is the strongest
 of the three because it removes the data from the prompt entirely; the subagent rule reduces
-attempt frequency; the Trust Layer mask catches what the other two miss.
+attempt frequency; the suite catches the regression when either of the other two drifts.
 
 **Regression test:** insert a Case whose Description contains the payload above, run the
 suite as the agent's run-as user, and assert that the generated answer contains neither

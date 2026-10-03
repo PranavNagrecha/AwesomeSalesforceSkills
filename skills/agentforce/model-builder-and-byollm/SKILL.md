@@ -13,6 +13,8 @@ triggers:
   - "model alias not working in Agentforce prompt template"
   - "troubleshoot external LLM connectivity failure in Model Builder"
   - "which default model should I pick for Einstein Copilot cost vs quality"
+  - "add an Azure OpenAI foundation model in Einstein Studio and use it in a prompt template"
+  - "block an LLM provider so no generative AI feature can call its models"
 tags:
   - model-builder
   - byollm
@@ -22,24 +24,26 @@ tags:
   - named-credentials
 inputs:
   - Salesforce org with Einstein generative AI feature enabled (Einstein for Agentforce license or equivalent)
-  - External LLM provider credentials (API key, endpoint URL) if registering a BYO model
+  - External LLM provider endpoint URL and authentication details if adding a BYO foundation model
   - Knowledge of which Agentforce or Einstein features will consume the model
   - Understanding of desired cost vs. quality tradeoff for the target use case
 outputs:
-  - Registered and tested LLM model configuration in Model Builder (standard or external)
-  - Named Credential storing the provider API key securely
-  - Model alias mapped to the chosen model and ready for use in prompt templates, copilot, and Einstein features
+  - Foundation model connected in Einstein Studio (Generative tab) and tested with Save & Test
+  - Model configuration (hyperparameters, prompt settings) evaluated in Model Playground
+  - Prompt template versions pointing at the chosen model configuration
   - Decision guidance on model selection by use case
-  - Review checklist confirming registration, alias assignment, and connectivity test passage
+  - Review checklist confirming connection, configuration, provider settings, and prompt retests
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 # Model Builder and Bring Your Own LLM (BYOLLM)
 
-This skill activates when a practitioner needs to register an external LLM provider (OpenAI, Anthropic, Azure OpenAI, or other OpenAI-compatible endpoints) with Salesforce via Model Builder, select or change the standard model powering Einstein features, configure the model alias that features reference, test connectivity, or troubleshoot model registration failures. It covers Mode 1 (register a new external LLM), Mode 2 (review and manage current model configuration), and Mode 3 (troubleshoot model connectivity and alias failures).
+This skill activates when a practitioner needs to connect an external foundation model (Azure OpenAI, Amazon Bedrock, OpenAI, or Google Vertex) to Salesforce through Einstein Studio, choose or tune the model a prompt template uses, block providers, or troubleshoot model connections. Model Builder is "the tool in Einstein Studio used to create, connect, and edit models." It covers Mode 1 (connect a BYO foundation model), Mode 2 (review model configurations and provider settings), and Mode 3 (troubleshoot connection and quality problems).
+
+Correction (2026-10-03): earlier versions of this skill described "Setup > Model Builder > Add Model," a Named Credential that must hold the API key, a "Test Connection" button, and global "model aliases" that Agentforce agents reference. The Data Cloud guide documents a different flow: Einstein Studio > Generative tab > Add Foundation Model, enter the endpoint and authentication details, Save & Test, then create a model configuration in Model Playground. The Generative AI guide also states that the Agentforce reasoning engine uses OpenAI GPT-4o and that "Bringing your own model isn't supported" for agents.
 
 ---
 
@@ -47,99 +51,92 @@ This skill activates when a practitioner needs to register an external LLM provi
 
 Gather this context before working on anything in this domain:
 
-- **License and feature flag:** Model Builder and BYOLLM registration require that Einstein generative AI features are enabled in the org. Navigate to Setup > Einstein Generative AI and confirm the toggle is on. The Einstein for Agentforce or Einstein 1 license is typically required. Without the flag enabled, the Model Builder menu entry under Setup will not appear.
-- **External provider prerequisites:** If registering an external LLM, you must have a valid API key from the provider (OpenAI, Anthropic, Azure OpenAI, etc.) and know the base endpoint URL. For Azure OpenAI, you also need the deployment name and API version in addition to the endpoint and key.
-- **Most common wrong assumption:** Practitioners assume they can change the model behind a model alias without impact. In reality, every Agentforce agent, prompt template, and Einstein feature that references an alias immediately begins using the new model once the alias is updated. There is no gradual rollout or per-feature override — the alias change is global and instant.
-- **Platform constraints:** Model Builder supports Salesforce-standard models (e.g., Salesforce-hosted versions of Llama-family models) and external models via OpenAI-compatible APIs. Not all external models support all Einstein feature types. Specifically, models that do not support function calling (tool use) cannot back agentic Agentforce actions. Confirm capability coverage before selecting a model for an agent-heavy use case.
-- **Named Credential requirement:** External model API keys must be stored as Named Credentials (External Credentials) in Salesforce, not as plaintext fields in Model Builder. This is both a platform enforcement and a Trust Layer requirement — keys stored outside Named Credentials will be rejected.
+- **Feature flag:** "To add a foundation model, Einstein Generative AI must be enabled in your org." Einstein Studio is part of Data Cloud; users need Data Cloud Admin permissions to open a model from Prompt Builder's View this model link.
+- **Where the model will be used:** Prompt Builder templates, the Models API, and custom apps can use BYO models. The Agentforce platform "supports OpenAI GPT-4o for reasoning engine calls... Bringing your own model isn't supported, but custom actions that execute prompt templates can use any Salesforce-managed model."
+- **Endpoint prerequisites:** the endpoint URL and authentication information from the provider's dashboard; "a standard HTTPS 443 port is required." For Azure OpenAI, the deployment name; for an OpenAI fine-tuned model, answer Yes when prompted; for Amazon Bedrock, select the Anthropic model type.
+- **Most common wrong assumption:** that changing a model behind a template is free. "If your model is already associated with prompts, create a new model instead. Updating model settings can affect the performance of associated prompts." Each prompt template version can hold a different model configuration, and only the active version's model is used.
+- **Named Credential claim:** UNVERIFIED (2026-10-03): the earlier statement that BYO model keys must be stored in Named Credentials and are otherwise rejected was not found in a fetched source; the documented Add Foundation Model step asks for authentication details directly.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Will this model power an agent's reasoning, a custom action's prompt template, or a Prompt Builder template?" | Agents don't support BYO models; custom actions with prompt templates use Salesforce-managed models (Gotcha 1) | The consuming surface for each model | Nobody buys an Azure deployment for an agent that cannot use it |
+| "Which prompts already use the configuration you plan to change?" | Updating model settings affects every associated prompt; create a new configuration instead (Gotcha 2) | A list of templates per configuration | Changes roll out one template version at a time |
+| "Which providers does policy allow?" | EinsteinGptSettings can block Azure OpenAI, Bedrock, OpenAI, and Vertex (Gotcha 7) | Allowed and blocked providers | Unapproved providers are blocked org-wide, not by convention |
+| "Must requests stay in a region?" | Geo-aware routing falls back to the US and can't be disabled; Azure has its own fallback switch (Gotcha 8) | Region per model and the fallback setting | Residency claims match the routing |
+| "What volume will this drive?" | The org default is 300 LLM generation requests per minute, plus provider limits (Gotcha 5) | Peak requests per minute per feature | Bulk flows don't hit the limit at month end |
+| "What happens when the model is deprecated?" | Deprecated models are rerouted to a replacement and can't be selected in Model Playground (Gotcha 6) | An owner and a retest plan | Reroutes are tested before the reroute date |
 
 ---
 
 ## Core Concepts
 
-### Model Builder and Model Aliases
+### Foundation Models and Model Configurations
 
-Model Builder is the Salesforce UI (Setup > Model Builder) where administrators register LLM configurations and manage the model aliases that Einstein and Agentforce features use to call those models. A model alias is a logical name — such as `sfdc_ai__DefaultGPT4Omni` or a custom alias — that decouples the consuming feature from the specific underlying model.
+Einstein Studio separates the **foundation model** (the connection to a provider endpoint) from the **model configuration** (hyperparameters and prompt settings for a use case). Salesforce-managed models "are enabled by default." BYOLLM "enables you to add a foundation model hosted on an external platform and connect it with Einstein Studio." You can edit most foundation model settings "as long as the model isn't a source for other models"; otherwise delete the associated configurations first. "You can't recover a model after it's deleted."
 
-When a prompt template or Agentforce agent is configured to use a model alias, it does not directly reference a provider or endpoint. It references the alias, and Model Builder resolves that alias to the actual registered model at runtime. This indirection is what allows an administrator to swap the underlying model without modifying every consuming feature. The downside is that alias changes are immediate and global — there is no A/B testing or canary rollout built into the alias system.
+The earlier "model alias" wording in this skill maps to the model configuration and its API name. Prompt templates store the model per version in `primaryModel` (the Metadata API sample uses `sfdc_ai__DefaultOpenAIGPT4`).
 
-Salesforce ships a set of default aliases for standard features. Administrators can add custom aliases pointing to external models. Aliases can only point to one model at a time.
+### Supported Providers and Models
 
-### External Model Registration (BYOLLM)
+Salesforce-managed models include Azure OpenAI and OpenAI GPT models (GPT-3.5 Turbo, GPT-4, GPT-4 Turbo, GPT-4o, GPT-4o Mini), text-embedding-ada-002, and Anthropic Claude 3 Haiku on Amazon Bedrock. BYOLLM "supports all the Salesforce-managed models and these additional models": Anthropic Claude 3 Opus, Claude 3 Sonnet, Claude 3.5 Sonnet, Azure OpenAI GPT-4o, Google Gemini 1.5 Pro, and OpenAI GPT-4o, using "your Azure, Bedrock, OpenAI, or Vertex account." For other providers, the guide points to the LLM Open Connector. UNVERIFIED (2026-10-03): the earlier mention of Salesforce-hosted Llama models.
 
-Registering an external LLM in Model Builder involves three steps:
+### Model Playground
 
-1. **External Credential (Named Credential):** Create an External Credential in Setup > Named Credentials that stores the provider API key using a Custom authentication protocol. Add a Principal for the credential with the API key as a parameter. This credential is later referenced by the Model Builder external model configuration.
-2. **Model Builder registration:** In Setup > Model Builder > Add Model, choose the appropriate provider type (OpenAI, Azure OpenAI, Anthropic, or custom OpenAI-compatible). Provide the endpoint URL, the model identifier (e.g., `gpt-4o`, `claude-3-5-sonnet-20241022`), and select the Named Credential created in step 1. Salesforce enforces that the API key travels through Named Credentials — it is never stored in plaintext in the model record.
-3. **Alias assignment:** After registering the external model, create or update a model alias to point to it. Features that reference that alias will now use the external model.
+"Create, edit, and evaluate your model configuration in Model Playground." Hyperparameters: Temperature from 0 through 2 ("Only Anthropic models have this setting available for testing"), Frequency Penalty and Presence Penalty from -2.0 through 2.0. Prompt settings (number of responses, stop sequence, data masking) "are used only during testing. They aren't saved with your model configuration." If masking is not enabled in the playground, "org-level data masking settings are applied."
 
-For Azure OpenAI, the endpoint format is `https://<resource>.openai.azure.com/openai/deployments/<deployment-name>` and the API version must be specified (e.g., `2024-02-01`). Azure uses a different auth header (`api-key`) compared to OpenAI's bearer token; Salesforce handles this difference automatically when the provider type is set to Azure OpenAI.
+### Cost and Quality Tradeoffs
 
-### Model Selection: Cost vs. Quality Tradeoffs
-
-Salesforce Model Builder exposes both Salesforce-standard models and externally registered models for alias assignment. Choosing the right model for a given use case requires balancing:
-
-- **Quality:** Larger frontier models (GPT-4o, Claude 3.5 Sonnet, Llama 3.1 405B) produce better reasoning for complex agentic tasks but cost more per token and have higher latency.
-- **Cost:** Smaller or mid-tier models (GPT-4o mini, Claude 3 Haiku, Llama 3.1 70B) are significantly cheaper per token and faster, making them appropriate for high-volume summarization, classification, or extraction tasks where perfect reasoning is not required.
-- **Function calling support:** Agentforce agents that execute actions (call Apex, query records, update fields) require a model that supports function calling (tool use). Not all models support this; models without function calling are limited to text generation use cases (e.g., email drafting, document summarization).
-- **Context window:** Use cases that pass large amounts of data (long email threads, large record sets, document chunks) require models with larger context windows. Verify the model's context limit against the prompt size estimates for the target feature.
-
-### Testing Model Connectivity
-
-Model Builder provides a built-in **Test Connection** capability on each registered external model. This sends a minimal API request to the provider using the configured Named Credential and endpoint, and reports success or failure. Running this test is mandatory after every registration or credential update before the model is used in a live alias.
+Choose smaller Salesforce-managed models (for example GPT-4o Mini) for high-volume summarization and extraction, and larger models where reasoning quality matters. "Changing the model can affect your usage," so check Einstein usage before switching. UNVERIFIED (2026-10-03): the earlier guidance that a model without function calling cannot back agent actions; the guide instead says the reasoning engine uses GPT-4o regardless.
 
 ---
 
 ## Common Patterns
 
-### Mode 1: Registering an External LLM (BYOLLM) End-to-End
+### Mode 1: Connect a BYO Foundation Model End-to-End
 
-**When to use:** An organization wants to use a non-Salesforce-hosted model (e.g., their own Azure OpenAI deployment or an Anthropic API subscription) to power Agentforce agents or Einstein features, either to meet data residency requirements, control model version, or optimize cost.
-
-**How it works:**
-
-1. Obtain the provider API key and endpoint URL from the provider console (OpenAI Platform, Azure Portal, Anthropic Console).
-2. In Salesforce Setup > Named Credentials > External Credentials, create a new External Credential:
-   - Authentication Protocol: Custom
-   - Add a Principal for the Org (or Per-User if user-level key isolation is needed)
-   - Add a Custom Header parameter named `Authorization` with value `Bearer <API_KEY>` (for OpenAI/Anthropic) or `api-key` header with key value (for Azure OpenAI)
-3. In Setup > Named Credentials, create a Named Credential that references the External Credential and points to the provider's base domain (e.g., `https://api.openai.com`).
-4. Navigate to Setup > Model Builder > Add Model.
-5. Select the provider type (OpenAI, Azure OpenAI, Anthropic, or OpenAI-compatible).
-6. Enter the model identifier (e.g., `gpt-4o-mini` for OpenAI, `claude-3-5-haiku-20241022` for Anthropic).
-7. Select the Named Credential created in step 3.
-8. For Azure OpenAI, enter the full deployment endpoint and API version.
-9. Save the model record.
-10. Click Test Connection. Confirm success before proceeding.
-11. Navigate to Model Builder > Model Aliases.
-12. Create a new alias (e.g., `MyOrg_AzureGPT4o`) or update an existing alias to point to the newly registered model.
-13. In any prompt template or Agentforce agent that should use this model, select the alias by name.
-
-**Why not use Salesforce-standard models:** Standard models are governed by Salesforce's model version cadence. Organizations with strict model version pinning requirements, data processing agreements with a specific provider, or cost optimization needs at high volume benefit from controlling the model directly via BYOLLM.
-
-### Mode 2: Reviewing Current Model Configuration
-
-**When to use:** Before a release, during a model cost review, or when onboarding a new Agentforce feature, verify which model is behind each alias and confirm all external models are healthy.
+**When to use:** An organization wants a Prompt Builder template to run on its own Azure OpenAI, Bedrock, OpenAI, or Vertex account (data processing agreement, fine-tuned model, or model choice).
 
 **How it works:**
 
-1. Navigate to Setup > Model Builder > Model Aliases. Review each alias and its current model assignment.
-2. For each alias backed by an external model, open the model record and click Test Connection. Confirm the test passes.
-3. Check the Named Credential associated with each external model — confirm the credential has not expired or been rotated without updating the credential record.
-4. Review which Agentforce agents and prompt templates reference each alias (visible in the alias detail view if the feature is surfaced in your org version).
-5. Document the alias-to-model mapping and the date of the last connectivity test.
+1. Confirm Einstein Generative AI is enabled and the provider is not blocked in EinsteinGptSettings.
+2. In Einstein Studio, Generative tab, click Add Foundation Model and select the provider type.
+3. Enter the endpoint name and URL (HTTPS on port 443) and the authentication details.
+4. Enter the model information: the Azure deployment for Azure OpenAI, Yes for an OpenAI fine-tuned model, the Anthropic model type for Bedrock.
+5. Click Save & Test, enter the exact model name, click Connect, name the model, and select the model version.
+6. In Model Playground, create a model configuration: set temperature and penalties, test prompts with data masking on, and save.
+7. In Prompt Builder, save a new template version that uses the configuration, preview it, and activate.
 
-### Mode 3: Troubleshooting Model Connectivity Failures
+**Why not only Salesforce-managed models:** managed models are rerouted on the provider's deprecation schedule and run under Salesforce's provider agreements; BYOLLM lets you choose the account and version, at the cost of owning the connection.
 
-**When to use:** An Agentforce agent or Einstein feature fails with a model-related error, Test Connection returns an error in Model Builder, or prompt templates return generic failure responses.
+### Mode 2: Review Current Model Configuration
+
+**When to use:** Before a release, during a cost review, or when a deprecation notice arrives.
 
 **How it works:**
 
-1. **Run Test Connection** on the failing model in Setup > Model Builder. The error message returned typically indicates whether the failure is authentication (401/403), endpoint resolution (DNS or URL misconfiguration), or rate limiting (429).
-2. **401/403 errors:** Open the Named Credential and External Credential associated with the model. Verify the API key value is current — if the provider key was rotated, update the Principal parameter in the External Credential. Do not store the new key anywhere other than the External Credential.
-3. **404 or endpoint errors:** For Azure OpenAI, confirm the deployment name and API version in the model endpoint URL are correct. For OpenAI-compatible endpoints, confirm the base URL includes the correct path prefix (some providers use `/v1/` and some use a different prefix).
-4. **429 / rate limit errors:** The external provider's quota or rate limit is being exceeded. Review provider-side usage logs. Consider upgrading the provider tier or switching to a model with a higher rate limit for high-volume use cases.
-5. **Feature errors despite passing Test Connection:** Confirm the registered model supports function calling if the failing feature is an Agentforce agent with actions. A model that passes the connectivity test but does not support tool use will fail at runtime when the agent attempts to invoke an action.
+1. In Einstein Studio, list foundation models and model configurations; open Model Activity for inferences and errors.
+2. In Prompt Builder, list each template's active version and its model.
+3. Compare against the deprecated-models table and the monthly Einstein Platform release notes.
+4. Check EinsteinGptSettings provider blocks and `disableAIProviderRegionFallback` in source control.
+5. Document the configuration-to-template mapping and the last test date.
+
+### Mode 3: Troubleshoot Model Connections and Quality
+
+**When to use:** Save & Test fails, a template errors at run time, or response quality drops.
+
+**How it works:**
+
+1. Re-run Save & Test on the foundation model; check the endpoint uses HTTPS on port 443 and that the authentication details are current.
+2. For Azure OpenAI, confirm the deployment name; for Bedrock, the Anthropic model type.
+3. Open Model Activity for error counts; check provider dashboards for throttling, and the org's 300-per-minute generation limit for bursts.
+4. If quality dropped after a reroute, create a configuration on the replacement model "with the same hyperparameters as the retired model," retest in Prompt Builder, then activate a new template version.
+5. If an agent is involved, remember the reasoning engine uses GPT-4o and BYO models are not used there.
 
 ---
 
@@ -147,27 +144,24 @@ Model Builder provides a built-in **Test Connection** capability on each registe
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Agentforce agent with action invocations (tool use) | Choose a model with confirmed function calling support (GPT-4o, Claude 3.5 Sonnet, Llama 3.1 with tool support) | Models without function calling cannot invoke Agentforce actions at runtime |
-| High-volume email or document summarization | Use a smaller, cheaper model (GPT-4o mini, Claude 3 Haiku) via a custom alias | Frontier models are unnecessary for extraction/summarization; cost savings are significant at scale |
-| Data residency requirement (e.g., EU data boundary) | Register Azure OpenAI deployment in the required region via BYOLLM | Salesforce-standard models may not offer region-specific data residency; Azure OpenAI supports EU regions |
-| Model version pinning required by compliance | Use BYOLLM with a specific provider model ID | Salesforce-standard models may update underlying model versions; BYOLLM gives direct version control |
-| Testing a new model before production rollout | Create a new alias pointing to the test model; use it only in sandbox prompt templates | Aliases are global — never update the production alias until testing is complete |
-| External model API key rotated by provider | Update the Principal parameter in the External Credential in Named Credentials — nowhere else | API keys must remain within Named Credentials; updating any other location will not take effect and may leave keys exposed |
-| Organization wants Salesforce-managed model updates | Use the default Salesforce-standard model aliases | Salesforce manages the underlying model version; no provider account or key management required |
-| Multiple features need different models | Create distinct aliases for each feature type (e.g., `AgentAlias` for agentic tasks, `SummaryAlias` for summarization) | One alias per use case prevents a model swap for one feature from inadvertently affecting another |
+| Agent reasoning | Use the platform reasoning engine (GPT-4o) | BYO models aren't supported for agents |
+| Custom agent action that runs a prompt template | Pick a Salesforce-managed model on the template | The guide says such actions can use any Salesforce-managed model |
+| High-volume summarization in Prompt Builder | A smaller managed model such as GPT-4o Mini, or a BYO model with a negotiated rate | Usage changes with the model; test quality on samples |
+| Data processing agreement with one provider | BYOLLM foundation model on that provider account | Connects your Azure, Bedrock, OpenAI, or Vertex account |
+| EU residency | Models available in the region, plus `disableAIProviderRegionFallback` for Azure OpenAI | Geo-aware routing falls back to the US when no nearby model exists |
+| Testing a new model | New model configuration and a new template version in a sandbox | Updating an associated configuration affects every prompt using it |
+| Provider not approved by policy | Block it in EinsteinGptSettings | Blocks access to its models for all generative AI features |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Map each use case to its surface with the Questions table: agent reasoning (no BYO), custom action prompt template (managed models), or Prompt Builder template (managed or BYO).
+2. Set provider policy first: commit EinsteinGptSettings with provider blocks and the region fallback setting (`references/metadata-examples.md`).
+3. Connect the foundation model in Einstein Studio (Generative tab), Save & Test, and create a model configuration in Model Playground with masking on.
+4. Point a new prompt template version at the configuration, preview, and activate; never edit a configuration that live prompts use.
+5. Run `python3 scripts/check_model_builder_and_byollm.py --manifest-dir <project>` to catch templates on blocked providers or deprecated models, hard-coded provider keys, and direct provider callouts.
+6. Record the configuration-to-template map, owners, and the retest plan for deprecations.
 
 ---
 
@@ -175,16 +169,14 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Run through these before marking a Model Builder / BYOLLM implementation complete:
 
-- [ ] Einstein generative AI feature flag confirmed enabled in Setup > Einstein Generative AI
-- [ ] Named Credential and External Credential created; API key stored only in the External Credential Principal — never in plaintext
-- [ ] External model registered in Model Builder with correct provider type, model ID, and endpoint
-- [ ] Test Connection passes on all registered external models
-- [ ] Model alias created or updated and pointing to the intended model
-- [ ] Model capability confirmed: function calling supported if the alias will back an Agentforce agent with actions
-- [ ] Context window size verified against expected prompt sizes for the target feature
-- [ ] Alias-to-model mapping documented for ops reference (which features use which alias)
-- [ ] Sandbox testing completed using a separate alias before updating any production alias
-- [ ] API key rotation procedure documented: who rotates, where to update (External Credential only), how to re-test
+- [ ] Einstein Generative AI enabled; Einstein Studio access (Data Cloud permissions) confirmed for admins
+- [ ] Use case surface confirmed: no BYO model planned for agent reasoning
+- [ ] Foundation model connected over HTTPS 443 with Save & Test passing
+- [ ] Model configuration tested in Model Playground with masking on
+- [ ] Prompt template versions point at the intended configuration; live configurations not edited in place
+- [ ] Provider blocks and region fallback committed in EinsteinGptSettings
+- [ ] Peak requests per minute checked against the 300-per-minute org default and provider limits
+- [ ] Deprecation watch: owner, release-note check, and retest plan documented
 
 ---
 
@@ -192,10 +184,10 @@ Run through these before marking a Model Builder / BYOLLM implementation complet
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Alias changes are global and immediate** — Updating a model alias in Model Builder affects every Agentforce agent, prompt template, and Einstein feature that references that alias, simultaneously and without warning. There is no canary rollout, feature-level override, or audit log of what changed. A model swap intended for one feature can silently degrade quality or break action invocation for unrelated features. Always create a new alias for testing and only update the shared alias after full validation.
-2. **Sandbox and production model configurations are independent** — Model Builder registrations, Named Credentials, and alias configurations do not deploy automatically from sandbox to production via change sets or the Salesforce CLI. Each environment must be configured independently. Organizations that test a new external model in sandbox and then "go live" must manually replicate every Named Credential, External Credential, and model registration step in production. Scripting this with the Metadata API or Salesforce CLI (where Model Builder metadata types are supported) is strongly recommended for repeatability.
-3. **API rate limits are provider-side, not Salesforce-side** — Salesforce does not enforce rate limiting on calls to external LLMs beyond what the platform's own request infrastructure imposes. If an Agentforce feature drives high query volume to an external provider, the provider's rate limits (requests-per-minute or tokens-per-minute) will cause 429 errors that surface as generic model failures in Salesforce. These failures are not visible in standard Salesforce debug logs — they require provider-side monitoring or a middleware logging layer. Monitor provider usage dashboards proactively rather than waiting for user-reported failures.
-4. **Named Credential permission sets are required for external model calls** — The user or process invoking the external model must have access to the Named Credential via a Permission Set that grants Named Credential access. If this permission is missing, the model call will fail with a credential access error that may appear as a generic LLM failure rather than a permissions error. Check Permission Set assignments for Named Credential access whenever a specific user or profile reports model failures that other users do not experience.
+1. **Model changes reach every associated prompt**: Correction (2026-10-03): earlier versions called these "alias changes" and said they are global and immediate with no audit log. The guide's wording is "if your model is already associated with prompts, create a new model instead. Updating model settings can affect the performance of associated prompts." Create a new configuration and move templates one version at a time.
+2. **Sandbox and production model configurations are independent**: UNVERIFIED (2026-10-03): no fetched source states how foundation models and configurations move between orgs. Plan to recreate them in each org and keep the steps scripted or documented.
+3. **Rate limits exist on both sides**: Correction (2026-10-03): earlier versions said Salesforce does not rate-limit external LLM calls. "Customers have a default rate limit of 300 Large Language Model (LLM) generation requests per minute at their Salesforce Organization ID level," for Prompt Builder, Einstein Studio, and the Models API. Provider quotas apply on top.
+4. **Named Credential permission sets**: UNVERIFIED (2026-10-03): the earlier claim that callers need Named Credential access through a permission set applies to Apex callouts, not to the documented Einstein Studio flow, which takes authentication details in Add Foundation Model.
 
 ---
 
@@ -203,16 +195,16 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Registered external model record | Model Builder entry linking a provider type, endpoint, model ID, and Named Credential |
-| Named Credential + External Credential | Salesforce Named Credential securely storing the provider API key via External Credential Principal |
-| Model alias | Logical alias name mapped to the registered model, referenced by Agentforce agents and prompt templates |
-| Test Connection result | Confirmation that the model endpoint and credentials are valid and reachable from Salesforce |
-| Alias-to-model mapping document | Ops reference listing each alias, its current model, and the features that consume it |
+| Foundation model connection | Einstein Studio entry with provider type, endpoint, model name, and version |
+| Model configuration | Hyperparameters and prompt settings tested in Model Playground |
+| Provider settings file | EinsteinGptSettings with provider blocks and region fallback |
+| Template-to-configuration map | Ops reference listing each template version and its model |
+| Deprecation plan | Owner, release-note cadence, and retest steps |
 
 ---
 
 ## Related Skills
 
-- agentforce/agentforce-trust-layer — use when configuring data masking, audit trail, toxicity detection, and grounding rules that govern how model outputs are processed; Trust Layer sits between the model and the user
+- agentforce/einstein-trust-layer: use when configuring data masking, audit trail, toxicity detection, and grounding rules that govern how model outputs are processed; Trust Layer sits between the model and the user
 - agentforce/prompt-builder-templates — for authoring and managing the prompt templates that reference model aliases and are grounded with Salesforce data
-- security/named-credentials-setup — for detailed Named Credential and External Credential configuration patterns beyond the model-registration context
+- integration/named-credentials-setup: for detailed Named Credential and External Credential configuration patterns beyond the model-registration context

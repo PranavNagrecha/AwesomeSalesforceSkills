@@ -1,256 +1,229 @@
 #!/usr/bin/env python3
-"""Checker script for Einstein Trust Layer skill.
+"""Check Salesforce metadata for Einstein Trust Layer configuration gaps.
 
-Validates Salesforce metadata for common Einstein Trust Layer misconfigurations.
-Uses stdlib only — no pip dependencies.
+Stdlib only. Point --manifest-dir at a source-format project folder (for example
+force-app/main/default) or an unzipped retrieve. Rules encode the Generative AI guide
+(Spring '26) and the Metadata API Developer Guide (v67.0).
 
-Checks performed:
-  - EinsteinSettings metadata: generativeAiEnabled flag present
-  - Prompt templates: verifies expected structure in promptTemplates/ directory
-  - Warns if no audit trail configuration file is found
-  - Warns if data masking-related settings cannot be confirmed from metadata
+Correction (2026-10-03): the previous version of this checker looked for an
+"EinsteinSettings" file with enableEinsteinGPTForSalesforce or generativeAiEnabled, and for
+*.promptTemplate-meta.xml files. None of those exist in the Metadata API guide. The real
+types are EinsteinAISettings (enableTrustPIIMasking, enableAIFeedbackWithDC), EinsteinGptSettings
+(enableEinsteinGptPlatform, provider blocks, disableAIProviderRegionFallback), and
+GenAiPromptTemplate (suffix .genAiPromptTemplate).
 
-Usage:
-    python3 check_einstein_trust_layer.py [--help]
-    python3 check_einstein_trust_layer.py --manifest-dir path/to/metadata
+Rules
+  TL-XML-01     ERROR  A settings or prompt template file does not parse (the guide's own
+                       EinsteinGptSettings sample has mismatched tags).
+  TL-SET-01     ERROR  EinsteinAISettings.enableTrustPIIMasking is false.
+  TL-SET-02     WARN   EinsteinGptSettings.enableEinsteinGptPlatform is false.
+  TL-SET-03     WARN   EinsteinAISettings.enableAIFeedbackWithDC is false or absent (no audit and feedback data).
+  TL-REGION-01  ERROR  With --residency: EinsteinGptSettings.disableAIProviderRegionFallback is not true.
+  TL-NOSET-01   WARN   Prompt templates present but no EinsteinAISettings/EinsteinGptSettings to verify.
+  TL-PT-01      WARN   A *.promptTemplate-meta.xml file; prompt templates are GenAiPromptTemplate.
+  TL-PT-02      WARN   A prompt template uses Flow or Apex data providers; field-based masking covers
+                       only record merge fields and related lists.
+  TL-AGENT-01   WARN   Agent metadata present and a prompt template references sensitive-looking fields;
+                       data masking is disabled for agents.
+  TL-DIRECT-01  WARN   Apex or credential metadata calls an LLM provider directly; Trust Layer
+                       capabilities apply only to Einstein generative AI features.
+
+Usage
+  python3 check_einstein_trust_layer.py --manifest-dir force-app/main/default [--residency] [--strict]
+  python3 check_einstein_trust_layer.py --self-test
+
+Exit codes: 0 clean (WARN allowed unless --strict); 1 on ERROR, a missing folder, or WARN with --strict.
 """
-
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Check Einstein Trust Layer configuration and metadata for common issues.\n\n"
-            "Pass the root of a Salesforce DX project or an unzipped metadata retrieve "
-            "as --manifest-dir. The script looks for EinsteinSettings, prompt templates, "
-            "and related configuration files."
-        ),
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
-    )
-    return parser.parse_args()
+LLM_HOSTS = re.compile(
+    r"(api\.openai\.com|openai\.azure\.com|api\.anthropic\.com|bedrock-runtime\.|"
+    r"generativelanguage\.googleapis\.com|aiplatform\.googleapis\.com)",
+    re.IGNORECASE,
+)
+SENSITIVE_FIELD = re.compile(r"\{![^}]*(ssn|social_?security|passport|credit_?card|tax_?id|date_?of_?birth|dob)[^}]*\}",
+                             re.IGNORECASE)
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+def strip_comments(text: str) -> str:
+    """Remove // and /* */ comments outside single-quoted Apex/SOQL string literals."""
+    out: list[str] = []
+    i, n = 0, len(text)
+    in_string = False
+    while i < n:
+        ch = text[i]
+        if in_string:
+            out.append(ch)
+            if ch == "\\" and i + 1 < n:
+                out.append(text[i + 1])
+                i += 2
+                continue
+            if ch == "'":
+                in_string = False
+            i += 1
+            continue
+        if ch == "'":
+            in_string = True
+            out.append(ch)
+            i += 1
+        elif text.startswith("//", i):
+            end = text.find("\n", i)
+            i = n if end == -1 else end
+        elif text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            out.append(" ")
+            i = n if end == -1 else end + 2
+        else:
+            out.append(ch)
+            i += 1
+    return "".join(out)
 
-def find_files(root: Path, pattern: str) -> list[Path]:
-    """Return all files matching a glob pattern under root."""
-    return sorted(root.rglob(pattern))
+
+def _local(tag: str) -> str:
+    return tag.split("}", 1)[1] if "}" in tag else tag
 
 
-def read_xml_root(path: Path) -> ET.Element | None:
-    """Parse an XML file and return the root element, or None on error."""
+def _parse(path: Path) -> tuple[ET.Element | None, str | None]:
     try:
-        tree = ET.parse(str(path))
-        return tree.getroot()
-    except ET.ParseError:
-        return None
+        return ET.parse(path).getroot(), None
+    except ET.ParseError as exc:
+        return None, str(exc)
 
 
-def strip_ns(tag: str) -> str:
-    """Remove XML namespace prefix from a tag string."""
-    return tag.split("}")[-1] if "}" in tag else tag
+def _flag(root: ET.Element, name: str) -> str | None:
+    for el in root.iter():
+        if _local(el.tag) == name:
+            return (el.text or "").strip().lower()
+    return None
 
 
-# ---------------------------------------------------------------------------
-# Individual checks
-# ---------------------------------------------------------------------------
+def scan(root: Path, residency: bool) -> tuple[int, list[tuple[str, str, str]]]:
+    findings: list[tuple[str, str, str]] = []
+    files = [p for p in root.rglob("*") if p.is_file()]
+    relevant = 0
+    ai_settings = [p for p in files if p.name.startswith(("EinsteinAI.settings", "EinsteinAISettings.settings"))]
+    gpt_settings = [p for p in files if p.name.startswith("EinsteinGpt.settings")]
+    templates = [p for p in files if ".genAiPromptTemplate" in p.name]
+    legacy = [p for p in files if p.name.endswith(".promptTemplate-meta.xml")]
+    agents = [p for p in files if any(part in ("genAiPlannerBundles", "genAiPlanners", "bots", "genAiPlugins")
+                                      for part in p.parts)]
+    code = [p for p in files if p.suffix in (".cls", ".trigger")
+            or p.name.endswith((".namedCredential-meta.xml", ".externalCredential-meta.xml",
+                                ".remoteSite-meta.xml", ".namedCredential", ".remoteSite"))]
+    relevant = len(ai_settings) + len(gpt_settings) + len(templates) + len(legacy) + len(code)
 
-def check_einstein_settings(manifest_dir: Path) -> list[str]:
-    """Check EinsteinSettings metadata for expected Trust Layer flags."""
-    issues: list[str] = []
-    settings_files = find_files(manifest_dir, "EinsteinSettings.settings-meta.xml")
-    if not settings_files:
-        issues.append(
-            "No EinsteinSettings metadata file found. "
-            "Cannot verify Einstein Generative AI is enabled. "
-            "Expected path: settings/EinsteinSettings.settings-meta.xml"
-        )
-        return issues
-
-    for path in settings_files:
-        root = read_xml_root(path)
-        if root is None:
-            issues.append(f"Could not parse EinsteinSettings file: {path}")
+    for path in ai_settings:
+        node, err = _parse(path)
+        if node is None:
+            findings.append(("ERROR", "TL-XML-01", f"{path}: does not parse ({err})."))
             continue
-
-        # Look for generativeAiEnabled or enableEinsteinGPTForSalesforce
-        tags = {strip_ns(child.tag): child.text for child in root.iter()}
-        generative_flag = tags.get("enableEinsteinGPTForSalesforce") or tags.get("generativeAiEnabled")
-        if generative_flag is None:
-            issues.append(
-                f"{path}: Einstein Generative AI flag not found in EinsteinSettings. "
-                "Confirm 'enableEinsteinGPTForSalesforce' is present and set to 'true'."
-            )
-        elif generative_flag.strip().lower() != "true":
-            issues.append(
-                f"{path}: Einstein Generative AI does not appear to be enabled "
-                f"(found value: '{generative_flag.strip()}'). "
-                "Einstein Trust Layer requires Generative AI to be turned on."
-            )
-
-    return issues
-
-
-def check_prompt_templates(manifest_dir: Path) -> list[str]:
-    """Check prompt templates for basic structural completeness."""
-    issues: list[str] = []
-    template_files = find_files(manifest_dir, "*.promptTemplate-meta.xml")
-
-    if not template_files:
-        # Not an error — org may not use Prompt Builder
-        return issues
-
-    for path in template_files:
-        root = read_xml_root(path)
-        if root is None:
-            issues.append(f"Could not parse prompt template file: {path}")
+        if _flag(node, "enableTrustPIIMasking") == "false":
+            findings.append(("ERROR", "TL-SET-01", f"{path}: enableTrustPIIMasking is false; PII masking for AI trust features is off."))
+        if _flag(node, "enableAIFeedbackWithDC") != "true":
+            findings.append(("WARN", "TL-SET-03", f"{path}: enableAIFeedbackWithDC is not true; audit and feedback data will not reach Data 360."))
+    for path in gpt_settings:
+        node, err = _parse(path)
+        if node is None:
+            findings.append(("ERROR", "TL-XML-01", f"{path}: does not parse ({err})."))
             continue
-
-        tags = {strip_ns(child.tag): child.text for child in root.iter()}
-
-        # Warn if no templateBody or templateVersions element found
-        has_body = "templateBody" in tags or "templateVersions" in tags
-        if not has_body:
-            issues.append(
-                f"{path}: Prompt template appears to have no body or version content. "
-                "Verify the template is fully defined — empty templates cannot be tested "
-                "for data masking coverage."
-            )
-
-        # Warn if template references sensitive field patterns without masking note
-        template_text = " ".join(str(v) for v in tags.values() if v)
-        pii_indicators = ["ssn", "social security", "creditcard", "credit_card", "passport"]
-        found_pii = [p for p in pii_indicators if p in template_text.lower()]
-        if found_pii:
-            issues.append(
-                f"{path}: Prompt template text contains possible PII-related field references "
-                f"({', '.join(found_pii)}). Confirm data masking is enabled and these fields "
-                "are covered by the configured masking categories."
-            )
-
-    return issues
-
-
-def check_for_audit_trail_config(manifest_dir: Path) -> list[str]:
-    """Warn if no audit trail or Einstein feedback configuration is detectable."""
-    issues: list[str] = []
-
-    # Look for any data stream or Einstein feedback-related metadata
-    feedback_files = (
-        find_files(manifest_dir, "*EinsteinFeedback*")
-        + find_files(manifest_dir, "*AuditTrail*")
-        + find_files(manifest_dir, "*einstein*audit*")
-    )
-    feedback_files = [f for f in feedback_files if f.suffix not in {".py", ".md"}]
-
-    if not feedback_files:
-        issues.append(
-            "No Einstein audit trail or feedback configuration files detected in the metadata. "
-            "Ensure the Einstein Trust Layer audit trail is explicitly enabled in Setup "
-            "(Setup > Einstein Setup > Go to Einstein Trust Layer > Audit Trail toggle). "
-            "Audit trail is not active by default and is not retroactive — "
-            "interactions before enablement are not logged."
-        )
-
-    return issues
-
-
-def check_for_data360_dependency(manifest_dir: Path) -> list[str]:
-    """Warn if Data 360 / Customer Data Platform related metadata is absent."""
-    issues: list[str] = []
-
-    cdp_files = (
-        find_files(manifest_dir, "*.dataConnector-meta.xml")
-        + find_files(manifest_dir, "*.cdpObjectDefinition-meta.xml")
-        + find_files(manifest_dir, "*.dataStreamDefinition-meta.xml")
-    )
-
-    if not cdp_files:
-        issues.append(
-            "No Data 360 / Data Cloud metadata found. "
-            "Einstein Trust Layer requires Data 360 to be provisioned for audit trail functionality. "
-            "If this org uses Einstein Trust Layer features, confirm Data 360 is provisioned "
-            "even if no Data Cloud objects are deployed in this metadata package."
-        )
-
-    return issues
-
-
-def check_connected_apps_for_llm_gateway(manifest_dir: Path) -> list[str]:
-    """Check connected apps for potential external LLM provider integrations."""
-    issues: list[str] = []
-    connected_app_files = find_files(manifest_dir, "*.connectedApp-meta.xml")
-
-    llm_provider_indicators = ["openai", "anthropic", "vertex", "azureopenai", "bedrock", "cohere"]
-
-    for path in connected_app_files:
-        root = read_xml_root(path)
-        if root is None:
+        if _flag(node, "enableEinsteinGptPlatform") == "false":
+            findings.append(("WARN", "TL-SET-02", f"{path}: enableEinsteinGptPlatform is false; generative AI features are off."))
+        if residency and _flag(node, "disableAIProviderRegionFallback") != "true":
+            findings.append(("ERROR", "TL-REGION-01",
+                             f"{path}: disableAIProviderRegionFallback is not true; Azure OpenAI requests can fall back outside the endpoint region."))
+    if (templates or legacy) and not (ai_settings or gpt_settings):
+        findings.append(("WARN", "TL-NOSET-01", f"{root}: prompt templates found but no EinsteinAI or EinsteinGpt settings to verify masking."))
+    for path in legacy:
+        findings.append(("WARN", "TL-PT-01", f"{path}: not a Metadata API type; prompt templates are GenAiPromptTemplate (.genAiPromptTemplate)."))
+    sensitive_templates: list[Path] = []
+    for path in templates:
+        node, err = _parse(path)
+        if node is None:
+            findings.append(("ERROR", "TL-XML-01", f"{path}: does not parse ({err})."))
             continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        definitions = [(el.text or "") for el in node.iter() if _local(el.tag) == "definition"]
+        if any(d.startswith(("flow://", "apex://")) for d in definitions) or re.search(r"\{!\$(Flow|Apex):", text):
+            findings.append(("WARN", "TL-PT-02",
+                             f"{path}: Flow or Apex merge fields get pattern-based masking only; field-based masking covers record merge fields and related lists."))
+        if SENSITIVE_FIELD.search(text):
+            sensitive_templates.append(path)
+    if agents and sensitive_templates:
+        for path in sensitive_templates:
+            findings.append(("WARN", "TL-AGENT-01",
+                             f"{path}: references sensitive-looking fields and the project has agents; data masking is disabled for agents."))
+    for path in code:
+        raw = path.read_text(encoding="utf-8", errors="replace")
+        if path.suffix in (".cls", ".trigger"):
+            raw = strip_comments(raw)
+        match = LLM_HOSTS.search(raw)
+        if match:
+            findings.append(("WARN", "TL-DIRECT-01",
+                             f"{path}: calls {match.group(1)} directly; Trust Layer masking, toxicity scoring, and audit apply only to Einstein generative AI features."))
+    return relevant, findings
 
-        app_text = path.read_text(encoding="utf-8", errors="replace").lower()
-        found_providers = [p for p in llm_provider_indicators if p in app_text]
-        if found_providers:
-            issues.append(
-                f"{path}: Connected app may reference an external LLM provider "
-                f"({', '.join(found_providers)}). "
-                "Confirm this integration routes through the Einstein Trust Layer LLM gateway "
-                "rather than bypassing it with a direct callout. "
-                "Direct callouts to LLM providers bypass all Trust Layer controls."
-            )
 
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# Main runner
-# ---------------------------------------------------------------------------
-
-def check_einstein_trust_layer(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    issues.extend(check_einstein_settings(manifest_dir))
-    issues.extend(check_prompt_templates(manifest_dir))
-    issues.extend(check_for_audit_trail_config(manifest_dir))
-    issues.extend(check_for_data360_dependency(manifest_dir))
-    issues.extend(check_connected_apps_for_llm_gateway(manifest_dir))
-
-    return issues
+def self_test() -> int:
+    import re as _re
+    import tempfile
+    here = Path(__file__).resolve().parent
+    _, good = scan(here / "fixtures" / "good", residency=True)
+    _, bad = scan(here / "fixtures" / "bad", residency=True)
+    expected = {"TL-XML-01", "TL-SET-01", "TL-SET-02", "TL-SET-03", "TL-REGION-01", "TL-PT-01",
+                "TL-PT-02", "TL-AGENT-01", "TL-DIRECT-01"}
+    seen = {rule for _, rule, _ in bad}
+    own: list[tuple[str, str, str]] = []
+    md = (here.parent / "references" / "metadata-examples.md").read_text(encoding="utf-8")
+    with tempfile.TemporaryDirectory() as tmp:
+        settings = Path(tmp) / "settings"
+        settings.mkdir()
+        for block in _re.findall(r"```xml\n(.*?)```", md, flags=_re.DOTALL):
+            if "<EinsteinAISettings" in block:
+                (settings / "EinsteinAI.settings-meta.xml").write_text(block, encoding="utf-8")
+            elif "<EinsteinGptSettings" in block:
+                (settings / "EinsteinGpt.settings-meta.xml").write_text(block, encoding="utf-8")
+        _, own = scan(Path(tmp), residency=True)
+    ok = not good and expected <= seen and not own
+    print(f"good fixtures: {len(good)} finding(s) (expected 0)")
+    for f in good:
+        print("   ", *f)
+    print(f"bad fixtures: rules seen {sorted(seen)}; missing {sorted(expected - seen)}")
+    print(f"skill examples: {len(own)} finding(s) (expected 0)")
+    for f in own:
+        print("   ", *f)
+    print("SELF-TEST", "PASS" if ok else "FAIL")
+    return 0 if ok else 1
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_einstein_trust_layer(manifest_dir)
-
-    if not issues:
-        print("No Einstein Trust Layer configuration issues found.")
+    ap = argparse.ArgumentParser(description="Check metadata for Einstein Trust Layer configuration gaps.")
+    ap.add_argument("--manifest-dir", default=".", help="Project or retrieve folder to scan (default: current directory).")
+    ap.add_argument("--residency", action="store_true", help="Require disableAIProviderRegionFallback = true.")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN findings as failures.")
+    ap.add_argument("--self-test", action="store_true", help="Run the bundled fixtures and exit.")
+    args = ap.parse_args()
+    if args.self_test:
+        return self_test()
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    relevant, findings = scan(root, args.residency)
+    if relevant == 0:
+        print(f"WARN: no Einstein settings, prompt templates, Apex, or credential metadata under {root}; nothing checked.")
         return 0
-
-    for issue in issues:
-        print(f"ISSUE: {issue}")
-        print()
-
-    print(f"{len(issues)} issue(s) found.")
-    return 1
+    for severity, rule, message in findings:
+        print(f"{severity} {rule}: {message}")
+    errors = sum(1 for f in findings if f[0] == "ERROR")
+    warns = sum(1 for f in findings if f[0] == "WARN")
+    print(f"Checked {relevant} file(s): {errors} error(s), {warns} warning(s).")
+    return 1 if errors or (args.strict and warns) else 0
 
 
 if __name__ == "__main__":

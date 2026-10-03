@@ -15,6 +15,8 @@ triggers:
   - "What chunking strategy should I use for Data Cloud vector embeddings?"
   - "How does the Einstein Trust Layer control what retrieved context reaches the LLM?"
   - "Agent gives generic answers instead of using our product documentation — how do I fix RAG grounding?"
+  - "set up an Einstein Data Library so my agent answers from Knowledge articles"
+  - "create a custom retriever that filters search index results by product line"
 tags:
   - rag
   - data-cloud
@@ -23,28 +25,30 @@ tags:
   - einstein-trust-layer
   - prompt-grounding
 inputs:
-  - "Data Cloud org with Data Cloud Vector Search enabled (requires Data Cloud Starter or higher)"
+  - "Data Cloud org with a Data Cloud license (search index configurations are not available under Customer Data Platform licenses)"
   - "Source content: Salesforce Knowledge articles, Data Cloud DMOs, external documents ingested via Data Cloud connector"
   - "Agentforce agent or Einstein Copilot to which grounding will be attached"
-  - "Embedding model choice (Salesforce-managed or BYO via Model Builder)"
-  - "Desired chunk size, overlap, and retrieval top-K values"
+  - "Embedding model choice (E5-Large V2, Multilingual E5-Large, or Whisper-Large-V3 for audio)"
+  - "Chunking strategy, max tokens per chunk, filter fields, and number of results"
 outputs:
   - "Configured Data Cloud vector search index with chosen embedding model and chunking settings"
-  - "Retriever configuration connecting the agent topic or prompt template to the vector index"
-  - "Grounding policy in the Einstein Trust Layer specifying which indexes are accessible per agent"
+  - "Retriever configuration (default or custom, in Einstein Studio) used by a prompt template or an Einstein Data Library"
+  - "Access plan: Data Cloud permission sets for retriever authors and prompt runners"
   - "Validated end-to-end RAG flow: source content → chunked embeddings → semantic retrieval → grounded prompt → LLM response"
-  - "Decision record documenting chunk size, overlap, top-K, and embedding model rationale"
+  - "Decision record documenting chunking strategy, max tokens, number of results, filters, and embedding model rationale"
 dependencies:
   - prompt-builder-templates
   - einstein-trust-layer
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # RAG Patterns in Salesforce
 
-This skill activates when an Agentforce agent or Einstein Copilot needs to retrieve and incorporate content from a grounded knowledge source at inference time using Data Cloud vector search. It covers the full RAG pipeline: ingesting source content into Data Cloud, configuring vector indexes and embedding models, connecting a retriever to an agent or prompt template, and enforcing access controls through the Einstein Trust Layer.
+This skill activates when an Agentforce agent or a Prompt Builder template needs to retrieve and incorporate content from a knowledge source at inference time using Data Cloud search. It covers the full RAG pipeline: ingesting source content into Data Cloud, configuring search indexes (vector or hybrid), choosing chunking and embedding settings, connecting a retriever to a prompt template or an Einstein Data Library, and how the Einstein Trust Layer treats retrieved content.
+
+Correction (2026-10-03): earlier versions of this skill described a "Grounding record" on a subagent with `top_k` and a `{!topic.product}` filter, and a `{!grounding.chunks}` merge field. None of these appear in the Generative AI guide or the Data Cloud guide. The documented model is: a search index creates a default retriever, custom retrievers are built in Einstein Studio, and a retriever is added to a prompt template from the Resource picker; for agents, an Einstein Data Library creates the index, retriever, prompt template, and Answer Questions with Knowledge action.
 
 ---
 
@@ -52,109 +56,100 @@ This skill activates when an Agentforce agent or Einstein Copilot needs to retri
 
 Gather this context before working on anything in this domain:
 
-- Confirm Data Cloud is provisioned and that the **Data Cloud Vector Search** feature is enabled in the org. Vector search is not available in all Data Cloud SKUs — it requires at least the Data Cloud Starter license with the Vector Search add-on enabled.
-- Identify the source content type: Salesforce Knowledge, a Data Cloud Data Model Object (DMO), or an external file store ingested via a Data Cloud connector. The source type determines which ingestion path and field mappings apply.
-- Understand the agent's latency budget. RAG adds a retrieval round-trip before the LLM call. If the agent is customer-facing with a strict SLA, chunk count and top-K directly affect response time.
-- Clarify data residency and sensitivity classification. The Einstein Trust Layer controls which vector indexes an agent can query, and retrieved chunks are subject to the same zero-retention and masking policies as the rest of the prompt payload.
+- Confirm Data Cloud is provisioned with a Data Cloud license. The Data Cloud feature table lists "Unstructured Data and Search Index Configurations" as available with Data Cloud licenses and not with Customer Data Platform licenses. UNVERIFIED (2026-10-03): the earlier claim that a "Vector Search add-on" on Data Cloud Starter is required.
+- Identify the source content: Salesforce Knowledge, uploaded files (up to 4 MB text or HTML, 100 MB PDF), a DMO with text fields, or unstructured data from a connector.
+- Decide whether an Einstein Data Library is enough. It creates the data stream, search index, retriever, prompt template, and standard action with defaults, which is the fastest path for agents.
+- Clarify data residency and sensitivity. Data masking is disabled for agents, so retrieved text reaches the LLM as written; secure data retrieval follows the running user's access.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What is the content: Knowledge HTML, PDFs, transcripts, or DMO text?" | Passage extraction uses HTML structure, PDF chunking depends on encoding, and tables can't be chunked (Gotcha 1) | A chunking strategy per source | Chunks follow the document's real sections |
+| "Which languages is the content in?" | Max tokens default to 512, and non-Latin text can exceed it, so text drops out of the embedding (Gotcha 2) | A max-token setting and embedding model per language | Japanese or Chinese content is fully embedded |
+| "Which fields will narrow results (product, region, category)?" | Retriever filters only use fields defined as filter fields on the index, up to 10 conditions (Gotcha 3) | Filter fields designed into the index | Product-scoped answers without a second index |
+| "How many search indexes already exist in this Data Cloud instance?" | The limit is 10 search indexes per instance (Gotcha 4) | An index budget across teams | The next team is not blocked by a forgotten test index |
+| "How will the configuration reach production?" | Change sets and Metadata API deployments don't include the retriever or search index (Gotcha 5) | Data kit or rebuild steps for the target org | Templates deploy into an org where their retriever exists |
+| "Does any content need customer-managed key encryption?" | Search indexes don't support encryption with customer-managed keys (Gotcha 6) | A decision on which content may be indexed | Compliance is checked before indexing, not after |
 
 ---
 
 ## Core Concepts
 
-### 1. Data Cloud Vector Search Index
+### 1. Search Index (Vector or Hybrid)
 
-A **vector search index** in Data Cloud stores dense embedding vectors alongside source text chunks. When a retrieval query arrives, Data Cloud computes the query embedding, runs approximate nearest-neighbor (ANN) search against the index, and returns the top-K most semantically similar chunks.
+A search index "stores chunked and vectorized data that can be searched and retrieved from other applications." It lives in a data space and is associated with a DMO. Creating one makes a chunk DMO and an index DMO. Use vector search for semantic matches and hybrid search when queries include exact terms such as product codes.
 
-Configuration options (set at index creation):
-
-| Option | Notes |
+| Setting | What the guides say |
 |---|---|
-| Embedding model | Salesforce provides a built-in embedding model; custom models can be registered via Model Builder. |
-| Chunk size | Max token length of each chunk written to the index. Smaller chunks improve precision but increase total vector count and search latency. |
-| Chunk overlap | Tokens shared between adjacent chunks to preserve context across boundaries. Typical production values: 10–20% of chunk size. |
-| Index refresh cadence | Batch (scheduled) or near-real-time, depending on the underlying Data Stream configuration. |
+| Chunking strategy | Semantic-based passage extraction (HTML headings, lists, and bold subheadings are passage boundaries), window-based passage extraction, conversation-based (audio and video transcripts), prepend fields (for example, Title on each Knowledge chunk) |
+| Max tokens | "In Data Cloud, the max token limit is set to 512 by default." Use a lower limit for non-Latin languages |
+| Embedding model | E5-Large V2, Multilingual E5-Large, Whisper-Large-V3. Easy Setup defaults: passage extraction, E5-Large V2, hybrid search. UNVERIFIED (2026-10-03): the earlier claim that custom embedding models can be registered through Model Builder |
+| Chunk overlap | UNVERIFIED (2026-10-03): the earlier "10 to 20% overlap" guidance was not found in the Data Cloud guide, which documents no overlap setting |
+| Pre-filter fields | Up to 10 fields; text values up to 1,024 characters |
 
-Source: [Data Cloud Vector Search](https://help.salesforce.com/s/articleView?id=sf.data_cloud_vector_search.htm)
+### 2. Retrievers
 
-### 2. Knowledge Grounding and the Retriever
+"When a search index is created in Data Cloud, a default retriever is created automatically. You can't customize a default retriever." Custom retrievers are built in Einstein Studio: pick the data space, DMO, and index; add up to 10 filter conditions (only on the index's filter fields); choose output fields and the maximum number of results. Each save creates a new version, and "Only one version of a retriever can be active."
 
-**Grounding** is the mechanism by which Agentforce agents receive contextually relevant documents before generating a response. A **retriever** is the platform-managed component that bridges a subagent or prompt template with a vector search index.
+In a prompt template, add the retriever from the Resource field and tune it in the Configuration panel: Search Text (limited to 255 characters, globals, and prompt inputs; it can't use related lists, Flow, or Apex), Output Fields, and Number of Results. Retrieved data appears in the preview resolution as JSON.
 
 > **Terminology.** Agent *topics* were renamed *subagents* in April 2026, with no
 > change to functionality. This skill leads with *subagent* in prose, and keeps
 > *topic* in metadata names, merge fields such as `{!topic.…}`, and search
 > keywords, because those did not change.
 
-At runtime:
-1. The agent framework extracts a semantic query from the user turn (or uses the full user message).
-2. The retriever calls the configured Data Cloud vector index with that query.
-3. Top-K chunks are returned and injected into the prompt as grounding context before the LLM call.
+### 3. Einstein Data Library (Agents)
 
-The retriever is configured inside a **Grounding** record linked to the subagent or directly to a Prompt Template. It specifies which vector index to query, the top-K value, and any metadata filters to narrow results (e.g., filter by `product_line` field on the source DMO).
+A data library "automates several configuration steps across Data Cloud and Prompt Builder," creating data streams, a search index, and a retriever. The Answer Questions with Knowledge action answers from the library. A library uses Knowledge or file uploads, not both, and neither the data space nor the source can be changed later. Each feature uses one data library at a time. For Knowledge, choose identifying and content fields, optionally restrict to public articles or data categories, and turn on Show sources for citations.
 
-Source: [Einstein Copilot Grounding](https://help.salesforce.com/s/articleView?id=sf.einstein_copilot_grounding.htm)
+### 4. Einstein Trust Layer and Retrieved Content
 
-### 3. Einstein Trust Layer Grounding Controls
-
-Retrieved chunks pass through the Einstein Trust Layer before reaching the LLM. The Trust Layer:
-- Enforces **zero data retention** — chunks are not persisted by the LLM provider.
-- Applies **data masking** rules to PII fields that may appear in retrieved text.
-- Respects **audit logging** so every retrieved chunk and its source record ID is traceable.
-- Can **restrict which indexes** an agent is permitted to query based on org-level grounding policies.
-
-Any chunk returned from a vector index that contains a masked field will have that field redacted before it reaches the LLM. This means sensitive fields in the source DMO must be explicitly classified if they should not appear in agent responses.
-
-Source: [Einstein Trust Layer](https://help.salesforce.com/s/articleView?id=sf.einstein_trust_layer.htm)
-
-### 4. Data Streams Feeding the Vector Index
-
-The vector index consumes content from a **Data Stream** in Data Cloud. Common source patterns:
-- **Salesforce Knowledge** — ingested via the CRM connector; article body and metadata become DMO fields; the `Body` field is the canonical chunk source.
-- **File-based content** — PDFs and documents ingested via Salesforce Files or an S3 connector; chunking is applied by Data Cloud during ingest.
-- **Custom DMO** — structured data (e.g., product specs, SOPs) modeled as a Data Model Object and then enrolled in a vector index on a selected text field.
-
-The Data Stream refresh cadence controls how quickly new or updated source records appear in the vector index. Near-real-time streaming is available for CRM-connected sources.
+Grounding uses only data the running user can access. For prompt templates, pattern-based masking scans all prompt text, including retrieved chunks; field-based masking covers only record merge fields and related lists. For agents, masking is disabled. Audit data records the hydrated prompt, masked prompt, and retrieved data. UNVERIFIED (2026-10-03): the earlier claim that the Trust Layer can restrict which indexes an agent may query through org-level grounding policies.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Knowledge Article Grounding for a Service Agent
+### Pattern 1: Knowledge Grounding for a Service Agent With a Data Library
 
-**When to use:** A service or support Agentforce agent needs to answer customer questions using content from Salesforce Knowledge, with answers grounded in the actual article body rather than generated from training data.
+**When to use:** A service agent must answer from Salesforce Knowledge with citations.
 
 **How it works:**
-1. Enable the Salesforce Knowledge → Data Cloud CRM connector and create a Data Stream mapping `KnowledgeArticleVersion` to a DMO (e.g., `KnowledgeArticle__dlm`).
-2. In Data Cloud, create a vector search index on the `Body__c` field of that DMO. Set chunk size to 512 tokens, overlap to 64 tokens.
-3. Select the Salesforce-managed embedding model (no additional license required).
-4. In Agentforce Setup, open the subagent and add a **Grounding** configuration pointing to the new vector index with `top_k = 5`.
-5. Test by submitting queries in the Agent Preview panel — the Grounding tab shows which chunks were retrieved per turn.
+1. In Einstein Data Library setup, create a library in the right data space (it can't be changed later).
+2. Choose Knowledge, select identifying fields (title, summary) and content fields (resolution steps), and filter by data categories if the base is large.
+3. Turn on Show sources and set the Knowledge domain URL for citations.
+4. Save; data streams, the search index, and the retriever are created. Assign the library to the agent in Agent Builder (Knowledge tab).
+5. Test in the agent preview with real questions and check that sources point at the right articles.
 
-**Why not the alternative:** Without a retriever, the agent relies entirely on LLM training data, which does not reflect org-specific article content and drifts as articles are updated.
+**Why not the alternative:** Without retrieval the agent relies on training data, which does not reflect org-specific content.
 
 ### Pattern 2: Filtered Retrieval by Product Line
 
-**When to use:** A single vector index contains articles or documents for multiple products. An agent should only retrieve chunks relevant to the product the customer is currently discussing, reducing irrelevant context noise in the prompt.
+**When to use:** One index holds documents for several products, and answers must stay within one.
 
 **How it works:**
-1. Ensure the source DMO includes a filterable metadata field — e.g., `Product_Line__c` — populated during ingestion.
-2. In the Grounding configuration, add a **metadata filter**: `Product_Line__c = '{!topic.product}'` where `{!topic.product}` is a merge field resolved from the subagent context.
-3. The retriever passes the filter to Data Cloud's vector search, which applies it as a pre-filter before ANN ranking — only chunks matching the product line are candidates.
+1. Add `Product_Line__c` as a filter field when creating the search index (advanced setup).
+2. In Einstein Studio, create a custom retriever with a condition `Product_Line__c` equals `CRM` (up to 10 conditions; All Conditions Are Met or Any Condition Is Met), output fields, and number of results. Activate it.
+3. Use one retriever per product, or a dynamic retriever where a standard template supports one. UNVERIFIED (2026-10-03): passing a runtime value from the conversation into a retriever filter was not found in a fetched source.
 
-**Why not the alternative:** Relying on semantic similarity alone to implicitly separate product content fails when different product lines use similar vocabulary, causing cross-product chunk contamination.
+**Why not the alternative:** Semantic similarity alone mixes products that share vocabulary.
 
-### Pattern 3: Prompt Template with Explicit Retrieval Merge Fields
+### Pattern 3: Prompt Template With a Retriever Resource
 
-**When to use:** A Flex or Field Generation prompt template needs to incorporate retrieved chunks alongside CRM record fields, with precise control over where retrieved context appears in the prompt structure.
+**When to use:** A template must combine CRM fields and retrieved passages.
 
 **How it works:**
-1. In Prompt Builder, create a Flex prompt template.
-2. Add a **Grounding** resource that references the vector index.
-3. In the template body, insert the merge field `{!grounding.chunks}` at the position where retrieved context should appear (typically before the instruction section).
-4. The platform renders each chunk sequentially in the order returned by the retriever, separated by system-defined delimiters.
-5. Tune the template instruction to direct the LLM to cite or prefer the grounding content.
+1. In Prompt Builder, insert record merge fields for the context, then select Resource > Einstein Search > the DMO > the retriever.
+2. In the Configuration panel, build the Search Text from prompt inputs (for example `account name: Input.Account.Name`), pick output fields such as Chunk, and set the number of results.
+3. Put instructions after the context block and tell the model to answer only from the retrieved passages.
+4. Preview and read the retriever's JSON output in the resolution.
 
-**Why not the alternative:** Without explicit merge field placement, the platform inserts chunks at the default position (top of system prompt), which can conflict with role-framing instructions and degrade instruction-following behavior.
+**Why not the alternative:** Unbounded results crowd out the record context the template also needs.
 
 ---
 
@@ -162,26 +157,23 @@ The Data Stream refresh cadence controls how quickly new or updated source recor
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Source is Salesforce Knowledge, updated frequently | CRM connector Data Stream + near-real-time refresh | Keeps index current without custom ETL; Knowledge article lifecycle events trigger stream updates |
-| Source is a static PDF corpus | File connector ingestion + scheduled batch refresh | Near-real-time is not needed; batch is lower overhead for infrequently changing documents |
-| Multi-product agent with a single shared index | Metadata filter in Grounding config | Avoids maintaining separate indexes per product; filter is applied server-side, not post-retrieval |
-| High-precision requirement (legal, compliance) | Smaller chunk size (256–384 tokens), higher overlap (20%), lower top-K (3) | Smaller chunks reduce context dilution; lower top-K prevents unrelated chunks from appearing in prompt |
-| High-recall requirement (broad knowledge base) | Larger chunk size (512–768 tokens), top-K of 5–10 | Larger chunks carry more context per result; higher top-K ensures coverage of multi-faceted queries |
-| PII in source documents | Classify sensitive fields in Data Cloud field taxonomy before indexing | Trust Layer masking operates on classified fields; unclassified PII fields pass through unmasked |
-| Scratch org or packaging scenario | Use Data Kits to package Data Cloud vector index configuration | Vector indexes and DMO mappings are packageable via Data Kits in 2GP scratch org development |
+| Agent answers from Knowledge or uploaded files | Einstein Data Library | Creates index, retriever, template, and action with defaults |
+| Source is HTML Knowledge with clear headings | Semantic-based passage extraction, keep the HTML | Headings and lists become passage boundaries |
+| Queries include product codes or exact terms | Hybrid search index | Combines vector similarity with keyword precision |
+| Multi-product content in one index | Filter fields on the index plus custom retrievers | Filters apply only to fields the index defines |
+| Non-Latin content | Max tokens below 512, Multilingual E5-Large | Punctuation-based token estimates can exceed the embedding limit |
+| Deploying to another org | Data kit for the search index configuration, then create the retriever before deploying templates | Change sets and Metadata API don't carry retrievers or indexes |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Answer the Questions table: content types and languages, filter fields, index budget, deployment path, and encryption constraints.
+2. Choose the path: an Einstein Data Library for agents, or a search index (Easy or Advanced setup) plus a custom retriever for prompt templates.
+3. Configure chunking (strategy, max tokens, prepend fields), the embedding model, and filter fields; record the choices in the decision record.
+4. Build and activate the retriever, add it to the prompt template or library, and preview with representative questions; read the retrieved JSON.
+5. Run `python3 scripts/check_rag_patterns_in_salesforce.py --manifest-dir <project>` to catch retriever search-text limits, number-of-results budgets, and leftover merge fields from older guidance.
+6. Plan deployment: data kit for the index configuration, retriever recreated in the target org before templates deploy (`references/metadata-examples.md`), and a test as each persona.
 
 ---
 
@@ -189,14 +181,14 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Run through these before marking RAG grounding work complete:
 
-- [ ] Data Cloud Vector Search feature is enabled and the embedding model is confirmed as active
-- [ ] Source DMO field mapped for chunking contains clean, deduplicated text (HTML stripped from Knowledge article body if applicable)
-- [ ] Chunk size and overlap values are documented in the decision record with rationale
-- [ ] Grounding configuration specifies the correct vector index, top-K, and any required metadata filters
-- [ ] Einstein Trust Layer audit log reviewed for at least one test retrieval turn — confirm chunks are logged and no unexpected masking is dropping needed content
-- [ ] Agent preview tested with at least 5 representative queries; retrieved chunks visible in Grounding tab and answers are factually grounded
-- [ ] Data residency confirmed: vector index region matches org data residency requirements
-- [ ] If packaging: Data Kit includes DMO definition, Data Stream configuration, and vector index settings
+- [ ] Data Cloud license confirmed; search index count under the 10-per-instance limit
+- [ ] Chunking strategy fits the content (HTML kept for passage extraction; tables avoided in PDFs)
+- [ ] Max tokens and embedding model fit the languages in the content
+- [ ] Filter fields defined on the index for every retriever condition
+- [ ] Retriever activated; search text within 255 characters using only globals and prompt inputs
+- [ ] Number of results sized against the prompt's other context
+- [ ] Preview tested with at least 5 representative queries as the target user
+- [ ] Deployment plan covers the data kit and retriever creation in the target org
 
 ---
 
@@ -204,15 +196,15 @@ Run through these before marking RAG grounding work complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **HTML in Knowledge Article Body Pollutes Chunks** — Salesforce Knowledge stores article body as HTML. If the `Body__c` field is mapped directly to the vector index without stripping HTML tags, the embedding model encodes tag markup (`<p>`, `<li>`, `&nbsp;`) as semantic content, degrading similarity scores. Pre-process the field using a Data Cloud formula or transformation to strip HTML before indexing.
+1. **Stripping HTML removes the structure the chunker uses**: Correction (2026-10-03): earlier versions said to strip HTML from Knowledge bodies before indexing. Semantic-based passage extraction "uses the semantic meaning inherent in HTML tags to chunk a document into passages," and passage extraction "work[s] best for HTML files."
 
-2. **Metadata Filters Are Pre-Filters, Not Post-Filters** — Metadata filters in the Grounding config are applied before ANN ranking, not after. If the filter is too restrictive (e.g., an exact match on a field with high cardinality), the candidate set may be empty even when relevant chunks exist, resulting in the agent responding with no grounding context. Use `LIKE` or categorical filters rather than exact-match on free-text fields.
+2. **Metadata Filters Are Pre-Filters, Not Post-Filters**: Filter fields are selected for pre-filtering on the index (up to 10). A filter that matches nothing leaves no candidates. UNVERIFIED (2026-10-03): the earlier advice to prefer `LIKE` over exact match; check the supported operators in the Search Index Reference.
 
-3. **Trust Layer Masking Silently Drops Chunk Content** — If a retrieved chunk contains a field classified as PII under the Trust Layer data masking policy, the masked value is replaced with a placeholder token. The chunk still counts toward top-K but contributes no useful content. This can cause the agent to appear to ignore retrieved documents. Always review the Trust Layer audit log for masking events during QA.
+3. **Masking does not clean retrieved chunks for agents**: Data masking is disabled for agents. For prompt templates, pattern-based masking scans retrieved text for its listed data types only.
 
-4. **Vector Index Does Not Auto-Refresh on Knowledge Article Publish** — Near-real-time refresh is available for CRM Data Streams but requires explicit configuration of the refresh trigger. By default, new Data Streams use scheduled batch refresh. A newly published Knowledge article will not appear in retrieval results until the next scheduled refresh window unless the Data Stream is configured for continuous mode.
+4. **Index refresh follows the data stream**: UNVERIFIED (2026-10-03): the earlier statement that new data streams default to scheduled batch refresh and that continuous mode must be configured was not found in a fetched source. Test how soon a newly published article becomes retrievable.
 
-5. **top-K Counts Against Prompt Token Budget** — Each retrieved chunk consumes tokens in the final prompt. With top-K of 10 and a chunk size of 512 tokens, retrieval alone can consume 5,000+ tokens. For models with a 16K context window this is manageable, but for shorter-context configurations it can crowd out conversation history or CRM record context. Monitor total prompt token usage during load testing.
+5. **Number of results counts against the prompt**: Each retrieved chunk is added to the prompt. With max tokens at 512, ten results can add roughly 5,000 tokens before any other context.
 
 ---
 
@@ -220,11 +212,11 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Data Cloud vector search index | The configured index including embedding model, chunk size, and overlap settings; deployable via Data Kit in packaging scenarios |
-| Grounding configuration record | The retriever definition linking the subagent or prompt template to the vector index, including top-K and any metadata filters |
-| Decision record | Documents chunk size, overlap, top-K, embedding model choice, and data residency rationale for audit and future tuning |
-| Einstein Trust Layer audit log excerpt | QA evidence that retrieval events are logged and masking behavior is as expected |
-| Agent preview test results | Minimum 5 representative queries with retrieved chunk traces from the Grounding tab |
+| Search index configuration | Chunking strategy, max tokens, embedding model, search type, filter fields; deployable via data kit |
+| Retriever | Default or custom retriever with filters, output fields, number of results, and active version |
+| Decision record | Chunking, max tokens, embedding model, filters, number of results, and residency rationale |
+| Prompt template or data library | The consumer of the retriever, with preview evidence |
+| Agent preview test results | Minimum 5 representative queries with retrieved passages or sources |
 
 ---
 

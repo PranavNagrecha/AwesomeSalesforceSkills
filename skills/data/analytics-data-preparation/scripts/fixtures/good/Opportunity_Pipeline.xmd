@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WaveXmd xmlns="http://soap.sforce.com/2006/04/metadata">
+    <dataset>Opportunity_Pipeline</dataset>
+    <dimensions>
+        <field>Acct_Tier__c</field>
+        <isDerived>false</isDerived>
+        <label>Account Tier</label>
+        <members>
+            <label>Tier 1 (Strategic)</label>
+            <member>T1</member>
+            <sortIndex>0</sortIndex>
+        </members>
+        <members>
+            <label>Tier 2 (Growth)</label>
+            <member>T2</member>
+            <sortIndex>1</sortIndex>
+        </members>
+        <showInExplorer>true</showInExplorer>
+        <sortIndex>0</sortIndex>
+    </dimensions>
+    <dimensions>
+        <field>Prod_Cat__c</field>
+        <isDerived>false</isDerived>
+        <label>Product Category</label>
+        <showInExplorer>true</showInExplorer>
+        <sortIndex>1</sortIndex>
+    </dimensions>
+    <measures>
+        <field>Amount</field>
+        <formatDecimalDigits>2</formatDecimalDigits>
+        <formatPrefix>$</formatPrefix>
+        <isDerived>false</isDerived>
+        <label>Amount</label>
+        <showInExplorer>true</showInExplorer>
+        <sortIndex>0</sortIndex>
+    </measures>
+    <type>User</type>
+</WaveXmd>

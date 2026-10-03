@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlugin xmlns="http://soap.sforce.com/2006/04/metadata">
+    <developerName>Overloaded</developerName>
+    <genAiPluginInstructions>
+        <description>Only refund orders placed within 30 days.</description>
+        <developerName>rule_0</developerName>
+        <masterLabel>Rule 0</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 0 about tone.</description>
+        <developerName>rule_1</developerName>
+        <masterLabel>Rule 1</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 1 about tone.</description>
+        <developerName>rule_2</developerName>
+        <masterLabel>Rule 2</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 2 about tone.</description>
+        <developerName>rule_3</developerName>
+        <masterLabel>Rule 3</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 3 about tone.</description>
+        <developerName>rule_4</developerName>
+        <masterLabel>Rule 4</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 4 about tone.</description>
+        <developerName>rule_5</developerName>
+        <masterLabel>Rule 5</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 5 about tone.</description>
+        <developerName>rule_6</developerName>
+        <masterLabel>Rule 6</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 6 about tone.</description>
+        <developerName>rule_7</developerName>
+        <masterLabel>Rule 7</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 7 about tone.</description>
+        <developerName>rule_8</developerName>
+        <masterLabel>Rule 8</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 8 about tone.</description>
+        <developerName>rule_9</developerName>
+        <masterLabel>Rule 9</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 9 about tone.</description>
+        <developerName>rule_10</developerName>
+        <masterLabel>Rule 10</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 10 about tone.</description>
+        <developerName>rule_11</developerName>
+        <masterLabel>Rule 11</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 11 about tone.</description>
+        <developerName>rule_12</developerName>
+        <masterLabel>Rule 12</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 12 about tone.</description>
+        <developerName>rule_13</developerName>
+        <masterLabel>Rule 13</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 13 about tone.</description>
+        <developerName>rule_14</developerName>
+        <masterLabel>Rule 14</masterLabel>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description>Remember rule number 14 about tone.</description>
+        <developerName>rule_15</developerName>
+        <masterLabel>Rule 15</masterLabel>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <masterLabel>Overloaded</masterLabel>
+    <pluginType>Topic</pluginType>
+</GenAiPlugin>

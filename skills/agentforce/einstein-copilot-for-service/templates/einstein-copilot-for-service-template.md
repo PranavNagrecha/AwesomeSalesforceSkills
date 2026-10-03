@@ -17,7 +17,7 @@ Use this template when enabling, reviewing, or troubleshooting Einstein for Serv
 - [ ] Reply Recommendations
 - [ ] Work Summary (After-Visit Summary)
 - [ ] Service Replies with Einstein
-- [ ] Einstein Auto-Routing (requires Omni-Channel)
+- [ ] Classification-driven routing (EinsteinAgentSettings runAssignmentRules / reRunAttributeBasedRules; requires Omni-Channel)
 - [ ] Einstein Conversation Mining
 
 ---
@@ -52,7 +52,7 @@ Answer these before beginning feature configuration:
 - Agents currently linking articles to cases at resolution: Yes / No / Inconsistent
 - Average article age (years since last review): ___
 
-**Omni-Channel status (for Auto-Routing):**
+**Omni-Channel status (for classification-driven routing):**
 - Omni-Channel enabled and configured: Yes / No
 - Queues defined for relevant case types: Yes / No / Partial
 - Routing configurations active: Yes / No
@@ -60,7 +60,7 @@ Answer these before beginning feature configuration:
 **Reply Recommendations readiness:**
 - Messaging channels in scope: ___
 - Historical messaging transcript volume (last 12 months): ___
-- Training Data job previously run: Yes / No / Unknown
+- ReplyText records generated / reviewed / published: Yes / No / Unknown
 
 ---
 
@@ -86,7 +86,7 @@ Follow this sequence to avoid dependency failures. Check off each step only afte
 - [ ] Permission sets identified (`Service Cloud Einstein` or `Einstein for Service`)
 - [ ] Case field null rate report run and qualifying fields identified
 - [ ] Knowledge articles confirmed published (if Article Recommendations or Service Replies in scope)
-- [ ] Omni-Channel confirmed active (if Auto-Routing in scope)
+- [ ] Omni-Channel confirmed active (if classification-driven routing in scope)
 
 **Phase 2 — ML Feature Enablement (Case Classification, Article Recommendations, Reply Recommendations)**
 - [ ] Case Classification enabled; fields selected based on data quality audit
@@ -95,7 +95,7 @@ Follow this sequence to avoid dependency failures. Check off each step only afte
 - [ ] Article Recommendations enabled; component added to Case record page
 - [ ] Agents briefed on article-linking habit (link article to case when it helps resolve it)
 - [ ] Reply Recommendations enabled (if in scope)
-- [ ] Training Data job initiated for Reply Recommendations; status confirmed "Complete"
+- [ ] Reply Recommendations model built on closed chats; ReplyText reviewed for customer data and published
 - [ ] Model training status checked (24–72 hours post-enablement): Active / In Progress / Insufficient Data
 
 **Phase 3 — Generative AI Feature Enablement (Work Summary, Service Replies)**
@@ -105,10 +105,10 @@ Follow this sequence to avoid dependency failures. Check off each step only afte
 - [ ] Service Replies enabled and Knowledge grounding confirmed (if in scope)
 - [ ] Agents briefed: AI outputs are suggestions — edit or reject as needed
 
-**Phase 4 — Auto-Routing (if in scope)**
+**Phase 4 — Classification-driven routing (if in scope)**
 - [ ] Case Classification model validated in suggestion mode (accuracy sampled over 2–4 weeks)
-- [ ] Per-field classification accuracy at acceptable threshold (80%+) before enabling Auto-Routing
-- [ ] Auto-Routing enabled on pilot case type or channel
+- [ ] Per-field acceptance (AIInsightFeedback) at an agreed threshold before enabling re-routing after classification (80% is a team threshold, not a platform rule)
+- [ ] runAssignmentRules or reRunAttributeBasedRules enabled for a pilot case type or channel
 - [ ] Routing outcomes monitored for 1 week before expanding
 
 **Phase 5 — Einstein Conversation Mining (if in scope)**
@@ -141,11 +141,11 @@ Copy from SKILL.md and tick items as confirmed:
 - [ ] Case Classification component on Case record page or service console layout
 - [ ] Knowledge published; agents trained on article-linking habit
 - [ ] Article Recommendations component on Case record page
-- [ ] Reply Recommendations Training Data job completed (if in scope)
+- [ ] Reply Recommendations replies reviewed and published (if in scope)
 - [ ] Work Summary enabled with Trust Layer reviewed (if in scope)
 - [ ] Service Replies enabled with Knowledge grounding confirmed (if in scope)
-- [ ] Omni-Channel active before Auto-Routing enabled (if in scope)
-- [ ] Classification accuracy validated before Auto-Routing enabled (if in scope)
+- [ ] Omni-Channel active before classification-driven routing enabled (if in scope)
+- [ ] Acceptance per field validated (AIInsightFeedback) before routing on classified values (if in scope)
 
 ---
 
@@ -162,4 +162,4 @@ Record any deviations from the standard pattern and the reason for the deviation
 | Case field null rate too high for reliable classification | | |
 | Einstein Generative AI license not provisioned | | |
 | Agents not adopting article-linking habit | | |
-| Auto-Routing errors due to early classification inaccuracy | | |
+| Routing errors due to early classification inaccuracy | | |

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AiEvaluationDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <subjectName>Service_Agent</subjectName>
+    <subjectType>BOT</subjectType>
+    <testCase>
+        <number>1</number>
+        <inputs><utterance>Where is my order?</utterance></inputs>
+        <expectation><name>topic_sequence_match</name><expectedValue>Order_Status</expectedValue></expectation>
+    </testCase>
+    <testCase>
+        <number>2</number>
+        <inputs><utterance>Hello there</utterance></inputs>
+        <expectation><name>bot_response_rating</name><expectedValue>A greeting</expectedValue></expectation>
+    </testCase>
+</AiEvaluationDefinition>

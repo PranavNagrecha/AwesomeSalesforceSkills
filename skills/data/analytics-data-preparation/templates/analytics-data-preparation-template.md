@@ -1,6 +1,6 @@
-# Analytics Data Preparation (XMD) — Work Template
+# Analytics Data Preparation (XMD and External Data): Work Template
 
-Use this template when updating CRM Analytics dataset XMD metadata or adding external data augmentation to a recipe.
+Use this template when updating CRM Analytics dataset XMD or loading external data into a dataset.
 
 ---
 
@@ -8,40 +8,44 @@ Use this template when updating CRM Analytics dataset XMD metadata or adding ext
 
 **Dataset API Name:** _______________
 **Dataset ID:** _______________
-**Task:** [ ] XMD field label/format update  [ ] External CSV augmentation  [ ] Dimension/measure reclassification
+**Current Version ID:** _______________
+**Task:** [ ] User XMD update on this version  [ ] Deployable WaveXmd  [ ] External Data API upload
+**Write path that owns this dataset's XMD:** [ ] Metadata API (WaveXmd)  [ ] REST user XMD  [ ] Dataset edit page
 
 ---
 
 ## XMD Update
 
-**Pre-PATCH backup:**
-- [ ] `GET /wave/datasets/{id}/xmds/main` executed
-- [ ] Response saved to: _______________
+**Backup before any write:**
+- [ ] `GET /wave/datasets/{id}/versions/{versionId}/xmds/user` saved to: _______________
+- [ ] or WaveXmd retrieved and confirmed not empty
 
 **Fields to update:**
 
-| Field API Name | Change Type | New Value |
+| Field API Name | Change Type (label, member label, format, hide) | New Value |
 |---|---|---|
 | | | |
 
-**PATCH endpoint:** `PATCH /wave/datasets/{id}/xmds/main`
+**Write:** [ ] `PUT /wave/datasets/{id}/versions/{versionId}/xmds/user` with the complete document  [ ] WaveXmd deploy followed by a dataflow run
+
+**Checker:** [ ] `python3 scripts/check_analytics_data_preparation.py --manifest-dir <folder>` exit 0
 
 ---
 
-## External Augmentation
+## External Data Upload
 
 **CSV file name:** _______________
-**Salesforce File ContentDocumentId:** _______________
-**Join key field (in primary dataset):** _______________
-**Join key field (in CSV):** _______________
-**Join type:** [ ] Left outer  [ ] Inner
-
-**CSV refresh process:** _______________
+**Has header row:** [ ] Yes (`numberOfLinesToIgnore` 1)  [ ] No (`numberOfLinesToIgnore` 0)
+**Metadata JSON file:** _______________ (fields in CSV column order)
+**Unique ID field (one text field):** _______________
+**Operation:** [ ] Overwrite  [ ] Append  [ ] Upsert  [ ] Delete    **Mode:** [ ] Incremental  [ ] None
+**Refresh cadence and jobs per day (limit 50 per dataset):** _______________
 
 ---
 
 ## Validation
 
-- [ ] HTTP 200 confirmed (XMD)
-- [ ] Labels visible in Analytics Studio lens
-- [ ] Augment node join key verified same data type in both sources
+- [ ] Labels and member labels visible in a lens
+- [ ] No empty strings in the XMD; `dataset` block untouched
+- [ ] InsightsExternalData `Status` checked after `Action` = Process
+- [ ] Sensitive fields protected by security, not by hiding

@@ -30,6 +30,15 @@
 
 ## Official Sources Used
 
-- Bulk API 2.0 Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm
-- Salesforce Large Data Volumes Best Practices — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/
-- Bulk API and Bulk API 2.0 Limits and Allocations — https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_bulkapi.htm
+Read for this revision (2026-10-03):
+
+- Bulk API 2.0 and Bulk API Developer Guide, Version 67.0: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_asynch.pdf. The 2,000-record guidance; Understanding Bulk API 2.0 Ingest (10,000-record batches, 150,000,000 daily, 5-minute batch timeout, 20 retries); Prepare CSV Files (UTF-8, base64 growth, delimiters, LF default); Create a Job (request and response fields, concurrencyMode parallel only, hardDelete permission, multipart 100,000 characters); Upload Job Data; Get Job Unprocessed Record Results; Troubleshooting Ingest Timeouts; Query (locator, maxRecords, 15 retries); Limits (60,000 ms CPU); Bulk API 1.0 Plan Bulk Data Loads (serial mode, lock-prone operations, 2,000 queued requests) and JobInfo.
+- Salesforce Developer Limits and Allocations Quick Reference, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf. Bulk API and Bulk API 2.0 Limits and Allocations (15,000 shared batches, 24-hour open job, 7-day results, 150 MB per job, 200-record chunks); API request allocation includes Bulk API and Bulk API 2.0.
+- Best Practices for Deployments with Large Data Volumes: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_large_data_volumes_bp.pdf. Defer Sharing Calculation; Deleting Data (hard delete recommendation, 15-day Recycle Bin).
+- Local corpus: `knowledge/imports/salesforce-bulk-api-guide.md` (searched for coverage; the PDF above was used for citations).
+
+Listed in the original version and not re-read:
+
+- Bulk API 2.0 Developer Guide (atlas page): https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm (same guide read as PDF above).
+- Salesforce Large Data Volumes Best Practices (atlas page): https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ (same guide read as PDF above).
+- Bulk API and Bulk API 2.0 Limits and Allocations (atlas page): https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_bulkapi.htm (same content read in the PDF above).

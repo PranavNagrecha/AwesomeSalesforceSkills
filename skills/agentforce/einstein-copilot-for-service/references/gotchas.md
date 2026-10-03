@@ -1,67 +1,121 @@
-# Gotchas — Einstein Copilot for Service
+# Gotchas: Einstein for Service (Case Classification, Article and Reply Recommendations, Service Replies, Work Summaries)
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious behaviours that cause real production problems in this domain. Each gotcha names its source. "Object Reference" means the Salesforce Object Reference, Summer '26. "Metadata API" means the Metadata API Developer Guide, Version 67.0. "GenAI Guide" means Quickstart Your Einstein Generative AI Solution, Spring '26. Claims carried from earlier versions that no fetched source confirms are marked UNVERIFIED inline.
 
-## Gotcha 1: Case Classification Model Trains on Closed Cases — Field Null Rates in Historical Data Silently Degrade Model Quality
+## Gotcha 1: Classification Fills Fields but Does Not Re-Route the Case Unless Told To
 
-**What happens:** An admin enables Case Classification and selects several fields (Case Type, Priority, Case Reason). The feature shows "Active" status in Setup after training completes. However, classification suggestions are wrong far more often than expected, or the model shows "Low Confidence" on certain fields.
+**What happens:** Case Classification sets Type and Reason on new cases, and the cases stay in the intake queue instead of moving to the specialist queue the new values point to.
 
-**When it occurs:** The historical closed case data has high null rates on the selected fields. For example, if 60% of closed cases have `Case Reason` set to null (agents historically left it blank), the model learns that "blank" is a frequently correct label and produces blank or low-confidence predictions. The admin has no inline warning about null rate quality during setup — they only discover the problem after the model trains and suggestions are poor.
+**When it occurs:** EinsteinAgentSettings has `runAssignmentRules` ("If true, assignment rules are run after Einstein Case Classification automatically updates field values") and `reRunAttributeBasedRules` (skills-based routing rules), and "The default value is false" for both.
 
-**How to avoid:** Before selecting fields for classification, run a SOQL report to measure null rate per field on closed cases:
-```text
-SELECT COUNT()
-FROM Case
-WHERE IsClosed = true AND ClosedDate >= LAST_N_DAYS:365 AND CaseType = null
-```
-Fields with more than 20% null rates in the training population will produce unreliable models. Establish data quality baseline first — enforce required fields on case close via validation rules — then enable classification for those fields after 60–90 days of clean data accumulation.
+**How to avoid:** Decide whether classified values should drive routing, then set the matching flag and deploy it. For flow-based designs, the `applyCaseClassificationRecommendations` invocable action (API 57.0) "Takes a Case ID as input and outputs a case SObject with recommendations applied." The skill checker warns when classification is on and neither flag is set (`ES-CLS-01`).
+
+**Source:** Metadata API, EinsteinAgentSettings; invocable action values ("This value is used in Einstein Case Classification flow").
 
 ---
 
-## Gotcha 2: Reply Recommendations Require an Explicit Training Data Job — Enabling the Feature Alone Does Nothing
+## Gotcha 2: Agents See Only the Top Three of Up to Ten Recommendations
 
-**What happens:** An admin enables Einstein Reply Recommendations in Setup and assigns the permission set to agents. The feature toggle shows as Active. Agents use messaging channels for days or weeks but see no suggested replies. The admin cannot find an obvious error in Setup.
+**What happens:** A team audits recommendation accuracy against all stored values and concludes the model is worse than agents report, or the reverse.
 
-**When it occurs:** Any time an admin follows the standard Einstein for Service enablement flow without noticing the separate Training Data tab in the Reply Recommendations setup area. Unlike Case Classification — which starts training automatically on save — Reply Recommendations has a decoupled Training Data preparation step that must be manually initiated. Until the Training Data job completes, the recommendation model has no corpus and generates no suggestions.
+**When it occurs:** "For a picklist field, Einstein creates AIInsightValue objects with up to 10 field value recommendations. However, just the top three predictions appear to agents in the Einstein Field Recommendations component." Feedback is recorded in AIInsightFeedback: AiInsightFeedbackType is Explicit when the agent acts after viewing recommendations (or Einstein applies one automatically) and Implicit when the agent changes the field elsewhere; AiFeedback is Positive when the recommended value is applied and Negative when a different value is.
 
-**How to avoid:** After enabling Reply Recommendations, always navigate explicitly to the Training Data tab and initiate the training job. Confirm job status reaches "Complete" before releasing the feature to agents. Include "Training Data job completed" as a non-negotiable item on the Einstein for Service go-live checklist.
+**How to avoid:** Measure acceptance with AIRecordInsight, AIInsightValue, and AIInsightFeedback (query in `references/examples.md`), split by Explicit and Implicit, and judge each field on what agents actually saw.
 
----
-
-## Gotcha 3: Work Summary and Service Replies Are Generative AI Features — They Require Einstein Generative AI License, Not Just Service Cloud Einstein
-
-**What happens:** An admin with Service Cloud Einstein provisioned navigates to Setup > Service > Service Replies with Einstein or Setup > Service > Work Summary and finds the settings greyed out with a tooltip indicating additional licensing is required. The org clearly has an Einstein license (confirmed in Feature Licenses), but the generative features are blocked.
-
-**When it occurs:** Service Cloud Einstein (the add-on license) covers ML-based features: Case Classification, Article Recommendations, and Reply Recommendations. It does NOT include generative AI drafting capabilities. Work Summary and Service Replies require the Einstein Generative AI entitlement, which is only included in Einstein 1 Service edition or as a separately purchased add-on. This split is non-obvious in the product UI and in Salesforce marketing materials.
-
-**How to avoid:** At the start of any Einstein for Service engagement, audit the Feature Licenses list for both "Service Cloud Einstein" AND "Einstein Generative AI." Build a clear feature-to-license mapping in the project scope document. Do not include Work Summary or Service Replies in the project scope, user training, or go-live materials until Einstein Generative AI entitlement is confirmed.
+**Source:** Object Reference, Einstein insight objects (Considerations for Case Classification; AIInsightFeedback fields).
 
 ---
 
-## Gotcha 4: Auto-Routing Inherits Case Classification Errors — Routing Problems Are Usually Classification Problems
+## Gotcha 3: A Recommendation Is Shown Once, Then Marked Defunct
 
-**What happens:** After enabling Einstein Auto-Routing, cases start appearing in the wrong queues. The admin audits Omni-Channel routing rules and finds them correctly configured. The routing rules look right on paper, but cases still misroute in production.
+**What happens:** An agent dismisses a recommendation, reopens the case later, and the suggestion is gone.
 
-**When it occurs:** Auto-Routing uses the field values set by Case Classification to make routing decisions. If the Case Classification model is predicting incorrect values for Case Type or Case Reason — the fields driving the routing rules — those incorrect values cause routing to the wrong queue. The routing engine is functioning correctly; it is routing based on the field values it receives. The defect is upstream in the classification layer.
+**When it occurs:** AIRecordInsight Status Defunct means "The insight has been consumed by the Einstein feature that owns the prediction. For example, Case Classification marks an insight as defunct if a predicted recommendation was presented to a user and the user either accepted or ignored the recommendation. This behavior ensures that the same recommendation isn't presented multiple times to the user."
 
-**How to avoid:** Never enable Auto-Routing before validating Case Classification accuracy. A recommended approach: run Case Classification in suggestion mode for 2–4 weeks, then sample 50–100 recent cases and compare Einstein's suggested field values against what agents actually set. Calculate a per-field accuracy rate. Only enable Auto-Routing when per-field accuracy is at an acceptable threshold for your use case (typically 80%+). Add "Classification accuracy sampled and validated" to the Auto-Routing go-live checklist.
+**How to avoid:** Train agents to act on recommendations when first shown. Exclude Defunct insights when counting "open" recommendations in reports.
 
----
-
-## Gotcha 5: Article Recommendations Degrade If Agents Stop Linking Articles to Cases
-
-**What happens:** Einstein Article Recommendations are working well at launch — agents see relevant articles and the adoption metrics look good. Three months later, recommendation quality has dropped noticeably. Articles being surfaced are less relevant or increasingly generic. No configuration change was made.
-
-**When it occurs:** The Article Recommendations model is trained on case-to-article association history — cases where agents attached or linked a Knowledge article to the case (signaling that article helped solve the issue). If agents change their resolution behavior and stop attaching articles (e.g., they start copying article content into the case comments instead), the training feedback loop breaks. The model's signal degrades over time as old associations age out of the training window and no new associations are being created.
-
-**How to avoid:** Treat agent article-linking behavior as a managed process, not a one-time training event. Include "Attach article to case at resolution" as a formal workflow step in agent SOPs and coaching programs. Monitor article-to-case attachment rates as an operational KPI alongside recommendation click-through rate. If attachment rates drop, investigate whether the workflow step is being skipped before assuming the model has degraded.
+**Source:** Object Reference, AIRecordInsight (Status).
 
 ---
 
-## Gotcha 6: Case Classification Does Not Validate in Sandboxes the Same as Production
+## Gotcha 4: Reply Recommendations Must Be Reviewed and Published, and May Contain Customer Data
 
-**What happens:** An admin enables Case Classification in a full sandbox for testing. After waiting 24–72 hours, the model status shows "Insufficient Data" or suggestions never appear on cases created in the sandbox.
+**What happens:** The feature is enabled and the model has run, but agents see no suggestions; or a suggested reply quotes a customer's account details.
 
-**When it occurs:** Full sandboxes are refreshed from production data, but sandboxes may have significantly fewer closed cases depending on the refresh age and the sandbox data mask configuration. Additionally, the Case Classification model in a sandbox trains separately from production and requires its own threshold of closed case data in the sandbox. If the sandbox has a smaller or masked case dataset, the classification model may not meet training thresholds.
+**When it occurs:** The model "analyzes closed chats for frequently used text snippets," then "Einstein generates a list of these snippets as ReplyText records for you to review and publish, or convert, to quick text." Only PUBLISHED replies are recommended once the model is activated; PUBLISH_FAILED replies failed on validation, access, or corrupted files. "Because the replies generated by Einstein are taken from closed chats with your customers, they may contain customer data." Correction (2026-10-03): earlier versions described a separate "Training Data job."
 
-**How to avoid:** Use sandbox testing to validate the Case Classification component UI, page layout placement, permission set assignments, and admin setup steps. Do not rely on sandbox to validate that suggestions are accurate or that the model is production-quality. Classification model quality validation must happen in production with real closed case data. Communicate this limitation clearly to stakeholders who expect full end-to-end testing in sandbox.
+**How to avoid:** Assign a reviewer, edit out customer details, publish, and re-check PUBLISH_FAILED records. Treat the reply library as content under change control.
+
+**Source:** Object Reference, ReplyText (description, Status, Usage); QuickText (Einstein Reply Recommendations).
+
+---
+
+## Gotcha 5: Article Recommendations Need Languages and Ranked Fields
+
+**What happens:** Recommendations work for English cases and never appear for French ones, or the model reads a weak case field first.
+
+**When it occurs:** ServiceAISetupDefinition `supportedLanguages` is "Required when appSourceType is ARTICLE_RECOMMENDATION." ServiceAISetupField maps Case fields (CASE_SUBJ, CASE_DESC) and article fields (ARTICLE_TITLE, ARTICLE_CONTENT, ARTICLE_SUMMARY), and `fieldPosition` ranks importance ("The value 1 is most important"). Both types are "available only if Einstein Article Recommendations is enabled in your org and the Main Services Agreement has been accepted." UNVERIFIED (2026-10-03): the earlier claim that recommendations depend on agents attaching articles to cases.
+
+**How to avoid:** List the languages cases arrive in, publish articles in them, and rank the case Subject and Description and the article fields deliberately. The checker flags a missing language list and mismatched field mappings (`ES-ART-01`, `ES-ART-02`).
+
+**Source:** Metadata API, ServiceAISetupDefinition; ServiceAISetupField.
+
+---
+
+## Gotcha 6: EinsteinAgentSettings Was Renamed, and Settings Live Under the Settings Type
+
+**What happens:** A retrieve with an old manifest returns nothing for Case Classification, or a deploy carries a stale CaseClassification settings file.
+
+**When it occurs:** "In API version 52.0, we renamed CaseClassificationSettings components to EinsteinAgentSettings components... CaseClassificationSettings components are available in API version 47.0 through 51.0." Both EinsteinAgentSettings and AIReplyRecommendationsSettings are retrieved with the `Settings` type (members `EinsteinAgent` and `AIReplyRecommendations`), and "The wildcard character * (asterisk) in the package.xml manifest file doesn't apply to metadata types for feature settings."
+
+**How to avoid:** Name the settings members explicitly in package.xml at API 52.0 or later. The checker flags old CaseClassification settings files (`ES-CLS-02`).
+
+**Source:** Metadata API, EinsteinAgentSettings (Version); AIReplyRecommendationsSettings (Example Package Manifest; Wildcard Support).
+
+---
+
+## Gotcha 7: Service Replies Are Embedded Features, Not Agent Features
+
+**What happens:** A team tunes the Service Replies prompt templates expecting the Agentforce service agent's answers to improve, and nothing changes.
+
+**When it occurs:** The standard Draft Service Replies prompt templates (Contextual and Grounded) are listed as "Not used with agent," and the Einstein Data Library feature table lists Einstein Service Replies with "Enabled with AI Agents: No." Generative Service Replies are switched by `enableGenReplyRecommendations` and Service AI Grounding by `enableServiceEinsteinGPTGrounding` on AIReplyRecommendationsSettings, separate from predictive Reply Recommendations (`enableAIReplyRecommendations`).
+
+**How to avoid:** Decide which conversations an agent handles and which reps handle with Service Replies, and tune each surface separately.
+
+**Source:** GenAI Guide, Standard Prompt Templates table; Assign Data Libraries to Features. Metadata API, AIReplyRecommendationsSettings.
+
+---
+
+## Gotcha 8: ExternalAIModel Can't Be Retrieved With a Wildcard
+
+**What happens:** A manifest with `<members>*</members>` for ExternalAIModel retrieves no models, and a deploy silently leaves the Reply Recommendations model state behind.
+
+**When it occurs:** ExternalAIModel "Represents the state of a given model for an Einstein for Service feature, such as Einstein Reply Recommendations," with `externalModelStatus` DISABLED, ENABLED, or PAUSED and an optional `threshold` override. "This metadata type doesn't support the wildcard character * (asterisk) in the package.xml manifest file."
+
+**How to avoid:** List ExternalAIModel members by name. Review `externalModelStatus` before deploying so a PAUSED model is not promoted by accident. The checker flags a wildcard member (`ES-MODEL-01`).
+
+**Source:** Metadata API, ExternalAIModel.
+
+---
+
+## Gotcha 9: Generative Features Send the Transcript to the LLM Provider
+
+**What happens:** A compliance review is told that Work Summaries keep all data inside Salesforce.
+
+**When it occurs:** Work Summaries and Service Replies are Einstein generative AI features; prompts travel through the Einstein Trust Layer and the LLM gateway to the model provider under a zero data retention policy ("data sent to the LLM from Salesforce isn't retained and is deleted after a response is sent back"). Masking is "not always available in all features." The Work Summaries invocable actions `getCaseInfoToSummarize` and `getConvTrscpForRecord` gather case details and conversation transcripts for prompt templates. Correction (2026-10-03): earlier versions said no customer data leaves Salesforce's infrastructure.
+
+**How to avoid:** Describe the flow accurately (gateway, ZDR, masking coverage), confirm masking coverage for each feature, and turn on audit data collection before go-live.
+
+**Source:** GenAI Guide, Einstein Trust Layer: Designed for Trust; Large Language Model Data Masking. Metadata API, invocable action values for Einstein Work summaries.
+
+---
+
+## Gotcha 10: Sparse Historical Fields and Licensing Carried From Earlier Versions
+
+**What happens:** Classification quality is poor on fields agents historically left blank, or generative settings are missing in Setup.
+
+**When it occurs:** UNVERIFIED (2026-10-03): earlier versions stated that fields with more than 20% nulls in closed cases produce unreliable models, that 60 to 90 days of clean data are needed before re-adding a field, that Work Summary and Service Replies are greyed out without a generative AI entitlement beyond Service Cloud Einstein, and that sandboxes often show "Insufficient Data." None of these figures were found in a fetched source.
+
+**How to avoid:** Measure null rates before choosing fields (query in `references/examples.md`), require key fields at case close, confirm license entitlements on the contract, and test the setup UI in a sandbox while judging model quality in production data.
+
+**Source:** None fetched; retained from earlier versions with the markers above.
