@@ -204,3 +204,6 @@ docs/comparison.md
 docs/release-plans/
 docs/archive/
 .sf/
+
+# Generated static site (scripts/build_site.py)
+site/_build/

@@ -1,0 +1,50 @@
+name: Pages
+
+# Builds the static skill catalog (scripts/build_site.py) and deploys it to
+# GitHub Pages. The deploy job only runs when Pages is enabled for the repo
+# (Settings > Pages > Source: GitHub Actions); until then the build job still
+# verifies the generator on every push to main.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - "docs/**"
+      - "registry/**"
+      - "scripts/build_site.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build static site
+        run: python3 scripts/build_site.py --out site/_build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/_build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

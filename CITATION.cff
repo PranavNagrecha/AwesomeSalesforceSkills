@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use SfSkills in your work, please cite it using the metadata below."
+type: software
+title: "SfSkills: Salesforce AI Skill Library"
+abstract: >-
+  A source-available library of Salesforce skill packages, run-time agents and an
+  MCP server that make AI coding assistants behave like senior Salesforce
+  practitioners: platform failure modes, refusal of known-wrong LLM output,
+  and claims grounded in official Salesforce documentation.
+authors:
+  - family-names: Nagrecha
+    given-names: Pranav
+    email: pranav.nagrecha11@gmail.com
+    alias: PranavNagrecha
+version: 1.3.0
+date-released: "2026-10-03"
+license: PolyForm-Small-Business-1.0.0
+repository-code: "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
+url: "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"
+keywords:
+  - salesforce
+  - apex
+  - lwc
+  - flow
+  - agentforce
+  - claude-code
+  - mcp
+  - skills-library
