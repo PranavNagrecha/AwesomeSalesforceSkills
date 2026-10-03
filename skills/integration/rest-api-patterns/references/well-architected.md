@@ -45,11 +45,10 @@ REST-based polling (repeated SOQL queries for changed records) consumes API limi
 
 ## Official Sources Used
 
-- REST API Developer Guide — resource reference, request/response semantics, Composite resources, pagination, error format
-  https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm
+Fetched and read on 2026-10-03 unless marked.
 
-- Integration Patterns — synchronous vs. asynchronous pattern selection, API limit considerations, event-driven vs. polling tradeoffs
-  https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html
-
-- Salesforce Well-Architected Overview — reliability and scalability pillar framing, anti-pattern structure
-  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- REST API Developer Guide, Version 67.0: Status Codes and Error Responses, Limit Info Header, Query Options Header, API End-of-Life Policy, Query, Insert or Update (Upsert) a Record Using an External ID, Composite (Send Multiple Requests Using Composite), Batch (Batch Request Body, haltOnError), sObject Tree. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_rest.pdf
+- Salesforce Developer Limits and Allocations Quick Reference, release 262: API Request Limits and Allocations (Concurrent API Request Limits, API Timeout Limits, Total API Request Allocations, Monitoring Your API Usage). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf
+- Identify Your Users and Manage Access, Spring '26: Block Authorization Flows to Improve Security (username-password flow blocked by default for orgs created Summer '23 or later). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/identity.pdf
+- Salesforce Well-Architected Overview, archived 2026-06-16. http://web.archive.org/web/20260616115029/https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Listed by an earlier version of this skill and not re-read on 2026-10-03: REST API Developer Guide landing page https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm (the PDF above was read instead) and Integration Patterns https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html

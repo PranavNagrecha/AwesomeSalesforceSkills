@@ -1,5 +1,28 @@
 #!/usr/bin/env python3
-"""Scan Apex files for SOQL injection and CRUD/FLS risk patterns."""
+"""Scan Apex files for SOQL injection and CRUD/FLS risk patterns.
+
+Stdlib only. Pass class or trigger files, or folders that contain them. The
+severity of version-gated findings comes from the sibling -meta.xml apiVersion.
+
+Corrections (2026-10-03), grounded on the Apex Developer Guide v67.0:
+  * AccessLevel.USER_MODE (Database.query, Database.queryWithBinds, DML methods)
+    and `as user` DML are user-mode idioms. The check used to recognize only the
+    WITH USER_MODE clause, so a 66.0 class using AccessLevel.USER_MODE got a
+    false "no CRUD/FLS enforcement" finding.
+  * Concatenation is now also detected in Database.queryWithBinds,
+    Database.countQuery, and Database.getQueryLocator calls, the other dynamic
+    entry points listed under "Set an Access Mode for Database Operations".
+  * Triggers saved at 67.0+ run their SOQL and DML in user mode unless system
+    mode is stated. The guide recommends an explicit access mode on every
+    database operation in triggers, so an unqualified trigger query is LOW.
+
+A dynamic ORDER BY line that carries an `allowlist` comment is treated as
+acknowledged and not reported.
+
+Usage:
+    python3 check_soql_security.py force-app/main/default/classes
+    python3 check_soql_security.py --self-test
+"""
 
 from __future__ import annotations
 
@@ -11,11 +34,17 @@ from pathlib import Path
 
 
 TEXT_SUFFIXES = {".cls", ".trigger"}
-DATABASE_QUERY_RE = re.compile(r"Database\.query\s*\(", re.IGNORECASE)
+DATABASE_QUERY_RE = re.compile(
+    r"Database\.(query|queryWithBinds|countQuery|countQueryWithBinds|getQueryLocator|getQueryLocatorWithBinds)\s*\(",
+    re.IGNORECASE,
+)
 STRING_CONCAT_RE = re.compile(r"\+\s*\w+|\w+\s*\+")
 WITHOUT_SHARING_RE = re.compile(r"\bwithout\s+sharing\b", re.IGNORECASE)
 AURA_OR_REST_RE = re.compile(r"@AuraEnabled|@RestResource|global\s+static|public\s+static", re.IGNORECASE)
-USER_MODE_RE = re.compile(r"WITH\s+USER_MODE", re.IGNORECASE)
+USER_MODE_RE = re.compile(r"WITH\s+USER_MODE|AccessLevel\.USER_MODE|\b(insert|update|upsert|delete|undelete|merge)\s+as\s+user\b", re.IGNORECASE)
+EXPLICIT_MODE_RE = re.compile(r"(WITH\s+|AccessLevel\.)(USER|SYSTEM)_MODE|\bas\s+(user|system)\b", re.IGNORECASE)
+DB_OP_RE = re.compile(r"\[\s*SELECT\b|\bDatabase\.|\b(insert|update|upsert|delete|undelete|merge)\s+\w", re.IGNORECASE)
+ALLOWLIST_NOTE_RE = re.compile(r"//.*allow-?list", re.IGNORECASE)
 SECURITY_ENFORCED_RE = re.compile(r"WITH\s+SECURITY_ENFORCED", re.IGNORECASE)
 STRIP_RE = re.compile(r"stripInaccessible\s*\(", re.IGNORECASE)
 API_VERSION_RE = re.compile(r"<apiVersion>\s*([0-9.]+)\s*</apiVersion>")
@@ -98,16 +127,16 @@ def audit_file(path: Path) -> list[str]:
             findings.append(
                 f"MEDIUM {path}: uses WITH SECURITY_ENFORCED and no sibling .cls-meta.xml "
                 f"was found, so the apiVersion is unknown. At {SECURITY_ENFORCED_REMOVED_IN} "
-                f"and later this does not compile "
-                f"(\"WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead\"); "
-                f"below that it is legacy. Determine the version, then migrate to WITH USER_MODE"
+                f"and later the Apex Developer Guide says the clause can't be used in Apex SOQL "
+                f"(expect a compile failure); below that it is legacy. Determine the version, "
+                f"then migrate to WITH USER_MODE"
             )
         elif api_version >= SECURITY_ENFORCED_REMOVED_IN:
             findings.append(
                 f"CRITICAL {path}: uses WITH SECURITY_ENFORCED at apiVersion {api_version:g}. "
-                f"The clause was removed in {SECURITY_ENFORCED_REMOVED_IN:g} and this class will "
-                f"not compile: \"WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE "
-                f"instead\". This is a build failure, not a style note"
+                f"From {SECURITY_ENFORCED_REMOVED_IN:g} the clause can't be used in Apex SOQL "
+                f"(Apex Developer Guide, Versioned Behavior Changes); expect a compile failure. "
+                f"Replace it with WITH USER_MODE"
             )
         else:
             findings.append(
@@ -134,22 +163,61 @@ def audit_file(path: Path) -> list[str]:
         if api_version is None or api_version < SECURITY_ENFORCED_REMOVED_IN:
             findings.append(f"MEDIUM {path}: public or API-facing Apex found without obvious CRUD/FLS enforcement pattern")
 
+    if (path.suffix.lower() == ".trigger" and api_version is not None
+            and api_version >= SECURITY_ENFORCED_REMOVED_IN
+            and DB_OP_RE.search(text) and not EXPLICIT_MODE_RE.search(text)):
+        findings.append(
+            f"LOW {path}: trigger saved at apiVersion {api_version:g} has database operations with no explicit "
+            f"access mode. At 67.0+ they run in user mode (sharing applies in the trigger body); the Apex "
+            f"Developer Guide recommends stating WITH USER_MODE or WITH SYSTEM_MODE on every operation"
+        )
+
     for line_number, raw_line in enumerate(lines, start=1):
         line = raw_line.strip()
         if DATABASE_QUERY_RE.search(line) and STRING_CONCAT_RE.search(line):
-            findings.append(f"CRITICAL {path}:{line_number}: Database.query appears to use string concatenation")
-        if "ORDER BY" in line.upper() and STRING_CONCAT_RE.search(line):
+            findings.append(f"CRITICAL {path}:{line_number}: dynamic SOQL call appears to use string concatenation")
+        if ("ORDER BY" in line.upper() and STRING_CONCAT_RE.search(line)
+                and not ALLOWLIST_NOTE_RE.search(raw_line)):
             findings.append(f"HIGH {path}:{line_number}: dynamic ORDER BY detected; confirm allowlist protection")
 
     return findings
+
+
+def self_test() -> int:
+    here = Path(__file__).resolve().parent / "fixtures"
+    good = [f for p in iter_files([str(here / "good")]) for f in audit_file(p)]
+    bad_files = iter_files([str(here / "bad")])
+    bad = [f for p in bad_files for f in audit_file(p)]
+    expected = {
+        "InjectableSearch.cls": ["CRITICAL", "HIGH"],
+        "RemovedClause.cls": ["CRITICAL"],
+        "AccountContactSync.trigger": ["LOW"],
+        "UnenforcedController.cls": ["MEDIUM"],
+    }
+    missing = []
+    for name, sevs in expected.items():
+        hits = [f for f in bad if f"{name}" in f]
+        for sev in sevs:
+            if not any(h.startswith(sev + " ") for h in hits):
+                missing.append(f"{name}: expected a {sev} finding")
+    print(f"good fixtures: {len(good)} finding(s) (expected 0)")
+    for f in good:
+        print(f"  unexpected: {f}")
+    print(f"bad fixtures: {len(bad)} finding(s); missing: {missing or 'none'}")
+    return 0 if not good and not missing else 1
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Check Apex files for dynamic SOQL and CRUD/FLS risk patterns."
     )
-    parser.add_argument("paths", nargs="+", help="Files or directories to inspect")
+    parser.add_argument("paths", nargs="*", help="Files or directories to inspect")
+    parser.add_argument("--self-test", action="store_true", help="Run the bundled fixtures and exit.")
     args = parser.parse_args()
+    if args.self_test:
+        return self_test()
+    if not args.paths:
+        parser.error("pass at least one file or directory, or --self-test")
 
     files = iter_files(args.paths)
     if not files:

@@ -26,34 +26,31 @@ Loyalty Program: "SkyRewards"
 Setup steps:
 
 1. Create Loyalty Program "SkyRewards".
-2. Create Non-Qualifying Currency "Reward Miles".
-3. Create Tier Group "Status Tier".
-4. Create Qualifying Currency "Elite Qualifying Miles" — associate with "Status Tier" Tier Group.
-5. Create Tiers (Silver, Gold, Platinum) with EQM thresholds.
-6. Activate and schedule DPE "Reset Qualifying Points" job (run annually on January 1).
+2. Create Non-Qualifying Currency "Reward Miles" with a Fixed expiry model.
+3. Create Tier Group "Status Tier" and Tiers Silver, Gold, Platinum.
+4. Create Qualifying Currency "Elite Qualifying Miles" and associate it with "Status Tier".
+5. In Manage Tier Eligibility, enter the minimum balances (0; 25,000; 75,000) and Generate Rules to create the Change Tier process.
+6. Clone the Reset Qualifying Points DPE template, activate the clone, and call it from a scheduled flow on the reset date.
 
 **Why it works:** Separating qualifying and non-qualifying currencies allows the program to reset status miles annually without touching reward balances. This is the canonical two-currency architecture.
 
 ---
 
-## Example 2: Activating DPE Batch Jobs for Tier Processing
+## Example 2: Members Reach the Threshold but Their Tier Never Changes
 
-**Context:** A hotel loyalty program has been set up with tiers and currencies but members are not advancing to higher tiers even though they've accumulated sufficient qualifying points.
+**Context:** A hotel loyalty program has tiers and currencies, and members with enough qualifying points stay in their starting tier.
 
-**Problem:** The "Reset Qualifying Points" and tier assessment DPE batch jobs were created by the Loyalty Management setup but never activated or scheduled.
+**Problem:** The team activated DPE definitions and expected them to upgrade tiers. The DPE templates calculate balances, reset qualifying points, and expire points; tier upgrades come from a loyalty program process.
 
 **Solution:**
 
-1. In Salesforce Setup, navigate to **Data Processing Engine**.
-2. Find the definition named `Reset Qualifying Points for [Program Name]`.
-3. Click **Activate**.
-4. Click **Schedule** → Set recurrence: Annual, January 1, 00:00 UTC.
-5. Find the definition named `Aggregate and Expire Fixed Non-Qualifying Points for [Program Name]`.
-6. Click **Activate**.
-7. Click **Schedule** → Set recurrence: Daily, 01:00 UTC.
-8. Run a manual test execution and verify member tier records update correctly.
+1. On the loyalty program, open the tier group, choose Manage Tier Eligibility, enter the minimum eligible balances, and click Generate Rules. Salesforce generates and activates the Change Tier process.
+2. Decide how it runs: as a child of the accrual Transaction Journal process for real-time upgrades, or through a Batch Management job.
+3. For batch, turn on Select Members for Tier Assessment Automatically in Loyalty Management Settings and filter the job on Eligible for Tier Assessment.
+4. Clone the balance and reset DPE templates, activate the clones, and call them from scheduled flows so qualifying balances are current before the tier job runs.
+5. In a sandbox, post a transaction journal that crosses the Gold threshold and confirm the member's tier changes.
 
-**Why it works:** DPE jobs must be explicitly activated and scheduled. Default state after Loyalty Program setup is inactive — tier processing never runs until explicitly activated.
+**Why it works:** Each job does the part the guide assigns to it: DPE clones keep balances current, and the generated process changes tiers.
 
 ---
 
@@ -61,6 +58,6 @@ Setup steps:
 
 **What practitioners do:** Create a single "Points" non-qualifying currency and configure tier thresholds against it for tier advancement.
 
-**What goes wrong:** The tier group's qualifying currency is separate from the non-qualifying currency. Tier assessment reads from the qualifying currency balance, not the non-qualifying one. Members accumulate non-qualifying points but their tier does not advance. The tier calculation engine appears to be broken.
+**What goes wrong:** Tier assessment reads the tier group's qualifying (assessment) currency, not the non-qualifying one. Members accumulate non-qualifying points but their tier does not advance.
 
 **Correct approach:** Create a dedicated qualifying currency associated with the tier group. Non-qualifying points and qualifying points are tracked separately and serve different purposes. Never use a non-qualifying currency for tier thresholds.

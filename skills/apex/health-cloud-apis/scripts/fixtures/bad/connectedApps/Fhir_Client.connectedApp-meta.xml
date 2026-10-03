@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>admin@example.com</contactEmail>
+    <label>Fhir Client</label>
+    <oauthConfig>
+        <callbackUrl>https://ehr.example.com/callback</callbackUrl>
+        <scopes>Api</scopes>
+        <scopes>RefreshToken</scopes>
+        <oauthScope>healthcare</oauthScope>
+    </oauthConfig>
+</ConnectedApp>

@@ -1,46 +1,52 @@
 # Examples — Slack Salesforce Integration Setup
 
-## Example 1: Three-Party Handshake for First-Time Org Connection
+## Example 1: First-Time Org Connection in One Session
 
-**Context:** A company wants to connect their Salesforce Production org to their Slack workspace to enable record sharing and Salesforce search within Slack.
+**Context:** A company wants Salesforce channels and the Salesforce app in Slack for its production org.
 
-**Problem:** The IT team tried to complete the entire setup with one admin who had both Slack Workspace Admin and Salesforce System Admin roles. The setup stalled because the Salesforce approval step was not visible after the Slack admin initiated, leading to repeated failed attempts.
+**Problem:** The Salesforce admin looked for a "connect to Slack" button in Setup and found only a page with nothing pending. The Slack side had never requested the connection.
 
-**Solution:**
+**Solution:** Book one session with the Slack Owner (or a person with the Salesforce Admin system role in Slack) and the Salesforce System Admin, then follow the three documented steps:
 
-Complete the handshake in three distinct phases with the correct role at each step:
+```text
+Step 1  Slack   Workspace name > Tools & settings > Manage Salesforce Organizations
+                > Connect Salesforce Org; enter the org URL; Account mapping field = Email;
+                Automatic account mapping = on; Request Connection
+Step 2  Salesforce  Setup > Platform tools > Slack > Manage Slack Connection;
+                select the user mapping field; accept the terms; Approve
+Step 3  Slack   Manage Salesforce Organizations > select the pending connection > Activate
+                (Owner or Salesforce Admin system role)
+Then    Salesforce  Assign the permission set with Connect Salesforce with Slack to every
+                Slack user; members with mapped accounts get the Salesforce app in Slack
+```
 
-1. **Slack Workspace Admin** logs into Slack → Apps → App Directory → search "Salesforce for Slack" → Install to workspace.
-2. **Salesforce System Admin** logs into Salesforce → Setup → Platform Tools → Apps → Salesforce for Slack → Manage Slack Connection → Approve the pending connection.
-3. **Slack Workspace Admin** (or Workspace Owner) returns to Slack → App Home tab of Salesforce for Slack app → Complete the connection activation.
-4. Each individual user then connects their personal Salesforce account from the Salesforce app in Slack.
-
-**Why it works:** The platform enforces role separation across these steps. Step 2 requires Salesforce System Admin — a different role from the Slack admin who initiated in step 1. Coordinating all three parties in a 15-minute call prevents the multi-day back-and-forth that common ad-hoc setups encounter.
-
----
-
-## Example 2: Governing Record Preview Data Exposure
-
-**Context:** A financial services firm connected Salesforce to Slack for their sales team. A compliance audit discovered that deal terms and compensation data (stored in custom Opportunity fields) were visible in Slack channel previews to all channel members, including junior staff who lack field-level security access to those fields in Salesforce.
-
-**Problem:** Record previews render based on the Salesforce page layout visible to the Platform Integration User, not the individual Slack user's Salesforce field-level security settings.
-
-**Solution:**
-
-1. Identify all custom Opportunity fields containing sensitive data (Compensation, Legal Terms, Discount Approval).
-2. Remove these fields from the Opportunity page layout assigned to the Platform Integration User used by the Salesforce for Slack app.
-3. Create a restricted page layout with only non-sensitive fields for Slack preview purposes.
-4. Assign this restricted layout to the Platform Integration User's profile.
-5. Document a channel governance policy: Opportunity records with deal value > $X should only be shared in designated private Slack channels with restricted membership.
-
-**Why it works:** The preview card renders the page layout visible to the Platform Integration User. Restricting the layout for that user limits what appears in previews regardless of which Slack user shared the URL.
+**Why it works:** The approval page in Salesforce shows a request only after Slack has sent one, and activation needs a Slack role the Salesforce admin may not hold. Doing the steps in order with both role holders present finishes the connection in one sitting.
 
 ---
 
-## Anti-Pattern: Attempting Government Cloud Connection
+## Example 2: Governing What Record Links Reveal
 
-**What practitioners do:** A client with a Salesforce Government Cloud org requests Salesforce for Slack setup.
+**Context:** A financial services firm found that Opportunity links posted in a broad channel showed deal amounts to junior staff who cannot see that field in Salesforce.
 
-**What goes wrong:** Government Cloud orgs cannot be connected to Slack workspaces — this is an absolute platform restriction. Attempts to initiate the connection fail at the Salesforce approval step with no available workaround.
+**Problem:** Link unfurling was set to "Data Viewable by User Sharing the Link", so the channel saw the poster's view of the record, rendered with the object's compact layout because no Slack Record Layout existed.
 
-**Correct approach:** Inform the client of the hard restriction. Propose alternative integration patterns: custom Slack app built using Slack SDK, MuleSoft-based integration, or native Salesforce notifications via email. There is no configuration workaround for Government Cloud Slack connection.
+**Solution:**
+
+1. In Setup > Initial Slack Setup > Verify Data Sharing Options, change the unfurling option to Name, Type, and Preview Button. The channel now sees the name and type; the preview window opens with each viewer's own permissions.
+2. For objects where a data preview is still wanted, create a URL Unfurling Slack Record Layout (Object Manager > object > Slack Record Layouts > New > URL Unfurling Layout) with only non-sensitive fields, and assign it to the relevant profiles.
+3. For Sales Cloud for Slack notifications, set record detail security to Show object type only.
+4. Publish a channel policy covering public channels, private channels, and Slack Connect channels.
+
+**Why it works:** What a channel sees is the configured unfurling option plus the layout it uses, so changing those two settings changes the exposure for every future link.
+
+---
+
+## Anti-Pattern: Attempting a Government Cloud Connection
+
+**What practitioners do:** Start the connection for a Government Cloud org because the customer asked for Slack features.
+
+**What goes wrong:** Slack cannot connect to Government Cloud Salesforce orgs, and the Salesforce for Slack apps are not supported in Government Cloud or Government Cloud Plus.
+
+**Correct approach:** State the restriction early and propose an alternative pattern, such as a custom Slack app or middleware.
+
+See [`metadata-examples.md`](metadata-examples.md) for the connection plan file the checker validates and the permission set to deploy.

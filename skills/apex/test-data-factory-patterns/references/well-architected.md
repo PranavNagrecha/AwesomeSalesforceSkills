@@ -15,11 +15,14 @@
 
 1. **`@isTest(SeeAllData=true)`** — tests that read from org data are fragile, environment-specific, and cannot run in scratch orgs. They break when an admin changes data or when the test runs in a sandbox with different records. Use factory methods to create all test data.
 2. **Hardcoded record IDs in factories** — hardcoding RecordTypeId, ProfileId, or RoleId values that are org-specific causes tests to fail when deployed to any other org. Always query by Name or DeveloperName.
-3. **Mixed DML without `System.runAs()`** — creating a User in the same transaction as Account or Contact causes `MIXED_DML_OPERATION` at runtime. The error often appears only in test runs, not in interactive execution, because the isolation is enforced differently. Always wrap User creation in `System.runAs()`.
+3. **Mixed DML without `System.runAs()`**: DML on setup objects (a user with a role, a permission set assignment, a group member) in the same transaction as Account or Contact DML raises a mixed DML error. The Apex Developer Guide notes that mixed DML validation is skipped during deployment, so the same suite can pass a deploy and fail when run in the UI. Enclose setup DML in `System.runAs()`.
 
 ## Official Sources Used
 
-- Apex Developer Guide (Common Test Utility Classes) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_utility_classes.htm
-- Apex Developer Guide (@testSetup) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_testsetup_using.htm
-- Apex Developer Guide (Mixed DML Operations in Tests) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dml_non_mix_sobjects_test_methods.htm
-- Apex Developer Guide (System.runAs) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_tools_runas.htm
+Fetched and read on 2026-10-03 (release 262, Summer '26, API 67.0).
+
+- Apex Developer Guide, Version 67.0: Isolation of Test Data from Organization Data in Unit Tests, Using the isTest(SeeAllData=True) Annotation, Loading Test Data, Common Test Utility Classes for Test Data Creation, Using Test Setup Methods (and Test Setup Method Considerations), Using the runAs Method, sObjects That Cannot Be Used Together in DML Operations, Mixed DML Operations in Test Methods, Custom Settings (test isolation note). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Salesforce Developer Limits and Allocations Quick Reference, release 262: Per-Transaction Apex Limits (150 DML statements, 10,000 DML rows). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf
+- Apex Reference Guide, Version 67.0: System Class `runAs(userSObject)` (implicit insert, license limits, mixed DML note). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf
+- Salesforce Well-Architected Overview, archived 2026-06-16. http://web.archive.org/web/20260616115029/https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Listed by an earlier version of this skill and not re-fetched on 2026-10-03 (the atlas pages return a script shell): Apex Developer Guide topic pages apex_testing_utility_classes.htm, apex_testing_testsetup_using.htm, apex_dml_non_mix_sobjects_test_methods.htm, apex_testing_tools_runas.htm under https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/. The same content was read in the PDF above.

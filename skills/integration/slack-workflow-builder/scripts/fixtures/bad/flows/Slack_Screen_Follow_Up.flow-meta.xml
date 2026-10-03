@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <description>Called by the Slack Workflow Builder Run a Flow step to log a follow-up task on an Opportunity.</description>
+    <interviewLabel>Slack Screen Follow Up {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Slack Screen Follow Up</label>
+    <processType>Flow</processType>
+    <recordCreates>
+        <name>Create_Follow_Up_Task</name>
+        <label>Create Follow Up Task</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <assignRecordIdToReference>taskId</assignRecordIdToReference>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>taskSubject</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>opportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+    </recordCreates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_Follow_Up_Task</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>opportunityId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>taskId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>taskSubject</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

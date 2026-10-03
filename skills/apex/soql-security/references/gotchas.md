@@ -1,115 +1,164 @@
 # SOQL Security — Gotchas
 
-## 1. `String.escapeSingleQuotes()` Does NOT Protect Structural SOQL
+Non-obvious behaviors that cause real security-review failures and production incidents. Each gotcha names its source. "Apex Guide" means the Apex Developer Guide, Version 67.0 (Summer '26). "Apex Reference" means the Apex Reference Guide, Version 67.0. "SOQL Reference" means the SOQL and SOSL Reference, Version 67.0.
 
-`String.escapeSingleQuotes()` only prevents injection through quoted string values. It does nothing when user input appears in:
-- Field names: `SELECT ` + userField + ` FROM Account`
-- Object names: `SELECT Id FROM ` + userObject
-- ORDER BY: `ORDER BY ` + sortField
-- Operators: `WHERE Status ` + operator + ` 'Active'`
-- LIMIT/OFFSET: `LIMIT ` + userLimit
+The controlling fact for most of these is the `apiVersion` in the class's or trigger's own `-meta.xml`, not the org's release. A Summer '26 org runs a class saved at 58.0 with 58.0 behavior. For the per-version table read [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
-For all structural elements, use an **allowlist**. `escapeSingleQuotes` is a supplementary defense for string values only.
+## Gotcha 1: `String.escapeSingleQuotes()` Does Not Protect Structural SOQL
 
----
+**What happens:** A reviewer accepts `escapeSingleQuotes` as the injection fix, and the query is still injectable through a field name, sort column, operator, object name, or `LIMIT` value.
 
-## 2. FLS Enforcement Throws on ANY Inaccessible Field — It Does Not Filter
+**When it occurs:** User input is concatenated anywhere outside a quoted string literal, for example `'SELECT ' + userField + ' FROM Account'`, `'ORDER BY ' + sortField`, `'WHERE Status ' + operator + ' \'Active\''`, or `'LIMIT ' + userLimit`. The Apex Guide says the method "adds the escape character (\) to all single quotation marks in a string" and "ensures that all single quotation marks are treated as enclosing strings, instead of database commands". That is the whole of what it does.
 
-If any field in the SELECT list is inaccessible to the running user, the query throws a `System.QueryException` and the entire query fails. This means:
-- A user who can't see `AnnualRevenue` gets no records at all, not records without that field
-- For UI components where partial results are OK, use `stripInaccessible()` instead — that is the whole difference between the two, and switching enforcement idiom does not change it
-- `WITH USER_MODE` (GA in Spring '23 / API 57.0) behaves the same way
+**How to avoid:** Use static SOQL and bind variables first (Apex Guide, SOQL Injection Defenses). Allowlist every structural element against a fixed set or a `Schema` describe. Treat `escapeSingleQuotes` as a fallback for a quoted literal that cannot be bound, never as the primary control. Do not escape a value that is already passed as a bind variable: a bind is treated as data, so escaping adds a literal backslash to the value you are searching for.
 
-**Which idiom applies is decided by the `apiVersion` in the class's `.cls-meta.xml`, not the org's release** — a Summer '26 org runs a class pinned to 58.0 quite happily. `WITH SECURITY_ENFORCED` was removed in 67.0 and does not compile there (`WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`); below that it still compiles but is the weaker construct. `WITH USER_MODE` is the read idiom at every version from 57.0. For the per-version breakdown read the canonical table — [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version* — rather than a copy of it here.
+**Source:** Apex Guide, SOQL Injection and SOQL Injection Defenses; Apex Reference, String Class `escapeSingleQuotes`.
 
 ---
 
-## 3. `WITH USER_MODE` vs `with sharing` — They Are Not The Same
+## Gotcha 2: FLS Enforcement on Read Throws; It Does Not Filter
+
+**What happens:** A user who cannot read one selected field gets no rows at all, and the LWC shows an error instead of a list.
+
+**When it occurs:** The query uses `WITH USER_MODE` (or `AccessLevel.USER_MODE`) and selects a field the running user cannot read. User mode "finds all FLS errors in your SOQL query" and "supports the getInaccessibleFields() method on QueryException to examine the full set of access errors". It also processes the `WHERE` clause and polymorphic fields such as `Owner`.
+
+**How to avoid:** Decide per method whether the contract is fail-fast or degrade. For fail-fast, keep `WITH USER_MODE` and catch `QueryException`, reporting `getInaccessibleFields()`. For degrade, query and pass the result through `Security.stripInaccessible(AccessType.READABLE, rows)`. Switching enforcement idiom is the only way to change this behavior.
+
+**Source:** Apex Guide, Set an Access Mode for Database Operations (Set an Access Mode for SOQL and SOSL Queries).
+
+---
+
+## Gotcha 3: `WITH SECURITY_ENFORCED` Is Not Supported at API 67.0 and Later
+
+**What happens:** Code copied from an older example fails to save or deploy once its `apiVersion` is raised to 67.0.
+
+**When it occurs:** Any Apex SOQL `SELECT` with `WITH SECURITY_ENFORCED` in a class or trigger saved at 67.0+. The Apex Guide versioned-behavior table for 67.0 says: "you cannot use the WITH SECURITY_ENFORCED clause in SOQL SELECT queries in Apex code. Instead, to run a SOQL or SOSL query in user mode, use the WITH USER_MODE clause." Below 67.0 the clause still compiles, and the SOQL Reference recommends `WITH USER_MODE` "because it has fewer limitations". UNVERIFIED (2026-10-03): the exact compiler message `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead` quoted by this skill's checker is not printed in any fetched guide.
+
+**How to avoid:** Replace the clause with `WITH USER_MODE` before raising `apiVersion`. `scripts/check_soql_security.py` reports the clause as CRITICAL when the sibling `-meta.xml` says 67.0+ and as LOW below it.
+
+**Source:** Apex Guide, Apex Versioned Behavior Changes (Version 67.0) and Apex Security and Sharing Model (Versioned Behavior Changes); SOQL Reference, WITH.
+
+---
+
+## Gotcha 4: `with sharing` Never Enforced FLS or Object Permissions
+
+**What happens:** A `with sharing` class at `apiVersion` 66.0 or earlier returns `SSN__c` to a user whose profile hides that field.
+
+**When it occurs:** Teams treat the sharing keyword as the whole security model. The Apex Guide is explicit: "Using the with sharing keyword doesn't enforce the user's permissions and field-level security." At 67.0+ the unqualified query is blocked anyway, but by the default access mode, not by the keyword.
+
+**How to avoid:** Pair the sharing keyword with a field-level idiom: `WITH USER_MODE`, `AccessLevel.USER_MODE`, or `Security.stripInaccessible`. State user mode even at 67.0+, so the intent survives a later copy into an older class.
 
 | | `with sharing` | `WITH USER_MODE` |
-|--|--------------|-----------------|
-| Enforces row-level sharing rules | ✅ | ✅ |
-| Enforces object-level CRUD | ❌ | ✅ |
-| Enforces field-level security | ❌ | ✅ |
-| Available since | Always | GA Spring '23 (API 57.0) |
+|--|--|--|
+| Enforces record sharing | Yes | Yes |
+| Enforces object permissions | No | Yes |
+| Enforces field-level security | No | Yes |
 
-A class declared `with sharing` does NOT enforce FLS — the keyword never did, at any version. **At `apiVersion` ≤ 66.0** that means you can read `SSN__c` from a `with sharing` class unless you also use `WITH USER_MODE` or `stripInaccessible`. **At 67.0+** the unqualified query is blocked anyway, but by the default access mode rather than by the keyword: the sharing keyword still contributes nothing to FLS.
-
----
-
-## 4. `@AuraEnabled` Methods Run in System Context By Default — Below API 67.0
-
-This gotcha is version-gated, and the gate is the class's own `apiVersion`, not the org's release.
-
-**At `apiVersion` ≤ 66.0** — even when a user calls an `@AuraEnabled` method, Apex runs in system context unless:
-- The class is declared `with sharing` (enforces row sharing)
-- The query enforces FLS with `WITH USER_MODE` (57.0+), or `Security.stripInaccessible` on the result
-
-Without these, your LWC can expose fields the user doesn't have read access to.
-
-**At `apiVersion` 67.0+ the default inverted.** Apex database operations run in user mode by default, and a class with no sharing keyword defaults to `with sharing`. The exposure risk above is closed by default; the new risk is its mirror image — integration, batch, and system-utility code that legitimately needs elevated access now silently returns fewer rows, or throws, unless it opts in with `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE`. Adding "user mode for security" to a 67.0 class is a no-op.
-
-**Do not treat `WITH SECURITY_ENFORCED` as satisfying this at any version** — see Gotcha 2. `scripts/check_soql_security.py` reports it as a finding whose severity it derives from the sibling `.cls-meta.xml`: CRITICAL at 67.0+ (a build failure), LOW below it (legacy to migrate).
+**Source:** Apex Guide, Enforce Sharing Rules (Note) and Set an Access Mode for Database Operations (Note on user mode always applying sharing).
 
 ---
 
-## 5. Bind Variables Don't Work for All SOQL Clauses
+## Gotcha 5: At 66.0 and Earlier, a Keyword-less `@AuraEnabled` Class Is `with sharing` but Still Ignores FLS
 
-Bind variables (`:varName`) are only valid for **values** in WHERE clauses, not for:
-- Field names in SELECT
-- Object names in FROM
-- ORDER BY fields
-- LIMIT values (though `:intVar` works for LIMIT since API 20)
+**What happens:** A reviewer assumes a keyword-less `@AuraEnabled` controller at 66.0 runs without sharing and is surprised that record visibility is already restricted, while field-level security is still not enforced.
+
+**When it occurs:** For classes saved at 66.0 or earlier with no sharing declaration, the Apex Guide lists the rules: if any class in the inheritance chain is saved at 67.0+ the class runs `with sharing`; "if the class is an Aura controller or an @AuraEnabled method called from a Lightning web component, the class runs in with sharing mode"; a non-entry-point class takes the caller's mode; otherwise it runs `without sharing`. Object and field permissions are not enforced at 66.0 and earlier because system mode is the default there. This corrects an earlier version of this skill, which said such a method runs without sharing.
+
+**How to avoid:** Declare a sharing keyword on every class with SOQL or DML, as the Apex Guide recommends, and add a field-level idiom. At 67.0+ classes with no keyword run `with sharing` and database operations run in user mode, so the inverse risk appears: batch, integration, and utility code that needs elevation must opt in with `WITH SYSTEM_MODE` or `AccessLevel.SYSTEM_MODE`.
+
+**Source:** Apex Guide, Apex Security and Sharing Model (Versioned Behavior Changes) and Use the with sharing, without sharing, and inherited sharing Keywords (Omitted Sharing).
+
+---
+
+## Gotcha 6: Trigger Bodies Run Without Sharing, but Their Queries Run in User Mode at 67.0+
+
+**What happens:** A trigger saved at 67.0 suddenly sees fewer related records, or throws on a field the running user cannot read, after a version bump.
+
+**When it occurs:** "Apex triggers can't have an explicit sharing declaration. Triggers always run implicitly in a without sharing context." However, "database operations within trigger bodies, including SOQL queries, SOSL queries, DML statements, and Database methods, run in user mode unless system mode is explicitly specified. User mode overrides the trigger's without sharing context and effectively enforces a with sharing context in the trigger body." This corrects an earlier version of this skill, which said the 67.0 default does not reach the trigger body.
+
+**How to avoid:** Set an explicit access mode on every database operation in triggers and handlers, as the Apex Guide recommends. Use `WITH SYSTEM_MODE` only where the trigger genuinely needs all records, and delegate logic to a handler class that declares its own sharing keyword.
+
+**Source:** Apex Guide, Use the with sharing, without sharing, and inherited sharing Keywords (Implementation in Apex Triggers, AccountUpdateTrigger example).
+
+---
+
+## Gotcha 7: Bind Variables Work for Values, Not for Structure or Object Fields in Dynamic SOQL
+
+**What happens:** A developer tries to bind a field name, or binds `:record.Field__c` inside a `Database.query` string, and gets a compile error or `Variable does not exist` at run time.
+
+**When it occurs:** Binds replace values only. In dynamic SOQL "you can't use bind variable fields in the query string with Database.query", so `:myVariable.field1__c` fails. With `Database.queryWithBinds`, map keys are compared case-insensitively, and duplicate keys that differ only in case throw `QueryException`.
+
+**How to avoid:** Resolve object fields into a local variable first, or use `Database.queryWithBinds(query, bindMap, AccessLevel.USER_MODE)` with unique keys. Allowlist structural parts separately.
 
 ```apex
-// ✅ LIMIT with bind variable works
+// LIMIT accepts a bind; a field name does not
 Integer maxRecords = 100;
 List<Account> accts = [SELECT Id FROM Account LIMIT :maxRecords];
-
-// ❌ Field name bind variable does NOT work — compile error
-String fieldName = 'Name';
-List<Account> accts = [SELECT :fieldName FROM Account]; // Invalid
 ```
+
+**Source:** Apex Guide, Dynamic SOQL and Dynamic SOQL Considerations.
 
 ---
 
-## 6. Inline SOQL in `without sharing` Classes — What It Bypasses Depends on the `apiVersion`
+## Gotcha 8: `stripInaccessible` Returns a New List, Never Filters Records, and Throws on Object Access
 
-Inline SOQL (not dynamic) is safe from injection but not automatically safe from an access-control perspective. **At `apiVersion` ≤ 66.0** the query below bypasses both sharing and FLS. **At 67.0+** `without sharing` is a record-visibility keyword only: database operations enforce the running user's FLS and object permissions by default, so code that genuinely needs them off states it per statement (`WITH SYSTEM_MODE`, `AccessLevel.SYSTEM_MODE`) — which is the improvement, because the bypass is now written down.
+**What happens:** Code keeps using the original list and leaks the fields, or expects an empty list for a user who cannot read the object and gets an exception instead.
 
-```apex
-public without sharing class BatchProcessor {
-    // ❌ Even though no injection risk, this exposes ALL account records
-    // regardless of the user's sharing access
-    List<Account> allAccounts = [SELECT Id, SSN__c FROM Account];
-}
-```
+**When it occurs:** `Security.stripInaccessible` "creates a return list of sObjects that is identical to the source records, except that the fields that are inaccessible to the current user are removed". It does not change record visibility. The `enforceRootObjectCRUD` parameter defaults to true, so a failed object-level check throws. The method does not support `AggregateResult`, and the `Id` field is never stripped.
 
----
-
-## 7. `stripInaccessible` Returns a New Collection — The Original Is Unchanged
+**How to avoid:** Always continue with `decision.getRecords()`. Use `getRemovedFields()` for logging. Combine with a sharing keyword for record visibility, and catch the exception where object access may be missing.
 
 ```apex
 SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
-// ❌ records still has all the original fields
-// ✅ Use decision.getRecords() for the safe version
 List<Account> safeRecords = (List<Account>) decision.getRecords();
 ```
 
----
-
-## 8. SOQL in Visualforce Controllers Has Different Rules
-
-In Visualforce `StandardController` extensions, the platform enforces FLS automatically for bound fields (`{!account.Name}`). But at `apiVersion` ≤ 66.0 Apex queries in the extension class still bypass FLS unless you add `WITH USER_MODE` (at 67.0+ they enforce it by default). Don't assume Visualforce field binding protects your Apex layer either way.
+**Source:** Apex Guide, Enforce Security with the stripInaccessible Method; Apex Reference, Security Class `stripInaccessible(accessCheckType, sourceRecords, enforceRootObjectCRUD)`.
 
 ---
 
-## 9. Dynamic SOQL in Test Classes Can Mask Injection Vulnerabilities
+## Gotcha 9: User Mode Does Not Enforce Experience Cloud Personal Information Settings
 
-If you use `Test.isRunningTest()` to skip validation in test context, you won't catch injection vulnerabilities in test coverage. Never bypass allowlist or bind variable logic in tests.
+**What happens:** A site member sees another user's email or phone through an Apex query, even though the query runs in user mode.
+
+**When it occurs:** Orgs with Experience Cloud sites hide personal user fields through site settings. The Apex Guide states these settings "aren't enforced in Apex, even with security features such as the WITH USER_MODE clause or the stripInaccessible method".
+
+**How to avoid:** Filter User fields explicitly in Apex for site-facing code, following the guide's "Comply with a User's Personal Information Visibility Settings" sample. Test with a site member, not an internal user.
+
+**Source:** Apex Guide, Enforce Object and Field Permissions (Considerations).
 
 ---
 
-## 10. `Security.stripInaccessible` Was Introduced in Summer '18
+## Gotcha 10: The SOQL Reference and the Apex Guide Disagree About the Default Mode
 
-If you're on an older API version or deploying to a legacy scratch org definition, `stripInaccessible` may not be available. Check the org's API version. For environments before Summer '18, use `Schema.DescribeFieldResult.isAccessible()` per-field checks.
+**What happens:** A reviewer quotes the SOQL Reference line "Apex code runs in system mode by default" to argue that a 67.0 class without `WITH USER_MODE` is insecure, or the reverse.
+
+**When it occurs:** The Version 67.0 SOQL Reference still describes system mode as the Apex default in its `WITH` section, while the Version 67.0 Apex Guide says user mode is the default at 67.0+ and system mode at 66.0 and earlier.
+
+**How to avoid:** Treat the Apex Guide versioned-behavior table as authoritative for the default, keyed by the class's `apiVersion`. Write the access mode explicitly so the code reads the same under either reading.
+
+**Source:** SOQL Reference, SOQL SELECT Syntax and WITH; Apex Guide, Apex Versioned Behavior Changes (Version 67.0).
+
+---
+
+## Gotcha 11: Tests That Skip Validation Hide Injection
+
+**What happens:** Coverage is green, and the injectable branch was never exercised.
+
+**When it occurs:** Code uses `Test.isRunningTest()` to bypass allowlist or bind logic in test context.
+
+**How to avoid:** Never branch security logic on test context. Write a negative test that passes a hostile sort field and asserts the method rejects it.
+
+**Source:** Practice guidance; no fetched guide states it. UNVERIFIED (2026-10-03) as a platform claim.
+
+---
+
+## Gotcha 12: `Security.stripInaccessible` Availability on Old API Versions
+
+**What happens:** A class pinned to a very old `apiVersion` cannot call the method.
+
+**When it occurs:** Legacy code or old scratch definitions. UNVERIFIED (2026-10-03): this skill previously dated the method to Summer '18; the Version 67.0 references do not state the introduction version.
+
+**How to avoid:** Raise the class `apiVersion` before adopting the method. Where that is not possible, check `Schema.DescribeFieldResult.isAccessible()` per field.
+
+**Source:** Apex Reference, Security Class (no version note found).

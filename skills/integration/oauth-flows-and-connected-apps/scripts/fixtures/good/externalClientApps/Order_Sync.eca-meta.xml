@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExternalClientApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>integration-owner@example.com</contactEmail>
+    <description>Middleware order sync, client credentials flow</description>
+    <distributionState>Local</distributionState>
+    <isProtected>false</isProtected>
+    <label>Order Sync</label>
+</ExternalClientApplication>

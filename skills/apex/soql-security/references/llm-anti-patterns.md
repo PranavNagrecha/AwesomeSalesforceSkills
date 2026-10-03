@@ -70,30 +70,34 @@ public static List<Account> getAccounts() {
 
 ---
 
-## Anti-Pattern 3: Using WITH USER_MODE but calling Database.query() with string SOQL
+## Anti-Pattern 3: Claiming WITH USER_MODE cannot be used in a Database.query string
 
 **What the LLM generates:**
 
 ```apex
 String query = 'SELECT Id, Name FROM Account WHERE Industry = :industry';
-List<Account> results = Database.query(query); // Access mode left implicit — see below
-// WITH USER_MODE cannot be appended to Database.query string
+List<Account> results = Database.query(query); // access mode left implicit
+// "WITH USER_MODE is compile-time only, so dynamic SOQL cannot enforce FLS"
 ```
 
-**Why it happens:** LLMs know about `WITH USER_MODE` but forget it is a compile-time clause for inline SOQL, not for dynamic `Database.query()`. For dynamic SOQL with user-mode enforcement, you must use `Database.query(query, AccessLevel.USER_MODE)`. The single-argument overload leaves the mode implicit, and the implicit value flipped: system mode at `apiVersion` ≤ 66.0, user mode at 67.0+. Pass the `AccessLevel` so the call means the same thing at both.
+**Why it happens:** The model remembers that `WITH USER_MODE` appears in inline SOQL examples and invents a restriction. An earlier version of this skill made the same claim. The Version 67.0 Apex Developer Guide shows `Database.query('SELECT Id FROM Account__dlm WITH USER_MODE LIMIT 1')` in its integration-test example, so the clause is valid inside a dynamic string.
 
 **Correct pattern:**
 
 ```apex
-// For inline SOQL — WITH USER_MODE works
-List<Account> results = [SELECT Id, Name FROM Account WHERE Industry = :industry WITH USER_MODE];
+// Inline SOQL
+List<Account> a = [SELECT Id, Name FROM Account WHERE Industry = :industry WITH USER_MODE];
 
-// For dynamic SOQL — use AccessLevel parameter
-String query = 'SELECT Id, Name FROM Account WHERE Industry = :industry';
-List<Account> results = Database.query(query, AccessLevel.USER_MODE);
+// Dynamic SOQL: either form enforces user mode; the AccessLevel argument keeps
+// the query string free of security clauses and is required by queryWithBinds
+List<Account> b = Database.query(
+    'SELECT Id, Name FROM Account WHERE Industry = :industry', AccessLevel.USER_MODE);
+Map<String, Object> binds = new Map<String, Object>{ 'industry' => industry };
+List<Account> c = Database.queryWithBinds(
+    'SELECT Id, Name FROM Account WHERE Industry = :industry', binds, AccessLevel.USER_MODE);
 ```
 
-**Detection hint:** `Database\.query\(` without `AccessLevel.USER_MODE` as the second parameter, combined with missing `WITH USER_MODE` in the query string.
+**Detection hint:** A `Database.query(` call in a class saved at 66.0 or earlier with neither `AccessLevel.USER_MODE` nor `WITH USER_MODE` in the string, or advice that says the clause is inline-only.
 
 ---
 
@@ -140,19 +144,20 @@ return decision.getRecords();
 
 ```apex
 public class DataExporter {
-    // No sharing keyword — runs without sharing at apiVersion <= 66.0
-    // (at 67.0+ a bare class runs with sharing, and one link saved at 67.0+
-    //  pulls the other keyword-less classes in the chain with it; an explicit
-    //  without sharing still wins for that class at every version)
+    // No sharing keyword. At apiVersion <= 66.0 an @AuraEnabled method called
+    // from LWC runs with sharing, but object and field permissions are NOT
+    // enforced because system mode is the default there. At 67.0+ the class
+    // runs with sharing and database operations run in user mode.
     @AuraEnabled
     public static List<Account> exportData() {
         return [SELECT Id, Name, AnnualRevenue, SSN__c FROM Account];
-        // No sharing enforcement, no FLS, no CRUD check
+        // No FLS or CRUD check at <= 66.0 (sharing applies only because the
+        // caller is LWC; any other entry point inherits or drops it)
     }
 }
 ```
 
-**Why it happens:** LLMs generate the query without any security clause and omit the sharing keyword. On a class pinned to `apiVersion` ≤ 66.0 — still the common case for existing code — that `@AuraEnabled` method lets any user read any record and any field, a critical vulnerability that would fail a Salesforce security review. On a 67.0+ class both defaults invert and the gap closes on its own, so the correct pattern below is a no-op there rather than a fix; write it anyway, because the same source file is one `apiVersion` edit away from the old behavior and the explicit form reads the same at every version.
+**Why it happens:** LLMs generate the query without any security clause and omit the sharing keyword. On a class pinned to `apiVersion` ≤ 66.0, still the common case for existing code, that `@AuraEnabled` method lets any user read any field on the records they can see (the Apex Developer Guide says an `@AuraEnabled` method called from LWC runs `with sharing` even without a keyword, but system mode still skips object and field permissions), a critical vulnerability that would fail a Salesforce security review. On a 67.0+ class both defaults invert and the gap closes on its own, so the correct pattern below is a no-op there rather than a fix; write it anyway, because the same source file is one `apiVersion` edit away from the old behavior and the explicit form reads the same at every version.
 
 **Correct pattern:**
 
@@ -165,7 +170,7 @@ public with sharing class DataExporter {
 }
 ```
 
-**Detection hint:** `@AuraEnabled` methods in a class pinned below `apiVersion` 67.0 that declares no sharing keyword, whose SOQL has no `WITH USER_MODE` and no `Security.stripInaccessible` on the result. `WITH SECURITY_ENFORCED` does not clear this hint at any version — see Gotcha 2.
+**Detection hint:** `@AuraEnabled` methods in a class pinned below `apiVersion` 67.0 that declares no sharing keyword, whose SOQL has no `WITH USER_MODE` and no `Security.stripInaccessible` on the result. `WITH SECURITY_ENFORCED` does not clear this hint at any version; see Gotcha 3 in `references/gotchas.md`.
 
 ---
 
@@ -200,3 +205,51 @@ List<Account> results = Database.query(query);
 ```
 
 **Detection hint:** User-provided values concatenated into `ORDER BY`, `GROUP BY`, or `LIMIT` clauses without whitelist validation.
+
+---
+
+## Anti-Pattern 7: Saying the 67.0 user-mode default does not reach trigger bodies
+
+**What the LLM generates:** "Triggers always run in system mode, so the query in this 67.0 trigger sees every Contact." The handler then assumes it will find all related records.
+
+**Why it happens:** For years triggers were described as system-mode code. The Version 67.0 Apex Developer Guide now says the trigger itself runs without sharing, but "database operations within trigger bodies ... run in user mode unless system mode is explicitly specified", which "effectively enforces a with sharing context in the trigger body".
+
+**Correct pattern:**
+
+```apex
+// trigger saved at apiVersion 67.0
+trigger AccountContactSync on Account (after update) {
+    // Deliberate elevation, written down: the sync must see every related Contact
+    List<Contact> related = [
+        SELECT Id, AccountId FROM Contact
+        WHERE AccountId IN :Trigger.newMap.keySet()
+        WITH SYSTEM_MODE
+    ];
+    AccountContactSyncHandler.apply(related);
+}
+```
+
+**Detection hint:** A `.trigger` saved at 67.0+ whose SOQL or DML has no explicit access mode, together with logic that assumes all records are visible.
+
+---
+
+## Anti-Pattern 8: Escaping a value that is already a bind variable
+
+**What the LLM generates:**
+
+```apex
+String likePattern = '%' + String.escapeSingleQuotes(searchTerm) + '%';
+List<Account> rows = [SELECT Id FROM Account WHERE Name LIKE :likePattern];
+```
+
+**Why it happens:** The model stacks every defense it knows. A bind variable is already treated as data, so escaping it adds a literal backslash before each apostrophe and a search for `O'Brien` stops matching.
+
+**Correct pattern:**
+
+```apex
+String likePattern = '%' + searchTerm + '%';
+List<Account> rows = [SELECT Id FROM Account WHERE Name LIKE :likePattern WITH USER_MODE];
+```
+
+**Detection hint:** `escapeSingleQuotes` applied to a variable that is then used only after a `:` bind marker.
+

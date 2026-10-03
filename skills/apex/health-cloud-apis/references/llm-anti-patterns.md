@@ -1,66 +1,85 @@
 # LLM Anti-Patterns — Health Cloud APIs
 
-Common mistakes AI coding assistants make when generating or advising on Health Cloud API usage.
+Common mistakes AI coding assistants make when generating or advising on Health Cloud API usage. Facts cite the Salesforce Healthcare API guide (developer.salesforce.com/docs/industries/health/guide) and the Agentforce Health Developer Guide, Summer '26.
 
-## Anti-Pattern 1: Treating FHIR Healthcare API as Interchangeable with Standard SObject API
+## Anti-Pattern 1: Putting the FHIR API under `/services/data`
 
-**What the LLM generates:** Code that calls `/services/data/vXX.0/sobjects/HealthCondition` expecting FHIR R4 bundle responses, or code that sends FHIR bundle JSON to the standard SObject endpoint.
+**What the LLM generates:** `GET https://{instance}.my.salesforce.com/services/data/v60.0/healthcare/fhir/R4/Condition/{id}`.
 
-**Why it happens:** LLMs know that Health Cloud uses both FHIR R4 objects and standard SObjects. Without knowing the distinct API endpoints for each layer, they conflate them into a single API surface.
+**Why it happens:** Every other Salesforce REST API sits under `/services/data`, so the model extrapolates. An earlier version of this skill made the same mistake.
 
-**Correct pattern:**
-Standard SObject endpoint: `/services/data/vXX.0/sobjects/HealthCondition/{id}` — returns SObject JSON, no FHIR formatting, no `healthcare` scope required. FHIR Healthcare API: `/services/data/vXX.0/healthcare/fhir/R4/Condition/{id}` — returns FHIR R4 resource JSON, requires `healthcare` OAuth scope.
+**Correct pattern:** The Healthcare API URL format is `<Domain name>/<FHIR module>/<FHIR version>/<API version>/<Resource type>`, for example `https://api.healthcloud.salesforce.com/clinical-summary/fhir-r4/v1/Condition`; sandboxes insert `/sandBox/` after the host, and EU, CA, and AU orgs use `eu.`, `ca.`, or `au.` prefixed hosts. Keep `/services/data/vXX.X/sobjects/...` for records and `/services/data/vXX.X/connect/health/...` for Business APIs.
 
-**Detection hint:** If code uses the `/sobjects/` path with FHIR bundle parsing, or uses the `/healthcare/fhir/R4/` path expecting SObject JSON, the endpoints are being mixed.
-
----
-
-## Anti-Pattern 2: Omitting `healthcare` OAuth Scope for FHIR Healthcare API
-
-**What the LLM generates:** Connected App configuration or OAuth flow code that requests only the `api` scope for FHIR Healthcare API calls.
-
-**Why it happens:** The `api` scope covers almost all Salesforce API operations. LLMs recommend it as the default scope for any Salesforce API integration without knowing the FHIR-specific `healthcare` scope requirement.
-
-**Correct pattern:**
-FHIR Healthcare API calls require the `healthcare` scope in addition to the `api` scope. Connected Apps used for FHIR Healthcare API must explicitly include `healthcare` in the OAuth scope list. Without it, all FHIR Healthcare API requests return HTTP 403.
-
-**Detection hint:** If the Connected App configuration or token request includes `api` but not `healthcare` for an integration using FHIR Healthcare API endpoints, the scope is missing.
+**Detection hint:** A URL containing both `/services/data/` and `fhir`.
 
 ---
 
-## Anti-Pattern 3: Sending FHIR Bundles Larger Than 30 Entries
+## Anti-Pattern 2: Inventing a `healthcare` OAuth scope
 
-**What the LLM generates:** Batch clinical data processing code that assembles FHIR bundles based on the standard Salesforce API limit (200 records) rather than the FHIR Healthcare API bundle limit (30 entries).
+**What the LLM generates:** An app configuration with `api healthcare refresh_token` scopes, and advice that the `healthcare` scope unlocks all FHIR calls.
 
-**Why it happens:** Standard Salesforce API collection limits (200 for REST composite, 200 for Bulk API) are well-known. The FHIR Healthcare API bundle limit (30 entries) is a FHIR-specific constraint not inferrable from general Salesforce API knowledge.
+**Why it happens:** Scope names like `api` and `refresh_token` are well known, and the model invents a matching name for the product.
 
-**Correct pattern:**
-FHIR Healthcare API bundles are limited to 30 entries maximum, with a sub-limit of 10 read/search operations per bundle. Bulk clinical data operations must implement bundle chunking: split operations into batches of max 30 entries. Also limit read/search operations to 10 per bundle.
+**Correct pattern:** The Healthcare API uses OAuth custom scopes per resource and method, for example `user_condition_read`, `system_carePlan_write`, `system_bundle_write`, created in the org and assigned to the external client app. The app must also have the `refresh_token` scope.
 
-**Detection hint:** If batch processing code divides operations into chunks based on 200 (or any number > 30) for FHIR bundle operations, the FHIR bundle limit is not being respected.
-
----
-
-## Anti-Pattern 4: Ignoring HTTP 424 Dependency Failures
-
-**What the LLM generates:** Bundle response handling code that treats all 4xx responses as independent errors, logs the HTTP 424 responses as distinct failures, and attempts to retry each 424 entry independently.
-
-**Why it happens:** HTTP 424 is an uncommon status code. LLMs handle it with generic 4xx error handling patterns without knowing its specific meaning in FHIR bundle context (a dependency on a failed entry).
-
-**Correct pattern:**
-HTTP 424 means "the entry I reference in this bundle failed." Retry logic must: (1) identify the root non-424 failure, (2) fix the root cause, (3) retry the full bundle. Retrying individual 424 entries without fixing the root cause will always produce the same 424 result.
-
-**Detection hint:** If error handling code counts or logs HTTP 424 as a distinct error category without tracing it back to the root bundle entry failure, the dependency semantics are being ignored.
+**Detection hint:** The literal scope string `healthcare` in app metadata, token requests, or setup instructions.
 
 ---
 
-## Anti-Pattern 5: Using FHIR Healthcare API for High-Throughput Internal Operations
+## Anti-Pattern 3: Sending FHIR Bundles larger than 30 entries
 
-**What the LLM generates:** Internal Salesforce-to-Salesforce integrations (e.g., cross-org sync, analytics data feeds) that use the FHIR Healthcare API because the data is clinical, even when FHIR compliance is not required.
+**What the LLM generates:** Chunking logic that groups 200 resources per Bundle because that is the familiar Salesforce collection size.
 
-**Why it happens:** LLMs associate clinical Health Cloud data with FHIR and recommend FHIR Healthcare API for all clinical data operations. The performance implications of bundle limits vs. standard API throughput are not considered.
+**Why it happens:** REST Composite and sObject Collections limits are common knowledge; the Healthcare API limit is not.
 
-**Correct pattern:**
-For internal integrations and analytics pipelines where FHIR R4 conformance is not required, use the standard SObject REST or Bulk API. The FHIR Healthcare API has lower throughput (30-entry bundles vs. 200-record Bulk API batches) and should be used only where FHIR R4 conformance is a requirement (external FHIR clients, EHR interoperability).
+**Correct pattern:** At most 30 entries per call, and at most 10 of them read or search requests. Chunk on both counts.
 
-**Detection hint:** If the integration is internal (Salesforce to Salesforce or Salesforce to an internal analytics system) and uses FHIR Healthcare API without a FHIR conformance requirement, the API layer choice is unnecessarily constraining throughput.
+**Detection hint:** A bundle chunk size constant greater than 30, or a Bundle JSON array with more than 30 entries.
+
+---
+
+## Anti-Pattern 4: Treating 424 entries as independent errors
+
+**What the LLM generates:** Retry logic that resends each 424 entry on its own, or logs 424s as separate failures.
+
+**Why it happens:** 424 is rare outside WebDAV, so the model applies generic 4xx handling.
+
+**Correct pattern:** 424 means the entry depended on another entry that failed, so the API cancelled it. Find the non-424 root failure, fix it, then resend the root and its dependents. Because only `batch` bundles exist, entries that succeeded are already committed; do not resend them.
+
+**Detection hint:** Retry code that filters on status 424 without first locating the referenced entry.
+
+---
+
+## Anti-Pattern 5: Using the FHIR API for internal, high-throughput work
+
+**What the LLM generates:** An internal analytics feed that reads clinical data through the Healthcare API because the data is clinical.
+
+**Why it happens:** The model associates clinical data with FHIR by default.
+
+**Correct pattern:** Use the SObject API or Bulk API 2.0 for internal consumers. The Healthcare API is capped at 30 entries per bundle, Salesforce recommends at most five concurrent requests, and typical response time is about three seconds.
+
+**Detection hint:** An internal consumer with no FHIR conformance requirement calling `api.healthcloud.salesforce.com`.
+
+---
+
+## Anti-Pattern 6: Promising atomic `transaction` bundles
+
+**What the LLM generates:** `{"resourceType": "Bundle", "type": "transaction", "entry": [...]}` with a claim that CarePlan and Goals commit together.
+
+**Why it happens:** FHIR R4 defines `transaction` bundles and the model assumes every server implements them.
+
+**Correct pattern:** The Healthcare API supports only Bundle type `batch`. Design for partial success, or use a Salesforce-side atomic path (a Business API or the SObject API with `allOrNone`) when resources must commit together.
+
+**Detection hint:** `"type": "transaction"` in any Bundle sent to the Healthcare API.
+
+---
+
+## Anti-Pattern 7: Passing SMART on FHIR wildcard scopes through unchanged
+
+**What the LLM generates:** An onboarding guide that tells an EHR vendor to request `patient/*.read` or `system/*.*`.
+
+**Why it happens:** SMART scopes are the FHIR ecosystem default.
+
+**Correct pattern:** The Healthcare API guide says SMART on FHIR scope formats are not supported because Salesforce does not allow wildcard characters in OAuth scopes. Map each SMART scope to the specific Salesforce custom scopes.
+
+**Detection hint:** Scope strings containing `/*.` in configuration for the Healthcare API.

@@ -52,7 +52,7 @@ Content-Type: application/json
 
 ```json
 {
-  // TODO: paste request body here
+  "Name": "<replace with the request body fields>"
 }
 ```
 

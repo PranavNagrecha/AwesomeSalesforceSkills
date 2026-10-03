@@ -1,6 +1,6 @@
 ---
 name: slack-salesforce-integration-setup
-description: "Use this skill when setting up or troubleshooting the Salesforce for Slack managed app — including connecting a Salesforce org to a Slack workspace, configuring the three-party admin handshake, linking Slack channels. NOT for building custom Slack apps or Slack bots (separate development platform), not fo — use integration/slack-workflow-builder."
+description: "Use this skill when setting up or troubleshooting the Salesforce for Slack integrations, including connecting a Salesforce org to a Slack workspace through the three-step request, approve, and activate handshake, enabling Salesforce for Slack apps in Slack Apps Setup, link unfurling and record preview data sharing, and user account mapping. NOT for building custom Slack apps or Slack bots (separate development platform), and not for Workflow Builder automations — use integration/slack-workflow-builder."
 category: integration
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -15,10 +15,10 @@ tags:
   - record-sharing
   - oauth
 inputs:
-  - "Slack workspace (paid plan — Free plan cannot connect to Salesforce)"
+  - "Slack workspace and its plan (multiple Salesforce orgs require Pro, Business+, or Enterprise)"
   - "Slack Workspace Owner or Admin credentials"
   - "Salesforce System Administrator credentials"
-  - "Salesforce edition: Enterprise, Unlimited, or Developer (required)"
+  - "Salesforce org type (Government Cloud and Government Cloud Plus orgs cannot connect)"
 outputs:
   - "Connected Salesforce org in Slack workspace"
   - "Record preview sharing enabled in Slack channels"
@@ -31,15 +31,24 @@ triggers:
   - "Salesforce record preview in Slack channel"
   - "Slack org connection limit Salesforce"
   - "salesforce for slack isn't working"
+  - "connect our Salesforce org to Slack and map user accounts"
+  - "control what Salesforce record links show when shared in Slack"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
 # Slack Salesforce Integration Setup
 
-This skill activates when a practitioner needs to connect a Salesforce org to a Slack workspace using the Salesforce for Slack managed app, troubleshoot the three-party admin handshake, configure record sharing, or understand workspace-level limits. It does NOT cover custom Slack app development, Slack Workflow Builder, or Flow-based Slack messaging.
+This skill activates when a practitioner needs to connect a Salesforce org to a Slack workspace, enable the Salesforce for Slack apps (Sales Cloud for Slack, Service Cloud for Slack, and the rest), decide what record links reveal when shared in Slack, or understand who must do which step. It does NOT cover custom Slack app development, Slack Workflow Builder, or Flow-based Slack messaging.
+
+Two related setups exist and are often confused:
+
+| Setup | Where it starts | What it enables | Source |
+|---|---|---|---|
+| **Connect Salesforce and Slack** (org connection) | Slack: Tools & settings > Manage Salesforce Organizations | Slackbot, Salesforce channels, Agentforce in Slack, Slack Sales Elevate; member account mapping | Slack Help Center, Connect Salesforce and Slack |
+| **Salesforce for Slack Integrations** (apps) | Salesforce Setup: Slack Apps Setup | Sales Cloud for Slack, Service Cloud for Slack, CRM Analytics for Slack, link unfurling, record detail security | Slack Integrations guide, Enable Salesforce for Slack Integrations |
 
 ---
 
@@ -47,69 +56,81 @@ This skill activates when a practitioner needs to connect a Salesforce org to a 
 
 Gather this context before working on anything in this domain:
 
-- The connected-org setup requires THREE parties: a Slack Workspace Owner/Admin to initiate, a Salesforce System Admin to approve in Setup, and a Slack Owner/Admin to activate. A single administrator cannot complete all three steps alone.
-- Hard limits: maximum 20 Salesforce orgs per Slack workspace. Government Cloud orgs CANNOT be connected at all.
-- Record previews shared into Slack channels are visible to ALL channel members regardless of their individual Salesforce object permissions — this is the primary data-exposure risk.
+- The org connection has three steps across two systems: request the connection in Slack, approve it in Salesforce Setup (Platform Tools > Slack > Manage Slack Connection, by a Salesforce System Admin), and activate it in Slack (workspace Owners or people with the Salesforce Admin system role in Slack). One person can do all three only if they hold both roles.
+- Government Cloud and Government Cloud Plus orgs cannot be connected, and Salesforce for Slack apps are not supported there. The apps are not FedRAMP or HIPAA certified and cannot be used within Blackjack.
+- Each Slack user, including the workspace owner who adds apps, needs a permission set with the Connect Salesforce with Slack system permission on a Salesforce license that supports it.
+- What a shared record link reveals is a configured choice (link unfurling data sharing options plus Slack Record Layouts), not a fixed behavior.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Is the org Government Cloud, Government Cloud Plus, or under FedRAMP or HIPAA obligations?" | Slack cannot connect to Government Cloud orgs, and Salesforce for Slack is not FedRAMP or HIPAA certified | A go or no-go before any setup work | No project that fails at the approval step or at an audit |
+| "Who is the Slack Owner (or Salesforce Admin system role holder) and who is the Salesforce System Admin?" | Request and activation happen in Slack; approval happens in Salesforce Setup | A named person per step and a scheduled session | A connection finished in one sitting instead of days of hand-offs |
+| "How many Salesforce orgs, including sandboxes, should this workspace reach, and on which Slack plan?" | Pro, Business+, and Enterprise plans can connect up to 20 additional orgs | A prioritized org list | The orgs that matter are connected and the limit is not hit mid-rollout |
+| "How should Slack members map to Salesforce users: email, SAML NameID, or manual?" | Automatic mapping removes a manual sign-in for members; Unified Employee license users can only be mapped automatically | The mapping field and whether automatic mapping is on | Members who can use Salesforce features in Slack on day one |
+| "What may a shared record link show, and to whom?" | Options range from Do Not Share Data to showing data viewable by the Default Render User or by the person who posted the link | A data sharing option per object and a Slack Record Layout for sensitive objects | Previews that never expose fields the channel should not see |
+| "Are IP restrictions or a custom org URL change planned?" | Features may not work with Salesforce IP restrictions, and a changed org URL requires updating the connection | A network decision and a change runbook | No silent breakage after a My Domain or network change |
+
+What a proper configuration adds over "just installing the app": every step has an owner with the right role, compliance blockers are found first, users are mapped and permissioned, and record previews reveal only what the channel is allowed to see.
 
 ---
 
 ## Core Concepts
 
-### Three-Party Admin Handshake
+### The Three-Step Org Connection
 
-The connection process requires coordination between three distinct administrative roles:
+1. **Request (Slack):** workspace name > Tools & settings > Manage Salesforce Organizations > Connect Salesforce Org; enter the org URL, choose Email or SAML NameID for account mapping, and Request Connection.
+2. **Approve (Salesforce):** a Salesforce System Admin opens Setup > Platform Tools > Slack > Manage Slack Connection, selects the user mapping field, accepts the terms, and approves.
+3. **Activate (Slack):** an Owner or a person with the Salesforce Admin system role in Slack selects the pending connection and activates it.
 
-1. **Slack Workspace Owner/Admin** — Initiates the connection from the Slack App Directory or Salesforce AppExchange. Installs the Salesforce for Slack managed app into the workspace.
-2. **Salesforce System Admin** — Approves the connection in Salesforce Setup under Platform Tools > Slack > Manage Slack Connection. This grants the app permission to access the Salesforce org.
-3. **Slack Workspace Owner/Admin** — Completes the activation after Salesforce approval.
+Members with mapped accounts then get the Salesforce app in Slack. Connections use a Salesforce Platform Integration User to manage access to object types for features such as Salesforce channels.
 
-These steps must happen in order. If the Salesforce System Admin has not approved the connection, the Slack side cannot activate. If the Slack Workspace Owner has not initiated, the Salesforce approval step is not visible.
+### Enabling Salesforce for Slack Apps
 
-### Org-Level Limits
+In Salesforce Setup > Slack Apps Setup: accept the terms, enable the apps, assign the Connect Salesforce with Slack permission (and app-specific permissions such as Slack Sales User), set object permissions, record detail security, and link unfurling options, then a Slack workspace owner or Enterprise Grid admin installs the apps from the Slack App Directory and authorizes them with Salesforce admin credentials. Finally, each user adds the app to their Slack sidebar and connects their Salesforce account.
 
-- Maximum **20 Salesforce orgs** per Slack workspace (across all plans)
-- **Government Cloud** orgs cannot be connected — this is a hard platform restriction, not a configuration choice
-- Standard Salesforce editions supported: Enterprise, Unlimited, Developer
+### What Shared Record Links Reveal
 
-### Record Preview Data Exposure
+| Unfurling option | What the channel sees |
+|---|---|
+| Do Not Share Data | The link is not unfurled |
+| Preview Button Only | A button that opens the record with the viewer's permissions |
+| Object Type and Preview Button | Object type plus the button |
+| Name, Type, and Preview Button | Record name, object type, plus the button |
+| Data Viewable by Slack Default Render User | Record data per the Default Render User's permissions |
+| Data Viewable by User Sharing the Link | Record data per the poster's permissions |
 
-When a Salesforce record URL is shared in a Slack channel, the Salesforce for Slack app unfurls a record preview card visible to ALL channel members. This preview displays field values according to the Salesforce page layout, NOT the channel member's individual Salesforce sharing and field-level security settings. A user without Salesforce access (or with restricted field access) can see field values in the Slack preview that they could not see directly in Salesforce.
+For the two "data viewable" options, unfurling uses the URL Unfurling Slack Record Layout assigned for the object, or the object's compact layout if none is assigned. Separately, record detail security (Show object type only or Show record name) currently applies to the Sales Cloud for Slack app only, and "Show record name" includes the record name and key fields "even to users who don't have access in Salesforce".
 
-This is not a bug — it is documented platform behavior. Organizations with sensitive field data (compensation, legal case details, PII) must review which Salesforce records can be shared in Slack channels and apply channel-level governance policies.
-
-### Platform Integration User and Permission Sets
-
-The Salesforce for Slack app uses a dedicated Platform Integration User in the connected Salesforce org. This user requires specific permission sets to access Salesforce data for previews and search. The exact permission sets may vary by release — verify in the current AppExchange listing or help documentation.
+An earlier version of this skill said previews always follow the page layout visible to the Platform Integration User. The fetched guides describe Slack Record Layouts, compact layouts, and the data sharing options above instead.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Initial Org Connection (Three-Party Handshake)
+### Pattern 1: Initial Org Connection
 
-**When to use:** First-time setup of Salesforce for Slack in a workspace.
+**When to use:** First-time connection of a Salesforce org to a Slack workspace.
 
-**How it works:**
+**How it works:** Schedule the Slack Owner (or Salesforce Admin system role holder) and the Salesforce System Admin together, run the three steps in order, choose automatic account mapping where possible, then verify that a mapped member sees the Salesforce app in Slack. The step-by-step plan file and the permission set are in [`references/metadata-examples.md`](references/metadata-examples.md).
 
-1. **Slack Workspace Owner/Admin:** Go to Slack App Directory, search "Salesforce for Slack", install to workspace. Or install from Salesforce AppExchange.
-2. **Salesforce System Admin:** In Salesforce Setup, navigate to Platform Tools > Apps > Salesforce for Slack. Click "Manage Slack Connection" and authorize the pending connection.
-3. **Slack Workspace Owner/Admin:** Return to Slack and complete the activation by confirming the connection.
-4. Users then individually connect their personal Salesforce accounts from the Salesforce app in Slack (each user authorizes their own account separately from the org connection).
-
-**Why not do this solo:** The platform requires Slack admin, Salesforce admin, and Slack admin roles at different steps. A single admin doing all steps will hit an authorization gap at step 2 if they lack Salesforce System Admin, or at step 3 if they lack Slack Workspace Owner role.
+**Why plan it:** The roles live in two systems; without both present the connection waits in a pending state.
 
 ### Pattern 2: Record Sharing Governance
 
-**When to use:** Restricting which Salesforce records can generate preview cards in Slack channels.
+**When to use:** Any org with sensitive fields that users might share as links.
 
 **How it works:**
 
-1. Document which Salesforce objects contain sensitive fields that should not be preview-shared.
-2. Educate users that pasting a Salesforce record URL in any Slack channel (including private channels) generates a preview visible to all members.
-3. For high-sensitivity objects, implement a Salesforce sharing rule that restricts the record URL from being accessible to the Platform Integration User used by the app.
-4. Consider channel governance policies: define which Salesforce record types are acceptable to share in which channel types (public vs. private).
+1. List objects with sensitive fields.
+2. Pick an unfurling option per the table above; prefer Preview Button Only or Name, Type, and Preview Button where data must not appear in the channel.
+3. If a "data viewable" option is used, create a URL Unfurling Slack Record Layout per sensitive object with only safe fields, and assign it to the relevant profiles.
+4. Publish a channel policy for public channels, private channels, and Slack Connect channels.
 
-**Why this matters:** Record preview exposure is the primary compliance and data-leakage risk in Salesforce for Slack implementations.
+**Why this matters:** Record preview exposure is the main data-leakage risk in this integration.
 
 ---
 
@@ -117,50 +138,50 @@ The Salesforce for Slack app uses a dedicated Platform Integration User in the c
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| First-time org connection | Three-party handshake (Slack admin + SF admin + Slack admin) | Required by platform — single admin cannot complete alone |
-| Government Cloud org | Cannot connect | Platform restriction — no workaround |
-| 20+ orgs needed in one workspace | Re-evaluate workspace architecture | Hard limit — cannot exceed 20 orgs per workspace |
-| Sensitive field data shared in Slack | Channel governance policy + Platform Integration User sharing rules | Preview shows data regardless of individual permissions |
-| User cannot see Salesforce records in Slack | User needs personal account connection + Salesforce permissions | Org connection alone does not authorize individual users |
+| First-time org connection | Three-step request, approve, activate with both role holders present | Steps span Slack and Salesforce |
+| Government Cloud or Government Cloud Plus org | Do not connect; propose a custom integration | Not supported |
+| More orgs than the plan allows | Prioritize production and key sandboxes, or split workspaces | Pro, Business+, and Enterprise allow up to 20 additional orgs |
+| Sensitive fields shared in Slack | Preview-button options, or a restricted URL Unfurling Slack Record Layout | Previews follow the configured option, not each viewer's field access |
+| User cannot see Salesforce data in Slack | Check mapping, the Connect Salesforce with Slack permission, and the personal account connection | Org connection alone does not authorize individual users |
 
 ---
 
 ## Recommended Workflow
 
-1. Confirm the Salesforce edition is Enterprise, Unlimited, or Developer — Essential/Professional editions are not supported.
-2. Confirm the Slack workspace is on a paid plan (Free plan cannot connect to Salesforce).
-3. Confirm the workspace has fewer than 20 existing Salesforce org connections.
-4. Coordinate the three-party handshake: Slack admin initiates, Salesforce System Admin approves, Slack admin activates.
-5. Assign the required permission sets to the Platform Integration User in Salesforce.
-6. Communicate the record preview data exposure risk to all workspace members and define channel-level governance policies.
-7. Have each individual user connect their personal Salesforce account from the Salesforce app in Slack.
+1. Run the compliance gate: Government Cloud, Government Cloud Plus, FedRAMP, HIPAA, and Blackjack all stop the project.
+2. Fill in the connection plan (roles, plan, org list, mapping field, unfurling option, IP restrictions) and run `python3 skills/integration/slack-salesforce-integration-setup/scripts/check_slack_salesforce_integration_setup.py --plan slack-connection-plan.json`.
+3. Assign the Connect Salesforce with Slack permission set to every Slack user, including the workspace owner who installs apps.
+4. Run the three-step org connection with both role holders present, then enable the Salesforce for Slack apps in Slack Apps Setup.
+5. Configure link unfurling and Slack Record Layouts for sensitive objects, and publish the channel policy.
+6. Confirm mapping (automatic or manual) and have each user connect their account from the app in Slack; spot-check with a low-access user.
 
 ---
 
 ## Review Checklist
 
-- [ ] Salesforce edition confirmed: Enterprise, Unlimited, or Developer
-- [ ] Slack workspace is on paid plan
-- [ ] Workspace has fewer than 20 connected Salesforce orgs
-- [ ] Three-party handshake completed in correct order
-- [ ] Platform Integration User has required permission sets
-- [ ] Record preview data exposure risk documented and communicated
-- [ ] Individual users have connected their personal Salesforce accounts
-- [ ] Government Cloud exclusion confirmed if applicable
+- [ ] Not a Government Cloud or Government Cloud Plus org; no FedRAMP, HIPAA, or Blackjack requirement
+- [ ] Org count within the plan's allowance (up to 20 additional orgs on Pro, Business+, Enterprise)
+- [ ] Request, approve, and activate completed by the documented roles
+- [ ] Connect Salesforce with Slack permission assigned to every Slack user, including the installing owner
+- [ ] Account mapping configured (automatic for Unified Employee license users)
+- [ ] Unfurling option chosen per object; Slack Record Layouts for sensitive objects
+- [ ] Individual users connected their Salesforce accounts
+- [ ] IP restriction and org URL change impacts documented
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Three-Party Handshake Cannot Be Done Solo** — The connection requires separate Slack admin approval, Salesforce admin approval, and Slack admin activation. If any party is unavailable or lacks the right role, the connection stalls. Plan the handshake as a coordinated event with all three parties present.
+One-line summaries; the full entries are in [`references/gotchas.md`](references/gotchas.md).
 
-2. **Record Previews Bypass Salesforce Field-Level Security** — Previews render fields based on page layout visible to the Platform Integration User, not the Slack user's individual Salesforce permissions. Sensitive fields can be exposed to channel members who lack Salesforce access.
-
-3. **Government Cloud Orgs Cannot Connect** — This is an absolute restriction with no workaround. Organizations with Government Cloud orgs must use alternative integration patterns (custom Slack apps via Slack SDK, or MuleSoft-based integration).
-
-4. **20-Org Workspace Limit** — Large enterprises with many Salesforce orgs across divisions may hit the 20-org limit. There is no configuration to increase this limit. Workspace architecture may need to be split.
-
-5. **User Personal Account Connection Is Separate from Org Connection** — Connecting the org grants workspace-level access, but each individual user must separately authorize their personal Salesforce account in the Slack app. Users who skip this step cannot see personalized Salesforce data or use Salesforce search in Slack.
+| Gotcha | Short form |
+|---|---|
+| Roles, not people | Request and activation need Slack roles; approval needs a Salesforce System Admin |
+| Government Cloud | Cannot connect; apps unsupported in Government Cloud and Government Cloud Plus |
+| Per-user permission | Every Slack user needs Connect Salesforce with Slack on a supporting license |
+| Previews | Follow the configured unfurling option and Slack Record Layout, not each viewer's FLS |
+| Org limit | Up to 20 additional orgs on Pro, Business+, Enterprise |
+| Legacy app | The Slack-built Salesforce app no longer supports new installations |
 
 ---
 
@@ -168,9 +189,9 @@ The Salesforce for Slack app uses a dedicated Platform Integration User in the c
 
 | Artifact | Description |
 |---|---|
-| Connection setup checklist | Step-by-step three-party handshake with role assignments |
-| Data exposure risk register | List of sensitive Salesforce objects with channel-sharing governance policy |
-| User onboarding guide | Instructions for individual users to connect personal Salesforce accounts |
+| Connection plan | Roles, plan, orgs, mapping, unfurling, network decisions (checked by the skill script) |
+| Data exposure register | Sensitive objects with their unfurling option and Slack Record Layout |
+| User onboarding guide | Permission assignment and personal account connection steps |
 
 ---
 

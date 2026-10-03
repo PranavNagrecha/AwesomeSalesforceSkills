@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OauthCustomScope xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Read Condition resources in the Healthcare API</description>
+    <developerName>system_condition_read</developerName>
+    <isProtected>false</isProtected>
+    <isPublic>false</isPublic>
+    <masterLabel>system_condition_read</masterLabel>
+</OauthCustomScope>

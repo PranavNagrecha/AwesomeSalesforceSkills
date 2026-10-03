@@ -113,14 +113,17 @@ API version management strategies:
 ```text
 Salesforce REST API rate limits:
 
-Daily API request allocation:
-  Enterprise: 100,000 + (user licenses x per-license add)
-  Unlimited: 500,000 + (user licenses x per-license add)
-  Check: GET /services/data/vXX.0/limits/
+Daily API request allocation (Limits quick reference, release 262):
+  Developer Edition: 15,000
+  Enterprise: 100,000 + (licenses x calls per license type; Salesforce = 1,000)
+  Unlimited / Performance: 100,000 + (licenses x calls per license type; Salesforce = 5,000)
+  Allocations are org-wide, not per user
+  Check: GET /services/data/vXX.X/limits/ or the Sforce-Limit-Info header
 
 Concurrent request limits:
-  25 concurrent long-running requests per org
-  Per-user concurrency limits may apply
+  25 concurrent requests running 20 seconds or longer (production and sandbox)
+  5 in Developer Edition and trial orgs
+  No limit on requests shorter than 20 seconds
 
 Rate limit response:
   HTTP 403 with error code REQUEST_LIMIT_EXCEEDED
@@ -128,11 +131,13 @@ Rate limit response:
 Integration design for rate limits:
 1. Monitor /limits/ endpoint before large batch operations
 2. Implement exponential backoff on 403 responses
-3. Use Composite API to reduce call count (25 subrequests = 1 API call)
+3. Use Composite API to reduce call count (the whole composite series counts as one call)
 4. Use Bulk API for operations over 2,000 records
 5. Schedule high-volume operations during off-peak hours
 6. Cache frequently-accessed reference data client-side
 ```
+
+Correction (2026-10-03): an earlier version of this entry gave Unlimited Edition as 500,000 plus per-license calls. The Salesforce Developer Limits and Allocations Quick Reference (release 262) gives 100,000 plus (licenses x calls per license type) for Unlimited and Performance, so the table above uses that.
 
 **Detection hint:** Flag integration code that makes API calls in a loop without rate limit handling. Look for missing 403 error handling and backoff logic.
 
@@ -169,3 +174,33 @@ Alternatives to polling for record changes:
 ```
 
 **Detection hint:** Flag polling-based integration designs that make REST API calls on a short interval. Check whether CDC or Platform Events would be more efficient.
+
+---
+
+## Anti-Pattern 6: Waiting for HTTP 429 and Retry-After
+
+**What the LLM generates:** Retry middleware that only reacts to `429 Too Many Requests` and sleeps for the `Retry-After` value.
+
+**Why it happens:** 429 with `Retry-After` is the common convention across public APIs.
+
+**Correct pattern:** The REST API Developer Guide's status table has no 429. Exceeding the org's request limit returns 403 with `errorCode` `REQUEST_LIMIT_EXCEEDED`, and long-running concurrency overflow returns the same code. Read the error body, back off with jitter, and monitor `Sforce-Limit-Info`.
+
+```python
+if resp.status_code == 403 and any(e.get("errorCode") == "REQUEST_LIMIT_EXCEEDED" for e in resp.json()):
+    backoff_and_alert()
+```
+
+**Detection hint:** Retry logic keyed only on 429, or any reliance on a `Retry-After` header from Salesforce REST API.
+
+---
+
+## Anti-Pattern 7: Treating Composite Batch as a transaction
+
+**What the LLM generates:** "Send the order header and lines in one `/composite/batch/` call so they commit together."
+
+**Why it happens:** All composite resources look alike.
+
+**Correct pattern:** Composite Batch subrequests are independent and cannot reference each other. For atomic parent-child writes use `/composite/` with `allOrNone: true` or `/composite/tree/{SObject}/`. With `haltOnError: true`, later batch subrequests return 412 `BATCH_PROCESSING_HALTED`, but the earlier ones are not rolled back.
+
+**Detection hint:** A `/composite/batch/` payload whose subrequests depend on each other's results, or a comment claiming batch atomicity.
+

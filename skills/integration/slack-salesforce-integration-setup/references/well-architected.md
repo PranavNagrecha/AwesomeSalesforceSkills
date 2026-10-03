@@ -2,9 +2,9 @@
 
 ## Relevant Pillars
 
-- **Security** — Record preview cards render based on the Platform Integration User's page layout — NOT the Slack user's field-level security. Sensitive field exposure in Slack channels is a critical security risk requiring page layout governance on the Platform Integration User.
-- **Operational Excellence** — The three-party handshake requires coordinated admin access across two platforms. Documenting the setup process, role requirements, and channel governance policies is essential for operational sustainability.
-- **Reliability** — The integration depends on the Salesforce for Slack managed app's OAuth token remaining active. Token revocation by a Slack admin breaks the integration silently. Monitoring the connection status in Setup is required.
+- **Security**: What a shared record link reveals is set by the link unfurling data sharing option and the URL Unfurling Slack Record Layout (or the compact layout). The two "data viewable" options show data according to the Default Render User or the poster, not each channel member. Govern the option and the layouts per sensitive object; Government Cloud orgs cannot connect, and the apps are not FedRAMP or HIPAA certified.
+- **Operational Excellence**: The three-step handshake (request and activate in Slack, approve in Salesforce) requires coordinated admin roles across two platforms. Documenting the setup process, role requirements, and channel governance policies is essential for operational sustainability.
+- **Reliability**: The connection breaks when the org URL changes (the connection must be updated) and features may fail under Salesforce IP restrictions. Removing an app from a workspace deletes all user mappings. Monitor the connection after network and My Domain changes. UNVERIFIED (2026-10-03): an earlier version said token revocation by a Slack admin breaks the integration silently; the fetched sources do not describe that case.
 
 ## Architectural Tradeoffs
 
@@ -14,7 +14,7 @@
 
 ## Anti-Patterns
 
-1. **Allowing Any Record to Be Shared in Any Channel** — Unrestricted record sharing exposes sensitive field data to all channel members regardless of their Salesforce permissions. Define and enforce a channel governance policy mapping record types to appropriate channel restrictions.
+1. **Leaving a Data-Viewable Unfurl Option on Sensitive Objects**: The channel sees the Default Render User's or poster's view of the record. Use preview-button options or restricted Slack Record Layouts, and publish a channel policy.
 
 2. **Attempting Government Cloud Connection** — Government Cloud org connection to Slack is not supported. Proposing it as a configuration option wastes implementation effort. Identify org type early and route to alternative integration patterns.
 
@@ -22,7 +22,11 @@
 
 ## Official Sources Used
 
-- Connect Salesforce and Slack — https://slack.com/help/articles/30754346665747
-- Configure Salesforce for Use with Slack — https://slack.com/help/articles/360044038514
-- Connect the Salesforce for Slack App to a Salesforce Org — https://help.salesforce.com/s/articleView?id=sf.slack_apps_digital_hq_setup.htm
-- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Fetched and read on 2026-10-03 unless marked.
+
+- Slack Integrations, Spring '26 (Salesforce): Enable Salesforce for Slack Integrations (user permissions, Government Cloud note, setup sections), Set Record Detail Security for Your Salesforce Apps, Salesforce Apps for Slack Limitations (block limit, FedRAMP and HIPAA, Blackjack), Add Apps in Your Personal Slack Sidebar, Unfurling Slack Record Layouts with Data Sharing Options, Create a New URL Unfurling Slack Record Layout, Authorize Unfurling Links that Show Record Data. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/slack_apps.pdf
+- Slack Help Center, Connect Salesforce and Slack (three steps, roles, Government Cloud, IP restrictions, org URL change, Unified Employee license, up to 20 additional orgs, available on all plans). https://slack.com/help/articles/30754346665747-Connect-Salesforce-and-Slack
+- Slack Help Center, Configure Salesforce for use with Slack (the Slack-built app no longer supports new installations). https://slack.com/help/articles/360044038514-Configure-Salesforce-for-use-with-Slack
+- Salesforce Well-Architected: Secure (Trusted), archived 2026-07-11. http://web.archive.org/web/20260711090005/https://architect.salesforce.com/docs/architect/well-architected/guide/secure.html
+- Salesforce Well-Architected Overview, archived 2026-06-16. http://web.archive.org/web/20260616115029/https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Listed by an earlier version of this skill; help.salesforce.com returns a script shell and was not re-read: Connect the Salesforce for Slack App to a Salesforce Org https://help.salesforce.com/s/articleView?id=sf.slack_apps_digital_hq_setup.htm

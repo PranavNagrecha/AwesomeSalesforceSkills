@@ -42,21 +42,26 @@ When the validation rule is added, only `createOpportunity` needs updating — a
 
 ## Example 2: Portal User Factory with Mixed DML Workaround
 
-**Scenario:** A B2B portal org's test suite needs to create portal users (Experience Cloud Customer Community users) linked to Contact records and test their data access. The original test keeps throwing `MIXED_DML_OPERATION`.
+**Scenario:** A B2B portal org's test suite needs Customer Community users linked to Contact records, each with a permission set that grants access to a custom object. The original test keeps throwing a mixed DML error.
 
 **Problem:**
 ```apex
-// This fails with MIXED_DML_OPERATION
+// The User insert alone is allowed here (UserRoleId is null), but the
+// PermissionSetAssignment is a setup object and collides with the Account
+// and Contact DML earlier in the same transaction.
 Account acc = new Account(Name = 'Portal Customer');
 insert acc;
 Contact con = new Contact(AccountId = acc.Id, LastName = 'Smith');
 insert con;
 Profile p = [SELECT Id FROM Profile WHERE Name = 'Customer Community User' LIMIT 1];
-User portalUser = new User(ContactId = con.Id, ProfileId = p.Id, Username = 'test@example.com',
+User portalUser = new User(ContactId = con.Id, ProfileId = p.Id,
+                           Username = 'portal.' + DateTime.now().getTime() + '@example.com',
                            Alias = 'tuser', Email = 'test@example.com', EmailEncodingKey = 'UTF-8',
                            LastName = 'Smith', LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US',
                            TimeZoneSidKey = 'America/Chicago');
-insert portalUser;  // MIXED_DML_OPERATION error here
+insert portalUser;
+PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Portal_Orders_Access' LIMIT 1];
+insert new PermissionSetAssignment(AssigneeId = portalUser.Id, PermissionSetId = ps.Id); // mixed DML
 ```
 
 **Solution:**
@@ -68,27 +73,28 @@ static void testPortalUserAccess() {
   Account acc = TestDataFactory.createAccount('Portal Customer', true);
   Contact con = TestDataFactory.createContact(acc.Id, 'John', 'Smith', true);
 
-  // Setup objects (User) inside System.runAs
+  // Setup objects (User and PermissionSetAssignment) inside System.runAs
   User portalUser;
   System.runAs(new User(Id = UserInfo.getUserId())) {
     Profile p = [SELECT Id FROM Profile WHERE Name = 'Customer Community User' LIMIT 1];
     portalUser = new User(
       ContactId = con.Id, ProfileId = p.Id,
-      Username = 'portal.test.' + DateTime.now().getTime() + '@test.example.com',
+      Username = 'portal.test.' + DateTime.now().getTime() + '@example.com',
       Alias = 'ptuser', Email = 'portal.test@example.com',
       EmailEncodingKey = 'UTF-8', LastName = 'Smith',
       LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US',
       TimeZoneSidKey = 'America/Chicago'
     );
     insert portalUser;
+    PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'Portal_Orders_Access' LIMIT 1];
+    insert new PermissionSetAssignment(AssigneeId = portalUser.Id, PermissionSetId = ps.Id);
   }
 
   System.runAs(portalUser) {
-    // Test portal user's data access here
     List<Account> visible = [SELECT Id FROM Account WHERE Id = :acc.Id WITH USER_MODE];
-    System.assertEquals(1, visible.size(), 'Portal user should see their linked account');
+    Assert.areEqual(1, visible.size(), 'Portal user should see their linked account');
   }
 }
 ```
 
-**Why it works:** `System.runAs()` creates a new transaction context for setup object DML, bypassing the Mixed DML restriction. The `DateTime.now().getTime()` suffix ensures the username is unique across test runs.
+**Why it works:** The Apex Developer Guide says test methods may perform mixed DML "if the code that performs the DML operations is enclosed within System.runAs method blocks". The `DateTime.now().getTime()` suffix keeps the username unique across runs, following the guide's own runAs example. UNVERIFIED (2026-10-03): the profile name `Customer Community User` and the permission set `Portal_Orders_Access` are placeholders for whatever exists in the target org, and a portal user's account owner may need a role before the user can be created; the fetched guide does not cover that prerequisite.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtlClntAppOauthConfigurablePolicies xmlns="http://soap.sforce.com/2006/04/metadata">
+    <externalClientApplication>Order_Sync</externalClientApplication>
+    <label>Order Sync OAuth Policies</label>
+    <isClientCredentialsFlowEnabled>true</isClientCredentialsFlowEnabled>
+    <clientCredentialsFlowUser>order.sync@example.com.prod</clientCredentialsFlowUser>
+    <permittedUsersPolicyType>AdminApprovedPreAuthorized</permittedUsersPolicyType>
+    <commaSeparatedPermissionSet>Order_Sync_Integration</commaSeparatedPermissionSet>
+    <ipRelaxationPolicyType>Enforce</ipRelaxationPolicyType>
+    <refreshTokenPolicyType>Zero</refreshTokenPolicyType>
+</ExtlClntAppOauthConfigurablePolicies>

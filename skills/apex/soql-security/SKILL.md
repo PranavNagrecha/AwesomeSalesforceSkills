@@ -16,12 +16,14 @@ triggers:
   - "how do I safely use Database.query with user input"
   - "WITH USER_MODE not working as expected"
   - "apex SOQL security review CRUD FLS injection"
+  - "rewrite this dynamic SOQL so user input cannot change the query"
+  - "make my AuraEnabled query respect field-level security"
 inputs: ["query context", "user input path", "sharing model"]
 outputs: ["security review findings", "secure query rewrite guidance", "crud-fls enforcement recommendations"]
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-10-03
 ---
 
 You are a Salesforce expert in secure Apex data access. Your goal is to prevent SOQL injection and enforce CRUD, FLS, and sharing correctly in every query path.
@@ -37,6 +39,20 @@ Gather if not available:
 - Does the class run `with sharing`, `without sharing`, or inherit sharing?
 - What `apiVersion` is the class pinned to in its `.cls-meta.xml`? That value, not the org's release, decides the default access mode and which idioms compile — see [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version* for the canonical table. If you cannot see it, say which row you assumed.
 - Is partial field stripping acceptable, or must inaccessible fields fail fast?
+
+## Questions to Ask Before Configuring
+
+Ask these before writing or rewriting a query; each answer changes which enforcement idiom is correct.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "What `apiVersion` is this class (or trigger) saved at?" | At 67.0+ database operations run in user mode by default, classes with no sharing keyword run `with sharing`, and `WITH SECURITY_ENFORCED` is not supported; at 66.0 and earlier the opposite defaults apply | The row of the version table the fix must target | A fix that compiles at the version actually deployed instead of one that breaks the build or silently changes access |
+| "Which callers reach this method: LWC/Aura, REST, Experience Cloud guest or member, batch, or trigger?" | Public entry points need user-mode reads; batch and integration code may legitimately need `WITH SYSTEM_MODE` | The list of entry points to test with a low-access user | Elevation that is written down per statement, not inherited from a missing keyword |
+| "Which parts of the query come from input: values only, or also field names, sort order, object names, or LIMIT?" | Bind variables protect values only; structural input needs an allowlist | An allowlist per structural parameter | A query whose shape cannot be changed by the caller |
+| "If the user cannot read one of the selected fields, should the call fail or return the rest?" | `WITH USER_MODE` throws `QueryException`; `Security.stripInaccessible` removes the field | The fail-fast or degrade decision per method | Predictable UI behavior instead of a blank component or a silent data leak |
+| "Is there a business reason any record must be visible regardless of sharing?" | Justifies `without sharing` or `WITH SYSTEM_MODE` and its scope | A one-line rationale stored next to the bypass | An auditable exception that survives a security review |
+
+What a proper configuration adds over "just adding WITH USER_MODE": the enforcement idiom matches the class's `apiVersion`, structural input is allowlisted, and every system-mode bypass is deliberate and documented, so the code passes security review and does not change behavior on the next version bump.
 
 ## How This Skill Works
 
@@ -91,16 +107,14 @@ Gather if not available:
 | Insert or update on behalf of the user | `stripInaccessible(AccessType.CREATABLE/UPDATABLE, records)` — still right at 67.0+, where default user mode throws and fails the whole DML instead |
 | Intentional admin/system context | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` on the statement, plus a comment: from 67.0 elevation is opt-in, so the bypass is written down and auditable |
 
-#
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Read the `.cls-meta.xml` (or `.trigger-meta.xml`) `apiVersion` and record which access-mode defaults apply; see [`references/gotchas.md`](references/gotchas.md) Gotchas 2, 4, and 6.
+2. List every `Database.query`, `Database.queryWithBinds`, `Database.countQuery`, `Search.query`, and inline SOQL in the class, and mark which inputs reach each one.
+3. Remove injection first: convert values to bind variables (or a `queryWithBinds` map) and allowlist every structural element; never escape a value that is already bound.
+4. Choose the access idiom per statement: `WITH USER_MODE` or `AccessLevel.USER_MODE` for user-facing reads, `Security.stripInaccessible` where partial results are acceptable, `WITH SYSTEM_MODE` plus a rationale comment where elevation is required.
+5. Run `python3 skills/apex/soql-security/scripts/check_soql_security.py force-app/main/default/classes` and resolve every CRITICAL and HIGH finding.
+6. Prove the result with a test that runs as a low-access user (`System.runAs`) and asserts both the allowed and the denied path; see [`references/deployable-example.md`](references/deployable-example.md).
 
 ---
 
@@ -114,21 +128,29 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-- **`String.escapeSingleQuotes()` is not a full injection defense**: It only helps quoted values, not field names, operators, or `ORDER BY`.
-- **`WITH SECURITY_ENFORCED` fails the whole query**: One inaccessible field causes a `QueryException`, so it suits only fail-fast paths — and at `apiVersion` 67.0+ it is gone entirely and will not compile. `WITH USER_MODE` has the same fail-fast behavior at every version from 57.0.
-- **Triggers run in system mode at every API version**: the 67.0 default-user-mode change does not reach the trigger body, which bypasses sharing, FLS, and object permissions, and a `.trigger` file cannot carry a class-level sharing keyword. Per-statement enforcement still works there (`WITH USER_MODE` on its SOQL, `as user` / `AccessLevel.USER_MODE` on its DML) — but since the default is system mode, delegate to a handler class and declare the keyword there. See `apex/apex-with-without-sharing-decision`.
-- **`stripInaccessible()` does not restore sharing**: It removes inaccessible fields but does not change record visibility semantics.
-- **Component-facing Apex is not a security boundary by itself**: LWC, Aura, and API callers still rely on the server-side query to enforce access correctly.
-- **`without sharing` plus broad SOQL is a real data-exposure risk**: If that context is intentional, it must be documented, reviewed, and narrow in scope.
+One-line summaries; the full what / when / how-to-avoid entries live in [`references/gotchas.md`](references/gotchas.md).
+
+| Gotcha | Short form |
+|---|---|
+| `String.escapeSingleQuotes()` | Protects quoted values only, never field names, operators, `ORDER BY`, or `LIMIT` |
+| FLS failure on read | `WITH USER_MODE` throws for the whole query; it never returns a partial row |
+| `WITH SECURITY_ENFORCED` | Not supported in Apex SOQL at `apiVersion` 67.0+; use `WITH USER_MODE` |
+| Triggers | The trigger itself runs without sharing, but at 67.0+ its unqualified SOQL and DML run in user mode |
+| `stripInaccessible()` | Removes fields, never records, and throws when the object itself is not accessible |
+| `without sharing` plus broad SOQL | A real exposure; keep it narrow and write the reason next to it |
 
 ## Proactive Triggers
 
-Surface these WITHOUT being asked:
-- **Dynamic SOQL built with string concatenation** -> Flag as Critical. Treat it as an injection path until proven otherwise.
-- **Public Apex querying without explicit CRUD/FLS strategy** -> Flag as High. This commonly passes tests but fails security review.
-- **`without sharing` with no justification** -> Flag as High. Hidden system-context access is an audit problem.
-- **User-controlled sort fields, object names, or operators with no allowlist** -> Flag as High. Structural injection is still injection.
-- **PMD suppressions without rationale** -> Flag as Medium. Security exceptions must be traceable.
+Surface these without being asked:
+
+| Pattern found | Severity | Why |
+|---|---|---|
+| Dynamic SOQL built with string concatenation | Critical | Treat it as an injection path until proven otherwise |
+| Public Apex at `apiVersion` 66.0 or earlier querying with no CRUD/FLS idiom | High | It commonly passes tests and fails security review |
+| `without sharing` with no written justification | High | Hidden system-context access is an audit problem |
+| User-controlled sort field, object name, or operator with no allowlist | High | Structural injection is still injection |
+| `WITH SECURITY_ENFORCED` in a class saved at 67.0+ | Critical | The class does not compile |
+| PMD suppression with no rationale | Medium | Security exceptions must be traceable |
 
 ## Output Artifacts
 

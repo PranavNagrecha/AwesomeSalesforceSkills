@@ -35,19 +35,24 @@ Create or reuse an **autolaunched** flow with the needed inputs. Record-triggere
 
 ---
 
-## Anti-Pattern 3: Assuming the clicking user’s Salesforce session executes the Flow
+## Anti-Pattern 3: Asserting the wrong identity for connector steps
 
-**What the LLM generates:** “The Flow runs **as the Slack user**, so their profile permissions apply.”
+**What the LLM generates:** "The Flow runs as the Slack user, so their profile permissions apply", or the opposite, with no mention of the step's account setting.
 
-**Why it happens:** Analogies to interactive OAuth apps; partially true for some Slack apps but dangerous to assert for managed connector behavior without verifying current product docs.
+**Why it happens:** Analogies to interactive OAuth apps. An earlier version of this file said the identity model was unknown.
 
 **Correct pattern:**
 
 ```
-Treat Salesforce side effects as **integration context**: verify in official Salesforce for Slack documentation which identity and permission model applies to connector steps for your release. Never invent CRUD semantics from analogy.
+Slack Help, Authenticate third-party accounts to use connector steps:
+- The builder connects an account when adding the step.
+- Default: people using the workflow can use the builder's account.
+- "Whose account should be used for this step" > "The person using the workflow"
+  makes each user authenticate, so their Salesforce permissions apply.
+Coded workflows: credential_source "END_USER" (link trigger only) or "DEVELOPER".
 ```
 
-**Detection hint:** Absolute claims about **running user**, **impersonation**, or **FLS** for connector steps without citing current help.
+**Detection hint:** Any claim about which Salesforce user runs the step that does not name the step's account setting.
 
 ---
 
@@ -80,3 +85,28 @@ Return only fields required for the Slack outcome; prefer **IDs** and **non-sens
 ```
 
 **Detection hint:** Flow outputs that include **PII**, **financial**, or **health** field names routed to **public** channels without governance language.
+
+---
+
+## Anti-Pattern 6: Letting Slack Connect partners run steps on an internal account
+
+**What the LLM generates:** "Share the workflow in the partner channel so suppliers can update their Salesforce records."
+
+**Why it happens:** The model treats shared channels like internal ones.
+
+**Correct pattern:** Slack Help says external people can only use workflows with connector steps that do not require them to authenticate, and admins control whether they can use such workflows at all. A step that runs on an internal account would therefore act with internal permissions on a partner's behalf. Use a Salesforce-side intake (for example an Experience Cloud form) for partners instead.
+
+**Detection hint:** A Salesforce connector workflow intended for a Slack Connect channel with no identity or admin-setting review.
+
+---
+
+## Anti-Pattern 7: Building a flow for a single record update
+
+**What the LLM generates:** An autolaunched flow whose only element is Update Records, called through Run a Flow.
+
+**Why it happens:** The model reaches for Run a Flow by default.
+
+**Correct pattern:** The Salesforce connector has Create a record, Read a record, Update a record, and Delete a record steps. Use them for single-record work and keep Run a Flow for logic that needs a flow.
+
+**Detection hint:** A Run a Flow target whose flow contains one record element and no decisions.
+

@@ -1,47 +1,60 @@
 # Examples — Health Cloud APIs
 
-## Example 1: Calling the FHIR Healthcare API vs. Standard SObject API
+## Example 1: Choosing Between the SObject API and the Healthcare API
 
-**Context:** An integration developer is building a connector between a third-party analytics platform and Salesforce Health Cloud to retrieve patient condition data. They need to determine which API to use.
+**Context:** An integration developer connects a third-party analytics platform to Health Cloud to retrieve patient condition data.
 
-**Problem:** The developer attempts to call the FHIR Healthcare API endpoint but receives a 403 Forbidden error. The Connected App was configured for the standard `api` OAuth scope only.
+**Problem:** The developer first tried `GET /services/data/v60.0/healthcare/fhir/R4/Condition` with an app that had only the `api` scope, following an outdated guide. That path is not the Healthcare API, and the analytics platform did not need FHIR at all.
 
 **Solution:**
-1. Navigate to Setup > App Manager > find the Connected App used for the integration.
-2. Edit the OAuth settings and add the `healthcare` scope to the selected OAuth scopes.
-3. Re-authenticate to obtain a new access token that includes the `healthcare` scope.
-4. Call the FHIR Healthcare API: `GET https://{instance}.salesforce.com/services/data/v60.0/healthcare/fhir/R4/Condition?patient={patientId}`
-5. The response is a FHIR Bundle JSON structure containing Condition entries.
-6. Parse each bundle entry to extract the clinical data.
 
-For non-FHIR use cases (internal integrations, reporting): use the standard SObject API instead — `GET /services/data/v60.0/sobjects/HealthCondition?fields=Id,Name,PatientId` — which does not require the `healthcare` scope and returns simpler SObject JSON.
+1. The analytics platform needs records, not FHIR resources, so it uses the SObject API with a normal org token:
 
-**Why it works:** The two API layers serve different use cases. FHIR Healthcare API is for FHIR-conformant interoperability (external FHIR clients, EHR integration). Standard SObject API is for internal Salesforce integrations and reporting. Choosing correctly avoids scope configuration complexity and unnecessary bundle handling overhead.
+```http
+GET /services/data/v67.0/query?q=SELECT+Id,PatientId,ConditionSeverity+FROM+HealthCondition HTTP/1.1
+Host: MyDomainName.my.salesforce.com
+Authorization: Bearer <org access token>
+```
+
+2. A separate EHR feed that does need FHIR R4 uses the Healthcare API host and a token whose app holds `system_condition_read` (or `user_condition_read`) plus `refresh_token`:
+
+```http
+GET /clinical-summary/fhir-r4/v1/Condition HTTP/1.1
+Host: api.healthcloud.salesforce.com
+Authorization: Bearer <access token issued to the external client app>
+Accept: application/fhir+json
+```
+
+UNVERIFIED (2026-10-03): the `Accept: application/fhir+json` header and the search parameters a Condition read accepts are not shown in the fetched guide pages; check the Healthcare API reference for the Clinical Summary module.
+
+**Why it works:** Each consumer uses the layer that matches its contract. The analytics feed avoids custom scopes, regional hosts, and bundle limits; the EHR feed gets FHIR R4 resources from the documented host.
 
 ---
 
-## Example 2: Handling HTTP 424 Errors in FHIR Bundle Operations
+## Example 2: Handling HTTP 424 in a Batch Bundle
 
-**Context:** A batch integration creates CarePlan and CarePlanGoal records using FHIR bundle transactions. The bundle processes but some entries return HTTP 424.
+**Context:** A nightly job writes CarePlan and Goal resources through a `batch` Bundle. Some entries return 424.
 
-**Problem:** The CarePlan entry in the bundle failed with a validation error. All CarePlanGoal entries that reference the CarePlan via `fullUrl` returned HTTP 424 (Failed Dependency), making the error cascade confusing — the developer cannot find a 4xx error on the CarePlan entry itself.
+**Problem:** The CarePlan entry failed validation. Every Goal entry that referenced the CarePlan through its `urn:uuid:` placeholder was cancelled with 424, so the log shows many "Failed Dependency" lines and one real error.
 
 **Solution:**
-1. In bundle response processing, check all entries for HTTP 424 status.
-2. Build a dependency graph: trace each 424 entry back to the bundle entry it references via `request.url` or `fullUrl`.
-3. Find the root cause entry — the one with a 4xx/5xx error that is NOT 424.
-4. Fix the root cause (in this case, a validation error on the CarePlan — a required field was missing).
-5. Retry the full bundle after fixing the root cause.
-6. Implement a circuit breaker: if a bundle returns >10% 424 errors, log the full bundle for debugging rather than retrying immediately.
 
-**Why it works:** HTTP 424 is a dependency-failure indicator, not an independent error. Always trace 424 errors back to their root cause entry before attempting a fix. Fixing downstream 424 entries without addressing the root cause will not resolve the issue.
+1. Before sending, record each entry's `fullUrl` placeholder and which entries reference it.
+2. On the response, list the entries whose status is not 2xx and not 424; these are the root failures.
+3. Fix the root cause (here, a missing required CarePlan field).
+4. Resend only the failed root and the entries that depended on it. Entries that succeeded are already committed, because the API supports only `batch` bundles.
+5. If more than a small share of a run returns 424, stop the run and alert, rather than retrying blindly.
+
+**Why it works:** A 424 is the API telling you it cancelled a dependent action. Fixing the root and resending only what failed avoids duplicate writes.
 
 ---
 
-## Anti-Pattern: Using Standard SObject Endpoint for FHIR Operations
+## Anti-Pattern: Using the SObject Endpoint for FHIR Payloads
 
-**What practitioners do:** Send FHIR R4 bundle payloads to the standard SObject endpoint (`/services/data/vXX.0/sobjects/`) expecting FHIR-conformant responses, because this is the standard Salesforce REST API endpoint.
+**What practitioners do:** Send FHIR R4 Bundle JSON to `/services/data/vXX.X/sobjects/` expecting FHIR handling.
 
-**What goes wrong:** The standard SObject endpoint does not understand FHIR bundle JSON format. It returns an error that the request body does not match the expected SObject format, or (worse) silently ignores FHIR-specific fields and stores only fields that match the SObject schema. The response is also plain SObject JSON, not FHIR bundle format.
+**What goes wrong:** The SObject endpoint expects SObject field maps. It rejects the body or stores only fields that happen to match the SObject schema, and the response is SObject JSON, not FHIR.
 
-**Correct approach:** FHIR operations must use the FHIR Healthcare API endpoint: `/services/data/vXX.0/healthcare/fhir/R4/{ResourceType}`. Standard SObject API is for standard platform operations. Do not mix endpoints.
+**Correct approach:** Send FHIR payloads to the Healthcare API host (`https://api.healthcloud.salesforce.com/{module}/fhir-r4/v1/{Resource}`, or the regional and sandbox variants). Use the SObject API for records and the Business APIs under `/connect/health` for business operations.
+
+See [`healthcare-api-examples.md`](healthcare-api-examples.md) for the deployable scope metadata and complete request bodies.

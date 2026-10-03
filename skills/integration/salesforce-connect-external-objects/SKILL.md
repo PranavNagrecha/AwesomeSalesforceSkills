@@ -18,6 +18,8 @@ triggers:
   - "OData versus custom adapter for Salesforce Connect"
   - "cross org external object design"
   - "external objects performance and reporting limits"
+  - "set up an OData 4.0 external data source for Salesforce Connect"
+  - "write Apex that queries or inserts external object records"
 inputs:
   - "source system type and whether the data must remain outside Salesforce"
   - "latency, availability, and write requirements"
@@ -27,9 +29,9 @@ outputs:
   - "review findings for adapter choice and platform-fit risks"
   - "Salesforce Connect pattern with operational guardrails"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-10-03
 ---
 
 # Salesforce Connect External Objects
@@ -45,6 +47,19 @@ Gather this context before working on anything in this domain:
 - Is the source of truth staying outside Salesforce, and is that requirement real?
 - Do users need read-only lookup-style access, or are they expecting reporting, automation, and low-latency interaction like a native object?
 - Is the adapter choice OData, cross-org, or custom Apex because of source-system constraints?
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Must the data stay in the source system, and what latency and uptime does that system offer?" | Every external object query is a round trip; each join adds another | A latency budget and an availability owner | Pages that degrade predictably when the source is slow, instead of surprising users |
+| "Which queries will users and code run: filters, sorts, counts, joins, text search?" | External objects reject aggregates other than `COUNT()`, `LIKE`, `INCLUDES`, `TYPEOF`, `WITH`, and more; subqueries return at most 1,000 rows | A query inventory checked against the SOQL limits table | No late rewrite when a report or LWC uses an unsupported clause |
+| "Read-only, or must users create and update records in the source?" | External objects are read-only unless the data source is writable; Apex writes use `insertAsync`, `updateAsync`, or the `Immediate` variants | The writable flag and the write path per caller | Writes that reach the source and can be monitored through `BackgroundOperation` |
+| "Does the source support OData 2.0 or 4.0, or is it another Salesforce org?" | Adapter choice (`OData`, `OData4`, `SfdcOrg`, custom Apex) sets the feature set and the build cost | The adapter and the protocol settings (row counts, server-driven paging, high data volume) | The least-code adapter that meets the query inventory |
+| "How do related Salesforce records link to the external rows?" | Indirect lookups need a parent field that is both External ID and unique; external lookups key on the external object's External ID | The relationship type per link and the matching key | Related lists that resolve instead of showing empty |
+| "Will batch jobs or automation process these records?" | Triggers are not supported on external objects (except change event triggers for OData 4.0); batch Apex with a query locator needs row counts and paging configured | The automation path or an explicit "no automation" decision | No design that depends on a trigger that can never fire |
+
+What a proper configuration adds over "just creating the external object": queries are proven against the documented limits, writes go through the asynchronous path with monitoring, relationships use the right key, and nobody expects triggers or full reporting on data that never lands in Salesforce.
 
 ---
 
@@ -65,6 +80,28 @@ External Objects can participate in useful UI and query patterns, but they do no
 ### Query Shape And User Expectations Matter
 
 Virtualized data is fine for lookup and reference views. It becomes painful when pages, related lists, or repeated queries assume local-database speed.
+
+| SOQL feature on `__x` | Behavior (SOQL and SOSL Reference v67.0) |
+|---|---|
+| Subquery or filter on a parent external object | Up to 1,000 rows |
+| Joins | Up to 4 per query across external and other objects; each join is a separate round trip |
+| `AVG`, `SUM`, `MIN`, `MAX`, `COUNT(field)`, `GROUP BY`, `HAVING` | Not supported |
+| `COUNT()` | Supported; for OData adapters only when Request Row Counts is enabled and the source returns a total |
+| `LIKE`, `INCLUDES`, `EXCLUDES`, `toLabel()`, `TYPEOF`, `FOR VIEW`, `FOR REFERENCE`, `WITH` | Not supported |
+| `ORDER BY` in relationship queries (OData) | Not supported; `NULLS FIRST` / `NULLS LAST` ignored |
+| `queryMore()` when the external object drives the query | Only the primary object; no subqueries |
+| Static SOQL in Apex tests | Fails for custom adapters; use dynamic SOQL or a SOQL stub |
+
+### Adapters and Writes
+
+| Adapter (`ExternalDataSource.type`) | Fits | Notes |
+|---|---|---|
+| `OData4` / `OData` | A source that exposes OData | Request Row Counts, Server Driven Pagination, and High Data Volume live in `customConfiguration` |
+| `SfdcOrg` | Another Salesforce org | Writable only from API 39.0 |
+| Apex class (custom adapter) | A source with no standard protocol | DML is not allowed inside the adapter; all Apex limits apply |
+| `AmazonDynamoDB`, `AmazonAthena` | Those AWS stores | Schema descriptors in `externalDataSrcDescriptors` |
+
+External objects are read-only by default; `isWritable` on the data source enables create, update, and delete. Apex "can't execute standard insert(), update(), or create() operations on external objects"; it uses `Database.insertAsync()` and related methods (or `insertImmediate()` for portal users), and `BackgroundOperation` records show job status. Writes from the UI and API are synchronous.
 
 ---
 
@@ -106,13 +143,12 @@ Virtualized data is fine for lookup and reference views. It becomes painful when
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Confirm the source of truth stays external and record the latency and availability budget; if users really need native automation or deep reporting, recommend replication instead.
+2. Inventory every query the pages, reports, and code will run, and check each one against the SOQL limits table above.
+3. Pick the adapter and set the data source options: Request Row Counts if anything uses `COUNT()` or batch Apex, Server Driven Pagination for large result sets, `isWritable` only when writes are required.
+4. Model relationships: indirect lookups on a parent field that is External ID and unique, external lookups on the external object's External ID.
+5. Build Apex against the asynchronous write methods, mock queries with `Test.createSoqlStub`, and use dynamic SOQL in custom adapter tests. Deployable files are in [`references/metadata-examples.md`](references/metadata-examples.md).
+6. Run `python3 skills/integration/salesforce-connect-external-objects/scripts/check_salesforce_connect_external_objects.py --manifest-dir force-app/main/default` and fix every ERROR.
 
 ---
 
@@ -131,12 +167,16 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+One-line summaries; the full entries are in [`references/gotchas.md`](references/gotchas.md).
 
-1. **External Objects are not native objects with someone else's storage** - feature expectations must be checked, not assumed.
-2. **Latency belongs to the architecture** - slow external systems make Salesforce pages feel slow too.
-3. **Reporting and aggregation expectations often exceed the fit** - virtualization does not equal native analytics behavior.
-4. **Custom adapters are a power tool, not the default** - once chosen, you own more implementation and support surface.
+| Gotcha | Short form |
+|---|---|
+| Triggers and Apex managed sharing | Not available on external objects; only change event triggers for OData 4.0 |
+| Apex DML | Use `insertAsync` / `updateAsync` / `deleteAsync` or the `Immediate` variants, not plain DML |
+| Unsupported SOQL | Aggregates other than `COUNT()`, `LIKE`, `WITH`, and others fail |
+| Batch Apex | Query locator needs Request Row Counts; iterable batches store external rows in Salesforce while running |
+| External ID values | Salesforce may store them; never use sensitive data |
+| Custom adapter edits | Resave the Provider class after changing the Connection class |
 
 ---
 

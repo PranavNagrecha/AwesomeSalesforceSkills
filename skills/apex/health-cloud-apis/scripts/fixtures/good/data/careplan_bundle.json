@@ -1,0 +1,13 @@
+{
+  "resourceType": "Bundle",
+  "type": "batch",
+  "entry": [
+    {"fullUrl": "urn:uuid:4d3c2b1a-0000-4000-8000-000000000001",
+     "resource": {"resourceType": "Goal", "lifecycleStatus": "proposed", "subject": {"reference": "Patient/123"}},
+     "request": {"method": "POST", "url": "Goal"}},
+    {"fullUrl": "urn:uuid:4d3c2b1a-0000-4000-8000-000000000002",
+     "resource": {"resourceType": "CarePlan", "status": "active", "intent": "plan", "subject": {"reference": "Patient/123"},
+                  "goal": [{"reference": "urn:uuid:4d3c2b1a-0000-4000-8000-000000000001"}]},
+     "request": {"method": "POST", "url": "CarePlan"}}
+  ]
+}

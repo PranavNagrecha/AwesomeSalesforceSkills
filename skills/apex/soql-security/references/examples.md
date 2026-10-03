@@ -34,11 +34,11 @@ public class AccountSearchController {
             throw new AuraHandledException('Invalid sort field.');
         }
 
-        // ✅ Bind variable for user value; AccessLevel.USER_MODE for FLS.
-        //    WITH USER_MODE is a compile-time clause for inline SOQL only — it
-        //    cannot be appended to a dynamic query string (see llm-anti-patterns
-        //    Anti-Pattern 3), so dynamic SOQL passes the access level instead.
-        String likePattern = '%' + String.escapeSingleQuotes(searchTerm) + '%';
+        // ✅ Bind variable for the user value; AccessLevel.USER_MODE for FLS.
+        //    WITH USER_MODE would also work inside the string; the argument
+        //    keeps the security choice out of the query text.
+        //    Do not escape a bound value: escaping adds a literal backslash.
+        String likePattern = '%' + searchTerm + '%';
         String query = 'SELECT Id, Name, AnnualRevenue FROM Account '
             + 'WHERE Name LIKE :likePattern '
             + 'ORDER BY ' + sortField + ' ASC';
@@ -47,7 +47,7 @@ public class AccountSearchController {
 }
 ```
 
-Note: `String.escapeSingleQuotes()` is added as a defense-in-depth for the LIKE pattern, but the bind variable (`:likePattern`) is the primary protection.
+Note: the bind variable (`:likePattern`) is the protection for the value. An earlier version of this example also passed the value through `String.escapeSingleQuotes()`; that is wrong for a bound value, because the backslash becomes part of the search string. The allowlist is the protection for `sortField`.
 
 ---
 

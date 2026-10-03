@@ -1,0 +1,19 @@
+{
+  "salesforce_org_url": "https://acme.my.salesforce.com",
+  "government_cloud": false,
+  "compliance_requirements": ["SOC2"],
+  "slack_plan": "Business+",
+  "integration": "salesforce-built",
+  "additional_orgs_connected": 2,
+  "request_by_role": "Workspace Owner",
+  "approve_by_role": "Salesforce System Admin",
+  "activate_by_role": "Owner",
+  "account_mapping_field": "Email",
+  "automatic_account_mapping": true,
+  "unified_employee_license_users": false,
+  "users_have_connect_permission": true,
+  "salesforce_ip_restrictions": false,
+  "unfurl_option": "Name, Type, and Preview Button",
+  "sensitive_objects": ["Opportunity", "Contract"],
+  "slack_record_layouts_for_sensitive_objects": true
+}

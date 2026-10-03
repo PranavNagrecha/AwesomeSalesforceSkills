@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExternalDataSource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customConfiguration>{"inlineCountEnabled":"true","pagination":"SERVER","noIdMapping":"false","requestCompression":"false","compatibility":"DEFAULT","format":"JSON","timeout":"120","searchEnabled":"true"}</customConfiguration>
+    <endpoint>callout:ERP_OData/odata/v4</endpoint>
+    <isWritable>true</isWritable>
+    <label>ERP OData</label>
+    <principalType>Anonymous</principalType>
+    <protocol>NoAuthentication</protocol>
+    <type>OData4</type>
+</ExternalDataSource>

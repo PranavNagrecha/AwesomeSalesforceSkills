@@ -5,11 +5,19 @@ Inspects Salesforce project metadata to surface common REST API integration
 anti-patterns: hard-coded old API versions, missing error handling markers,
 and composite usage without subrequest result inspection.
 
-Uses stdlib only — no pip dependencies.
+Rules added 2026-10-03, grounded on the REST API Developer Guide v67.0
+(API End-of-Life Policy; Status Codes and Error Responses):
+  * A version at or below 30.0 is retired and returns 410 GONE.
+  * Retry logic keyed on HTTP 429 or Retry-After without any REQUEST_LIMIT_EXCEEDED
+    handling: the REST guide documents 403 with errorCode REQUEST_LIMIT_EXCEEDED
+    for exceeded request limits and lists no 429.
+
+Uses stdlib only; no pip dependencies.
 
 Usage:
     python3 check_rest_api_patterns.py [--help]
     python3 check_rest_api_patterns.py --manifest-dir path/to/force-app
+    python3 check_rest_api_patterns.py --self-test
 """
 
 from __future__ import annotations
@@ -21,6 +29,10 @@ from pathlib import Path
 
 # Minimum acceptable API version (roughly last 4 major releases from Spring '25)
 MIN_API_VERSION = 56
+# Versions 7.0 through 30.0 are retired (REST guide, API End-of-Life Policy)
+RETIRED_MAX_VERSION = 30
+_RE_429 = re.compile(r"\b429\b|Retry-After", re.IGNORECASE)
+_RE_LIMIT_CODE = re.compile(r"REQUEST_LIMIT_EXCEEDED")
 
 # Regex patterns for source scan
 _RE_OLD_API_VERSION = re.compile(r"/services/data/v(\d+)(?:\.\d+)?/")
@@ -34,7 +46,7 @@ _RE_COMPOSITE_RESPONSE_CHECK = re.compile(
     re.IGNORECASE,
 )
 _RE_NEXT_RECORDS_URL = re.compile(r"nextRecordsUrl", re.IGNORECASE)
-_RE_DONE_FLAG = re.compile(r'"done"\s*:|\.done\b', re.IGNORECASE)
+_RE_DONE_FLAG = re.compile(r'"done"\s*:|\.done\b|\[\s*[\'"]done[\'"]\s*\]', re.IGNORECASE)
 
 
 def _scan_file_for_api_version_issues(path: Path) -> list[str]:
@@ -51,7 +63,13 @@ def _scan_file_for_api_version_issues(path: Path) -> list[str]:
             version = int(version_str)
         except ValueError:
             continue
-        if version < MIN_API_VERSION:
+        if version <= RETIRED_MAX_VERSION:
+            line_num = text[: match.start()].count("\n") + 1
+            issues.append(
+                f"{path}:{line_num}: REST API version v{version_str}.0 is retired; requests "
+                f"return 410 GONE (versions 7.0 through 30.0 are retired). Upgrade the version."
+            )
+        elif version < MIN_API_VERSION:
             line_num = text[: match.start()].count("\n") + 1
             issues.append(
                 f"{path}:{line_num} — REST API version v{version_str}.0 is below "
@@ -116,6 +134,22 @@ def _scan_file_for_pagination_issues(path: Path) -> list[str]:
     return issues
 
 
+def _scan_file_for_limit_handling(path: Path) -> list[str]:
+    """Flag retry logic that waits for 429/Retry-After but never handles REQUEST_LIMIT_EXCEEDED."""
+    try:
+        text = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return []
+    if "/services/data/" not in text:
+        return []
+    if _RE_429.search(text) and not _RE_LIMIT_CODE.search(text):
+        return [
+            f"{path}: Retry logic keys on HTTP 429 or Retry-After. Salesforce REST API returns 403 "
+            f"with errorCode REQUEST_LIMIT_EXCEEDED when request limits are exceeded; handle that code."
+        ]
+    return []
+
+
 def check_rest_api_patterns(manifest_dir: Path) -> list[str]:
     """Scan manifest_dir for REST API integration issues.
 
@@ -141,6 +175,7 @@ def check_rest_api_patterns(manifest_dir: Path) -> list[str]:
         issues.extend(_scan_file_for_api_version_issues(source_file))
         issues.extend(_scan_file_for_composite_issues(source_file))
         issues.extend(_scan_file_for_pagination_issues(source_file))
+        issues.extend(_scan_file_for_limit_handling(source_file))
 
     return issues
 
@@ -158,7 +193,20 @@ def main() -> int:
         default=".",
         help="Root directory of the Salesforce project metadata (default: current directory).",
     )
+    parser.add_argument("--self-test", action="store_true", help="Run the bundled fixtures and exit.")
     args = parser.parse_args()
+    if args.self_test:
+        here = Path(__file__).resolve().parent / "fixtures"
+        good = check_rest_api_patterns(here / "good")
+        bad = check_rest_api_patterns(here / "bad")
+        expected = ["is retired", "below the recommended minimum", "no inspection of 'compositeResponse'",
+                    "missing pagination handling", "REQUEST_LIMIT_EXCEEDED"]
+        missing = [e for e in expected if not any(e in issue for issue in bad)]
+        print(f"good fixtures: {len(good)} issue(s) (expected 0)")
+        for g in good:
+            print(f"  unexpected: {g}")
+        print(f"bad fixtures: {len(bad)} issue(s); missing expected: {missing or 'none'}")
+        return 0 if not good and not missing else 1
     manifest_dir = Path(args.manifest_dir)
 
     issues = check_rest_api_patterns(manifest_dir)

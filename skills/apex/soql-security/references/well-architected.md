@@ -40,7 +40,11 @@
 
 ## Official Sources Used
 
-- Salesforce Well-Architected Overview — security and audit framing for data-access design
-- Apex Developer Guide — secure query and transaction behavior guidance
-- Apex Reference Guide — query, security API, and language reference confirmation
-- Secure Apex Classes — component-facing sharing and CRUD/FLS enforcement patterns
+Fetched and read on 2026-10-03 (release 262, Summer '26, API 67.0) unless marked.
+
+- Apex Developer Guide, Version 67.0: Apex Security and Sharing Model, Use the with sharing, without sharing, and inherited sharing Keywords (Omitted Sharing, Implementation in Apex Triggers), Set an Access Mode for Database Operations, Enforce Security with the stripInaccessible Method, Dynamic SOQL, SOQL Injection Defenses, Apex Versioned Behavior Changes (Version 67.0), Using the runAs Method. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Apex Reference Guide, Version 67.0: Security Class (`stripInaccessible` overloads and `enforceRootObjectCRUD`), String Class (`escapeSingleQuotes`). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf
+- SOQL and SOSL Reference, Version 67.0: SOQL SELECT Syntax and WITH (recommendation of `WITH USER_MODE` over `WITH SECURITY_ENFORCED`; the system-mode default sentence that conflicts with the Apex guide). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_soql_sosl.pdf
+- Salesforce Well-Architected: Secure (Trusted), archived 2026-07-11. http://web.archive.org/web/20260711090005/https://architect.salesforce.com/docs/architect/well-architected/guide/secure.html
+- Salesforce Well-Architected Overview, archived 2026-06-16. http://web.archive.org/web/20260616115029/https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Canonical version table in this repository: `agents/_shared/AGENT_CONTRACT.md` § Apex security idiom by API version.

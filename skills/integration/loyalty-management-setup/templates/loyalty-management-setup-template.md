@@ -13,7 +13,8 @@
 | (e.g., Reward Points) | Non-Qualifying | Redemption | N/A |
 | (e.g., Elite Qualifying) | Qualifying | Tier measurement | (Tier Group name) |
 
-- **One qualifying currency per tier group:** [ ] Confirmed
+- **Each qualifying currency on exactly one tier group (a tier group may hold several):** [ ] Confirmed
+- **Tier assessment currency set on each tier group:** [ ] Confirmed
 - **Non-qualifying points NOT used for tier thresholds:** [ ] Confirmed
 
 ## Tier Group Design
@@ -24,18 +25,24 @@
 
 ## DPE Job Activation
 
-| DPE Definition | Activated? | Scheduled? | Cadence |
-|---|---|---|---|
-| Reset Qualifying Points | [ ] Yes  [ ] No | [ ] Yes  [ ] No | Annual |
-| Aggregate/Expire Fixed Non-Qualifying Points | [ ] Yes  [ ] No | [ ] Yes  [ ] No | Daily |
-| Create Partner Ledgers (if partner loyalty) | [ ] Yes  [ ] No | [ ] Yes  [ ] No | |
-| Update Partner Balance (if partner loyalty) | [ ] Yes  [ ] No | [ ] Yes  [ ] No | |
+| DPE Template | Cloned? | Clone Activated? | Flow That Runs It | Cadence |
+|---|---|---|---|---|
+| Credit Qualifying / Non-Qualifying Points to Members | [ ] | [ ] | | Daily |
+| Reset Qualifying Points | [ ] | [ ] | | Reset date |
+| Expire Fixed Non-Qualifying Points (or the Aggregated Expiration Ledgers variant) | [ ] | [ ] | | Daily |
+| Create Partner Ledgers and Update Partner Balances (if partner loyalty) | [ ] | [ ] | | |
+
+## Tier Assessment
+
+- **Change Tier process generated (Manage Tier Eligibility > Generate Rules):** [ ] Yes
+- **Runs:** [ ] Real time (child of Transaction Journal process)  [ ] Batch Management job
+- **Select Members for Tier Assessment Automatically turned on:** [ ] Yes
 
 ## Partner Loyalty (if applicable)
 
 - **LoyaltyProgramPartner records created:** [ ] Yes
-- **Accrual factor and redemption factor set:**
-- **Both partner DPE definitions activated:** [ ] Yes — BOTH required
+- **BillingType, PartnerType, AccrualCostperUnit, RedemptionCostperUnit set:**
+- **Create Partner Ledgers and Update Partner Balances clone active and scheduled:** [ ] Yes
 
 ## Member Portal
 
@@ -46,13 +53,12 @@
 ## Checklist
 
 - [ ] Two-currency architecture: qualifying (tier) + non-qualifying (redemption)
-- [ ] One qualifying currency per tier group
-- [ ] Tiers created with threshold values
-- [ ] DPE Reset Qualifying Points activated and scheduled
-- [ ] DPE Aggregate/Expire activated and scheduled
-- [ ] Partner DPE definitions both activated (if partner loyalty)
+- [ ] Each qualifying currency on exactly one tier group
+- [ ] Tiers created with minimum eligible balances; Change Tier process generated
+- [ ] DPE clones for balances, reset, and expiration activated and called by scheduled flows
+- [ ] Partner ledger definition clone active (if partner loyalty)
 - [ ] Member portal associated with exactly one program
 
 ## Notes
 
-(Record currency naming decisions, DPE schedule cadence, partner conversion factors)
+(Record currency naming decisions, DPE flow schedules, partner cost per unit values)

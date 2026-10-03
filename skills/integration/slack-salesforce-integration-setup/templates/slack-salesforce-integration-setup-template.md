@@ -8,38 +8,41 @@
 
 ## Pre-Flight Checks
 
-- **Salesforce edition:** [ ] Enterprise  [ ] Unlimited  [ ] Developer  (Professional/Essential not supported)
-- **Slack workspace plan:** [ ] Paid  [ ] Free (Free cannot connect)
-- **Government Cloud org?** [ ] No  [ ] Yes — CANNOT connect (hard restriction)
-- **Current connected org count:** ___ / 20 maximum
+- **Government Cloud or Government Cloud Plus org?** [ ] No  [ ] Yes (cannot connect)
+- **FedRAMP, HIPAA, or Blackjack requirement?** [ ] No  [ ] Yes (not certified)
+- **Slack plan:** ______ (multiple orgs documented for Pro, Business+, Enterprise)
+- **Additional orgs already connected:** ___ (up to 20 additional on those plans)
+- **Connection plan checked:** `check_slack_salesforce_integration_setup.py --plan ...` [ ] Clean
 
 ## Three-Party Handshake Roster
 
 | Role | Person | Status |
 |---|---|---|
-| Slack Workspace Owner/Admin (Step 1 & 3) | | [ ] Available |
-| Salesforce System Admin (Step 2) | | [ ] Available |
+| Slack Workspace Owner/Admin (Step 1: request) | | [ ] Available |
+| Salesforce System Admin (Step 2: approve) | | [ ] Available |
+| Slack Owner or Salesforce Admin system role (Step 3: activate) | | [ ] Available |
 
 ## Connection Steps
 
-- [ ] Step 1: Slack admin installs Salesforce for Slack from App Directory
-- [ ] Step 2: Salesforce System Admin approves in Setup > Slack > Manage Slack Connection
-- [ ] Step 3: Slack admin completes activation
-- [ ] Platform Integration User permission sets assigned
-- [ ] All users connected personal Salesforce accounts
+- [ ] Step 1: Request the connection in Slack (Tools & settings > Manage Salesforce Organizations)
+- [ ] Step 2: Salesforce System Admin approves in Setup > Platform Tools > Slack > Manage Slack Connection
+- [ ] Step 3: Owner or Salesforce Admin system role activates in Slack
+- [ ] Connect Salesforce with Slack permission assigned to every Slack user
+- [ ] Account mapping configured; users connected their Salesforce accounts
 
 ## Data Governance
 
 - **Sensitive Salesforce objects that should not be shared in Slack:**
   (list object names)
-- **Page layout for Platform Integration User:** (restricted layout configured)
+- **Unfurling option per object:** (Do Not Share Data / Preview Button Only / ... )
+- **URL Unfurling Slack Record Layouts for sensitive objects:** (list)
 - **Channel governance policy:** (which record types allowed in which channel types)
 
 ## Checklist
 
-- [ ] Edition and plan confirmed
-- [ ] Three-party handshake completed in order
-- [ ] Platform Integration User permission sets assigned
+- [ ] Compliance gate and plan confirmed
+- [ ] Three-step handshake completed in order by the documented roles
+- [ ] Connect Salesforce with Slack permission assigned
 - [ ] Record preview data exposure risk documented and communicated
 - [ ] Individual users connected personal accounts
 - [ ] Channel governance policy defined

@@ -4,12 +4,12 @@
 
 | Property | Value |
 |----------|-------|
-| **Class Name** | TODO |
-| **Class Type** | TODO: @AuraEnabled / REST / Batch / Trigger Handler / Service |
-| **`apiVersion`** | TODO: from the `.cls-meta.xml`, not the org's release — it decides the default access mode and which idioms compile |
-| **Sharing Model** | TODO: `with sharing` / `without sharing` / `inherited sharing` (no keyword = without sharing at ≤ 66.0, with sharing at 67.0+) |
-| **Reviewed By** | TODO |
-| **Date** | TODO: YYYY-MM-DD |
+| **Class Name** | <fill in> |
+| **Class Type** | <fill in> @AuraEnabled / REST / Batch / Trigger Handler / Service |
+| **`apiVersion`** | <fill in> from the `.cls-meta.xml`, not the org's release, it decides the default access mode and which idioms compile |
+| **Sharing Model** | <fill in> `with sharing` / `without sharing` / `inherited sharing` (no keyword at 66.0 and earlier: with sharing for an Aura controller or an @AuraEnabled method called from LWC, the caller's mode for a non-entry-point class, otherwise without sharing; with sharing at 67.0+) |
+| **Reviewed By** | <fill in> |
+| **Date** | <fill in> YYYY-MM-DD |
 
 ---
 
@@ -17,9 +17,9 @@
 
 | Line | Code Pattern | Risk | Remediation |
 |------|-------------|------|-------------|
-| TODO | `Database.query('...' + userVar)` | HIGH | Replace with bind variable |
-| TODO | `ORDER BY ' + sortParam` | HIGH | Implement allowlist |
-| TODO | None found | — | — |
+| <fill in> | `Database.query('...' + userVar)` | HIGH | Replace with bind variable |
+| <fill in> | `ORDER BY ' + sortParam` | HIGH | Implement allowlist |
+| <fill in> | None found | n/a | n/a |
 
 ---
 
@@ -27,9 +27,9 @@
 
 | Line | Method / Query | Issue | Remediation |
 |------|---------------|-------|-------------|
-| TODO | `@AuraEnabled` query without `WITH USER_MODE` | Medium (≤ 66.0; at 67.0+ user mode is already the default) | Add `WITH USER_MODE` |
-| TODO | DML without `stripInaccessible` | Medium | Wrap in `stripInaccessible(UPDATABLE)` |
-| TODO | None found | — | — |
+| <fill in> | `@AuraEnabled` query without `WITH USER_MODE` | Medium (≤ 66.0; at 67.0+ user mode is already the default) | Add `WITH USER_MODE` |
+| <fill in> | DML without `stripInaccessible` | Medium | Wrap in `stripInaccessible(UPDATABLE)` |
+| <fill in> | None found | n/a | n/a |
 
 ---
 
@@ -38,8 +38,8 @@
 | Finding | Detail |
 |---------|--------|
 | Class declared | `with sharing` / `without sharing` / `inherited sharing` |
-| Is `without sharing` intentional? | TODO: Yes/No — reason: |
-| Calls into `without sharing` classes? | TODO: List class names |
+| Is `without sharing` intentional? | <fill in> Yes/No, reason: |
+| Calls into `without sharing` classes? | <fill in> List class names |
 
 ---
 
@@ -49,7 +49,7 @@ List every `Database.query()` call:
 
 | Line | Query String | User-Controlled Variables? | Allowlist in Place? |
 |------|-------------|--------------------------|-------------------|
-| TODO | TODO | Yes / No | Yes / No / N/A |
+| <fill in> | <fill in> | Yes / No | Yes / No / N/A |
 
 ---
 
@@ -68,4 +68,4 @@ List every `Database.query()` call:
 
 | Reviewer | Date | Notes |
 |----------|------|-------|
-| TODO | TODO | TODO |
+| <fill in> | <fill in> | <fill in> |

@@ -1,0 +1,24 @@
+{
+  "salesforce_org_url": "https://acme.my.salesforce.com",
+  "government_cloud": true,
+  "compliance_requirements": [
+    "HIPAA"
+  ],
+  "slack_plan": "Pro",
+  "integration": "slack-built legacy app",
+  "additional_orgs_connected": 24,
+  "request_by_role": "Workspace Owner",
+  "approve_by_role": "Salesforce System Admin",
+  "activate_by_role": "Workspace Admin",
+  "account_mapping_field": "Email",
+  "automatic_account_mapping": false,
+  "unified_employee_license_users": true,
+  "users_have_connect_permission": false,
+  "salesforce_ip_restrictions": true,
+  "unfurl_option": "Data Viewable by User Sharing the Link",
+  "sensitive_objects": [
+    "Opportunity",
+    "Contract"
+  ],
+  "slack_record_layouts_for_sensitive_objects": false
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtlClntAppGlobalOauthSettings xmlns="http://soap.sforce.com/2006/04/metadata">
+    <callbackUrl>https://middleware.example.com/callback</callbackUrl>
+    <consumerKey>3MVG9EXAMPLEKEY</consumerKey>
+    <consumerSecret>A1B2C3D4E5F6EXAMPLE</consumerSecret>
+    <externalClientApplication>Order_Sync</externalClientApplication>
+    <isClientCredentialsFlowEnabled>true</isClientCredentialsFlowEnabled>
+    <label>Order Sync Global</label>
+</ExtlClntAppGlobalOauthSettings>

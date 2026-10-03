@@ -12,6 +12,8 @@ triggers:
   - "my Apex tests are fragile because they depend on org data using SeeAllData=true"
   - "how do I create test data for 200 records to test a trigger at bulk scale"
   - "all my tests broke after an admin added a validation rule to Account"
+  - "write a TestDataFactory class for my Apex tests"
+  - "create test users with roles and permission sets without mixed DML errors"
 tags:
   - apex-testing
   - test-data-factory
@@ -28,9 +30,9 @@ outputs:
   - "Pattern guidance for @testSetup vs per-method factory calls"
   - "Portal user factory pattern using System.runAs()"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
 # Test Data Factory Patterns
@@ -44,9 +46,23 @@ This skill activates when a practitioner needs to build reusable, bulk-safe Apex
 Gather this context before working on anything in this domain:
 
 - Identify all SObject types the test suite needs. Map the hierarchy: parent objects must be created before child objects.
-- Determine whether the tests involve **setup objects** (User, UserRole, PermissionSet, Group) alongside **non-setup objects** (Account, Case, etc.). If yes, the Mixed DML restriction applies and requires `System.runAs()`.
+- Determine whether the tests involve **setup objects** (User, UserRole, PermissionSet, PermissionSetAssignment, Group, GroupMember, and the rest of the Apex Developer Guide list) alongside **non-setup objects** (Account, Case, etc.). If yes, the Mixed DML restriction applies; wrap the setup DML in `System.runAs()`.
 - Decide on the data sharing model: `@testSetup` for a shared baseline that is reset between test methods, vs factory method calls in each test for per-test variation.
-- Check the governor limit budget: 150 DML statements per test transaction, 10,000 rows per DML call. Bulk factories must stay within these limits.
+- Check the governor limit budget: 150 DML statements and 10,000 DML rows per transaction, and every `System.runAs` call counts as a DML statement. Bulk factories must stay within these limits.
+
+## Questions to Ask Before Configuring
+
+Ask these before writing the factory; each answer changes its shape.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which objects do the tests create, and which required fields, validation rules, or duplicate rules apply to them in every target org?" | Validation and required-field rules run in tests; a missing field fails every test that creates the object | The default field values the factory must set | One place to fix when an admin adds a rule, instead of dozens of broken tests |
+| "Do any tests create users, roles, permission set assignments, or group members?" | Those are setup objects; mixing their DML with Account or Case DML raises `MIXED_DML_OPERATION` unless it runs inside `System.runAs` | The list of setup objects and which tests need them | A user factory that never mixes DML, so the suite passes in the UI and in deployments |
+| "Which data must every test share, and which must vary per test?" | `@testSetup` runs once per class and resets changes after each method; static variables set there do not survive | The split between `@testSetup` baseline and per-test factory calls | Faster tests that cannot leak state between methods |
+| "Does any test need org data, such as a custom setting or a price book?" | Test data isolation hides org data, and `SeeAllData=true` on any method makes `@testSetup` unsupported for the class | Whether to create the data in setup instead | A suite that runs the same in a scratch org, a sandbox, and production |
+| "What volume must trigger tests cover?" | Bulk behavior only shows when records are inserted in one DML statement | The count parameter each bulk factory method needs | Tests that exercise the same code path production bulk loads use |
+
+What a proper configuration adds over "just inserting records in each test": required-field changes are fixed once, setup and non-setup DML never collide, the suite does not depend on org data, and bulk paths are tested at production volume.
 
 ---
 
@@ -54,7 +70,7 @@ Gather this context before working on anything in this domain:
 
 ### @IsTest Utility Class and Code Size
 
-Factory classes decorated with `@IsTest` are excluded from the org's code size limit (6 MB of Apex code). This means you can have large, comprehensive factory classes without impacting your org's Apex footprint. The `@IsTest` annotation on the class — not just on individual methods — is what triggers the exclusion.
+Factory classes decorated with `@IsTest` are excluded from the org's code size limit (6 MB of Apex code); the Apex Developer Guide says such classes "don't count against your organization limit of 6 MB for all Apex code". This means you can have large, comprehensive factory classes without impacting your org's Apex footprint. The `@IsTest` annotation on the class, not just on individual methods, is what triggers the exclusion.
 
 ```apex
 @IsTest
@@ -70,19 +86,19 @@ public class TestDataFactory {
 
 ### @testSetup: Shared Baseline
 
-The `@testSetup` method runs once per test class before any test method. It inserts records into the database. Each test method then sees those records as if they were freshly inserted (Salesforce resets the database state between test methods using a savepoint/rollback mechanism).
+The `@testSetup` method runs once per test class before any test method. Records it creates are available to every test method, and any change a test method makes to them (field updates or deletions) is rolled back after that method, so the next method sees the original records. Static variables set in `@testSetup` do not carry over: every test method runs as a separate transaction with freshly initialized static context.
 
 Use `@testSetup` for records that all test methods share and that would be expensive to recreate per method (e.g., an Account hierarchy with 50 records, a complex Product + Pricebook structure).
 
-**Constraint:** `@isTest(SeeAllData=true)` is **incompatible** with `@testSetup`. You cannot use both on the same test class. If you must use `SeeAllData=true` for a specific reason, you lose `@testSetup` and must create data in each test method.
+**Constraint:** "If the test class or a test method has access to organization data by using the @isTest(SeeAllData=true) annotation, test setup methods aren't supported in this class." One `SeeAllData=true` method is enough to lose `@testSetup` for the whole class. A class can have only one `@testSetup` method, and a fatal error in it fails the entire class.
 
 ### Mixed DML Restriction and Portal Users
 
-Salesforce prevents inserting setup objects (User, UserRole, PermissionSet, Group, GroupMember) in the same DML transaction as non-setup objects. This restriction exists to prevent sharing model recalculation mid-transaction.
+Salesforce prevents DML on setup objects (UserRole, PermissionSet, PermissionSetAssignment, Group, GroupMember, and others in the Apex Developer Guide list) in the same transaction as DML on non-setup objects, because those objects change the user's access to records. A `User` insert is allowed alongside other sObjects only when `UserRoleId` is null (API 15.0+); a `User` update is allowed only when fields such as `UserRoleId`, `IsActive`, `ProfileId`, `IsPortalEnabled`, and `Username` are not changed.
 
-Common scenario that triggers the error: creating a portal user (a User record) and the Account/Contact it belongs to in the same transaction.
+Common scenarios that trigger the error: creating a user with a role, assigning a permission set, or adding a group member in the same test transaction that inserts Accounts or Contacts. Validation for mixed DML is skipped during deployment, so a suite can pass a deploy and fail when run from the UI.
 
-The fix is `System.runAs()`. Wrap User insertions inside a `System.runAs(adminUser)` block. Non-setup DML outside the `runAs` block, setup DML inside.
+The documented fix in tests is `System.runAs()`: enclose the setup-object DML in a `System.runAs(adminUser)` block, or perform it in an asynchronous job the test calls. Inside a `runAs` block the user's sharing, object permissions, and field-level security are enforced.
 
 ```apex
 @IsTest
@@ -124,7 +140,7 @@ public static List<Case> createCases(Id accountId, Integer count, Boolean doInse
 }
 ```
 
-Always use a single `insert cases` statement for bulk records — never loop and insert one by one (this hits the 150 DML statement limit and misses bulk trigger testing).
+Always use a single `insert cases` statement for bulk records. Looping and inserting one by one hits the 150 DML statement limit and never exercises the bulk trigger path.
 
 ---
 
@@ -211,7 +227,7 @@ static void testActiveCases() {
 |---|---|---|
 | All tests share the same baseline data | `@testSetup` + factory calls | Fastest test execution; database reset is automatic per test method |
 | Tests need independent, varying data | Factory method calls per test method | No risk of test interference; each test owns its data |
-| Creating portal/community users | `System.runAs()` wrapping User insert | Required to avoid Mixed DML exception |
+| Creating users with a role, permission set assignments, or group members | `System.runAs()` around the setup DML | Those are setup objects; a role-less `User` insert alone is allowed alongside other sObjects |
 | Bulk trigger testing (200 records) | Single `insert List<SObject>` in factory | Tests the actual trigger bulk behavior; avoids 150 DML limit |
 | Org has required custom fields on Account | Add required fields to factory defaults with dummy values | Prevents validation rule failures in tests |
 | Testing with specific Profile | Query the Profile by Name in `@testSetup`, pass Id to user factory | Avoids hardcoding Profile IDs which differ between orgs |
@@ -226,7 +242,7 @@ static void testActiveCases() {
 4. Create a single `@IsTest` factory class. Add one static method per SObject type. Use `Boolean doInsert` parameter for flexibility.
 5. Add bulk factory methods (accepting a count parameter, returning List) for any SObject that a trigger fires on.
 6. In test classes, use `@testSetup` for shared baseline data. Use per-test factory calls only for data that varies between tests.
-7. Run all tests after factory changes and verify no test uses `@isTest(SeeAllData=true)` alongside `@testSetup`.
+7. Run `python3 skills/apex/test-data-factory-patterns/scripts/check_test_data_factory_patterns.py --apex-dir force-app/main/default/classes`, then run all tests from the UI as well as in a validation deploy, because mixed DML validation is skipped during deployment.
 
 ---
 
@@ -235,7 +251,7 @@ static void testActiveCases() {
 - [ ] Factory class is annotated `@IsTest` at the class level (excluded from code size limit)
 - [ ] Factory methods use `Boolean doInsert` parameter to allow building records without inserting
 - [ ] Required fields and validation-rule-required fields are populated in factory defaults
-- [ ] Portal/community user creation wraps User insert in `System.runAs()`
+- [ ] Setup-object DML (users with roles, permission set assignments, group members) runs inside `System.runAs()`
 - [ ] Bulk factory methods insert via a single DML call, not one record at a time
 - [ ] No test class uses both `@isTest(SeeAllData=true)` and `@testSetup`
 - [ ] Profile IDs are queried by Name, not hardcoded
@@ -244,11 +260,11 @@ static void testActiveCases() {
 
 ## Salesforce-Specific Gotchas
 
-1. **`@isTest(SeeAllData=true)` incompatibility with `@testSetup`** — using both on the same test class throws a compile-time error. `SeeAllData=true` was designed for legacy tests that needed access to org data; `@testSetup` creates isolated test data. They cannot coexist. Remove `SeeAllData=true` whenever possible.
-2. **Mixed DML: User + Account/Contact in same transaction** — this is the most common factory test failure. The error message is `MIXED_DML_OPERATION: DML operation on setup object is not permitted after you have updated a non-setup object`. Fix by separating User inserts into a `System.runAs()` block.
-3. **`@testSetup` records are shared but reset between tests** — changes made by one test method (e.g., updating a record's Status) do not persist to the next test method. Salesforce rolls back DML from each test method while keeping `@testSetup` records. This is intentional but surprises developers who expect test method order to matter.
+1. **`@isTest(SeeAllData=true)` disables `@testSetup` for the class.** The Apex Developer Guide says test setup methods "aren't supported" when the class or any test method has `SeeAllData=true`. UNVERIFIED (2026-10-03): whether this surfaces as a compile error or a run-time failure is not stated in the guide. Remove `SeeAllData=true` whenever possible.
+2. **Mixed DML: setup-object DML plus Account/Contact DML in one transaction.** This is the most common factory test failure (a user with a role, a permission set assignment, a group member). Fix by moving the setup DML into a `System.runAs()` block. UNVERIFIED (2026-10-03): the exact error text `MIXED_DML_OPERATION: DML operation on setup object is not permitted after you have updated a non-setup object` is not printed in the fetched guide.
+3. **`@testSetup` records are shared but reset between tests.** Updates and deletions made by one test method are rolled back before the next one runs, and static variables set in `@testSetup` are reinitialized. Do not cache Ids in statics during setup; query them in each method.
 4. **Required fields change without notice** — an admin can add a validation rule that makes a previously optional field required. This silently breaks factory methods that omit that field. Run your full test suite after every metadata deployment, not just after code changes.
-5. **Querying Profile by Name is org-specific** — Profile Names differ between sandbox and production if the profile was renamed. Always query `[SELECT Id FROM Profile WHERE Name = :profileName LIMIT 1]` — never hardcode a Profile ID. This ensures the factory works across environments.
+5. **Profile and RecordType IDs are org-specific.** Query `[SELECT Id FROM Profile WHERE Name = :profileName LIMIT 1]` (Profile, RecordType, and User stay visible to tests without `SeeAllData`). Profile names can still differ if a profile was renamed, so keep the name in one constant.
 
 ---
 

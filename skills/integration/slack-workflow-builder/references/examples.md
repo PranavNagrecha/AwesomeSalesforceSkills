@@ -10,10 +10,24 @@
 
 1. Clone the business logic into a new **autolaunched** flow with inputs `opportunityId`, `taskSubject`, and `ownerId` (text or reference variables as required by your org).
 2. Replace user prompts with inputs supplied from the Slack workflow **shortcut form** (or from channel metadata gathered in earlier Slack steps).
-3. In Workflow Builder, add **Run a Flow**, select the org, choose the new autolaunched flow, map form answers to Flow inputs.
+3. In Workflow Builder, add **Run a Flow**, select the org, choose the new autolaunched flow, map form answers to Flow inputs, and under **Whose account should be used for this step** pick **The person using the workflow** so each rep's own Salesforce permissions apply.
 4. Add a Slack **Send a message** step that posts a confirmation using output variables from the Flow.
 
-**Why it works:** Slack’s connector invokes Salesforce the same way other headless callers do: no UI runtime, so the target must be autolaunched and active.
+```text
+Trigger:        Link (shortcut) in #deal-acme
+Step 1 Form:    Opportunity Id (text), Follow-up subject (text)
+Step 2 Run a Flow (Salesforce):
+                flow_name    = AL_Slack_Log_Follow_Up        (autolaunched, Active)
+                opportunityId <- Form: Opportunity Id
+                taskSubject   <- Form: Follow-up subject
+                Account used  = The person using the workflow
+Step 3 Send a message to #deal-acme:
+                "Follow-up logged: {Run a Flow > result > taskId}"
+```
+
+The flow metadata for `AL_Slack_Log_Follow_Up` is in [`metadata-examples.md`](metadata-examples.md).
+
+**Why it works:** The connector's flow picker is limited to auto-launched flows ("Only auto-launched flows are currently supported" in Slack's connector schema), there is no UI runtime, and the per-person account choice keeps each rep inside their own Salesforce permissions.
 
 ---
 

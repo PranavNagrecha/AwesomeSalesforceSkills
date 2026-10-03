@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LoyaltyProgramSetup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>SkyRewards</label>
+    <programProcesses>
+        <executionType>RealTime</executionType>
+        <journalType>Accrual</journalType>
+        <parameters>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>0</decimalPlaces>
+            <isCollection>false</isCollection>
+            <isInput>false</isInput>
+            <isOutput>false</isOutput>
+            <parameterName>VoucherValue</parameterName>
+            <parameterType>Constant</parameterType>
+            <value>50</value>
+        </parameters>
+        <processName>High Value Booking Voucher</processName>
+        <processType>TransactionJournal</processType>
+        <rules>
+            <isProcessEligibilityRule>false</isProcessEligibilityRule>
+            <actions>
+                <actionName>Issue High Value Voucher</actionName>
+                <actionParameters>
+                    <operator>Equals</operator>
+                    <parameterName>VoucherDefinitionName</parameterName>
+                    <sequenceNumber>1</sequenceNumber>
+                    <value>Voucher for High Value Bookings</value>
+                    <valueType>Literal</valueType>
+                </actionParameters>
+                <actionParameters>
+                    <operator>Equals</operator>
+                    <parameterName>VoucherFaceValue</parameterName>
+                    <sequenceNumber>2</sequenceNumber>
+                    <value>{!VoucherValue}</value>
+                </actionParameters>
+                <actionType>IssueVoucher</actionType>
+            </actions>
+            <conditions>
+                <conditionCriteria>1</conditionCriteria>
+                <conditionFilterCriteria>
+                    <operator>GreaterThanOrEquals</operator>
+                    <sequence>1</sequence>
+                    <sourceFieldName>TransactionJournal.TransactionAmount</sourceFieldName>
+                    <value>500</value>
+                    <valueType>Literal</valueType>
+                </conditionFilterCriteria>
+                <conditionName>Booking At Least 500</conditionName>
+                <conditionType>Condition</conditionType>
+            </conditions>
+            <ruleName>Voucher for Bookings of 500 or More</ruleName>
+            <startDate>2026-10-01</startDate>
+            <status>Draft</status>
+            <stepMappings>
+                <associatedStep>Booking At Least 500</associatedStep>
+                <sequence>1</sequence>
+            </stepMappings>
+            <stepMappings>
+                <associatedStep>Issue High Value Voucher</associatedStep>
+                <parentStep>Booking At Least 500</parentStep>
+                <sequence>1</sequence>
+            </stepMappings>
+        </rules>
+        <status>Draft</status>
+    </programProcesses>
+</LoyaltyProgramSetup>

@@ -2,25 +2,32 @@
 
 ## Relevant Pillars
 
-- **Security** — FHIR Healthcare API requires the `healthcare` OAuth scope. Clinical SObjects require the HealthCloudICM permission set for all API users including integration users. FHIR responses contain PHI — OAuth tokens with `healthcare` scope must be stored securely and rotated regularly.
-- **Performance** — FHIR bundle limits (30 entries, 10 reads) require chunking design for bulk operations. The standard SObject API has higher throughput for internal operations. Use the appropriate API layer for the performance requirements of the integration.
-- **Reliability** — FHIR bundle HTTP 424 errors are dependency cascades from a single root failure. Error handling must implement dependency tracing, not just per-entry error counting. Retry logic must fix the root cause before retrying dependent entries.
+- **Security**: The Healthcare API authorizes each resource and method with its own OAuth custom scope (for example `system_condition_read`), and the external client app must also hold `refresh_token`. Grant the narrowest scope per consumer. FHIR payloads carry PHI, so tokens and refresh tokens need secure storage and rotation. Clinical objects on Experience Cloud sites need the FHIR R4 for Experience Cloud Sites permission set.
+- **Performance**: Bundles cap at 30 entries (10 reads), Salesforce recommends at most five concurrent requests per org, and the documented typical response time is about three seconds. Internal, high-volume consumers belong on the SObject API or Bulk API 2.0.
+- **Reliability**: Only `batch` bundles are supported, so partial success is normal. A 424 marks an entry cancelled because an entry it depends on failed. Retry logic must resend failed roots and their dependents, never the whole bundle, and writes must be idempotent.
 
 ## Architectural Tradeoffs
 
-**FHIR Healthcare API vs. Standard SObject API:** FHIR Healthcare API provides FHIR R4-conformant responses required for external FHIR client interoperability but has lower throughput limits (30 entries/bundle). Standard SObject API has higher throughput and simpler error handling but returns non-FHIR response formats. For internal integrations and analytics, standard SObject API is preferred. For EHR/payer FHIR interoperability, FHIR Healthcare API is required.
+**Healthcare API vs. SObject API vs. Business APIs:** The Healthcare API gives external FHIR clients FHIR R4 resources but adds regional hosts, custom scopes, bundle limits, and no code-set validation. The SObject API has higher throughput and full SOQL for internal consumers. The Business APIs under `/connect/health` wrap multi-object operations such as medication statements and enrollments in one call, which is the safer choice when business rules must apply.
 
-**Bundle Transactions vs. Individual Calls:** FHIR bundles are atomic when using `type: "transaction"` — all entries succeed or all fail. This is valuable for creating related clinical records (CarePlan + Goals + Tasks) atomically. However, bundle failures cascade via 424. For independent clinical record operations, individual API calls may be simpler to debug and retry.
+**Batch bundles vs. a Salesforce-side atomic write:** An earlier version of these notes described atomic `transaction` bundles. The Healthcare API supports only `batch`. When resources must commit together, write them through a Business API or the SObject API with `allOrNone`, and keep the Healthcare API for interoperability reads and independent writes.
 
 ## Anti-Patterns
 
-1. **Using the standard SObject endpoint for FHIR operations** — FHIR bundles sent to the standard SObject endpoint will fail or silently lose FHIR-specific fields. Always use the FHIR-specific endpoint for FHIR operations.
-2. **Assuming standard API batch limits apply to FHIR bundles** — FHIR bundles are limited to 30 entries, not 200. Integrations built without chunking will fail at production data volumes.
-3. **Not handling HTTP 424 dependency errors specifically** — Generic error handling that treats 424 like other 4xx errors will misdiagnose bundle failures. Always implement 424 dependency tracing.
+1. **Calling `/services/data/.../fhir` paths or requesting a `healthcare` scope**: Neither exists in the Healthcare API guide; use `api.healthcloud.salesforce.com` and resource custom scopes.
+2. **Assuming standard API batch limits apply to FHIR bundles**: Bundles are limited to 30 entries, 10 of them reads.
+3. **Not handling HTTP 424 dependency errors specifically**: Generic 4xx handling misdiagnoses bundle failures and duplicates committed writes on retry.
 
 ## Official Sources Used
 
-- Salesforce Healthcare API Get Started Guide: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_healthcare_api.htm
-- Health Cloud Developer Guide — Clinical Data Model: https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/
-- Health Cloud Business APIs REST Reference: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_api.htm
-- Salesforce Well-Architected Overview: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Fetched and read on 2026-10-03.
+
+- Salesforce Healthcare API, Get Started (resources, Bundle batch-only rule, 30-entry and 10-read limits, 424 behavior, data centers). https://developer.salesforce.com/docs/industries/health/guide/get-started.html
+- Salesforce Healthcare API, Authorization (OAuth custom scopes per resource and method, refresh_token requirement). https://developer.salesforce.com/docs/industries/health/guide/authorization.html
+- Salesforce Healthcare API, Call the API (URL format, modules, regional and sandbox domains). https://developer.salesforce.com/docs/industries/health/guide/call-the-api.html
+- Salesforce Healthcare API, Considerations (three-second response time, five concurrent requests, no code-set validation, SMART scope format not supported). https://developer.salesforce.com/docs/industries/health/guide/considerations.html
+- Salesforce Healthcare API, FAQ and Consent (Winter '23 minimum, SKU, Industry APIs terms). https://developer.salesforce.com/docs/industries/health/guide/faq.html and https://developer.salesforce.com/docs/industries/health/guide/consent.html
+- Agentforce Health Developer Guide, Summer '26: Clinical Data Model (FHIR R4 Support Settings org preference, FHIR R4 for Experience Cloud Sites permission set), HealthCondition and ClinicalEncounter (API 51.0), Health Cloud Business APIs (REST Reference, Medication Statements, Create Patient Apex), Health Cloud FHIR APIs. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/health_cloud_dev_guide.pdf
+- Metadata API Developer Guide, Version 67.0: OauthCustomScope, ExtlClntAppOauthSettings, ExtlClntAppOauthConfigurablePolicies. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Salesforce Well-Architected Overview, archived 2026-06-16. http://web.archive.org/web/20260616115029/https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+- Listed by an earlier version of this skill and not readable on 2026-10-03: https://developer.salesforce.com/docs/atlas.en-us.health_cloud.meta/health_cloud/hco_dev_healthcare_api.htm (redirects to help.salesforce.com, which returns a script shell) and https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/ (superseded by the PDF above).
