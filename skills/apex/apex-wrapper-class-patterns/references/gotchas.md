@@ -1,65 +1,97 @@
-# Gotchas — Apex Wrapper Class Patterns
+# Gotchas: Apex Wrapper Class Patterns
 
-Non-obvious Salesforce platform behaviors that cause real production problems when working with Apex wrapper and inner classes.
+Non-obvious Apex and component-framework behaviors that cause real production problems with wrapper classes. Each one names the official source it rests on.
 
----
+## Gotcha 1: Inner classes as component parameters or return values are unsupported
 
-## Gotcha 1: Comparable.compareTo() Without Null Guard Throws NullPointerException at Sort Time
+**What happens:** A controller returns `List<Controller.Row>` to a Lightning web component. It may work in some orgs and fail in others, and Salesforce does not support it.
 
-**What happens:** `List.sort()` invokes `compareTo(Object compareTo)` on each element during the sort. If the argument or a field on the argument is null and the implementation dereferences it without checking, the sort throws `System.NullPointerException`. The stack trace points into internal sort machinery, making it very difficult to trace back to the wrapper's `compareTo()` method.
+**When it occurs:** When the wrapper is declared as an inner class of the controller, which most tutorials show.
 
-**When it occurs:** Any time `List.sort()` is called on a list of wrappers where at least one instance has a null value in the sort-key field, or where a null wrapper instance itself is present in the list. This is common when wrappers are built from query results that include records with optional fields (e.g., Opportunity.Amount can be null).
+**How to avoid:** Declare component-facing wrappers as top-level classes. Do not use inheritance in classes used as component attributes either.
 
-**How to avoid:** Always null-check the incoming argument in `compareTo()` before accessing any field. A safe pattern:
-
-```apex
-public Integer compareTo(Object compareTo) {
-    if (compareTo == null) return 1; // nulls sort last
-    OpportunityWrapper other = (OpportunityWrapper) compareTo;
-    Decimal thisAmt  = this.amount  == null ? -1 : this.amount;
-    Decimal otherAmt = other.amount == null ? -1 : other.amount;
-    if (thisAmt > otherAmt) return 1;
-    if (thisAmt < otherAmt) return -1;
-    return 0;
-}
-```
+**Source:** Lightning Web Components Developer Guide, "Expose Apex Methods to Lightning Web Components": "An Apex inner class as a parameter or return value for an Apex method that's called by a Lightning web component isn't supported." Lightning Aura Components Developer Guide (262): custom Apex classes used for component attributes "can't be inner classes or use inheritance ... their use is unsupported in all cases"; with Lightning Web Security enabled, an inner class can't be a parameter or return value.
 
 ---
 
-## Gotcha 2: Inner Classes Always Run in System Mode
+## Gotcha 2: Unannotated properties never reach the client
 
-**What happens:** A developer declares the outer class `with sharing` and assumes the inner wrapper class will also respect user record visibility. In reality, Apex inner classes always execute in system mode — they see all records regardless of the outer class's sharing declaration. Only SOQL and DML in the **outer class's own methods** are constrained by the outer class's sharing keyword.
+**What happens:** The component receives objects whose properties are `undefined`.
 
-**When it occurs:** When an inner class independently queries or modifies records (e.g., a heavy constructor that issues a SOQL query). The inner class bypasses record-level security even if the outer class is `with sharing`.
+**When it occurs:** When `@AuraEnabled` is on the method but not on the wrapper's properties, or a new property is added without it.
 
-**How to avoid:** Do not issue SOQL or DML inside inner class constructors or methods. Perform all data access in the outer class (where `with sharing` is enforced) and pass results into the wrapper constructor as plain field values.
+**How to avoid:** Annotate every public property the template reads. Leave server-only properties unannotated.
 
----
-
-## Gotcha 3: @JsonAccess Is Required for Apex REST Deserialization
-
-**What happens:** An `@RestResource` Apex class uses a custom wrapper as a typed parameter or deserializes the request body via `JSON.deserialize()`. At runtime the platform throws `System.JSONException: Type is not visible` even though the wrapper class is `public`.
-
-**When it occurs:** Any time the Apex JSON deserializer encounters a class that lacks the `@JsonAccess` annotation. This is a compile-time-silent, runtime-fatal error — the code deploys successfully but fails on the first real HTTP call.
-
-**How to avoid:** Add `@JsonAccess(serializable='always' deserializable='always')` at the class level on any wrapper used for Apex REST request or response binding. Use narrower variants (`serializable='never'`, `deserializable='samePackage'`, etc.) if the security policy requires tighter control. Inner classes cannot carry `@JsonAccess` — REST-bound wrappers must be top-level classes.
+**Source:** Lightning Aura Components Developer Guide (262), "Returning Data from an Apex Server-Side Controller": "Only the values of public instance properties and methods annotated with @AuraEnabled are serialized and returned."
 
 ---
 
-## Gotcha 4: Comparator Interface Requires API Version 60.0+ (Spring '24+)
+## Gotcha 3: Parameters need getters and setters
 
-**What happens:** A developer references `Comparator<T>` in an Apex class saved at API version 59 or earlier. The class fails to compile or deploys but throws a runtime error when `List.sort(Comparator)` is called.
+**What happens:** A wrapper sent from the component back to Apex arrives with null properties.
 
-**When it occurs:** In orgs or scratch org definitions that have not yet updated class-level API versions, or in packages that ship classes at a lower API version floor. The Comparator interface was introduced in Spring '24 (API v60.0); it does not exist at lower API versions.
+**When it occurs:** When the wrapper is used as an `@AuraEnabled` method parameter and its properties are plain fields.
 
-**How to avoid:** Before using `Comparator<T>`, confirm the class file's API version is 60.0 or higher. In package development, set the minimum API version in `sfdx-project.json`. If the org is on an older release, fall back to `Comparable` with a flag-based sort direction.
+**How to avoid:** Declare parameter properties as `@AuraEnabled public String name { get; set; }`.
+
+**Source:** Lightning Aura Components Developer Guide (262), custom Apex class parameter example: "Each property in the Apex class must have an @AuraEnabled annotation, as well as a getter and setter."
 
 ---
 
-## Gotcha 5: @AuraEnabled on Method Does Not Propagate to Wrapper Fields
+## Gotcha 4: Mixing controller methods and wrapper properties in one class
 
-**What happens:** The developer places `@AuraEnabled` on the Apex controller method that returns the wrapper list but forgets to annotate the fields on the wrapper class. The LWC component receives an array of objects where every custom property is `undefined`. The component renders empty rows with no JavaScript error in strict mode until a template binding tries to call a method on `undefined`.
+**What happens:** A single class holds both static `@AuraEnabled` methods and `@AuraEnabled` instance properties, a combination the Aura guide tells you to avoid.
 
-**When it occurs:** Every time a wrapper class is introduced or a new field is added to an existing wrapper that will be consumed by a Lightning component. This is the single most common wrapper class mistake in LWC development.
+**When it occurs:** When a controller also acts as its own return type.
 
-**How to avoid:** As part of the wrapper class review checklist, enumerate every property the LWC HTML template references and confirm each has `@AuraEnabled`. Properties used only server-side should be left unannotated to minimize the JSON payload size.
+**How to avoid:** Keep the controller and the wrapper in separate top-level classes.
+
+**Source:** Lightning Aura Components Developer Guide (262), "AuraEnabled Annotation": "Don't mix-and-match these different uses of @AuraEnabled in the same Apex class."
+
+---
+
+## Gotcha 5: compareTo() and compare() must handle nulls
+
+**What happens:** `List.sort()` throws a null pointer exception on a list with a null element or a wrapper whose sort key is null.
+
+**When it occurs:** On real data where optional fields (for example `Opportunity.Amount`) are blank.
+
+**How to avoid:** Check both arguments and the key fields for null and pick a rule (nulls first or last).
+
+**Source:** Apex Reference Guide (262), "Comparable Interface" and "Comparator Interface": "Your implementation must explicitly handle null inputs ... to avoid a null pointer exception."
+
+---
+
+## Gotcha 6: Inner classes don't inherit the outer class's sharing mode
+
+**What happens:** An inner class that runs SOQL behaves differently from the `with sharing` outer class around it.
+
+**When it occurs:** When a wrapper constructor or helper method queries records.
+
+**How to avoid:** Keep queries in the controller or service. If an inner class must query, give it an explicit sharing keyword. In API 67.0 and later, a class without a declaration runs with sharing; in 66.0 and earlier, a non-entry-point class without one takes its caller's mode.
+
+**Source:** Apex Developer Guide (262), "Using the with sharing, without sharing, and inherited sharing Keywords," Other Implementation Details and Versioned Behavior Changes.
+
+---
+
+## Gotcha 7: @JsonAccess is about namespaces, not about REST
+
+**What happens:** Teams add `@JsonAccess(serializable='always' deserializable='always')` to every REST wrapper, widening access to all namespaces when nothing needed it. Or code in another namespace fails to deserialize a class with `JSONException`.
+
+**When it occurs:** When the annotation is treated as a REST requirement.
+
+**How to avoid:** Leave it off for same-namespace code; since API 49.0 the default for both directions is `sameNamespace`. Add the narrowest value that the cross-namespace case needs. Subclasses don't inherit it.
+
+**Source:** Apex Developer Guide (262), "JsonAccess Annotation," JsonAccess Considerations and Versioned Behavior Changes.
+
+---
+
+## Gotcha 8: Collator sorting changes with the running user
+
+**What happens:** A list sorted with `Collator` comes back in a different order for users with different locales.
+
+**When it occurs:** In triggers or code whose output order other logic depends on.
+
+**How to avoid:** Use `Collator` only for display ordering. Avoid it in triggers and in code that expects a fixed order.
+
+**Source:** Apex Developer Guide (262), "Lists of Custom Types and Sorting."

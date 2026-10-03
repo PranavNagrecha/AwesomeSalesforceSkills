@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — Debug Logs and Developer Console
+# LLM Anti-Patterns: Debug Logs and Developer Console
 
 Common mistakes AI coding assistants make when advising on debug log setup, trace flags, and Developer Console usage.
 These patterns help the consuming agent self-check its own output.
@@ -17,7 +17,7 @@ Set all categories to FINEST:
 - System: FINEST
 ```
 
-**Why it happens:** LLMs recommend maximum verbosity to "capture everything." But FINEST on all categories produces massive debug logs that hit the 20 MB log size limit, causing truncation. The critical information gets buried or cut off. Workflow and Validation at FINEST generate enormous output for orgs with many automation rules.
+**Why it happens:** LLMs recommend maximum verbosity to "capture everything." FINEST everywhere produces logs that pass 20 MB, and the platform then removes older lines from anywhere in the log (Apex Developer Guide 262, "Debug Log Limits"). Apex Code at FINEST also logs every variable assignment, including sensitive values.
 
 **Correct pattern:**
 
@@ -31,7 +31,7 @@ Targeted log levels for Apex debugging:
 - System: WARN
 ```
 
-**Detection hint:** Advice to set all log categories to `FINEST` — should be targeted per debugging scenario.
+**Detection hint:** Advice to set all log categories to `FINEST`; levels should be targeted per debugging scenario.
 
 ---
 
@@ -44,22 +44,26 @@ To debug a scheduled job:
 Setup > Debug Logs > New > Traced Entity Type: User > [select your user]
 ```
 
-**Why it happens:** LLMs default to user-level trace flags for all scenarios. Scheduled Apex, platform event subscribers, and Batch Apex may run as the "Automated Process" user or a different context user. A trace flag on your personal user will not capture logs for those executions.
+**Why it happens:** LLMs default to one user-level trace flag for every scenario, or the opposite: they suggest a class trace flag as a way to capture a class. Neither matches how logging works.
 
 **Correct pattern:**
 
 ```
-For scheduled/batch jobs running as Automated Process:
-Setup > Debug Logs > New > Traced Entity Type: Automated Process
+Platform event triggers, event processes, resumed flow interviews, publish callbacks:
+  Traced Entity Type: Automated Process (or the running user configured on the trigger)
+  (Platform Events Developer Guide 262, "Set Up Debug Logs for Event Subscriptions")
 
-For a specific Apex class:
-Setup > Debug Logs > New > Traced Entity Type: Apex Class > [select the class]
+More detail for one Apex class or trigger:
+  Keep a User or Automated Process trace flag, AND add Traced Entity Type: Apex Class
+  with higher levels. A class trace flag (CLASS_TRACING) overrides levels but never
+  generates a log on its own (Apex Developer Guide 262, "Debug Log Order of Precedence").
 
-For platform event triggers:
-Traced Entity Type: Automated Process (event triggers run in system context)
+Scheduled, Batch, Queueable Apex:
+  Trace the user who scheduled or submitted the job; add Automated Process if no log
+  appears. UNVERIFIED (2026-10-03): the 262 guides do not state which user these log under.
 ```
 
-**Detection hint:** Advice to set trace flags on a specific user when debugging scheduled jobs, batch jobs, or platform event triggers.
+**Detection hint:** Only the publishing user traced for platform event triggers, or a class trace flag offered as the only trace flag.
 
 ---
 
@@ -71,13 +75,13 @@ Traced Entity Type: Automated Process (event triggers run in system context)
 Open the Developer Console in your production org to step through the issue in real-time.
 ```
 
-**Why it happens:** LLMs do not distinguish between environments. The Developer Console has known performance and reliability issues in production orgs — it can time out, lose connection, or fail to render large logs. It also adds risk by providing ad-hoc query and anonymous Apex access in production.
+**Why it happens:** LLMs do not distinguish between environments. Opening the Developer Console sets a `DEVELOPER_LOG` trace flag, its log levels apply to all logs including deployment logs, and it offers ad-hoc anonymous Apex against production data (Apex Developer Guide 262, "Debug Log Order of Precedence" and "Debug Log Levels"). UNVERIFIED (2026-10-03): claims that the Console is less reliable in production than in sandboxes.
 
 **Correct pattern:**
 
 ```
 For production debugging:
-1. Set up a trace flag via Setup > Debug Logs (targeted user/class)
+1. Set up a trace flag via Setup > Debug Logs (the user or Automated Process; add a class trace flag only for extra detail)
 2. Reproduce the issue
 3. Download the debug log file
 4. Analyze locally using VS Code with the Apex Replay Debugger
@@ -101,7 +105,7 @@ List<Account> accounts = [SELECT Id FROM Account WHERE Status__c = 'Bad'];
 delete accounts;
 ```
 
-**Why it happens:** LLMs suggest anonymous Apex as a quick data fix tool without warning that it runs in full system context, bypasses validation rules with certain configurations, has no undo mechanism, and is not auditable (no deployment record, no version history).
+**Why it happens:** LLMs suggest anonymous Apex as a quick data fix without saying how it runs. It runs as the current user, with sharing, and fails to compile if it violates that user's object or field permissions (Apex Developer Guide 262, "Anonymous Blocks"). It has no undo once it commits, and it leaves no deployment record or version history. Version 1.0.0 of this file said it runs in full system context; that was wrong.
 
 **Correct pattern:**
 
@@ -133,17 +137,18 @@ for (Account a : accounts) {
 Set up the trace flag and then reproduce the issue whenever it happens next.
 ```
 
-**Why it happens:** LLMs advise setting a trace flag as a one-time action. Trace flags have a maximum duration of 24 hours (and the UI defaults to shorter). If the issue does not reproduce within that window, the trace flag expires silently and no logs are captured.
+**Why it happens:** LLMs advise setting a trace flag as a one-time action. `ExpirationDate` must be less than 24 hours after `StartDate` (Tooling API Developer Guide 262, "TraceFlag"). If the issue does not reproduce within that window, the trace flag expires silently and no logs are captured.
 
 **Correct pattern:**
 
 ```
-1. Set the trace flag with the maximum expiration (24 hours from now)
+1. Set the trace flag with an expiration just under 24 hours from the start
 2. Note the expiration time
 3. If the issue is intermittent, set a calendar reminder to renew the trace flag
 4. Alternatively, use the sf CLI to automate renewal:
    sf apex tail log --target-org myOrg
-   (keeps the trace active as long as the command runs)
+   (sets a DEVELOPER_LOG trace flag for your own user and streams logs;
+    UNVERIFIED 2026-10-03: whether it renews the flag past 24 hours)
 5. For persistent monitoring beyond 24 hours, use a custom logging
    framework that writes to a custom object or platform event
 ```

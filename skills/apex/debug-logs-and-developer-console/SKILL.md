@@ -1,6 +1,6 @@
 ---
 name: debug-logs-and-developer-console
-description: "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger'. NOT for production logging strategy or custom structured logging frameworks — use apex/debug-and-logging. NOT for writing test classes — use apex/test-class-standards."
+description: "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger', 'tail Apex logs from the CLI', 'capture logs for a platform event trigger'. NOT for production logging strategy or custom structured logging frameworks — use apex/debug-and-logging. NOT for writing test classes — use apex/test-class-standards."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -19,8 +19,11 @@ triggers:
   - "how do I use the Apex Replay Debugger in VS Code"
   - "my debug log is truncated or missing output"
   - "how do I query data from the Developer Console"
+  - "capture debug logs for a platform event trigger that runs as Automated Process"
+  - "create a trace flag from the command line and tail the logs"
 inputs:
   - "Which user or automated process needs logging (user, scheduled job, Automated Process, platform event subscriber)"
+  - "Whether an Apex class or trigger needs its own log levels (class tracing) on top of a user trace flag"
   - "Which log categories matter (Apex, Database, Callout, Workflow, etc.)"
   - "Environment type (sandbox, scratch org, or production)"
 outputs:
@@ -29,191 +32,139 @@ outputs:
   - "Developer Console usage guidance for queries and anonymous Apex"
   - "Apex Replay Debugger setup and checkpoint instructions"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-03
 ---
 
-Use this skill when a developer needs to capture runtime Apex behavior using debug logs, navigate the Developer Console, execute ad-hoc Apex anonymously, or step through code with the Apex Replay Debugger. This skill covers the mechanics of Salesforce's native debugging toolchain — not logging architecture or production observability strategy.
+Use this skill when a developer needs to capture runtime Apex behavior with debug logs, use the Developer Console or the sf CLI to read them, run anonymous Apex, or step through a log with the Apex Replay Debugger. It covers the native debugging toolchain, not logging architecture or production observability.
 
 ---
 
 ## Before Starting
 
-- **Who or what needs to be traced?** Debug logs require a trace flag tied to a Traced Entity Type: User, Apex class, Apex trigger, Visualforce page, or Automated Process.
-- **What environment are you in?** Production limits log retention. Sandboxes allow broader experimentation.
-- **What log size risk exists?** A single debug log is capped at 20 MB. Logs beyond that are truncated without error. Set log categories to the minimum needed.
+- **Whose execution produces the log?** A user trace flag logs that user's requests. Platform event triggers, event processes, resumed flow interviews, and publish callbacks log under **Automated Process**. Class and trigger trace flags only change levels; they never create a log on their own.
+- **How long must the trace stay on?** A trace flag's expiration must be less than 24 hours after its start, and only one trace flag per traced entity can be active at a time.
+- **How big will the log get?** Each log is capped at 20 MB. Above that, older lines are removed from anywhere in the log, not just the start.
+- **Is anything sensitive in scope?** FINEST on Apex Code logs every variable assignment.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which user, or which background process, runs the code we need to see?" | Event triggers and resumed flows log under Automated Process, and those logs don't show in the Developer Console Logs tab | The right traced entity: the user, Automated Process, or the overridden trigger user | A log that actually appears after the reproduction |
+| "Do we need more detail for one class or trigger without flooding the whole log?" | `CLASS_TRACING` trace flags override levels for that class or trigger but don't generate logs | A user (or Automated Process) trace flag plus a class trace flag with higher levels | A focused log that stays under 20 MB |
+| "When will the problem be reproduced, and for how long must logging run?" | Expiration must be under 24 hours from start, and trace flags expire without warning | A window that brackets the reproduction | No empty searches after a flag quietly expired |
+| "Could the code under trace touch passwords, tokens, or personal data?" | FINEST on Apex Code logs all variable assignments | Lower Apex Code levels, or a sandbox with masked data | No secrets sitting in a downloadable log |
+| "Is a deployment running while the Developer Console is open?" | Developer Console log levels affect all logs, including deployment logs, and FINEST slows deployments | Close the Console or lower levels before deploying | Deployments that are not slowed by logging |
+| "How many logs will this generate?" | More than 1,000 MB in 15 minutes disables trace flags; more than 1,000 MB stored blocks new trace flags | A narrow window and a cleanup step | Logging that keeps working for the rest of the team |
+
+What a proper setup adds over clicking "New" in Debug Logs: the log lands under the right entity, contains the detail you need, stays under the size cap, and does not leak sensitive values or block other people's trace flags.
 
 ---
 
 ## Core Concepts
 
-### Trace Flags and Debug Levels
+### Trace flags and debug levels
 
-A **trace flag** is a Setup record that tells Salesforce to capture a debug log for a specific entity during a defined time window. Without a trace flag, no debug log is generated for that entity — even if the code runs.
+A trace flag (Tooling API `TraceFlag`) ties a traced entity (`TracedEntityId`: a user, an Apex class, or an Apex trigger) to a debug level for a time window. `LogType` is one of:
 
-Every trace flag references a **Debug Level**, a named configuration that sets the verbosity for each of the nine log categories:
-
-| Category | What it captures |
+| LogType | What it does |
 |---|---|
-| ApexCode | `System.debug` calls, Apex entry/exit, exceptions |
-| ApexProfiling | Limits consumption, method timing |
-| Callout | HTTP request/response headers and bodies |
-| Database | SOQL queries, DML statements, query rows |
-| NBA | Next Best Action strategy execution |
-| System | System method calls |
-| Validation | Validation rule evaluation details |
-| Visualforce | Visualforce page execution |
-| Workflow | Flow and workflow rule evaluation |
+| `USER_DEBUG` | Logs an individual user's activities |
+| `DEVELOPER_LOG` | Set by the Developer Console when it opens, and by `sf apex tail log`, to log your own activity |
+| `CLASS_TRACING` | Overrides levels for an Apex class or trigger; doesn't generate logs |
 
-For each category the valid log levels in ascending verbosity order are:
-`NONE < ERROR < WARN < INFO < DEBUG < FINE < FINER < FINEST`
+A debug level (Tooling API `DebugLevel`) holds one level per category. The Apex Developer Guide lists these categories: Database, Database Access, Workflow, NBA, Validation, Callout, Apex Code, Apex Profiling, Visualforce, System. Levels run `NONE`, `ERROR`, `WARN`, `INFO`, `DEBUG`, `FINE`, `FINER`, `FINEST`, and are cumulative. Not every category offers every level.
 
-For most Apex debugging, set **ApexCode to DEBUG** and **Database to INFO**. Avoid FINEST on ApexCode unless diagnosing the heaviest executions — it generates enormous output and may cause the 20 MB cap to truncate the useful end of the log.
+### Order of precedence
 
-### Debug Log Lifecycle
+1. Trace flags override all other logging logic.
+2. With no active trace flags, Apex tests run with default levels (DB INFO, APEX_CODE DEBUG, APEX_PROFILING INFO, WORKFLOW INFO, VALIDATION INFO, CALLOUT INFO, VISUALFORCE INFO, SYSTEM DEBUG).
+3. Otherwise the API header sets levels; API requests without debugging headers produce transient logs that aren't saved.
+4. Otherwise an entry point's own level applies. If none apply, no log is generated.
 
-- **Setup path:** Setup → Debug Logs → New (choose Traced Entity Type → select entity → set start/end time → assign or create a Debug Level).
-- **Expiration:** Trace flags expire automatically at the configured end time. Expired flags produce no new logs. Always check whether the flag is still active.
-- **Retention:** The platform retains the most recent **20 logs per user**. Older logs are purged automatically. Logs in production are retained for **24 hours**; sandbox logs are retained for **7 days**. The org has an overall cap of **1,000 MB** of total debug log storage — when that cap is hit, Salesforce blocks adding new trace flags until old logs are deleted.
-- **Log size cap:** Each log file is capped at **20 MB**. Truncated logs display a message at the point of truncation. If the log is truncated, reduce verbosity or narrow the trace to a smaller time window.
+### Limits and retention
 
-Trace flag **Traced Entity Types** and when to use each:
-
-| Entity Type | When to use |
+| Limit | Value |
 |---|---|
-| User | Trace all Apex triggered by a specific user's session |
-| Apex Class | Trace invocations of a single Apex class regardless of which user triggers it |
-| Apex Trigger | Trace a specific trigger |
-| Visualforce Page | Trace a specific Visualforce page |
-| Automated Process | Trace background jobs (Scheduled Apex, Queueable, Batch, Platform Event triggers) |
+| Size per log | 20 MB; larger logs lose older lines from any location |
+| Retention | System debug logs 24 hours; monitoring debug logs seven days |
+| Burst | More than 1,000 MB of logs in 15 minutes disables trace flags (re-enable after 15 minutes) |
+| Storage | More than 1,000 MB of stored logs blocks adding or editing trace flags until logs are deleted |
+| Trace window | `ExpirationDate` less than 24 hours after `StartDate` |
 
-**Important:** When debugging scheduled jobs or batch Apex, set the Traced Entity Type to **Automated Process**, not the user who created the job.
+UNVERIFIED (2026-10-03): a per-user cap on the number of stored logs; version 1.0.0 of this skill said 20, and the 262 Apex guide does not state one.
 
-### Developer Console
+### Reading a log
 
-The Developer Console is a browser-based IDE accessible from the gear icon or from **Setup → Developer Console**. Its key panels for debugging are:
+The header lists the API version and category levels. `EXECUTION_STARTED` and `EXECUTION_FINISHED` delimit a transaction; `CODE_UNIT_STARTED` and `CODE_UNIT_FINISHED` delimit triggers, validation rules, future calls, batch `start`, `execute`, and `finish`, scheduled `execute`, and anonymous blocks. Each line is `timestamp (nanoseconds since request start)|EVENT|details`. `USER_DEBUG` carries `System.debug` output, `DML_BEGIN` shows `Op`, `Type`, and `Rows`, and `CUMULATIVE_LIMIT_USAGE` with `LIMIT_USAGE_FOR_NS` shows limit consumption. Session IDs appear as `SESSION_ID_REMOVED`.
 
-**Logs tab:**
-- Displays captured debug logs for the current user.
-- Filter by request type or search within a log.
-- Click **Open** on a log to view raw text, or switch to the **Execution Overview** panel for a structured tree view of code execution.
-- Use **Debug → Open Execute Anonymous Window** (Ctrl+E) to run ad-hoc Apex.
+### Anonymous Apex
 
-**Query Editor:**
-- Supports SOQL and SOSL queries against the org.
-- Results display in a data grid. Relationships (child-to-parent, parent-to-child) work in the same syntax as production SOQL.
-- Useful for verifying data state without a separate tool.
-
-**Source and Tests tabs:**
-- Open, create, and save Apex classes, triggers, and Visualforce pages.
-- Run individual test methods directly.
-
-**Checkpoints:**
-- Set up to five checkpoints in Apex code via the Developer Console to capture a heap dump at that line. These are required for the Apex Replay Debugger.
-
-### Anonymous Apex Execution
-
-Anonymous Apex lets developers run ad-hoc Apex in the current org without deploying a class. Common uses:
-
-- Quickly fix or correct data records.
-- Invoke a method under test to reproduce a bug.
-- Test a single method before deploying.
-- Batch jobs or Queueable invocation for immediate execution.
-
-**Developer Console path:** Debug → Open Execute Anonymous Window → paste code → Execute.
-
-**sf CLI path:** `sf apex run --file path/to/script.apex` or `sf apex run` (interactive).
-
-Anonymous Apex runs with the **permissions of the current user**. It is not a public-facing API and does not require a class definition, but it does consume governor limits. Each execution is a fresh transaction.
+Anonymous blocks need "API Enabled" and "Author Apex" (execution through the API allows restricted access without Author Apex). They run as the current user, can fail to compile if the code violates the user's object or field permissions, and run with sharing. Changes commit only if the whole block succeeds. Run them from the Developer Console, VS Code, or `sf apex run --file script.apex`.
 
 ### Apex Replay Debugger
 
-The **Apex Replay Debugger** is a VS Code extension (part of the Salesforce Extensions for VS Code) that replays a debug log as if stepping through code in a traditional debugger. It supports:
-
-- Step-over, step-into, step-out controls.
-- Variable inspection at each point in the log.
-- Heap dump inspection when checkpoints are set in the Developer Console.
-
-**Setup steps:**
-1. In VS Code, install the Salesforce Extension Pack.
-2. Capture a debug log with **ApexCode set to FINEST** and checkpoints enabled for the code path you need.
-3. Download the log to your local project directory.
-4. In VS Code, right-click the log file → **Launch Apex Replay Debugger**.
-5. Set breakpoints in your Apex source and start the replay.
-
-**Key limitation:** The Replay Debugger replays what the log captured — it cannot re-execute code live. If the log is truncated before the error point, replay stops at the truncation. For this reason, keep the traced scope narrow and log level targeted.
+The Replay Debugger in the Salesforce Extensions for VS Code replays a downloaded log with breakpoints and variable inspection; it cannot re-run code. UNVERIFIED (2026-10-03): the exact log levels and checkpoint counts it requires; the extension documentation page did not return its text to a fetch. Capture with high Apex Code detail on a narrow scope so the log stays under 20 MB.
 
 ---
 
-## Mode 1: Set Up a Debug Log (Build from Scratch)
+## Mode 1: Set Up a Debug Log
 
-1. Go to **Setup → Debug Logs**.
-2. Click **New**.
-3. Set **Traced Entity Type** (User for interactive debugging, Automated Process for background jobs).
-4. Select or search for the entity.
-5. Set **Start Date** to now and **End Date** to 15–30 minutes from now (avoid long windows that generate excess logs).
-6. Select or create a **Debug Level**. Recommended starting point: ApexCode = DEBUG, Database = INFO, all others = NONE.
-7. Click **Save**.
-8. Reproduce the operation that triggers the code you want to trace.
-9. Return to **Setup → Debug Logs** and refresh. Click the log to open it.
+1. Setup > Debug Logs > New, or `sf apex tail log` for your own user (it sets a `DEVELOPER_LOG` trace flag).
+2. Traced Entity Type: User for interactive work; Automated Process for platform event triggers, event processes, and resumed flows; the configured user if an event trigger's running user is overridden.
+3. Window: start now, end before the 24-hour limit; 30 minutes is usually enough.
+4. Debug level: Apex Code DEBUG, Database INFO, others NONE or INFO as needed.
+5. Optional: add a `CLASS_TRACING` trace flag on the one class or trigger that needs FINE or FINEST.
+6. Reproduce, then open the log in Setup, the Developer Console, or `sf apex get log --number 1`.
 
----
+## Mode 2: Read an Existing Log
 
-## Mode 2: Read an Existing Debug Log
+Search for `FATAL_ERROR`, `EXCEPTION_THROWN`, and `USER_DEBUG`, then read the last `LIMIT_USAGE_FOR_NS` block before the failure. If lines you expect are missing in a large log, assume the 20 MB reduction removed older lines and re-capture with lower levels.
 
-Debug logs use a structured format. Key events to look for:
-
-- `EXECUTION_STARTED` / `EXECUTION_FINISHED` — marks the transaction boundary.
-- `CODE_UNIT_STARTED` / `CODE_UNIT_FINISHED` — marks class/trigger/method boundaries.
-- `SOQL_EXECUTE_BEGIN` / `SOQL_EXECUTE_END` — shows SOQL statements and row counts.
-- `DML_BEGIN` / `DML_END` — shows DML operations and record counts.
-- `FATAL_ERROR` — unhandled exception with stack trace.
-- `LIMIT_USAGE_FOR_NS` — governor limit consumption at point of reporting.
-- `USER_DEBUG` — output from `System.debug()` calls.
-
-If the log ends with `*** Skipped N bytes of log` it was truncated. Reduce verbosity and re-capture.
-
----
-
-## Mode 3: Troubleshoot Missing or Truncated Logs
+## Mode 3: Troubleshoot Missing or Incomplete Logs
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| No log appears after operation | Trace flag is expired or missing | Check expiry; create a new trace flag |
-| Log exists but code section is absent | Wrong Traced Entity Type (e.g., User instead of Automated Process) | Add a trace flag for Automated Process |
-| Log is cut off mid-execution | 20 MB cap reached | Reduce category verbosity; narrow trace window |
-| Log shows but is empty | Code did not execute in the trace window | Verify the timestamp of the operation vs the trace flag window |
-| Replay Debugger stops early | Log truncated before error point | Use FINEST ApexCode only for the method under test; set checkpoints |
+| No log after the operation | Trace flag expired or not yet started | Check `StartDate` and `ExpirationDate`; create a new flag |
+| Event trigger or resumed flow never logs | Traced the publishing user only | Add an Automated Process trace flag (or the overridden user) |
+| Class trace flag set, still no log | `CLASS_TRACING` doesn't generate logs | Add a user or Automated Process trace flag too |
+| Cannot add a trace flag | Org holds more than 1,000 MB of logs | Delete old logs |
+| Trace flags turned off by themselves | More than 1,000 MB generated in 15 minutes | Lower levels, narrow scope, re-enable after 15 minutes |
+| Expected lines missing in a big log | 20 MB reduction removed older lines | Lower verbosity; use class tracing for detail |
+| Log not in Developer Console Logs tab | Logs created by Automated Process aren't shown there | View in Setup > Debug Logs or with `sf apex get log` |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Identify the running entity.** User, Automated Process, or an overridden trigger user; note whether a class needs extra detail.
+2. **Create the debug level and trace flag.** Setup, the Tooling API, or `sf data create record --use-tooling-api --sobject TraceFlag` (see `references/code-examples.md`).
+3. **Reproduce inside the window** and keep it under the 24-hour limit.
+4. **Retrieve and read.** `sf apex get log`, Setup, or the Developer Console; search for `FATAL_ERROR` and `LIMIT_USAGE_FOR_NS`.
+5. **Clean up.** Delete or let the trace flag expire, delete large logs, and lower Developer Console levels before deployments.
+6. **Lint the setup.** Run `python3 scripts/check_debug_logs_and_developer_console.py --manifest-dir <folder>` over saved trace flag JSON and anonymous Apex scripts.
 
 ---
 
 ## Review Checklist
 
-- [ ] Trace flag created for the correct entity type (User vs Automated Process)
-- [ ] Trace flag is not expired; end time is in the future
-- [ ] Log level is set appropriately (DEBUG for ApexCode, INFO or NONE for noisy categories)
-- [ ] Log was captured after reproducing the operation (not before)
-- [ ] Log size is under 20 MB (no truncation message at end)
-- [ ] For Replay Debugger: log file is downloaded locally and ApexCode is set to FINEST
+- [ ] Traced entity matches who runs the code (user, Automated Process, overridden user)
+- [ ] Class or trigger trace flags are paired with a user or Automated Process trace flag
+- [ ] Expiration is less than 24 hours after start and covers the reproduction
+- [ ] Apex Code is not FINEST where sensitive data is handled
+- [ ] Log size stays under 20 MB; levels lowered if lines are missing
+- [ ] Anonymous Apex was run in a sandbox first and its user has the needed object and field access
+- [ ] Trace flags and large logs cleaned up afterwards
 
 ---
 
 ## Related Skills
 
-- `apex/debug-and-logging` — logging strategy, custom logging frameworks, production observability (use when the question is about *how* to log, not *how to set up the tooling*)
-- `apex/apex-test-class-standards` — writing and running Apex test classes
-- `apex/soql-fundamentals` — writing the SOQL queries you run in the Query Editor
+- `apex/debug-and-logging`: logging strategy, custom logging frameworks, production observability
+- `apex/salesforce-debug-log-analysis`: forensic reading of large logs
+- `apex/test-class-standards`: writing and running Apex test classes
+- `apex/soql-fundamentals`: writing the SOQL you run in the Query Editor

@@ -10,6 +10,9 @@
 | Must run on a schedule? | Yes / No |
 | Need monitoring by job ID? | Yes / No |
 | Partial success acceptable? | Yes / No |
+| Called from an async context (Batch, Queueable, future)? | Yes / No (1 enqueue, 0 future calls from Batch or future) |
+| Concurrent batch jobs expected at peak | (5 active, 100 in flex queue) |
+| Share of daily async executions this job uses | |
 
 ## Mechanism Choice
 
@@ -19,6 +22,7 @@
 | Batch Apex | | |
 | `@future` | | |
 | Schedulable | | |
+| Apex Cursors + chained Queueable | | |
 
 ## Guardrails
 
@@ -27,6 +31,9 @@
 - [ ] Batch `execute()` is idempotent and handles partial failure intentionally.
 - [ ] Scheduler dispatches a worker rather than performing business logic inline.
 - [ ] Tests use `Test.startTest()` and `Test.stopTest()` for async assertions.
+- [ ] No future calls from Batch or future contexts.
+- [ ] Scheduled class has no synchronous callouts; pending jobs deleted before redeploy.
+- [ ] `python3 scripts/check_async_apex.py --manifest-dir force-app/main/default` reviewed.
 
 ## Final Recommendation
 

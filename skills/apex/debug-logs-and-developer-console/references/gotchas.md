@@ -1,55 +1,109 @@
-# Gotchas — Debug Logs And Developer Console
+# Gotchas: Debug Logs and Developer Console
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
+Non-obvious behaviors of Salesforce debug logging that cost real debugging time. Each one names the official source it rests on.
 
-## Gotcha 1: Scheduled and Batch Jobs Run as Automated Process, Not the Submitting User
+## Gotcha 1: Class and trigger trace flags never create a log
 
-**What happens:** A developer creates a trace flag for their own user account expecting to see debug output from a scheduled job or batch class. The job runs and completes, but no debug log appears for the developer's user.
+**What happens:** A developer adds a trace flag on an Apex class, reproduces the issue, and finds no log at all.
 
-**When it occurs:** Whenever code runs asynchronously as a background process — Scheduled Apex, Batch Apex, Queueable (when enqueued by a scheduled job), and Platform Event trigger handlers all execute under the **Automated Process** system user, not the user who submitted the job.
+**When it occurs:** When `CLASS_TRACING` (Traced Entity Type: Apex Class or Apex Trigger) is used on its own.
 
-**How to avoid:** Always check what user context the code runs in before creating the trace flag. For background jobs, set **Traced Entity Type = Automated Process** rather than User. You can also set a trace flag on the specific Apex class to capture it regardless of which user or system entity triggers it.
+**How to avoid:** Pair it with a user or Automated Process trace flag. Use the class flag only to raise or lower levels for that class.
 
----
-
-## Gotcha 2: Trace Flags Silently Expire — No Alert Is Issued
-
-**What happens:** A developer sets up a trace flag, takes a break, and then reproduces the scenario — only to find no log was captured. The trace flag had an end time of 30 minutes and expired during the break.
-
-**When it occurs:** Trace flags have a required expiry time. Once expired, the flag still appears in the Debug Logs list but is greyed out. The platform generates no notification, no error, and no empty log to indicate the flag was inactive.
-
-**How to avoid:** Always check the trace flag expiry before reproducing a scenario. When setting up a flag, choose a window that exceeds the time you expect to spend debugging, then delete the flag manually when done. If a log is missing, check the flag's expiry first — it is the most common cause of missing logs.
+**Source:** Apex Developer Guide (262), "Debug Log Order of Precedence": "Setting class and trigger trace flags doesn't cause logs to be generated or saved." Tooling API Developer Guide (262), "TraceFlag," `LogType`: "CLASS_TRACING trace flags override logging levels for Apex classes and triggers, but don't generate logs."
 
 ---
 
-## Gotcha 3: The 20 MB Log Cap Truncates from the End — Silently Cutting Off the Error
+## Gotcha 2: Event-driven code logs under Automated Process, outside the Developer Console
 
-**What happens:** The debug log exists and is readable, but the `FATAL_ERROR` or the `USER_DEBUG` statements at the end of the transaction are absent. The log shows a message like `*** Skipped 3145728 bytes of log ***` near the end or does not include `EXECUTION_FINISHED`.
+**What happens:** A platform event trigger, event process, or resumed flow interview runs, and the publishing user's log shows nothing from it. The Developer Console Logs tab shows nothing either.
 
-**When it occurs:** When a single transaction generates more than 20 MB of log output, the platform silently drops the tail of the log. Ironically, the most important information — exceptions, final state — is typically at the end and is the first thing truncated.
+**When it occurs:** When only the publishing user is traced.
 
-**How to avoid:**
-- Set ApexProfiling, NBA, System, Validation, Visualforce, and Workflow to NONE unless specifically needed.
-- Start with ApexCode = DEBUG and Database = INFO rather than FINEST.
-- For Apex Replay Debugger scenarios, set all non-Apex categories to NONE and ApexCode to FINEST — this targets the verbosity to only what the debugger needs.
-- Narrow the trace window and scope to a single operation rather than a broad user session.
+**How to avoid:** Add a trace flag for Automated Process (or for the running user configured on the trigger). Read the log in Setup > Debug Logs or with `sf apex get log`.
+
+**Source:** Platform Events Developer Guide (262), "Set Up Debug Logs for Event Subscriptions": these logs "are created by Automated Process," and "The debug logs aren't available in the Developer Console's Log tab." UNVERIFIED (2026-10-03): which user Scheduled, Batch, and Queueable Apex log under; the 262 guides do not tie them to Automated Process, so trace the submitting user and add Automated Process if no log appears.
 
 ---
 
-## Gotcha 4: Developer Console Debug Logs Only Show the Current User's Logs
+## Gotcha 3: Large logs lose older lines from anywhere, not just the end
 
-**What happens:** A developer opens the Developer Console and clicks on the Logs tab expecting to see logs for all users or for a specific integration user. Only their own logs appear.
+**What happens:** A log near the cap is missing early `USER_DEBUG` lines or a block in the middle, while the end of the transaction is still there.
 
-**When it occurs:** The Developer Console's Logs tab filters debug logs to the current authenticated user by default. Logs captured for other users via trace flags are stored in the org but not surfaced in the Developer Console's Logs panel for other users.
+**When it occurs:** When a log would exceed 20 MB.
 
-**How to avoid:** To view logs for another user (or for Automated Process), go to **Setup → Debug Logs**, find the log entry (sorted by timestamp), and open it from Setup. Alternatively, use the sf CLI: `sf apex log list` to list all available logs, then `sf apex log get --log-id <id>` to download a specific log. For Automated Process logs, you can also query them via the Tooling API: `SELECT Id, Body FROM ApexLog WHERE LogUser.Name = 'Automated Process'`.
+**How to avoid:** Lower category levels, narrow the window, and use a class trace flag for detail on one class.
+
+**Source:** Apex Developer Guide (262), "Debug Log Limits": "Debug logs that are larger than 20 MB are reduced in size by removing older log lines ... The log lines can be removed from any location, not just the start of the debug log."
 
 ---
 
-## Gotcha 5: Anonymous Apex Runs With the Current User's Permissions — Not System Permissions
+## Gotcha 4: Trace flags cannot span more than 24 hours, and expire silently
 
-**What happens:** A developer runs anonymous Apex to update records and receives an unexpected `System.DmlException: FIELD_CUSTOM_VALIDATION_EXCEPTION` or is unable to query certain fields. The same query works fine in a unit test written with `@isTest`.
+**What happens:** A trace flag set for a weekend run is rejected, or a flag set an hour ago has expired before the reproduction.
 
-**When it occurs:** Anonymous Apex executes in the current user's security context and enforces field-level security (FLS), sharing rules, and validation rules. It does not run in a system context like `@isTest` methods. If the developer's profile lacks access to a field or record, the anonymous Apex reflects those restrictions.
+**When it occurs:** When `ExpirationDate` is 24 hours or more after `StartDate`, or the window was too short.
 
-**How to avoid:** Run anonymous Apex as a System Administrator when elevated access is needed. If the intent is to test code logic that bypasses sharing, run the code inside a class declared `without sharing` and invoke it from the anonymous script — but be explicit about this choice. Do not assume anonymous Apex equals unrestricted access.
+**How to avoid:** Set a window under 24 hours that brackets the reproduction, and recreate it for each run. Only one trace flag per traced entity can be active at a time.
+
+**Source:** Tooling API Developer Guide (262), "TraceFlag," `ExpirationDate` and `StartDate`.
+
+---
+
+## Gotcha 5: Retention is by log type, not by org type
+
+**What happens:** A team expects sandbox logs to stay for a week and finds them gone the next day.
+
+**When it occurs:** When guidance says "24 hours in production, 7 days in sandbox," which is how version 1.0.0 of this skill described it.
+
+**How to avoid:** Download logs you need to keep. System debug logs are retained 24 hours; monitoring debug logs seven days.
+
+**Source:** Apex Developer Guide (262), "Debug Log Limits."
+
+---
+
+## Gotcha 6: Too many logs turn trace flags off or block new ones
+
+**What happens:** Trace flags stop working mid-investigation, or nobody can create a new trace flag.
+
+**When it occurs:** More than 1,000 MB of logs in 15 minutes disables trace flags; more than 1,000 MB stored blocks adding or editing them. A trace flag on a busy class or user can also make requests fail.
+
+**How to avoid:** Keep windows short and levels low, avoid tracing high-traffic users and classes, and delete old logs.
+
+**Source:** Apex Developer Guide (262), "Debug Log Limits," including the warning about frequently accessed classes and users.
+
+---
+
+## Gotcha 7: FINEST exposes variable values and slows deployments
+
+**What happens:** A log contains a password or token assigned to a variable. A deployment takes much longer than usual.
+
+**When it occurs:** Apex Code at FINEST logs all variable assignments. Developer Console levels apply to all logs, including those created during deployment.
+
+**How to avoid:** Avoid FINEST where sensitive values exist, and lower levels or close the Developer Console before deploying.
+
+**Source:** Apex Developer Guide (262), "Debug Log" header warning and "Debug Log Levels" (Important note on deployments).
+
+---
+
+## Gotcha 8: Anonymous Apex runs as you, with sharing, and commits only if everything succeeds
+
+**What happens:** A data-fix script fails to compile on a field the user cannot see, or skips records the user cannot access.
+
+**When it occurs:** When the running user lacks object or field permissions, or sharing hides records.
+
+**How to avoid:** Run it as a user with the right access, test it in a sandbox, and check row counts in `System.debug` before relying on it.
+
+**Source:** Apex Developer Guide (262), "Anonymous Blocks" ("Anonymous blocks run as the current user and can fail to compile if the code violates the user's object- and field-level permissions") and sharing implementation details ("Anonymous Apex and Connect in Apex always run in with sharing mode").
+
+---
+
+## Gotcha 9: API requests without debugging headers leave no saved log
+
+**What happens:** An integration call fails, and no log exists for it even though Apex ran.
+
+**When it occurs:** When no trace flag covers the integration user and the request sends no debugging header.
+
+**How to avoid:** Trace the integration user for the reproduction window.
+
+**Source:** Apex Developer Guide (262), "Debug Log Order of Precedence," item 3: requests without debugging headers "generate transient logs, logs that aren't saved."

@@ -1,99 +1,24 @@
-# Examples — Async Apex
+# Examples: Async Apex
 
-## Example 1: Queueable For Post-Save Callout
+## Example 1: Queueable for a post-save callout
 
-**Context:** An `Order__c` trigger needs to notify an external OMS after the records are committed. The payload is small enough for one background job per transaction.
+**Context:** An `Order__c` trigger must notify an external order system after commit; a trigger chunk can hold 200 records.
 
-**Problem:** Calling the external API directly from the trigger risks transaction failures, uncommitted-work errors, and poor monitoring.
-
-**Solution:**
-
-```apex
-public class OrderDispatchQueueable implements Queueable, Database.AllowsCallouts {
-    private final Set<Id> orderIds;
-
-    public OrderDispatchQueueable(Set<Id> orderIds) {
-        this.orderIds = orderIds;
-    }
-
-    public void execute(QueueableContext context) {
-        List<Order__c> orders = [
-            SELECT Id, External_Key__c, Status__c
-            FROM Order__c
-            WHERE Id IN :orderIds
-        ];
-
-        HttpRequest request = new HttpRequest();
-        request.setEndpoint('callout:OMS_NC/orders/sync');
-        request.setMethod('POST');
-        request.setTimeout(10000);
-        request.setBody(JSON.serialize(orders));
-
-        HttpResponse response = new Http().send(request);
-        if (response.getStatusCode() >= 300) {
-            throw new CalloutException('OMS sync failed: ' + response.getBody());
-        }
-    }
-}
-
-trigger OrderTrigger on Order__c (after insert, after update) {
-    Set<Id> changedOrderIds = new Set<Id>();
-    for (Order__c record : Trigger.new) {
-        changedOrderIds.add(record.Id);
-    }
-    System.enqueueJob(new OrderDispatchQueueable(changedOrderIds));
-}
-```
-
-**Why it works:** The transaction commits first, then the Queueable performs the callout with its own async monitoring record and callout support.
+**Approach:** Collect changed IDs, enqueue one `Database.AllowsCallouts` Queueable per chunk, re-query inside `execute`, and throw a custom exception on a failed response so the `AsyncApexJob` shows the failure. Worker, trigger, and test class are in `code-examples.md`.
 
 ---
 
-## Example 2: Scheduled Batch For Nightly Cleanup
+## Example 2: Scheduler that dispatches a batch
 
-**Context:** Stale `Lead` records must be closed every night, and the volume can exceed what one transaction should handle.
+**Context:** Stale Leads must be closed nightly and the volume can exceed one transaction.
 
-**Problem:** A scheduled class that queries and updates everything inline risks CPU, SOQL row, and DML row failures.
-
-**Solution:**
-
-```apex
-public class StaleLeadBatch implements Database.Batchable<SObject> {
-    public Database.QueryLocator start(Database.BatchableContext context) {
-        return Database.getQueryLocator([
-            SELECT Id, Status
-            FROM Lead
-            WHERE Status = 'Open'
-            AND LastActivityDate < :Date.today().addDays(-90)
-        ]);
-    }
-
-    public void execute(Database.BatchableContext context, List<Lead> scope) {
-        for (Lead leadRecord : scope) {
-            leadRecord.Status = 'Closed - Inactive';
-        }
-        Database.update(scope, false);
-    }
-
-    public void finish(Database.BatchableContext context) {
-        System.debug('Completed batch job ' + context.getJobId());
-    }
-}
-
-global class StaleLeadScheduler implements Schedulable {
-    global void execute(SchedulableContext context) {
-        Database.executeBatch(new StaleLeadBatch(), 200);
-    }
-}
-```
-
-**Why it works:** The scheduler only starts the work. Batch handles chunking, fresh limits, and a controllable scope size.
+**Approach:** A thin `Schedulable` that calls `Database.executeBatch`, because synchronous limits apply to scheduled Apex (Apex Developer Guide 262, L19536). The batch uses partial-success DML and `Database.Stateful` for a failure count. Batch, scheduler, tests, metadata, and package.xml are in `code-examples.md`.
 
 ---
 
-## Anti-Pattern: Async Fan-Out Inside A Loop
+## Anti-Pattern: Async fan-out inside a loop
 
-**What practitioners do:** They call `System.enqueueJob()` once for each record in `Trigger.new`.
+**What practitioners do:** Call `System.enqueueJob()` once for each record in `Trigger.new`.
 
 ```apex
 for (Order__c record : Trigger.new) {
@@ -101,6 +26,6 @@ for (Order__c record : Trigger.new) {
 }
 ```
 
-**What goes wrong:** Job counts explode, monitoring becomes noisy, and the design is harder to retry or reason about. In chained Queueables, this can also violate child-job limits.
+**What goes wrong:** A 200-record chunk passes the 50-enqueue synchronous limit, each job consumes a daily async execution, and monitoring becomes noisy.
 
-**Correct approach:** Aggregate IDs and enqueue a single job per transaction, or deliberately chunk into a controlled series of jobs.
+**Correct approach:** Aggregate IDs and enqueue one job per transaction, or deliberately chunk into a controlled series of jobs.

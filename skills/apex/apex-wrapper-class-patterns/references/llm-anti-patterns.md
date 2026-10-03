@@ -1,229 +1,101 @@
-# LLM Anti-Patterns — Apex Wrapper Class Patterns
+# LLM Anti-Patterns: Apex Wrapper Class Patterns
 
-Common mistakes AI coding assistants make when generating or advising on Apex wrapper and inner class patterns. These patterns help the consuming agent self-check its own output.
+Common mistakes AI coding assistants make when generating Apex wrapper classes. These help the consuming agent self-check its own output.
 
 ---
 
-## Anti-Pattern 1: compareTo() Without Null Guard
+## Anti-Pattern 1: Returning an inner class to a Lightning web component
 
 **What the LLM generates:**
 
 ```apex
-public Integer compareTo(Object compareTo) {
-    MyWrapper other = (MyWrapper) compareTo;
-    return this.amount > other.amount ? 1 : (this.amount < other.amount ? -1 : 0);
-}
-```
-
-**Why it happens:** LLMs are trained on Java and generic sorting examples where null inputs to `compareTo` are considered a contract violation. In Apex, `List.sort()` can pass null internally when the list contains null-field wrappers, and the Apex runtime does not enforce the no-null precondition that Java's `Comparable` contract implies.
-
-**Correct pattern:**
-
-```apex
-public Integer compareTo(Object compareTo) {
-    if (compareTo == null) return 1;
-    MyWrapper other = (MyWrapper) compareTo;
-    Decimal thisAmt  = this.amount  == null ? Decimal.valueOf(-1) : this.amount;
-    Decimal otherAmt = other.amount == null ? Decimal.valueOf(-1) : other.amount;
-    if (thisAmt > otherAmt) return 1;
-    if (thisAmt < otherAmt) return -1;
-    return 0;
-}
-```
-
-**Detection hint:** Look for `compareTo` implementations that cast the argument and immediately dereference a field without a prior null check. Any pattern matching `(MyClass) compareTo\.\w+` without a preceding `if (compareTo == null)` is suspect.
-
----
-
-## Anti-Pattern 2: Assuming Inner Class Inherits Outer Class Sharing
-
-**What the LLM generates:**
-
-```apex
-public with sharing class MyService {
-    public class MyWrapper {
-        public List<Account> getVisibleAccounts() {
-            // LLM assumes this respects the outer class's with sharing declaration
-            return [SELECT Id, Name FROM Account];
-        }
-    }
-}
-```
-
-**Why it happens:** The LLM extrapolates from Java's inner-class behavior (where inner classes inherit enclosing class access modifiers) to Apex. In Apex, inner classes do not inherit the `with sharing` / `without sharing` context — they execute in system mode for any data operations they independently perform.
-
-**Correct pattern:**
-
-```apex
-public with sharing class MyService {
-    // Perform SOQL in outer class where with sharing is enforced
+public with sharing class AccountController {
+    public class Row { @AuraEnabled public String name; }
     @AuraEnabled(cacheable=true)
-    public static List<MyWrapper> getRows() {
-        List<Account> accts = [SELECT Id, Name FROM Account]; // respects sharing
-        List<MyWrapper> rows = new List<MyWrapper>();
-        for (Account a : accts) {
-            rows.add(new MyWrapper(a)); // wrapper just holds the data
-        }
-        return rows;
-    }
-
-    public class MyWrapper {
-        @AuraEnabled public Id accountId;
-        @AuraEnabled public String name;
-        public MyWrapper(Account a) {
-            this.accountId = a.Id;
-            this.name = a.Name;
-        }
-        // NO SOQL inside the inner class
-    }
+    public static List<Row> getRows() { /* ... */ }
 }
 ```
 
-**Detection hint:** Any SOQL or DML statement inside an inner class method or constructor should be flagged for review, especially if the outer class is declared `with sharing`.
+**Why it happens:** Most blog examples nest the wrapper inside the controller, and it often appears to work.
+
+**The correct pattern:** The LWC guide says an Apex inner class as a parameter or return value for a method called by a Lightning web component isn't supported. Put `Row` in its own top-level class file and keep the controller separate.
+
+**Detection hint:** An `@AuraEnabled` method whose return type or parameter type names a class declared inside the same file.
 
 ---
 
-## Anti-Pattern 3: Forgetting @AuraEnabled on Wrapper Fields
+## Anti-Pattern 2: Claiming inner classes always run in system mode
+
+**What the LLM generates:** "Inner classes always execute in system mode, and Apex doesn't allow sharing keywords on inner classes."
+
+**Why it happens:** The model half-remembers that inner classes don't inherit sharing. Version 1.0.0 of this skill stated it this way.
+
+**The correct pattern:** You can declare a sharing mode on inner classes, and they don't adopt the container's mode. In API 67.0 and later, a class without an explicit declaration runs with sharing. In 66.0 and earlier, a non-entry-point class without one takes its caller's mode (Apex Developer Guide, sharing keywords and Versioned Behavior Changes).
+
+**Detection hint:** "Inner class" and "system mode" in the same sentence with no API version.
+
+---
+
+## Anti-Pattern 3: Forgetting @AuraEnabled, or getters and setters, on wrapper properties
+
+**What the LLM generates:** `@AuraEnabled` on the method only, or plain fields on a wrapper that the component sends back to Apex.
+
+**Why it happens:** The model assumes the method annotation cascades.
+
+**The correct pattern:** Only public instance properties annotated with `@AuraEnabled` are serialized. Properties of a custom-class parameter need `@AuraEnabled` plus `{ get; set; }`.
+
+**Detection hint:** A class used as an `@AuraEnabled` return or parameter type with public properties that lack the annotation.
+
+---
+
+## Anti-Pattern 4: Adding @JsonAccess to every REST wrapper
+
+**What the LLM generates:** "Add `@JsonAccess(serializable='always' deserializable='always')` or the REST endpoint throws `Type is not visible`."
+
+**Why it happens:** The model links the annotation to REST rather than to namespaces. Version 1.0.0 of this skill made that claim.
+
+**The correct pattern:** Since API 49.0 the default for both directions is `sameNamespace`, so same-namespace REST code needs no annotation. Use `@JsonAccess` with the narrowest value only when another namespace or package must serialize or deserialize the class. A restrictive setting throws `JSONException` at runtime.
+
+**Detection hint:** `@JsonAccess(... 'always' ...)` on a class that no other namespace touches.
+
+---
+
+## Anti-Pattern 5: Comparators and compareTo() without null handling
 
 **What the LLM generates:**
 
 ```apex
-public class AccountRow {
-    public Id accountId;
-    public String accountName;
-    public Integer openOpportunityCount;
-}
-
-@AuraEnabled(cacheable=true)
-public static List<AccountRow> getRows() { ... }
-```
-
-**Why it happens:** LLMs see the `@AuraEnabled` on the method and assume that is sufficient for the entire return type to be serialized and accessible in LWC. The annotation requirement on individual fields is a Salesforce-specific behavior not present in general Java or REST API patterns.
-
-**Correct pattern:**
-
-```apex
-public class AccountRow {
-    @AuraEnabled public Id accountId;
-    @AuraEnabled public String accountName;
-    @AuraEnabled public Integer openOpportunityCount;
+public Integer compare(Row a, Row b) {
+    return a.amount > b.amount ? 1 : -1;
 }
 ```
 
-**Detection hint:** Any wrapper class returned by an `@AuraEnabled` method where the wrapper fields lack `@AuraEnabled` themselves. Search for `@AuraEnabled` on methods and then verify the return type's fields also carry the annotation.
+**Why it happens:** Happy-path code with no null rows or null keys.
+
+**The correct pattern:** Check both arguments and both keys for null, return 0 for equal values, and choose nulls first or last. The Comparable and Comparator references require explicit null handling.
+
+**Detection hint:** A `compare` or `compareTo` body with no `== null` check.
 
 ---
 
-## Anti-Pattern 4: Using @JsonAccess Incorrectly for REST Deserialization
+## Anti-Pattern 6: Queries inside wrapper constructors
 
-**What the LLM generates — variant A (missing annotation entirely):**
+**What the LLM generates:** A constructor that runs `[SELECT COUNT() FROM Opportunity WHERE AccountId = :acct.Id]` for each row.
 
-```apex
-public class MyRequestBody {
-    public String externalId;
-    public Decimal value;
-}
-```
+**Why it happens:** It keeps the wrapper "self-contained."
 
-Used inside a `@RestResource` endpoint. Fails at runtime with `System.JSONException: Type is not visible`.
+**The correct pattern:** Query and aggregate once in the controller or service, then pass values into the constructor. One query per row multiplies SOQL against the 100-query synchronous limit (Apex Developer Guide, Per-Transaction Apex Limits).
 
-**What the LLM generates — variant B (annotation on inner class):**
-
-```apex
-public class MyController {
-    @JsonAccess(serializable='always' deserializable='always')
-    public class MyRequestBody { ... } // @JsonAccess does not work on inner classes for REST
-}
-```
-
-**Why it happens:** LLMs either omit the annotation entirely (unfamiliar with the Salesforce-specific requirement) or apply it to an inner class, which does not satisfy the REST deserializer's requirement for a top-level accessible type.
-
-**Correct pattern:**
-
-```apex
-// Top-level class, not inner
-@JsonAccess(serializable='always' deserializable='always')
-public class MyRequestBody {
-    public String externalId;
-    public Decimal value;
-}
-```
-
-**Detection hint:** Any class used as a parameter type or deserialization target in a `@RestResource` method that lacks `@JsonAccess` at the class level, or that is declared as an inner class.
+**Detection hint:** SOQL or DML inside a constructor of a class built in a loop.
 
 ---
 
-## Anti-Pattern 5: Using Comparator When the Org Is Below API v60
+## Anti-Pattern 7: Stating a version for Comparator as fact
 
-**What the LLM generates:**
+**What the LLM generates:** "Comparator requires API 60.0; fall back to Comparable below that."
 
-```apex
-// Saved at API version 58.0
-public class PriceAscComparator implements Comparator<ProductWrapper> {
-    public Integer compare(ProductWrapper o1, ProductWrapper o2) { ... }
-}
-```
+**Why it happens:** The model recalls a release, not a documented rule.
 
-**Why it happens:** The LLM recommends `Comparator<T>` as a modern best practice (which it is) without checking the class's API version. `Comparator` was introduced in Spring '24 (API v60.0) and is unavailable in classes saved at lower versions.
+**The correct pattern:** The 262 Apex Reference Guide documents `System.Comparator` and `List.sort(comparator)` without a minimum version. Check the class's API version against your own org (compile it) rather than citing a number. UNVERIFIED (2026-10-03): the introducing API version.
 
-**Correct pattern:** Before recommending `Comparator<T>`, confirm the target class is saved at API v60.0 or higher. If not, use `Comparable` with a sort-direction flag pattern, or update the class API version first.
-
-```apex
-// API version must be 60.0+ in the class file header
-// In Metadata API: <apiVersion>60.0</apiVersion> in the .cls-meta.xml file
-public class PriceAscComparator implements Comparator<ProductWrapper> {
-    public Integer compare(ProductWrapper o1, ProductWrapper o2) {
-        Decimal p1 = o1.price == null ? 0 : o1.price;
-        Decimal p2 = o2.price == null ? 0 : o2.price;
-        if (p1 < p2) return -1;
-        if (p1 > p2) return 1;
-        return 0;
-    }
-}
-```
-
-**Detection hint:** `implements Comparator` in a class whose `.cls-meta.xml` `<apiVersion>` is below `60.0`. Also flag any `List.sort(new SomeComparator())` call in a class saved at a lower version.
-
----
-
-## Anti-Pattern 6: DML or SOQL Inside Wrapper Constructor
-
-**What the LLM generates:**
-
-```apex
-public class CaseWrapper {
-    public Case theCase;
-    public List<CaseComment> comments;
-
-    public CaseWrapper(Id caseId) {
-        this.theCase = [SELECT Id, Subject FROM Case WHERE Id = :caseId];
-        this.comments = [SELECT Id, CommentBody FROM CaseComment WHERE ParentId = :caseId];
-    }
-}
-```
-
-**Why it happens:** LLMs model wrapper constructors like service constructors — a place to fetch data for the object. In Apex, issuing SOQL inside a constructor called in a loop (e.g., `new CaseWrapper(id)` for each of 200 Cases) fires one SOQL query per constructor call, hitting the 100 SOQL per transaction limit instantly.
-
-**Correct pattern:** Perform all SOQL in bulk outside the constructor. Pass pre-fetched data in:
-
-```apex
-public class CaseWrapper {
-    @AuraEnabled public Case theCase;
-    @AuraEnabled public List<CaseComment> comments;
-
-    public CaseWrapper(Case c, List<CaseComment> caseComments) {
-        this.theCase = c;
-        this.comments = caseComments;
-    }
-}
-
-// In the controller:
-List<Case> cases = [SELECT Id, Subject FROM Case WHERE ...];
-Map<Id, List<CaseComment>> commentMap = buildCommentMap(cases);
-List<CaseWrapper> rows = new List<CaseWrapper>();
-for (Case c : cases) {
-    rows.add(new CaseWrapper(c, commentMap.get(c.Id) ?? new List<CaseComment>()));
-}
-```
-
-**Detection hint:** Any SOQL or DML statement inside a class constructor (`public ClassName(...)` block). This is almost always a governor-limit hazard in list-processing contexts.
+**Detection hint:** A Comparator version floor stated with no source.

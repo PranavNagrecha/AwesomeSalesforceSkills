@@ -1,6 +1,6 @@
 ---
 name: fhir-integration-patterns
-description: "Use this skill when implementing FHIR R4 integration for Health Cloud in code: inbound and outbound FHIR REST API patterns, CDS Hooks via MuleSoft middleware, SMART on FHIR setup, and HL7 v2 to FHIR R4 conversion. NOT for mapping a FHIR resource to Health Cloud objects field by field — use data/fhir-data-mapping. NOT for choosing the EHR sync topology or MuleSoft Accelerator design — use architect/fhir-integration-architecture."
+description: "Use this skill when implementing FHIR R4 integration for Health Cloud in code: inbound and outbound FHIR REST API patterns, CDS Hooks via MuleSoft middleware, SMART on FHIR setup, and HL7 v2 to FHIR R4 conversion. Trigger keywords: FHIR R4 integration, Healthcare API, CodeSetBundle, HealthCondition mapping, ingest a FHIR bundle. NOT for mapping a FHIR resource to Health Cloud objects field by field — use data/fhir-data-mapping. NOT for choosing the EHR sync topology or MuleSoft Accelerator design — use architect/fhir-integration-architecture."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,8 @@ triggers:
   - "How to set up CDS Hooks with Salesforce Health Cloud using MuleSoft"
   - "SMART on FHIR OAuth setup for Health Cloud patient-facing FHIR app"
   - "Legacy EHR objects frozen in Spring 2023 and all new integration must target FHIR R4 standard objects"
+  - "map a FHIR Condition with several codings into HealthCondition and CodeSetBundle"
+  - "call the Salesforce Healthcare API to read a patient's conditions"
 tags:
   - health-cloud
   - fhir-r4
@@ -32,137 +34,139 @@ outputs:
   - Outbound FHIR integration architecture (Salesforce → external FHIR client)
   - CDS Hooks middleware architecture (MuleSoft required)
   - SMART on FHIR OAuth app registration requirements
+  - Apex normalization class and test for FHIR Condition to HealthCondition, CodeSetBundle, and CodeSet
 dependencies:
   - admin/clinical-data-requirements
   - apex/health-cloud-apis
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-10
+updated: 2026-10-03
 ---
 
 # FHIR Integration Patterns for Health Cloud
 
-Use this skill when implementing FHIR R4 integration patterns for Health Cloud: mapping FHIR resources to Salesforce clinical objects, building inbound/outbound FHIR REST API patterns, implementing CDS Hooks via MuleSoft, and setting up SMART on FHIR for patient-facing applications. This skill covers FHIR integration code and architecture patterns. It does NOT cover Health Cloud admin setup, generic REST API development, or standard Salesforce integration patterns unrelated to clinical FHIR standards.
+Use this skill when implementing FHIR R4 integration for Health Cloud: normalizing inbound FHIR resources into the FHIR-aligned Clinical Data Model, calling the Salesforce Healthcare API, routing CDS Hooks and HL7 v2 through MuleSoft, and authorizing client apps. It covers integration code and patterns, not Health Cloud admin setup or generic REST development.
 
 ---
 
 ## Before Starting
 
-Gather this context before working on anything in this domain:
+- Is the **FHIR-Aligned Clinical Data Model** org preference enabled (Setup > FHIR R4 Support Settings)? Objects such as HealthCondition, AllergyIntolerance, ClinicalEncounter, and MedicationRequest need it; CareObservation, CodeSet, CodeSetBundle, Identifier, and PersonName do not.
+- Which **direction and surface**? Inbound records written to the Clinical Data Model through the standard APIs, or the **Salesforce Healthcare API** (FHIR R4 REST at `api.healthcloud.salesforce.com`, regional hosts for EU, CA, and AU).
+- What does the source send? FHIR R4 resources, HL7 v2 messages, or C-CDA documents. MuleSoft Direct Integration apps exist for HL7 v2 event ingestion, EMR synchronization, CDS Hooks, bulk FHIR data, and more.
+- Does the org still use packaged EHR objects (`HC24__Ehr...__c`)? Starting with Spring '23, new customers can't create records in packaged EHR objects that have counterpart standard objects.
+- Will Experience Cloud users see clinical records? They need the **FHIR R4 for Experience Cloud Sites** permission set.
 
-- Confirm FHIR R4 Support Settings are enabled (`FHIR-Aligned Clinical Data Model` org preference). Without this, FHIR R4-aligned objects are unavailable.
-- Determine the FHIR version of the source EHR: FHIR R4, FHIR STU2/DSTU2, or HL7 v2.x. Each requires a different translation approach. Salesforce's FHIR implementation targets R4 only.
-- Identify integration direction: inbound (EHR → Salesforce), outbound (Salesforce → EHR/payer), or bidirectional. Each direction has different pattern requirements.
-- Confirm whether CDS Hooks is in scope. There is NO native Salesforce endpoint that serves CDS Hooks responses. CDS Hooks requires MuleSoft as middleware to translate between CDS Hook service calls and Salesforce platform logic.
-- Identify legacy EHR object usage. Starting Spring '23, new orgs cannot write to legacy packaged EHR objects (`HC24__EhrCondition__c`, etc.). All new integration must target FHIR R4-aligned standard objects.
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Which FHIR resources and which code systems will arrive, and how many codings per concept?" | A CodeableConcept flattens to at most 15 CodeSet references on CodeSetBundle, and Salesforce doesn't validate codes | A coding priority rule and a truncation log | No silently dropped codes and no invalid codes stored |
+| "Will we write through the Clinical Data Model objects or call the Salesforce Healthcare API?" | They are different surfaces: standard sObject APIs versus FHIR R4 REST at `api.healthcloud.salesforce.com` with its own scopes and limits | The chosen surface per flow | Calls that use the right host, scopes, and limits |
+| "How many requests can run at once, and how big are the batches?" | The Healthcare API guide recommends at most five concurrent requests and allows up to 30 Bundle entries, up to 10 of them reads or searches | Throttling and batch sizing in middleware | No failed calls under load |
+| "What OAuth scopes will each client request?" | The Healthcare API uses custom scopes such as `user_condition_read`; SMART-style wildcard scopes aren't supported | A scope list per client app | Clients that authorize on the first try with least privilege |
+| "Do any clinicians need decision support inside the EHR?" | CDS Hooks reaches Health Cloud through a MuleSoft Direct Integration app; Salesforce itself is not the CDS service | A MuleSoft CDS Hooks service in the design | An EHR integration that the EHR can actually call |
+| "Is any code still writing HC24 EHR objects?" | New customers can't create records in packaged EHR objects that have standard counterparts | A migration list to HealthCondition, ClinicalEncounter, and the rest | Integrations that keep working on new orgs |
+
+What a proper integration adds over posting FHIR JSON at Salesforce: every resource lands in the right objects with its codings preserved up to the documented limit, clients use supported scopes and stay within the concurrency guidance, and decision support runs where the platform supports it.
 
 ---
 
 ## Core Concepts
 
-### Salesforce FHIR R4 Deviations from Spec
+### The Clinical Data Model is FHIR-aligned, not a FHIR server
 
-Salesforce's FHIR R4 implementation deliberately deviates from the HL7 spec in key ways that affect integration code:
+The Health Cloud developer guide says a middleware integration solution is required to convert HL7 and FHIR messages to Salesforce fields and objects, and lists the deviations:
 
-1. **CodeableConcept cardinality** — FHIR CodeableConcept supports 0-to-many Coding elements. Salesforce flattens this to a single lookup on most objects, with an optional CodeSetBundle for multi-coding (max 15).
-2. **Complex type flattening** — FHIR Period, Quantity, Range, Ratio are flattened into multi-field representations rather than nested JSON.
-3. **Mandatory fields differ** — Some FHIR optional fields are required in Salesforce (e.g., `Condition.code` has a required CodeSet lookup in SF vs. 0:1 in FHIR spec).
-4. **No raw FHIR bundle persistence** — inbound FHIR payloads cannot be stored as-is; they must be normalized to the Salesforce flat object model by middleware.
+| FHIR construct | Salesforce representation |
+|---|---|
+| CodeableConcept (0..* Coding) | CodeSetBundle with `CodeSet1Id` to `CodeSet15Id`; `text` maps to `CodeSetBundle.Name` |
+| Coding | CodeSet: `SourceSystem` (system), `SystemVersion`, `Code`, `Name` (display), `IsPrimary` (userSelected) |
+| Simple value sets | Picklists (for example `Identifier.IdUsageType`) |
+| Period | Start and end date fields (for example `OnsetStartDateTime`, `OnsetEndDateTime`) |
+| Quantity, Range, Ratio | Value and unit fields, lower and upper limits, numerator and denominator, with a UnitOfMeasure lookup |
+| HumanName | PersonName (`FirstName`, `LastName`, `FullName`, `ParentRecordId`) |
+| Address.line (0..*) | One `ContactPointAddress.Street` string; merge lines first |
 
-Every field-level mapping must be verified against the official Salesforce FHIR R4 mapping guide — do not assume 1:1 field equivalence.
+For Condition to HealthCondition: `code` is a required lookup to CodeSetBundle (`ConditionCodeId`, 1..1, where FHIR allows 0..1); `subject` is a master-detail to Account and doesn't support groups; `category` becomes a single picklist; `onsetAge`, `onsetRange`, and `onsetString` aren't supported.
 
-### CDS Hooks Requires MuleSoft Middleware
+### Salesforce Healthcare API
 
-CDS (Clinical Decision Support) Hooks is an HL7 standard for injecting real-time clinical decision support alerts into EHR workflows. A CDS Hook service receives an HTTP POST when a clinician opens a patient record or orders a medication, and must return card recommendations.
+| Item | Value (Salesforce Healthcare API guide) |
+|---|---|
+| URL shape | `https://api.healthcloud.salesforce.com/<module>/fhir-r4/v1/<Resource>`; sandbox adds `/sandBox/` after the host |
+| Modules | `admin`, `bundle`, `care_management`, `clinical-summary`, `clinical-diagnostics`, `clinical-workflow`, `clinical-medications`, `prior-auth`, `forms` |
+| Bundle | Batch type only; up to 30 entries per call, up to 10 of them reads or searches; dependent failures return 424 |
+| Authorization | External client app with OAuth 2.0 and custom scopes such as `user_condition_read`, `system_all_write` |
+| Guidance | About 3 seconds per call; keep concurrent requests at five or fewer; no FHIR semantic (code set) validation |
+| Availability | Winter '23 (API 56.0) and later; a $0 SKU is required |
 
-Salesforce has NO native CDS Hook service endpoint. To implement CDS Hooks with Salesforce:
-1. MuleSoft acts as the CDS Hook service (receives HTTP POST from EHR).
-2. MuleSoft queries Salesforce (ClinicalAlert records, CareGap records, FlexCard data) to build the CDS response.
-3. MuleSoft returns the CDS Hook card JSON to the EHR.
+### CDS Hooks and HL7 v2 go through MuleSoft
 
-Any architecture that assumes Salesforce can directly serve CDS Hook responses is incorrect.
-
-### SMART on FHIR for Patient Apps
-
-SMART (Substitutable Medical Applications, Reusable Technologies) on FHIR is an OAuth-based authorization framework for EHR-integrated clinical applications. For SMART on FHIR with Salesforce Health Cloud:
-- Register a Connected App with the `healthcare` and `api` OAuth scopes.
-- Configure the SMART launch parameter in the Connected App metadata.
-- Patient-facing apps need the FHIR R4 for Experience Cloud permission set on portal users.
-- The SMART launch context (patient ID, encounter context) is passed as a JWT claim from the EHR.
+The MuleSoft Direct Integration apps include a CDS Hooks integration that connects EMR workflows to clinical decision support from Health Cloud, and an event-based ingestion app that consumes HL7 v2 feeds into the Clinical Data Model. The Coverage Requirement Discovery data model maps CDS Hooks fields for payer use cases (Hls Clinical Decision Support permission set).
 
 ---
 
 ## Common Patterns
 
-### Inbound FHIR R4 Integration (EHR → Salesforce)
+### Inbound FHIR R4 to the Clinical Data Model
 
-**When to use:** An EHR sends patient clinical data (Conditions, Observations, Medications) to Salesforce on an event-driven or scheduled basis.
+1. Middleware receives the FHIR resource or bundle from the EHR.
+2. It resolves the patient (Person Account) and upserts CodeSet records by `SourceSystem` and `Code`.
+3. It builds a CodeSetBundle with up to 15 CodeSet references and records any truncation.
+4. It flattens Period, Quantity, Range, and Ratio values and maps picklist values.
+5. It writes HealthCondition (or the target object) and Identifier child records.
+6. It retries transient failures and acknowledges the source.
 
-**How it works:**
-1. EHR sends FHIR R4 bundle to middleware (MuleSoft).
-2. Middleware validates the FHIR bundle and checks resource types.
-3. Middleware translates FHIR resource fields to Salesforce object fields: complex type flattening, CodeableConcept normalization, identifier resolution.
-4. Middleware calls Salesforce FHIR Healthcare API or SObject API to create/update clinical records.
-5. Salesforce returns response; middleware handles errors and implements retry for transient failures.
-6. Middleware sends acknowledgment to EHR.
+An Apex version of steps 2 to 5 with a test class is in `references/code-examples.md`.
 
-**Why not the alternative:** Sending raw FHIR bundles directly to Salesforce APIs without translation results in silent data loss (unmapped fields dropped), validation errors (required field differences), and incorrect data (complex type flattening not applied).
+### Reading or writing through the Healthcare API
 
-### Outbound FHIR R4 Query (Salesforce → External FHIR Client)
-
-**When to use:** An external FHIR client (payer, HIE, patient app) needs to query patient clinical data from Salesforce in FHIR R4 format.
-
-**How it works:**
-1. External FHIR client authenticates via OAuth (with `healthcare` scope for FHIR Healthcare API).
-2. Client queries Salesforce FHIR Healthcare API: `GET /services/data/v60.0/healthcare/fhir/R4/Patient/{id}/$everything`
-3. Salesforce returns a FHIR Bundle with up to 30 entries.
-4. For large result sets, client must implement FHIR pagination (`_count` and `_page` parameters).
-5. Client processes each entry and maps FHIR resources to its own data model.
+The client authorizes with the custom scopes it needs, calls `GET https://api.healthcloud.salesforce.com/clinical-summary/fhir-r4/v1/Condition` (with search parameters) or posts a batch Bundle to the `bundle` module, throttles to five concurrent requests, and handles 424 responses for dependent entries.
 
 ---
 
 ## Decision Guidance
 
-| Situation | Pattern | Middleware Required? |
+| Situation | Pattern | Middleware required? |
 |---|---|---|
-| EHR sends FHIR R4 bundles to Salesforce | Inbound FHIR with middleware translation | Yes (MuleSoft or custom) |
-| External FHIR client reads Salesforce data | Outbound FHIR Healthcare API | No middleware needed |
-| CDS Hooks alerts to EHR | MuleSoft CDS Hook service | Yes (MuleSoft required) |
-| HL7 v2 from EHR to Salesforce | HL7 → FHIR translation middleware | Yes (MuleSoft HL7 connector) |
-| SMART on FHIR app launch | Connected App + healthcare scope | No middleware needed |
+| EHR sends FHIR R4 resources to Health Cloud | Middleware normalization into Clinical Data Model objects | Yes (the guide requires a middleware solution) |
+| External FHIR client reads or writes clinical data | Salesforce Healthcare API with custom scopes | No MuleSoft purchase needed to call the API |
+| CDS Hooks cards in the EHR | MuleSoft CDS Hooks Direct Integration app | Yes (MuleSoft) |
+| HL7 v2 feeds | MuleSoft event-based ingestion app | Yes (MuleSoft) |
+| SMART on FHIR client | External client app with Healthcare API custom scopes | No; wildcard SMART scopes aren't supported |
 
 ---
 
 ## Recommended Workflow
 
-1. **Verify FHIR prerequisites** — confirm FHIR R4 Support Settings enabled, legacy EHR object status assessed, integration direction and pattern determined.
-2. **Obtain source FHIR capability statement** — request the EHR's CapabilityStatement resource to understand which FHIR resources it supports, which FHIR version it uses, and which operations (read, search, write) are available.
-3. **Build field-level mapping** — for each FHIR resource in scope, map every field to its Salesforce equivalent using the official FHIR R4 mapping guide. Document all deviation points: complex types to flatten, CodeableConcept truncation, mandatory field differences.
-4. **Design middleware layer** — specify the middleware (MuleSoft or custom) responsible for translation, error handling, and retry. For CDS Hooks, MuleSoft is required.
-5. **Implement and test field mappings** — implement mapping logic in middleware. Test with representative FHIR payloads including edge cases: missing optional fields, multi-coding CodeableConcepts, complex types.
-6. **Configure SMART on FHIR** — if patient-facing apps are in scope, configure the Connected App with correct OAuth scopes, SMART launch parameters, and permission set assignments for portal users.
+1. **Confirm prerequisites.** Org preference, permission sets (including FHIR R4 for Experience Cloud Sites for portal users), Healthcare API terms and SKU if that surface is used.
+2. **Inventory resources and codings.** Use the EHR CapabilityStatement and sample payloads; count codings per concept against the 15-reference limit.
+3. **Map field by field.** Use the guide's "Mapping FHIR v4.0 to Salesforce Standard Objects" tables; record unsupported elements.
+4. **Build the normalizer.** MuleSoft app or custom code; start from the Apex example in `references/code-examples.md`.
+5. **Set authorization and throttling.** Custom scopes per client, five concurrent requests, Bundle sizes within 30 entries.
+6. **Test and scan.** Edge cases (no coding, more than 15 codings, onsetPeriod, unsupported onsetAge), then `python3 scripts/check_fhir_integration_patterns.py --manifest-dir force-app/main/default`.
 
 ---
 
 ## Review Checklist
 
-- [ ] FHIR R4 Support Settings enabled
-- [ ] Source EHR's FHIR version confirmed (R4 only natively supported)
-- [ ] Field-level mapping documented with deviation points identified
-- [ ] Middleware layer specified for inbound translation
-- [ ] CDS Hooks architecture uses MuleSoft as the CDS service endpoint (not Salesforce directly)
-- [ ] `healthcare` OAuth scope configured on Connected App
-- [ ] Legacy HC24__ EHR objects NOT used in new integration
+- [ ] FHIR-Aligned Clinical Data Model org preference enabled where the target objects need it
+- [ ] Field mapping documented from the guide's tables, with unsupported elements listed
+- [ ] CodeableConcepts capped at 15 codings with a priority rule and truncation log
+- [ ] Codes validated upstream (Salesforce doesn't validate code sets)
+- [ ] No writes to packaged `HC24__Ehr...__c` objects that have standard counterparts
+- [ ] Healthcare API clients use custom scopes, no wildcard SMART scopes
+- [ ] Middleware throttles to five concurrent Healthcare API requests and keeps Bundles at 30 entries or fewer
+- [ ] CDS Hooks and HL7 v2 run through MuleSoft
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **Salesforce is not a 1:1 FHIR R4 server** — CodeableConcept cardinality, complex type flattening, and mandatory field differences mean every integration needs field-by-field validation against the official Salesforce FHIR R4 mapping guide. Never assume field names match the FHIR spec.
-
-2. **CDS Hooks requires MuleSoft middleware** — there is no native Salesforce endpoint that serves CDS Hook responses. MuleSoft must act as the CDS service, querying Salesforce and assembling the CDS card response.
-
-3. **Legacy HC24__ EHR objects are frozen in new orgs** — Spring '23+ orgs cannot write to legacy managed-package EHR objects. All new integrations must target FHIR R4-aligned standard objects. Documentation predating Spring '23 that references HC24__ objects is obsolete for new orgs.
+See `references/gotchas.md`. The two that cause the most rework: Salesforce does not validate FHIR codes, and SMART-style wildcard scopes are not supported by the Healthcare API.
 
 ---
 
@@ -170,15 +174,16 @@ SMART (Substitutable Medical Applications, Reusable Technologies) on FHIR is an 
 
 | Artifact | Description |
 |---|---|
-| FHIR resource field mapping | Field-level mapping with deviation documentation for all in-scope resources |
-| Middleware translation specification | Input/output format, transformation rules, error handling for each integration |
-| CDS Hooks architecture diagram | MuleSoft → Salesforce CDS alert/gap query → card response flow |
-| Connected App SMART on FHIR configuration | OAuth scopes, launch parameters, permission set assignments |
+| FHIR resource field mapping | Field-level mapping with deviations and unsupported elements |
+| Normalization code | Middleware flow or Apex class with tests |
+| Client authorization spec | External client app, custom scopes per resource and method |
+| CDS Hooks and HL7 v2 design | MuleSoft Direct Integration app selection |
 
 ---
 
 ## Related Skills
 
-- apex/health-cloud-apis — Health Cloud API endpoint selection and bundle limits
-- admin/clinical-data-requirements — FHIR R4 object activation and data model requirements
-- admin/fhir-data-mapping — Detailed FHIR resource to Salesforce object mapping reference
+- `apex/health-cloud-apis`: Health Cloud API endpoint selection
+- `admin/clinical-data-requirements`: FHIR R4 object activation and data model requirements
+- `data/fhir-data-mapping`: detailed FHIR resource to Salesforce object mapping reference
+- `architect/fhir-integration-architecture`: EHR sync topology and MuleSoft design

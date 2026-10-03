@@ -1,6 +1,6 @@
 ---
 name: vector-database-management
-description: "Use this skill to design, configure, and maintain vector indexes in Salesforce Data Cloud via the Setup UI. Covers chunking strategy selection, index refresh mode, PII field exclusion, and index rebuild workflows. Trigger keywords: vector index, Data Cloud vector database, chunking strategy, index refresh mode, search index rebuild, embedding model selection. NOT for developer-facing retrieval APIs, Apex vector search queries, or SOQL-based retrieval - use agentforce/data-cloud-vector-search-dev."
+description: "Use this skill to design, configure, and maintain vector indexes in Salesforce Data Cloud via the Setup UI. Covers chunking strategy selection, index refresh mode, PII field exclusion, and index rebuild workflows. Trigger keywords: vector index, Data Cloud vector database, chunking strategy, index refresh mode, search index rebuild, embedding model selection, create a search index, choose vector or hybrid search. NOT for developer-facing retrieval APIs, Apex vector search queries, or SOQL-based retrieval - use agentforce/data-cloud-vector-search-dev."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -12,6 +12,9 @@ triggers:
   - "vector index returning irrelevant results or poor retrieval precision in Agentforce"
   - "how to configure chunking strategy for Data Cloud vector search"
   - "vector index is stale after data updates — how to enable continuous refresh"
+  - "create a Data Cloud search index for our knowledge articles"
+  - "change the chunking strategy on an existing Data Cloud search index"
+  - "choose between a vector and a hybrid search index in Data Cloud"
 tags:
   - vector-database-management
   - data-cloud
@@ -30,14 +33,14 @@ outputs:
   - "PII field exclusion list for the index"
   - "Rebuild runbook when chunking strategy or embedding model must change"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-10-03
 ---
 
 # Vector Database Management
 
-This skill activates when a practitioner needs to create, tune, or maintain a Data Cloud vector index through the Salesforce Setup UI. It covers the admin-facing decisions — chunking strategy, refresh cadence, PII exclusion, and rebuild workflows — that determine whether an Agentforce retrieval pipeline returns relevant results.
+This skill covers creating, tuning, and maintaining Data Cloud search indexes (the vector store behind Agentforce and Prompt Builder retrieval) through the Data Cloud UI: setup mode, chunking, embedding model, filter fields, freshness, cost, and rebuilds. The 262 Data Cloud guide calls the object a "search index configuration"; this skill uses "search index" and "vector index" for the same thing.
 
 ---
 
@@ -45,70 +48,76 @@ This skill activates when a practitioner needs to create, tune, or maintain a Da
 
 Gather this context before working on anything in this domain:
 
-- Confirm that a Data Space is configured and that the target DMO or UDLO is active in Data Cloud. Vector indexes cannot be created without a Data Space.
-- The most common wrong assumption is that poor retrieval precision is a `topK` tuning problem. It is almost always a chunking strategy mismatch. Identify query length and document structure before touching any index setting.
-- Key platform constraints: changing a chunking strategy or swapping an embedding model requires deleting the existing index and rebuilding from scratch. There is no in-place edit. Plan for downtime or a blue/green approach if the index is in production use.
+- Which data space and which DMO or unstructured DMO (UDMO) holds the text? A search index is defined in a data space and tied to one object. A DMO mapped from external data lake objects cannot be selected.
+- How many search indexes already exist? The limit is 10 per Data Cloud instance.
+- Which language is the content in? Max tokens and the embedding model choice depend on it.
+- Which fields will users filter on (category, product, region, status)? Up to 10 filter fields, chosen at setup.
+- Plan the chunking strategy and embedding model before creating the index. After creation you can add fields or file extensions; other settings are view-only.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Is the content in English, another Latin-script language, or a non-Latin language?" | Max tokens default to 512, and Data Cloud approximates tokens by words (Latin) or punctuation (non-Latin); non-Latin chunks can exceed the limit and lose text | Embedding model (E5-Large V2 or Multilingual E5-Large) and a max-token setting below 512 where needed | Chunks that are fully embedded instead of silently truncated |
+| "Will queries use product codes, error numbers, or other exact terms?" | Easy Setup builds a hybrid index; vector-only search lacks domain vocabulary | Hybrid vs vector-only decision | Exact-term questions that still find the right passage |
+| "What will retrievers filter on?" | Filter fields are chosen at setup (up to 10, 1:1 or N:1 relationships), and only defined filter fields can be used by retrievers | The filter field list | Retrievers scoped to the right subset without rebuilding |
+| "Which fields hold personal or regulated data?" | Every field you chunk is copied into the chunk DMO and embedded | A field list that excludes those fields | No personal data sitting in a chunk DMO that the retriever can return |
+| "How fresh must answers be, and how is the source data stream refreshed?" | A Ready index processes source changes incrementally, but only after the data stream ingests them; Full Refresh replaces all data each cycle | The data stream refresh mode and schedule | Freshness that matches the business need without reprocessing the whole corpus |
+| "How many vectors will this index hold, and how often will it be queried?" | Data Queries billing for vector search counts the number of vectors in the index | A cost estimate per query volume | No surprise credit consumption after go-live |
+
+What a proper configuration adds over clicking Easy Setup and moving on: the chunking and model fit the content, filter fields exist before retrievers need them, sensitive fields are kept out, and the team knows what a rebuild or a query costs.
 
 ---
 
 ## Core Concepts
 
-### Vector Indexes and Embeddings
+### What a search index creates
 
-A vector index stores numerical embeddings generated from text fields on a DMO or UDLO. The index is separate from the source data object — it is a derived artifact that must be explicitly created and maintained. Each index is tied to a specific embedding model; the model cannot be changed without rebuilding the index.
+Creating a search index configuration creates two Semantic DMOs: a chunk DMO (`Chunk__c`, `ChunkSequenceNumber__c`, source references) and an index DMO (`RecordId__c`, `VectorEmbedding__c`). It also creates a default retriever that cannot be customized; custom retrievers are built in Einstein Studio.
 
-### Chunking Strategy
+### Easy Setup vs Advanced Setup
 
-Chunking controls how source text is split into segments before embedding. Salesforce provides two options in Setup:
+| Setting | Easy Setup | Advanced Setup |
+|---|---|---|
+| Chunking strategy | Passage extraction (default) | Choose per field or file type; optional prepend fields |
+| Embedding model | E5-Large V2 | E5-Large V2, Multilingual E5-Large, or Whisper-Large-V3 (as listed in the Search Index Reference) |
+| Search type | Hybrid | Vector or hybrid, chosen on the Select Source Object page; hybrid adds ranking factors such as recency or popularity |
+| Filter fields | Not part of the Easy Setup steps | Up to 10 |
+| Transcription (audio, video) | Not part of the Easy Setup steps | Default transcription model, optional timestamps |
 
-- **Easy Setup**: fixed 500-character chunks with no overlap. Fast to configure, appropriate for short, uniform documents.
-- **Advanced Setup**: configurable chunk size (recommended range: 200–1500 characters) and overlap percentage (typically 5–20%). Required for longer documents, PDFs, or when retrieval precision matters.
+### Chunking is token-based
 
-The chunking strategy is set at index creation. It cannot be modified in-place — a strategy change requires deleting the index and rebuilding it.
+Data Cloud splits content into sentences, merges sentences up to the max-token setting (default 512), and embeds each chunk. Semantic-based passage extraction uses HTML structure (headings, lists, bold subheadings) as boundaries and works best for HTML; PDF results depend on how the text is encoded. Conversation-based chunking splits transcripts by speaker. Prepend fields add context such as a title to every chunk. UNVERIFIED (2026-10-03): a configurable chunk overlap setting; the 262 Data Cloud guide does not describe one.
 
-### Refresh Mode
+### What you can change later
 
-Vector indexes are fed by a Data Stream. Two refresh modes are available:
+Edit lets you add fields (DMO) or file extensions (UDMO). Other settings, including chunking strategy and embedding model, are view-only. Changing them means a new index. Rebuild re-runs the full index for a configuration that did not process correctly.
 
-- **Batch (default)**: the index updates on a scheduled cadence, which can lag by hours after the source data changes.
-- **Continuous**: the index updates near-real-time as records change in the source DMO. Higher Data Cloud credit consumption than batch.
+### Freshness
 
-Select continuous refresh only when retrieval freshness is a business requirement. For static or slowly changing corpora (product catalogs, policy documents), batch refresh is sufficient.
+Index status moves Submitted, In-progress, Ready, or Failed. In Ready, the indexing job runs incrementally on changes in the source object. The source object is fed by a data stream whose refresh mode is Incremental, Upsert, or Full Refresh; Full Refresh deletes and replaces all data each cycle.
 
-### PII Field Exclusion
+### Cost
 
-Any field included in a vector index is embedded and stored in the index. PII fields (names, email addresses, SSNs, health data) should be explicitly excluded from the field list when creating an index. Salesforce does not auto-exclude PII fields — this is an admin responsibility. Failure to exclude PII from the index creates a data governance risk and may violate regulatory requirements.
+Unstructured Data Processed is billed once per file across transcription, chunking, and vectorization, and costs the same for vector and hybrid indexes. Data Queries for vector search count the number of vectors in the search index.
 
 ---
 
 ## Common Patterns
 
-### Advanced Chunking Rebuild for Improved Retrieval Precision
+### Replace an index whose chunking does not fit
 
-**When to use:** Agentforce is returning off-topic or fragmented results. The vector index was created with Easy Setup (500-character fixed chunks). Queries are longer than one or two sentences, or source documents have natural section boundaries.
+1. Record the current configuration: data space, object, fields, chunking strategy, max tokens, embedding model, filter fields.
+2. Create a second index with Advanced Setup and the new settings (count it against the 10-index limit).
+3. Wait for Ready, then compare results with the validation queries in `references/examples.md`.
+4. Point custom retrievers at the new index and activate the new retriever versions.
+5. Delete the old index. Deletion is blocked while any retriever references it.
 
-**How it works:**
-1. In Data Cloud Setup, navigate to **Vector Indexes**.
-2. Note the current index name, DMO/UDLO, field list, and embedding model.
-3. Delete the existing vector index. This removes the index artifact but does not affect source data.
-4. Create a new vector index on the same DMO/UDLO using **Advanced Setup**.
-5. Set chunk size to match average query length plus context (800–1000 characters is a common starting point for product documentation).
-6. Set overlap to 10% of chunk size to preserve context at chunk boundaries.
-7. Save and allow the index to build. Monitor index status in Setup until it shows Active.
-8. Test retrieval precision with representative queries before re-enabling production traffic.
+### Keep an index fresh without reprocessing everything
 
-**Why not the alternative:** Increasing `topK` returns more candidate chunks but does not fix the root cause. If chunks are too small, the most relevant content is split across multiple chunks, none of which individually scores high enough to rank at the top.
-
-### Continuous Refresh for High-Frequency Source Data
-
-**When to use:** The source DMO is updated frequently (inventory, case data, pricing) and retrieval results must reflect recent changes within minutes rather than hours.
-
-**How it works:**
-1. Navigate to the Data Stream that feeds the vector index source DMO.
-2. Change the refresh mode from **Batch** to **Continuous**.
-3. Save the Data Stream configuration.
-4. Monitor Data Cloud credit consumption after enabling — continuous mode has higher per-update credit cost than batch.
-5. Set a credit consumption alert in Data Cloud Setup if the DMO update frequency is unpredictable.
+Use Incremental (or Upsert for file connectors) on the source data stream instead of Full Refresh, and set the refresh schedule to the freshness the use case needs.
 
 ---
 
@@ -116,49 +125,44 @@ Any field included in a vector index is embedded and stored in the index. PII fi
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Poor retrieval precision, queries are longer than one sentence | Rebuild index with Advanced Setup, increase chunk size and add overlap | Chunking strategy mismatch is the root cause; topK is not the fix |
-| Embedding model must be changed (e.g., moving to a higher-quality model) | Delete index, update embedding model selection, rebuild | Model change always requires full rebuild; no in-place migration path |
-| Source DMO updated hourly or more frequently and freshness matters | Enable continuous refresh on the Data Stream | Batch default can lag hours; continuous keeps index near-real-time |
-| Source corpus is static (policy docs, product catalog updated weekly) | Keep batch refresh | Continuous mode consumes more credits without meaningful freshness benefit |
-| Index includes fields with PII (names, emails, health data) | Remove PII fields from index field list before creation | Embedded PII in vector store is a data governance and regulatory risk |
-| Chunking strategy needs to change on a live production index | Delete index, configure new strategy, rebuild, test, then restore production routing | In-place strategy change is not supported by the platform |
+| Queries mix natural language and exact codes | Hybrid index | Keyword search covers vocabulary that vector search misses |
+| Non-English or mixed-language corpus | Multilingual E5-Large, max tokens below 512 for non-Latin text | Token approximation differs by script |
+| Poor results on long HTML articles | Passage extraction plus a title prepend field | Uses document structure and adds context |
+| Need to change chunking or the embedding model | Build a new index in parallel, then cut over | Those settings are view-only after creation |
+| Index stuck in Failed | Rebuild from the configuration page | Rebuild re-runs the full index |
+| Source data stream uses Full Refresh on a large corpus | Switch to Incremental or Upsert where the connector allows | Full Refresh replaces all data each cycle |
+| Fields contain personal data | Leave them out of the chunked fields | Chunked text is stored in the chunk DMO |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Gather context**: Identify the source DMO or UDLO, the use case (Agentforce knowledge base, search, classification), typical query length, and current index configuration if one exists.
-2. **Audit field list for PII**: Review the fields selected for indexing against the org's PII taxonomy. Remove any sensitive fields before creating or rebuilding the index.
-3. **Select chunking strategy**: If source documents are short and uniform, Easy Setup (500-char fixed) is acceptable. For longer documents or when retrieval precision matters, use Advanced Setup with chunk size tuned to query length and 5–15% overlap.
-4. **Create or rebuild the index**: In Data Cloud Setup > Vector Indexes, create the index with the selected configuration. If an index already exists with the wrong strategy, delete it first, then create the new one.
-5. **Configure refresh mode**: On the Data Stream feeding the DMO, set batch or continuous refresh based on required freshness. Monitor credit consumption after enabling continuous mode.
-6. **Validate retrieval precision**: After the index reaches Active status, run representative test queries. Verify that top results are relevant. If precision is still poor, revisit chunk size and overlap rather than adjusting topK.
-7. **Document rebuild runbook**: Record the index configuration (chunk size, overlap, embedding model, field list, refresh mode) in a runbook. Any future change to chunking strategy or embedding model will require a full rebuild — the runbook minimizes downtime.
+1. **Scope.** Record the data space, object, language, query style, filter needs, and expected query volume in `templates/vector-database-management-template.md`.
+2. **Choose fields.** Pick text fields to chunk and exclude personal or regulated fields; pick up to 10 filter fields.
+3. **Choose setup and model.** Easy Setup for a quick hybrid index on English content; Advanced Setup for language, max tokens, prepend fields, or filters.
+4. **Create and wait for Ready.** Watch the status; use Rebuild if it fails.
+5. **Validate.** Run the `vector_search` or `hybrid_search` queries in `references/examples.md` against representative questions and inspect the returned chunks and scores.
+6. **Set freshness and cost guardrails.** Confirm the data stream refresh mode and schedule; estimate query cost from the vector count.
+7. **Record the configuration.** Keep the template current and, where the index must move between orgs, add it to a data kit.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] Source DMO or UDLO is active in Data Cloud and a Data Space is configured
-- [ ] PII fields are excluded from the vector index field list
-- [ ] Chunking strategy matches the query length and document structure of the use case
-- [ ] Refresh mode is set appropriately (batch for static corpora, continuous for high-frequency updates)
-- [ ] Index status is Active before routing production traffic to it
-- [ ] Rebuild runbook documents chunk size, overlap, embedding model, field list, and refresh mode
+- [ ] Data space and source object recorded; object is not mapped from external DLOs
+- [ ] Index count stays within 10 per Data Cloud instance
+- [ ] Personal and regulated fields are not chunked
+- [ ] Language, embedding model, and max tokens fit the content
+- [ ] Filter fields defined before retrievers need them
+- [ ] Index status is Ready before retrievers point at it
+- [ ] Data stream refresh mode and schedule match the freshness need
+- [ ] Configuration recorded; replacement plan uses a parallel index
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
-
-1. **Chunking strategy is immutable after index creation** — There is no in-place edit for chunking strategy or chunk size. If you need to change either, you must delete the entire index and rebuild it. This causes a gap in retrieval availability unless a blue/green approach (build new index, validate, reroute) is planned in advance.
-2. **Embedding model change requires full index rebuild** — Switching the embedding model (e.g., upgrading to a higher-quality or domain-specific model) is not an incremental operation. The entire index must be deleted and rebuilt from scratch. Plan for rebuild time proportional to corpus size.
-3. **Continuous refresh has meaningfully higher credit consumption** — Continuous mode triggers an embedding and index update for every source record change, not just on a schedule. On high-volume DMOs this can multiply Data Cloud credit usage. Always set a consumption alert before enabling continuous mode in production.
+See `references/gotchas.md`. The two that cause the most rework: chunking strategy and embedding model are view-only after creation, and an index cannot be deleted while a retriever still references it.
 
 ---
 
@@ -166,13 +170,15 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Vector index configuration record | Setup UI record specifying DMO/UDLO, field list, chunking strategy, chunk size, overlap, and embedding model |
-| Data Stream refresh mode setting | Batch or continuous refresh configured on the Data Stream feeding the source DMO |
-| PII exclusion list | Documented list of fields excluded from the index for data governance compliance |
-| Rebuild runbook | Step-by-step record of the index configuration and rebuild procedure for future strategy or model changes |
+| Search index configuration record | Data space, object, fields, chunking, max tokens, model, search type, filter fields |
+| Validation query set | `vector_search` or `hybrid_search` queries with expected chunks |
+| Freshness and cost note | Data stream refresh mode, schedule, and vector-count query cost |
+| Data kit entry | When the index must be deployed to another org |
 
 ---
 
 ## Related Skills
 
-- skills/agentforce/data-cloud-vector-search-dev — developer lifecycle for querying vector indexes via Apex and retrieval APIs; use alongside this skill when building end-to-end Agentforce pipelines
+- `agentforce/data-cloud-vector-search-dev`: developer lifecycle for querying search indexes from code and retrieval APIs
+- `agentforce/rag-patterns-in-salesforce`: retrieval-augmented generation design on top of the index
+- `agentforce/data-cloud-grounding-for-agentforce`: grounding agents and prompts in Data Cloud data

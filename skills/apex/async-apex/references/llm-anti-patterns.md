@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — Async Apex
+# LLM Anti-Patterns: Async Apex
 
 Common mistakes AI coding assistants make when generating or advising on async Apex mechanism selection and design.
 These patterns help the consuming agent self-check its own output.
@@ -38,7 +38,7 @@ public class AccountSyncJob implements Queueable, Database.AllowsCallouts {
 System.enqueueJob(new AccountSyncJob(accountId));
 ```
 
-**Detection hint:** `@future` annotation in newly generated code — it should be `Queueable` unless there is an explicit reason (e.g., mixed DML workaround).
+**Detection hint:** `@future` annotation in newly generated code. It should be `Queueable` unless there is an explicit reason (for example, a mixed DML workaround).
 
 ---
 
@@ -59,7 +59,7 @@ public class UpdateFiveRecordsBatch implements Database.Batchable<SObject> {
 }
 ```
 
-**Why it happens:** LLMs pattern-match on "needs to run asynchronously" and reach for Batch Apex. For 5-50 records, Batch Apex is overkill — it introduces a full lifecycle (start/execute/finish), queuing delays in the flex queue, and extra complexity. A Queueable or even synchronous processing is simpler.
+**Why it happens:** LLMs pattern-match on "needs to run asynchronously" and reach for Batch Apex. For 5 to 50 records, Batch Apex is overkill: it introduces a full lifecycle (start/execute/finish), queuing delays in the flex queue, and extra complexity. A Queueable or even synchronous processing is simpler.
 
 **Correct pattern:**
 
@@ -90,9 +90,9 @@ public void execute(Database.BatchableContext bc, List<Account> scope) {
 }
 ```
 
-**Why it happens:** LLMs generate `@future` calls without checking the calling context. The governor limit "Maximum number of methods with the future annotation allowed per Apex invocation" is **50** synchronously and, asynchronously, **"0 in batch and future contexts; 50 in queueable context"**. So from a `@future` method or a Batch `execute()`/`finish()` the allocation is zero and the platform throws `System.AsyncException: Future method cannot be called from a future or batch method`.
+**Why it happens:** LLMs generate `@future` calls without checking the calling context. The governor limit "Maximum number of methods with the future annotation allowed per Apex invocation" is **50** synchronously and, asynchronously, **"0 in batch and future contexts; 50 in queueable context"**. So from a `@future` method or a Batch `execute()`/`finish()` the allocation is zero and the call fails at runtime. UNVERIFIED (2026-10-03): the exact exception type and message text.
 
-**Queueable is the exception, and it is a real one.** A `Queueable.execute()` gets an allocation of **50** `@future` calls — calling `@future` from a Queueable is documented and supported, not an error. Do not generate the AsyncException warning for a Queueable caller; it will not fire. Salesforce does caution that "having multiple future methods fan out from a queueable job isn't a recommended practice as it can rapidly add many future methods to the asynchronous queue" — that is a design smell to raise, not a platform restriction to assert.
+**Queueable is the exception, and it is a real one.** A `Queueable.execute()` gets an allocation of **50** `@future` calls; calling `@future` from a Queueable is documented and supported, not an error. Salesforce does caution that "having multiple future methods fan out from a queueable job isn't a recommended practice as it can rapidly add many future methods to the asynchronous queue." That is a design smell to raise, not a platform restriction to assert.
 
 **Correct pattern:**
 
@@ -108,7 +108,7 @@ public void execute(Database.BatchableContext bc, List<Account> scope) {
 }
 ```
 
-**Detection hint:** `@future` method calls inside classes that implement `Database.Batchable`, or inside another `@future`-annotated method. A `@future` call inside a `Queueable` is **legal** — flag it only as a design review item (fan-out), never as a compile/runtime error.
+**Detection hint:** `@future` method calls inside classes that implement `Database.Batchable`, or inside another `@future`-annotated method. A `@future` call inside a `Queueable` is **legal**; flag it only as a design review item (fan-out), never as a compile or runtime error.
 
 ---
 
@@ -120,13 +120,13 @@ public void execute(Database.BatchableContext bc, List<Account> scope) {
 trigger AccountTrigger on Account (after update) {
     for (Account a : Trigger.new) {
         if (a.NeedsSync__c) {
-            System.enqueueJob(new SyncJob(a.Id)); // Limit: 1 per sync transaction
+            System.enqueueJob(new SyncJob(a.Id)); // 200-row chunk can exceed the 50-per-transaction limit
         }
     }
 }
 ```
 
-**Why it happens:** LLMs generate per-record async dispatch. In a synchronous Apex transaction (trigger, controller), you can only enqueue 1 Queueable job. Enqueuing 2 or more throws `System.LimitException`.
+**Why it happens:** LLMs generate per-record async dispatch. A synchronous transaction can enqueue up to 50 Queueables and an asynchronous one only 1 (Apex Developer Guide 262, Per-Transaction Apex Limits, L19573). Version 1.0.0 of this skill said the synchronous limit was 1; that was wrong. Per-record enqueues still fail: a 200-record trigger chunk can pass 50, and each job counts against the org's daily async executions.
 
 **Correct pattern:**
 
@@ -159,18 +159,18 @@ public void finish(Database.BatchableContext bc) {
 }
 ```
 
-**Why it happens:** LLMs chain batch jobs in `finish()` without considering that only 5 batch jobs can be actively processing concurrently (the rest go to the flex queue, up to 100). If the flex queue is full, `Database.executeBatch` throws an exception and the chain breaks silently.
+**Why it happens:** LLMs chain batch jobs in `finish()` without considering that only 5 batch jobs can be queued or active (the rest wait in the flex queue with Status `Holding`, up to 100). If the flex queue already holds 100 jobs, `Database.executeBatch` throws a `LimitException` (Apex Developer Guide 262, "Holding Batch Jobs in the Apex Flex Queue").
 
 **Correct pattern:**
 
 ```apex
 public void finish(Database.BatchableContext bc) {
-    Integer activeBatches = [
+    Integer holding = [
         SELECT COUNT() FROM AsyncApexJob
         WHERE JobType = 'BatchApex'
-        AND Status IN ('Processing', 'Preparing', 'Queued')
+        AND Status = 'Holding'
     ];
-    if (activeBatches < 95) { // Leave headroom in flex queue
+    if (holding < 95) { // Flex queue holds 100 jobs in Holding status; leave headroom
         Database.executeBatch(new NextBatch());
     } else {
         // Fallback: schedule retry via Schedulable or log for manual intervention
@@ -183,7 +183,7 @@ public void finish(Database.BatchableContext bc) {
 
 ---
 
-## Anti-Pattern 6: Ignoring the 250K row limit for @future method SOQL queries
+## Anti-Pattern 6: Ignoring the 50,000-row SOQL limit in @future methods
 
 **What the LLM generates:**
 
@@ -195,7 +195,7 @@ public static void processAllContacts() {
 }
 ```
 
-**Why it happens:** LLMs know that async Apex gets higher governor limits but incorrectly assume unlimited queries. `@future` methods share the same 50K SOQL row limit as synchronous Apex. Only Batch Apex `start()` with `Database.getQueryLocator` gets the 50 million row limit.
+**Why it happens:** LLMs know that async Apex gets higher governor limits (200 SOQL queries, 12 MB heap, 60,000 ms CPU) and assume rows are unlimited too. The total number of records retrieved by SOQL is 50,000 in both synchronous and asynchronous Apex (Apex Developer Guide 262, Per-Transaction Apex Limits, L19546). Only a Batch `start()` returning `Database.getQueryLocator` reaches 50 million rows.
 
 **Correct pattern:**
 
@@ -213,3 +213,33 @@ public class ContactProcessorBatch implements Database.Batchable<SObject> {
 ```
 
 **Detection hint:** `@future` method with SOQL queries that have no `WHERE` filter or `LIMIT` clause, suggesting unbounded result sets.
+
+---
+
+## Anti-Pattern 7: Doing the work, or the callout, inside Schedulable.execute
+
+**What the LLM generates:**
+
+```apex
+global class NightlySync implements Schedulable {
+    global void execute(SchedulableContext ctx) {
+        HttpResponse res = new Http().send(buildRequest()); // synchronous callout
+        List<Account> rows = [SELECT Id FROM Account WHERE Needs_Sync__c = true];
+        update rows;
+    }
+}
+```
+
+**Why it happens:** The model treats the scheduler as an async worker with async limits.
+
+**Correct pattern:** Synchronous limits apply to scheduled Apex, and synchronous callouts aren't supported from it (Apex Developer Guide 262, L19536 and "Apex Scheduler Notes and Best Practices"). Dispatch instead:
+
+```apex
+global class NightlySync implements Schedulable {
+    global void execute(SchedulableContext ctx) {
+        System.enqueueJob(new AccountSyncJob()); // implements Queueable, Database.AllowsCallouts
+    }
+}
+```
+
+**Detection hint:** `HttpRequest`, `Http().send`, or large SOQL and DML inside a class that implements `Schedulable`.

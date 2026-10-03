@@ -1,12 +1,26 @@
 #!/usr/bin/env python3
 """Checker script for Vector Database Management skill.
 
-Checks org metadata or configuration relevant to vector indexes in Data Cloud.
-Uses stdlib only — no pip dependencies.
+Checks org metadata relevant to Data Cloud search indexes (vector stores).
+Uses stdlib only, no pip dependencies.
+
+Rules and the Summer '26 (262) source each one encodes:
+  WARN  No DataStreamDefinition retrieved. The search index's source object is fed by a
+        data stream whose refresh mode (Incremental, Upsert, Full Refresh) decides freshness.
+        Data Cloud guide, "Data Stream Settings and Refresh Modes."
+  WARN  A DataStreamDefinition with dataExtractMethods FULL_REFRESH. Full Refresh deletes
+        and replaces all data each cycle. Same source; Metadata API, DataStreamDefinition.
+  WARN  No DataSpaceDefinition retrieved. A search index is defined in a data space.
+        Data Cloud guide, "Retrievers" and "Manage Search Indexes."
+  WARN  Field references whose names match personal-data patterns. Every chunked field is
+        copied into the chunk DMO. Data Cloud guide, "Chunk and Index Data Model Objects."
+  WARN  More than one distinct embedding model reference. The embedding model is view-only
+        after creation. Data Cloud guide, "Edit Search Index Configurations."
 
 Usage:
     python3 check_vector_database_management.py [--help]
     python3 check_vector_database_management.py --manifest-dir path/to/metadata
+    python3 check_vector_database_management.py --self-test
 """
 
 from __future__ import annotations
@@ -65,6 +79,7 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument("--self-test", action="store_true", help="Run against scripts/fixtures/good and bad.")
     return parser.parse_args()
 
 
@@ -74,12 +89,12 @@ def check_data_stream_definition(manifest_dir: Path) -> list[str]:
     """Warn if no DataStreamDefinition metadata files are found in the manifest."""
     issues: list[str] = []
     # DataStreamDefinition files live under dataStreamDefinitions/ with .dataStreamDefinition extension
-    candidates = list(manifest_dir.rglob("*.dataStreamDefinition"))
+    candidates = list(manifest_dir.rglob("*.dataStreamDefinition")) + list(manifest_dir.rglob("*.dataStreamDefinition-meta.xml"))
     if not candidates:
         issues.append(
             "No DataStreamDefinition metadata found in the manifest. "
-            "A DataStreamDefinition is required to configure the refresh mode "
-            "(batch or continuous) for the DMO feeding a vector index. "
+            "The data stream feeding the search index's source object sets its refresh mode "
+            "(Incremental, Upsert, or Full Refresh) and schedule, which decide index freshness. "
             "Ensure it is included in the package.xml and retrieved before configuring "
             "the vector index refresh cadence."
         )
@@ -89,12 +104,11 @@ def check_data_stream_definition(manifest_dir: Path) -> list[str]:
 def check_data_space_definition(manifest_dir: Path) -> list[str]:
     """Warn if no DataSpaceDefinition metadata files are found in the manifest."""
     issues: list[str] = []
-    candidates = list(manifest_dir.rglob("*.dataSpaceDefinition"))
+    candidates = list(manifest_dir.rglob("*.dataSpaceDefinition")) + list(manifest_dir.rglob("*.dataSpaceDefinition-meta.xml"))
     if not candidates:
         issues.append(
             "No DataSpaceDefinition metadata found in the manifest. "
-            "A DataSpaceDefinition is required for Data Cloud to be active. "
-            "Vector indexes cannot be created without an active Data Space. "
+            "A search index is defined in a data space and tied to one data model object. "
             "Confirm Data Cloud is provisioned and retrieve DataSpaceDefinition metadata."
         )
     return issues
@@ -131,9 +145,9 @@ def check_pii_fields_in_metadata(manifest_dir: Path) -> list[str]:
     if flagged:
         issues.append(
             f"Found {len(flagged)} field reference(s) in metadata that match PII name patterns. "
-            "PII fields must be excluded from vector index field lists — embeddings bypass "
-            "Salesforce FLS/OLS and expose PII to any index consumer. Review and confirm "
-            "these fields are NOT included in any vector index configuration:"
+            "Every chunked field is copied into the chunk DMO and embedded. Keep personal-data "
+            "fields out of search index chunking (UNVERIFIED 2026-10-03: whether retrievers "
+            "enforce source field-level security). Confirm these fields are not chunked:"
         )
         for relative_path, line_content, pattern in flagged[:20]:  # cap at 20 to avoid noise
             issues.append(f"  [{pattern}] {relative_path}: {line_content[:120]}")
@@ -172,14 +186,29 @@ def check_embedding_model_change_risk(manifest_dir: Path) -> list[str]:
     if len(model_references) > 1:
         issues.append(
             "Multiple distinct embedding model references found across metadata files. "
-            "If an embedding model change is in progress, note that switching models "
-            "requires a full vector index delete and rebuild — there is no in-place migration. "
-            "Plan for an index availability gap or use a parallel build strategy. "
+            "The embedding model is view-only after a search index is created; a model change "
+            "means a new index built in parallel, a retriever cutover, then deleting the old one. "
             "Distinct references found:"
         )
         for ref, files in list(model_references.items())[:10]:
             issues.append(f"  {ref[:100]}  (in: {', '.join(files[:3])})")
 
+    return issues
+
+
+def check_full_refresh_streams(manifest_dir: Path) -> list[str]:
+    """Warn on data streams that replace all data each cycle."""
+    issues: list[str] = []
+    for path in sorted(manifest_dir.rglob("*.dataStreamDefinition")) + sorted(manifest_dir.rglob("*.dataStreamDefinition-meta.xml")):
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if "<dataExtractMethods>FULL_REFRESH</dataExtractMethods>" in text.replace(" ", ""):
+            issues.append(
+                f"{path.relative_to(manifest_dir)} uses FULL_REFRESH; each cycle deletes and replaces all data. "
+                "Use Incremental or Upsert where the connector allows."
+            )
     return issues
 
 
@@ -194,6 +223,7 @@ def check_vector_database_management(manifest_dir: Path) -> list[str]:
         return issues
 
     issues.extend(check_data_stream_definition(manifest_dir))
+    issues.extend(check_full_refresh_streams(manifest_dir))
     issues.extend(check_data_space_definition(manifest_dir))
     issues.extend(check_pii_fields_in_metadata(manifest_dir))
     issues.extend(check_embedding_model_change_risk(manifest_dir))
@@ -201,8 +231,32 @@ def check_vector_database_management(manifest_dir: Path) -> list[str]:
     return issues
 
 
+def self_test() -> int:
+    base = Path(__file__).resolve().parent / "fixtures"
+    good, bad = base / "good", base / "bad"
+    if not good.is_dir() or not bad.is_dir():
+        print("ERROR: fixtures/good or fixtures/bad is missing")
+        return 1
+    good_issues = check_vector_database_management(good)
+    bad_issues = check_vector_database_management(bad)
+    failures = 0
+    if good_issues:
+        failures += 1
+        print(f"ERROR: self-test: fixtures/good produced {good_issues}")
+    for expected in ("FULL_REFRESH", "match PII name patterns", "embedding model"):
+        if not any(expected in issue for issue in bad_issues):
+            failures += 1
+            print(f"ERROR: self-test: fixtures/bad did not report '{expected}'")
+    if failures:
+        return 1
+    print("self-test passed")
+    return 0
+
+
 def main() -> int:
     args = parse_args()
+    if args.self_test:
+        return self_test()
     manifest_dir = Path(args.manifest_dir)
     issues = check_vector_database_management(manifest_dir)
 

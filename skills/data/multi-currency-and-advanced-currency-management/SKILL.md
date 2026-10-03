@@ -1,8 +1,8 @@
 ---
 name: multi-currency-and-advanced-currency-management
-description: "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency'. NOT for what convertCurrency() allows in WHERE/ORDER BY or querying CurrencyType and DatedConversionRate — use data/currency-management-patterns. NOT for wrong converted amounts in Sales Cloud reports and roll-ups — use architect/multi-currency-sales-architecture."
+description: "Use when designing or reviewing Salesforce multi-currency behavior, especially irreversible activation, `CurrencyIsoCode`, `convertCurrency()`, dated exchange rates, and Advanced Currency Management tradeoffs. Triggers: 'multi currency', 'advanced currency management', 'CurrencyIsoCode', 'dated exchange rate', 'convertCurrency', 'enable multiple currencies', 'load daily exchange rates'. NOT for what convertCurrency() allows in WHERE/ORDER BY or querying CurrencyType and DatedConversionRate — use data/currency-management-patterns. NOT for wrong converted amounts in Sales Cloud reports and roll-ups — use architect/multi-currency-sales-architecture."
 category: data
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Reliability
   - Scalability
@@ -20,6 +20,8 @@ triggers:
   - "roll up summary and ACM currency issues"
   - "advanced currency management vs standard multi-currency for Sales Cloud"
   - "standard multi-currency versus advanced currency management comparison"
+  - "enable multiple currencies in our org and what breaks afterwards"
+  - "load daily exchange rates into Salesforce from our finance system"
 inputs:
   - "whether multi-currency or ACM is already enabled"
   - "objects and reports involved"
@@ -29,14 +31,14 @@ outputs:
   - "review findings for conversion and reporting risks"
   - "query and Apex guidance for currency-aware behavior"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-10-03
 ---
 
 # Multi Currency And Advanced Currency Management
 
-Use this skill when currency is no longer just a formatting concern. Multi-currency and Advanced Currency Management change how data is stored, queried, reported, and explained to the business. The most important design rule is to respect currency context instead of smuggling in hardcoded assumptions about one corporate currency.
+Use this skill when currency is no longer just a formatting concern. Multi-currency and Advanced Currency Management (ACM) change how data is stored, queried, reported, and explained to the business. The design rule: keep every amount next to its currency, and convert only where the consumer asked for a converted value.
 
 ---
 
@@ -44,53 +46,76 @@ Use this skill when currency is no longer just a formatting concern. Multi-curre
 
 Gather this context before working on anything in this domain:
 
-- Is multi-currency already enabled, and if not, has the team understood that activation is irreversible?
-- Does the requirement involve Opportunity reporting, forecasting, rollups, or Apex calculations that depend on exchange rates?
-- Does the consumer need the stored transaction currency, the user's currency, or dated historical conversion?
+- Is multi-currency already enabled? `CurrencySettings.enableMultiCurrency` cannot be set back to `false` once it is `true`.
+- Is ACM (effective dated currency) enabled or planned? It requires multi-currency first.
+- Which consumers read money: Opportunity reports, forecasts, roll-ups, Apex, integrations, CRM Analytics?
+- Does each consumer need the stored transaction currency, the viewer's currency, or a dated historical conversion?
+- Does any Apex or managed package code have to run in both single-currency and multi-currency orgs?
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Have the sponsors signed off that turning on multiple currencies is permanent?" | The Metadata API says `enableMultiCurrency` "can't be set to false" after it is set to true | A recorded decision and a full sandbox rehearsal before production | No surprise one-way change to every record's data model |
+| "Which amounts need historical rates, and on which objects?" | The SOQL guide says ACM dated rates apply to opportunities, opportunity line items, and opportunity history; other currency fields use the static rate | A list of reports that will change meaning under ACM, and those that will not | Finance knows which numbers are dated and which are not |
+| "Who loads exchange rates, how often, and through which API?" | `CurrencyType` and `DatedConversionRate` do not support Apex DML; rates come in through the API or Setup | A named owner and an API-only job for rate loads | Rates that stay current without a manual Setup task |
+| "Do integrations send the ISO code with every amount?" | `CurrencyIsoCode` exists only in multi-currency orgs and the stored amount is in that currency | A payload contract of amount plus ISO code | Downstream systems stop guessing the currency |
+| "Do any queries total money with GROUP BY?" | Aggregates with GROUP BY or HAVING return the org's default currency, and `convertCurrency()` cannot wrap them | Reports or code that label totals as corporate currency | Totals that match what users expect to see |
+| "Does code need to run in single-currency orgs too?" | Static SOQL naming `CurrencyIsoCode` or `CurrencyType` assumes multi-currency | A `UserInfo.isMultiCurrencyOrganization()` guard and dynamic SOQL | Packages and shared code that install in any org |
+
+What a proper configuration adds over just ticking the box: the irreversible switch is rehearsed, every amount travels with its ISO code, the team knows exactly which reports use dated rates, and rate loads are an owned, automated job.
 
 ---
 
 ## Core Concepts
 
-### Activation Changes The Data Model
+### Enabling multi-currency is one-way
 
-Once multi-currency is enabled, currency context becomes part of the record model through `CurrencyIsoCode` and exchange-rate behavior. Teams should stop assuming every `Amount` field is implicitly the same currency everywhere.
+`CurrencySettings` (Metadata API, `Currency.settings`) holds `enableMultiCurrency`, `enableCurrencyEffectiveDates`, `enableCurrencySymbolWithMultiCurrency`, and `isParenCurrencyConvDisabled`. After `enableMultiCurrency` is true it cannot be set to false. `enableCurrencyEffectiveDates` (ACM) requires `enableMultiCurrency`.
 
-### `CurrencyIsoCode` Is Not Optional Context
+### Where currency lives
 
-When Apex or integrations move money-like values around, the ISO code matters. A number without its currency context is usually incomplete business data.
+| Object or field | What it holds | Writable how |
+|---|---|---|
+| `CurrencyIsoCode` on records | The record's currency; available only in multi-currency orgs | Normal DML |
+| `CurrencyType` | One row per currency: `IsoCode`, `ConversionRate` against the corporate currency, `DecimalPlaces`, `IsActive`, `IsCorporate` | API `create()` and `update()`; no Apex DML; cannot be deleted |
+| `DatedConversionRate` | Rate per currency per date range: `IsoCode`, `ConversionRate`, `StartDate`, read-only `NextStartDate` | API `update()` and `delete()` listed in the Object Reference; no Apex DML; exists only with ACM |
 
-### `convertCurrency()` Serves A Different Need
+When updating a `CurrencyType` record, send every field. The Object Reference warns that a missing `IsActive` defaults to false and can deactivate an active currency.
 
-`convertCurrency()` is for returning values converted into the running user's currency context in SOQL. It is different from preserving the stored transactional currency and should be chosen intentionally.
+### `convertCurrency()` rules
 
-### Advanced Currency Management Adds Time Dimension
+- It converts a currency field to the running user's currency in the SELECT clause.
+- It cannot be used in WHERE. Compare against an ISO-prefixed literal instead: `WHERE Amount > USD5000`. Without the prefix, the raw number is compared across currencies.
+- It cannot be used with ORDER BY. Ordering already uses the converted value.
+- It cannot convert aggregate results. With GROUP BY or HAVING, aggregates return the org's default currency.
+- With ACM, conversion on opportunities, opportunity line items, and opportunity history uses the rate for the field's date (for example `CloseDate`). Otherwise the most recent rate is used.
 
-ACM uses dated exchange rates for supported use cases such as opportunity reporting. That improves historical correctness, but it also changes reporting and summary expectations. Designs that ignore the time dimension eventually confuse finance and sales users.
+### ACM scope
+
+ACM adds a time dimension only where the SOQL guide says dated rates apply. Everything else keeps converting at the static `CurrencyType` rate. UNVERIFIED (2026-10-03): the help-only statements about ACM and roll-up summary fields on Account; help.salesforce.com does not return article text to a fetch, so test roll-ups in a sandbox before enabling ACM.
 
 ---
 
 ## Common Patterns
 
-### Currency-Aware Query Pattern
+### Currency-aware query
 
-**When to use:** Apex or reporting logic must display both amount and currency context clearly.
+Query `CurrencyIsoCode` with every amount you expose. Use `convertCurrency()` only when the requirement is the viewer's currency. Example with a test class in `references/examples.md`.
 
-**How it works:** Query `CurrencyIsoCode` with the amount fields you expose and use `convertCurrency()` only when the user-currency projection is the actual requirement.
+### Code that runs in any org
 
-**Why not the alternative:** Returning bare amounts encourages silent conversion mistakes downstream.
+Guard with `UserInfo.isMultiCurrencyOrganization()` and build the field list dynamically. `UserInfo.getDefaultCurrency()` returns the user's currency in a multi-currency org and the org currency in a single-currency org.
 
-### Historical Reporting With ACM
+### Rate loads from finance
 
-**When to use:** The business needs dated exchange-rate behavior for historical opportunity analysis.
+An API-only integration user updates `CurrencyType` (static rates) or `DatedConversionRate` (ACM rates) on a schedule. Apex cannot do this with DML.
 
-**How it works:** Enable ACM deliberately and document which reports and summaries change meaning under dated rates.
+### Integration DTO with currency context
 
-### Integration DTO With Currency Context
-
-**When to use:** Money values leave Salesforce through Apex or integration payloads.
-
-**How it works:** Include both the amount and the ISO code rather than sending a bare decimal.
+Send amount and ISO code together. Never send a bare decimal.
 
 ---
 
@@ -98,47 +123,43 @@ ACM uses dated exchange rates for supported use cases such as opportunity report
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Org needs multiple transactional currencies | Multi-currency | Core platform support for currency context |
-| Historical opportunity reporting needs dated conversion | ACM | Adds time-aware exchange-rate behavior |
-| Apex exposes money values externally | Include `CurrencyIsoCode` with amount | Prevents silent interpretation errors |
-| User-facing query wants viewer-currency projection | `convertCurrency()` | Returns user-context converted values |
+| Org needs multiple transactional currencies | Multi-currency, after a rehearsal | One-way switch |
+| Historical opportunity reporting needs period rates | ACM | Dated rates apply to opportunity, line item, and history amounts |
+| Historical rates needed on a custom object | Store the rate or converted amount on the record | Dated rates do not apply outside the opportunity family |
+| Apex exposes money values externally | Include `CurrencyIsoCode` with the amount | Prevents silent interpretation errors |
+| Filter by amount across currencies | ISO-prefixed literal in WHERE | `convertCurrency()` is not allowed in WHERE |
+| Total money in SOQL | Label the result as corporate currency | Aggregates return the org default currency |
+| Change exchange rates from Apex | Do not; use the API from an integration | No DML on `CurrencyType` or `DatedConversionRate` |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Inventory currency consumers.** List reports, forecasts, roll-ups, Apex, integrations, and analytics that read money.
+2. **Decide the switch.** If multi-currency is not enabled, run it in a full sandbox, review the inventory, and record sign-off that it is permanent.
+3. **Scope ACM.** Mark which consumers use opportunity-family amounts (dated) and which use static rates.
+4. **Fix the code.** Add `CurrencyIsoCode` next to amounts, remove `convertCurrency()` from WHERE and ORDER BY, guard shared code with `isMultiCurrencyOrganization()`, and run `python3 scripts/check_multi_currency_and_advanced_currency_management.py --manifest-dir force-app`.
+5. **Automate rate loads.** Build the API job that updates `CurrencyType` or `DatedConversionRate`, sending all fields on `CurrencyType` updates.
+6. **Deploy settings and verify.** Deploy `Currency.settings` from `references/metadata-examples.md` and check converted amounts in a report and in SOQL for a known record.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] Activation and irreversibility implications are understood.
-- [ ] Apex and integrations preserve currency context, not just numeric values.
-- [ ] `CurrencyIsoCode` is queried or propagated where needed.
-- [ ] `convertCurrency()` is used only when user-currency projection is intended.
-- [ ] ACM implications for reporting, rollups, and finance users are documented.
-- [ ] Hardcoded single-currency assumptions are challenged.
+- [ ] Sign-off on the one-way switch is recorded
+- [ ] Apex and integrations carry `CurrencyIsoCode` with every amount
+- [ ] No `convertCurrency()` in WHERE or ORDER BY
+- [ ] Aggregated money is labeled as corporate currency
+- [ ] Shared code is guarded with `UserInfo.isMultiCurrencyOrganization()`
+- [ ] No Apex DML on `CurrencyType` or `DatedConversionRate`
+- [ ] `CurrencyType` updates send every field, including `IsActive`
+- [ ] Reports that change meaning under ACM are documented
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
-
-1. **Multi-currency activation is irreversible** - teams must treat it as an architectural decision, not a casual setting toggle.
-2. **Amounts without ISO context are misleading** - Apex and integrations often lose meaning when they move only decimals.
-3. **`convertCurrency()` is not the same as preserving stored currency** - it serves a different consumer need.
-4. **ACM changes historical reporting expectations** - the business must understand why values differ over time.
+See `references/gotchas.md`. The two that cause the most rework: a `CurrencyType` update that omits `IsActive` deactivates the currency, and aggregates return the corporate currency no matter who runs the query.
 
 ---
 
@@ -147,13 +168,16 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | Currency design review | Findings on activation, conversion, reporting, and Apex handling |
-| Query guidance | Pattern for stored-currency versus converted-currency retrieval |
-| ACM decision | Recommendation for when dated exchange rates are justified |
+| Query guidance | Stored-currency versus converted-currency retrieval per consumer |
+| ACM decision | Which amounts get dated rates and which do not |
+| `Currency.settings` and rate-load job | Deployable settings and the API job for rates |
 
 ---
 
 ## Related Skills
 
-- `data/roll-up-summary-alternatives` - use when parent totals and rollups become the main implementation issue.
-- `apex/custom-metadata-in-apex` - use when exchange-rate or currency-routing config belongs in metadata-driven logic.
-- `integration/oauth-flows-and-connected-apps` - use when the main blocker is external finance-system authentication rather than currency semantics.
+- `data/currency-management-patterns`: what `convertCurrency()` allows in WHERE and ORDER BY, and querying `CurrencyType` and `DatedConversionRate`
+- `architect/multi-currency-sales-architecture`: wrong converted amounts in Sales Cloud reports and roll-ups
+- `data/roll-up-summary-alternatives`: when parent totals and roll-ups become the main implementation issue
+- `apex/custom-metadata-in-apex`: when exchange-rate or currency-routing config belongs in metadata-driven logic
+- `integration/oauth-flows-and-connected-apps`: when the blocker is external finance-system authentication

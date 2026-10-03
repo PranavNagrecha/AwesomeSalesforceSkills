@@ -1,6 +1,6 @@
-# Einstein Analytics Data Model (XMD) — Work Template
+# Einstein Analytics Data Model (XMD): Work Template
 
-Use this template when updating CRM Analytics dataset field metadata via the XMD REST API.
+Use this template when changing CRM Analytics dataset field formatting through XMD.
 
 ---
 
@@ -8,27 +8,31 @@ Use this template when updating CRM Analytics dataset field metadata via the XMD
 
 **Dataset API Name:** _______________
 **Dataset ID:** _______________
-**Change type:** [ ] Field label rename  [ ] Format change  [ ] Dimension/measure reclassification
-**Scope:** [ ] Org-wide (main XMD)  [ ] Personal (user XMD)
+**Current version ID (`currentVersionId`):** _______________
+**Change type:** [ ] Field label  [ ] Value labels (`members`)  [ ] Number format  [ ] Hide from explorer  [ ] Chart colors  [ ] Record actions
+**Delivery path:** [ ] REST PUT of this version's user XMD (one org)  [ ] `WaveXmd` metadata deploy plus dataflow run (cross-org)
 
 ---
 
 ## Pre-Change Backup
 
-- [ ] `GET /wave/datasets/{id}/xmds/main` executed
-- [ ] Response saved to: `xmd-backup-{dataset}-{date}.json`
+- [ ] `GET /wave/datasets/<datasetID>/versions/<versionID>/xmds/user` saved to: `xmd-user-<dataset>-<date>.json`
+- [ ] `GET .../xmds/system` saved (reference schema)
+- [ ] `GET .../xmds/main` saved (reference only; not writable)
 
 ---
 
 ## Fields to Update
 
-| Field API Name | Current Label | New Label | Current Classification | New Classification |
+| Field API Name | Section (dimensions / measures / derived*) | Current Label | New Label (max 40 chars) | Format or other change |
 |---|---|---|---|---|
 | | | | | |
 
 ---
 
-## PATCH Payload
+## Complete User XMD for the PUT
+
+Paste the full edited document here, not a delta.
 
 ```json
 {
@@ -39,8 +43,10 @@ Use this template when updating CRM Analytics dataset field metadata via the XMD
 
 ---
 
-## Post-PATCH Validation
+## Post-Change Validation
 
-- [ ] HTTP 200 confirmed
-- [ ] Field label verified in Analytics Studio lens
-- [ ] No fields orphaned by this change
+- [ ] PUT returned an Xmd with `"type": "user"`
+- [ ] `errorMessage` is absent or empty
+- [ ] Labels verified in a lens on the dataset
+- [ ] `python3 scripts/check_einstein_analytics_data_model.py --manifest-dir <folder>` exits 0
+- [ ] For a `WaveXmd` deploy: the dataflow ran after the deploy, and nobody edits this XMD in the UI afterwards

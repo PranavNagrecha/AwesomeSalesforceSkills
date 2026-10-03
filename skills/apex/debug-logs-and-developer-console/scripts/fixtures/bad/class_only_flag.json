@@ -1,0 +1,4 @@
+{"result": {"records": [
+  {"TracedEntityId": "01pxx0000000001AAA", "DebugLevelId": "7dlxx0000000001AAA", "LogType": "CLASS_TRACING",
+   "StartDate": "2026-10-03T10:00:00.000+0000", "ExpirationDate": "2026-10-03T10:30:00.000+0000"}
+]}}

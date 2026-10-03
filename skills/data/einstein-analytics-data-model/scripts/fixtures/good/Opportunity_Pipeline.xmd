@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WaveXmd xmlns="http://soap.sforce.com/2006/04/metadata">
+    <dataset>Opportunity_Pipeline</dataset>
+    <dimensions>
+        <field>StageName</field>
+        <isDerived>false</isDerived>
+        <label>Stage</label>
+        <sortIndex>0</sortIndex>
+    </dimensions>
+    <measures>
+        <field>Amount</field>
+        <isDerived>false</isDerived>
+        <label>Amount (USD)</label>
+        <sortIndex>0</sortIndex>
+    </measures>
+</WaveXmd>

@@ -1,0 +1,18 @@
+{
+  "dimensions": [
+    {
+      "field": "StageName",
+      "label": "Stage",
+      "members": [
+        { "member": "Closed Won", "label": "Closed (Won)" }
+      ],
+      "showInExplorer": true
+    }
+  ],
+  "measures": [
+    { "field": "Amount", "label": "Amount (USD)", "format": { "customFormat": "[\"$#,###,###.##\",1]" } }
+  ],
+  "derivedMeasures": [
+    { "field": "*", "label": "Opportunities" }
+  ]
+}

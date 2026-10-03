@@ -1,46 +1,55 @@
-# Well-Architected Notes — Vector Database Management
+# Well-Architected Notes: Vector Database Management
 
 ## Relevant Pillars
 
-- **Security** — PII fields must be explicitly excluded from vector indexes. Embeddings stored in the vector index are not protected by standard Salesforce field-level security (FLS) or object-level security (OLS) on the source DMO. Any PII embedded at index creation is accessible through the retrieval layer to any consumer of the index, regardless of their access to the source record. Practitioners must apply PII field exclusion as a mandatory governance step at index creation, and audit the field list whenever the source DMO schema changes.
+- **Security**: every chunked field is copied into the chunk DMO and embedded. Keep personal and regulated fields out of the chunked-field list and use filter fields for scoping attributes. UNVERIFIED (2026-10-03): whether retrievers enforce the source object's field-level security; design as if any retriever consumer can read chunked text.
 
-- **Performance** — Chunking strategy is the primary performance lever for retrieval relevance. Chunk size must be tuned to match query length and document structure. Overly small chunks (Easy Setup default 500 characters) fragment semantic context; overly large chunks reduce ranking precision by including too much irrelevant content in a single embedding. Overlap (5–15%) at chunk boundaries prevents relevant passages from being missed due to arbitrary split points. Performance degradation from a wrong chunking strategy cannot be corrected without a full index rebuild.
+- **Performance**: retrieval quality depends on chunking strategy, max tokens, embedding model, search type, and filter fields. Passage extraction suits HTML; prepend fields add context; non-Latin content needs a max-token setting below 512; hybrid search covers exact terms that vector search misses. Chunking and model cannot be changed in place, so the cost of a wrong choice is a second index.
 
-- **Reliability** — Vector index availability depends on the rebuild lifecycle. Because changing chunking strategy or embedding model requires deleting and recreating the index, teams must plan for index unavailability windows during major configuration changes. A rebuild runbook that documents current configuration (chunk size, overlap, embedding model, field list, refresh mode) is required to execute a reliable rebuild. For business-critical indexes, a blue/green pattern (build replacement in parallel, validate, reroute) eliminates the availability gap.
+- **Reliability**: an index is usable at status Ready and then processes source changes incrementally. Replacements run as a parallel index followed by a retriever cutover, because chunking and model are view-only and deletion is blocked while retrievers reference the index. Rebuild recovers an index that failed to process.
 
-- **Operational Excellence** — Refresh mode selection (batch vs. continuous) must be a deliberate operational decision, not a default left unchanged. Continuous mode has higher Data Cloud credit consumption and should be enabled only when retrieval freshness is a documented business requirement. Credit consumption alerts must be set before enabling continuous mode to prevent runaway costs. Index configuration should be tracked in a rebuild runbook and reviewed whenever the source DMO schema or the Agentforce retrieval use case changes.
+- **Operational Excellence**: record the configuration (data space, object, chunked fields, chunking strategy, max tokens, model, search type, filter fields), watch status, and treat the data stream's refresh mode and schedule as part of the index design. Use data kits to move configurations between orgs.
 
 ---
 
 ## Architectural Tradeoffs
 
-**Chunking strategy: Easy Setup vs. Advanced Setup**
+**Easy Setup vs Advanced Setup**
 
-Easy Setup is appropriate for short, uniform documents where rapid index creation is more important than retrieval precision. Advanced Setup requires more upfront configuration and a rebuild if parameters need adjustment, but is the correct choice for production knowledge bases, longer documents, or any use case where retrieval precision directly affects Agentforce answer quality. The cost of getting chunking wrong is a full index rebuild — there is no incremental fix.
+Easy Setup creates a hybrid index with passage extraction and E5-Large V2 in a few steps. Advanced Setup adds model choice, max tokens, prepend fields, transcription settings, and up to 10 filter fields. Choose Advanced Setup when content is multilingual, when retrievers must filter, or when chunks need extra context.
 
-**Refresh mode: Batch vs. Continuous**
+**Vector vs hybrid**
 
-Batch refresh is lower cost and appropriate for corpora that change infrequently. Continuous refresh maintains near-real-time index freshness but multiplies credit consumption in proportion to source data update frequency. The tradeoff is operational cost versus retrieval freshness. This decision should be revisited if the source DMO update pattern changes (e.g., ERP batch size increases, new real-time event stream feeds the DMO).
+Vector search matches meaning; keyword search matches exact terms such as product codes. Hybrid fuses both and can weight recency or popularity. The cost of creating the index is the same for both.
 
-**Embedding model selection**
+**Freshness vs processing**
 
-The embedding model determines the semantic quality of retrieval. Higher-quality or domain-specific models improve precision for specialized corpora (legal, medical, technical). However, every model change requires a full index rebuild. Model selection should be treated as a high-stakes, infrequent decision. Avoid switching models opportunistically — establish a clear quality bar and a planned migration window before executing a model change.
+Incremental or Upsert data streams deliver only changed records. Full Refresh replaces all data each cycle. Pick the most frequent schedule the use case needs, not the most frequent one available.
+
+**Index size vs query cost**
+
+Data Queries billing for vector search counts the vectors in the index. Narrow, purpose-built indexes cost less per query than one index over everything, within the limit of 10 indexes per Data Cloud instance.
 
 ---
 
 ## Anti-Patterns
 
-1. **Creating a vector index over all available DMO fields without PII review** — Including PII fields (names, email addresses, health data) in a vector index embeds that data in a form that bypasses standard Salesforce FLS/OLS protections. Any consumer of the index retrieval API can access the embedded PII regardless of their access to the source object. Always audit the field list for PII before creating an index, and document excluded fields in the rebuild runbook.
-
-2. **Leaving batch refresh as default for a business-critical real-time use case** — The default Data Stream refresh mode is batch. For use cases where retrieval freshness directly affects business outcomes (inventory availability, live pricing, active incident status), leaving batch refresh in place means the vector index can lag hours behind reality. This pattern often surfaces in production when users report stale data from Agentforce, requiring an emergency configuration change. Establish the refresh mode requirement during index design, not after go-live.
-
-3. **Skipping the rebuild runbook** — Vector index configuration (chunk size, overlap, embedding model, field list, refresh mode) is not surfaced prominently in the Setup UI after creation. When a precision problem requires a rebuild, or when an embedding model upgrade is needed, practitioners without a documented runbook must reconstruct the original configuration from memory or audit logs. A missed field, wrong chunk size, or incorrect overlap can silently degrade retrieval quality in the rebuilt index. Maintaining a runbook is a low-cost, high-reliability operational practice.
+1. **Chunking every field on a customer DMO**: personal data lands in the chunk DMO and query cost grows with vector count.
+2. **Easy Setup for a corpus that needs filtering**: retrievers cannot filter on fields the index does not define.
+3. **No recorded configuration**: replacing an index means guessing the original chunking, model, and fields.
 
 ---
 
 ## Official Sources Used
 
-- Data Cloud Vector Search Overview — https://help.salesforce.com/s/articleView?id=sf.c360_a_vector_search.htm&type=5
-- Data 360 Limits and Guidelines — https://help.salesforce.com/s/articleView?id=sf.c360_a_limits_and_guidelines.htm&type=5
-- Data Cloud Setup and Administration — https://help.salesforce.com/s/articleView?id=sf.c360_a_admin_setup.htm&type=5
-- Agentforce Retrieval Augmented Generation — https://help.salesforce.com/s/articleView?id=sf.agentforce_rag.htm&type=5
+- Data Cloud guide, Summer '26 (262), "Use Search for AI, Automation, and Analytics": "Chunk Data," "Chunking Strategies," "How the Max Token Setting Affects Chunking," "Chunk and Index Data Model Objects," "Vector Search," "Create a Vector Search Index Configuration with Advanced Setup," "Hybrid Search," "Create a Hybrid Search Index with Advanced Setup," "Run Vector Searches Using Query API," "Run Hybrid Search Queries with Query API," "Manage Search Indexes" (Easy Setup, View, Edit, Rebuild, Delete), "Search Index Reference," "Billing Considerations for Unstructured Data and Search Index." https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/data_cloud.pdf
+- Data Cloud guide, Summer '26 (262), "Data Cloud Limits and Guidelines" (Unstructured Data and Search Index), "Data Stream Settings and Refresh Modes," "Retrievers" and "Create a Custom Retriever," "Add a Search Index Configuration to a Data Kit." Same PDF as above.
+- Metadata API Developer Guide, Summer '26 (262): "DataPackageKitDefinition," "DataPackageKitObject," "DataStreamTemplate" (`refreshMode`, `refreshFrequency`), "DataStreamDefinition." https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Generative AI guide, Summer '26 (262), searched for retriever and chunking references. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf
+
+### Earlier references kept from version 1.0.0 (checked 2026-10-03: atlas pages return a script shell, help.salesforce.com returns an app shell, and Well-Architected guide pages redirect to the home page, so no claim in this skill rests on these links)
+
+- Salesforce Help, Data Cloud Vector Search Overview: https://help.salesforce.com/s/articleView?id=sf.c360_a_vector_search.htm&type=5 (help.salesforce.com does not return article text to a fetch)
+- Salesforce Help, Data 360 Limits and Guidelines: https://help.salesforce.com/s/articleView?id=sf.c360_a_limits_and_guidelines.htm&type=5 (the same limits were read in the 262 Data Cloud PDF)
+- Salesforce Help, Data Cloud Setup and Administration: https://help.salesforce.com/s/articleView?id=sf.c360_a_admin_setup.htm&type=5
+- Salesforce Help, Agentforce Retrieval Augmented Generation: https://help.salesforce.com/s/articleView?id=sf.agentforce_rag.htm&type=5

@@ -1,6 +1,6 @@
 ---
 name: async-apex
-description: "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex'. NOT for Batchable structure or scope sizing — use apex/batch-apex-patterns. NOT for Queueable chaining — use apex/apex-queueable-patterns."
+description: "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex', 'move a callout out of a trigger', 'run Apex in the background'. NOT for Batchable structure or scope sizing — use apex/batch-apex-patterns. NOT for Queueable chaining — use apex/apex-queueable-patterns."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -19,6 +19,8 @@ triggers:
   - "async job failed and I need to debug it"
   - "how do I chain queueable jobs safely"
   - "when should I use schedulable apex"
+  - "move an HTTP callout out of a trigger into a background job"
+  - "replace our future methods with queueable apex"
 inputs:
   - "workload size and whether records can exceed one transaction"
   - "need for callouts, chaining, scheduling, or state across chunks"
@@ -28,107 +30,120 @@ outputs:
   - "review findings for queueable, batch, future, or scheduler usage"
   - "migration guidance from legacy future methods"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-03-13
+updated: 2026-10-03
 ---
 
-Use this skill when synchronous Apex is the wrong execution model or when an existing async design is brittle. The core job is to choose the smallest async mechanism that fits the workload, preserves observability, and does not create hidden limit or chaining failures.
+Use this skill when synchronous Apex is the wrong execution model or when an existing async design is brittle. The job is to choose the smallest async mechanism that fits the workload, keeps it observable, and stays inside the per-transaction and org-wide async limits.
 
 ## Before Starting
 
 - How many records or payloads can this process handle at peak, not just in the happy-path demo?
-- Does the work need outbound callouts, a scheduled start time, or multiple transactions with fresh limits?
-- Do you need monitoring, retry visibility, or a job ID that operations can inspect later?
+- Does the work need outbound callouts, a scheduled start time, or many transactions with fresh limits?
+- Do operations need a job ID to monitor (`AsyncApexJob`) and a recovery path when a job fails?
+- What else in the org consumes async executions? The daily limit is shared by Batch, Queueable, scheduled Apex, and future methods.
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "How many records at peak, and does one transaction's 50,000-row query limit cover them?" | Queueable and future jobs share the 50,000-row SOQL limit; Batch `QueryLocator` returns up to 50 million rows | Queueable for bounded work, Batch (or Cursors with chained Queueables) for unbounded work | A job sized for the real volume, not the demo |
+| "What starts the work: a trigger, a UI action, a schedule, or another job?" | You can enqueue 50 Queueables in a synchronous transaction but only 1 from an async one, and future methods are not allowed from Batch or future contexts | The entry point and the matching enqueue pattern | No `LimitException` the first time the job is called from a batch |
+| "Does the work make callouts?" | Queueables need `Database.AllowsCallouts`; synchronous callouts aren't supported from scheduled Apex | The callout-capable worker class the scheduler or trigger hands off to | Callouts that run where the platform allows them |
+| "What happens if the job fails halfway?" | A rolled-back transaction discards the Queueables it enqueued, and Batch scopes are separate transactions | A Transaction Finalizer, idempotent `execute`, or a retry design | Failures that are visible and recoverable |
+| "How many jobs will run at once?" | Only 5 batch jobs are active; the flex queue holds 100, and `Database.executeBatch` throws `LimitException` when it is full | A cap or a single dispatcher instead of one batch per event | No dropped jobs during busy periods |
+| "Who owns the schedule after a sandbox refresh or deployment?" | Scheduled jobs aren't copied on refresh, and deploying a scheduled class fails while jobs are pending | A runbook to delete, deploy, and reschedule | Releases that do not stall on CronTrigger errors |
+
+What a proper design adds over "just make it async": the job runs in the right mechanism for its volume and entry point, its failures are observable, and it does not starve the rest of the org's async capacity.
 
 ## Core Concepts
 
-### Queueable Is The Default Modern Async Tool
+### Choosing the mechanism
 
-For most application-level async work, start with `Queueable`. It supports complex member variables, gives you an `AsyncApexJob` record to monitor, and is usually the right replacement for legacy `@future` code. It is especially strong for "finish DML, then make a callout" patterns when combined with `Database.AllowsCallouts`.
+| Mechanism | Use it for | Key limits (Apex Developer Guide 262) |
+|---|---|---|
+| Queueable | Default background work, callouts after DML, non-primitive state, chaining | 50 enqueues per synchronous transaction, 1 per async transaction; one child per executing job; chain depth unlimited except 5 in Developer and Trial orgs |
+| Batch Apex | Large, query-driven volumes with fresh limits per scope | `QueryLocator` up to 50 million rows; scope up to 2,000 with a `QueryLocator` (default 200); 5 active jobs; flex queue of 100; one `start` at a time |
+| Scheduled Apex | A timer that dispatches a Queueable or Batch | 100 scheduled jobs; synchronous limits apply; no synchronous callouts |
+| Future method | Narrow legacy use, mixed-DML isolation | Static, void, primitive parameters only; 50 per synchronous invocation, 0 in batch and future contexts, 50 in queueable context; no guaranteed order |
+| Apex Cursors with chained Queueables | Large volumes without competing for the 5 batch slots | 50 million cursor rows per transaction; 10,000 cursors per day |
 
-### Batch Exists For Scale And Fresh Limits Per Scope
+Salesforce recommends Queueable over future methods: same use cases plus job IDs, non-primitive types, and chaining.
 
-Use Batch Apex when the workload can exceed normal transaction limits or when you need to process very large data volumes in chunks. Each `execute()` scope gets fresh governor limits. That makes Batch the right tool for record sets that can grow beyond what one Queueable should reasonably hold. It is not the default choice for every background task because it adds more framework overhead and operational complexity.
+### Org-wide async capacity
 
-### Future Is Legacy And Narrow
+Asynchronous Apex method executions are limited to 250,000 per 24 hours or 200 per applicable user license, whichever is greater, shared across Batch, Queueable, scheduled Apex, and future methods. Batch checks the required capacity when `Database.executeBatch` is called and the `start` method has returned its workload, and won't start without enough capacity.
 
-`@future` still exists, but it is intentionally constrained. Parameters must be primitive types or collections of primitives, and it offers weaker monitoring and composition than Queueable. Keep it for simple legacy code paths only when there is no need for chaining, non-primitive state, or richer operational visibility.
+### Testing
 
-### Schedulable Starts Work; It Should Rarely Do All The Work
-
-`Schedulable` is the timer, not usually the worker. A scheduler should dispatch a Queueable or Batch job instead of performing large business logic inline. This keeps recurring jobs maintainable and avoids turning cron logic into a second processing framework.
+Async work queued after `Test.startTest()` runs synchronously at `Test.stopTest()`. A batch test can exercise only one `execute`, so size test data to one scope.
 
 ## Common Patterns
 
-### Post-Commit Queueable For Callouts
+### Post-commit Queueable for callouts
 
-**When to use:** A trigger or synchronous service must perform a callout after data is saved.
+Collect IDs in the trigger, enqueue one Queueable that implements `Database.AllowsCallouts`, re-query inside `execute`, and throw on a failed response so the `AsyncApexJob` records it; add a Transaction Finalizer (`apex/apex-transaction-finalizers`) when the job needs automatic recovery. Full class and tests in `references/code-examples.md`.
 
-**How it works:** Collect record IDs in the original transaction, enqueue one Queueable, re-query inside the job, and implement `Database.AllowsCallouts` when HTTP work is required.
+### Batch for large, query-driven work
 
-**Why not the alternative:** Doing the callout in-trigger or using `@future` by default makes monitoring, retry design, and composition worse.
+`Database.getQueryLocator()` in `start`, an idempotent `execute` with partial-success DML, and a summary in `finish`. Use `Database.Stateful` only for instance variables you need across scopes.
 
-### Batch For Large, Query-Driven Workloads
+### Scheduler as dispatcher
 
-**When to use:** The record count may exceed one transaction or you need controlled chunking with `start`, `execute`, and `finish`.
-
-**How it works:** Use `Database.getQueryLocator()` in `start()`, keep `execute()` idempotent, and summarize outcomes in `finish()`.
-
-### Scheduler As Dispatcher
-
-**When to use:** Work must begin on a cron schedule.
-
-**How it works:** The `Schedulable.execute` method launches a Batch or Queueable and exits quickly, leaving the heavy lifting to the right async mechanism.
+`Schedulable.execute` calls `Database.executeBatch` or `System.enqueueJob` and returns. Mark member variables `transient` if they must not persist between runs.
 
 ## Decision Guidance
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Trigger must perform a callout after DML for tens or hundreds of records | Queueable + `Database.AllowsCallouts` | Clean post-commit boundary with monitoring and chaining support |
-| Nightly cleanup or reprocessing may touch thousands to millions of rows | Batch Apex | Fresh limits per scope and native large-volume processing |
-| Small legacy fire-and-forget method only needs primitive inputs | `@future` only if there is no reason to modernize | Supported, but weaker than Queueable |
-| Work must start on a schedule | Schedulable launching Queueable or Batch | Separates timer concerns from worker concerns |
-
+| Trigger must call out after DML for a few hundred records | One Queueable with `Database.AllowsCallouts` | Post-commit, monitorable, callout-capable |
+| Nightly work over millions of rows | Batch Apex dispatched by a scheduler | Fresh limits per scope, 50 million row locator |
+| Many independent large jobs competing for batch slots | Apex Cursors with chained Queueables | Avoids the 5-active and 100-flex-queue limits |
+| Callout needed from a schedule | Scheduler enqueues a Queueable or a callout-enabled batch | Synchronous callouts aren't supported from scheduled Apex |
+| Need to fan out from a Batch `execute` | Enqueue one Queueable per execute | Async contexts allow one enqueue and zero future calls |
+| Legacy future method needs sObject input | Convert to Queueable | Future parameters must be primitives |
+| Prevent duplicate jobs for the same record | `AsyncOptions` with a `QueueableDuplicateSignature` | Duplicate enqueue throws `DuplicateMessageException` |
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
-
----
+1. **Size and source the work.** Peak records, entry point (trigger, UI, schedule, job), callouts, and failure tolerance.
+2. **Pick the mechanism** from the table above; check the entry point's enqueue and future limits.
+3. **Build the worker.** Queueable or Batch with IDs re-queried inside, partial-success DML, and callout support where needed; start from `references/code-examples.md`.
+4. **Add recovery.** A Transaction Finalizer for Queueables, idempotent Batch scopes, and a logged summary in `finish`.
+5. **Test with `Test.startTest()` and `Test.stopTest()`.** One batch scope's worth of data; `HttpCalloutMock` for callouts (`templates/apex/tests/MockHttpResponseGenerator.cls`).
+6. **Scan and deploy.** Run `python3 scripts/check_async_apex.py --manifest-dir force-app/main/default`; delete pending scheduled jobs before deploying a scheduled class, then reschedule.
 
 ## Review Checklist
 
-- [ ] The chosen async mechanism matches data volume and operational needs, not team habit.
-- [ ] Queueable jobs are not enqueued inside loops.
-- [ ] Queueables that make callouts implement `Database.AllowsCallouts`.
-- [ ] Batch jobs use an idempotent `execute()` path and summarize failures in `finish()`.
-- [ ] Legacy `@future` methods are justified instead of being the default.
-- [ ] Schedulers dispatch work rather than containing heavy processing inline.
+- [ ] Mechanism matches peak volume and entry point
+- [ ] No `System.enqueueJob` or `Database.executeBatch` inside a loop
+- [ ] Queueables that call out implement `Database.AllowsCallouts`
+- [ ] No future calls from Batch or future contexts
+- [ ] Schedulers dispatch work and make no synchronous callouts
+- [ ] Batch `execute` is idempotent; `finish` records the outcome
+- [ ] Failure handling exists (Finalizer, retry, or alert)
+- [ ] Tests wrap async calls in `Test.startTest()` and `Test.stopTest()`
 
 ## Salesforce-Specific Gotchas
 
-1. **`@future` parameters are constrained** — pass IDs or primitives, then re-query inside the async method.
-2. **A running Queueable can only chain one child Queueable job** — fan-out designs need a different approach.
-3. **Tests do not run async work until `Test.stopTest()`** — asserting before `stopTest()` produces false negatives.
-4. **Batch `execute()` gets fresh limits, but that does not excuse non-idempotent logic** — retries or re-runs can still duplicate side effects if the code is not designed carefully.
+See `references/gotchas.md`. The two that surprise teams most: scheduled Apex runs with synchronous limits, and a rolled-back transaction silently discards the Queueables it enqueued.
 
 ## Output Artifacts
 
 | Artifact | Description |
 |---|---|
-| Async decision matrix | Recommended use of Queueable, Batch, Future, or Schedulable for the current workload |
-| Async review findings | Findings on callouts, chaining, monitoring, and bulk safety |
-| Migration plan | Practical move from `@future` or overloaded schedulers to modern async patterns |
+| Async decision matrix | Queueable, Batch, Future, Scheduled, or Cursors for the workload |
+| Worker classes and tests | Deployable Queueable or Batch with tests and package.xml |
+| Async review findings | Callouts, chaining, limits, monitoring, and bulk safety |
+| Migration plan | Moving future methods and heavy schedulers to Queueable or Batch |
 
 ## Related Skills
 
-- `apex/callouts-and-http-integrations` — use when the async question is really about outbound HTTP design, Named Credentials, or callout error handling.
-- `apex/governor-limits` — use when the problem is transaction budgeting or loop-driven limit failures, not just async mechanism choice.
-- `apex/test-class-standards` — use alongside this skill to validate Queueable, Batch, and scheduler behavior correctly in tests.
+- `apex/batch-apex-patterns`: Batchable structure and scope sizing
+- `apex/apex-queueable-patterns`: Queueable chaining in depth
+- `apex/apex-transaction-finalizers`: Finalizer-based recovery for Queueables
+- `apex/apex-scheduled-jobs`: cron expressions and scheduled job management
+- `apex/callouts-and-http-integrations`: outbound HTTP design, Named Credentials, callout errors
+- `apex/governor-limits`: transaction budgeting and loop-driven limit failures
+- `apex/test-class-standards`: testing Queueable, Batch, and scheduler behavior

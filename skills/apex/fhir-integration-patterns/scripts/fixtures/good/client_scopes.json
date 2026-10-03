@@ -1,0 +1,2 @@
+{"clientApp": "PayerPortalReader", "scopes": ["user_condition_read", "user_patient_read", "refresh_token"],
+ "baseUrl": "https://api.healthcloud.salesforce.com/sandBox/clinical-summary/fhir-r4/v1/"}

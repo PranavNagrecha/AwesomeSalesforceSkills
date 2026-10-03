@@ -1,63 +1,99 @@
-# LLM Anti-Patterns — Einstein Analytics Data Model (XMD)
+# LLM Anti-Patterns: Einstein Analytics Data Model (XMD)
 
 Common mistakes AI coding assistants make when generating or advising on CRM Analytics XMD.
 
 ---
 
-## Anti-Pattern 1: Attempting to PATCH System XMD
+## Anti-Pattern 1: Writing to main or system XMD
 
-**What the LLM generates:** Code calling `PATCH /wave/datasets/{id}/xmds/system`.
+**What the LLM generates:** `PATCH /wave/datasets/{id}/xmds/main` or a PUT to `xmds/system`.
 
-**Why it happens:** LLMs assume "system" is the base layer that can be overridden.
+**Why it happens:** "Main" sounds like the org-wide layer, and many REST APIs use PATCH for partial updates.
 
-**The correct pattern:** System XMD is immutable. Always PATCH `xmds/main`.
+**The correct pattern:** The Xmd resource supports GET and PUT, and PUT works on the user type only. Write to `PUT /wave/datasets/<datasetID>/versions/<versionID>/xmds/user`.
 
-**Detection hint:** Any write operation targeting `xmds/system` is incorrect.
-
----
-
-## Anti-Pattern 2: Using SOQL to Query WaveXmd
-
-**What the LLM generates:** `SELECT Id, Name FROM WaveXmd WHERE DatasetId = '{id}'`
-
-**Why it happens:** LLMs apply standard Salesforce SOQL patterns to analytics metadata.
-
-**The correct pattern:** Use `GET /wave/datasets/{id}/xmds/main` — WaveXmd is not SOQL-accessible.
-
-**Detection hint:** Any SOQL query against `WaveXmd` fails with INVALID_TYPE.
+**Detection hint:** Any write method on a URL ending in `xmds/main` or `xmds/system`, or any PATCH on an Xmd URL.
 
 ---
 
-## Anti-Pattern 3: Presenting Datasets as Analogous to Salesforce Object Model
+## Anti-Pattern 2: Dropping the version segment from the URL
 
-**What the LLM generates:** Descriptions of CRM Analytics datasets with "related lists," "lookup fields," or "parent-child relationships."
+**What the LLM generates:** `GET /wave/datasets/{id}/xmds/main`.
 
-**Why it happens:** LLMs conflate the Salesforce object model with CRM Analytics columnar data model.
+**Why it happens:** The model assumes XMD is attached to the dataset as a whole.
 
-**The correct pattern:** CRM Analytics datasets are columnar stores. Cross-dataset joins are SAQL queries at runtime — not persistent relationship metadata in XMD.
+**The correct pattern:** Every Xmd resource URL includes `/versions/<versionID>/`. Read `currentVersionId` from the Dataset resource first.
 
-**Detection hint:** Any description of CRM Analytics XMD referencing "lookup field" or "foreign key" is incorrect.
-
----
-
-## Anti-Pattern 4: Using PUT Instead of PATCH for XMD Updates
-
-**What the LLM generates:** HTTP PUT to update XMD, resulting in full replacement of all properties.
-
-**Why it happens:** Many REST APIs use PUT for updates.
-
-**The correct pattern:** XMD updates use HTTP PATCH with a minimal delta payload. PUT overwrites all existing customizations.
-
-**Detection hint:** Any PUT to an XMD endpoint risks deleting existing customizations.
+**Detection hint:** An `xmds/` URL with no `versions/` segment.
 
 ---
 
-## Anti-Pattern 5: Assuming Main XMD Customizations Are Versioned
+## Anti-Pattern 3: Sending a delta and calling it a merge
 
-**What the LLM generates:** "You can roll back the XMD change using the previous version."
+**What the LLM generates:** A payload with one changed label and the claim "only the label changes; everything else is preserved."
 
-**Why it happens:** LLMs know datasets are versioned and incorrectly extend this to XMD.
+**Why it happens:** The model generalizes from merge-patch APIs.
 
-**The correct pattern:** Main XMD is NOT versioned. Previous state must be backed up manually before PATCH.
+**The correct pattern:** The XMD guide says an upload overwrites current customizations and is not appended. GET the full user XMD, edit it, and PUT the full document. Keep the pre-change copy.
 
-**Detection hint:** Any mention of "rolling back" an XMD change assumes version history that does not exist.
+**Detection hint:** The words "additive merge" or "only include changed properties" next to an XMD write.
+
+---
+
+## Anti-Pattern 4: Treating the user XMD as a personal preference
+
+**What the LLM generates:** "Use user XMD to change the label just for yourself; use main XMD for everyone."
+
+**Why it happens:** The type name `user` reads like "per user."
+
+**The correct pattern:** The Standard User XMD is the dataset's customization file. Every visualization that uses the dataset shows its formatting.
+
+**Detection hint:** Any claim that user XMD affects only the requesting user.
+
+---
+
+## Anti-Pattern 5: Querying WaveXmd with SOQL or Apex
+
+**What the LLM generates:** `SELECT Id FROM WaveXmd WHERE ...`
+
+**Why it happens:** The model sees `WaveXmd` in Metadata API lists and assumes an sObject of the same name.
+
+**The correct pattern:** There is no `WaveXmd` sObject in the Object Reference or the Tooling API. Use the REST Xmd resources, or retrieve the `WaveXmd` metadata type.
+
+**Detection hint:** `WaveXmd` inside a SOQL string.
+
+---
+
+## Anti-Pattern 6: Packaging the Standard User XMD
+
+**What the LLM generates:** "Add the XMD to your change set and it will deploy with the dataset."
+
+**Why it happens:** The model assumes all customization is metadata.
+
+**The correct pattern:** The Standard User XMD is tied to a dataset version that is not packageable. Deploy `WaveXmd` (the Primary User XMD), then run the dataflow so it applies.
+
+**Detection hint:** A deployment plan with XMD but no dataflow run after it.
+
+---
+
+## Anti-Pattern 7: Reclassifying a field by moving it between XMD arrays
+
+**What the LLM generates:** Instructions to move a field from `measures` to `dimensions` in XMD to change how it aggregates.
+
+**Why it happens:** The XMD file has separate `dimensions` and `measures` arrays, so the model treats them as the type definition.
+
+**The correct pattern:** The XMD guide lists formatting, labels, colors, and actions as what XMD customizes. Change the field type upstream, for example the External Data metadata `type` (Text, Numeric, Date) or the recipe output type.
+
+**Detection hint:** An XMD edit offered as the fix for "this number is being summed."
+
+---
+
+## Anti-Pattern 8: Joining datasets with a SAQL `join` keyword
+
+**What the LLM generates:** `q = join a by 'Id', b by 'AccountId';`
+
+**Why it happens:** SQL habits.
+
+**The correct pattern:** SAQL combines streams with `cogroup`, including `left` and `full` outer forms, and `coalesce()` for unmatched values.
+
+**Detection hint:** The token `join` used as a SAQL statement.

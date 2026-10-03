@@ -1,4 +1,4 @@
-# LLM Anti-Patterns — Governor Limits
+# LLM Anti-Patterns: Governor Limits
 
 Common mistakes AI coding assistants make when generating or advising on Apex governor limit compliance.
 These patterns help the consuming agent self-check its own output.
@@ -14,7 +14,7 @@ for (Contact c : Trigger.new) {
 }
 ```
 
-**Why it happens:** LLMs generate single-record-at-a-time logic because it reads naturally. With 200 records in a trigger batch, this executes 200 SOQL queries — hitting the 100 SOQL query limit on the first batch.
+**Why it happens:** LLMs generate single-record-at-a-time logic because it reads naturally. With 200 records in a trigger batch, this executes 200 SOQL queries; hitting the 100 SOQL query limit on the first batch.
 
 **Correct pattern:**
 
@@ -126,7 +126,7 @@ trigger OpportunityTrigger on Opportunity (before insert) {
 }
 ```
 
-**Detection hint:** Multiple SOQL queries inside trigger handler loops — multiply by 200 to assess real limit consumption.
+**Detection hint:** Multiple SOQL queries inside trigger handler loops; multiply by 200 to assess real limit consumption.
 
 ---
 
@@ -183,18 +183,18 @@ for (Account a : accounts) {
 }
 ```
 
-**Why it happens:** LLMs use `Limits.getQueries()` as a safety valve instead of bulkifying the query. This creates non-deterministic behavior — how many records get processed depends on how many SOQL queries were already consumed earlier in the transaction. Remaining records are silently dropped.
+**Why it happens:** LLMs use `Limits.getQueries()` as a safety valve instead of bulkifying the query. This creates non-deterministic behavior; how many records get processed depends on how many SOQL queries were already consumed earlier in the transaction. Remaining records are silently dropped.
 
 **Correct pattern:**
 
 ```apex
-// Bulkify the query — no need to check limits per record
+// Bulkify the query; no need to check limits per record
 Map<Id, Account> detailMap = new Map<Id, Account>(
     [SELECT Id, Owner.Name FROM Account WHERE Id IN :accountIds]
 );
 for (Account a : accounts) {
     Account detail = detailMap.get(a.Id);
-    // process — every record gets handled
+    // process; every record gets handled
 }
 ```
 

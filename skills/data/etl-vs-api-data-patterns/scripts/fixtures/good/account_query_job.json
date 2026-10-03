@@ -1,0 +1,1 @@
+{"operation":"query","query":"SELECT Id, ERP_Customer_Id__c FROM Account WHERE LastModifiedDate = LAST_N_DAYS:1","contentType":"CSV","columnDelimiter":"PIPE"}

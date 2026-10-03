@@ -1,8 +1,8 @@
 ---
 name: roll-up-summary-alternatives
-description: "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup'. NOT for ordinary master-detail roll-ups that fit native limits — use apex/cross-object-formula-and-rollup-performance."
+description: "Use when native Roll-Up Summary fields are not enough and the design needs Flow, Apex aggregate, or DLRS-style alternatives for lookup or advanced summary scenarios. Triggers: 'roll up summary on lookup', 'build a lookup rollup', 'count child records on a lookup'. NOT for ordinary master-detail roll-ups that fit native limits — use apex/cross-object-formula-and-rollup-performance."
 category: data
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Performance
   - Reliability
@@ -18,6 +18,8 @@ triggers:
   - "count child records on parent in Salesforce"
   - "native roll up summary limitations"
   - "aggregate trigger for parent totals"
+  - "build a rollup count on a lookup relationship that stays correct after deletes and merges"
+  - "replace DLRS with a flow or Apex rollup"
 inputs:
   - "relationship type such as master-detail or lookup"
   - "summary type such as count, sum, min, max, or filtered total"
@@ -27,14 +29,14 @@ outputs:
   - "review findings for scale and maintenance risk"
   - "implementation sketch for Flow, Apex, or native summary"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-03
 ---
 
 # Roll Up Summary Alternatives
 
-Use this skill when stakeholders say "just add a roll-up field" and the platform answer is "not natively, at least not that way." Native Roll-Up Summary fields are excellent when the relationship and limits fit, but many orgs need lookup-based summaries, filtered calculations, or higher-volume behavior that changes the right implementation choice.
+Use this skill when stakeholders say "just add a roll-up field" and the platform answer is "not natively, at least not that way." Native Roll-Up Summary fields work when the relationship is master-detail and the summary is a count, sum, min, or max. Lookup relationships, other calculations, and high-churn parents need a different implementation, and each one has its own failure modes.
 
 ---
 
@@ -42,53 +44,68 @@ Use this skill when stakeholders say "just add a roll-up field" and the platform
 
 Gather this context before working on anything in this domain:
 
-- Is the relationship master-detail or lookup?
-- Does the summary need real-time accuracy, near-real-time, or just eventual consistency?
-- Is the org comfortable with code, managed or open-source tooling, or declarative-only approaches?
+- Is the relationship master-detail or lookup? A native summary's `summaryForeignKey` must be the master-detail field on the child.
+- Which operation: count, sum, min, max, or something native summaries do not offer (average, count distinct, concatenate, first, last)?
+- Does the total have to be right in the same transaction, or is eventual consistency acceptable?
+- How many children can one parent have, and how many child rows change per load?
+- Does anything merge, cascade-delete, or undelete these records? Those paths skip child triggers.
+- Is the team comfortable with Apex, an installed package such as DLRS, or Flow only?
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Is the child related by master-detail or by lookup?" | Native summaries need the master-detail field as `summaryForeignKey` | Native field when possible; a custom pattern only when required | No custom code where a native field would do |
+| "Do children get merged, cascade-deleted, or undeleted with a parent?" | Reparenting from a merge, cascaded deletes, and child undeletes do not fire child triggers | A scheduled recompute that repairs totals | Totals that recover from paths the trigger never sees |
+| "Will this run as a Flow, and must it handle deletes?" | Record-triggered flows run on delete only before the record is deleted, and Flow has no undelete trigger | A recount that excludes the record being deleted, plus a repair job for undeletes | A Flow total that does not overcount by one on every delete |
+| "How many children can one parent hold, and do loads arrive grouped by parent?" | Skewed parents and ungrouped loads concentrate locks on the same parent rows | Child loads sorted by parent, and a recompute batch size that fits | Fewer lock errors during loads |
+| "Is SUM over many children going to run in one transaction?" | SUM, MIN, MAX, and AVG count every aggregated row toward query-row limits; COUNT counts one row per group | Scoped recomputes for very large parents | No query-row limit errors on big parents |
+| "Will we ever replace a native roll-up with a custom field?" | Deleting a roll-up summary field through Metadata API purges it with no Recycle Bin | A backup of definitions and reports before the swap | A reversible migration plan |
+
+What a proper configuration adds over a quick counter field: the total stays correct through deletes, merges, undeletes, and bulk loads, and there is a repair job when it does not.
 
 ---
 
 ## Core Concepts
 
-### Native Roll-Up Summary Is The First Choice
+### Native roll-up summary is the first choice
 
-If the relationship is master-detail and the supported summary behavior meets the requirement, keep it native. Native summary fields are easier to operate than custom recalculation logic.
+`CustomField` of type `Summary` supports `summaryOperation` values Count, Min, Max, and Sum, an optional `summarizedField`, `summaryFilterItems`, and `summaryForeignKey`, which "represents the master-detail field on the child" (Metadata API Developer Guide). The platform recalculates native summaries during the parent's save procedure: step 16 of the order of execution updates the parent, and step 17 updates a grandparent.
 
-### Lookup Rollups Need An Alternative Pattern
+### Lookup roll-ups need an alternative
 
-Once the relationship is lookup, teams move into tradeoff territory. Flow, Apex aggregate logic, or a tool such as Declarative Lookup Rollup Summaries can solve the gap, but they differ in scale, maintainability, and operational visibility.
+| Option | Runs when | Strengths | Watch out for |
+|---|---|---|---|
+| Apex trigger plus aggregate SOQL | After insert, update, delete, undelete on the child | Full control, bulk-safe, testable | Merge reparenting, cascaded deletes, and child undeletes skip child triggers |
+| Record-triggered Flow | After save for create and update; before delete for delete | Declarative ownership | No after-delete or undelete trigger; a before-delete recount still sees the deleted row |
+| DLRS (open-source package) | Realtime, Scheduled, or Developer API modes | Declarative; adds Average, Count Distinct, Concatenate, First, Last | A package to install, upgrade, and monitor |
+| Scheduled recompute (Batch Apex or scheduled Flow) | On a schedule | Repairs drift from any path | Totals are stale between runs |
 
-### Volume And Recalculation Style Matter
+### Triggers do not see every change
 
-Low-volume event-driven updates are different from large data backfills or high-churn parent-child relationships. The implementation needs to match both normal traffic and recalculation scenarios.
+The Apex Developer Guide lists operations that don't invoke triggers, including cascading deletes ("only records that initiate a delete cause trigger evaluation") and cascading updates of child records reparented by a merge. After undelete runs only on top-level objects: undeleting an Account restores its Opportunities, but only the Account trigger runs. Any trigger-maintained total needs a recompute path.
 
-### Summary Logic Is Data Architecture
+### Aggregate queries still cost query rows
 
-Every rollup decision affects locking, recursion, reporting, and user trust in totals. A "simple counter field" can still become a reliability problem if the design ignores bulk behavior.
+All aggregate functions other than COUNT() and COUNT(fieldname) count each aggregated row as a query row. COUNT counts one row, or one per group with GROUP BY.
 
 ---
 
 ## Common Patterns
 
-### Native Roll-Up Summary Field
+### Native roll-up on master-detail
 
-**When to use:** Master-detail relationship and supported summary logic.
+Use the platform field. Worked XML in `references/metadata-examples.md`.
 
-**How it works:** Use the platform feature and avoid custom recalculation paths.
+### Apex recompute-from-source
 
-**Why not the alternative:** Custom logic adds maintenance cost with no benefit when native fit is available.
+Collect affected parent IDs from `Trigger.new` and `Trigger.old` (both old and new parents on reparent), run one aggregate query, write only parents whose value changed, and schedule the same method as a repair batch. Full trigger, service, batch, and test class in `references/examples.md`.
 
-### Flow-Maintained Summary
+### Flow-maintained summary
 
-**When to use:** Lookup relationship, moderate volume, and declarative ownership is preferred.
-
-**How it works:** Record-triggered automation recalculates or adjusts a parent summary field with clear bulk and fault handling.
-
-### Apex Aggregate Rollup
-
-**When to use:** High-volume or complex filtered summaries need stronger control and testing.
-
-**How it works:** Collect affected parent IDs, run aggregate SOQL once, and update parent records in bulk.
+Use after-save flows for create and update. For delete, use a before-delete flow whose recount filters out `$Record.Id`. Pair it with a scheduled recompute for undeletes and merges.
 
 ---
 
@@ -96,47 +113,41 @@ Every rollup decision affects locking, recursion, reporting, and user trust in t
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Master-detail and native summary fits | Native roll-up summary | Lowest maintenance and strongest platform fit |
-| Lookup relationship with moderate volume | Flow or DLRS-style approach | Declarative option may be sufficient |
-| Complex filter logic or higher volume | Apex aggregate pattern | Better control over recalculation and scale |
-| Team wants no-code but needs lookup summaries at scale | Re-evaluate operational ownership carefully | Tooling convenience does not remove recalculation complexity |
+| Master-detail and count, sum, min, or max | Native roll-up summary | Platform recalculates in the save procedure |
+| Lookup, moderate volume, admin-owned | Flow (create and update after save, delete before delete) plus a scheduled recompute | Flow has no after-delete or undelete trigger |
+| Lookup, high volume or complex filters | Apex trigger with aggregate SOQL plus a repair batch | Bulk control and testability |
+| Needs average, count distinct, concatenate, first, or last | DLRS or Apex | Native summaries offer only Count, Min, Max, Sum |
+| Records are merged or cascade-deleted | Add a scheduled recompute to any trigger or Flow approach | Those paths skip child triggers |
+| Replacing a native field with a custom one | Back up first | Metadata API purges deleted roll-up summary fields |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Classify the relationship and operation.** Master-detail plus count, sum, min, or max goes native; stop there.
+2. **List every path that changes a child.** Insert, update (including reparent), delete, undelete, merge, cascade delete, bulk loads.
+3. **Pick the engine.** Use the option table above; size it against parent skew and daily load volume.
+4. **Build recompute-from-source.** One aggregate per transaction, write only changed parents, and a scheduled repair job. Start from `references/examples.md`.
+5. **Test the paths.** 200-row inserts, reparent, delete, undelete, and a repair run; then run `python3 scripts/check_roll_up_summary_alternatives.py --manifest-dir force-app`.
+6. **Assign an owner.** Name who watches repair-job results and who answers "why is this total wrong."
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] Native roll-up summary was rejected for a real reason, not habit.
-- [ ] Lookup versus master-detail constraints are explicit.
-- [ ] Recalculation path is bulk-safe and tested for backfill scenarios.
-- [ ] Parent locking and recursion risk were considered.
-- [ ] Reporting expectations match the chosen summary model.
-- [ ] The org has an owner for maintenance and re-sync operations.
+- [ ] Native roll-up was rejected for a real reason (lookup relationship or unsupported operation)
+- [ ] Every child-change path is handled, including reparent, delete, and undelete
+- [ ] A scheduled recompute repairs merge, cascade-delete, and undelete drift
+- [ ] No aggregate SOQL inside a loop
+- [ ] Before-delete flow recounts exclude the record being deleted
+- [ ] Child loads are grouped by parent
+- [ ] An owner is named for repair results
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
-
-1. **Lookup rollups are not a free native feature** - once the relationship is not master-detail, you own more tradeoffs.
-2. **Backfills expose weak designs** - a pattern that works per record can fail badly during migration or data cleanup.
-3. **Parent locking can become the bottleneck** - summary updates concentrate writes on the same parent records.
-4. **A declarative option still has operating cost** - someone must own failures, recalcs, and drift correction.
+See `references/gotchas.md`. The two most often missed: merges and cascaded deletes change children without firing child triggers, and a before-delete flow still counts the record it is deleting.
 
 ---
 
@@ -144,14 +155,15 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Summary decision | Recommendation for native, Flow, Apex, or DLRS-style pattern |
-| Rollup review | Findings on scale, locking, and recalculation risk |
-| Bulk recalculation pattern | Aggregate-based implementation guidance for parent totals |
+| Summary decision | Native, Flow, Apex, or DLRS, with the reason |
+| Rollup implementation | Trigger, service, repair batch, and tests, or the Flow pair |
+| Path coverage table | Each child-change path and what keeps the total right |
 
 ---
 
 ## Related Skills
 
-- `apex/trigger-framework` - use when the rollup implementation is becoming trigger-architecture work.
-- `apex/recursive-trigger-prevention` - use when parent-summary writes are causing re-entry problems.
-- `data/multi-currency-and-advanced-currency-management` - use when the rollup requirement depends on currency conversion behavior.
+- `apex/cross-object-formula-and-rollup-performance`: ordinary master-detail roll-ups that fit native limits
+- `apex/trigger-framework`: when the rollup implementation is becoming trigger-architecture work
+- `apex/recursive-trigger-prevention`: when parent-summary writes are causing re-entry problems
+- `data/multi-currency-and-advanced-currency-management`: when the rollup depends on currency conversion

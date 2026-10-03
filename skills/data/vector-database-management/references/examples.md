@@ -1,77 +1,82 @@
-# Examples — Vector Database Management
+# Examples: Vector Database Management
 
-## Example 1: Knowledge Base Vector Index for Agentforce — Poor Retrieval Fixed by Advanced Chunking
+## Example 1: Replace an Easy Setup index whose results are noisy
 
-**Context:** A service cloud team has loaded product documentation PDFs into a Data Cloud DMO and created a vector index using Easy Setup (500-character fixed chunks). An Agentforce agent is answering customer product questions by retrieving from this index. Retrieval quality is poor — the agent frequently returns irrelevant document sections.
+**Context:** A service team created a search index on the Knowledge article DMO with Easy Setup (passage extraction, E5-Large V2, hybrid). Articles are long HTML pages in English and German. Agents get passages from the wrong product line and from German articles when the question is in English.
 
-**Problem:** Easy Setup produces 500-character chunks with no overlap. Product documentation paragraphs average 600–900 characters. The fixed chunk boundary splits paragraphs mid-sentence, breaking semantic context. The most relevant passage for a given query is divided across two adjacent chunks, neither of which individually scores high enough to reach the top retrieval results. Increasing `topK` returns more candidates but does not surface the split passage because neither half ranks well independently.
+**Problem:** The index has no filter fields, so the default retriever cannot narrow by product or language, and passages lose the article title that gives them context.
 
-**Solution:**
-
-Delete the existing Easy Setup index and rebuild with Advanced Setup:
+**Solution:** Build a second index with Advanced Setup, validate it with queries, move the retriever, then delete the old index.
 
 ```text
-Data Cloud Setup > Vector Indexes > Delete existing index
-
-Create new Vector Index:
-  Source DMO:        ProductDocumentation__dlm
-  Embedding Model:   [current model — do not change during this fix]
-  Setup Mode:        Advanced Setup
-  Chunk Size:        800 characters
-  Chunk Overlap:     10% (80 characters)
-  Fields:            DocumentBody__c (exclude DocumentOwnerEmail__c — PII)
+Data Cloud app > Search Index > New > Advanced Setup
+  Search type:      Hybrid
+  Data space:       default
+  Object:           Knowledge article DMO (not mapped from external DLOs)
+  Chunking:         Semantic-based passage extraction on the article body field
+                    Prepend fields: Title
+                    Max tokens: 512 (English and German are Latin-script)
+  Embedding model:  Multilingual E5-Large (two languages)
+  Filter fields:    Language, Product_Line (2 of the 10 allowed)
+  Chunked fields exclude: author email, internal reviewer notes
 ```
 
-After the index reaches Active status, run representative test queries:
+Wait for status Ready, then run validation queries in Data Cloud Query Editor. Replace the DMO names with the index and chunk DMO API names shown on the configuration record; the names below are illustrative.
 
-```text
-Query: "What is the warranty period for the Model X refrigerator?"
-Expected: chunk containing the warranty section of the Model X product guide
+```sql
+-- Hybrid search with a pre-filter; quotes inside the filter string are doubled.
+select h.hybrid_score__c, h.vector_score__c, h.keyword_score__c, c.Chunk__c
+from hybrid_search(
+        table(Knowledge_v2_index__dlm),
+        'How do I reset the LaserPrinter TX 440 to factory settings',
+        'Language=''English'' and Product_Line=''Printers''',
+        10) h
+join Knowledge_v2_chunk__dlm c on h.SourceRecordId__c = c.RecordId__c
+order by h.hybrid_score__c desc
+limit 10
 ```
 
-Monitor precision across 10–20 representative queries before restoring production traffic.
+```sql
+-- Vector-only comparison on the same question, joined to the chunk DMO.
+select v.score__c, c.Chunk__c
+from vector_search(
+        TABLE(Knowledge_v2_index__dlm),
+        'How do I reset the LaserPrinter TX 440 to factory settings',
+        'Language="English"',
+        10) v
+join Knowledge_v2_chunk__dlm c on v.RecordId__c = c.RecordId__c
+order by 1 desc
+limit 10
+```
 
-**Why it works:** 800-character chunks accommodate full paragraphs without splitting semantic units. 10% overlap preserves context at chunk boundaries — if a key sentence straddles a chunk boundary, it appears in both adjacent chunks, ensuring at least one scores high for relevant queries.
+Run 10 to 20 representative questions and record, for each, whether the expected article appears in the top results. Then in Einstein Studio, point each custom retriever at the new index, add filters (up to 10 conditions), and activate the new retriever version. Finally delete the old index; Data Cloud blocks the delete while any retriever still references it.
+
+**Grounding:** Easy Setup defaults, Advanced Setup steps, filter-field limit, max tokens, statuses, delete rule, and the `vector_search` and `hybrid_search` syntax (including result fields and doubled quotes in filters) are from the Data Cloud guide (262), "Manage Search Indexes," "Chunking Strategies," "Run Vector Searches Using Query API," and "Run Hybrid Search Queries with Query API." Retriever steps are from "Create a Custom Retriever." UNVERIFIED (2026-10-03): the exact join key between the hybrid result and the chunk DMO in your org; the guide says `SourceRecordId__c` identifies the chunk DMO record, so confirm against your chunk DMO's primary key before relying on the join.
+
+**Why it works:** Prepending the title keeps context on every passage, the multilingual model fits two languages, and filter fields let the retriever scope results instead of hoping ranking sorts them out.
 
 ---
 
-## Example 2: Stale Vector Index Fixed by Enabling Continuous Refresh on Inventory DMO
+## Example 2: Answers lag a day behind source changes
 
-**Context:** A retail org uses a Data Cloud vector index over an inventory DMO to power a product availability chatbot. The inventory DMO receives batch updates from an ERP system several times per day. Users are reporting that the chatbot cites out-of-stock items as available.
+**Context:** An index on a product-documentation DMO is Ready, but answers cite instructions that were corrected the previous morning.
 
-**Problem:** The vector index Data Stream is configured in the default batch refresh mode. After each ERP batch load updates the inventory DMO, the vector index does not reflect the changes until the next scheduled batch refresh window, which can lag by two to four hours. The chatbot is retrieving stale embeddings and reporting outdated availability.
+**Problem:** The data stream feeding the DMO runs once a day in Full Refresh mode, so changes arrive late and every run replaces all data.
 
 **Solution:**
 
-Navigate to the Data Stream feeding the inventory DMO and switch refresh mode to continuous:
-
 ```text
-Data Cloud Setup > Data Streams > InventoryDMO_Stream
-
-Edit:
-  Refresh Mode: Continuous  (was: Batch)
-
-Save
+Data Cloud app > Data Streams > Product_Docs stream > Edit settings
+  Refresh mode:  Incremental (the source has a last-modified Datetime field)
+  Schedule:      every hour (or the most frequent option the connector offers)
+Then: confirm the next run processes only changed records, and watch the index
+record; a Ready index processes source changes incrementally.
 ```
 
-After saving, verify the Data Stream shows the updated refresh mode. Set a credit consumption alert:
+**Grounding:** Data Cloud guide (262), "Data Stream Settings and Refresh Modes" (Incremental, Upsert, Full Refresh) and "View Search Index Configurations" (Ready status runs incrementally). UNVERIFIED (2026-10-03): the schedule options for your connector.
 
-```text
-Data Cloud Setup > Credit Usage Alerts
-  Alert threshold: [appropriate for org's credit allocation]
-  Alert recipient: [admin email]
-```
-
-Monitor credit usage for 48 hours after enabling continuous mode to confirm consumption is within budget.
-
-**Why it works:** Continuous refresh mode triggers an index update each time a record changes in the source DMO, keeping embeddings near-real-time. The credit alert prevents runaway consumption if ERP batch behavior changes and update frequency spikes unexpectedly.
+**Why it works:** Freshness is decided upstream by the data stream. The index follows once the data lands.
 
 ---
 
-## Anti-Pattern: Raising topK to Fix Poor Retrieval Precision
-
-**What practitioners do:** When an Agentforce agent returns off-topic results, the immediate instinct is to increase `topK` (the number of candidate chunks returned from the vector index) to "cast a wider net."
-
-**What goes wrong:** Increasing `topK` returns more candidates, but the underlying problem is that the correct chunk does not exist in a form the embedding model can rank highly. If the relevant passage was split by a 500-character fixed chunk boundary, neither half scores well. Returning 20 or 50 candidates instead of 5 still does not surface a well-scored chunk containing the complete relevant passage. The agent receives more low-relevance noise, which can degrade answer quality further.
-
-**Correct approach:** Diagnose the chunking strategy first. Inspect which chunks are actually being returned for a failing query. If the relevant content is split across adjacent low-scoring chunks, the fix is a chunking strategy rebuild using Advanced Setup with larger chunk size and overlap — not a `topK` increase.
+Moving a search index configuration to another org through a data kit, with the retrieval manifest, is in `metadata-examples.md`.

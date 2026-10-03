@@ -1,0 +1,5 @@
+{
+  "dates": [
+    { "alias": "CloseDate", "label": "Close Date", "firstDayOfWeek": 1, "fiscalMonthOffset": 9 }
+  ]
+}

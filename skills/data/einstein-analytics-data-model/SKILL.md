@@ -1,6 +1,6 @@
 ---
 name: einstein-analytics-data-model
-description: "Use this skill when working with CRM Analytics (Einstein Analytics) extended metadata (XMD) — the multi-layer metadata system controlling field display labels, aliases, number and date formatting, measure/dimension classification, and dataset versioning. Trigger keywords: XMD API, dataset field formatting CRM Analytics, wave dataset labels, main XMD update, dataset versioning Analytics. NOT for recipe node configuration — use admin/analytics-recipe-design. NOT for dataflow development, node types, and scheduling — use admin/analytics-dataflow-development."
+description: "Use this skill when working with CRM Analytics (Einstein Analytics) extended metadata (XMD) — the multi-layer metadata system controlling field display labels, aliases, number and date formatting, measure/dimension classification, and dataset versioning. Trigger keywords: XMD API, dataset field formatting CRM Analytics, wave dataset labels, main XMD update, dataset versioning Analytics, update the user XMD, deploy WaveXmd. NOT for recipe node configuration — use admin/analytics-recipe-design. NOT for dataflow development, node types, and scheduling — use admin/analytics-dataflow-development."
 category: data
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -13,6 +13,8 @@ triggers:
   - "how do I apply org-wide formatting to a CRM Analytics field versus per-user customization"
   - "can I query WaveXmd using SOQL to see dataset metadata"
   - "my PATCH to the CRM Analytics XMD REST API is overwriting all existing field settings"
+  - "update the XMD for a dataset version with the REST API"
+  - "deploy CRM Analytics XMD formatting to another org in a package"
 tags:
   - crm-analytics
   - einstein-analytics
@@ -21,21 +23,23 @@ tags:
   - wave
 inputs:
   - "CRM Analytics dataset API name and dataset ID"
+  - "Current dataset version ID (from the dataset's currentVersionId)"
   - "Field API names requiring formatting or label customization"
-  - "Target XMD layer: main (org-wide) or user (per-user)"
+  - "Delivery path: one-off REST update of the version's user XMD, or packaged WaveXmd metadata"
 outputs:
-  - "XMD PATCH request payload for field label or formatting change"
-  - "Guidance on which XMD layer to target for each type of change"
+  - "Complete user XMD JSON for a PUT to /wave/datasets/<datasetID>/versions/<versionID>/xmds/user"
+  - "WaveXmd metadata file and package.xml entry when the formatting must move between orgs"
+  - "Guidance on which XMD type is readable versus writable"
   - "Dataset versioning awareness documentation"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-16
+updated: 2026-10-03
 ---
 
 # Einstein Analytics Data Model (XMD and Dataset Versioning)
 
-Use this skill when a practitioner needs to understand the CRM Analytics dataset conceptual model — specifically the Extended Metadata (XMD) three-layer system, dataset versioning, and the REST API mechanics for customizing how dataset fields are displayed. This skill is scoped to XMD conceptual understanding and API mechanics, not to dataflow or recipe transformation logic.
+Use this skill when a practitioner needs to understand the CRM Analytics dataset model behind field display: the extended metadata (XMD) types, dataset versions, and the REST and Metadata API mechanics for changing how dataset fields look. Transformation logic in dataflows and recipes is out of scope.
 
 ---
 
@@ -43,65 +47,75 @@ Use this skill when a practitioner needs to understand the CRM Analytics dataset
 
 Gather this context before working on anything in this domain:
 
-- What is the API name and ID of the target dataset? (The ID is required for all XMD API calls, not the API name.)
-- Which XMD type is the target: `main` (org-level customization) or `user` (per-user preference)? System XMD is platform-generated and immutable.
-- Is this a field label change, a field type reclassification (measure vs. dimension), or a date/number format override?
-- Is the dataset a live dataset or a versioned snapshot? Dataset version IDs differ from the stable dataset ID.
+- What is the dataset ID, and what is its `currentVersionId`? Every XMD REST URL contains both: `/wave/datasets/<datasetID>/versions/<versionID>/xmds/<xmdType>`.
+- Is the change a label, a value label (`members`), a number format, a hidden field, a chart color, or a record action?
+- Must the change survive a move to another org? The version-bound user XMD cannot be packaged; the WaveXmd metadata type can.
+- Does the running user hold Edit CRM Analytics Dataflows or Upload External Data to CRM Analytics? The XMD guide names those as the permissions needed to edit XMD.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| "Is this a one-time fix in this org, or must the formatting deploy from sandbox to production?" | The Standard User XMD is tied to a dataset version and cannot be packaged; only the Primary User XMD (WaveXmd metadata) can | The delivery path: REST PUT on the version's user XMD, or a WaveXmd file in source control | Formatting that arrives with the release instead of a manual rework in every org |
+| "Which dashboards query this dataset together with another dataset?" | A multi-dataset query is formatted with the XMD of the first loaded dataset only | The list of SAQL `load` orders to check, or the second dataset whose XMD needs the same labels | Labels and number formats that stay consistent on blended widgets |
+| "Are we hiding a field because users should not see it, or only to declutter the explorer?" | `showInExplorer: false` removes a field from the explorer, but SAQL, dashboard JSON, and the REST API still reach it | A decision to use a security predicate or a different dataset when the goal is access control | No sensitive field left one SAQL edit away from a viewer |
+| "When does the next dataflow or recipe run change this dataset's schema?" | A new version gets a new system XMD; a renamed or dropped field breaks XMD entries and surfaces only in the `errorMessage` property | A post-run check of `errorMessage` on the new version's user XMD | Schema changes that come with an XMD update instead of a silently broken action menu |
+| "Who owns the current XMD file, and where is the last known-good copy?" | An upload or PUT of an invalid file reverts all formatting to defaults, and the API keeps no history | A saved copy of the user XMD for the current version before every change | A one-step rollback instead of rebuilding labels from screenshots |
+| "Will users download this data to CSV or Excel?" | Custom delimiters are not honored in CSV downloads, and a multiplier of 0 downloads every value as 0 | Format choices that read correctly in both the dashboard and the export | Exports that match what the dashboard shows |
+
+What a proper configuration adds over just editing XMD: the change lands on the writable XMD type, is versioned in a file you can redeploy, and is checked again after the next schema change instead of drifting until a user reports a broken chart.
 
 ---
 
 ## Core Concepts
 
-### The Three-Layer XMD System
+### XMD types and which ones you can write
 
-CRM Analytics datasets have three XMD layers:
+The CRM Analytics REST API lists four XMD types: `asset`, `main`, `system`, and `user` (Xmd response body, `type` property). Only one is writable through REST.
 
-1. **System XMD** (`type=system`) — Auto-generated by the platform when a dataset is created. Contains the base field schema: API names, inferred data types, and default formatting. **Immutable.** PATCH to system XMD returns HTTP 400.
+| XMD type | Where it lives | Read | Write |
+|---|---|---|---|
+| `system` | Per dataset version, generated by the platform | `GET .../versions/<versionID>/xmds/system` | No. The REST guide says the PUT request cannot update System or Main XMD types. |
+| `main` | Per dataset version | `GET .../versions/<versionID>/xmds/main` | No (same rule). UNVERIFIED (2026-10-03): that `main` is the merged view of system plus user XMD; the 262 guides list the type without describing it. |
+| `user` (Standard User XMD) | Per dataset version; the file you upload on the Edit Dataset page | `GET .../versions/<versionID>/xmds/user` | `PUT .../versions/<versionID>/xmds/user`, or upload on the Edit Dataset page |
+| `asset` | A dashboard or lens | `GET /wave/assets/<assetID>/xmds/asset` | Not through this resource |
+| Primary User XMD | The dataset container, not a version | MDAPI retrieve (returns the file only if it was deployed with MDAPI) | Deploy the `WaveXmd` metadata type, or set `userXmd` on `PATCH /wave/datasets/<datasetIdOrApiName>` |
 
-2. **Main XMD** (`type=main`) — The org-level customization layer. Changes here apply to all users who access the dataset. This is where field labels, aliases, date formats, number formats, measure/dimension reclassification, and color palettes are set. PATCH `/wave/datasets/{datasetId}/xmds/main` to apply org-wide customizations.
+The user XMD is not a per-person preference. The XMD guide says that when you modify a dataset's XMD, every visualization that uses the dataset shows the modified format.
 
-3. **User XMD** (`type=user`) — Per-user preference layer. Overrides main XMD only for the requesting user. Not suitable for shared org-wide label standards.
+### Dataset versions and XMD
 
-When the Analytics UI renders a field, it resolves the label using: user XMD → main XMD → system XMD (first non-null value wins). Practitioners often mistake system XMD labels as the changeable default — you must write to main XMD to override them.
+Each dataset has a stable ID and a `currentVersionId` (Dataset response body). `GET /wave/datasets/<datasetIdOrApiName>/versions` lists versions. XMD REST resources hang off a version, so a URL built from last month's version ID edits a version that dashboards no longer read.
 
-### CRM Analytics Datasets Are Columnar Stores, Not Object Stores
+When a dataflow creates a new version, the platform copies the current user XMD forward. The Xmd response body carries an `errorMessage` property for the case where that copy-forward failed. If a field is renamed or deleted upstream, the XMD guide says you must update the XMD, and the error also appears in `errorMessage`.
 
-CRM Analytics datasets are **columnar stores**. They do not have a relationship graph like Salesforce object relationships. There are no foreign key constraints. Cross-dataset relationships (joins) are expressed at query time in SAQL using `load` and `join` operations — not as persistent relationship metadata in XMD. XMD does not store join definitions.
+### Datasets are not related objects
 
-**Critical distinction:** You cannot query WaveXmd records using SOQL. The XMD REST API (`/wave/datasets/{id}/xmds/{xmdtype}`) is the only supported interface. SOQL cannot access Analytics metadata objects and throws INVALID_TYPE if attempted.
-
-### Dataset Versioning
-
-CRM Analytics datasets are versioned. Each time a dataflow or recipe runs and produces output, a new **version** of the dataset is created. The dataset has:
-- A stable `id` (the dataset's persistent identifier across all versions)
-- A `currentVersionId` pointing to the latest version
-- Historical version IDs accessible via `GET /wave/datasets/{datasetId}/versions`
-
-XMD is attached at the **dataset level** (not version level) — main XMD changes persist across dataset refreshes. However, if a new dataflow run changes the schema (adds or removes fields), the system XMD for the new version will differ, and main XMD customizations for removed fields will be orphaned silently.
+SAQL combines data streams with `cogroup` (SAQL Developer Guide, "Combine Data from Multiple Data Streams with cogroup"). There is no persistent relationship metadata in XMD. There is no `WaveXmd` sObject in the Object Reference or the Tooling API; `WaveXmd` exists only as a Metadata API type (suffix `.xmd`, `wave` folder, API 39.0 and later). SOQL cannot read XMD.
 
 ---
 
 ## Common Patterns
 
-### Pattern: PATCH Main XMD to Rename a Field Label
+### Pattern: Change labels and formats for everyone in one org
 
-**When to use:** When a dataset field API name is a cryptic system-generated string and the dashboard should display a business-readable label.
+1. `GET /services/data/v67.0/wave/datasets/<datasetID>` and read `currentVersionId`.
+2. `GET .../versions/<currentVersionId>/xmds/user` and save the response to a file.
+3. Edit the saved document. Keep every existing customization in it.
+4. `PUT .../versions/<currentVersionId>/xmds/user` with the complete document.
+5. Open a lens on the dataset and confirm the labels.
 
-**How it works:**
-1. GET the current main XMD: `GET /services/data/v60.0/wave/datasets/{datasetId}/xmds/main`
-2. Locate the field entry under `dimensions` or `measures` in the response body.
-3. Construct a PATCH payload with only the `label` property changed.
-4. PATCH: `PATCH /services/data/v60.0/wave/datasets/{datasetId}/xmds/main`
+The XMD guide states that each upload overwrites the current customizations and is not appended. UNVERIFIED (2026-10-03): whether a partial REST PUT body merges; send the complete user XMD so the outcome does not depend on it.
 
-XMD PATCH is **additive-merge** — you only need to include changed properties. The full field list is not required.
+### Pattern: Ship formatting with a release
 
-**Why not edit system XMD:** System XMD is immutable. The API returns HTTP 400 if you attempt to PATCH `xmds/system`.
+Deploy a `WaveXmd` component (worked example in `references/metadata-examples.md`). The Primary User XMD applies to the dataset only after a dataflow that updates the dataset runs, because that run sets the Standard User XMD on the new version. Schedule or trigger the run as part of the deployment.
 
-### Pattern: Reclassify a Field from Dimension to Measure (or Vice Versa)
+### Pattern: Hide a field from builders
 
-**When to use:** When a numeric field like year or fiscal period is being aggregated as a measure but should be treated as a grouping dimension.
-
-**How it works:** In the main XMD PATCH payload, move the field from the `measures` array to the `dimensions` array. Include the field's API name and `label`. The platform validates that the field's data type is compatible with the target classification — numeric fields can be either; string fields cannot be measures.
+Set `"showInExplorer": false` on the field in `dimensions` or `measures`. Treat this as decluttering only. The XMD reference says the field stays usable in SAQL, dashboard JSON, and the REST API.
 
 ---
 
@@ -109,51 +123,42 @@ XMD PATCH is **additive-merge** — you only need to include changed properties.
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Rename a field label for all users | PATCH main XMD `label` property | Main XMD applies org-wide |
-| Override label only for yourself | PATCH user XMD | User XMD is per-user |
-| Understand raw field schema | GET system XMD | System XMD shows platform-generated schema |
-| Attempt to edit system XMD | Stop — not supported | System XMD is immutable; PATCH returns HTTP 400 |
-| Query dataset fields via SOQL | Use REST API instead | WaveXmd is not queryable via SOQL |
-| Field disappeared after dataflow refresh | Check schema drift | New version may have dropped the field |
+| Rename a field label for all users in this org | GET then PUT the version's user XMD | `user` is the only REST-writable XMD type |
+| Same labels needed in sandbox and production | Deploy `WaveXmd`, then run the dataflow | Standard User XMD is version-bound and not packageable |
+| See the platform-generated schema | GET the version's system XMD | Read-only reference |
+| Edit system or main XMD | Stop | The REST guide forbids PUT on System and Main |
+| Read XMD from Apex or SOQL | Use the REST API | No `WaveXmd` sObject exists |
+| Turn a numeric field into a grouping | Change the field type upstream (recipe, dataflow, or External Data metadata `type`) | The XMD guide's list of customizations does not include changing a field's type |
+| Field broke after a refresh | Read `errorMessage` on the new version's user XMD | The platform reports copy-forward and stale-field errors there |
 
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner working on this task:
-
-1. **Identify the dataset** — Get the dataset ID via `GET /wave/datasets` or the Analytics Studio Dataset Inspector.
-2. **Read system XMD** — `GET /wave/datasets/{id}/xmds/system` to understand raw schema, field API names, and defaults.
-3. **Read and back up main XMD** — `GET /wave/datasets/{id}/xmds/main`. Save the response to file — main XMD has no version history and cannot be recovered after PATCH.
-4. **Identify target fields** — List fields needing label, format, or classification changes. Note whether they are in `dimensions` or `measures`.
-5. **Construct PATCH payload** — Build the minimal additive-merge JSON with only changed properties.
-6. **PATCH main XMD** — `PATCH /wave/datasets/{id}/xmds/main`. Verify HTTP 200.
-7. **Validate in Analytics Studio** — Open a lens on the dataset and confirm field labels and formats are correct.
+1. **Resolve the version.** `GET /wave/datasets/<datasetIdOrApiName>` and record `id` and `currentVersionId`.
+2. **Back up.** GET `xmds/user`, `xmds/main`, and `xmds/system` for that version and save them under the change ticket.
+3. **Choose the path.** One-org fix: edit the saved user XMD. Cross-org: author a `WaveXmd` file from `references/metadata-examples.md`.
+4. **Edit within documented limits.** Labels up to 40 characters, descriptions up to 1,000, no empty strings, no edits to the `dataset` block.
+5. **Apply.** PUT the full user XMD, or deploy the `WaveXmd` and run the dataflow that refreshes the dataset.
+6. **Verify.** Re-GET the user XMD, confirm `errorMessage` is empty, and open a lens to see the labels. Run `python3 scripts/check_einstein_analytics_data_model.py --manifest-dir <folder>` on the folder holding the XMD file and any script that called the API.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] Targeting main XMD, not system XMD
-- [ ] Used REST API (`/wave/datasets/{id}/xmds/main`), not SOQL
-- [ ] Main XMD backed up before PATCH
-- [ ] PATCH payload verified as additive-merge format
-- [ ] Field API names match exactly (case-sensitive)
-- [ ] After PATCH: HTTP 200 confirmed and label visible in Analytics Studio lens
+- [ ] The URL contains the current version ID, not an old one
+- [ ] Only `xmds/user` was written; system and main were read only
+- [ ] The PUT body is the complete user XMD, saved to a file first
+- [ ] No label longer than 40 characters and no empty string values
+- [ ] `showInExplorer: false` is not being used as a security control
+- [ ] Cross-org formatting is a `WaveXmd` file, and the dataflow ran after deploy
+- [ ] `errorMessage` on the refreshed version's user XMD is empty
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **System XMD is immutable — PATCH returns HTTP 400** — A frequent mistake is attempting `PATCH /wave/datasets/{id}/xmds/system`. The API rejects this with HTTP 400. Always PATCH `xmds/main`.
-
-2. **WaveXmd is not SOQL-queryable** — SOQL does not support `SELECT … FROM WaveXmd`. The REST API is the only interface. Attempting SOQL on WaveXmd throws an INVALID_TYPE error.
-
-3. **Main XMD has no version history — PATCH is destructive** — CRM Analytics does not save the previous main XMD before a PATCH overwrites it. There is no undo. Always GET and save the current main XMD JSON to a file before any modification.
-
-4. **Schema drift orphans main XMD customizations silently** — If a new dataflow run removes a field from the dataset schema, the main XMD entry for that field becomes orphaned. It does not cause an error but the customization applies to a field that no longer exists.
+See `references/gotchas.md` for the full list with sources. The two that cause the most rework: an invalid upload reverts all formatting to defaults, and an MDAPI retrieve returns an empty `WaveXmd` once anyone edits the XMD through the UI or REST.
 
 ---
 
@@ -161,15 +166,16 @@ Run through these before marking work in this area complete:
 
 | Artifact | Description |
 |---|---|
-| XMD PATCH payload | JSON delta for main XMD update |
-| Pre-patch XMD backup | GET response of main XMD before modification |
-| Dataset version log | Record of current version ID and schema change history |
+| Pre-change backup | GET responses for user, main, and system XMD of the current version |
+| User XMD document | Complete JSON for the PUT |
+| WaveXmd component | `wave/<name>.xmd` plus the package.xml entry |
+| Post-run check | `errorMessage` value of the refreshed version's user XMD |
 
 ---
 
 ## Related Skills
 
-- `admin/analytics-dataflow-development` — Use for sfdcDigest, Augment, sfdcRegister node configuration and Data Sync setup
-- `admin/analytics-recipe-design` — Use for recipe node types, transformation logic, and formula language
-- `admin/analytics-dataset-management` — Use for dataset scheduling, row limits, and dataset sharing settings
-- `architect/analytics-data-architecture` — Use for multi-dataset architecture decisions and CRM Analytics platform design
+- `admin/analytics-dataflow-development`: Use for sfdcDigest, Augment, sfdcRegister node configuration and Data Sync setup
+- `admin/analytics-recipe-design`: Use for recipe node types, transformation logic, and formula language
+- `admin/analytics-dataset-management`: Use for dataset scheduling, row limits, and dataset sharing settings
+- `architect/analytics-data-architecture`: Use for multi-dataset architecture decisions and CRM Analytics platform design

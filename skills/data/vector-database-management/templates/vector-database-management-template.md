@@ -1,4 +1,4 @@
-# Vector Database Management — Design Template
+# Vector Database Management: Design Template
 
 Use this template when designing a new vector index or planning a rebuild of an existing one.
 Fill in every section before creating or modifying any index in Setup.
@@ -18,11 +18,11 @@ Fill in every section before creating or modifying any index in Setup.
 
 ## 2. Source Data
 
-**Source DMO / UDLO name:** _____________________________
+**Source DMO / UDMO name (not mapped from external DLOs):** _____________________________
 
 **Data Space:** _____________________________
 
-**Text fields to index** (list only semantic content fields — no PII):
+**Text fields to index** (list only fields that answer questions; no personal data):
 
 | Field API Name | Description | PII? (exclude if yes) |
 |---|---|---|
@@ -38,87 +38,81 @@ Fill in every section before creating or modifying any index in Setup.
 
 ---
 
-## 3. Chunking Strategy
+## 3. Setup Mode and Chunking
 
-**Selection:**
-- [ ] Easy Setup (500-character fixed chunks, no overlap) — appropriate for short, uniform documents only
-- [ ] Advanced Setup — required for production knowledge bases, longer documents, or precision-sensitive use cases
-
-**If Advanced Setup:**
+**Setup mode:**
+- [ ] Easy Setup (defaults: passage extraction, E5-Large V2, hybrid search; no filter fields in the steps)
+- [ ] Advanced Setup (choose search type, chunking per field or file type, prepend fields, max tokens, model, up to 10 filter fields)
 
 | Parameter | Value | Rationale |
 |---|---|---|
-| Chunk size (characters) | | (match to average paragraph length or ~1.5× typical query length) |
-| Chunk overlap (%) | | (typically 10%; prevents relevant passages from straddling chunk boundaries) |
+| Search type | Vector / Hybrid | (hybrid when text contains codes or domain terms) |
+| Chunking strategy | Passage extraction / Conversation-based / other | |
+| Prepend fields | | (for example Title) |
+| Max tokens | 512 default | (lower for non-Latin text) |
 
-**Justification for this chunk size:** (describe the source document structure that drove this choice)
+Chunking strategy, max tokens, and model are view-only after creation. Changing them means a new index.
 
 ---
 
 ## 4. Embedding Model
 
-**Selected model:** _____________________________
+**Selected model:** [ ] E5-Large V2   [ ] Multilingual E5-Large   [ ] Whisper-Large-V3 (listed in the Search Index Reference)
 
-**Reason for selection:** (general-purpose vs. domain-specific, quality tier)
-
-**Note:** Changing the embedding model after index creation requires a full delete-and-rebuild. Record this selection for the rebuild runbook.
+**Reason for selection:** (language mix, content type)
 
 ---
 
-## 5. Refresh Mode
+## 5. Filter Fields and Retrievers
 
-**Selected mode:**
-- [ ] Batch (default) — appropriate for static corpora or infrequently updated DMOs
-- [ ] Continuous — appropriate when retrieval freshness is a documented business requirement
-
-**If Continuous:**
-- Estimated source DMO update frequency: _____ updates/hour
-- Data Cloud credit consumption alert set? [ ] Yes — alert threshold: _____   [ ] No (set before enabling)
-- Business justification for continuous mode: _____________________________
+| Filter field (max 10) | Source object or related object (1:1 or N:1) | Used by retriever |
+|---|---|---|
+| | | |
 
 ---
 
-## 6. Rebuild Runbook
+## 6. Freshness and Cost
 
-Record this section after the index is created. It is the authoritative reference for any future rebuild.
+- Source data stream refresh mode: [ ] Incremental   [ ] Upsert   [ ] Full Refresh (replaces all data each cycle)
+- Data stream schedule: _____
+- Estimated vector count: _____ (vector search query billing counts the vectors in the index)
+- Expected queries per day: _____
+- Search index count after this one (limit 10 per Data Cloud instance): _____
+
+---
+
+## 7. Configuration Record
 
 | Configuration Item | Value |
 |---|---|
-| Index name | |
-| Source DMO / UDLO | |
-| Data Space | |
-| Indexed field list | |
-| Excluded fields (PII) | |
-| Chunking strategy | Easy Setup / Advanced Setup |
-| Chunk size (chars) | |
-| Chunk overlap (%) | |
+| Index name and API name | |
+| Data space | |
+| Source DMO / UDMO | |
+| Chunked fields | |
+| Excluded fields (personal or regulated) | |
+| Search type | |
+| Chunking strategy and prepend fields | |
+| Max tokens | |
 | Embedding model | |
-| Refresh mode | Batch / Continuous |
-| Index created date | |
-| Last rebuilt date | |
-| Rebuilt by | |
+| Filter fields | |
+| Custom retrievers that reference it | |
+| Created date / created by | |
 
-**Rebuild trigger conditions** (mark all that apply):
-- [ ] Chunking strategy or parameters need to change
-- [ ] Embedding model upgrade
-- [ ] Source DMO schema change (new fields added/removed)
-- [ ] Retrieval precision degraded and chunk strategy is the diagnosed cause
-
-**Rebuild procedure:**
-1. Notify stakeholders of expected index availability gap (estimated rebuild time: _____ minutes/hours).
-2. In Data Cloud Setup > Vector Indexes, delete the existing index.
-3. Create new index using the updated configuration recorded in this runbook.
-4. Monitor index status until Active.
-5. Run validation queries (see Section 7) before restoring production traffic.
-6. Update this runbook with new configuration and rebuild date.
+**Replacement procedure (chunking or model change):**
+1. Create a second index with the new settings.
+2. Wait for status Ready (Submitted, In-progress, Ready, Failed).
+3. Run the validation queries in Section 8 against both indexes.
+4. Point custom retrievers at the new index and activate the new versions.
+5. Delete the old index (blocked while any retriever references it).
+6. Update this record.
 
 ---
 
-## 7. Validation Queries
+## 8. Validation Queries
 
-List 5–10 representative queries that must return relevant results before the index is considered production-ready.
+List 5 to 10 representative questions. Run each with `vector_search` or `hybrid_search` joined to the chunk DMO.
 
-| Query | Expected top result (document section / chunk content summary) | Pass? |
+| Question | Expected chunk (article / section) | Pass? |
 |---|---|---|
 | | | [ ] |
 | | | [ ] |
@@ -126,16 +120,17 @@ List 5–10 representative queries that must return relevant results before the 
 | | | [ ] |
 | | | [ ] |
 
-**Acceptance criteria:** _____ of _____ validation queries return a relevant top result.
+**Acceptance criteria:** _____ of _____ questions return the expected chunk in the top results.
 
 ---
 
-## 8. Review Checklist
+## 9. Review Checklist
 
-- [ ] Source DMO is active and Data Space is configured
-- [ ] All indexed fields reviewed for PII; exclusions documented above
-- [ ] Chunking strategy and parameters justified based on query characteristics and document structure
-- [ ] Embedding model recorded in rebuild runbook
-- [ ] Refresh mode set appropriately; credit alert configured if continuous
-- [ ] Rebuild runbook complete with all configuration values
-- [ ] Validation queries defined and passing before production go-live
+- [ ] Data space and source object recorded
+- [ ] Chunked fields reviewed; personal and regulated fields excluded
+- [ ] Setup mode, chunking, max tokens, and model justified
+- [ ] Filter fields defined before retrievers need them
+- [ ] Data stream refresh mode and schedule match the freshness need
+- [ ] Vector count and query cost estimated
+- [ ] `python3 scripts/check_vector_database_management.py --manifest-dir <retrieved metadata>` reviewed
+- [ ] Validation queries passing before go-live

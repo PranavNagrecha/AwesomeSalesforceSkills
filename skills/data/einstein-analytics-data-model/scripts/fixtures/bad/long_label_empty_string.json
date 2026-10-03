@@ -1,0 +1,8 @@
+{
+  "dimensions": [
+    { "field": "Owner.UserRole.Name", "label": "Opportunity Owner Role In The Sales Hierarchy", "description": "" }
+  ],
+  "measures": [
+    { "field": "Discount", "label": "Discount", "format": { "customFormat": "[\"#,###\",0]" } }
+  ]
+}

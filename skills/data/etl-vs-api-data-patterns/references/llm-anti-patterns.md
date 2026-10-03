@@ -1,63 +1,99 @@
-# LLM Anti-Patterns — ETL vs API Data Patterns
+# LLM Anti-Patterns: ETL vs API Data Patterns
 
-Common mistakes AI coding assistants make when generating or advising on ETL vs API integration selection.
+Common mistakes AI coding assistants make when advising on ETL vs API integration for Salesforce.
 
 ---
 
-## Anti-Pattern 1: Conflating One-Time Migration with Ongoing ETL Pipeline
+## Anti-Pattern 1: Conflating one-time migration with an ongoing ETL pipeline
 
 **What the LLM generates:** "Use Data Loader or SFDMU for your ongoing daily sync pipeline."
 
-**Why it happens:** LLMs suggest familiar Salesforce data tools without distinguishing migration tools from pipeline tools.
+**Why it happens:** The model suggests familiar Salesforce data tools without separating migration from steady state.
 
-**The correct pattern:** Data Loader and SFDMU are appropriate for one-time or infrequent migrations. Ongoing ETL pipelines require tools with scheduling, error retry, lineage, and change detection — Informatica Cloud, MuleSoft Batch, or similar platforms.
+**The correct pattern:** Ongoing pipelines need scheduling, a control table, restart values, error tables, and change detection. Data Loader and SFDMU fit one-time or occasional moves.
 
-**Detection hint:** Any recommendation of Data Loader or SFDMU for a recurring ongoing pipeline is likely incorrect.
-
----
-
-## Anti-Pattern 2: Recommending ETL for Real-Time Scenarios
-
-**What the LLM generates:** "Schedule your ETL job to run every 5 minutes for near-real-time sync."
-
-**Why it happens:** LLMs attempt to satisfy a latency requirement by reducing batch interval, without recognizing the architectural mismatch.
-
-**The correct pattern:** If the latency requirement is < 5 minutes for individual record changes, event-driven API integration (MuleSoft, direct REST API with webhooks) is required. ETL batch processing has inherent overhead regardless of scheduling frequency.
-
-**Detection hint:** If the use case requires sub-minute latency and the response suggests ETL with short intervals, the approach is architecturally inappropriate.
+**Detection hint:** Data Loader or SFDMU named as the engine for a recurring pipeline.
 
 ---
 
-## Anti-Pattern 3: Using REST API sObjects Endpoint for Bulk ETL
+## Anti-Pattern 2: Meeting a real-time requirement with a shorter batch interval
 
-**What the LLM generates:** Code that calls `POST /services/data/vXX.0/sobjects/Account` for each record in a bulk ETL pipeline.
+**What the LLM generates:** "Schedule your ETL job every 5 minutes for near-real-time sync."
 
-**Why it happens:** LLMs generate the most familiar REST API pattern without considering the volume implications.
+**Why it happens:** The model tunes the schedule instead of changing the pattern.
 
-**The correct pattern:** Bulk ETL operations must use Bulk API 2.0. Using the REST API CRUD endpoint for bulk loads consumes one API call per record, rapidly exhausting the daily limit.
+**The correct pattern:** Per-record latency calls for Remote Call-In, Platform Events, or Change Data Capture. Integration Patterns says timeliness is not the goal of Batch Data Synchronization.
 
-**Detection hint:** Any bulk ETL code using standard CRUD REST endpoints (not Bulk API 2.0 jobs) for more than 200 records is architecturally incorrect.
-
----
-
-## Anti-Pattern 4: Presenting Informatica and MuleSoft as Competing Alternatives for Every Use Case
-
-**What the LLM generates:** "You can use either MuleSoft or Informatica for this integration — choose based on your existing licenses."
-
-**Why it happens:** LLMs present tools as interchangeable when the official Salesforce Architects framework treats them as complementary tools for different integration types.
-
-**The correct pattern:** The selection axis is application integration (MuleSoft) vs. data integration (Informatica). Real-time API connectivity → MuleSoft. Bulk ETL with data quality and lineage → Informatica. The decision is driven by the integration type, not purely by existing licenses.
-
-**Detection hint:** Any recommendation that treats Informatica and MuleSoft as interchangeable for any use case is ignoring the official Salesforce Architects complementary-tool framing.
+**Detection hint:** A sub-minute requirement answered with an ETL schedule.
 
 ---
 
-## Anti-Pattern 5: Jitterbit Selection Criteria From Training Memory
+## Anti-Pattern 3: Single-record REST calls for volume
 
-**What the LLM generates:** Specific Jitterbit selection criteria or comparisons without citing official Salesforce sources.
+**What the LLM generates:** A loop that calls `POST /services/data/vXX.0/sobjects/Account` for each row.
 
-**Why it happens:** LLMs generate plausible-sounding tool comparisons from training data.
+**Why it happens:** It is the most common REST example in training data.
 
-**The correct pattern:** Only Informatica and MuleSoft have formal treatment in official Salesforce Architects documentation (architect.salesforce.com). Jitterbit selection criteria should be sourced from vendor documentation, not from Salesforce official sources.
+**The correct pattern:** Under 2,000 records, batch into sObject Collections (up to 200 records per call) or Composite. Above 2,000, use a Bulk API 2.0 job.
 
-**Detection hint:** Any Jitterbit-specific selection criteria presented as Salesforce Architects guidance should be verified against official sources.
+**Detection hint:** `/sobjects/<Object>` inside a loop over thousands of rows.
+
+---
+
+## Anti-Pattern 4: Inventing Bulk API 2.0 limits from Bulk API (1.0)
+
+**What the LLM generates:** "Set the batch size to 10,000 records" or "request JSON results from the Bulk API 2.0 query job."
+
+**Why it happens:** The model blends the two Bulk APIs.
+
+**The correct pattern:** Bulk API 2.0 creates batches for you (one per 10,000 records) and accepts only CSV for ingest and query. The client-side limit is 150 MB per job upload.
+
+**Detection hint:** A batch-size setting or a JSON `contentType` on a `/jobs/ingest` or `/jobs/query` request.
+
+---
+
+## Anti-Pattern 5: Claiming Bulk API 2.0 does not use API requests
+
+**What the LLM generates:** "Bulk API 2.0 has its own budget, so it won't touch your daily API limit."
+
+**Why it happens:** The 150,000,000-record ceiling looks like a separate allocation.
+
+**The correct pattern:** Bulk API 2.0 calls count toward the org's API request allocation. Plan polling and result calls.
+
+**Detection hint:** Any statement that Bulk calls are exempt from the API request allocation.
+
+---
+
+## Anti-Pattern 6: Treating MuleSoft and Informatica as interchangeable
+
+**What the LLM generates:** "Use either MuleSoft or Informatica; pick whichever you already license."
+
+**Why it happens:** The model sees two integration platforms and flattens the distinction.
+
+**The correct pattern:** The Salesforce Architects "Better Together" page assigns real-time application connectivity to MuleSoft and large-scale ETL, data quality, lineage, and MDM to Informatica. The requirement picks the platform; complex architectures can use both.
+
+**Detection hint:** A platform choice with no mention of latency, governance, or MDM.
+
+---
+
+## Anti-Pattern 7: Upserting without an External ID or a parent sort
+
+**What the LLM generates:** A Bulk API 2.0 upsert job with no `externalIdFieldName`, or a child load in source order.
+
+**Why it happens:** The model writes the happy-path call and skips the data design.
+
+**The correct pattern:** Upsert requires `externalIdFieldName`, and the field must exist on the object and in the CSV. Sort child rows by parent key because Bulk API 2.0 runs batches in parallel only.
+
+**Detection hint:** `"operation": "upsert"` without `externalIdFieldName`, or no sort step before a child load.
+
+---
+
+## Anti-Pattern 8: Presenting vendor-tool criteria as Salesforce guidance
+
+**What the LLM generates:** Specific Jitterbit or Informatica feature claims presented as Salesforce Architects guidance.
+
+**Why it happens:** The model mixes vendor marketing into platform guidance.
+
+**The correct pattern:** Cite Salesforce sources for Salesforce behavior and vendor documentation for vendor features. Mark vendor claims that were not checked.
+
+**Detection hint:** A tool feature claim with no source, attributed to Salesforce.
