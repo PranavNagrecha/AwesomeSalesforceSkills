@@ -86,34 +86,37 @@ def check_service_channel_capacity_weights(manifest_dir: Path) -> list[str]:
     issues: list[str] = []
     channel_files = _find_files(manifest_dir, ".serviceChannel-meta.xml")
 
-    if not channel_files:
-        # Not necessarily an issue — metadata may not be retrieved
-        return issues
-
+    # No early return: capacity lives on QueueRoutingConfig, scanned below even when no
+    # ServiceChannel file was retrieved.
     for filepath in channel_files:
         root = _parse_xml_safe(filepath)
         if root is None:
             issues.append(f"Could not parse Service Channel metadata: {filepath.name}")
             continue
 
-        # Check for capacity weight — namespace-agnostic tag search
-        capacity_el = None
+        # Capacity does not live on ServiceChannel (the type carries no capacity field — the
+        # Metadata API guide, ServiceChannel); it lives on QueueRoutingConfig
+        # (capacityWeight / capacityPercentage) and PresenceUserConfig (capacity). The old
+        # rule looked here and parsed with int(), so it could never fire. Found 2026-10-03.
+
+    for cfg in sorted(manifest_dir.rglob("*.queueRoutingConfig-meta.xml")):
+        root = _parse_xml_safe(cfg)
+        if root is None:
+            issues.append(f"Could not parse Queue Routing Config metadata: {cfg.name}")
+            continue
         for el in root.iter():
-            if el.tag.endswith("relatedEntityCapacityWeight") or el.tag.endswith("capacityWeight"):
-                capacity_el = el
-                break
-
-        if capacity_el is not None:
-            try:
-                weight = int(capacity_el.text or "0")
-                if weight == 0:
+            tag = el.tag.split("}")[-1]
+            if tag in ("capacityWeight", "capacityPercentage"):
+                try:
+                    value = float((el.text or "").strip() or "0")
+                except ValueError:
+                    continue
+                if value == 0:
                     issues.append(
-                        f"Service Channel '{filepath.stem.replace('.serviceChannel-meta', '')}' has "
-                        f"capacity weight of 0. This means unlimited work items — likely a misconfiguration."
+                        f"Queue Routing Config '{cfg.name.replace('.queueRoutingConfig-meta.xml', '')}' sets "
+                        f"{tag} to 0 — a work item that consumes no capacity routes without limit; set a "
+                        f"weight or percentage that reflects the channel's load (QueueRoutingConfig, Metadata API)."
                     )
-            except ValueError:
-                pass
-
     return issues
 
 

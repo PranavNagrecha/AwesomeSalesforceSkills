@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QueueRoutingConfig xmlns="http://soap.sforce.com/2006/04/metadata">
+    <capacityWeight>0</capacityWeight>
+    <label>Chat</label>
+    <routingModel>LeastActive</routingModel>
+    <routingPriority>1</routingPriority>
+</QueueRoutingConfig>
