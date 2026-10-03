@@ -1,417 +1,346 @@
-# SfSkills — Salesforce AI Skill Library
+# SfSkills: Salesforce skills for AI coding assistants
 
-Make your AI coding assistant behave like a senior Salesforce practitioner on
-the task in front of it: knowing the platform's non-obvious failure modes,
-refusing the specific wrong code an LLM reliably produces, grounding every
-claim in official Salesforce documentation, and — through the MCP server —
-asking your actual org whether the thing already exists.
+Grounded Salesforce skill packages, run-time agents, a requirement-to-build loop and an MCP server for Claude Code, Cursor, Codex and any MCP client.
 
-[![Validate](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml)
-[![PR Lint](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml)
-[![License: PolyForm Small Business](https://img.shields.io/badge/License-PolyForm_Small_Business_1.0.0-orange.svg)](./LICENSE)
+[![validate](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml)
+[![pr-lint](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml)
+[![tests](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/tests.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/tests.yml)
+[![PyPI: sfskills-mcp](https://img.shields.io/pypi/v/sfskills-mcp?label=sfskills-mcp)](https://pypi.org/project/sfskills-mcp/)
+[![License: PolyForm Small Business 1.0.0](https://img.shields.io/badge/license-PolyForm_Small_Business_1.0.0-orange.svg)](./LICENSE)
 
----
+SfSkills makes an AI coding assistant work on Salesforce the way a senior practitioner does. It is a
+library of 1,040 skill packages covering Apex, LWC, Flow, Agentforce, OmniStudio, integration, data,
+security, DevOps and declarative admin work; 70 run-time agents you call as slash commands in Claude
+Code; a beta loop that turns one business requirement into a verified, deploy-ready build; and an MCP
+server that gives any MCP client the same library plus read-only probes of your org. Nothing in this
+repository deploys to an org.
 
-## The problem
+## Contents
 
-A general-purpose model has read enormous amounts of Salesforce code, and a
-lot of it is wrong in ways that only surface in production. The output
-compiles, passes review, and then hits a governor limit, a mixed-DML boundary,
-or a sharing rule nobody modelled. The failure mode is not that the model
-lacks syntax — it is that the model has no working theory of the platform's
-constraints, so it confidently generalises a test-only idiom into production
-code.
+- [What this is](#what-this-is)
+- [Sixty-second start](#sixty-second-start)
+- [What a session looks like](#what-a-session-looks-like)
+- [What's in it](#whats-in-it)
+- [Why you can trust the output](#why-you-can-trust-the-output)
+- [Limits](#limits)
+- [Docs](#docs)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Concretely
+## What this is
 
-<!-- anti-pattern-source: skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md -->
+**1. A skill library.** Each package under `skills/<domain>/<name>/` is a `SKILL.md` (when to use it,
+a recommended workflow, and in packages written or revised since 2026-09-04 the questions to ask
+before configuring) plus four reference files and a checker script:
 
-Ask a model to create an Account and a User in one service method and it
-writes this:
+- `references/examples.md`: worked examples, with metadata XML where the topic has it
+- `references/gotchas.md`: the platform's non-obvious failure modes
+- `references/llm-anti-patterns.md`: the wrong code an LLM reliably writes in this area, why it
+  writes it, and the correct pattern
+  ([example](skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md))
+- `references/well-architected.md`: the Well-Architected mapping and the official Salesforce sources
+  the package rests on
+- `scripts/`: a standard-library Python checker for the package's known failure modes
 
-```apex
-public class AccountService {
-    public static void createAccountAndUser(String name, String email) {
-        Account acc = new Account(Name = name);
-        insert acc;
-        System.runAs(new User(Id = UserInfo.getUserId())) {
-            User u = new User(/* fields */);
-            insert u;
-        }
-    }
-}
-```
+An assistant that has read the package refuses the specific wrong pattern and can say which document
+each claim comes from. In Claude Code only the 12 router skills, the slash commands and the agent
+loaders load at session start, about 7,000 tokens, and the model opens the one package it needs; a
+flat list of every skill description would cost about 149,000 (both estimated by
+`python3 scripts/build_plugin.py --measure`).
 
-With this library loaded, it writes this instead:
+**2. Run-time agents.** 70 playbooks under `agents/<name>/AGENT.md`, each behind a slash command:
+`/refactor-apex`, `/build-lwc`, `/build-flow`, `/score-deployment`, `/why-cant-user` and 65 more. An
+agent reads every skill on its Mandatory Reads list before writing anything, cites each skill,
+template and decision-tree branch it used, returns a HIGH/MEDIUM/LOW confidence score and a Process
+Observations block about your org, and never deploys or edits files outside the paths you give it
+([`agents/_shared/AGENT_CONTRACT.md`](agents/_shared/AGENT_CONTRACT.md)).
 
-```apex
-public class AccountService {
-    public static void createAccountAndUser(String name, String email) {
-        Account acc = new Account(Name = name);
-        insert acc;
-        UserCreationService.createUserAsync(acc.Id, email);
-    }
-}
+**3. The requirement-to-build loop (beta).** One business ask goes through eight Tier-4 agents with a
+human gate between stages. The clarifier asks every question the cited skills say must be asked, each
+with a proposed default. The planner writes milestones and steps, and the verifier tries to refute
+the plan. Then, step by step, a builder writes the metadata or code, a tester runs every cited
+skill's checker, and a doc keeper updates the plan views and the decision log; a milestone verifier
+writes the acceptance report the human signs against. Ceremony scales with the ask (`ask`, `feature`
+or `project`; [`standards/build-orchestration.md`](standards/build-orchestration.md) § 3.1). A build lives in
+`.sfskills/builds/<id>/` with `plan.json` as its only state and `scripts/build_plan.py` as its only
+writer. The loop never deploys and never approves a gate.
 
-public class UserCreationService {
-    @future
-    public static void createUserAsync(Id accountId, String email) {
-        User u = new User(/* fields */);
-        insert u;
-    }
-}
-```
+Five end-to-end scenarios are committed under [`examples/builds/`](examples/builds/README.md). The
+builds were exported from real runs, false starts and rebuilds included:
 
-The rule the first version violates: `User` is a setup object and `Account` is
-not, so DML against both inside one transaction throws
-`MIXED_DML_OPERATION`. `System.runAs()` relaxes that restriction *in test
-context only* — in production Apex it is not a fix, it is a bug that compiles.
-The model reaches for it because its training data is full of test classes.
-([Apex Developer Guide — sObjects That Cannot Be Used Together in DML
-Operations](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dml_non_mix_sobjects.htm))
+| Scenario | Tier | Questions | Steps | Gate records | Org dry runs |
+|---|---|---|---|---|---|
+| [`case-onboarding`](examples/builds/case-onboarding/) | project | 97 | 22 | 13 | 32 |
+| [`tier2-webhook`](examples/builds/tier2-webhook/) | feature | 45 | 5 | 4 | 13 |
+| [`northwind-sales`](examples/builds/northwind-sales/) | project | 65 | 16 | 9 | 16 |
+| [`opp-amount-lock`](examples/builds/opp-amount-lock/) | ask | 13 | 1 | 3 | 0 |
+| [`cold-start-case-escalation-email`](examples/builds/cold-start-case-escalation-email/) | feature | 19 | 1 | 3 | 0 |
 
-Both snippets above are lifted verbatim from
-[`skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md`](./skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md).
-All 1,034 skill packages ship a `references/llm-anti-patterns.md` in that same
-shape: the wrong output, why the model produces it, the correct pattern, and a
-detection hint.
+Scenario 5 ran twice: in [`cold-start-lead-source`](examples/builds/cold-start-lead-source/) a fresh
+session given one client sentence used the library correctly but never found the loop; after a
+one-paragraph fix to `CLAUDE.md`, the second cold start found it and drove the build to `done`. All
+builds are design-only, and every gate was signed by someone standing in for the requester.
 
----
+**4. An MCP server.** [`sfskills-mcp`](mcp/sfskills-mcp/README.md) serves the library, the agents'
+playbooks, the templates and the decision trees to any MCP client, plus read-only org probes through
+your existing `sf` CLI login: describe an org or an object, list fields, flows, validation rules,
+permission sets, Apex classes, triggers and LWC bundles, and run read-only Tooling API SOQL. The
+validate-only deploy the loop uses is a repository script, `scripts/mock_deploy.py`, which always runs
+`sf project deploy start --dry-run`.
 
-## Install
+## Sixty-second start
 
-Full setup reference, with captured transcripts and every flag:
-[`docs/installing.md`](./docs/installing.md).
+Pick one path. [`docs/getting-started.md`](docs/getting-started.md) gives each a verification step;
+[`docs/installing.md`](docs/installing.md) has every flag, the bootstrap internals and the embeddings
+option.
 
-### 1. Clone it and start asking — no build step
+**Claude Code plugin** (plugin 1.3.0). Installs the 12 router skills and 92 slash commands. It does
+not install the agent loaders or wire the MCP server
+([`docs/installing-the-plugin.md`](docs/installing-the-plugin.md)).
 
-```bash
-git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
-cd AwesomeSalesforceSkills
-```
-
-Open that directory in Claude Code and ask a Salesforce question. That is the
-whole setup for the main path.
-
-A clone carries everything the AI needs to find a skill. On `origin/main`,
-`git ls-tree -r --name-only origin/main` counts `CLAUDE.md`, **12 router
-skills** under `.claude/skills/` (one top-level `salesforce` router plus 11
-domain routers), their **11 rosters**, and **48 run-time agent loaders** under
-`.claude/agents/`.
-
-Selection is model-driven, not search-driven. Claude reads the router
-descriptions, hands off to one domain router, opens that router's
-`references/skill-index.md` — a roster of that domain's packages, one gloss
-each, budgeted at 220 characters (`scripts/build_plugin.py:281`) — and opens
-the package it picks. Eleven rosters, 1,034 glosses between them; Claude reads
-one. No index is consulted and nothing is built.
-
-That indirection is the whole design. Exporting all 1,034 skill descriptions
-flat would cost about **138,694 tokens** at session start, before you type
-anything. Everything actually loaded up front — 12 routers, 67 commands and 48
-agent loaders — costs **5,490**, or **4.0%** of that
-(`python3 scripts/build_plugin.py --measure`). The token model is an estimate,
-calibrated against a real Claude Code install; the method and its caveat are in
-[`docs/architecture.md`](./docs/architecture.md#why-the-library-is-tiered).
-
-Two things are *not* in a clone, because both are generated:
-`.claude/commands/` (the 67 slash commands) and the retrieval index under
-`vector_index/`. Step 2 builds both.
-
-**As a Claude Code plugin** — namespaced skills plus the slash commands,
-without adding this repo to your project:
-
-```
+```text
 /plugin marketplace add PranavNagrecha/AwesomeSalesforceSkills
 /plugin install sfskills@sfskills
 ```
 
-This works. The default branch carries the manifests and the payload they point
-at: `git ls-tree origin/main .claude-plugin/` returns both `marketplace.json`
-and `plugin.json`, both name the plugin `sfskills`, and both declare
-`skills: ["./.claude/skills/"]` and `commands: ["./commands/"]` — directories
-that exist on `origin/main`. A plugin install gives you routers and commands,
-not the 48 agent loaders; those reach you only through a clone. Flags, the
-local-path variant, and the measured token cost of an install:
-[`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md).
-
-**For Cursor, Windsurf, Aider, Augment, or Codex CLI** — run
-`python3 scripts/export_skills.py --target cursor` and copy the generated
-`exports/cursor/.cursor/` directory into your project root (the export writes
-one subdirectory per target, so copying `exports/` wholesale puts the rules in
-the wrong place).
-
-### 2. Optional — build the local index, for CLI and MCP search
+**Clone.** Open the folder in Claude Code and ask a Salesforce question. The routers, their rosters
+and the 70 agent loaders are committed, so that works with no build step. Bootstrap adds local keyword
+search and installs the slash commands; restart Claude Code afterwards.
 
 ```bash
-python3 -m pip install -r requirements.txt
+git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
+cd AwesomeSalesforceSkills
+python3 -m pip install -r requirements.txt    # inside a venv if your Python is externally managed
 python3 scripts/bootstrap.py
-python3 scripts/search_knowledge.py "trigger recursion"
+python3 scripts/search_knowledge.py "trigger recursion"   # top skill: apex/recursive-trigger-prevention
 ```
 
-The only entry under `Top skills:` should be
-`apex/recursive-trigger-prevention`. The number beside it is a ranking output
-that moves whenever the ranker is retuned — assert the skill id, never the
-score.
+For Cursor, `python3 scripts/export_skills.py --target cursor` writes `exports/cursor/.cursor/` to
+copy into your project; `--help` lists the Windsurf, Aider, Augment, Codex and cross-tool `agents`
+targets.
 
-This builds the FTS5 index behind the *keyword-search* way of finding a skill —
-`search_knowledge.py`, the MCP `search_skill` tool, and the build-time agents
-that maintain the library. `vector_index/` is gitignored, so a fresh clone has
-no index at all: `git ls-files vector_index` returns three files
-(`manifest.json`, `query-fixtures.json`, `query-variants.json`) and none of
-them is the index. Skip this step and `search_knowledge.py` reports
-`Coverage: NONE` for every query and still exits 0, which looks like an empty
-library rather than a missing index. Skipping it does **not** stop Claude from
-reaching a skill package through the routers above.
-
-Bootstrap also installs the 67 slash commands into `.claude/commands/`; restart
-Claude Code afterwards, since it loads commands at session start.
-
-Cost: about **9 s** on a fresh `git clone --depth 1`, per the measurement
-recorded in the script's own header (`scripts/bootstrap.py:20`, Apple silicon
-macOS, Python 3.14.4). It writes two gitignored files, **307 MB** together on
-this checkout — 127 MB of `chunks.jsonl` (135,409 chunks) and 179 MB of
-`lexical.sqlite` (`du -h vector_index/*`). Those are one machine's numbers, not
-a guarantee.
-
-**Embeddings, stated precisely, because this repo has described them wrong
-twice.** `config/retrieval-config.yaml` sets `embeddings.enabled: true`, but
-`fastembed` is commented out at `requirements.txt:12`, so
-`pipelines/embedding_backends.py` logs a warning and falls back to lexical-only.
-They are neither "opt-in behind a flag" nor "on by default" — they are
-**configured on and inert until you install a backend yourself**. Turning them
-on is two steps, not one:
+**MCP server** (any MCP client). The org tools borrow the `sf` CLI's session; the server stores no
+credentials.
 
 ```bash
-python3 -m pip install 'fastembed>=0.4,<1.0'
-python3 scripts/build_skill_embeddings.py     # writes vector_index/skill_embeddings.jsonl
+pip install sfskills-mcp
+sfskills-mcp-init                          # one-time download of the skill data to ~/.cache/sfskills-mcp/
+claude mcp add sfskills -- sfskills-mcp    # other clients: mcp/sfskills-mcp/docs/CONNECT.md
+sf org login web --alias my-dev            # optional; only the org tools need it
 ```
 
-The second command is not optional and `bootstrap.py` does not run it.
-`skill_embeddings.jsonl` is produced *only* by `scripts/build_skill_embeddings.py`
-— one vector per skill, 1,027 lines, **5.0 MB** (`du -h`) — and it is the file both
-`search_knowledge.py` and the MCP server actually read for vector signal.
+This repository is at sfskills-mcp 0.5.0 (`mcp/sfskills-mcp/pyproject.toml`); `python3 -m pip show
+sfskills-mcp` tells you which release PyPI installed. Client recipes for Claude Desktop, Cursor,
+Windsurf, Zed, VS Code, Cline, Continue, Codex CLI, Gemini CLI and Goose are in
+[`mcp/sfskills-mcp/docs/CONNECT.md`](mcp/sfskills-mcp/docs/CONNECT.md).
 
-A separate chunk-level file, `vector_index/embeddings.jsonl`, does exist in the
-pipeline: `python3 scripts/bootstrap.py --with-embeddings` builds it, and its
-own `--help` puts it at **+535 MB and hours of encode time**. It is absent from
-this checkout, it is not what the numbers below measure, and you almost
-certainly do not want it.
+## What a session looks like
 
-What the skill-level vectors buy, re-measured 2026-08-15 over 154 hand-written
-held-out queries (`python3 evals/measurement/run_heldout.py --json`, versus
-`--no-embeddings`):
+The smallest worked example, [`examples/builds/opp-amount-lock`](examples/builds/opp-amount-lock/),
+abbreviated and reconstructed from the build's own records (`reports/drivers-log.md`, `RUN.md`,
+`plan.json`). The ask is one line from Sales Ops.
 
-| retrieval config | Hit@1 | Hit@3 |
-|---|---:|---:|
-| lexical-only | 39.0% | 48.7% |
-| + skill vectors | **40.3%** | **53.9%** |
+```text
+you        /clarify-requirements "Add a validation rule so an Opportunity's Amount can't go
+           down after the Opportunity is Closed Won."
 
-So +1.3pp Hit@1 and +5.2pp Hit@3, with a 0.0% `Coverage: NONE` rate either way.
-An earlier re-measurement in this repo reported "no difference at all" and
-concluded embeddings were not worth installing; that conclusion does not
-survive the held-out set and is withdrawn. Both numbers describe *keyword
-search*. They say nothing about the routing path in step 1, which is the one a
-clone or plugin user actually exercises —
-[`docs/architecture.md`](./docs/architecture.md) keeps the three mechanisms
-apart and labels every accuracy figure with the one it measures.
+clarifier  scale: ask (D=1 metadata type, S=1 skill with question table, O=1 object,
+           integration=no; no override)
+           13 questions from admin/validation-rules and admin/requirements-gathering-for-sf:
+           7 blocking, written to CLARIFICATIONS.md; 6 pre-filled from their defaults
 
-> **Use `scripts/bootstrap.py`, not `scripts/build_index.py`.**
-> `build_index.py` reaches the same retrieval outcome through
-> `pipelines.sync_engine.write_state`, which rewrites every registry record. On
-> a fresh clone with no embedding backend installed it nulls `vector_embedding`
-> across all 1,027 records, leaving **1,029 modified tracked files** you then
-> have to recognise as noise and discard (`scripts/bootstrap.py:33-36`).
-> Bootstrap never calls `write_state`, so `git status` is clean when it
-> finishes.
+you        Q3 (who may still lower a Closed Won Amount?): Only the Sales Ops team (two people),
+           via a custom permission checked by the rule, not a profile exemption.
+           ...six more answers...
+           python3 scripts/build_plan.py ingest-answers plan.json
 
-### 3. Optional — let the AI read your real org
+planner    1 milestone, 1 step (M1-S01, metadata-builder), 4 acceptance tests
+verifier   one round, three lenses pass, 10 warnings, 0 blockers -> verified
 
-```bash
-python3 -m pip install -e mcp/sfskills-mcp   # published as sfskills-mcp on PyPI
-sf org login web --alias my-dev              # auth stays in the sf CLI
+you        python3 scripts/build_plan.py gate plan.json go approve --by "Sales Ops" \
+             --notes "Accepted knowingly: the step grants a bypass permission set to
+                      Sales Ops only (W1); historical violations stay in place (W6)"
+
+builder    objects/Opportunity/validationRules/Amount_Locked_After_Closed_Won.validationRule-meta.xml
+             AND(
+               NOT($Permission.Bypass_Opp_Amount_Lock),
+               NOT(ISNEW()),
+               NOT(ISBLANK(TEXT(StageName))),
+               ISPICKVAL(StageName, "Closed Won"),
+               Amount < PRIORVALUE(Amount)
+             )
+           + Bypass_Opp_Amount_Lock custom permission, Opp_Amount_Lock_Bypass permission set,
+             package.xml (API 67.0), deploy-order.md
+
+tester     check_validation_rules.py exit 0 · check_custom_permissions.py exit 0 · xml pass ·
+           manifest pass
+milestone  ready-with-findings, F-01..F-11
+
+you        python3 scripts/build_plan.py gate plan.json accept approve --by "Sales Ops" \
+             --notes "F-02: assigning the permission set is a post-deploy Setup action"
+
+next       printed, never run:
+           python3 scripts/mock_deploy.py plan.json --org-alias <alias> --milestone M1
 ```
 
-### What to expect
-
-All **1,034 of 1,034** skill packages are structurally complete — `SKILL.md`
-plus all four `references/` files, re-verified 2026-08-15 by walking
-`skills/*/*/`. Zero incomplete.
-
-Routing is a different question, and it is honest to say it is imperfect. Which
-package Claude opens is a model decision made from router descriptions and
-one-line glosses, so it is probabilistic and it does miss.
-
-The measurement worth quoting is **router accuracy: 88.3% → 96.1%** across a
-2026-08-14 rewrite of the router descriptions — that is which of the 12 routers
-gets opened, over 154 held-out queries, and it does not depend on any skill
-label.
-
-The measurement *not* worth quoting is the one this project published first. A
-headline of "79.2% → 92.2% Hit@1" for which *package* got opened was refuted on
-re-scoring: 41 of the baseline run's 43 misses had their expected label
-rewritten to whatever that same baseline had picked, so the comparison was
-circular, and exact-match scoring charges the router for the corpus's own
-near-duplicate pairs (`security/mfa-enforcement-strategy` vs
-`security/mfa-enforcement-patterns` is not a wrong answer). Re-scored against
-one label set the direction inverts — 10 regressions, 0 improvements. **That
-headline is retracted.** The full post-mortem, and the rule it produced —
-never score a corpus change against labels derived from a run of that same
-corpus — is in
-[`evals/measurement/README-model-routing.md`](./evals/measurement/README-model-routing.md).
-
-If Claude opens the wrong package, name the domain ("this is a sharing
-question") or run `python3 scripts/search_knowledge.py "<your question>"` after
-step 2.
-
----
-
-## Why you can trust the output
-
-- **Verified against a live org, in April 2026.** Three re-runnable harnesses:
-  `scripts/validate_probes_against_org.py` (every probe's SOQL executes),
-  `scripts/smoke_test_agents.py` (structural + dependency checks on the runtime
-  agents), and `scripts/validate_skill_factuality.py` (samples skills and
-  checks the field/object references actually exist). Say the date out loud:
-  the last run was April 2026, and the factuality run sampled 100 skills when
-  the corpus was smaller than it is now. The harnesses are current; re-run them
-  against your own org rather than trusting a stale number. Index:
-  [`docs/validation/README.md`](./docs/validation/README.md).
-- **Output quality has golden cases — for a thin slice.** P0 cases with
-  assertions, rubrics and reference answers live in `evals/golden/`; lint them
-  with `python3 evals/scripts/run_evals.py --structure`. Coverage is 10 of
-  1,027 packages (1.0%) across 4 of 11 domains — apex 4, integration 3, lwc 2,
-  flow 1. `admin` is the largest domain at 253 skills and has zero, as do
-  `data`, `security`, `devops`, `architect`, `agentforce` and `omnistudio`.
-- **Every claim is source-graded.** A 4-tier trust ladder — official docs beat
-  Trailhead/Architects beat community blogs beat forum signal — defined in
-  [`standards/source-hierarchy.md`](./standards/source-hierarchy.md) and
-  enforced by the content contract in
-  [`standards/skill-content-contract.md`](./standards/skill-content-contract.md).
-- **Structure is machine-checked.** `python3 scripts/validate_repo.py` must
-  exit 0 on every change; the full gate list is in
-  [`standards/validation-gates.md`](./standards/validation-gates.md). Agent
-  validation alone reports `Validated 76 agent(s); 0 error(s)`.
-
-Honest caveat, narrower than it used to be. Golden eval **structure** does gate
-a merge now (`.github/workflows/validate.yml`, the `evals` job's *golden eval
-structure* step), as do the 1,356 query fixtures inside the sharded validator
-run, agent-eval structure, and CLI/MCP retrieval parity across all 154 held-out
-queries (`.github/workflows/tests.yml`). What still gates nothing: eval
-**output quality** — no workflow scores an answer against its rubric — and
-neither retrieval benchmark, since `run_heldout.py`'s Hit@1/Hit@3 thresholds
-are not referenced by any workflow and the model-routing benchmark needs live
-agents to run at all. Nor is plugin drift gated: `build_plugin.py --check`
-exists and passes (`OK: 121 plugin artifact(s) match a fresh build`), but
-`grep -rn "build_plugin" .github/ .githooks/` returns nothing, so you have to
-run it yourself.
-
----
+One thing went wrong, and it shows what the loop is for. The plan's first blank guard,
+`NOT(ISBLANK(StageName))`, was copied from the skill's own GOOD example and did not compile in the
+operator's validate-only probe ("Field StageName is a picklist field"). `NOT(ISBLANK(TEXT(StageName)))`
+did. The step was amended and rebuilt, and `admin/validation-rules` now carries checker rule
+`VR-PICK-01`. The human made two gate decisions, read four distinct files, and spent about 20 minutes
+of a run that took about 170 (`reports/drivers-log.md`).
 
 ## What's in it
 
-**1,040 skills · 98 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1,040 skills · 98 agents (70 run-time, 14 build-time, 14 deprecated redirect stubs) · 92 slash
+commands · 50 MCP tools · 7 decision trees.**
 
-- **Skills** (`skills/`) — 1,040 structured guides across 11 domains: admin 254,
-  apex 159, architect 106, data 101, lwc 83, devops 70, flow 63, integration
-  61, agentforce 53, security 48, omnistudio 34. Each carries SKILL.md
-  instructions, worked examples, gotchas, Well-Architected mapping, and the
-  anti-pattern list shown above. Full catalog:
-  [`docs/SKILLS.md`](./docs/SKILLS.md).
-- **Shared canon** — `templates/` holds the one canonical TriggerHandler,
-  ApplicationLogger, SecurityUtils, HttpClient, TestDataFactory, LWC skeleton,
-  Flow fault path, and Agentforce action shell that every skill points at — 73
-  files ([`templates/README.md`](./templates/README.md)).
-  `standards/decision-trees/` holds seven trees — automation selection, flow
-  pattern, Agentforce capability, async tier, integration pattern, sharing
-  mechanism, performance tuning — consulted before any code gets written.
-- **Agents** (`agents/`) — instruction files any agentic AI can follow.
-  **Build-time (14)** maintain the library; **Run-time (70)** do real
-  Salesforce work in your codebase or org, across five tiers —
-  Developer + architecture tier (28), Admin accelerators — Tier 1 (14),
-  Strategic — Tier 2 (9), Vertical + governance — Tier 3 (11), Orchestration
-  — Tier 4 (8, `status: beta` — the requirement-to-build loop in
-  `standards/build-orchestration.md`). Fourteen more are deprecated redirect
-  stubs, for 98 `AGENT.md` files in total. Contract:
-  [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md);
-  roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md);
-  skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
-- **MCP server** (`mcp/sfskills-mcp/`) — 50 tools across skill / agent /
-  template / decision-tree retrieval plus live-org metadata and read-only
-  SOQL, so the agent can answer "does this already exist in my org?" without
-  asking you.
+### Skills by domain
 
-Shipped in v1:
+| Domain | Packages and scope |
+|---|---|
+| Admin | 261 — objects, fields, record types, page layouts, permission sets, reports, the record-access model (OWD, role hierarchy, sharing rules), and the requirements work before them |
+| Apex | 159 — triggers, governor limits, async processing, outbound HTTP callouts, security enforcement, test patterns |
+| Architect | 106 — multi-org strategy, scalability limits, licensing, Well-Architected reviews, architecture decision records |
+| Data | 101 — data model, migrations, bulk loads, query optimisation, deduplication at volume, archival, SOSL |
+| LWC | 83 — reactivity, wire adapters, component communication, accessibility, performance, security, Jest |
+| DevOps | 70 — source tracking, packaging, branching, CI/CD pipelines, environment strategy, deployment troubleshooting |
+| Flow | 63 — record-triggered, screen, scheduled and orchestration flows, bulkification, fault handling, testing |
+| Integration | 61 — REST and SOAP APIs, Bulk API 2.0, Platform Events, CDC, Pub/Sub, Named Credentials, middleware |
+| Agentforce | 53 — agents, topics, actions, prompt templates, grounding, guardrails, evaluation |
+| Security | 49 — org hardening, encryption, session policy, MFA, monitoring, incident response, record-access troubleshooting |
+| OmniStudio | 34 — OmniScripts, FlexCards, DataRaptors, Integration Procedures, DataPack deployment |
 
-- [x] 1,040 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
-- [x] Shared Apex / LWC / Flow / Agentforce templates and seven decision trees
+**Skills** (`skills/`) — 1,040 structured guides; the full catalog is [`docs/SKILLS.md`](docs/SKILLS.md).
+`templates/` holds the shared Apex, LWC, Flow and Agentforce building blocks the skills point at
+(TriggerHandler, TestDataFactory, HttpClient, the LWC skeleton, the Flow fault path), and
+`standards/decision-trees/` holds the routing trees an agent reads before choosing a technology:
+automation, flow pattern, Agentforce capability, async, integration pattern, sharing, performance.
+
+### Agents by tier
+
+**Run-time (70)** agents do Salesforce work in your codebase or org. **Build-time (14)** agents
+maintain the library. Fourteen more are deprecated stubs whose commands redirect to `/audit-router`.
+
+| Tier | Example commands |
+|---|---|
+| Developer + architecture (28) | `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/build-lwc`, `/score-deployment`, `/why-cant-user` |
+| Admin accelerators — Tier 1 (14) | `/design-object`, `/architect-perms`, `/build-flow`, `/preflight-load`, `/design-duplicate-rule`, `/design-path` |
+| Strategic — Tier 2 (9) | `/review-data-model`, `/run-fit-gap`, `/draft-stories`, `/audit-router`, `/decide-salesforce`, `/learn-salesforce` |
+| Vertical + governance — Tier 3 (11) | `/design-omni-channel`, `/design-sales-stages`, `/design-lead-routing`, `/plan-release-train`, `/assess-waf`, `/design-omnistudio` |
+| Orchestration — Tier 4 (8, beta) | `/clarify-requirements`, `/plan-build`, `/verify-plan`, `/run-build-step`, `/test-build-step`, `/keep-build-docs`, `/verify-milestone`, `/build-metadata` |
+
+`/build-from-requirements` walks the whole loop and `/run-build` walks one milestone. Every agent with
+its command and output: [`docs/agents.md`](docs/agents.md).
+
+### MCP tools
+
+**sfskills-mcp** (`mcp/sfskills-mcp/`) — 50 tools across skill, agent, template and decision-tree
+retrieval plus org probes. 23 run offline against the library and local files, 26 read from an org
+through the `sf` CLI, and one, `emit_envelope`, writes an agent's report under `docs/reports/`. None
+of them writes to your org. The list is long — the fifteen named here cover the usual paths:
+`search_skill` (lexical search over the 1,040-skill SfSkills corpus), `get_skill`, `suggest_agent`,
+`get_agent`, `describe_org`, `describe_object_full`, `list_custom_fields`, `list_flows_on_object`,
+`list_validation_rules`, `list_permission_sets`, `list_apex_classes`, `list_apex_triggers`,
+`tooling_query`, `validate_against_org` and `probe_automation_graph`. Credential-shaped strings in CLI output are
+scrubbed to `[REDACTED]` (`mcp/sfskills-mcp/tests/test_sf_cli_redaction.py`).
+
+### In this release
+
+- [x] 1,040 skills across 11 domains, each with `SKILL.md`, four reference files and a checker script
+- [x] 70 run-time agents, eight of them the beta requirement-to-build loop
+- [x] Five end-to-end build scenarios under `examples/builds/`
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
-- [x] MCP server on PyPI exposing the library plus live-org lookups
+- [x] Claude Code plugin 1.3.0 and sfskills-mcp 0.5.0
 
-Queue for what comes next: [`BACKLOG.yaml`](./BACKLOG.yaml) ·
-[`docs/queue-progress.md`](./docs/queue-progress.md).
+## Why you can trust the output
 
----
+- **Grounding.** Every package's `references/well-architected.md` has an `## Official Sources Used`
+  section, and `pipelines/validators.py` fails the build when one is missing. Sources are ranked in
+  four tiers by [`standards/source-hierarchy.md`](standards/source-hierarchy.md): official Salesforce
+  documentation first, and a lower tier never overrides a higher one on platform behaviour. The
+  official pages per domain are in
+  [`standards/official-salesforce-sources.md`](standards/official-salesforce-sources.md). A claim
+  that could not be checked against a fetched page carries an inline `UNVERIFIED (YYYY-MM-DD)` marker
+  instead of passing as fact.
+- **Checkers.** Every package ships a standard-library Python script under `scripts/`, usually
+  `check_<name>.py`, that inspects a project's metadata or source for that package's failure modes.
+  `scripts/validate_repo.py` compiles each one and runs its `--help`. The build loop runs the cited
+  checkers verbatim against every step and records each exit code in `tests/<step>/results.json`.
+- **Validators.** `python3 scripts/validate_repo.py` checks frontmatter, package shape, citations,
+  agent contracts and the counts in this README (`scripts/check_doc_counts.py`); every gate is listed
+  in [`standards/validation-gates.md`](standards/validation-gates.md). On every push and pull request
+  to `main`, `validate.yml` runs it in four shards together with `build_plugin.py --check`,
+  `export_skills.py --check` and `run_evals.py --structure`, and `tests.yml` runs the unit suites plus
+  a CLI/MCP retrieval parity check over 154 held-out queries.
+- **Golden evals.** `evals/golden/` holds 3 P0 cases (assertions, rubric, reference answer) for each
+  of 10 flagship skills: apex 4, integration 3, lwc 2, flow 1. Lint them with
+  `python3 evals/scripts/run_evals.py --structure`.
+- **Org dry runs.** `scripts/mock_deploy.py` assembles a build's artefacts and runs
+  `sf project deploy start --dry-run` against an org you name; it has no deploy option. The three
+  larger worked examples made 61 validate-only runs (32, 13 and 16). Most platform refusals they hit
+  are now checker rules, gotchas or `mock_deploy.py` fixes;
+  [the org as teacher](examples/builds/README.md#the-org-as-teacher) lists each one, including the
+  two not fixed yet.
 
-## MCP server
+## Limits
 
-50 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
-`search_skill` (lexical search
-over the 1,040-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
-`describe_org`, `list_custom_objects`, `list_flows_on_object`,
-`list_validation_rules`, `list_permission_sets`, `describe_permission_set`,
-`list_record_types`, `list_named_credentials`, `list_approval_processes`,
-`validate_against_org`, and `tooling_query`.
+- **Lexical search has no stemming.** The FTS5 index uses the default tokenizer and prefix-matches
+  query terms (`pipelines/lexical_index.py`): "trigger" finds "triggers", but "deleting" does not
+  find "delete", so natural-language phrasing can miss. In Claude Code, which package opens is a
+  model decision over router descriptions and rosters, and it can pick a neighbour. Name the domain
+  ("this is a sharing question") or run `scripts/search_knowledge.py`.
+- **Grounded, not fully verified.** Where an official page could not be fetched while authoring, the
+  claim carries an `UNVERIFIED (YYYY-MM-DD)` marker; `grep -rl "UNVERIFIED" skills/` lists every
+  file that has one. Check those claims before relying on them.
+- **The build loop is beta.** All eight Tier-4 agents are `status: beta`. Every worked example is
+  design-only, and its gates were signed by someone standing in for the requester.
+- **Org access is read-only; mock deploy is always `--dry-run`.** Validate-only compiles and checks
+  the build and runs the Apex tests you ask for. It cannot show runtime behaviour, run Jest or load
+  data; [what the loop could not see](examples/builds/README.md#what-the-loop-could-not-see) lists
+  each blind spot.
+- **Golden evals are thin.** 10 of 1,040 packages have them, in 4 of 11 domains, and CI lints their
+  structure without grading answers against the rubric.
+- **PyPI can trail the repository.** The badge above shows the published release.
 
-That label needs one correction, since the annotations are checkable. The 38
-registrations in `server.py` split 13 `_ANN_REPO_ONLY` + 24 `_ANN_ORG_READ` +
-1 `_ANN_ENVELOPE`, so **37 carry `readOnlyHint: true` and one does not**:
-`emit_envelope` writes a runtime agent's report to
-`docs/reports/<agent>/<run_id>.json` and `.md`. Nothing writes to your org
-under any tool. And "no secrets in output" is enforced rather than assumed —
-`sf_cli.py` scrubs credential-shaped strings to `[REDACTED]` at two layers, on
-both the success and the error path, with 20 tests behind it
-(`tests/test_sf_cli_redaction.py`).
+## Docs
 
-The server reports version **0.5.0** (`meta.health()` on this checkout).
-The latest release on PyPI is 0.4.7 as of 2026-08-17, so a `pip install`
-may trail the repo; `python3 -m pip show sfskills-mcp` tells you what you got.
+- [`docs/getting-started.md`](docs/getting-started.md): the three entry points, each with a check
+- [`docs/installing.md`](docs/installing.md): bootstrap, every flag, embeddings, MCP install paths
+- [`docs/installing-the-plugin.md`](docs/installing-the-plugin.md): the Claude Code plugin
+- [`docs/SKILLS.md`](docs/SKILLS.md): the generated skill catalog
+- [`docs/agents.md`](docs/agents.md): the generated agent roster
+- [`examples/builds/README.md`](examples/builds/README.md): the five scenarios and how to run one
+- [`standards/build-orchestration.md`](standards/build-orchestration.md): the build loop contract
+- [`docs/architecture.md`](docs/architecture.md): how routing, search and the MCP server fit together
+- [`docs/troubleshooting.md`](docs/troubleshooting.md): known failure modes and fixes
+- [`mcp/sfskills-mcp/README.md`](mcp/sfskills-mcp/README.md): MCP tools, prompts and resources
+- [`standards/decision-trees/README.md`](standards/decision-trees/README.md) and
+  [`templates/README.md`](templates/README.md): routing trees and shared building blocks
 
-Setup for Claude Code, Claude Desktop, Cursor, Windsurf, Zed, VS Code, Cline,
-Continue, Codex CLI, Gemini CLI, Goose and the generic stdio transport:
-[`mcp/sfskills-mcp/docs/CONNECT.md`](./mcp/sfskills-mcp/docs/CONNECT.md).
-Tool schemas and design notes: [`mcp/sfskills-mcp/README.md`](./mcp/sfskills-mcp/README.md).
+A browsable catalog site is generated by `scripts/build_site.py` and published by the Pages workflow
+(`.github/workflows/pages.yml`) when GitHub Pages is enabled for the repository.
 
----
+## Contributing
 
-## More
+[`CONTRIBUTING.md`](CONTRIBUTING.md) covers adding a skill, fixing one and reporting a gap. The short
+version:
 
-- [`docs/installing.md`](./docs/installing.md) — canonical setup reference: the one bootstrap command, every flag, what a fresh clone does and does not contain, embeddings cost, MCP install paths
-- [`docs/getting-started.md`](./docs/getting-started.md) — the three entry points, each with a verification step
-- [`docs/installing-the-plugin.md`](./docs/installing-the-plugin.md) — install the library as a Claude Code plugin
-- [`docs/README.md`](./docs/README.md) — documentation hub: getting started, architecture, FAQ, troubleshooting
-- [`docs/installing-single-agents.md`](./docs/installing-single-agents.md) — ship one agent into another project
-- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — add a skill, fix a skill, report a gap, flag stale content
+```bash
+python3 scripts/search_knowledge.py "<topic>"                          # search before you write
+python3 scripts/new_skill.py <domain> <name> --strict --agent <agent_id>
+python3 scripts/skill_sync.py --skill skills/<domain>/<name>
+python3 scripts/validate_repo.py
+```
 
----
+Please follow the [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). To cite SfSkills, use
+[`CITATION.cff`](CITATION.cff). Bugs and gaps go to
+[Issues](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues).
 
 ## License
 
-SfSkills is **source-available**, not open source. Read it freely; whether you
-may *use* it for free depends on how big your organisation is.
-
-- **Free** — individuals, freelancers and consultants (including on billable
-  client work), and any company with **fewer than 100 people and under USD 1M
-  in prior-year revenue**.
-- **Needs a commercial license** — everyone above either threshold, internal
-  enterprise use included.
-
-Governed by the [PolyForm Small Business License 1.0.0](./LICENSE)
-(`PolyForm-Small-Business-1.0.0`). [`LICENSING.md`](./LICENSING.md) explains the
-thresholds in plain English and how to buy a commercial license.
-
----
-
-**Pranav Nagrecha** — Salesforce Technical Architect ·
-[Issues](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/issues) ·
-[License](./LICENSE) · [Commercial use](./LICENSING.md)
+SfSkills is source-available under the [PolyForm Small Business License 1.0.0](./LICENSE)
+(`PolyForm-Small-Business-1.0.0`). It is not open source. Use is free when your organisation has
+fewer than 100 people and under USD 1M in prior-year revenue, which covers individual developers,
+freelancers and independent consultants, including on billable client work. Everyone else needs a
+commercial license; [`LICENSING.md`](LICENSING.md) explains the thresholds and how to buy one.
