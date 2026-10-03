@@ -22,23 +22,27 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: DPE Schedule Is Not Real-Time
+## Gotcha 3: Batch Tier Assessment Is Not Real-Time
 
-**What happens:** A member crosses the Gold threshold mid-day. Marketing sends an "upgrade" email. The member opens the loyalty portal — still showing Silver. The tier-promotion DPE doesn't run until 2 AM. Customer service ticket: "Salesforce loyalty is broken."
+**What happens:** A member crosses the Gold threshold mid-day. Marketing sends an "upgrade" email. The member opens the loyalty portal — still showing Silver. The tier process runs in batch and doesn't run until 2 AM. Customer service ticket: "Salesforce loyalty is broken."
 
-**When it bites you:** Whenever the architecture treats tier as real-time. The DPE schedule is the heartbeat; tier upgrades are real after the next DPE cycle, not on transaction post.
+**When it bites you:** Whenever the architecture treats tier as real-time without choosing real-time assessment. Tier changes come from the Change Tier process that Loyalty Management generates when the program manager enters minimum eligible balances in Manage Tier Eligibility and clicks Generate Rules; it is not a DPE job. That process runs in real time as a child of a Transaction Journal process, or in batches through Batch Management. Only the batch option lags.
 
-**How to handle:** Architecture must specify "tier upgrades are recognized within 24 hours of qualifying-balance crossing the threshold." Marketing communications align to that SLA — no real-time congratulations email until the DPE post is confirmed. If real-time tier is truly required, build a custom upgrade trigger and a reconciliation pipeline with the DPE; this is significant custom work.
+**How to handle:** Architecture must state the choice. If batch, specify "tier upgrades are recognized within the batch cadence (for example 24 hours) of the qualifying balance crossing the threshold" and align marketing communications to that SLA — no congratulations email until the tier change is confirmed. If real-time is required, use the real-time child-process option; no custom upgrade trigger is needed. Regenerate the process after any change to a tier's eligible balance or name.
+
+**Source:** Loyalty Management guide (Spring '26), Tier Assessment; Configure a Tier Assessment Process. Recorded in `skills/integration/loyalty-management-setup/references/gotchas.md` Gotcha 2.
 
 ---
 
-## Gotcha 4: Partner DPE Jobs Are Off By Default
+## Gotcha 4: DPE Templates Do Nothing Until Cloned, Activated, and Run From a Flow
 
 **What happens:** Architecture documents partner accrual and redemption factors. Implementation configures `LoyaltyProgramPartner` records. Members earn at partners but balances never update — the central ledger shows zero partner-earned points. Partners ask for a status update; the implementation team can't explain.
 
-**When it bites you:** Day-of-go-live for partner loyalty. The Partner DPE jobs (`Create Partner Ledgers`, `Update Partner Balance`) ship inactive in Loyalty Management. Activating them is a separate explicit step.
+**When it bites you:** Day-of-go-live for partner loyalty. Partner ledgers and balances come from **one** DPE definition, the `Create Partner Ledgers and Update Partner Balances` template. Loyalty Management ships DPE definitions as templates; they must be cloned, the clone activated, and the activated definition run from a flow (it appears in Flow Builder as an action). A team that searches for a second "Update Partner Balance" definition will not find one.
 
-**How to handle:** Architecture must list every DPE job that needs to be activated and on what cadence. The setup skill (`integration/loyalty-management-setup`) consumes this list and confirms activation in the implementation runbook. Validate via SOQL after the first scheduled run: `SELECT COUNT() FROM LoyaltyPartnerLedger` should match the partner-transaction-event count.
+**How to handle:** Architecture must list every DPE definition to clone and the flow cadence that runs it, and must set `BillingType` and the cost-per-unit fields on each `LoyaltyProgramPartner`. The setup skill (`integration/loyalty-management-setup`) consumes this list and confirms the clone, activation and flow in the implementation runbook. Validate via SOQL after the first flow run: `SELECT COUNT() FROM LoyaltyPartnerLedger` should match the partner-transaction-event count.
+
+**Source:** Loyalty Management guide (Spring '26), Create Partner Ledgers and Update Partner Balances Definition; Data Processing Engine Definitions (Clone the Template Data Processing Engine Definitions). Recorded in `skills/integration/loyalty-management-setup/references/gotchas.md` Gotchas 1 and 4.
 
 ---
 

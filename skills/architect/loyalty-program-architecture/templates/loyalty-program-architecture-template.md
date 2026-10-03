@@ -93,10 +93,9 @@ These targets drive every downstream decision. **Without them, the architecture 
 |  |  |  |  | own only / member balance / none |
 |  |  |  |  |  |
 
-**Partner DPE jobs to activate:**
-- [ ] Create Partner Ledgers (cadence: ___)
-- [ ] Update Partner Balance (cadence: ___)
-- [ ] Aggregate Partner Transactions for Reporting (cadence: ___)
+**Partner DPE definition to clone, activate and run from a flow (one definition):**
+- [ ] Create Partner Ledgers and Update Partner Balances (flow cadence: ___)
+- [ ] `BillingType` and cost-per-unit fields set on every `LoyaltyProgramPartner`
 
 ---
 
@@ -132,9 +131,8 @@ These targets drive every downstream decision. **Without them, the architecture 
 |---|---|---|---|
 | Reset Qualifying Points | Annual / Anniversary | none |  |
 | Aggregate/Expire Fixed Non-Qualifying Points | Monthly | none |  |
-| Tier Evaluation | Daily / Hourly | Aggregate must complete |  |
-| Create Partner Ledgers (if partner) | Daily |  |  |
-| Update Partner Balance (if partner) | Daily | Create Partner Ledgers must complete |  |
+| Change Tier process (generated; not a DPE job) | Real time / Batch (cadence: ___) | Qualifying balance current |  |
+| Create Partner Ledgers and Update Partner Balances (if partner; one definition) | Daily (flow cadence) | Partner transactions processed |  |
 
 ---
 

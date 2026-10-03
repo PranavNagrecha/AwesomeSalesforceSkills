@@ -57,10 +57,8 @@ Architecture document delivered:
 
 **Ledger:** all earning posts to the hotel central ledger via `LoyaltyMemberCurrency` records. Partner-side rewards consume central balance with the configured redemption factor.
 
-**Partner DPE jobs activated:**
-- `Create Partner Ledgers` — schedules nightly
-- `Update Partner Balance` — schedules nightly
-- `Aggregate Partner Transactions for Reporting` — weekly
+**Partner DPE definition activated (one, not two):**
+- `Create Partner Ledgers and Update Partner Balances` — cloned from the template, activated, and run nightly by a scheduled flow after partner transactions are processed
 
 **Partner ledger visibility:** partners see their own posted transactions but not member balances (privacy boundary). A partner-portal Experience Cloud site is built per the integration/loyalty-management-setup skill's member portal pattern.
 

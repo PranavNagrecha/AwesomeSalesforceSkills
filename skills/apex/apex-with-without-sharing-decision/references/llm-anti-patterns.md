@@ -137,37 +137,46 @@ sole enforcement mechanism on a bare class.
 
 ---
 
-## Anti-Pattern 5: Assuming Triggers run `with sharing`
+## Anti-Pattern 5: Getting a trigger's sharing context wrong in either direction
 
-**What the LLM generates:** Suggests `with sharing` on a trigger
-handler class to "make the trigger respect sharing." But the trigger
-body itself runs in system mode at **every** API version — including
-67.0+, where the default-mode change does not reach it. DML in the
-trigger ignores sharing, FLS, and object permissions regardless of the
-handler keyword, and a `.trigger` file cannot carry a class-level sharing
-keyword of its own. Per-statement enforcement does work inside a trigger
-body (`WITH USER_MODE`, `as user`, `AccessLevel.USER_MODE`) — it is the
-default that is system mode. Only SOQL inside the handler is affected by
-the handler's keyword.
+**What the LLM generates:** Either (a) "triggers always run in system
+mode" — stated flatly with no API version — or (b) `with sharing` on a
+trigger handler class to "make the trigger respect sharing." Both
+mis-state the split. A trigger cannot declare a sharing keyword and
+always carries an implicit `without sharing` context, but at trigger API
+**67.0+** its own SOQL, SOSL, DML and `Database` methods run in **user
+mode** unless system mode is stated, which overrides that implicit
+`without sharing` and applies the running user's sharing, FLS and object
+permissions. Before 67.0 they run in system mode. The handler's keyword
+never governs the trigger body's own operations — only SOQL and DML
+inside the handler.
 
 **Why it happens:** Model assumes trigger and handler share a single
-sharing context. They don't.
+sharing context, and that the pre-67.0 system-mode default still holds.
+Neither is true.
 
 **Correct pattern:**
 
 ```apex
-// Trigger body always runs in system mode, at every API version — the
-// handler keyword only affects SOQL queries inside the handler class.
+// Trigger body: at API 67.0+ these operations run in user mode by default;
+// before 67.0 they run in system mode. State the mode where it matters.
 trigger AccountTrigger on Account (before insert, after update) {
-    new AccountTriggerHandler().run();  // DML inside runs system-context
+    new AccountTriggerHandler().run();
 }
 
-// Most handlers want `without sharing` deliberately — the trigger is
-// system code and queries should match. Declare it explicitly.
+// The handler keyword governs only the handler's own queries/DML. Declare
+// it explicitly, and state the access mode on statements that need
+// all records.
 public without sharing class AccountTriggerHandler {
-    public void run() { /* ... */ }
+    public void run() {
+        List<Account> all = [SELECT Id FROM Account WITH SYSTEM_MODE LIMIT 10];
+    }
 }
 ```
+
+**Source:** Apex Developer Guide v67.0, *Using the with sharing, without
+sharing, and inherited sharing Keywords* (Implementation in Apex
+Triggers).
 
 **Detection hint:** PRs adding `with sharing` to a trigger handler
 without a clear story for why the queries inside the handler should be

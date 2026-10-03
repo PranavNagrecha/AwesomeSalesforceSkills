@@ -47,23 +47,23 @@ Redemption rules MUST read non-qualifying balance, never qualifying.
 
 ## Anti-Pattern 3: Promising Real-Time Tier Upgrades
 
-**What the LLM generates:** "When a member crosses the Gold threshold, send them a real-time congratulations email with their new tier benefits."
+**What the LLM generates:** "When a member crosses the Gold threshold, send them a real-time congratulations email with their new tier benefits." Or the opposite error: "tier evaluation is a scheduled DPE job, so real-time tier needs custom code."
 
-**Why it happens:** Real-time customer experiences are a popular pattern in modern app architecture. The model doesn't know that Loyalty Management's tier evaluation runs as a scheduled DPE job, not a real-time trigger.
+**Why it happens:** The model either assumes real-time is free, or assumes tier assessment is a DPE job. Tier changes come from the Change Tier process generated from Manage Tier Eligibility (Generate Rules). It runs in real time as a child of a Transaction Journal process, or in batches through Batch Management. The DPE definitions (balance calculation, Reset Qualifying Points, expiration, partner ledgers) are templates that run only when a flow calls the activated clone.
 
 **Correct pattern:**
 
 ```
-Tier upgrades are recognized within 24 hours of qualifying-balance
-crossing the threshold (when the next DPE cycle runs).
-
-If the use case truly needs real-time:
-  - Build a custom upgrade trigger on LoyaltyMemberCurrency updates.
-  - Reconcile against DPE on each cycle to handle edge cases.
-  - This is significant custom work, not a config switch.
+Choose and document the tier-assessment mode:
+  - Real time: Change Tier runs as a child of the Transaction Journal
+    process; upgrades land with the transaction. Costs work per transaction.
+  - Batch: Change Tier runs through Batch Management; upgrades are
+    recognized within the batch cadence (for example 24 hours).
+Marketing communications align to whichever SLA is chosen.
+No custom upgrade trigger is needed for either mode.
 ```
 
-**Detection hint:** If the answer treats tier promotion as instant or transaction-synchronous, the model is missing the DPE schedule constraint. Ask whether the customer accepts a 24-hour SLA before promising real-time.
+**Detection hint:** If the answer treats tier promotion as instant without naming the real-time Change Tier option, or builds a custom trigger to get real-time tier, it is missing the generated Change Tier process. Ask which mode the customer needs before promising an SLA.
 
 ---
 
@@ -79,8 +79,8 @@ If the use case truly needs real-time:
 Architecture must specify the reversal pipeline:
   refund/cancel/chargeback event
     → posts a negative qualifying transaction
-    → DPE re-aggregates qualifying balance
-    → tier evaluation runs
+    → qualifying balance is recalculated (DPE definition run from a flow)
+    → the Change Tier process re-assesses the member
     → member tier is descaled if they fall below threshold
     → notification email pipeline informs member of the change
 

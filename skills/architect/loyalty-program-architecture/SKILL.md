@@ -41,9 +41,9 @@ outputs:
   - "Multi-region federation design (if applicable): single program vs federated programs"
   - "Tier-descalation policy with grace-period and lookback-window rules"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-10-03
 ---
 
 # Loyalty Program Architecture
@@ -60,7 +60,7 @@ Gather this context before working on anything in this domain:
 - Salesforce Loyalty Management's **two-currency model** (qualifying vs non-qualifying) is non-negotiable: qualifying points drive tier advancement, non-qualifying points drive redemption. Conflating them in design produces an unimplementable program. Confirm the customer understands the split before tier design begins.
 - **Tier inflation is the leading cause of loyalty-program failure**: thresholds are set generously at launch to drive adoption, then half the customer base lands in the top tier within 18 months and the program loses differentiation. Build tier-descalation into the architecture, not as an afterthought.
 - Partner loyalty is a separate architectural problem from B2C loyalty. The `LoyaltyProgramPartner` model accommodates partner-earned and partner-redeemed transactions but architectural decisions (accrual factor, redemption factor, ledger transparency, fraud isolation) must be made before configuration.
-- The DPE (Data Processing Engine) is the heartbeat of the program. **Architecture must be DPE-aware**: the cadence of "Reset Qualifying Points," "Aggregate Non-Qualifying Points," and "Update Partner Balance" jobs determines what's in scope for tier-realtime vs tier-batch decisions.
+- The DPE (Data Processing Engine) runs the program's batch maintenance: point-balance calculation, Reset Qualifying Points, point expiration, and, for partner programs, the single Create Partner Ledgers and Update Partner Balances definition. The shipped definitions are templates: each must be cloned, activated, and run from a flow. Tier changes are not a DPE job; they come from a generated Change Tier process that runs in real time or in batches. **Architecture must be DPE-aware**: the flow cadence for the cloned definitions, plus the real-time vs batch choice for the Change Tier process, determines the tier-upgrade SLA.
 
 ---
 
@@ -129,7 +129,7 @@ Most programs spend 2 years promoting members up the ladder, then realize they h
 |---|---|---|
 | Reset cadence | Annual, biennial, never | Annual is most common; aligns with most marketing cycles |
 | Grace period | Same-day drop, or 3–12 month soft landing at current tier with lower earn rate | Soft landing is the better member experience but adds DPE complexity |
-| Lookback window | Calendar year, or rolling 12 months | Rolling smooths the member experience but DPE re-evaluates monthly |
+| Lookback window | Calendar year, or rolling 12 months | Rolling smooths the member experience but the tier process must re-assess monthly |
 | Lifetime status | Yes (e.g., 1M miles → Platinum forever) or no | Lifetime ledger never expires; plan a rolled-up summary on the member object |
 
 Without an architectural answer, each of these gets implemented ad-hoc and produces a mess.
@@ -160,7 +160,7 @@ Without an architectural answer, each of these gets implemented ad-hoc and produ
 
 1. Central program owns the master `LoyaltyProgram` and member ledger.
 2. Each partner is a `LoyaltyProgramPartner` with explicit accrual factor (e.g., 0.5 for non-strategic partners, 1.0 for parity, 1.5 for promo partners).
-3. Partner-earned transactions post to the central ledger via Partner DPE jobs (`Create Partner Ledgers`, `Update Partner Balance` — both must be activated).
+3. Partner-earned transactions post to the central ledger through **one** DPE definition, cloned from the `Create Partner Ledgers and Update Partner Balances` template, activated, and run from a flow after partner transactions are processed. Set `BillingType` and the cost-per-unit fields on each `LoyaltyProgramPartner` first. Source: Loyalty Management guide (Spring '26), Create Partner Ledgers and Update Partner Balances Definition; see `integration/loyalty-management-setup` Gotcha 4.
 4. Redemption happens centrally; partner-side rewards come out of the central non-qualifying balance with a configured redemption factor.
 5. Fraud controls per partner: rate limits per partner-day to catch a compromised partner-feed.
 
@@ -239,8 +239,8 @@ Run through these before marking architectural work in this area complete:
 
 1. **Point inflation is the most common program failure** — without a descalation rule, members concentrate in the top tier within 18 months.
 2. **Identical qualifying:non-qualifying ratio invites mental collapse** — marketing teams will write redemption rules against qualifying balance and break tier logic.
-3. **DPE schedule constraints on architecture** — qualifying-reset DPE runs on a schedule, not real-time; "instant tier upgrade on hitting the threshold" is not a supported pattern.
-4. **Partner DPE jobs are not on by default** — architecture must specify which jobs are activated and on what cadence.
+3. **Tier upgrades follow the Change Tier process, not a DPE job** — the generated process runs in real time (as a child of a Transaction Journal process) or in batches through Batch Management; the qualifying-reset DPE definition runs only when a flow calls it. Architecture must choose real-time vs batch and state the resulting upgrade SLA. Source: Loyalty Management guide (Spring '26), Tier Assessment; see `integration/loyalty-management-setup` Gotcha 2.
+4. **DPE templates do nothing until cloned, activated, and run from a flow** — architecture must specify which definitions are cloned and what flow cadence runs them. Partner ledgers and balances need only one definition.
 5. **Tier-credit reversals aren't automatic** — return/cancel events must be wired into the architecture or members earn tier on phantom transactions.
 
 ---

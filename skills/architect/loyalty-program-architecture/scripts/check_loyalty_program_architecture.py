@@ -13,8 +13,9 @@ Checks (architectural-review-oriented):
      not visibly distinct (architecture mandate: ratio asymmetry).
   4. LoyaltyTierGroup metadata — flag if program has 0 or > 5 tiers (canonical
      baseline is 3 tiers; > 5 needs explicit justification).
-  5. DPE definitions — flag if Partner DPE jobs (`Create Partner Ledgers`,
-     `Update Partner Balance`) are referenced as inactive.
+  5. DPE definitions — flag if LoyaltyProgramPartner records exist but no
+     Partner DPE definition (the single `Create Partner Ledgers and Update
+     Partner Balances` definition, cloned from the template) is in scope.
 
 Usage:
     python3 check_loyalty_program_architecture.py
@@ -140,8 +141,9 @@ def check_partner_dpe_activation(root: Path) -> list[str]:
     if needs_partner and not has_partner_dpe:
         issues.append(
             "BLOCKER: LoyaltyProgramPartner records exist but no Partner-DPE job metadata in scope. "
-            "Partner DPE jobs ('Create Partner Ledgers', 'Update Partner Balance') ship inactive — without "
-            "explicit activation, partner balances are never calculated."
+            "Partner ledgers and balances come from ONE DPE definition ('Create Partner Ledgers and Update "
+            "Partner Balances'); the shipped template must be cloned, activated and run from a flow, or "
+            "partner balances are never calculated."
         )
     return issues
 

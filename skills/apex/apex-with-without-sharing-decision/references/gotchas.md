@@ -79,13 +79,20 @@ they're seeing org-wide totals.
 
 ---
 
-## Gotcha 5: A bare trigger handler's query mode is version-gated — the trigger body's is not
+## Gotcha 5: The trigger body's own query and DML mode is version-gated, and so is a bare handler's
 
-**What happens:** A trigger handler class with no sharing keyword. The
-trigger body itself runs in system mode at **every** API version — the
-Summer '26 / 67.0 default-mode change does not reach it, so DML in the
-trigger happens regardless of the handler keyword. What the keyword does
-govern is the handler's own SOQL, and that default inverted at 67.0. At
+**What happens:** A trigger handler class with no sharing keyword, called
+from a trigger. A trigger itself cannot declare a sharing keyword and
+always runs in an implicit `without sharing` context, but its own
+database operations are version-split. At trigger **API 67.0+**, SOQL,
+SOSL, DML and `Database` methods in the trigger body run in **user mode**
+unless system mode is stated, and user mode overrides the implicit
+`without sharing` — the running user's sharing, FLS and object
+permissions apply, so a trigger saved at 67.0 can suddenly see fewer
+related records or throw on a field the user cannot read. Before 67.0 the
+same operations run in **system mode**. The handler keyword does not
+change the trigger body's own operations; what it governs is the
+handler's own SOQL, and that default inverted at 67.0 too. At
 **API ≤ 66.0**, `SELECT Id FROM Account WHERE Id IN :triggerNew` in a
 bare handler ran without sharing: records showed up that the actor could
 not normally see, and downstream logic (e.g., assignment rules driven by
@@ -97,10 +104,21 @@ cross-perimeter reads silently starts filtering them.
 declaration; especially common in trigger-handler frameworks where the
 base class is bare.
 
-**How to avoid:** explicitly declare a keyword on every handler. Most
-handlers want `without sharing` (system context for the trigger is
-intentional), but the keyword must be deliberate and documented, not
-defaulted.
+**How to avoid:** explicitly declare a keyword on every handler, and
+state an access mode on every database operation in the trigger body
+itself (`WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` only where all
+records are genuinely needed). Most handlers want `without sharing`, but
+the keyword must be deliberate and documented, not defaulted. Do not
+assume "triggers are system mode" on a class or trigger saved at 67.0+.
+
+**Source:** Apex Developer Guide v67.0, *Using the with sharing, without
+sharing, and inherited sharing Keywords* (Implementation in Apex
+Triggers): "Triggers always run implicitly in a without sharing context",
+and database operations in trigger bodies "run in user mode unless system
+mode is explicitly specified. User mode overrides the trigger's without
+sharing context and effectively enforces a with sharing context in the
+trigger body." Also recorded in
+`skills/apex/soql-security/references/gotchas.md` Gotcha 6.
 
 ---
 

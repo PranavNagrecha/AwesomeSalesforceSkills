@@ -33,9 +33,9 @@ outputs:
   - Per-query override plan using WITH USER_MODE where appropriate
   - Reviewer checklist confirming inherited-method risks are handled
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-08-13
+updated: 2026-10-03
 ---
 
 # Apex With / Without / Inherited Sharing Decision
@@ -202,7 +202,7 @@ integration user can silently miss records and cause incomplete jobs.
 | `@RestResource` exposed to a community / partner | `with sharing` | External caller authenticates as a user |
 | Reusable selector / service / domain class | `inherited sharing` | Caller chooses; you remain neutral |
 | Batch / Schedulable system job | `without sharing` + `// reason:` | Cross-perimeter aggregation |
-| Trigger handler | `without sharing` (typical) | The trigger body runs in system mode at **every** API version — 67.0 does not change that; the handler's keyword governs only the handler's own queries |
+| Trigger handler | `without sharing` (typical) | A trigger always carries an implicit `without sharing` context, but its own SOQL and DML are version-split: user mode (running user's sharing, FLS, object permissions applied) at API 67.0+, system mode before 67.0. The handler's keyword governs only the handler's own queries |
 | Site / guest user controller | `with sharing` (mandatory for guest) | Guest perimeter must not be elevated |
 | Managed-package internal class | `without sharing` (Salesforce-enforced) | Subscriber's keyword cannot override package |
 | One-off elevated query inside a `with sharing` class | keep class `with sharing`, use `WITH SYSTEM_MODE` per-query | Minimum-blast-radius elevation |
@@ -247,13 +247,20 @@ When this skill activates, the agent runs these steps in order:
    subscriber.** When a subscriber org calls a managed-package
    `@AuraEnabled` class, the package's declared keyword is enforced; the
    subscriber cannot tighten it.
-3. **Triggers run in system mode at every API version.** The 67.0
-   default-mode change does not reach the trigger body: it bypasses
-   sharing, FLS, and object permissions, and a `.trigger` file cannot
-   carry a class-level sharing keyword. Per-statement enforcement still
-   works inside a trigger (`WITH USER_MODE` on its SOQL, `as user` /
-   `AccessLevel.USER_MODE` on its DML) — but the default is system mode,
-   so delegate to a handler class and declare an explicit keyword there.
+3. **A trigger's own queries and DML are version-split.** A `.trigger`
+   file cannot carry a sharing keyword and always runs in an implicit
+   `without sharing` context. At trigger API **67.0 and later**, SOQL,
+   SOSL, DML and `Database` methods in the trigger body run in **user
+   mode** unless system mode is stated; user mode overrides the implicit
+   `without sharing`, so the running user's sharing, FLS and object
+   permissions all apply. Before 67.0 they run in **system mode**. State
+   the mode on every operation in a trigger (`WITH SYSTEM_MODE` only
+   where the trigger genuinely needs all records) and delegate to a
+   handler class that declares an explicit keyword.
+   Source: Apex Developer Guide v67.0, *Using the with sharing, without
+   sharing, and inherited sharing Keywords* (Implementation in Apex
+   Triggers) — recorded in `skills/apex/soql-security/references/gotchas.md`
+   Gotcha 6.
 4. **Aggregate queries (`SUM`, `COUNT`, `AVG`) respect class sharing.**
    A `with sharing` class running `SELECT COUNT() FROM Opportunity` only
    counts opportunities the user can see — surprising for dashboards.
