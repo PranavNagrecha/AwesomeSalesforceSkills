@@ -4,6 +4,7 @@
     "0573d73e1b5dcfc3d4ec",
     "058c4403e2f2471aa999",
     "09a827b4f895a117bad5",
+    "0b6841f7ac22dbb0195b",
     "0d07ae087c69984bf120",
     "0e56f5f2a75bf85de681",
     "11f5d2f0520715186541",
@@ -81,7 +82,7 @@
     "fe11f6ce68526d1cf41a",
     "ffdd36e34a933043b041"
   ],
-  "content_hash": "3add7204400ba62ea6ca8f447b2546d613fbd2898c990b4aa578fbb5096ba52f",
+  "content_hash": "fa3f6350e9031c845222a2f5dd76ac93cc806f15a59495b464b1ba5a577acf0e",
   "dependencies": [],
   "description": "Use this skill when designing hybrid on-premises-to-Salesforce integration architectures: DMZ relay patterns, reverse proxy configuration, VPN connectivity, and Salesforce Private Connect (AWS PrivateLink) topology. Trigger keywords: on-premises to Salesforce integration network topology, DMZ relay Salesforce, hybrid integration VPN, Private Connect architecture, data residency Salesforce hybrid, route Salesforce callouts privately to our data center. NOT for choosing the authentication mechanism \u2014 mTLS, OAuth flow, API gateway placement \u2014 use architect/integration-security-architecture. NOT for the Setup steps that configure Private Connect peering \u2014 use integration/private-connect-setup.",
   "file_location": "skills/architect/hybrid-integration-architecture",
@@ -95,8 +96,8 @@
   "name": "hybrid-integration-architecture",
   "official_sources": [
     "Salesforce Help \u2014 Salesforce Private Connect: https://help.salesforce.com/s/articleView?id=sf.private_connect_overview.htm (help.salesforce.com does not fetch; licensing and enablement claims marked UNVERIFIED)",
-    "Salesforce Architects \u2014 Integration Patterns: https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html (HTTP 403 on 2026-10-03; the PDF edition below was read instead)",
-    "Salesforce Architects \u2014 Hyperforce Architecture: https://architect.salesforce.com/docs/architect/infrastructure/guide/hyperforce-architecture (HTTP 403 on 2026-10-03, not re-read)",
+    "Salesforce Architects \u2014 Integration Patterns: https://architect.salesforce.com/docs/architect/fundamentals/guide/integration-patterns.html (returned content to plain curl on 2026-10-03; the PDF edition below was the one read)",
+    "Salesforce Architects \u2014 Hyperforce Architecture: https://architect.salesforce.com/docs/architect/infrastructure/guide/hyperforce-architecture (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)",
     "MuleSoft Docs \u2014 Hybrid Deployment: https://docs.mulesoft.com/runtime-manager/deployment-strategies (not re-read on 2026-10-03)",
     "Salesforce Trust \u2014 IP Ranges: https://help.salesforce.com/s/articleView?id=sf.salesforce_app_ip_allowlist.htm (help.salesforce.com does not fetch)",
     "Salesforce published IP ranges (machine-readable): https://ip-ranges.salesforce.com/ip-ranges.json: fetched 2026-10-03: `syncToken`, `createDate` 2026-07-06, prefixes for 24 AWS and GCP regions; basis for correcting the \"ephemeral IPs\" claim",

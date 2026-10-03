@@ -188,7 +188,7 @@
     "fe5f5c8dea4a7a8ff015",
     "ff6988f8237de91b311b"
   ],
-  "content_hash": "0dc843c0ef7c84b698875732c399233f219fcf2979f13c950b359ec9bf576f9c",
+  "content_hash": "08bfea4e80eca096063ff4c26ac39aa5281500f2e50105f07628f649f627efb6",
   "dependencies": [
     "architect/security-architecture-review",
     "security/platform-encryption"
@@ -207,8 +207,8 @@
   ],
   "name": "government-cloud-compliance",
   "official_sources": [
-    "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)",
-    "Salesforce Well-Architected: Trusted \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (HTTP 403 on 2026-10-03, not re-read)",
+    "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)",
+    "Salesforce Well-Architected: Trusted \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)",
     "Salesforce Government Cloud Overview \u2014 https://www.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Trust and Compliance documentation \u2014 https://compliance.salesforce.com/  (page retired \u2014 see host index for current equivalent)",
     "FedRAMP Authorization for Salesforce Government Cloud \u2014 https://marketplace.fedramp.gov/#/product/salesforce-government-cloud",
@@ -219,7 +219,7 @@
     "CMS Acceptable Risk Safeguards (ARS) \u2014 https://www.cms.gov/  (page retired \u2014 see host index for current equivalent)",
     "Salesforce Hyperforce Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.hyperforce_overview.htm (help.salesforce.com does not fetch; Hyperforce claims resting on it are marked UNVERIFIED)",
     "Salesforce Shield Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.security_shield.htm (help.salesforce.com does not fetch; not re-read)",
-    "NIST, FedRAMP Marketplace, DISA and CMS pages above are external government sources; they were not fetched on 2026-10-03, and claims resting only on them are marked UNVERIFIED in the skill",
+    "NIST, FedRAMP Marketplace, DISA and CMS pages above are external government sources; they returned pages on 2026-10-03 but were not read for content in this pass, so claims resting only on them are marked UNVERIFIED in the skill",
     "Salesforce Government Cloud guide (Spring '26 edition): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/government_cloud.pdf. Offerings (Government Cloud Plus: FedRAMP High P-ATO from the JAB, DoD IL4, IRS 1075, NIST SP 800-171; Government Cloud Plus - Defense: IL5 on dedicated DoD infrastructure), authorized versus interoperable products, compliance documentation access (package FR2003061248), Shield encryption and FIPS (deterministic not validated), information spillage and its cleanup steps, AppExchange boundary and labels, package install and LMA limits, 3PAO-recommended control list, Field Service compliance and Advanced Security Settings, Salesforce Express Connect routing and the `.mil` exclusion",
     "Quickstart Your Einstein Generative AI Solution (Spring '26 edition): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf. \"Considerations for Agents\": agents are not available for Government Cloud",
     "Salesforce Security Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_security_impl_guide.pdf. \"Field History Tracking\" (18/24 months without Field Audit Trail; until deleted with it), `HistoryRetentionPolicy`, MFA requirement for logins",

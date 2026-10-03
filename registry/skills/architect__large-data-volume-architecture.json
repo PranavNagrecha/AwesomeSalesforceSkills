@@ -10,6 +10,7 @@
     "11c4c63d1dc93edbb7fb",
     "1212a2a18363e98b8458",
     "16339a99aaf7087f9cdf",
+    "18ab626a9fb6b66d9a2f",
     "1bd3a4705bb24a4c4919",
     "1fd1f6b8a9a00fba6505",
     "201b16fc074042c003fb",
@@ -75,7 +76,7 @@
     "f670278d82062e825462",
     "fc47c1965838c4aa39c0"
   ],
-  "content_hash": "92eeccfe9663fa43e8694399b6c6644ddc9a536c211c4cfd38a0cda444700a24",
+  "content_hash": "a1faee9b5ee297706297ab12c201bf4896df27b7e9e05bcdaf32447ef4fbfff6",
   "dependencies": [],
   "description": "Use when designing or reviewing org-wide large data volume (LDV) concerns: query optimizer behavior and selectivity, custom indexes and skinny tables, sharing and ownership skew, bulk data loads, archival to Big Objects, and divisions. Triggers: LDV architecture review, skinny table request, ownership skew hurting sharing, millions of records on custom object, bulk load performance, 40 million rows on one object and queries crawl, tens of millions of records and everything is slow, object has grown too large and reports time out. NOT for rewriting individual SOQL statements or interpreting Query Plan output in isolation (use data/soql-query-optimization), sales-only Opportunity and Account skew playbooks (use architect/high-volume-sales-data-architecture), or Marketing Cloud data extensions.",
   "file_location": "skills/architect/large-data-volume-architecture",
@@ -89,7 +90,7 @@
   "name": "large-data-volume-architecture",
   "official_sources": [
     "Salesforce Large Data Volumes Best Practices \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/ldv_deployments_introduction.htm (read as the PDF edition below on 2026-10-03)",
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)",
     "Best Practices for Deployments with Large Data Volumes, Summer '26 (PDF): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_large_data_volumes_bp.pdf. LDV definition, \"Skinny Tables\" (objects, field types, 200 columns, no cross-object fields, Full sandbox copy, Support-managed definition), \"Indexes\" (Support or Metadata API, platform-maintained indexes, External ID types, non-indexable field types), \"Index Tables\" (nulls excluded by default), \"Standard and Custom Indexed Fields\" (30%/15%, 10%/5%, AND 20%, OR 10%, LIKE samples 100,000), \"Two-Column Custom Indexes\", \"Divisions\" (>1M rows, >35 licences, via Support), \"Defer Sharing Calculation\", best-practice tables (10,000 records per owner and per parent, group by ParentId, Bulk API hard delete for 1M+, Bulk API 2.0 query for >1M results, LIMIT 100,000)",
     "Local corpus copy: `knowledge/imports/salesforce-large-data-volumes-best-practices.md`",
     "REST API Developer Guide, Summer '26 (PDF): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_rest.pdf. \"Get Feedback on Query Performance (Beta)\" (`explain` parameter, `leadingOperationType`, `relativeCost`) and \"Record Count\" (cached snapshot, exclusions)",

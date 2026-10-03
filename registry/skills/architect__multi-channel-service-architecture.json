@@ -68,6 +68,7 @@
     "98f47708ca89243e393d",
     "999b5bc0fac402c98bc1",
     "9bf37c471c02e335df4b",
+    "9c1af2f6995567f3cf68",
     "9ca607dcef001b8a9a89",
     "9e4d5fe7219c658f23d6",
     "a02a64e9713c826486fc",
@@ -104,7 +105,7 @@
     "f44684263af71762dfd2",
     "fe817695804c51437d18"
   ],
-  "content_hash": "b43154edd9b1d77e0c0d2c914c528e9b25d3ffc359c9b79d46467830df2e32da",
+  "content_hash": "f802dafcca736595fb80047569dd30d19dd9e3bd6523aaffab7c303a44dce449",
   "dependencies": [],
   "description": "Use when designing a unified multi-channel service strategy spanning phone (Service Cloud Voice), email (Email-to-Case), chat (Messaging for In-App/Web), social, and SMS with Omni-Channel routing. Triggers: channel prioritization, unified routing across channels, service channel migration, multi-channel capacity planning. NOT for end-to-end contact centre design - use architect/service-cloud-architecture. NOT for enabling Omni-Channel and creating Service Channels - use admin/omni-channel-routing-setup.",
   "file_location": "skills/architect/multi-channel-service-architecture",
@@ -137,7 +138,11 @@
     "skills/architect/multi-channel-service-architecture/references/well-architected.md"
   ],
   "scripts": [
-    "skills/architect/multi-channel-service-architecture/scripts/check_multi_channel_service_architecture.py"
+    "skills/architect/multi-channel-service-architecture/scripts/check_multi_channel_service_architecture.py",
+    "skills/architect/multi-channel-service-architecture/scripts/fixtures/capacity-zero-negative/README.md",
+    "skills/architect/multi-channel-service-architecture/scripts/fixtures/capacity-zero-negative/queueRoutingConfigs/Chat.queueRoutingConfig-meta.xml",
+    "skills/architect/multi-channel-service-architecture/scripts/fixtures/capacity-zero-positive/README.md",
+    "skills/architect/multi-channel-service-architecture/scripts/fixtures/capacity-zero-positive/queueRoutingConfigs/Chat.queueRoutingConfig-meta.xml"
   ],
   "status": "stable",
   "tags": [

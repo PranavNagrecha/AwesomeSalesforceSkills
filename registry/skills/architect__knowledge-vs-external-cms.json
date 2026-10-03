@@ -90,7 +90,7 @@
     "fa58e0d2d420b6db5265",
     "fd794c4eafa8e6e6601b"
   ],
-  "content_hash": "120354fe0ca2dab61622d481f70f489f6d7e306bb217cc6029f75793c960f218",
+  "content_hash": "fc39be73ac8acdd4b411f3ba877dd558c4c0aafd33db28febea3cff4d9dfb5ba",
   "dependencies": [],
   "description": "Use when deciding between Salesforce Knowledge, an external CMS (Contentful, WordPress, AEM), or a hybrid content strategy. Triggers: 'should we use Salesforce Knowledge or a CMS', 'content federation across Salesforce and headless CMS', 'CMS Connect for Experience Cloud', 'agent-facing vs customer-facing content architecture', 'decide where our help articles should live'. NOT for setting up CMS workspaces, content types or publishing \u2014 use admin/experience-cloud-cms-content. NOT for building a React or mobile frontend on the CMS delivery API \u2014 use lwc/headless-experience-cloud.",
   "file_location": "skills/architect/knowledge-vs-external-cms",
@@ -103,7 +103,7 @@
   ],
   "name": "knowledge-vs-external-cms",
   "official_sources": [
-    "Salesforce Well-Architected Overview -- https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)",
+    "Salesforce Well-Architected Overview -- https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)",
     "Salesforce Knowledge Overview -- https://help.salesforce.com/s/articleView?id=sf.knowledge_whatis.htm (help.salesforce.com does not fetch; not re-read)",
     "CMS Connect for Experience Cloud -- https://help.salesforce.com/s/articleView?id=sf.cms_connect.htm (help.salesforce.com does not fetch; not re-read)",
     "Salesforce Knowledge Guide (Classic), Spring '26 -- https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_knowledge_implementation_guide.pdf -- edition availability, \"Data Category Limits\" (5 groups / 3 active, 100 per group, 5 levels, 8 per article, translations inherit), \"Visibility Setting Enforcement\" (ancestors and descendants visible), \"Work with Data Categories\" (standard sharing for Lightning Knowledge since Summer '20), scheduled publication, \"Export Articles for Translation\" (50 exports per 24 hours, 15 pending), \"Import Translated Articles\"",

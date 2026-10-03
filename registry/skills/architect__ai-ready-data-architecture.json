@@ -115,7 +115,7 @@
     "fee47188da7204f2ce73",
     "ff037dc26d2b75e1b52a"
   ],
-  "content_hash": "e4108851f7259999c2e7859510a48a0aa0374a5af6545fa28528d5c4590db50e",
+  "content_hash": "108b6bec7bf7252670e28d3dcf865894da001c845dd2470c8974849d3d05d760",
   "dependencies": [],
   "description": "Use when designing or auditing a Salesforce data architecture to support AI features \u2014 Einstein, Agentforce, Data Cloud, or custom ML models. Covers field-level data quality requirements, structured vs unstructured data placement, embedding-ready text field design, knowledge article structure for RAG grounding, Data Cloud harmonized data model, Einstein Feature Store patterns, AI-ready field naming conventions, and data freshness requirements for model retraining. Trigger phrases: design data model for AI, make Salesforce data AI-ready, data quality for Einstein, grounding data for Agentforce, Data Cloud for AI, RAG data architecture Salesforce. NOT for building the RAG grounding pipeline \u2014 use agentforce/rag-patterns-in-salesforce. NOT for Einstein Discovery or Prediction Builder training-data prep \u2014 use data/ai-training-data-preparation.",
   "file_location": "skills/architect/ai-ready-data-architecture",

@@ -48,6 +48,7 @@
     "5fd2d6382fbfb161c657",
     "61bdf6a332e3cd79e0f0",
     "6269d53fed509cc3f5f6",
+    "6376cd3750f0b6558929",
     "6717c47b58d2e6c1f2f9",
     "697aabdd5457c7b26096",
     "697d23d3da3fb315e6d0",
@@ -96,6 +97,7 @@
     "cddb883dc8e577878b8e",
     "cfcf2c5febce5d76bec0",
     "cff2ccdae441eb26bbe2",
+    "d218493ddcaee6756bf9",
     "d4058c44bd61acd63f54",
     "da00b8552d428cbacc45",
     "db487d9ed1790036f57d",
@@ -113,7 +115,7 @@
     "fb7d7190c8063152c9ee",
     "fd7bb5df3998bb251577"
   ],
-  "content_hash": "2b2589e8b069b39da52c7bba05bd4ad1fdf9d3725bcc14652c1e88341863adfd",
+  "content_hash": "bbb79286ab9c4b47f201d57063a8c7fd75a6a1ae1b6d7ce2ab685ff23597da33",
   "dependencies": [],
   "description": "Use when designing or evaluating a Salesforce conversational AI deployment that involves Agentforce agents, Einstein Bots, or a combination of both. Triggers: Agentforce topic design, Einstein Bot handoff to Agentforce, multi-agent orchestration, conversational channel routing, Atlas Reasoning Engine behavior, design an Agentforce agent alongside our Einstein Bot. NOT for Einstein Bot dialog and NLU design \u2014 use architect/einstein-bot-architecture. NOT for cutting an existing bot over to Agentforce \u2014 use agentforce/einstein-bots-to-agentforce-migration. NOT for Omni-Channel routing for human agents \u2014 use architect/multi-channel-service-architecture. NOT for Flow-only automation without a conversational surface \u2014 use admin/process-automation-selection.",
   "file_location": "skills/architect/conversational-ai-architecture",
@@ -126,14 +128,15 @@
   ],
   "name": "conversational-ai-architecture",
   "official_sources": [
-    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)",
-    "Agentic Patterns and Implementation with Agentforce \u2014 https://architect.salesforce.com/decision-guides/agentic-patterns (HTTP 403 on 2026-10-03, not re-read)",
-    "Enterprise Agentic Architecture and Design Patterns \u2014 https://architect.salesforce.com/decision-guides/enterprise-agentic-architecture (HTTP 403 on 2026-10-03, not re-read)",
+    "Salesforce Well-Architected Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)",
+    "Agentic Patterns and Implementation with Agentforce \u2014 https://architect.salesforce.com/decision-guides/agentic-patterns (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)",
+    "Enterprise Agentic Architecture and Design Patterns \u2014 https://architect.salesforce.com/decision-guides/enterprise-agentic-architecture (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)",
     "The Seamless Handoff: Integrating Einstein Enhanced Bots with Agentforce Agents \u2014 https://developer.salesforce.com/blogs/2024/10/the-seamless-handoff-integrating-einstein-enhanced-bots-with-agentforce-agents (blog; not sufficient grounding on its own, not re-read)",
     "Quickstart Your Einstein Generative AI Solution (Spring '26 edition): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/generative_ai.pdf. \"Differences Between Agents and Einstein Bots\", \"The Building Blocks of Agents\", \"Trust and Agents\" (Trust Layer masking disabled for agents), \"Considerations for Agents\" (15 actions per topic, 20 agents, no Government Cloud, Service Agent only on enhanced Messaging and BYOC, deactivation interrupts conversations, one intent per utterance), \"Parts of a Topic\" and \"Best Practices for Writing Topic Instructions\", \"Create a Custom Topic\" (deactivate first), \"Agent Topic: Escalation\", \"Create an Agent from a Type\" (Agent User license permission set), Agentforce usage types",
     "Metadata API Developer Guide, Summer '26: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf. `Bot` (`type`, `agentType`, `contextVariables`, `defaultOutboundFlow`, `sessionTimeout`), `ConversationContextVariable` (`includeInPrompt`), `ConversationContextVariableMapping` (`messageType`, `MessagingSession` / `MessagingEndUser` / `LiveChatTranscript`), `GenAiPlugin` (`aiPluginUtterances`, `canEscalate`, `scope`, Winter '26 retrieval note), `GenAiPlannerBundle` (`Atlas__ConcurrentMultiAgentOrchestration`), `GenAiFunction`",
     "Omni-Channel Developer Guide table of contents: https://developer.salesforce.com/docs/get_document/atlas.en-us.omni_channel_dev.meta. Checked for Agentforce capacity behavior; none documented",
-    "Repo decision tree: `standards/decision-trees/agentforce-capability-selector.md`. Routing between Agentforce agents, Einstein Bots and Prompt Builder"
+    "Repo decision tree: `standards/decision-trees/agentforce-capability-selector.md`. Routing between Agentforce agents, Einstein Bots and Prompt Builder",
+    "Agentforce Developer Guide, \"Get Started with Agent Script\": https://developer.salesforce.com/docs/ai/agentforce/guide/agent-script.html (fetched 2026-10-03 with plain curl): topics renamed to subagents from April 2026; Agent Script expressions for deterministic conditions, transitions, and variables"
   ],
   "outputs": [
     "Agentforce topic design with scope-bounded natural-language descriptions",

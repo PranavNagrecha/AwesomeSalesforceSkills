@@ -117,7 +117,7 @@
     "f89ae06af5f175da70b9",
     "ffd7a448722a4ce98b08"
   ],
-  "content_hash": "f73670c9e2b10d450a597a3a863811d63c0414ffc20a0b2522089aa13a841d63",
+  "content_hash": "f4dd288c5695412db13e2544a26130b47d03c4a39ede8fb3adc8fef9f48dbc55",
   "dependencies": [],
   "description": "Use when conducting a dedicated security architecture review of a Salesforce org \u2014 assessing sharing model completeness, FLS/CRUD enforcement, Apex security patterns, exposed API surface, Connected App policies, and Shield readiness. Produces a structured findings report with severity ratings (Critical/High/Medium/Low) and a 20+ point review checklist. Triggers: security architecture review, org security posture, sharing model audit, FLS coverage review, Connected App security, Shield assessment, org security health deep-dive, HIPAA or PCI security controls Salesforce, audit who can see what in our org. NOT for auditing Apex or LWC code line-by-line for CRUD/FLS, SOQL injection and XSS \u2014 use security/secure-coding-review-checklist. NOT for a full Well-Architected review across all three pillars \u2014 use architect/well-architected-review.",
   "file_location": "skills/architect/security-architecture-review",
@@ -132,10 +132,10 @@
   ],
   "name": "security-architecture-review",
   "official_sources": [
-    "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (HTTP 403 on 2026-10-03; pillar framing follows `standards/well-architected-mapping.md`)",
-    "Salesforce Well-Architected: Trusted \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (HTTP 403 on 2026-10-03, not re-read)",
+    "Salesforce Well-Architected Framework Overview \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html (on 2026-10-03 this URL redirected to the architect.salesforce.com home page, so the guide was not re-read; pillar framing follows `standards/well-architected-mapping.md`)",
+    "Salesforce Well-Architected: Trusted \u2014 https://architect.salesforce.com/docs/architect/well-architected/guide/trusted.html (returned 404 Not Found on 2026-10-03; dead link kept for history, not used as grounding)",
     "Secure Apex Classes (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_perms_enforcing.htm (read as the Summer '26 PDF below)",
-    "Apex Security and Sharing (LWC Developer Guide) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security (HTTP 403 on 2026-10-03, not re-read)",
+    "Apex Security and Sharing (LWC Developer Guide) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/apex-security (returned content on 2026-10-03; status checked, page not re-read)",
     "Salesforce Sharing Model \u2014 https://help.salesforce.com/s/articleView?id=sf.sharing_model.htm (help.salesforce.com does not fetch; the Security Guide PDF below was read instead)",
     "Connected App Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.connected_app_overview.htm (help.salesforce.com does not fetch; connected app policy claims marked UNVERIFIED)",
     "Salesforce Shield Overview \u2014 https://help.salesforce.com/s/articleView?id=sf.security_shield.htm (help.salesforce.com does not fetch; not re-read)",
