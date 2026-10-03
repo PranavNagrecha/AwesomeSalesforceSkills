@@ -304,14 +304,86 @@ quotes it.
 - **`scripts/bootstrap.py --verify-only`** exits 2 (`RETRIEVAL OK`) when only
   the slash-command install is stale.
 
+### Changed — depth wave: the 100 shallowest skills brought to the bar
+
+The 100 lowest-scoring packages on `scripts/score_skill_depth.py` (scores 4–7
+of 12; architect 24, admin 21, agentforce 21, data 9, apex 8, integration 7,
+devops 3, security 3, omnistudio 3, flow 1) were rewritten in ten batches
+against the release-262 PDFs, the Agentforce / GraphQL / Healthcare API guide
+pages, Trailhead, NPSP source and Slack's schemas. Every package now has a
+Questions-to-Ask table, a skill-specific workflow, a deployable worked example
+with its `package.xml` member form (metadata XML, Apex with its test class,
+LWC bundle or HTTP requests), six or more gotchas each with a source line,
+seven or more LLM anti-patterns, an `Official Sources Used` list that
+separates re-read sources from carried-over ones, verb-first triggers and a
+patch version bump. Wave mean 11.4 / 12 (68 packages at 12; corpus mean 9.3).
+
+- **Roughly 250 wrong claims corrected in place**, each marked
+  "Correction (2026-10-03)" or rewritten with its source. Representative:
+  Trust Layer masking is disabled for agents; `isConfirmationRequired` (not
+  `requiresConfirmation`); at least one Agentforce action output must set
+  `isUsedByPlanner`; agents do have versions; `Opportunity.IqScore` on 1–99;
+  AgentWork has no `WaitTime` (use `SpeedToAnswer`); Bulk API 2.0 has no
+  serial mode, 150 MB per job, counts toward the API allocation; XMD has no
+  PATCH; `convertCurrency()` errors in WHERE; dated exchange rates apply only
+  to Opportunity objects; at API 67.0+ trigger SOQL/DML runs in user mode;
+  `@testSetup` changes roll back per test method; Healthcare API lives on
+  `api.healthcloud.salesforce.com` with per-resource scopes; 2GP patches need
+  no patch org; change-set profile settings are scoped to deployed components;
+  Slack launch-flow targets a screen flow; `ReferralType` / `ReferredToId` do
+  not exist on `ClinicalServiceRequest`; CareGap supports create(); NPSP
+  `HH_INaming` / `npo02__Households_Settings__c`; Nonprofit Cloud objects are
+  `GiftTransaction` / `ProgramEnrollment` (not `Gift__c` / `ProgramEngagement`).
+- **Claims that could not be grounded carry an inline `UNVERIFIED (2026-10-03)`
+  marker beside the claim**, not in a footer.
+- **Three official doc bugs recorded as gotchas**: mismatched tags in the
+  `EinsteinGptSettings` and `Security.settings` samples, a `<dimesions>` typo
+  in the `WaveXmd` sample, missing commas in the External Data API JSON sample.
+
+### Fixed — skill checkers that encoded disproved facts
+
+About forty skill-local checkers were corrected or rewritten so their rules
+match the corrected prose, and twelve scaffold stubs became real checkers
+(agent-output-formats, agentforce-eval-harness, agentforce-tool-use-patterns,
+agentforce-multi-turn-patterns, omni-channel-reporting-data,
+prompt-injection-defense, apex-wrapper-class-patterns, flow-for-slack,
+loyalty-management-setup, slack-salesforce-integration-setup,
+package-development-strategy, einstein-analytics-data-model). Every new or
+rewritten checker is stdlib-only, takes `--manifest-dir`, ships
+`scripts/fixtures/{good,bad}` and a `--self-test`, exits 1 on a missing
+directory and 0 with a WARN on an empty one. Rules that could never fire are
+documented in the commits: capacity read from `ServiceChannel` (it lives on
+`QueueRoutingConfig`), `strategies/*.strategy-meta.xml` (the type is
+`recommendationStrategies/*.recommendationStrategy-meta.xml`), a Bot `status`
+element that does not exist, case-sensitive globs that never matched source
+files, and checkers that grepped their own SKILL.md.
+
+### Fixed — retrieval fixtures
+
+- `admin/user-management` gains one curated natural-language trigger ("how do I
+  add a new user"); the 1,381-fixture eval holds Hit@1 at 97.7% and lifts Hit@3
+  from 99.9% to 100%. A tokenizer stopword change was measured and rejected
+  (−0.3 to −0.5 pp Hit@1 from sibling flips).
+- The fixture "flow record choice set dynamic picklist choice collection" now
+  expects `flow/flow-dynamic-choices`, the specialist that owns the query's words.
+
 ### Docs
 
 - `admin/case-management-setup` `references/worked-example-case-intake.md`:
   a case intake solution built from the skills, and the five gaps it exposed.
 - `flow/flow-resource-patterns` 1.1.1: choosing between Choice, Picklist
-  Choice Set and Record Choice Set. The retrieval fixture `flow record choice
-  set dynamic picklist choice collection` was left failing for an owner
-  decision.
+  Choice Set and Record Choice Set. (The retrieval fixture `flow record choice
+  set dynamic picklist choice collection` was later re-pointed to the
+  specialist skill; see "Fixed — retrieval fixtures".)
+- **Repository presentation.** `scripts/generate_agent_roster.py` writes
+  `docs/agents.md` (the roster of all 98 agents by class and tier, `--check`
+  for CI); `scripts/build_site.py` renders the skills, domains and docs into a
+  static catalog site with sitemap, robots and canonical/Open Graph tags, and
+  `.github/workflows/pages.yml` publishes it to GitHub Pages once Pages is
+  enabled; `CITATION.cff`, `CODE_OF_CONDUCT.md` and `.github/REPO-METADATA.md`
+  (description, topics and the `gh repo edit` command) added. The roster is
+  deliberately not `agents/README.md`: Claude Code loads every flat
+  `agents/*.md` under the plugin root as a subagent.
 
 ## [0.5.0] — 2026-10-03 — sfskills-mcp (data bundle: org-taught rules)
 
