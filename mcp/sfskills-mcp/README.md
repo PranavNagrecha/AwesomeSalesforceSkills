@@ -70,37 +70,60 @@ unambiguous expected answers — better reflects real-world quality at
 
 ## Tools
 
-| Tool                      | What it does                                                                                              |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `search_skill`            | Lexical search over the SfSkills corpus. Returns ranked skill ids + top chunks. Optional `domain` filter. |
-| `get_skill`               | Full SKILL.md + registry metadata for a given skill id. Optional `include_references` for deep context.   |
-| `describe_org`            | `sf org display` summary: org id, instance, edition, API version, sandbox/scratch flags.                  |
-| `list_custom_objects`     | Custom (or standard) sObjects in the org. Substring filter via `name_filter`.                             |
-| `list_flows_on_object`    | Flows whose `TriggerObjectOrEvent` matches the given sObject (Tooling API).                               |
-| `validate_against_org`    | Category-aware probe: "does a skill's guidance already have analogs in the org?"                          |
-| `list_agents`             | Enumerate SfSkills run-time + build-time agents with one-line summaries. Filter via `kind="runtime"`.     |
-| `get_agent`               | Fetch an agent's full `AGENT.md` body so the caller's model can execute it (MCP does not execute agents). |
-| `list_validation_rules`   | Validation rules for a given sObject with formula, active flag, error display.                            |
-| `list_permission_sets`    | Permission sets + groups + muting permission sets, with license + assignment counts.                      |
-| `describe_permission_set` | Full object / field / user permission matrix for a specific permission set.                               |
-| `list_record_types`       | Record types, active flag, master-layout assignments, picklist value scoping.                             |
-| `list_named_credentials`  | Named Credentials + External Credentials (read-only; never returns secrets).                              |
-| `list_approval_processes` | Approval processes + steps + next approver rules for an sObject.                                          |
-| `tooling_query`           | Generic read-only Tooling API SOQL with a DML/mutation blocklist (escape hatch for admin-land agents).    |
-| `list_apex_classes`       | Apex class inventory + name filter + status filter. Primary consumer: apex-refactorer, code-reviewer.     |
-| `get_apex_class`          | Single Apex class by name; optional body for header-only calls.                                           |
-| `list_apex_triggers`      | Trigger inventory with per-event flags (BeforeInsert/AfterUpdate/etc.).                                   |
-| `list_lwc_bundles`        | LightningComponentBundle inventory.                                                                       |
-| `get_lwc_bundle`          | One bundle + every resource (js/html/css/meta-xml).                                                       |
-| `list_custom_fields`      | Field metadata via EntityParticle. Custom-only by default; `include_standard=true` for standard fields.   |
-| `describe_object_full`    | Composite read: fields + record types + validation rules + active flows in one call.                      |
-| `list_orgs`               | Wraps `sf org list` — every authenticated org normalized into one shape.                                  |
-| `search_agents`           | Rank agents by relevance to a natural-language query.                                                     |
-| `search_templates`        | Rank canonical building blocks under `templates/`.                                                         |
-| `search_decision_trees`   | Rank decision trees + return the best matching section per tree.                                          |
-| `get_template`            | Read one template by relative path (e.g. `apex/TriggerHandler.cls`).                                       |
-| `get_decision_tree`       | Read one decision tree by basename (e.g. `automation-selection`).                                          |
-| `suggest_agent`           | Take a free-text task; return ranked candidate agents + decision-tree branches + a `next_step` pointer.    |
+All 50 tools, listed from the `@mcp.tool` registrations in `server.py`: 23 run offline against the library and local files, 26 read from an org through the `sf` CLI, and `emit_envelope` is the only one that writes (to `docs/reports/`). Scope is the tool's annotation set; see "Tool annotations" below.
+
+| Tool | Scope | What it does |
+|---|---|---|
+| `search_skill` | repo | Lexical search over the SfSkills library (1,040 Salesforce skills spanning admin, apex, flow, lwc, integration, security, data, architect, devops, omnistudio, agentforce) |
+| `get_skill` | repo | Fetch a skill by id (e.g. 'apex/trigger-framework'). |
+| `describe_org` | org (read) | Describe the user's target Salesforce org via 'sf org display' — org id, instance URL, edition, API version, sandbox/scratch status. |
+| `list_custom_objects` | org (read) | List custom sObjects in the target org. Set include_standard=true to include standard objects. |
+| `list_flows_on_object` | org (read) | List Flows (record-triggered, scheduled-triggered, or platform-event-triggered) targeting the given sObject, via the Tooling API. |
+| `validate_against_org` | org (read) | Category-aware probe that checks whether a skill's guidance already has analogs in the org. E.g. |
+| `list_validation_rules` | org (read) | List Validation Rules on an sObject via the Tooling API. Returns rule name, active state, error message, error display field, and id. |
+| `list_permission_sets` | org (read) | List Permission Sets in the org. By default excludes the profile-owned shadow PSes Salesforce creates per profile. |
+| `describe_permission_set` | org (read) | Describe a single Permission Set by API name — header metadata, ObjectPermissions, and (optionally) FieldPermissions. |
+| `list_record_types` | org (read) | List Record Types on an sObject — developer name, label, active flag, and description. Use this in record-type-and-layout-auditor and object-designer. |
+| `list_named_credentials` | org (read) | List Named Credentials in the org. Includes endpoint and principal type. |
+| `list_approval_processes` | org (read) | List Approval ProcessDefinitions, optionally filtered by object. By default returns only active approvals. |
+| `tooling_query` | org (read) | Escape-hatch read-only SOQL against the Tooling or REST API. Refuses any statement that is not a SELECT or that contains DML keywords / semicolons. |
+| `probe_apex_references` | org (read) | Enumerate Apex classes and triggers referencing an <object>.<field>. Uses word-boundary regex on fetched bodies to filter substring false positives. |
+| `probe_flow_references` | org (read) | Enumerate active Flow versions whose metadata XML references <object>.<field>. |
+| `probe_matching_rules` | org (read) | List MatchingRule + DuplicateRule records on an sObject with their field items. |
+| `probe_permset_shape` | org (read) | Summarize a Permission Set / Permission Set Group / user scope. scope argument is psg:<DeveloperName>, ps:<Name>, or user:<username>. |
+| `list_agents` | repo | List SfSkills agents available to the caller. |
+| `get_agent` | repo | Fetch the full AGENT.md body for a named agent (e.g. 'apex-refactorer', 'security-scanner', 'deployment-risk-scorer'). |
+| `health` | repo | Server diagnostic snapshot — server / SDK / sf-CLI versions, registry skill count + build timestamp, lexical-index freshness + size, agent counts by class (runtime / buil |
+| `get_deployment_result` | org (read) | Read-only: retrieve an EXISTING Salesforce deployment job via `sf project deploy report --job-id --json`. job_id is required (15/18-char 0Af…). |
+| `get_apex_test_run` | org (read) | Read-only: retrieve an EXISTING Apex test run via `sf apex get test --test-run-id --json`. test_run_id is required (15/18-char 707…). |
+| `get_user_access_evidence` | repo | Read-only P03 access-path evidence from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_component_dependency_evidence` | repo | Read-only P04 component-dependency evidence from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_automation_inventory` | repo | Read-only P05 automation inventory from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_flow_test_result` | repo | Read-only P06 flow-test / release-readiness evidence from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_code_analysis_result` | repo | Read-only P07 code-analysis / security-posture evidence from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_integration_config_summary` | repo | Read-only P08 integration-config evidence from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_data_load_result` | repo | Read-only P09 data-load result evidence from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_org_snapshot_manifest` | repo | Read-only P10 org-snapshot manifest from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `get_agentforce_test_result` | repo | Read-only P11 Agentforce test evidence from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `compare_org_snapshots` | repo | Read-only P12 org-snapshot comparison from a captured JSON fixture (result_path). Bounded to 32 KiB. |
+| `list_deprecated_redirects` | repo | Return the map of retired agent ids → canonical router + flag. Call this once per session; before get_agent, check whether the requested id is in this map and redirect. |
+| `get_invocation_modes` | repo | Return docs/agent-invocation-modes.md — the 15 channels this library can be consumed through (MCP, slash commands, bundle export, informal chat, CI harness, subagents, et |
+| `emit_envelope` | writes docs/reports | Atomically write an agent's output envelope JSON + paired markdown report to docs/reports/<agent>/<run_id>.… per docs/consumer-responsibilities.md. |
+| `probe_automation_graph` | org (read) | Enumerate every active automation on a given sObject: record-triggered flows (grouped by trigger context), legacy Process Builders, active Apex triggers (with event usage |
+| `list_apex_classes` | org (read) | List Apex classes in the org via the Tooling API. Excludes managed-package classes by default (NamespacePrefix = null). |
+| `get_apex_class` | org (read) | Fetch one ApexClass by name. include_body defaults True; pass False for a header-only call when the class is large or you only need metadata. |
+| `list_apex_triggers` | org (read) | List ApexTrigger rows. object_name scopes to one sObject. |
+| `list_lwc_bundles` | org (read) | List Lightning Web Component bundles via the Tooling API. Excludes managed-package bundles by default. |
+| `get_lwc_bundle` | org (read) | Fetch one LightningComponentBundle by DeveloperName + (by default) every resource in the bundle (js, html, css, meta-xml). |
+| `list_custom_fields` | org (read) | List fields on an sObject via EntityParticle (REST API). |
+| `describe_object_full` | org (read) | Composite read: fields + record types + validation rules + active flows for one sObject in a single call. |
+| `list_orgs` | org (read) | List every Salesforce org the user is authenticated to. Wraps 'sf org list'. |
+| `search_agents` | repo | Rank SfSkills agents by relevance to a natural-language query. Useful when you know what you want to do (e.g. |
+| `search_templates` | repo | Rank canonical building blocks under templates/ by relevance (TriggerHandler, ApplicationLogger, BaseService, TestDataFactory, LWC skeleton, Flow fault-path, etc.). |
+| `search_decision_trees` | repo | Rank standards/decision-trees/ by relevance and return the best matching section per tree (e.g. 'flow vs apex' → automation-selection.md → '## Flow vs Apex'). |
+| `get_template` | repo | Fetch one canonical template by relative path under templates/ (e.g. 'apex/TriggerHandler.cls'). |
+| `get_decision_tree` | repo | Fetch one decision tree by basename without .md (e.g. 'automation-selection'). |
+| `suggest_agent` | repo | Take a free-text task description ('I want to refactor a 2000-line Apex class', 'audit my picklists', 'design a permission set for the marketing team') and return ranked  |
 
 ### Run-time agents reachable via `get_agent`
 
@@ -250,7 +273,7 @@ Every tool registers with [`ToolAnnotations`](https://modelcontextprotocol.io/sp
 
 - **`readOnlyHint`** — `True` for every tool except `emit_envelope` (the only tool that writes to disk; output goes to `docs/reports/<agent>/<run_id>.{json,md}`).
 - **`destructiveHint`** — `False` for all tools.
-- **`openWorldHint`** — `True` for the 16 org-touching tools (output depends on external state); `False` for the 7 repo-only tools (deterministic, cacheable).
+- **`openWorldHint`** — `True` for the 26 org-touching tools (output depends on external state); `False` for the 24 repo-only tools (deterministic, cacheable).
 - **`idempotentHint`** — `True` for read tools; `False` for `emit_envelope` (overwrite-protected by default; re-runs of the same `run_id` reject without `overwrite=True`).
 
 Honest annotations let Cursor's `autoApprove`, Cline's per-tool gating, and
